@@ -17,5 +17,5 @@ public interface DocumentServiceAsync {
 
     void saveDocument(Document document, AsyncCallback<Document> callback);
 
-    void findDecimalNumberForDocument(DecimalNumber decimalNumber, AsyncCallback<DecimalNumber> callback);
+    void findDecimalNumber(DecimalNumber decimalNumber, AsyncCallback<DecimalNumber> callback);
 }

@@ -71,22 +71,34 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onSaveClicked() {
-        Document document = getDocument();
-        if (!document.isValid() || isUploadingFileNotValid(document)) {
-            fireErrorMessage(getValidationErrorMessage(document));
+        Document newDocument = getDocument();
+        DecimalNumber newDecimalNumber = newDocument.getDecimalNumber();
+        boolean decimalNumberEmpty = newDecimalNumber == null || newDecimalNumber.isCompletelyEmpty();
+
+        if (newDocument.getId() == null && HelperFunc.isEmpty(view.documentUploader().getFilename())) {
+            fireErrorMessage(lang.uploadingDocumentNotSet());
             return;
-        } else if (!view.isDecimalNumberEmpty() && !view.isDecimalNumberValid()) {
+        }
+        if (!newDocument.isValid()) {
+            fireErrorMessage(getValidationErrorMessage(newDocument));
+            return;
+        } else if (!decimalNumberEmpty && !newDecimalNumber.isValid()) {
+            view.decimalNumberValidator().setValid(false);
             return;
         }
 
-        if (view.isDecimalNumberEmpty() ||
-                document.getDecimalNumber() == null ||
-                document.getDecimalNumber().getId() != null) {
-            saveDocument(document);
+        boolean decimalNumberWasSet = newDecimalNumber != null && newDecimalNumber.getId() != null;
+        if (decimalNumberWasSet && decimalNumberEmpty) {
+            fireErrorMessage(lang.decimalNumberNotSet());
             return;
         }
 
-        documentService.findDecimalNumberForDocument(document.getDecimalNumber(), new RequestCallback<DecimalNumber>() {
+        if (decimalNumberEmpty) {
+            saveDocument(newDocument);
+            return;
+        }
+
+        documentService.findDecimalNumber(newDocument.getDecimalNumber(), new RequestCallback<DecimalNumber>() {
             @Override
             public void onError(Throwable throwable) {
                 fireErrorMessage(lang.decimalNumberNotFound());
@@ -94,8 +106,8 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(DecimalNumber decimalNumber) {
-                document.setDecimalNumber(decimalNumber);
-                saveDocument(document);
+                newDocument.setDecimalNumber(decimalNumber);
+                saveDocument(newDocument);
             }
         });
     }
@@ -119,14 +131,7 @@ public abstract class DocumentEditActivity
         });
     }
 
-    private boolean isUploadingFileNotValid(Document doc) {
-        return HelperFunc.isEmpty(view.documentUploader().getFilename()) && doc.getId() == null;
-    }
-
     private String getValidationErrorMessage(Document doc) {
-        if (isUploadingFileNotValid(doc)) {
-            return lang.uploadingDocumentNotSet();
-        }
         if (doc.getDecimalNumber() == null) {
             return lang.decimalNumberNotSet();
         }
@@ -153,19 +158,21 @@ public abstract class DocumentEditActivity
 
 
     private Document getDocument() {
-        document.setName(view.name().getValue());
-        document.setAnnotation(view.annotation().getValue());
+        Document d = new Document();
+        d.setId(document.getId());
+        d.setName(view.name().getValue());
+        d.setAnnotation(view.annotation().getValue());
         DecimalNumber decimalNumber = view.decimalNumber().getValue();
         if (decimalNumber != null)
             decimalNumber.setEntityType(En_DecimalNumberEntityType.DOCUMENT);
-        document.setDecimalNumber(decimalNumber);
-        document.setType(view.documentType().getValue());
-        document.setTypeCode(view.typeCode().getValue());
-        document.setInventoryNumber(view.inventoryNumber().getValue());
-        document.setKeywords(view.keywords().getValue());
-        document.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
-        document.setProjectId(view.project().getValue().getId());
-        return document;
+        d.setDecimalNumber(decimalNumber);
+        d.setType(view.documentType().getValue());
+        d.setTypeCode(view.typeCode().getValue());
+        d.setInventoryNumber(view.inventoryNumber().getValue());
+        d.setKeywords(view.keywords().getValue());
+        d.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
+        d.setProjectId(view.project().getValue().getId());
+        return d;
     }
 
     @Override

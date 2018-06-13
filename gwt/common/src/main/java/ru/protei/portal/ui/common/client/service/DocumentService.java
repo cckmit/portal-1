@@ -20,5 +20,5 @@ public interface DocumentService extends RemoteService {
 
     Document saveDocument(Document document) throws RequestFailedException;
 
-    DecimalNumber findDecimalNumberForDocument(DecimalNumber decimalNumber) throws RequestFailedException;
+    DecimalNumber findDecimalNumber(DecimalNumber decimalNumber) throws RequestFailedException;
 }

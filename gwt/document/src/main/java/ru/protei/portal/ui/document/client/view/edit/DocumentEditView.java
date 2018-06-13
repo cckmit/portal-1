@@ -45,23 +45,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public boolean isDecimalNumberValid() {
-        if (decimalNumber.isValid()) {
-            return true;
-        }
-        decimalNumber.setValid(false);
-        return false;
-    }
-
-    @Override
-    public boolean isDecimalNumberEmpty() {
-        DecimalNumber decimalNumber = decimalNumber().getValue();
-        if (decimalNumber == null)
-            return true;
-        return decimalNumber.getModification() == null && decimalNumber.getClassifierCode() == null;
-    }
-
-    @Override
     public void setEnabledProject(boolean isEnabled) {
         project.setEnabled(isEnabled);
     }

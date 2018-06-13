@@ -16,8 +16,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setActivity(AbstractDocumentEditActivity activity);
 
-    boolean isDecimalNumberEmpty();
-
     void setEnabledProject(boolean isEnabled);
 
     void setVisibleUploader(boolean isVisible);
@@ -43,8 +41,6 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValue<List<String>> keywords();
 
     HasValue<DecimalNumber> decimalNumber();
-
-    boolean isDecimalNumberValid();
 
     AbstractDocumentUploader documentUploader();
 

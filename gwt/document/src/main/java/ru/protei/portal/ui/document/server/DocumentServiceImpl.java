@@ -81,10 +81,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DecimalNumber findDecimalNumberForDocument(DecimalNumber decimalNumber) throws RequestFailedException {
+    public DecimalNumber findDecimalNumber(DecimalNumber decimalNumber) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug("find decimal number for document(): decimal number={}", decimalNumber);
+        log.debug("find decimal number(): decimal number={}", decimalNumber);
         CoreResponse<DecimalNumber> response = documentService.findDecimalNumberForDocument(descriptor.makeAuthToken(), decimalNumber);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
