@@ -1,12 +1,17 @@
 package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -38,7 +43,7 @@ import java.util.Set;
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditView {
+public class IssueEditView extends Composite implements AbstractIssueEditView, ResizeHandler {
 
     @Inject
     public void onInit() {
@@ -51,11 +56,28 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
         initiator.setAddButtonVisible(true);
+        Window.addResizeHandler(this);
     }
 
     @Override
     protected void onAttach() {
         super.onAttach();
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        if (resizeFinishedTimer.isRunning()) {
+            resizeFinishedTimer.cancel();
+        }
+    }
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        if (resizeFinishedTimer.isRunning()) {
+            resizeFinishedTimer.cancel();
+        }
+        resizeFinishedTimer.schedule(200);
     }
 
     @Override
@@ -224,6 +246,23 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         };
     }
 
+    @Override
+    public void refreshFooterBtnPosition() {
+        Scheduler.get().scheduleDeferred(() -> {
+            int wHeight = Window.getClientHeight();
+            int pHeight = root.getOffsetHeight();
+            setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
+        });
+    }
+
+    private void setFooterFixed(boolean isFixed) {
+        if (isFixed) {
+            root.addStyleName("footer-fixed");
+        } else {
+            root.removeStyleName("footer-fixed");
+        }
+    }
+
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
         Company company = Company.fromEntityOption( event.getValue() );
@@ -268,6 +307,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         else
             comments.addClassName("hide");
     }
+
+    @UiField
+    HTMLPanel root;
 
     @UiField
     ValidableTextBox name;
@@ -335,6 +377,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     HTMLPanel caseSubscriptionContainers;
 
+    private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
+
+    private Timer resizeFinishedTimer = new Timer() {
+        @Override
+        public void run() {
+            refreshFooterBtnPosition();
+        }
+    };
 
     private AbstractIssueEditActivity activity;
 

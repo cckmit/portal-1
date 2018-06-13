@@ -100,6 +100,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
+    @Event
+    public void onChangeCommentsView(IssueEvents.ChangeCommentsView event) {
+        view.refreshFooterBtnPosition();
+    }
+
     @Override
     public void onSaveClicked() {
         if(!validateView()){
@@ -250,6 +255,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
+
+        view.refreshFooterBtnPosition();
     }
 
     private void fillIssueObject(CaseObject issue){

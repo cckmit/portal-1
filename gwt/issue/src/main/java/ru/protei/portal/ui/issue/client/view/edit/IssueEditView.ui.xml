@@ -10,7 +10,7 @@
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root" styleName="panel">
+    <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
 
         <div class="body">
             <div class="grid grid-indent">
