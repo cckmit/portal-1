@@ -9,7 +9,7 @@
     <g:HTMLPanel styleName="panel">
             <div class="body">
                 <div class="grid grid-indent">
-                    <g:HTMLPanel styleName="form-group col-xs-12" ui:field="contactFired">
+                    <g:HTMLPanel styleName="form-group col-xs-12 text-primary" ui:field="contactFired">
                         <i class="fa fa-info-circle"/>
                         <label><ui:text from="{lang.contactFired}"/></label>
                     </g:HTMLPanel>

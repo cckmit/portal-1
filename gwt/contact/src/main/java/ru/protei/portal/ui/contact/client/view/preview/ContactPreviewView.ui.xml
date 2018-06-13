@@ -8,7 +8,7 @@
             <div class="col-xs-12">
                 <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
             </div>
-            <g:HTMLPanel styleName="col-xs-12 m-l-10 m-b-5" ui:field="contactFired">
+            <g:HTMLPanel styleName="col-xs-12 m-l-10 m-b-5 text-primary" ui:field="contactFired">
                 <i class="fa fa-info-circle"/>
                 <label><ui:text from="{lang.contactFired}"/></label>
             </g:HTMLPanel>
