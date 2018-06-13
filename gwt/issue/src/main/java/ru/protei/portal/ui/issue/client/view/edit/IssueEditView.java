@@ -227,15 +227,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void scheduleFooterFix() {
-        Scheduler.get().scheduleDeferred(this::requestFooterFix);
-    }
-
-    @Override
-    public void requestFooterFix() {
-        int wHeight = Window.getClientHeight();
-        int pHeight = root.getOffsetHeight();
-        setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
+    public void refreshFooterBtnPosition() {
+        Scheduler.get().scheduleDeferred(() -> {
+            int wHeight = Window.getClientHeight();
+            int pHeight = root.getOffsetHeight();
+            setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
+        });
     }
 
     private void setFooterFixed(boolean isFixed) {

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
@@ -103,7 +104,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onChangeCommentsView(IssueEvents.ChangeCommentsView event) {
-        view.scheduleFooterFix();
+        view.refreshFooterBtnPosition();
     }
 
     @Override
@@ -197,7 +198,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onResize(ResizeEvent event) {
-        view.requestFooterFix();
+        if (resizeFinishedTimer.isRunning()) {
+            resizeFinishedTimer.cancel();
+        }
+        resizeFinishedTimer.schedule(200);
     }
 
     private void initialView(CaseObject issue){
@@ -265,7 +269,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
 
-        view.scheduleFooterFix();
+        view.refreshFooterBtnPosition();
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -314,6 +318,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CompanyServiceAsync companyService;
     @Inject
     PersonServiceAsync personService;
+
+    private Timer resizeFinishedTimer = new Timer() {
+        @Override
+        public void run() {
+            view.refreshFooterBtnPosition();
+        }
+    };
 
     private AppEvents.InitDetails initDetails;
     @ContextAware

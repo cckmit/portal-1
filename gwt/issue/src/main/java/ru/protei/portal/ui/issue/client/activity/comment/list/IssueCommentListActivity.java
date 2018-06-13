@@ -107,6 +107,7 @@ public abstract class IssueCommentListActivity
                 @Override
                 public void onSuccess(CaseComment caseComment) {
                     itemView.setMessage(null);
+                    fireEvent(new IssueEvents.ChangeCommentsView());
                 }
             });
             return;
@@ -127,6 +128,7 @@ public abstract class IssueCommentListActivity
                 view.removeComment( itemView );
                 itemViewToModel.remove(itemView);
                 fireEvent( new IssueEvents.ChangeModel() );
+                fireEvent( new IssueEvents.ChangeCommentsView() );
             }
         });
     }
@@ -412,6 +414,7 @@ public abstract class IssueCommentListActivity
                 view.attachmentContainer().clear();
                 tempAttachments.clear();
                 fireEvent( new IssueEvents.ChangeModel() );
+                fireEvent( new IssueEvents.ChangeCommentsView() );
             }
         } );
     };
@@ -419,8 +422,11 @@ public abstract class IssueCommentListActivity
     private void issueSavedAlso(boolean withComeback){
         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
         fireEvent(new IssueEvents.ChangeModel());
-        if(withComeback)
+        if (withComeback) {
             fireEvent(new Back());
+        } else {
+            fireEvent(new IssueEvents.ChangeCommentsView());
+        }
     }
 
     @Inject
