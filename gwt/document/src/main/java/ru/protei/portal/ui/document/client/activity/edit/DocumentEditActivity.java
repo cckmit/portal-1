@@ -71,16 +71,37 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onSaveClicked() {
-        boolean isNew = document.getId() == null;
-
-        Document document = applyChanges();
-        if (!document.isValid() || isUploadingDocumentNotValid(document)) {
+        Document document = getDocument();
+        if (!document.isValid() || isUploadingFileNotValid(document)) {
             fireErrorMessage(getValidationErrorMessage(document));
             return;
-        } else if (!view.isDecimalNumbersCorrect()) {
+        } else if (!view.isDecimalNumberEmpty() && !view.isDecimalNumberValid()) {
             return;
         }
 
+        if (view.isDecimalNumberEmpty() ||
+                document.getDecimalNumber() == null ||
+                document.getDecimalNumber().getId() != null) {
+            saveDocument(document);
+            return;
+        }
+
+        documentService.findDecimalNumberForDocument(document.getDecimalNumber(), new RequestCallback<DecimalNumber>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireErrorMessage(lang.decimalNumberNotFound());
+            }
+
+            @Override
+            public void onSuccess(DecimalNumber decimalNumber) {
+                document.setDecimalNumber(decimalNumber);
+                saveDocument(document);
+            }
+        });
+    }
+
+    private void saveDocument(Document document) {
+        boolean isNew = document.getId() == null;
         documentService.saveDocument(document, new RequestCallback<Document>() {
             @Override
             public void onError(Throwable throwable) {
@@ -94,17 +115,16 @@ public abstract class DocumentEditActivity
                 } else {
                     fireEvent(new Back());
                 }
-                // TODO: think about transactions: make sure that both document and pdf file are saved
             }
         });
     }
 
-    private boolean isUploadingDocumentNotValid(Document doc) {
+    private boolean isUploadingFileNotValid(Document doc) {
         return HelperFunc.isEmpty(view.documentUploader().getFilename()) && doc.getId() == null;
     }
 
     private String getValidationErrorMessage(Document doc) {
-        if (isUploadingDocumentNotValid(doc)) {
+        if (isUploadingFileNotValid(doc)) {
             return lang.uploadingDocumentNotSet();
         }
         if (doc.getDecimalNumber() == null) {
@@ -132,15 +152,15 @@ public abstract class DocumentEditActivity
     }
 
 
-    private Document applyChanges() {
+    private Document getDocument() {
         document.setName(view.name().getValue());
         document.setAnnotation(view.annotation().getValue());
         DecimalNumber decimalNumber = view.decimalNumber().getValue();
-        if (decimalNumber != null) {
+        if (decimalNumber != null)
             decimalNumber.setEntityType(En_DecimalNumberEntityType.DOCUMENT);
-        }
         document.setDecimalNumber(decimalNumber);
         document.setType(view.documentType().getValue());
+        document.setTypeCode(view.typeCode().getValue());
         document.setInventoryNumber(view.inventoryNumber().getValue());
         document.setKeywords(view.keywords().getValue());
         document.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
@@ -165,6 +185,7 @@ public abstract class DocumentEditActivity
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
+        view.typeCode().setValue(document.getTypeCode());
         view.decimalNumber().setValue(document.getDecimalNumber());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
         view.documentType().setValue(document.getType(), true);
@@ -178,6 +199,8 @@ public abstract class DocumentEditActivity
 
         view.nameValidator().setValid(true);
         view.decimalNumberValidator().setValid(true);
+
+        view.documentUploader().resetFilename();
     }
 
     @Inject

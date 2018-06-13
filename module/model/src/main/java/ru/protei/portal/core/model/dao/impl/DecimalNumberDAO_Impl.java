@@ -18,6 +18,10 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
     @Override
     public boolean checkIfExist( DecimalNumber number ) {
+        return CollectionUtils.size( findSimilar( number)) > 0;
+    }
+
+    private List<DecimalNumber> findSimilar(DecimalNumber number) {
         String condition = "org_code=? and classifier_code=? AND reg_number=? ";
         List<Object> args = new ArrayList<>( Arrays.asList( number.getOrganizationCode().name(), number.getClassifierCode(), number.getRegisterNumber() ) );
 
@@ -28,8 +32,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
             condition += " AND modification_number IS NULL";
         }
 
-        List< DecimalNumber > numbers = getListByCondition( condition, args );
-        return CollectionUtils.size( numbers ) > 0;
+        return getListByCondition( condition, args );
     }
 
     @Override
@@ -103,5 +106,14 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     @Override
     public void updateAllNumbersWithEmptyEntityType() {
         jdbcTemplate.batchUpdate("UPDATE " + getTableName() + " SET entity_type='" + En_DecimalNumberEntityType.EQUIPMENT.name() + "' WHERE entity_type IS NULL OR entity_type=''");
+    }
+
+    @Override
+    public DecimalNumber find(DecimalNumber decimalNumber) {
+        List<DecimalNumber> numbers = findSimilar(decimalNumber);
+        if (numbers == null || numbers.size() != 1) {
+            return null;
+        }
+        return numbers.get(0);
     }
 }

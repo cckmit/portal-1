@@ -890,4 +890,8 @@ public interface Lang extends Messages, ContactItemLang {
     String roleDefaultForContact();
 
     String mobilePhone();
+
+    String documentTypeCode();
+
+    String decimalNumberNotFound();
 }

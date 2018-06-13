@@ -5,9 +5,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
-import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
 
@@ -54,11 +54,14 @@ public class DocumentServiceImpl implements DocumentService {
         if (!documentDAO.saveOrUpdate(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
-        document.getDecimalNumber().setEntityId(document.getId());
-        document.getDecimalNumber().setEntityType(En_DecimalNumberEntityType.DOCUMENT);
-        if (!decimalNumberDAO.saveOrUpdate(document.getDecimalNumber())) {
-            return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
-        }
         return new CoreResponse<Document>().success(document);
+    }
+
+    @Override
+    public CoreResponse<DecimalNumber> findDecimalNumberForDocument(AuthToken token, DecimalNumber decimalNumber) {
+        DecimalNumber foundedNumber = decimalNumberDAO.find(decimalNumber);
+        if (foundedNumber == null)
+            return new CoreResponse<DecimalNumber>().error(En_ResultStatus.NOT_FOUND);
+        return new CoreResponse<DecimalNumber>().success(foundedNumber);
     }
 }
