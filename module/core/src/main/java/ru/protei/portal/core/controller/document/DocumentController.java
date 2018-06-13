@@ -37,7 +37,7 @@ public class DocumentController {
     PortalConfig config;
 
     @Autowired
-    DocumentStorageIndex documentStorage;
+    DocumentStorageIndex documentStorageIndex;
 
     @Autowired
     DocumentSvnService documentSvnService;
@@ -79,7 +79,7 @@ public class DocumentController {
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             try {
-                documentStorage.addPdfDocument(item.get().getInputStream(), projectId, documentId);
+                documentStorageIndex.addPdfDocument(item.get().getInputStream(), projectId, documentId);
             } catch (IOException e) {
                 logger.error("failed to add file to the index", e);
                 documentDAO.removeByKey(documentId);
@@ -91,7 +91,7 @@ public class DocumentController {
             } catch (SVNException | IOException e) {
                 logger.error("failed to save in the repository", e);
                 try {
-                    removeFromIndex(documentId);
+                    documentStorageIndex.removeDocument(documentId);
                 } catch (IOException e1) {
                     logger.error("failed to delete document from the index");
                 }
@@ -99,10 +99,6 @@ public class DocumentController {
                 return "error";
             }
         });
-    }
-
-    private void removeFromIndex(long documentId) throws IOException {
-        documentStorage.removeDocument(documentId);
     }
 
     @RequestMapping(value = "/document/{projectId:\\d+}/{documentId:\\d+}", method = RequestMethod.GET)
