@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
@@ -199,6 +200,16 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return company;
     }
 
+    @Override
+    public HasValue<Boolean> contactFired() {
+        return contactFired;
+    }
+
+    @Override
+    public HasValue<Boolean> contactDeleted() {
+        return contactDeleted;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -303,6 +314,12 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     PasswordTextBox confirmPassword;
+
+    @UiField
+    Switcher contactFired;
+
+    @UiField
+    Switcher contactDeleted;
 
     Timer timer = new Timer() {
         @Override

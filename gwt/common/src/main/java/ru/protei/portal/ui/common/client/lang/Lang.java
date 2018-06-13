@@ -940,4 +940,9 @@ public interface Lang extends Messages, ContactItemLang {
     String reportRequested();
 
     String errProductNotSelected();
+
+    String contactFired();
+
+    String contactDeleted();
+
 }

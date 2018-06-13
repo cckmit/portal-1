@@ -183,6 +183,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
 
+        contact.setFired(view.contactFired().getValue());
+        contact.setDeleted(view.contactDeleted().getValue());
+
         return contact;
     }
 
@@ -239,6 +242,9 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.login().setText(userLogin.getUlogin());
         view.password().setText("");
         view.confirmPassword().setText("");
+
+        view.contactFired().setValue(person.isFired());
+        view.contactDeleted().setValue(person.isDeleted());
 
         view.showInfo(userLogin.getId() != null);
     }
