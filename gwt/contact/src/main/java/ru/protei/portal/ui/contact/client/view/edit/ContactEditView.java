@@ -201,13 +201,13 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasValue<Boolean> contactFired() {
+    public HasVisibility contactFiredVisibility() {
         return contactFired;
     }
 
     @Override
-    public HasValue<Boolean> contactDeleted() {
-        return contactDeleted;
+    public HasVisibility fireBtnVisibility() {
+        return fireBtn;
     }
 
     @UiHandler( "saveButton" )
@@ -224,6 +224,13 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         }
     }
 
+    @UiHandler( "fireBtn" )
+    public void onFireClicked( ClickEvent event ) {
+        if (activity != null) {
+            activity.onFireClicked();
+        }
+    }
+
     @UiHandler("login")
     public void onChangeContactLogin( KeyUpEvent keyUpEvent ) {
         verifiableIcon.setClassName( NameStatus.UNDEFINED.getStyle());
@@ -236,6 +243,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     Button cancelButton;
+
+    @UiField
+    Button fireBtn;
 
     @UiField
     ValidableTextBox firstName;
@@ -316,10 +326,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     PasswordTextBox confirmPassword;
 
     @UiField
-    Switcher contactFired;
+    HTMLPanel contactFired;
 
-    @UiField
-    Switcher contactDeleted;
+    //@UiField
+    //HTMLPanel contactDeleted;
 
     Timer timer = new Timer() {
         @Override

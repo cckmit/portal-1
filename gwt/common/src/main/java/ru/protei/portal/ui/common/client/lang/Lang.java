@@ -945,4 +945,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactDeleted();
 
+    String contactFire();
+
+    String contactFireConfirmMessage();
+
 }

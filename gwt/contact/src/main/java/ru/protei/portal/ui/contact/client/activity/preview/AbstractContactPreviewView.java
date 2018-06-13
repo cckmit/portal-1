@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.contact.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -31,4 +32,6 @@ public interface AbstractContactPreviewView extends IsWidget {
 
     void showFullScreen ( boolean value );
     HTMLPanel preview ();
+
+    HasVisibility contactFiredVisibility();
 }

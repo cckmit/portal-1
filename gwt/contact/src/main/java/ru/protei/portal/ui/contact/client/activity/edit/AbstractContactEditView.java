@@ -73,7 +73,7 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasEnabled companyEnabled ();
 
-    HasValue<Boolean> contactFired();
+    HasVisibility contactFiredVisibility();
 
-    HasValue<Boolean> contactDeleted();
+    HasVisibility fireBtnVisibility();
 }

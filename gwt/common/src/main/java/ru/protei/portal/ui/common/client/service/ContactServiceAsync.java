@@ -26,6 +26,8 @@ public interface ContactServiceAsync {
 
     void getContactsCount( ContactQuery query, AsyncCallback<Long> async );
 
+    void fireContact(long id, AsyncCallback<Boolean> async);
+
     /**
      * Получение списка сокращенного представления контакта
      * @param query запрос

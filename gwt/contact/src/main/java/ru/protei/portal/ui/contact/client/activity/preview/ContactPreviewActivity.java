@@ -58,6 +58,8 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
 
     private void fillView( Person value ) {
+        view.contactFiredVisibility().setVisible(value.isFired());
+
         view.setLastName( value.getLastName() );
         view.setFirstName( value.getFirstName() );
         view.setSecondName( value.getSecondName() );

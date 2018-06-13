@@ -73,6 +73,34 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
     }
 
+    @Event
+    public void onConfirmFire( ConfirmDialogEvents.Confirm event ) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        if (contact.isFired()) {
+            return;
+        }
+
+        contactService.fireContact(contact.getId(), new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireErrorMessage(throwable.getMessage());
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Override
     public void onSaveClicked() {
         if (!validate()) {
@@ -148,6 +176,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         fireEvent(new Back());
     }
 
+    @Override
+    public void onFireClicked() {
+
+        if (contact.isFired()) {
+            return;
+        }
+
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
+    }
+
     private void resetValidationStatus(){
         view.setContactLoginStatus(NameStatus.NONE);
     }
@@ -182,9 +220,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 //        contact.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
-
-        contact.setFired(view.contactFired().getValue());
-        contact.setDeleted(view.contactDeleted().getValue());
 
         return contact;
     }
@@ -243,8 +278,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.password().setText("");
         view.confirmPassword().setText("");
 
-        view.contactFired().setValue(person.isFired());
-        view.contactDeleted().setValue(person.isDeleted());
+        view.contactFiredVisibility().setVisible(person.isFired());
+        view.fireBtnVisibility().setVisible(!person.isFired());
 
         view.showInfo(userLogin.getId() != null);
     }

@@ -3,12 +3,17 @@
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:switcher='urn:import:ru.protei.portal.ui.common.client.widget.switcher'>
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
             <div class="body">
+                <div class="grid grid-indent">
+                    <g:HTMLPanel styleName="form-group col-xs-12" ui:field="contactFired">
+                        <i class="fa fa-info-circle"/>
+                        <label><ui:text from="{lang.contactFired}"/></label>
+                    </g:HTMLPanel>
+                </div>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-4">
                         <label>
@@ -176,28 +181,11 @@
                             </label>
                             <g:PasswordTextBox ui:field="confirmPassword" styleName="input-field"/>
                         </div>
-                        <div class="form-group col-xs-12">
-                            <div class="form-group col-xs-6">
-                                <label>
-                                    <ui:text from="{lang.contactFired}"/>
-                                </label>
-                                <div>
-                                    <switcher:Switcher ui:field="contactFired"/>
-                                </div>
-                            </div>
-                            <div class="form-group col-xs-6">
-                                <label>
-                                    <ui:text from="{lang.contactDeleted}"/>
-                                </label>
-                                <div>
-                                    <switcher:Switcher ui:field="contactDeleted"/>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
             <div class="footer">
+                <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
             </div>
