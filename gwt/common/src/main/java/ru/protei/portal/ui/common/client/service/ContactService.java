@@ -31,6 +31,8 @@ public interface ContactService extends RemoteService {
 
     boolean fireContact( long id ) throws RequestFailedException;
 
+    boolean removeContact( long id ) throws RequestFailedException;
+
     /**
      * Получение списка сокращенного представления контакта
      * @param query запрос

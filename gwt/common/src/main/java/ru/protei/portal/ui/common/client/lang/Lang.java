@@ -949,4 +949,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactFireConfirmMessage();
 
+    String contactRemoveConfirmMessage();
+
 }

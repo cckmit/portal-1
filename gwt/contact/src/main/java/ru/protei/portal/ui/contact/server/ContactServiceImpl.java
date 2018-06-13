@@ -99,6 +99,19 @@ public class ContactServiceImpl implements ContactService {
         return response.isOk();
     }
 
+    @Override
+    public boolean removeContact(long id) throws RequestFailedException {
+        log.debug("remove contact, id: {}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse response = contactService.removeContact(descriptor.makeAuthToken(), id);
+
+        log.debug("remove contact, id: {} -> {} ", id, response.isOk() ? "ok" : response.getStatus());
+
+        return response.isOk();
+    }
+
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
 
         log.debug( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",

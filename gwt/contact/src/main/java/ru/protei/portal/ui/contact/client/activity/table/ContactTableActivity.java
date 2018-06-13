@@ -99,6 +99,40 @@ public abstract class ContactTableActivity
         this.init = initDetails;
     }
 
+    @Event
+    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        if (contactId == null) {
+            return;
+        }
+
+        contactService.removeContact(contactId, new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                contactId = null;
+                if (result) {
+                    fireEvent(new ContactEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.contactDeleted(), NotifyEvents.NotifyType.SUCCESS));
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
+    @Event
+    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
+        contactId = null;
+    }
+
     @Override
     public void onItemClicked ( Person value ) {
         if ( !isShowTable ) {
@@ -109,6 +143,14 @@ public abstract class ContactTableActivity
     @Override
     public void onEditClicked(Person value ) {
         fireEvent(ContactEvents.Edit.byId(value.getId()));
+    }
+
+    @Override
+    public void onRemoveClicked(Person value) {
+        if (value != null) {
+            contactId = value.getId();
+            fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactRemoveConfirmMessage()));
+        }
     }
 
     @Override
@@ -182,10 +224,11 @@ public abstract class ContactTableActivity
 
     private ContactQuery makeQuery( Long companyId ) {
         if ( companyId != null ) {
-            return new ContactQuery( companyId, null, null, En_SortField.person_full_name, En_SortDir.ASC);
+            return new ContactQuery( companyId, null, false, null, En_SortField.person_full_name, En_SortDir.ASC);
         }
         return new ContactQuery( filterView.company().getValue(),
                 filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
+                false,
                 filterView.searchPattern().getValue(), filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
 
@@ -213,6 +256,7 @@ public abstract class ContactTableActivity
     PolicyService policyService;
 
     private boolean isShowTable = false;
+    private Long contactId = null;
 
     private AppEvents.InitDetails init;
     private ContactQuery query;

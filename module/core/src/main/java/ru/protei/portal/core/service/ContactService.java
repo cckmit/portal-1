@@ -32,5 +32,9 @@ public interface ContactService {
     @Auditable( En_AuditType.CONTACT_MODIFY )
     CoreResponse<Person> saveContact( AuthToken token, Person p );
 
+    @Privileged( En_Privilege.CONTACT_EDIT )
     CoreResponse fireContact( AuthToken token, long id );
+
+    @Privileged( En_Privilege.CONTACT_EDIT )
+    CoreResponse removeContact( AuthToken token, long id );
 }

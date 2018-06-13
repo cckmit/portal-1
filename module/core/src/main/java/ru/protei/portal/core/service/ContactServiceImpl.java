@@ -128,6 +128,22 @@ public class ContactServiceImpl implements ContactService {
         return result ? new CoreResponse<>().success(null) : new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
+    @Override
+    public CoreResponse removeContact(AuthToken token, long id) {
+
+        Person person = personDAO.getContact(id);
+
+        if (person == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        person.setDeleted(true);
+
+        boolean result = personDAO.merge(person);
+
+        return result ? new CoreResponse<>().success(null) : new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
 
     @Override
     public CoreResponse<Long> count( AuthToken token, ContactQuery query ) {
