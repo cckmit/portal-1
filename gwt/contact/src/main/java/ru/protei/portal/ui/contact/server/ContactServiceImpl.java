@@ -86,6 +86,32 @@ public class ContactServiceImpl implements ContactService {
         return contactService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
+    @Override
+    public boolean fireContact(long id) throws RequestFailedException {
+        log.debug("fire contact, id: {}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Boolean> response = contactService.fireContact(descriptor.makeAuthToken(), id);
+
+        log.debug("fire contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
+
+        return response.isOk() ? response.getData() : false;
+    }
+
+    @Override
+    public boolean removeContact(long id) throws RequestFailedException {
+        log.debug("remove contact, id: {}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Boolean> response = contactService.removeContact(descriptor.makeAuthToken(), id);
+
+        log.debug("remove contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "removed");
+
+        return response.isOk() ? response.getData() : false;
+    }
+
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
 
         log.debug( "getContactViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",

@@ -73,6 +73,34 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         }
     }
 
+    @Event
+    public void onConfirmFire( ConfirmDialogEvents.Confirm event ) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        if (contact.isFired()) {
+            return;
+        }
+
+        contactService.fireContact(contact.getId(), new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireErrorMessage(throwable.getMessage());
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
+    }
+
     @Override
     public void onSaveClicked() {
         if (!validate()) {
@@ -146,6 +174,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
+    }
+
+    @Override
+    public void onFireClicked() {
+
+        if (contact.isFired()) {
+            return;
+        }
+
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
     }
 
     private void resetValidationStatus(){
@@ -239,6 +277,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.login().setText(userLogin.getUlogin());
         view.password().setText("");
         view.confirmPassword().setText("");
+
+        view.deletedMsgVisibility().setVisible(person.isDeleted());
+        view.firedMsgVisibility().setVisible(person.isFired());
+        view.fireBtnVisibility().setVisible(!person.isFired());
 
         view.showInfo(userLogin.getId() != null);
     }

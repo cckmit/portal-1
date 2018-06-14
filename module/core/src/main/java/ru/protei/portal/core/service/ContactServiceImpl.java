@@ -79,6 +79,20 @@ public class ContactServiceImpl implements ContactService {
                 || p.getCompanyId() == null)
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
 
+        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
+        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
+        if (p.getId() != null) {
+            Person personOld = personDAO.getContact(p.getId());
+            if (personOld.isFired() != p.isFired()) {
+                log.warn("prevented change of person.isFired attr, person with id = {}", p.getId());
+                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            }
+            if (personOld.isDeleted() != p.isDeleted()) {
+                log.warn("prevented change of person.isDeleted attr, person with id = {}", p.getId());
+                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            }
+        }
+
         if (HelperFunc.isEmpty(p.getDisplayName())) {
             p.setDisplayName(p.getLastName() + " " + p.getFirstName());
         }
@@ -110,6 +124,38 @@ public class ContactServiceImpl implements ContactService {
         }
 
         return new CoreResponse<Person>().error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public CoreResponse<Boolean> fireContact(AuthToken token, long id) {
+
+        Person person = personDAO.getContact(id);
+
+        if (person == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        person.setFired(true);
+
+        boolean result = personDAO.merge(person);
+
+        return new CoreResponse<Boolean>().success(result);
+    }
+
+    @Override
+    public CoreResponse<Boolean> removeContact(AuthToken token, long id) {
+
+        Person person = personDAO.getContact(id);
+
+        if (person == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        person.setDeleted(true);
+
+        boolean result = personDAO.merge(person);
+
+        return new CoreResponse<Boolean>().success(result);
     }
 
 

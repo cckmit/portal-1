@@ -14,7 +14,7 @@ import java.util.Objects;
  * Created by michael on 30.03.16.
  */
 @JdbcEntity(table = "Person")
-public class Person extends AuditableObject implements PersonShortViewSupport {
+public class Person extends AuditableObject implements PersonShortViewSupport, Removable {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -345,6 +345,11 @@ public class Person extends AuditableObject implements PersonShortViewSupport {
 
     public void setOldId(Long oldId) {
         this.oldId = oldId;
+    }
+
+    @Override
+    public boolean isAllowedRemove() {
+        return !isDeleted;
     }
 
     @Override
