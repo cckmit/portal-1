@@ -79,6 +79,20 @@ public class ContactServiceImpl implements ContactService {
                 || p.getCompanyId() == null)
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
 
+        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
+        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
+        if (p.getId() != null) {
+            Person personOld = personDAO.getContact(p.getId());
+            if (personOld.isFired() != p.isFired()) {
+                log.warn("prevented change of person.isFired attr, person with id = {}", p.getId());
+                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            }
+            if (personOld.isDeleted() != p.isDeleted()) {
+                log.warn("prevented change of person.isDeleted attr, person with id = {}", p.getId());
+                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            }
+        }
+
         if (HelperFunc.isEmpty(p.getDisplayName())) {
             p.setDisplayName(p.getLastName() + " " + p.getFirstName());
         }
@@ -104,20 +118,6 @@ public class ContactServiceImpl implements ContactService {
 
         if (p.getGender() == null)
             p.setGender(En_Gender.UNDEFINED);
-
-        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
-        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
-        if (p.getId() != null) {
-            Person personOld = personDAO.getContact(p.getId());
-            if (personOld.isFired() != p.isFired()) {
-                log.warn("prevented change of person.isFired attr, person with id = {}", p.getId());
-                p.setFired(personOld.isFired());
-            }
-            if (personOld.isDeleted() != p.isDeleted()) {
-                log.warn("prevented change of person.isDeleted attr, person with id = {}", p.getId());
-                p.setDeleted(personOld.isDeleted());
-            }
-        }
 
         if (personDAO.saveOrUpdate(p)) {
             return new CoreResponse<Person>().success(p);
