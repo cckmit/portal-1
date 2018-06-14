@@ -133,6 +133,24 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                 fioElement.setInnerHTML( "<b>" + value.getDisplayName() + "<b>" );
                 root.appendChild( fioElement );
 
+                if (value.isFired() || value.isDeleted()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<i class='fa fa-info-circle'></i> <b>");
+                    if (value.isFired()) {
+                        sb.append(lang.contactFiredShort());
+                        if (value.isDeleted()) {
+                            sb.append(", ");
+                        }
+                    }
+                    if (value.isDeleted()) {
+                        sb.append(value.isFired() ? lang.contactDeletedShort().toLowerCase() : lang.contactDeletedShort());
+                    }
+                    sb.append("</b>");
+                    Element stateElement = DOM.createDiv();
+                    stateElement.setInnerHTML(sb.toString());
+                    root.appendChild(stateElement);
+                }
+
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( value.getContactInfo() );
                 root.appendChild( ContactColumnBuilder.make().add( "ion-android-call", infoFacade.getWorkPhone() )
                         .add( "ion-android-call", infoFacade.getMobilePhone() )
