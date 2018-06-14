@@ -113,35 +113,35 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse fireContact(AuthToken token, long id) {
+    public CoreResponse<Boolean> fireContact(AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
 
         if (person == null) {
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
         }
 
         person.setFired(true);
 
         boolean result = personDAO.merge(person);
 
-        return result ? new CoreResponse<>().success(null) : new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
+        return new CoreResponse<Boolean>().success(result);
     }
 
     @Override
-    public CoreResponse removeContact(AuthToken token, long id) {
+    public CoreResponse<Boolean> removeContact(AuthToken token, long id) {
 
         Person person = personDAO.getContact(id);
 
         if (person == null) {
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
         }
 
         person.setDeleted(true);
 
         boolean result = personDAO.merge(person);
 
-        return result ? new CoreResponse<>().success(null) : new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
+        return new CoreResponse<Boolean>().success(result);
     }
 
 

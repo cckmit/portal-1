@@ -33,8 +33,8 @@ public interface ContactService {
     CoreResponse<Person> saveContact( AuthToken token, Person p );
 
     @Privileged( En_Privilege.CONTACT_EDIT )
-    CoreResponse fireContact( AuthToken token, long id );
+    CoreResponse<Boolean> fireContact( AuthToken token, long id );
 
     @Privileged( En_Privilege.CONTACT_REMOVE )
-    CoreResponse removeContact( AuthToken token, long id );
+    CoreResponse<Boolean> removeContact( AuthToken token, long id );
 }

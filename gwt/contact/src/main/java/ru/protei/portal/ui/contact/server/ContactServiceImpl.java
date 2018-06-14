@@ -92,11 +92,11 @@ public class ContactServiceImpl implements ContactService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = contactService.fireContact(descriptor.makeAuthToken(), id);
+        CoreResponse<Boolean> response = contactService.fireContact(descriptor.makeAuthToken(), id);
 
-        log.debug("fire contact, id: {} -> {} ", id, response.isOk() ? "ok" : response.getStatus());
+        log.debug("fire contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
 
-        return response.isOk();
+        return response.isOk() ? response.getData() : false;
     }
 
     @Override
@@ -105,11 +105,11 @@ public class ContactServiceImpl implements ContactService {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = contactService.removeContact(descriptor.makeAuthToken(), id);
+        CoreResponse<Boolean> response = contactService.removeContact(descriptor.makeAuthToken(), id);
 
-        log.debug("remove contact, id: {} -> {} ", id, response.isOk() ? "ok" : response.getStatus());
+        log.debug("remove contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "removed");
 
-        return response.isOk();
+        return response.isOk() ? response.getData() : false;
     }
 
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {
