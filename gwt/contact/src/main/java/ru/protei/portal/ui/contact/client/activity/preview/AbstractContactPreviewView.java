@@ -33,5 +33,6 @@ public interface AbstractContactPreviewView extends IsWidget {
     void showFullScreen ( boolean value );
     HTMLPanel preview ();
 
-    HasVisibility contactFiredVisibility();
+    HasVisibility firedMsgVisibility();
+    HasVisibility deletedMsgVisibility();
 }

@@ -101,8 +101,13 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public HTMLPanel preview () { return preview; }
 
     @Override
-    public HasVisibility contactFiredVisibility() {
+    public HasVisibility firedMsgVisibility() {
         return contactFired;
+    }
+
+    @Override
+    public HasVisibility deletedMsgVisibility() {
+        return contactDeleted;
     }
 
     @UiHandler( "fullScreen" )
@@ -150,6 +155,8 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     Anchor fullScreen;
     @UiField
     HTMLPanel contactFired;
+    @UiField
+    HTMLPanel contactDeleted;
 
     @Inject
     @UiField

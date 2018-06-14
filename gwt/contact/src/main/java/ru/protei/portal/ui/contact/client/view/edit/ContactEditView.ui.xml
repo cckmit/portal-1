@@ -13,6 +13,10 @@
                         <i class="fa fa-info-circle"/>
                         <label><ui:text from="{lang.contactFired}"/></label>
                     </g:HTMLPanel>
+                    <g:HTMLPanel styleName="form-group col-xs-12 text-primary" ui:field="contactDeleted">
+                        <i class="fa fa-info-circle"/>
+                        <label><ui:text from="{lang.contactDeleted}"/></label>
+                    </g:HTMLPanel>
                 </div>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-4">

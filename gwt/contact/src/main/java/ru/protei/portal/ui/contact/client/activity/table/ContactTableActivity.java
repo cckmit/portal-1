@@ -66,6 +66,7 @@ public abstract class ContactTableActivity
 
         view.showElements();
         isShowTable = false;
+        contactId = null;
 
         query = makeQuery( null );
         requestTotalCount();

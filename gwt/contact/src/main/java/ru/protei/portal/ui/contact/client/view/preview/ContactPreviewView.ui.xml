@@ -12,6 +12,10 @@
                 <i class="fa fa-info-circle"/>
                 <label><ui:text from="{lang.contactFired}"/></label>
             </g:HTMLPanel>
+            <g:HTMLPanel styleName="col-xs-12 m-l-10 m-b-5 text-primary" ui:field="contactDeleted">
+                <i class="fa fa-info-circle"/>
+                <label><ui:text from="{lang.contactDeleted}"/></label>
+            </g:HTMLPanel>
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.personalData}"/></legend>

@@ -201,8 +201,13 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public HasVisibility contactFiredVisibility() {
+    public HasVisibility firedMsgVisibility() {
         return contactFired;
+    }
+
+    @Override
+    public HasVisibility deletedMsgVisibility() {
+        return contactDeleted;
     }
 
     @Override
@@ -327,6 +332,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     HTMLPanel contactFired;
+
+    @UiField
+    HTMLPanel contactDeleted;
 
     //@UiField
     //HTMLPanel contactDeleted;
