@@ -28,6 +28,12 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
+    public void resetFilename() {
+        fileUpload.setName(null);
+        form.setAction("javascript:void(0);");
+    }
+
+    @Override
     public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
         form.removeStyleName("attachment-uploading");
         fileUpload.setEnabled(true);

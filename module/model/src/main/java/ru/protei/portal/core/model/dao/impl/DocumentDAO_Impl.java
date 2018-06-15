@@ -45,9 +45,9 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
-    public Long countByQuery(DocumentQuery query) {
+    public int countByQuery(DocumentQuery query) {
         SqlCondition where = createSqlCondition(query);
-        return (long) getObjectsCount(where.condition, where.args, JOINS, true);
+        return getObjectsCount(where.condition, where.args, JOINS, true);
     }
 
     @SqlConditionBuilder

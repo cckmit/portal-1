@@ -24,13 +24,13 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.widget.filter.IssueFilterSelector;
 import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
 
 import java.util.Set;
@@ -211,13 +211,29 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
+            if (reportBtnVisible) {
+                reportBtn.removeStyleName( "hide" );
+            }
             saveBtn.removeStyleName( "hide" );
             resetBtn.removeStyleName( "hide" );
             removeBtn.removeStyleName( "hide" );
         } else {
+            if (reportBtnVisible) {
+                reportBtn.addStyleName( "hide" );
+            }
             saveBtn.addStyleName( "hide" );
             resetBtn.addStyleName( "hide" );
             removeBtn.addStyleName( "hide" );
+        }
+    }
+
+    @Override
+    public void setReportButtonVisibility(boolean hasVisible) {
+        reportBtnVisible = hasVisible;
+        if (reportBtnVisible) {
+            reportBtn.removeStyleName( "hide" );
+        } else {
+            reportBtn.addStyleName( "hide" );
         }
     }
 
@@ -261,6 +277,15 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             return;
         }
         activity.onFilterRemoveClicked( userFilter.getValue().getId() );
+    }
+
+    @UiHandler("reportBtn")
+    public void onReportClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity == null ) {
+            return;
+        }
+        activity.onCreateReportClicked();
     }
 
     @UiHandler( "companies" )
@@ -404,6 +429,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Button removeBtn;
 
     @UiField
+    Button reportBtn;
+
+    @UiField
     Anchor okBtn;
 
     @UiField
@@ -423,6 +451,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Lang lang;
 
     AbstractIssueFilterActivity activity;
+    private boolean reportBtnVisible = true;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
 

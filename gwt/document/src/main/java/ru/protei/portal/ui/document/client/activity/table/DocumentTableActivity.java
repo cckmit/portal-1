@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -42,7 +43,7 @@ public abstract class DocumentTableActivity
 
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(DocumentEvents.Show event) {
         init.parent.clear();
         init.parent.add(view.asWidget());
@@ -128,15 +129,15 @@ public abstract class DocumentTableActivity
     private void requestTotalCount() {
         view.clearRecords();
 
-        documentService.getDocumentCount(query, new RequestCallback<Long>() {
+        documentService.getDocumentCount(query, new RequestCallback<Integer>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Long result) {
-                view.setRecordCount(result);
+            public void onSuccess(Integer result) {
+                view.setRecordCount(Long.valueOf(result));
                 pagerView.setTotalPages(view.getPageCount());
                 pagerView.setTotalCount( result );
             }

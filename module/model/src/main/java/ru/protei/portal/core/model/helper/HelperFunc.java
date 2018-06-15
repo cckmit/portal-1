@@ -181,4 +181,32 @@ public class HelperFunc {
                         .collect(Collectors.joining(","))
                 + ")";
     }
+
+    /**
+     * nullGreater - если значение null то трактовать как большее
+     */
+    public static <T extends Comparable<? super T>> int compare( T c1, T c2, boolean nullGreater ) {
+        return compare(c1, c2, nullGreater, null);
+    }
+
+    /**
+     * nullGreater - если значение null то трактовать как большее
+     */
+    public static <T extends Comparable<? super T>> int compare( T c1, T c2, boolean nullGreater, Comparator<T> comparator ) {
+        if ( c1 == c2 ) {
+            return 0;
+        }
+        else if ( c1 == null ) {
+            return nullGreater ? 1 : -1;
+        }
+        else if ( c2 == null ) {
+            return nullGreater ? -1 : 1;
+        }
+
+        if (comparator != null) {
+            return comparator.compare(c1, c2);
+        } else {
+            return c1.compareTo(c2);
+        }
+    }
 }

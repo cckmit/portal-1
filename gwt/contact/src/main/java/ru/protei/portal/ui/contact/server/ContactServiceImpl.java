@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -84,6 +83,32 @@ public class ContactServiceImpl implements ContactService {
 
         log.debug( "getContactsCount(): query={}", query );
         return contactService.count( descriptor.makeAuthToken(), query ).getData();
+    }
+
+    @Override
+    public boolean fireContact(long id) throws RequestFailedException {
+        log.debug("fire contact, id: {}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Boolean> response = contactService.fireContact(descriptor.makeAuthToken(), id);
+
+        log.debug("fire contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "fired");
+
+        return response.isOk() ? response.getData() : false;
+    }
+
+    @Override
+    public boolean removeContact(long id) throws RequestFailedException {
+        log.debug("remove contact, id: {}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Boolean> response = contactService.removeContact(descriptor.makeAuthToken(), id);
+
+        log.debug("remove contact, id: {} -> {} ", id, response.isError() ? response.getStatus() : (response.getData() ? "" : "not ") + "removed");
+
+        return response.isOk() ? response.getData() : false;
     }
 
     public List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException {

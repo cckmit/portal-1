@@ -13,12 +13,14 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.account.client.widget.role.RoleMultiSelector;
 import ru.protei.portal.ui.account.client.widget.type.AuthTypeBtnGroupMulti;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
 import java.util.HashSet;
@@ -77,12 +79,18 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     }
 
     @Override
+    public HasValue<EntityOption> company() {
+        return company;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.ulogin );
         sortDir.setValue( true );
         search.setText( "" );
         types.setValue( new HashSet<>() );
         roles.setValue( new HashSet<>() );
+        company.setValue(null);
     }
 
     @UiHandler( "resetBtn" )
@@ -116,6 +124,13 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
 
     @UiHandler( "roles" )
     public void onRolesSelected( ValueChangeEvent< Set< UserRole > > event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "company" )
+    public void onChangeCompany( ValueChangeEvent< EntityOption > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -159,6 +174,10 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     @Inject
     @UiField( provided = true )
     RoleMultiSelector roles;
+
+    @Inject
+    @UiField( provided = true )
+    CompanySelector company;
 
     @Inject
     FixedPositioner positioner;

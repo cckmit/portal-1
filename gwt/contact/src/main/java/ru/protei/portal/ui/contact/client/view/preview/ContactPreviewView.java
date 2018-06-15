@@ -9,6 +9,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -99,6 +100,16 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @Override
     public HTMLPanel preview () { return preview; }
 
+    @Override
+    public HasVisibility firedMsgVisibility() {
+        return contactFired;
+    }
+
+    @Override
+    public HasVisibility deletedMsgVisibility() {
+        return contactDeleted;
+    }
+
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
@@ -142,6 +153,10 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     SpanElement department;
     @UiField
     Anchor fullScreen;
+    @UiField
+    HTMLPanel contactFired;
+    @UiField
+    HTMLPanel contactDeleted;
 
     @Inject
     @UiField

@@ -17,13 +17,18 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.dict.En_CaseState.CREATED;
 
 /**
  * Активность создания и редактирования обращения
@@ -72,14 +77,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onAddingAttachments( AttachmentEvents.Add event ) {
-        if(view.isAttached() && issue.getId().equals(event.caseId)) {
+        if(view.isAttached() && issue.getId().equals(event.issueId)) {
             addAttachmentsToCase(event.attachments);
         }
     }
 
     @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
-        if(view.isAttached() && issue.getId().equals(event.caseId)) {
+        if(view.isAttached() && issue.getId().equals(event.issueId)) {
             event.attachments.forEach(view.attachmentsContainer()::remove);
             issue.getAttachments().removeAll(event.attachments);
             issue.setAttachmentExists(!issue.getAttachments().isEmpty());
@@ -97,15 +102,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
+    @Event
+    public void onChangeCommentsView(IssueEvents.ChangeCommentsView event) {
+        view.refreshFooterBtnPosition();
+    }
+
     @Override
     public void onSaveClicked() {
-        if(!isFieldsValid()){
+        if(!validateView()){
             return;
         }
-        if(view.manager().getValue() != null && view.state().getValue() == En_CaseState.CREATED){
-            fireEvent(new NotifyEvents.Show(lang.errCreatedStateSelected(), NotifyEvents.NotifyType.ERROR));
-            return;
-        }
+
         fillIssueObject(issue);
 
         issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
@@ -237,7 +244,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
-        view.state().setValue(issue.getId() == null ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
+        view.state().setValue(issue.getId() == null ? CREATED : En_CaseState.getById(issue.getStateId()));
         view.importance().setValue(issue.getId() == null ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
         Company initiatorCompany = issue.getInitiatorCompany();
@@ -246,10 +253,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
-        view.initiator().setValue( PersonShortView.fromPerson( issue.getInitiator() ) );
+        view.initiator().setValue( decideInitiator(issue) );
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
+
+        view.refreshFooterBtnPosition();
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -267,21 +276,45 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
     }
 
-    private boolean isFieldsValid(){
-        return view.nameValidator().isValid() &&
+    private boolean validateView() {
+        boolean isFieldsValid = view.nameValidator().isValid() &&
                 view.stateValidator().isValid() &&
                 view.importanceValidator().isValid() &&
                 view.companyValidator().isValid();
-//        && view.initiatorValidator().isValid();
+
+        if(!isFieldsValid) return false;
+
+        if(view.manager().getValue() != null && view.state().getValue() == CREATED){
+            fireEvent(new NotifyEvents.Show(lang.errCreatedStateSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        if(CREATED != view.state().getValue() && view.product().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        return true;
     }
 
     private void addAttachmentsToCase(Collection<Attachment> attachments){
         view.attachmentsContainer().add(attachments);
-        if(issue.getAttachments() == null)
+        if(issue.getAttachments() == null || issue.getAttachments().isEmpty())
             issue.setAttachments(new ArrayList<>());
 
         issue.getAttachments().addAll(attachments);
         issue.setAttachmentExists(true);
+    }
+
+    private PersonShortView decideInitiator(CaseObject issue) {
+        if (isNew(issue)) {
+            Profile profile = policyService.getProfile();
+            return new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
+        }
+        return PersonShortView.fromPerson(issue.getInitiator());
+    }
+
+    private boolean isNew(CaseObject issue) {
+        return issue.getId() == null;
     }
 
     @Inject
@@ -296,8 +329,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     PolicyService policyService;
     @Inject
     CompanyServiceAsync companyService;
-    @Inject
-    PersonServiceAsync personService;
 
     private AppEvents.InitDetails initDetails;
     @ContextAware

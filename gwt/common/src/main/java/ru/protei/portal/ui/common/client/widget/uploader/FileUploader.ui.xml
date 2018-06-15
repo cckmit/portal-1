@@ -5,7 +5,7 @@
         <g:FormPanel ui:field="form">
             <g:HTMLPanel tag="label">
                 <g:FileUpload ui:field="fileUpload" styleName="hide" name="file"/>
-                <g:HTMLPanel ui:field="visibleContent" />
+                <g:HTMLPanel ui:field="visibleContent" styleName="visible-content" />
             </g:HTMLPanel>
         </g:FormPanel>
 

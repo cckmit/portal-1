@@ -93,7 +93,7 @@ public class IssueServiceImpl implements IssueService {
 
     @Override
     public List<CaseComment> getIssueComments( Long caseId ) throws RequestFailedException {
-        log.debug( "getIssueComments(): caseId={}", caseId );
+        log.debug( "getIssueComments(): issueId={}", caseId );
 
         CoreResponse<List<CaseComment>> response = caseService.getCaseCommentList( getDescriptorAndCheckSession().makeAuthToken(), caseId );
         if (response.isError()) {

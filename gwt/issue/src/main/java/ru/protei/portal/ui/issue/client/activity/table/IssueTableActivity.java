@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -8,10 +9,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -22,7 +28,10 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueFilterServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.ReportServiceAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
@@ -57,7 +66,7 @@ public abstract class IssueTableActivity
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( IssueEvents.Show event ) {
         applyFilterViewPrivileges();
 
@@ -71,6 +80,9 @@ public abstract class IssueTableActivity
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) :
                 new ActionBarEvents.Clear()
         );
+
+        filterView.setReportButtonVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EXPORT));
+
         requestIssuesCount();
     }
 
@@ -215,6 +227,29 @@ public abstract class IssueTableActivity
     public void onCancelSavingClicked() {
         showUserFilterControls();
         filterView.resetFilter();
+    }
+
+    @Override
+    public void onCreateReportClicked() {
+
+        Report report = new Report();
+        report.setCaseQuery(getQuery());
+        report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+        if (!HelperFunc.isEmpty(filterView.filterName().getValue())) {
+            report.setName(filterView.filterName().getValue());
+        }
+
+        reportService.createReport(report, new RequestCallback<Long>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Long result) {
+                fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
+            }
+        });
     }
 
     @Override
@@ -437,6 +472,9 @@ public abstract class IssueTableActivity
 
     @Inject
     PolicyService policyService;
+
+    @Inject
+    ReportServiceAsync reportService;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

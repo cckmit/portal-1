@@ -62,4 +62,6 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled managerEnabled();
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
+
+    void refreshFooterBtnPosition();
 }

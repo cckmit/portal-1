@@ -56,6 +56,10 @@ public abstract class EditActionClickColumn< T > {
 
             com.google.gwt.dom.client.Element target = event.getEventTarget().cast();
             if ( "a".equalsIgnoreCase( target.getNodeName() ) ) {
+                if (editHandler != null) {
+                    event.preventDefault();
+                    editHandler.onItemClicked(value);
+                }
                 return;
             }
 
@@ -98,31 +102,14 @@ public abstract class EditActionClickColumn< T > {
         a.addClassName( "icon edit-icon" );
         a.setTitle( lang.edit() );
         cell.appendChild( a );
-
-        DOM.sinkEvents( a, Event.ONCLICK );
-        DOM.setEventListener( a, (event) -> {
-            if ( event.getTypeInt() != Event.ONCLICK ) {
-                return;
-            }
-
-            com.google.gwt.dom.client.Element target = event.getEventTarget().cast();
-            if ( !"a".equalsIgnoreCase(target.getNodeName() ) ) {
-                return;
-            }
-
-            event.preventDefault();
-            if ( editHandler != null ) {
-                editHandler.onEditClicked( value );
-            }
-        });
-    };
+    }
 
     public void setHandler( Handler<T> handler ) {
         this.handler = handler;
     }
 
     public void setEditHandler( EditHandler< T > editHandler ) {
-        this.editHandler = editHandler;
+        this.editHandler = editHandler::onEditClicked;
     }
 
     public void setSelectedRow( T value ) {
@@ -132,6 +119,6 @@ public abstract class EditActionClickColumn< T > {
     Lang lang;
     T selectedRow;
     Handler<T> handler;
-    EditHandler< T > editHandler;
+    Handler<T> editHandler;
 
 }

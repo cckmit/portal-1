@@ -9,6 +9,16 @@
     <g:HTMLPanel styleName="panel">
             <div class="body">
                 <div class="grid grid-indent">
+                    <g:HTMLPanel styleName="form-group col-xs-12 text-primary" ui:field="contactFired">
+                        <i class="fa fa-info-circle"/>
+                        <label><ui:text from="{lang.contactFired}"/></label>
+                    </g:HTMLPanel>
+                    <g:HTMLPanel styleName="form-group col-xs-12 text-primary" ui:field="contactDeleted">
+                        <i class="fa fa-info-circle"/>
+                        <label><ui:text from="{lang.contactDeleted}"/></label>
+                    </g:HTMLPanel>
+                </div>
+                <div class="grid grid-indent">
                     <div class="form-group col-xs-4">
                         <label>
                             <ui:text from="{lang.lastName}"/>
@@ -179,6 +189,7 @@
                 </div>
             </div>
             <div class="footer">
+                <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
             </div>

@@ -59,4 +59,6 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setManagersErrorStyle( boolean hasError );
 
     void setUserFilterControlsVisibility( boolean hasVisible );
+
+    void setReportButtonVisibility( boolean hasVisible );
 }

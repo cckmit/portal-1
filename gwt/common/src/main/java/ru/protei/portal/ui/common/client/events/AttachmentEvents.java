@@ -8,21 +8,21 @@ import java.util.Collection;
 public class AttachmentEvents {
 
     public static class Remove{
-        public Long caseId;
+        public Long issueId;
         public Collection<Attachment> attachments;
 
-        public Remove(Long caseId, Collection<Attachment> attachments) {
-            this.caseId = caseId;
+        public Remove(Long issueId, Collection<Attachment> attachments) {
+            this.issueId = issueId;
             this.attachments = attachments;
         }
     }
 
     public static class Add{
-        public Long caseId;
+        public Long issueId;
         public Collection<Attachment> attachments;
 
-        public Add(Long caseId, Collection<Attachment> attachments) {
-            this.caseId = caseId;
+        public Add(Long issueId, Collection<Attachment> attachments) {
+            this.issueId = issueId;
             this.attachments = attachments;
         }
     }

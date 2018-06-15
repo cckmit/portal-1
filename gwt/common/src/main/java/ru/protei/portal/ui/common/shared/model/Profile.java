@@ -2,14 +2,11 @@ package ru.protei.portal.ui.common.shared.model;
 
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Клиентский профиль пользователя
@@ -31,6 +28,10 @@ public class Profile implements Serializable {
     private En_Gender gender;
 
     private Company company;
+
+    private String shortName;
+
+    private boolean fired;
 
     public Set<UserRole> getRoles() {
         return roles;
@@ -70,6 +71,22 @@ public class Profile implements Serializable {
 
     public void setFullName( String fullName ) {
         this.fullName = fullName;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
+    }
+
+    public void setIsFired(boolean fired) {
+        this.fired = fired;
+    }
+
+    public boolean isFired() {
+        return fired;
     }
 
     public Set< En_Privilege > getPrivileges() {

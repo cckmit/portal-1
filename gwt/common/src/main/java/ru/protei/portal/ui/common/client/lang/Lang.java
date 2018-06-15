@@ -892,4 +892,70 @@ public interface Lang extends Messages, ContactItemLang {
     String mobilePhone();
 
     String download();
+    
+    String accountFilterCompany();
+    
+    String documentTypeCode();
+
+    String errNotAvailable();
+    
+    String decimalNumberNotFound();
+
+    String from();
+
+    String to();
+
+    String asc();
+
+    String desc();
+
+    String selected();
+
+    String buttonReport();
+
+    String buttonDownload();
+
+    String issueReports();
+
+    String issueReportsNumber();
+
+    String issueReportsInfo();
+
+    String issueReportsFilter();
+
+    String issueReportsNotDeleted();
+
+    String issueReportsDeleted();
+
+    String issueReportsCreated();
+
+    String issueReportsProcess();
+
+    String issueReportsReady();
+
+    String issueReportsError();
+
+    String issueReportsTitle();
+
+    String issueReportsNew();
+
+    String issueReportsView();
+
+    String reportRequested();
+
+    String errProductNotSelected();
+
+    String contactFired();
+
+    String contactDeleted();
+
+    String contactFiredShort();
+
+    String contactDeletedShort();
+
+    String contactFire();
+
+    String contactFireConfirmMessage();
+
+    String contactRemoveConfirmMessage();
 }

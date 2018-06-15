@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.widget.filter;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
@@ -50,6 +51,8 @@ import java.util.List;
 
     public void fillOptions( List< CaseFilterShortView > filters ) {
         clearOptions();
+
+        filters.sort((o1, o2) -> HelperFunc.compare(o1.getName(), o2.getName(), false));
 
         if ( defaultValue != null ) {
             addOption( null );

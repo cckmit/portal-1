@@ -37,6 +37,7 @@ public class En_ResultStatusLang {
             case NOT_CREATED :  return lang.errNotCreated();
             case NOT_UPDATED :  return lang.errNotUpdated();
             case NOT_REMOVED :  return lang.errNotRemoved();
+            case NOT_AVAILABLE:  return lang.errNotAvailable();
             case UNDEFINED_OBJECT: return lang.errUndefinedObject();
             case ALREADY_EXIST :  return lang.errAlreadyExist();
             case VALIDATION_ERROR: return lang.errValidationError();

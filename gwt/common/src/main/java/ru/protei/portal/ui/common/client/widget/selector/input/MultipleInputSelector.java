@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.selector.input;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -34,21 +33,26 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
     @Override
     public boolean isEnabled() {
-        return caretButton.isEnabled();
+        return isEnabled;
     }
 
     @Override
     public void setEnabled( boolean enabled ) {
-        if ( enabled ) {
+        isEnabled = enabled;
+        if ( isEnabled ) {
             itemContainer.removeStyleName( "inactive" );
         } else {
             itemContainer.addStyleName( "inactive" );
         }
-        caretButton.setEnabled( enabled );
+        caretButton.setEnabled( isEnabled );
+        itemViews.forEach((v) -> v.setEnabled(isEnabled));
     }
 
     @UiHandler( { "caretButton" } )
     public void onShowPopupClicked( ClickEvent event ) {
+        if (!isEnabled) {
+            return;
+        }
         showPopup( itemContainer );
     }
 
@@ -69,6 +73,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     private void addItem( final String val ) {
         SelectItemView itemView = itemViewProvider.get();
         itemView.setValue( val );
+        itemView.setEnabled(isEnabled);
 
         itemViews.add( itemView );
         itemView.setActivity( itemView1 -> removeItem( itemView1, val ) );
@@ -84,7 +89,12 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
 
     private void initHandlers() {
-        itemContainer.addDomHandler( event -> showPopup( itemContainer ), ClickEvent.getType() );
+        itemContainer.addDomHandler( event -> {
+            if (!isEnabled) {
+                return;
+            }
+            showPopup( itemContainer );
+        }, ClickEvent.getType() );
     }
 
     @UiField
@@ -100,6 +110,8 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     Provider<SelectItemView> itemViewProvider;
 
     List< SelectItemView > itemViews = new ArrayList<SelectItemView >();
+
+    private boolean isEnabled = true;
 
     interface SelectorUiBinder extends UiBinder< HTMLPanel, MultipleInputSelector > {}
     private static SelectorUiBinder ourUiBinder = GWT.create( SelectorUiBinder.class );

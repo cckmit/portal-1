@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -51,7 +52,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( AccountEvents.Show event ) {
 
         this.fireEvent( new AppEvents.InitPanelName( lang.accounts() ) );
@@ -198,12 +199,18 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 .map( UserRole::getId )
                 .collect( Collectors.toList());
 
+        Long companyId = null;
+        if(filterView.company().getValue()!=null){
+            companyId = filterView.company().getValue().getId();
+        }
+
         return new AccountQuery(
                 filterView.types().getValue(),
                 roles,
                 filterView.searchPattern().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue() ? En_SortDir.ASC: En_SortDir.DESC
+                filterView.sortDir().getValue() ? En_SortDir.ASC: En_SortDir.DESC,
+                companyId
         );
     }
 

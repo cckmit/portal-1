@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
@@ -59,34 +60,46 @@ public class FileController {
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadFile(HttpServletRequest request){
-        return uploadFileToCase(request, null);
+    public String uploadFile(HttpServletRequest request, HttpServletResponse response){
+        return uploadFileToCase(request, null, response);
     }
 
     @RequestMapping(value = "/uploadFileToCase{caseNumber:[0-9]+}", method = RequestMethod.POST)
     @ResponseBody
-    public String uploadFileToCase (HttpServletRequest request, @PathVariable("caseNumber") Long caseNumber){
+    public String uploadFileToCase (HttpServletRequest request, @PathVariable("caseNumber") Long caseNumber, HttpServletResponse response){
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
+
+        response.setContentType(MediaType.TEXT_HTML_VALUE + "; charset=utf-8");
 
         if(ud != null) {
             try {
+
+                logger.debug("uploadFileToCase: caseNumber=" + getCaseNumberOrNull(caseNumber));
+
                 for (FileItem item : upload.parseRequest(request)) {
                     if(item.isFormField())
                         continue;
+
+                    logger.debug("uploadFileToCase: caseNumber=" + getCaseNumberOrNull(caseNumber) + " | found file to be uploaded");
 
                     Person creator = ud.getPerson();
                     Attachment attachment = saveAttachment(item, creator.getId());
 
                     if(caseNumber != null) {
                         CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), attachment, caseNumber);
-                        if(caseAttachId.isError())
+                        if(caseAttachId.isError()) {
+                            logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
                             break;
+                        }
 
                         shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
                     }
 
                     return mapper.writeValueAsString(attachment);
                 }
+
+                logger.debug("uploadFileToCase: caseNumber=" + getCaseNumberOrNull(caseNumber) + " | file to be uploaded not found");
+
             } catch (FileUploadException | SQLException | IOException e) {
                 logger.error(e);
             }
@@ -100,8 +113,11 @@ public class FileController {
                                    @PathVariable("folder") String folder,
                                    @PathVariable("fileName") String fileName) throws IOException{
 
+        logger.debug("getFile: folder=" + folder + ", fileName=" + fileName);
+
         FileStorage.File file = fileStorage.getFile(folder +"/"+ fileName);
         if(file == null) {
+            logger.debug("getFile: folder=" + folder + ", fileName=" + fileName + " | file is null");
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return;
         }
@@ -163,7 +179,12 @@ public class FileController {
     }
 
     private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{
+
+        logger.debug("saveAttachment: creatorId=" + creatorId);
+
         String filePath = saveFile(item);
+
+        logger.debug("saveAttachment: creatorId=" + creatorId + ", filePath=" + filePath);
 
         Attachment attachment = new Attachment();
         attachment.setCreatorId(creatorId);
@@ -192,5 +213,10 @@ public class FileController {
         final String fileExt = fileName.substring(dotLastPos);
         final String val = new String(decoder.decode(encodedPart));
         return val + fileExt;
+    }
+
+
+    private String getCaseNumberOrNull(Long caseNumber) {
+        return caseNumber == null ? "null" : caseNumber.toString();
     }
 }

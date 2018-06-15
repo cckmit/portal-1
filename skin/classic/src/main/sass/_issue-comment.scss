@@ -93,6 +93,16 @@
   border-right-color: #fff
 }
 
+.chats {
+  .message {
+    .attachments {
+      .visible-content {
+        display: inline-block;
+      }
+    }
+  }
+}
+
 .chats .right .name {
   float: right;
 }

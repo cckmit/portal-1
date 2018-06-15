@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -66,7 +65,6 @@ public class IssueFilterServiceImpl implements ru.protei.portal.ui.common.client
             filter.setLoginId( descriptor.getLogin().getId() );
         }
 
-        filter.getParams().setSortField( En_SortField.creation_date );
         CoreResponse<CaseFilter > response = issueFilterService.saveIssueFilter( filter );
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());

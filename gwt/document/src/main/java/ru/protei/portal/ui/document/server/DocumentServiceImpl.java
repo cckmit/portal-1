@@ -77,12 +77,13 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Long getDocumentCount(DocumentQuery query) throws RequestFailedException {
+    public Integer getDocumentCount(DocumentQuery query) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug("get document count(): query={}", query);
         return documentService.count(descriptor.makeAuthToken(), query).getData();
     }
+
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);

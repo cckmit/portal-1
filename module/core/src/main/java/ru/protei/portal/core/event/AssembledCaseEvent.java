@@ -2,14 +2,14 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
+import java.util.*;
 
 import static java.lang.System.currentTimeMillis;
 
@@ -164,10 +164,12 @@ public class AssembledCaseEvent extends ApplicationEvent {
         addedAttachments.addAll(added);
         removedAttachments.addAll(removed);
 
-        for(Attachment attachment: removedAttachments){
-            if(addedAttachments.contains(attachment)){ //if you add and remove an attachment in a row
-                addedAttachments.remove(attachment);
-                removedAttachments.remove(attachment);
+        Iterator<Attachment> it = removedAttachments.iterator();
+        while (it.hasNext()){
+            Attachment removedAttachment = it.next();
+            if(addedAttachments.contains(removedAttachment)){ //if you add and remove an attachment in a row
+                addedAttachments.remove(removedAttachment);
+                it.remove();
             }
         }
         lastUpdated = currentTimeMillis();

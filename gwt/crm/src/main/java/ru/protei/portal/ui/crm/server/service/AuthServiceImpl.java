@@ -63,7 +63,9 @@ public class AuthServiceImpl implements AuthService {
         profile.setRoles( roles );
         profile.setLogin( sessionDescriptor.getLogin().getUlogin() );
         profile.setName( sessionDescriptor.getPerson().getFirstName() );
+        profile.setShortName( sessionDescriptor.getPerson().getDisplayShortName() );
         profile.setFullName( sessionDescriptor.getPerson().getDisplayName() );
+        profile.setIsFired( sessionDescriptor.getPerson().isFired());
         profile.setId( sessionDescriptor.getPerson().getId() );
         profile.setPrivileges( collectPrivileges( roles ) );
         profile.setGender( sessionDescriptor.getPerson().getGender() );

@@ -18,13 +18,16 @@ public class AccountQuery extends BaseQuery {
      * Выборка пользователь с конкретными ролями
      */
     private List<Long> roleIds;
+    private Long companyId;
 
     public AccountQuery() {}
 
-    public AccountQuery( Set< En_AuthType > types, List<Long> roleIds, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public AccountQuery(Set<En_AuthType> types, List<Long> roleIds, String searchString, En_SortField sortField,
+                        En_SortDir sortDir, Long companyId) {
         super ( searchString, sortField, sortDir );
         this.types = types;
         this.roleIds = roleIds;
+        this.companyId = companyId;
     }
 
     public Set<En_AuthType> getTypes() {
@@ -43,10 +46,19 @@ public class AccountQuery extends BaseQuery {
         this.roleIds = roleIds;
     }
 
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
     @Override
     public String toString() {
         return "AccountQuery{" +
                 "types=" + types +
+                ", companyId=" + companyId +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

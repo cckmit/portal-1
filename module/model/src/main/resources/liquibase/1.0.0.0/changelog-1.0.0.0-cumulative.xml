@@ -49,4 +49,6 @@
   <include file="2018-04-23-add_document_category.xml" relativeToChangelogFile="true"/>
   <include file="2018-04-24-devunit_subscription.xml" relativeToChangelogFile="true" />
   <include file="2018-05-04-add_default_flag_for_contacts.xml" relativeToChangelogFile="true" />
+  <include file="2018-05-17-add_report_table.xml" relativeToChangelogFile="true" />
+  <include file="2018-06-13-add_document_columns.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

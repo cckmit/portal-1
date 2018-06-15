@@ -1,0 +1,74 @@
+package ru.protei.portal.core.model.dao;
+
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
+import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.query.ReportQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+public interface ReportDAO extends PortalBaseDAO<Report> {
+
+    /**
+     * Получить отчет по идентификатору
+     *
+     * @param creatorId идентификатор профиля, который является создателем отчета
+     * @param reportId  идентификатор отчета
+     * @return отчет
+     */
+    Report getReport(Long creatorId, Long reportId);
+
+    /**
+     * Получить информацию об отчетах по фильтру
+     *
+     * @param creatorId  идентификатор профиля, который является создателем отчетов
+     * @param query      фильтр для выборки отчетов
+     * @param excludeIds не выбирать указанные идентификаторы
+     * @return список отчетов
+     */
+    List<Report> getReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds);
+
+    /**
+     * Получить количество отчетов по фильтру
+     *
+     * @param creatorId  идентификатор профиля, который является создателем отчетов
+     * @param query      фильтр для выборки отчетов
+     * @param excludeIds не выбирать указанные идентификаторы
+     * @return количество отчетов
+     */
+    Long countReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds);
+
+    /**
+     * Получить информацию об отчетах по фильтру
+     *
+     * @param creatorId  идентификатор профиля, который является создателем отчетов
+     * @param includeIds выбирать указанные идентификаторы
+     * @param excludeIds не выбирать указанные идентификаторы
+     * @return список отчетов
+     */
+    List<Report> getReportsByIds(Long creatorId, Set<Long> includeIds, Set<Long> excludeIds);
+
+    /**
+     * Получить отчеты с указанным статусом
+     *
+     * @param statuses статусы отчетов
+     * @param limit    лимит на количество отчетов для обработки
+     * @return список отчетов
+     */
+    List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, int limit);
+
+    /**
+     * Получить отчеты с указанным статусом
+     *
+     * @param statuses           статусы отчетов
+     * @param lastModifiedBefore дата до которой были последние изменения
+     * @return список отчетов
+     */
+    List<Report> getReportsByStatuses(List<En_ReportStatus> statuses, Date lastModifiedBefore);
+
+    @SqlConditionBuilder
+    SqlCondition createSqlCondition(ReportQuery query);
+}

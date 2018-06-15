@@ -7,17 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -79,6 +78,20 @@ public class ContactServiceImpl implements ContactService {
                 || p.getCompanyId() == null)
             return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
 
+        // prevent change of isfired and isdeleted attrs via ContactService.saveContact() method
+        // to change that attrs, follow ContactService.fireContact() and ContactService.removeContact() methods
+        if (p.getId() != null) {
+            Person personOld = personDAO.getContact(p.getId());
+            if (personOld.isFired() != p.isFired()) {
+                log.warn("prevented change of person.isFired attr, person with id = {}", p.getId());
+                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            }
+            if (personOld.isDeleted() != p.isDeleted()) {
+                log.warn("prevented change of person.isDeleted attr, person with id = {}", p.getId());
+                return new CoreResponse<Person>().error(En_ResultStatus.VALIDATION_ERROR);
+            }
+        }
+
         if (HelperFunc.isEmpty(p.getDisplayName())) {
             p.setDisplayName(p.getLastName() + " " + p.getFirstName());
         }
@@ -110,6 +123,38 @@ public class ContactServiceImpl implements ContactService {
         }
 
         return new CoreResponse<Person>().error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
+    @Override
+    public CoreResponse<Boolean> fireContact(AuthToken token, long id) {
+
+        Person person = personDAO.getContact(id);
+
+        if (person == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        person.setFired(true);
+
+        boolean result = personDAO.merge(person);
+
+        return new CoreResponse<Boolean>().success(result);
+    }
+
+    @Override
+    public CoreResponse<Boolean> removeContact(AuthToken token, long id) {
+
+        Person person = personDAO.getContact(id);
+
+        if (person == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        person.setDeleted(true);
+
+        boolean result = personDAO.merge(person);
+
+        return new CoreResponse<Boolean>().success(result);
     }
 
 
