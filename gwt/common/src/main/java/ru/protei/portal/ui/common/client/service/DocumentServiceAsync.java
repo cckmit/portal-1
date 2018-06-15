@@ -10,7 +10,7 @@ public interface DocumentServiceAsync {
 
     void getDocuments(DocumentQuery query, AsyncCallback<List<Document>> callback);
 
-    void getDocumentCount(DocumentQuery query, AsyncCallback<Long> callback);
+    void getDocumentCount(DocumentQuery query, AsyncCallback<Integer> callback);
 
     void getDocument(Long id, AsyncCallback<Document> callback);
 

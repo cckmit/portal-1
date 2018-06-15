@@ -1,11 +1,10 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 
 import java.util.List;
@@ -40,6 +39,11 @@ public interface EquipmentServiceAsync {
      * @param number
      */
     void checkIfExistDecimalNumber( DecimalNumber number, AsyncCallback<Boolean> callback );
+
+    /**
+     * Поиск децимального номера
+     */
+     void findDecimalNumber(DecimalNumber number, AsyncCallback<DecimalNumber> callback);
 
     /**
      * Получение следующего доступного номера

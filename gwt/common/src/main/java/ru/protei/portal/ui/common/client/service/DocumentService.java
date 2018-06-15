@@ -13,7 +13,7 @@ public interface DocumentService extends RemoteService {
 
     List<Document> getDocuments(DocumentQuery query) throws RequestFailedException;
 
-    Long getDocumentCount(DocumentQuery query) throws RequestFailedException;
+    Integer getDocumentCount(DocumentQuery query) throws RequestFailedException;
 
     Document getDocument(Long id) throws RequestFailedException;
 

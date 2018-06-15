@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -15,7 +16,6 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.service.EquipmentService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -164,6 +164,18 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
 
         throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public DecimalNumber findDecimalNumber(DecimalNumber decimalNumber) throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        log.debug("find decimal number: decimal number={}", decimalNumber);
+        CoreResponse<DecimalNumber> response = equipmentService.findDecimalNumber(descriptor.makeAuthToken(), decimalNumber);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
     }
 
     @Override

@@ -14,7 +14,7 @@ import java.util.List;
 public interface DocumentService {
 
     @Privileged(En_Privilege.DOCUMENT_VIEW)
-    CoreResponse<Long> count(AuthToken token, DocumentQuery query);
+    CoreResponse<Integer> count(AuthToken token, DocumentQuery query);
 
     @Privileged(En_Privilege.DOCUMENT_VIEW)
     CoreResponse<List<Document>> documentList(AuthToken token, DocumentQuery query);
