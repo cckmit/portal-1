@@ -118,18 +118,25 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > caseComment = new HashMap<>();
                     caseComment.put( "created", comment.getCreated() );
                     caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", comment.getText() );
+                    caseComment.put( "text", replaceLineBreaks(comment.getText()) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
                     if(isChanged && oldCaseComment != null){
-                        caseComment.put( "oldText", oldCaseComment.getText() );
+                        caseComment.put( "oldText", replaceLineBreaks(oldCaseComment.getText()) );
                     }
 
                     return caseComment;
                 } )
                 .collect( toList() );
+    }
+
+    private String replaceLineBreaks(String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.replaceAll("(\r\n|\n|\r)", "<br/>");
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
