@@ -523,15 +523,25 @@ i.ban {
 }
 
 .local-search-using-comments {
-  .checkbox {
-    label {
-      padding-left: 0;
-    }
-  }
-  .option-name {
-    padding: 0;
+  .warning {
+    display: inline-block;
+    padding: .3em 0 0 0;
     font-size: 0.9em;
-    color: inherit;
+    color: #d52021;
+    line-height: 1em;
+    font-weight: bold;
+  }
+  .toggle {
+    .checkbox {
+      label {
+        padding-left: 0;
+      }
+    }
+    .option-name {
+      padding: 0;
+      font-size: 0.9em;
+      color: inherit;
+    }
   }
 }
 

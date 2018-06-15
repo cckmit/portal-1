@@ -95,7 +95,11 @@ public class CaseObjectDAOHelper {
     }
 
     public CaseQuery getQueryWithSearchAtComments(CaseQuery query) {
-        if (query.isSearchStringAtComments() && HelperFunc.isNotEmpty(query.getSearchString())) {
+        if (
+                query.isSearchStringAtComments() &&
+                HelperFunc.isNotEmpty(query.getSearchString()) &&
+                query.getSearchString().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS
+        ) {
 
             CaseCommentQuery commentQuery = new CaseCommentQuery();
             commentQuery.setSearchString(query.getSearchString());

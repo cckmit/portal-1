@@ -24,8 +24,9 @@
                 <span class="icon local-search-icon"></span>
                 <g:TextBox ui:field="search" styleName="input-field"/>
             </div>
-            <div class="form-group col-xs-12">
-                <option:OptionItem ui:field="searchByComments" styleName="local-search-using-comments" name="{lang.searchByComments}"/>
+            <div class="form-group col-xs-12 local-search-using-comments">
+                <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
+                <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
             </div>
 
             <div class="col-xs-12">

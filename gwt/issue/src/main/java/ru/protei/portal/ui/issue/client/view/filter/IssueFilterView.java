@@ -16,6 +16,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -122,6 +123,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         removeBtn.setVisible( false );
         filterName.removeStyleName( "required" );
         filterName.setValue( "" );
+        toggleMsgSearchThreshold();
     }
 
     @Override
@@ -373,15 +375,31 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler( "searchByComments" )
     public void onSearchByCommentsChanged( ValueChangeEvent<Boolean> event ) {
+        toggleMsgSearchThreshold();
         if (activity != null) {
             activity.onFilterChanged();
+        }
+    }
+
+    private void toggleMsgSearchThreshold() {
+        if (searchByComments.getValue()) {
+            int actualLength = search.getValue().length();
+            if (actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS) {
+                searchByCommentsWarning.setVisible(false);
+            } else {
+                searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
+                searchByCommentsWarning.setVisible(true);
+            }
+        } else if (searchByCommentsWarning.isVisible()) {
+            searchByCommentsWarning.setVisible(false);
         }
     }
 
     Timer timer = new Timer() {
         @Override
         public void run() {
-            if ( activity != null ) {
+            toggleMsgSearchThreshold();
+            if (activity != null) {
                 activity.onFilterChanged();
             }
         }
@@ -434,6 +452,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     OptionItem searchByComments;
+
+    @UiField
+    Label searchByCommentsWarning;
 
     @UiField
     Button resetBtn;

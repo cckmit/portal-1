@@ -957,4 +957,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String searchByComments();
 
+    String searchByCommentsUnavailable(int threshold);
+
 }
