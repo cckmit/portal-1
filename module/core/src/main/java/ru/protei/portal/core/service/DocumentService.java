@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.fileupload.FileItem;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
@@ -22,7 +23,10 @@ public interface DocumentService {
     @Privileged(En_Privilege.DOCUMENT_VIEW)
     CoreResponse<Document> getDocument(AuthToken token, Long id);
 
-    @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.DOCUMENT_CREATE})
+    @Privileged(requireAny = En_Privilege.DOCUMENT_EDIT)
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
-    CoreResponse<Document> saveDocument(AuthToken token, Document document);
+    CoreResponse<Document> updateDocument(AuthToken token, Document document);
+
+    @Privileged(requireAny = En_Privilege.DOCUMENT_CREATE)
+    CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem);
 }

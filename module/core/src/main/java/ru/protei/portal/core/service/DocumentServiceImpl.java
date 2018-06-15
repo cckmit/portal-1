@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service;
 
+import org.apache.commons.fileupload.FileItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -71,7 +72,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public CoreResponse<Document> saveDocument(AuthToken token, Document document) {
+    public CoreResponse<Document> updateDocument(AuthToken token, Document document) {
         if(!document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -84,5 +85,10 @@ public class DocumentServiceImpl implements DocumentService {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
         return new CoreResponse<Document>().success(document);
+    }
+
+    @Override
+    public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
+        return updateDocument(token, document);
     }
 }

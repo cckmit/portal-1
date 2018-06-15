@@ -1,4 +1,4 @@
-package ru.protei.portal.core.controller.document;
+package ru.protei.portal.ui.common.server.controller;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -10,15 +10,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.service.DocumentSvnService;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +51,9 @@ public class DocumentController {
     @Autowired
     LockService lockService;
 
+    @Autowired
+    SessionService sessionService;
+
 
     @RequestMapping(value = "/uploadDocument/{projectId:\\d+}/{documentId:\\d+}", method = RequestMethod.POST)
     @ResponseBody
@@ -76,19 +82,28 @@ public class DocumentController {
             logger.error("no file items in request");
             return "error";
         }
+        InputStream fileInputStream;
+        try {
+            fileInputStream = item.get().getInputStream();
+        } catch (IOException e) {
+            logger.error("failed to get file item input stream", e);
+            return "error";
+        }
+
+        sessionService.setFileItem(request, item.get());
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
             try {
-                documentStorageIndex.addPdfDocument(item.get().getInputStream(), projectId, documentId);
+                documentStorageIndex.addPdfDocument(fileInputStream, projectId, documentId);
             } catch (IOException e) {
                 logger.error("failed to add file to the index", e);
                 documentDAO.removeByKey(documentId);
                 return "error";
             }
             try {
-                documentSvnService.saveDocument(projectId, documentId, item.get().getInputStream());
+                documentSvnService.saveDocument(projectId, documentId, fileInputStream);
                 return "ok";
-            } catch (SVNException | IOException e) {
+            } catch (SVNException e) {
                 logger.error("failed to save in the repository", e);
                 try {
                     documentStorageIndex.removeDocument(documentId);

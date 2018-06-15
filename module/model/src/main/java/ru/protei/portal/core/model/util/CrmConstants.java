@@ -17,4 +17,8 @@ public class CrmConstants {
     public interface Issue {
         String CREATE_CONTACT_IDENTITY = "issue-edit";
     }
+
+    public interface FileUpload {
+        String FILE_ITEM_DESC = "file-item";
+    }
 }

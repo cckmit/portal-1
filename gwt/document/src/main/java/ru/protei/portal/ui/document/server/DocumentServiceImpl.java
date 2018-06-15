@@ -59,7 +59,12 @@ public class DocumentServiceImpl implements DocumentService {
         log.debug("save document, id: {}", HelperFunc.nvlt(document.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Document> response = documentService.saveDocument(descriptor.makeAuthToken(), document);
+        CoreResponse<Document> response;
+        if (document.getId() == null) {
+            response = documentService.createDocument(descriptor.makeAuthToken(), document, null);
+        } else {
+            response = documentService.updateDocument(descriptor.makeAuthToken(), document);
+        }
 
         log.debug("save document, result: {}", response.isOk() ? "ok" : response.getStatus());
 
