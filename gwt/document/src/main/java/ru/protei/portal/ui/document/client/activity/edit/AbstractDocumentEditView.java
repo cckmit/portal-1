@@ -20,6 +20,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setVisibleUploader(boolean isVisible);
 
+    void resetFilename();
+
     HasValue<String> name();
 
     HasValue<DocumentType> documentType();

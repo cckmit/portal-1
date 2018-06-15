@@ -35,8 +35,7 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess() {
-                fireEvent(new DocumentEvents.ChangeModel());
-                fireEvent(new Back());
+                saveUploadedDocument();
             }
         });
     }
@@ -114,8 +113,17 @@ public abstract class DocumentEditActivity
     }
 
     private void saveDocument(Document document) {
-        boolean isNew = document.getId() == null;
-        documentService.saveDocument(document, new RequestCallback<Document>() {
+        this.document = document;
+        if (document.getId() == null)
+            view.documentUploader().uploadBindToDocument(document);
+        else
+            saveUploadedDocument();
+    }
+
+
+
+    private void saveUploadedDocument() {
+        documentService.saveDocument(this.document, new RequestCallback<Document>() {
             @Override
             public void onError(Throwable throwable) {
                 fireErrorMessage(lang.errDocumentNotSaved());
@@ -123,11 +131,8 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(Document result) {
-                if (isNew) {
-                    view.documentUploader().uploadBindToDocument(result);
-                } else {
-                    fireEvent(new Back());
-                }
+                fireEvent(new DocumentEvents.ChangeModel());
+                fireEvent(new Back());
             }
         });
     }
@@ -208,7 +213,8 @@ public abstract class DocumentEditActivity
         view.nameValidator().setValid(true);
         view.decimalNumberValidator().setValid(true);
 
-        view.documentUploader().resetFilename();
+        view.resetFilename();
+        view.documentUploader().resetAction();
     }
 
     @Inject

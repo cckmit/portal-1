@@ -26,7 +26,6 @@ import ru.protei.portal.config.PortalConfig;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -85,8 +84,8 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
     }
 
     @Override
-    public void addPdfDocument(InputStream stream, Long documentId, Long projectId) throws IOException {
-        try (PDDocument doc = PDDocument.load(stream)) {
+    public void addPdfDocument(byte[] fileData, Long documentId, Long projectId) throws IOException {
+        try (PDDocument doc = PDDocument.load(fileData)) {
             String content = new PDFTextStripper().getText(doc);
             addDocument(content, documentId, projectId);
         }

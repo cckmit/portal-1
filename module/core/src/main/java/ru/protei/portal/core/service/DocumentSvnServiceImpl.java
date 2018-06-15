@@ -43,7 +43,7 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
     PortalConfig config;
 
     @Override
-    public void saveDocument(Long projectId, Long documentId, InputStream fileData) throws SVNException {
+    public void saveDocument(Long projectId, Long documentId, InputStream inputStream) throws SVNException {
         String fileName = getFileName(projectId, documentId);
 
         ISVNEditor editor = repository.getCommitEditor(getFormattedCommitMessage(projectId, documentId), null);
@@ -59,7 +59,7 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
             editor.applyTextDelta(fileName, null);
 
             SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
-            String checksum = deltaGenerator.sendDelta(fileName, fileData, editor, true);
+            String checksum = deltaGenerator.sendDelta(fileName, inputStream, editor, true);
 
             editor.closeFile(fileName, checksum);
             editor.closeDir(); // close project directory

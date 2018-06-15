@@ -56,6 +56,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public void resetFilename() {
+        fileName.setText(null);
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }

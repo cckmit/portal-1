@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.document.server;
 
+import org.apache.commons.fileupload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +62,13 @@ public class DocumentServiceImpl implements DocumentService {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         CoreResponse<Document> response;
         if (document.getId() == null) {
-            response = documentService.createDocument(descriptor.makeAuthToken(), document, null);
+            FileItem fileItem = sessionService.getFileItem(httpRequest);
+            if (fileItem == null) {
+                log.error("file item in session was null");
+                throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+            }
+            sessionService.setFileItem(httpRequest, null);
+            response = documentService.createDocument(descriptor.makeAuthToken(), document, fileItem);
         } else {
             response = documentService.updateDocument(descriptor.makeAuthToken(), document);
         }
