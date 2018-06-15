@@ -16,6 +16,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -116,6 +117,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         removeBtn.setVisible( false );
         filterName.removeStyleName( "required" );
         filterName.setValue( "" );
+        toggleSearchAction();
     }
 
     @Override
@@ -237,6 +239,15 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
+    @Override
+    public void toggleSearchAction() {
+        if (HelperFunc.isNotEmpty(search.getValue())) {
+            searchAction.addStyleName("clear");
+        } else {
+            searchAction.removeStyleName("clear");
+        }
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -349,6 +360,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void onKeyUpSearch( KeyUpEvent event ) {
         timer.cancel();
         timer.schedule( 300 );
+        toggleSearchAction();
     }
 
     @UiHandler( "userFilter" )
@@ -363,6 +375,17 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void onFilterNameChanged( KeyUpEvent event ) {
         filterNameChangedTimer.cancel();
         filterNameChangedTimer.schedule( 300 );
+    }
+
+    @UiHandler( "searchAction" )
+    public void searchActionClick(ClickEvent event) {
+        if (HelperFunc.isNotEmpty(search.getValue())) {
+            search.setValue("");
+            toggleSearchAction();
+            if (activity != null) {
+                activity.onFilterChanged();
+            }
+        }
     }
 
     Timer timer = new Timer() {
@@ -418,6 +441,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     TextBox search;
+
+    @UiField
+    Anchor searchAction;
 
     @UiField
     Button resetBtn;

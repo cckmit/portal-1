@@ -20,7 +20,7 @@
         <div class="body">
 
             <div class="form-group local-search col-xs-12">
-                <span class="icon local-search-icon"></span>
+                <g:Anchor ui:field="searchAction" styleName="icon local-search-icon"/>
                 <g:TextBox ui:field="search" styleName="input-field"/>
             </div>
 
