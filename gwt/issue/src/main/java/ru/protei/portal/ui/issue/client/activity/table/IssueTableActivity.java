@@ -77,6 +77,7 @@ public abstract class IssueTableActivity
         );
 
         filterView.setReportButtonVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EXPORT));
+        filterView.toggleMsgSearchThreshold();
 
         requestIssuesCount();
     }
@@ -126,6 +127,7 @@ public abstract class IssueTableActivity
             return;
         }
         requestIssuesCount();
+        filterView.toggleMsgSearchThreshold();
     }
 
     @Override

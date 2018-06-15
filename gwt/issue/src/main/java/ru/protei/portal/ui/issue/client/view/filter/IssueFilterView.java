@@ -123,6 +123,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         removeBtn.setVisible( false );
         filterName.removeStyleName( "required" );
         filterName.setValue( "" );
+        searchByComments.setValue( false );
         toggleMsgSearchThreshold();
     }
 
@@ -242,6 +243,21 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             reportBtn.removeStyleName( "hide" );
         } else {
             reportBtn.addStyleName( "hide" );
+        }
+    }
+
+    @Override
+    public void toggleMsgSearchThreshold() {
+        if (searchByComments.getValue()) {
+            int actualLength = search.getValue().length();
+            if (actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS) {
+                searchByCommentsWarning.setVisible(false);
+            } else {
+                searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
+                searchByCommentsWarning.setVisible(true);
+            }
+        } else if (searchByCommentsWarning.isVisible()) {
+            searchByCommentsWarning.setVisible(false);
         }
     }
 
@@ -378,20 +394,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         toggleMsgSearchThreshold();
         if (activity != null) {
             activity.onFilterChanged();
-        }
-    }
-
-    private void toggleMsgSearchThreshold() {
-        if (searchByComments.getValue()) {
-            int actualLength = search.getValue().length();
-            if (actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS) {
-                searchByCommentsWarning.setVisible(false);
-            } else {
-                searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
-                searchByCommentsWarning.setVisible(true);
-            }
-        } else if (searchByCommentsWarning.isVisible()) {
-            searchByCommentsWarning.setVisible(false);
         }
     }
 
