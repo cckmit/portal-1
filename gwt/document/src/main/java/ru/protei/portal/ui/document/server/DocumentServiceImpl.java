@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -73,24 +72,13 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Long getDocumentCount(DocumentQuery query) throws RequestFailedException {
+    public Integer getDocumentCount(DocumentQuery query) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug("get document count(): query={}", query);
         return documentService.count(descriptor.makeAuthToken(), query).getData();
     }
 
-    @Override
-    public DecimalNumber findDecimalNumber(DecimalNumber decimalNumber) throws RequestFailedException {
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug("find decimal number(): decimal number={}", decimalNumber);
-        CoreResponse<DecimalNumber> response = documentService.findDecimalNumberForDocument(descriptor.makeAuthToken(), decimalNumber);
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
-    }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);

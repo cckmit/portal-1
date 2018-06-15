@@ -1,12 +1,12 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import org.apache.commons.collections4.CollectionUtils;
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,28 +17,33 @@ import java.util.stream.Collectors;
 public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > implements DecimalNumberDAO {
 
     @Override
-    public boolean checkIfExist( DecimalNumber number ) {
-        return CollectionUtils.size( findSimilar( number)) > 0;
-    }
-
-    private List<DecimalNumber> findSimilar(DecimalNumber number) {
-        String condition = "org_code=? and classifier_code=? AND reg_number=? ";
-        List<Object> args = new ArrayList<>( Arrays.asList( number.getOrganizationCode().name(), number.getClassifierCode(), number.getRegisterNumber() ) );
-
-        if ( number.getModification() != null ) {
-            condition += " AND modification_number=?";
-            args.add( number.getModification() );
-        } else {
-            condition += " AND modification_number IS NULL";
-        }
-
-        return getListByCondition( condition, args );
+    public boolean checkExists(DecimalNumber number ) {
+        SqlCondition condition = createSqlCondition(number);
+        return checkExistsByCondition(condition.condition, condition.args);
     }
 
     @Override
     public List< Long > getDecimalNumbersByEquipmentId( Long id ) {
         StringBuilder sql = new StringBuilder("SELECT id FROM ").append(getTableName()).append( " WHERE entity_id=? AND entity_type='EQUIPMENT'" );
         return jdbcTemplate.queryForList(sql.toString(), Long.class, id);
+    }
+
+    @SqlConditionBuilder
+    public SqlCondition createSqlCondition(DecimalNumber number) {
+        return new SqlCondition().build((condition, args) -> {
+            condition.append("org_code=? and classifier_code=? AND reg_number=? ");
+            args.add(Arrays.asList(
+                    number.getOrganizationCode().name(),
+                    number.getClassifierCode(),
+                    number.getRegisterNumber()));
+
+            if ( number.getModification() != null ) {
+                condition.append(" AND modification_number=?");
+                args.add( number.getModification() );
+            } else {
+                condition.append(" AND modification_number IS NULL");
+            }
+        });
     }
 
     @Override
@@ -110,7 +115,8 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
     @Override
     public DecimalNumber find(DecimalNumber decimalNumber) {
-        List<DecimalNumber> numbers = findSimilar(decimalNumber);
+        SqlCondition condition = createSqlCondition(decimalNumber);
+        List<DecimalNumber> numbers = getListByCondition(condition.condition, condition.args);
         if (numbers == null || numbers.size() != 1) {
             return null;
         }

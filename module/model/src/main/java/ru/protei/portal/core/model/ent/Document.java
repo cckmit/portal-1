@@ -79,7 +79,7 @@ public class Document implements Serializable {
     /**
      * Код вида документа
      */
-    @JdbcColumn(name = "type_code")
+    @JdbcColumn(name = "dn_type_code")
     private String typeCode;
 
     public Document() {
