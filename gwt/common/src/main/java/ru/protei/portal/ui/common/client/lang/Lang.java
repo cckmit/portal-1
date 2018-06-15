@@ -892,8 +892,12 @@ public interface Lang extends Messages, ContactItemLang {
     String mobilePhone();
 
     String accountFilterCompany();
+    
+    String documentTypeCode();
 
     String errNotAvailable();
+    
+    String decimalNumberNotFound();
 
     String from();
 

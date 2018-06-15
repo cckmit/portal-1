@@ -8,4 +8,6 @@ public interface AbstractDocumentUploader {
     void uploadBindToDocument(Document document);
 
     void setUploadHandler(UploadHandler uploadHandler);
+
+    void resetFilename();
 }

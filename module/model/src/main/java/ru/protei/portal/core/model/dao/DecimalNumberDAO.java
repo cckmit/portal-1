@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
 
-    boolean checkIfExist( DecimalNumber number );
+    boolean checkExists(DecimalNumber number );
 
     List<Long> getDecimalNumbersByEquipmentId( Long id );
 
@@ -19,4 +19,6 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
     Integer getNextAvailableModification(DecimalNumberQuery filter);
 
     void updateAllNumbersWithEmptyEntityType();
+
+    DecimalNumber find(DecimalNumber decimalNumber);
 }
