@@ -16,13 +16,13 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -112,12 +112,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         dateRange.setValue( null );
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( false );
-        search.setText( "" );
+        search.setValue( "" );
         userFilter.setValue( null );
         removeBtn.setVisible( false );
         filterName.removeStyleName( "required" );
         filterName.setValue( "" );
-        toggleSearchAction();
     }
 
     @Override
@@ -239,15 +238,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @Override
-    public void toggleSearchAction() {
-        if (HelperFunc.isNotEmpty(search.getValue())) {
-            searchAction.addStyleName("clear");
-        } else {
-            searchAction.removeStyleName("clear");
-        }
-    }
-
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -357,10 +347,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
-        toggleSearchAction();
     }
 
     @UiHandler( "userFilter" )
@@ -375,17 +364,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void onFilterNameChanged( KeyUpEvent event ) {
         filterNameChangedTimer.cancel();
         filterNameChangedTimer.schedule( 300 );
-    }
-
-    @UiHandler( "searchAction" )
-    public void searchActionClick(ClickEvent event) {
-        if (HelperFunc.isNotEmpty(search.getValue())) {
-            search.setValue("");
-            toggleSearchAction();
-            if (activity != null) {
-                activity.onFilterChanged();
-            }
-        }
     }
 
     Timer timer = new Timer() {
@@ -440,10 +418,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     ToggleButton sortDir;
 
     @UiField
-    TextBox search;
-
-    @UiField
-    Anchor searchAction;
+    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;

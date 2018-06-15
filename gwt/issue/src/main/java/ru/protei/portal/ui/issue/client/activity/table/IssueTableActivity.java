@@ -308,7 +308,6 @@ public abstract class IssueTableActivity
 
         CaseQuery params = filter.getParams();
         filterView.searchPattern().setValue( params.getSearchString() );
-        filterView.toggleSearchAction();
         filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
         filterView.sortField().setValue( params.getSortField() );
         filterView.dateRange().setValue( new DateInterval( params.getFrom(), params.getTo() ) );

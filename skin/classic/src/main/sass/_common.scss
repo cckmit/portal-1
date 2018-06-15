@@ -496,9 +496,10 @@ i.ban {
 /** LOCAL SEARCH **/
 .local-search {
   position: relative;
+  color: #a5acb5;
 }
 
-.local-search input { padding-right: 28px !important; }
+.local-search input { padding-right: 25px; }
 
 .icon {
   display: inline-block;
@@ -512,33 +513,13 @@ i.ban {
 
 .local-search .local-search-icon {
   position: absolute;
+  top: 10px;
+  right: 8px;
   font-weight: 600;
-  height: 30px;
-  width: 30px;
-  top: 0;
-  right: 0;
-  margin-right: 0;
-  color: #a5acb5 !important;
 }
 
 .local-search-icon:before {
   content: "\e904";
-  position: relative;
-  display: inline-block;
-  height: 30px;
-  width: 30px;
-  text-align: center;
-  line-height: 29px;
-}
-
-.local-search-icon.clear:before {
-  content: "\2716";
-  cursor: pointer;
-}
-
-.local-search-icon.clear:hover:before,
-.local-search-icon.clear:active:before {
-  color: #314157 !important;
 }
 
 .edit-icon {
@@ -608,6 +589,44 @@ i.ban {
   content: "\e80e";
   font-size: 16px;
   font-weight: bold;
+}
+
+/** CLEANABLE SEARCH **/
+.cleanable-search {
+  position: relative;
+}
+
+.cleanable-search input { padding-right: 28px !important; }
+
+.cleanable-search .cleanable-search-icon {
+  position: absolute;
+  font-weight: 600;
+  height: 30px;
+  width: 30px;
+  top: 0;
+  right: 0;
+  margin-right: 0;
+  color: #a5acb5 !important;
+}
+
+.cleanable-search-icon:before {
+  content: "\e904";
+  position: relative;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  text-align: center;
+  line-height: 29px;
+}
+
+.cleanable-search-icon.clear:before {
+  content: "\2716";
+  cursor: pointer;
+}
+
+.cleanable-search-icon.clear:hover:before,
+.cleanable-search-icon.clear:active:before {
+  color: #314157 !important;
 }
 
 /* OVERRIDED STYLES! */

@@ -61,6 +61,4 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setUserFilterControlsVisibility( boolean hasVisible );
 
     void setReportButtonVisibility( boolean hasVisible );
-
-    void toggleSearchAction();
 }
