@@ -30,6 +30,7 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue<En_SortField> sortField();
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
+    HasValue<Boolean> searchByComments();
     void resetFilter();
 
     HasVisibility companiesVisibility();

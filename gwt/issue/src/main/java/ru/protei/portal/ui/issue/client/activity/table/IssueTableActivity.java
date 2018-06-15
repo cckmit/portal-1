@@ -308,6 +308,7 @@ public abstract class IssueTableActivity
 
         CaseQuery params = filter.getParams();
         filterView.searchPattern().setValue( params.getSearchString() );
+        filterView.searchByComments().setValue( params.isSearchStringAtComments() );
         filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
         filterView.sortField().setValue( params.getSortField() );
         filterView.dateRange().setValue( new DateInterval( params.getFrom(), params.getTo() ) );
@@ -381,6 +382,7 @@ public abstract class IssueTableActivity
     }
 
     private void setQueryFields( CaseQuery query ) {
+        query.setSearchStringAtComments( filterView.searchByComments().getValue() );
         query.setSortField( filterView.sortField().getValue() );
         query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
         query.setCompanyIds( IssueFilterUtils.getCompaniesIdList( filterView.companies().getValue() ) );

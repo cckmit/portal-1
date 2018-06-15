@@ -1,13 +1,19 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
-public class SqlDefaultBuilder {
+public class CaseObjectDAOHelper {
 
     public SqlCondition caseCommonQuery (CaseQuery query) {
         return new SqlCondition().build((condition, args) -> {
@@ -79,6 +85,29 @@ public class SqlDefaultBuilder {
                 args.add(likeArg);
                 args.add(likeArg);
             }
+
+            if (query.getIncludeIds() != null && !query.getIncludeIds().isEmpty()) {
+                condition.append(" or case_object.id in (");
+                condition.append(query.getIncludeIds().stream().map(Object::toString).collect(Collectors.joining(",")));
+                condition.append(")");
+            }
         });
     }
+
+    public CaseQuery getQueryWithSearchAtComments(CaseQuery query) {
+        if (query.isSearchStringAtComments() && HelperFunc.isNotEmpty(query.getSearchString())) {
+
+            CaseCommentQuery commentQuery = new CaseCommentQuery();
+            commentQuery.setSearchString(query.getSearchString());
+
+            List<CaseComment> comments = caseCommentDAO.getCaseComments(commentQuery);
+            List<Long> foundByCommentsIds = new ArrayList<>(comments.stream().map(CaseComment::getCaseId).collect(Collectors.toSet()));
+
+            query.setIncludeIds(foundByCommentsIds);
+        }
+        return query;
+    }
+
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
 }

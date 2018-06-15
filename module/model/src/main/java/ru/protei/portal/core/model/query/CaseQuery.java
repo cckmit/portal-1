@@ -43,6 +43,10 @@ public class CaseQuery extends BaseQuery {
 
     private Date to;
 
+    private boolean searchStringAtComments = false;
+
+    private List<Long> includeIds;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -137,6 +141,22 @@ public class CaseQuery extends BaseQuery {
         this.allowViewPrivate = isAllowViewPrivate;
     }
 
+    public boolean isSearchStringAtComments() {
+        return searchStringAtComments;
+    }
+
+    public void setSearchStringAtComments(boolean searchStringAtComments) {
+        this.searchStringAtComments = searchStringAtComments;
+    }
+
+    public List<Long> getIncludeIds() {
+        return includeIds;
+    }
+
+    public void setIncludeIds(List<Long> includeIds) {
+        this.includeIds = includeIds;
+    }
+
     @Override
     public String toString () {
         return "CaseQuery{" +
@@ -150,6 +170,8 @@ public class CaseQuery extends BaseQuery {
                 ", from=" + from +
                 ", to=" + to +
                 ", showPrivate=" + allowViewPrivate +
+                ", searchStringAtComments=" + searchStringAtComments +
+                ", includeIds=" + includeIds +
                 '}';
     }
 }

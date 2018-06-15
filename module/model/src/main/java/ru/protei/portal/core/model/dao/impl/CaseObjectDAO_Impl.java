@@ -6,12 +6,10 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by michael on 19.05.16.
@@ -22,7 +20,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     CaseTypeDAO caseTypeDAO;
 
     @Autowired
-    SqlDefaultBuilder sqlDefaultBuilder;
+    CaseObjectDAOHelper caseObjectDAOHelper;
 
 
     public Map<Long,Long> getNumberToIdMap (En_CaseType caseType) {
@@ -63,8 +61,10 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return persist(object);
     }
 
-
-
+    @Override
+    public Long count(CaseQuery query) {
+        return super.count(caseObjectDAOHelper.getQueryWithSearchAtComments(query));
+    }
 
     @Override
     public List< CaseObject > getCases( CaseQuery query ) {
@@ -72,11 +72,13 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 //        return partialGetListByCondition( condition.condition, condition.args, query.offset, query.limit, TypeConverters.createSort( query ),
 //                "id", "CASENO", "IMPORTANCE", "STATE", "CREATED", "INFO", "InitiatorName" ).getResults();
 
-        return listByQuery(query);
+        //
+
+        return listByQuery(caseObjectDAOHelper.getQueryWithSearchAtComments(query));
     }
 
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
-        return sqlDefaultBuilder.caseCommonQuery(query);
+        return caseObjectDAOHelper.caseCommonQuery(query);
     }
 }

@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -99,6 +100,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public HasValue<String> searchPattern() {
         return search;
+    }
+
+    @Override
+    public HasValue<Boolean> searchByComments() {
+        return searchByComments;
     }
 
     @Override
@@ -365,6 +371,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         filterNameChangedTimer.schedule( 300 );
     }
 
+    @UiHandler( "searchByComments" )
+    public void onSearchByCommentsChanged( ValueChangeEvent<Boolean> event ) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -418,6 +431,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     TextBox search;
+
+    @UiField
+    OptionItem searchByComments;
 
     @UiField
     Button resetBtn;
