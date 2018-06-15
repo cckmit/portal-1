@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,10 +31,9 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     public SqlCondition createSqlCondition(DecimalNumber number) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("org_code=? and classifier_code=? AND reg_number=? ");
-            args.add(Arrays.asList(
-                    number.getOrganizationCode().name(),
-                    number.getClassifierCode(),
-                    number.getRegisterNumber()));
+            args.add(number.getOrganizationCode().name());
+            args.add(number.getClassifierCode());
+            args.add(number.getRegisterNumber());
 
             if ( number.getModification() != null ) {
                 condition.append(" AND modification_number=?");

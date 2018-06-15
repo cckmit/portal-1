@@ -23,6 +23,8 @@
     <changeSet id="rename_type_code_column" author="efremov">
         <renameColumn tableName="document"
                       oldColumnName="type_code"
-                      newColumnName="dn_type_code"/>
+                      newColumnName="dn_type_code"
+                      columnDataType="VARCHAR(16)"
+        />
     </changeSet>
 </databaseChangeLog>
