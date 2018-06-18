@@ -49,4 +49,8 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValidable nameValidator();
 
     HasValidable decimalNumberValidator();
+
+    void setDecimalNumberExists(boolean isExists);
+
+    void setSaveEnabled(boolean isEnabled);
 }
