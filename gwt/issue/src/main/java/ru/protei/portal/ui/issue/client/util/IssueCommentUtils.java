@@ -28,12 +28,6 @@ public class IssueCommentUtils {
         return "[quote]" + prewrapMsg + "[/quote]\n";
     }
 
-    public static String prewrapMessage( String message ) {
-//        return message.replaceAll("<(.*?)(\\n\\r|$)+", "<blockquote>$1</blockquote>");
-        return message.replaceAll("\\[quote\\]", "<blockquote>")
-                .replaceAll("\\[/quote\\]", "</blockquote>");
-    }
-
     private static final long EDIT_PERIOD = 300000;
 
 }
