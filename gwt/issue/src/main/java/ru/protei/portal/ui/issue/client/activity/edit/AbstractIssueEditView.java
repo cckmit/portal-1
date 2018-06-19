@@ -46,7 +46,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasValue<Integer> number();
 
-    void setSubscriptionEmails(List<CompanySubscription> subscriptions, String emptyMessage);
+    void setSubscriptionEmails(String value);
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
