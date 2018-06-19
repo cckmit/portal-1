@@ -164,7 +164,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onCompanyChanged() {
         if ( view.company().getValue() == null ) {
-            view.setSubscriptionEmails( lang.issueCompanySubscriptionNeedSelectCompany() );
+            view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()) );
         } else {
             companyService.getCompanySubscription( view.company().getValue().getId(), new RequestCallback< List<CompanySubscription> >() {
                 @Override
@@ -172,12 +172,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
                 @Override
                 public void onSuccess( List<CompanySubscription> subscriptions ) {
-                    view.setSubscriptionEmails(
-                            subscriptions == null || subscriptions.isEmpty()
-                                    ? lang.issueCompanySubscriptionNotDefined()
-                                    : subscriptions.stream()
-                                    .map( CompanySubscription::getEmail )
-                                    .collect( Collectors.joining( ", " ) ) );
+                    view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()) );
                 }
             });
         }
@@ -189,6 +184,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             fillIssueObject(issue);
             fireEvent(new ContactEvents.Edit(null, Company.fromEntityOption(view.company().getValue()), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
         }
+    }
+
+    @Override
+    public void onLocalClicked() {
+        view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage) );
     }
 
     private void initialView(CaseObject issue){
@@ -315,6 +315,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return issue.getId() == null;
     }
 
+    private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
+        this.subscriptionsList = subscriptionsList;
+        this.subscriptionsListEmptyMessage = emptyMessage;
+        return subscriptionsList == null || subscriptionsList.isEmpty()
+                ? subscriptionsListEmptyMessage
+                : subscriptionsList.stream()
+                .map(CompanySubscription::getEmail)
+                .filter(mail -> !view.isLocal().getValue() || mail.endsWith("@protei.ru"))
+                .collect(Collectors.joining(", "));
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -328,6 +339,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Inject
     CompanyServiceAsync companyService;
 
+    private List<CompanySubscription> subscriptionsList;
+    private String subscriptionsListEmptyMessage;
     private AppEvents.InitDetails initDetails;
     @ContextAware
     CaseObject issue;

@@ -182,8 +182,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
-    public void setSubscriptionEmails( String value ) {
-        this.subscriptions.setInnerText( value );
+    public void setSubscriptionEmails(String value) {
+        subscriptions.setInnerText(value);
     }
 
     @Override
@@ -298,6 +298,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @UiHandler("initiator")
     public void onAddContactEvent(AddEvent event) {
         activity.onCreateContactClicked();
+    }
+
+    @UiHandler("local")
+    public void onLocalClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onLocalClicked();
+        }
     }
 
     @Override

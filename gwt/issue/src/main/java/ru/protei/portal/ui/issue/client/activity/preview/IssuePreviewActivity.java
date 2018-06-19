@@ -139,7 +139,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         } else {
             view.setCompany( initiator.getCname() );
         }
-        view.setSubscriptionEmails(formSubscribers(value, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW))); //TODO change rule
+        view.setSubscriptionEmails(formSubscribers(value, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW), value.isPrivateCase())); //TODO change rule
 
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
@@ -168,12 +168,14 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         } );
     }
 
-    private String formSubscribers(CaseObject value, boolean isPersonsAllowed){
+    private String formSubscribers(CaseObject value, boolean isPersonsAllowed, boolean isPrivateCase){
         Company initiator = value.getInitiatorCompany();
 
         Stream<String> companySubscribers = Stream.empty();
         if ( initiator != null && initiator.getSubscriptions() != null ) {
-             companySubscribers = initiator.getSubscriptions().stream().map( CompanySubscription::getEmail );
+             companySubscribers = initiator.getSubscriptions().stream()
+                     .map( CompanySubscription::getEmail )
+                     .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"));
         }
 
         Stream<String> personSubscribers = Stream.empty();
