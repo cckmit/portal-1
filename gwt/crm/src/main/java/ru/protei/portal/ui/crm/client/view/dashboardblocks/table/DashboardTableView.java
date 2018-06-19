@@ -8,10 +8,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -114,7 +111,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiHandler( "fastOpen" )
     public void onFastOpenClicked(ClickEvent event) {
         event.preventDefault();
-
         if (activity != null) {
             activity.onFastOpenClicked(this);
         }
@@ -150,7 +146,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiField
     SpanElement count;
     @UiField
-    Anchor fastOpen;
+    Button fastOpen;
     @Inject
     @UiField( provided = true )
     CustomImportanceBtnGroupMulti importance;
