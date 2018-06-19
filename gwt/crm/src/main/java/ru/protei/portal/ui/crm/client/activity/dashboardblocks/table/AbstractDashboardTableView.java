@@ -19,6 +19,7 @@ public interface AbstractDashboardTableView extends IsWidget {
 
     void setSectionName(String name);
     void setRecordsCount(int count);
+    void setFastOpenEnabled(boolean enabled);
     void showLoader(boolean isShow);
     HasValue<Set<En_ImportanceLevel>> getImportance();
 

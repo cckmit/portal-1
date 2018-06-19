@@ -1761,6 +1761,22 @@ a {
   display: none;
 }
 
+.dashboard-fast-open-btn {
+  background: transparent !important;
+  border: none !important;
+  color: white !important;
+  width: 28px;
+  height: 28px;
+  padding: 0 !important;
+  i {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    vertical-align: top;
+    text-align: center;
+  }
+}
+
 @media (min-width: 1400px) {
   .dashboard-active-records {
     padding-right: 7.5px;
