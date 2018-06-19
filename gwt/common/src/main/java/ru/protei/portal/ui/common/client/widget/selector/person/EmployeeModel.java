@@ -48,7 +48,7 @@ public abstract class EmployeeModel implements Activity {
     }
 
     private void refreshOptions() {
-        employeeService.getEmployeeViewList( new EmployeeQuery( false, true, null, En_SortField.person_full_name, En_SortDir.ASC ),
+        employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, null, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
