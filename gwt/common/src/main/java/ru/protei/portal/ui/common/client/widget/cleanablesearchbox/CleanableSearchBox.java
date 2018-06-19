@@ -54,19 +54,8 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         if (KeyUpEvent.isArrow(event.getNativeKeyCode())) {
             return;
         }
-        blockValueChangeEvent = true;
+        toggleSearchAction();
         ValueChangeEvent.fire(CleanableSearchBox.this, getValue());
-        toggleSearchAction();
-    }
-
-    @UiHandler("textBox")
-    public void onTextBoxChanged(ValueChangeEvent<String> event) {
-        if (blockValueChangeEvent) {
-            blockValueChangeEvent = false;
-            return;
-        }
-        ValueChangeEvent.fire(CleanableSearchBox.this, event.getValue());
-        toggleSearchAction();
     }
 
     @UiHandler("textBoxAction")
@@ -74,8 +63,10 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         if (!enabled) {
             return;
         }
-        if (HelperFunc.isNotEmpty(textBox.getValue())) {
-            textBox.setValue("", true);
+        event.preventDefault();
+        if (HelperFunc.isNotEmpty(getValue())) {
+            setValue("");
+            ValueChangeEvent.fire(CleanableSearchBox.this, getValue());
         }
     }
 
@@ -105,7 +96,7 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
     }
 
     private void toggleSearchAction() {
-        if (HelperFunc.isNotEmpty(textBox.getValue())) {
+        if (HelperFunc.isNotEmpty(getValue())) {
             textBoxAction.addStyleName("clear");
         } else {
             textBoxAction.removeStyleName("clear");
@@ -118,7 +109,6 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
     @UiField
     Anchor textBoxAction;
 
-    private boolean blockValueChangeEvent = false;
     private boolean enabled = true;
 
     interface CleanableTextBoxViewUiBinder extends UiBinder<HTMLPanel, CleanableSearchBox> {}
