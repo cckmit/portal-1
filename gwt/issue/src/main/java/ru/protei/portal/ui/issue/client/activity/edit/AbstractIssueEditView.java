@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -10,6 +11,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -44,7 +46,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasValue<Integer> number();
 
-    void setSubscriptionEmails( String value );
+    void setSubscriptionEmails(List<CompanySubscription> subscriptions, String emptyMessage);
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();

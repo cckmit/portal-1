@@ -17,6 +17,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -38,7 +39,9 @@ import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Вид создания и редактирования обращения
@@ -182,8 +185,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
-    public void setSubscriptionEmails( String value ) {
-        this.subscriptions.setInnerText( value );
+    public void setSubscriptionEmails(List<CompanySubscription> subs, String emptyMessage) {
+        subscriptionsList = subs;
+        subscriptionsListEmptyMessage = emptyMessage;
+        subscriptions.setInnerText(subscriptionsList == null
+                ? subscriptionsListEmptyMessage
+                : subscriptionsList.stream()
+                .map(CompanySubscription::getEmail)
+                .filter(mail -> !local.getValue() || (local.getValue() && mail.endsWith("@protei.ru")))
+                .collect(Collectors.joining(", "))
+        );
     }
 
     @Override
@@ -300,6 +311,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         activity.onCreateContactClicked();
     }
 
+    @UiHandler("local")
+    public void onLocalClick(ClickEvent event) {
+        setSubscriptionEmails(subscriptionsList, subscriptionsListEmptyMessage);
+    }
+
     @Override
     public void showComments(boolean isShow) {
         if(isShow)
@@ -387,6 +403,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     };
 
     private AbstractIssueEditActivity activity;
+    private List<CompanySubscription> subscriptionsList;
+    private String subscriptionsListEmptyMessage;
 
     interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {}
     private static IssueEditViewUiBinder ourUiBinder = GWT.create(IssueEditViewUiBinder.class);

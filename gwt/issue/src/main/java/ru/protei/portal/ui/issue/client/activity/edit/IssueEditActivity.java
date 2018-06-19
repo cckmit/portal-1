@@ -164,7 +164,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onCompanyChanged() {
         if ( view.company().getValue() == null ) {
-            view.setSubscriptionEmails( lang.issueCompanySubscriptionNeedSelectCompany() );
+            view.setSubscriptionEmails( null, lang.issueCompanySubscriptionNeedSelectCompany() );
         } else {
             companyService.getCompanySubscription( view.company().getValue().getId(), new RequestCallback< List<CompanySubscription> >() {
                 @Override
@@ -173,11 +173,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 @Override
                 public void onSuccess( List<CompanySubscription> subscriptions ) {
                     view.setSubscriptionEmails(
-                            subscriptions == null || subscriptions.isEmpty()
-                                    ? lang.issueCompanySubscriptionNotDefined()
-                                    : subscriptions.stream()
-                                    .map( CompanySubscription::getEmail )
-                                    .collect( Collectors.joining( ", " ) ) );
+                            subscriptions == null || subscriptions.isEmpty() ? null : subscriptions,
+                            lang.issueCompanySubscriptionNotDefined()
+                    );
                 }
             });
         }
