@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -31,7 +32,6 @@ public class OfficialFilterView extends Composite implements AbstractOfficialFil
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.OFFICIAL );
         sortDir.setValue( false );
         product.setDefaultValue( lang.selectIssueProduct() );
@@ -75,7 +75,7 @@ public class OfficialFilterView extends Composite implements AbstractOfficialFil
 
     @Override
     public void resetFilter() {
-        search.setText("");
+        search.setValue("");
         dateRange.setValue(null);
         product.setValue(null);
         region.setValue(null);
@@ -84,7 +84,7 @@ public class OfficialFilterView extends Composite implements AbstractOfficialFil
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -146,7 +146,7 @@ public class OfficialFilterView extends Composite implements AbstractOfficialFil
     Lang lang;
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @Inject
     @UiField (provided = true)

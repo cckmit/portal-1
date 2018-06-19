@@ -5,16 +5,14 @@
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
-             xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector">
+             xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector"
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
         <div class="body">
-            <div class="form-group local-search col-xs-12">
-                <span class="icon local-search-icon"></span>
-                <g:TextBox ui:field="name" styleName="input-field"/>
-            </div>
+            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.equipmentSearchNameOrProject}" styleName="form-group col-xs-12"/>
 
             <div class="form-group col-xs-12">
                 <label>

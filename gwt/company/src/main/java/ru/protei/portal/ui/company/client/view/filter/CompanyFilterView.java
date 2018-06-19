@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
@@ -30,7 +31,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         group.setDefaultValue( lang.selectCompanyGroup() );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     @Override
@@ -89,7 +89,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
         group.setValue(null);
         sortField.setValue( En_SortField.comp_name );
         sortDir.setValue(true);
-        search.setText( "" );
+        search.setValue( "" );
     }
 
     @UiHandler( "categories" )
@@ -121,7 +121,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -152,7 +152,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     ToggleButton sortDir;
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;
