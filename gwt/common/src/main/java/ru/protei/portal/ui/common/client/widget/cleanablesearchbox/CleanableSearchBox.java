@@ -11,7 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 
-public class CleanableSearchBox extends Composite implements HasValue<String> {
+public class CleanableSearchBox extends Composite implements HasValue<String>, HasEnabled {
 
     public CleanableSearchBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -38,25 +38,42 @@ public class CleanableSearchBox extends Composite implements HasValue<String> {
         textBox.getElement().setAttribute("placeholder", value);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+        textBox.setEnabled(enabled);
+    }
+
     @UiHandler("textBox")
     public void onTextBoxKeyUp(KeyUpEvent event) {
-        keyUpEventSent = true;
+        if (KeyUpEvent.isArrow(event.getNativeKeyCode()) || event.isAnyModifierKeyDown()) {
+            return;
+        }
+        blockValueChangeEvent = true;
         ValueChangeEvent.fire(CleanableSearchBox.this, getValue());
         toggleSearchAction();
     }
 
     @UiHandler("textBox")
     public void onTextBoxChanged(ValueChangeEvent<String> event) {
-        if (keyUpEventSent) {
-            keyUpEventSent = false;
+        if (blockValueChangeEvent) {
+            blockValueChangeEvent = false;
             return;
         }
-        ValueChangeEvent.fire(CleanableSearchBox.this, getValue());
+        ValueChangeEvent.fire(CleanableSearchBox.this, event.getValue());
         toggleSearchAction();
     }
 
     @UiHandler("textBoxAction")
     public void onTextBoxActionClick(ClickEvent event) {
+        if (!enabled) {
+            return;
+        }
         if (HelperFunc.isNotEmpty(textBox.getValue())) {
             textBox.setValue("", true);
         }
@@ -69,6 +86,22 @@ public class CleanableSearchBox extends Composite implements HasValue<String> {
 
     public HandlerRegistration addChangeHandler(ChangeHandler handler) {
         return addDomHandler(handler, ChangeEvent.getType());
+    }
+
+    public HandlerRegistration addKeyDownHandler(KeyDownHandler handler) {
+        return textBox.addKeyDownHandler(handler);
+    }
+
+    public HandlerRegistration addKeyPressHandler(KeyPressHandler handler) {
+        return textBox.addKeyPressHandler(handler);
+    }
+
+    public HandlerRegistration addKeyUpHandler(KeyUpHandler handler) {
+        return textBox.addKeyUpHandler(handler);
+    }
+
+    public void setFocus(boolean focused) {
+        textBox.setFocus(focused);
     }
 
     private void toggleSearchAction() {
@@ -85,7 +118,8 @@ public class CleanableSearchBox extends Composite implements HasValue<String> {
     @UiField
     Anchor textBoxAction;
 
-    private boolean keyUpEventSent = false;
+    private boolean blockValueChangeEvent = false;
+    private boolean enabled = true;
 
     interface CleanableTextBoxViewUiBinder extends UiBinder<HTMLPanel, CleanableSearchBox> {}
     private static CleanableTextBoxViewUiBinder ourUiBinder = GWT.create( CleanableTextBoxViewUiBinder.class );
