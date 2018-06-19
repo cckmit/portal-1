@@ -8,6 +8,7 @@
             <span ui:field="sectionName"/>
             <span ui:field="count" class="dashboard-total-count"/>
             <div class="rightSide">
+                <g:Anchor ui:field="fastOpen" styleName="fa fa-lg fa-external-link dashboard-fast-open" href="#"/>
                 <importance:CustomImportanceBtnGroupMulti ui:field="importance"/>
             </div>
         </label>

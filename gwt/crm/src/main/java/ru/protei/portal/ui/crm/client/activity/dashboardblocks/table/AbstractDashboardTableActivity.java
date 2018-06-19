@@ -12,4 +12,5 @@ import java.util.Set;
 public interface AbstractDashboardTableActivity extends ClickColumn.Handler<CaseShortView>{
     void updateImportance(AbstractDashboardTableView view, Set<En_ImportanceLevel> importanceLevels);
     void removeView(AbstractDashboardTableView view);
+    void onFastOpenClicked(AbstractDashboardTableView view);
 }

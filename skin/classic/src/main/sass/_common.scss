@@ -1761,6 +1761,15 @@ a {
   display: none;
 }
 
+.dashboard-fast-open {
+  color: white;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  vertical-align: top;
+  text-align: center;
+}
+
 @media (min-width: 1400px) {
   .dashboard-active-records {
     padding-right: 7.5px;

@@ -77,6 +77,9 @@ public abstract class IssueTableActivity
         );
 
         filterView.setReportButtonVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EXPORT));
+        if (event.query != null) {
+            fillFilterFields(event.query);
+        }
 
         requestIssuesCount();
     }
@@ -306,7 +309,11 @@ public abstract class IssueTableActivity
         filterView.removeFilterBtnVisibility().setVisible( true );
         filterView.filterName().setValue( filter.getName() );
 
-        CaseQuery params = filter.getParams();
+        fillFilterFields(filter.getParams());
+
+    }
+
+    private void fillFilterFields(CaseQuery params) {
         filterView.searchPattern().setValue( params.getSearchString() );
         filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
         filterView.sortField().setValue( params.getSortField() );

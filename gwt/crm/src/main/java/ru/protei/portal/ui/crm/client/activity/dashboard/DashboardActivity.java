@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,6 +29,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     public void onDashboardInit( AuthEvents.Success event ) {
         activeRecordsQuery = generateActiveRecordsQuery();
         newRecordsQuery = generateNewRecordsQuery();
+        inactiveRecordsQuery30days = modify30DaysQuery(generateInactiveRecordsQuery());
         inactiveRecordsQuery = generateInactiveRecordsQuery();
     }
 
@@ -69,7 +71,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                         newRecordsQuery, view.getNewRecordsContainer(), lang.newRecords()));
         fireEvent(
                 new DashboardEvents.ShowTableBlock(
-                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true ));
+                        inactiveRecordsQuery30days, inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, true ));
     }
 
 
@@ -108,6 +110,14 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         return query;
     }
 
+    private CaseQuery modify30DaysQuery(CaseQuery query) {
+        Date to = new Date();
+        Date from = new Date(to.getTime() - (86400000L * 30L));
+        query.setFrom(from);
+        query.setTo(to);
+        return query;
+    }
+
     @Inject
     AbstractDashboardView view;
 
@@ -124,5 +134,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery activeRecordsQuery;
     private CaseQuery newRecordsQuery;
+    private CaseQuery inactiveRecordsQuery30days;
     private CaseQuery inactiveRecordsQuery;
 }

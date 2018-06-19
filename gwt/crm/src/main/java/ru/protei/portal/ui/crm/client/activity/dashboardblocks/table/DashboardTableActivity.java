@@ -29,11 +29,12 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         event.parent.add(view.asWidget());
 
 
-        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow);
+        DashboardTableModel model = new DashboardTableModel(view, event.query, event.fastOpenQuery, event.isLoaderShow);
         viewToModel.put(view, model);
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
         view.setSectionName(event.sectionName);
+        view.setFastOpenEnabled(event.isFastOpenEnabled);
 
         updateSection(model);
     }
@@ -60,6 +61,11 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             return;
 
         model.query.setImportanceIds(importanceIds);
+
+        if (model.fastOpenQuery != null && !(model.fastOpenQuery.getImportanceIds() != null && model.fastOpenQuery.getImportanceIds().equals(importanceIds))) {
+            model.fastOpenQuery.setImportanceIds(importanceIds);
+        }
+
         updateSection(model);
     }
 
@@ -68,6 +74,12 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         viewToModel.remove(view);
     }
 
+    @Override
+    public void onFastOpenClicked(AbstractDashboardTableView view) {
+        if (viewToModel.containsKey(view)) {
+            fireEvent(new IssueEvents.Show(viewToModel.get(view).fastOpenQuery));
+        }
+    }
 
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();

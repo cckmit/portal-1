@@ -2,7 +2,9 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
 /**
@@ -15,6 +17,12 @@ public class IssueEvents {
 
         public Show () {}
 
+        public Show (CaseQuery query) {
+            this.query = query;
+        }
+
+        @Omit
+        public CaseQuery query;
     }
 
     /**
