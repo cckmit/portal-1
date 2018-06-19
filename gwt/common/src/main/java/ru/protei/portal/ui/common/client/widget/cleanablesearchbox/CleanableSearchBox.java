@@ -51,7 +51,7 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
 
     @UiHandler("textBox")
     public void onTextBoxKeyUp(KeyUpEvent event) {
-        if (KeyUpEvent.isArrow(event.getNativeKeyCode()) || event.isAnyModifierKeyDown()) {
+        if (KeyUpEvent.isArrow(event.getNativeKeyCode())) {
             return;
         }
         blockValueChangeEvent = true;
