@@ -56,6 +56,25 @@ public class CaseQuery extends BaseQuery {
         this.allowViewPrivate = true;
     }
 
+    public CaseQuery(CaseQuery query) {
+        setSearchString(query.getSearchString());
+        setSortField(query.getSortField());
+        setSortDir(query.getSortDir());
+
+        setId(query.getId());
+        setCaseNo(query.getCaseNo());
+        setCompanyIds(query.getCompanyIds());
+        setProductIds(query.getProductIds());
+        setType(query.getType());
+        setStateIds(query.getStateIds());
+        setImportanceIds(query.getImportanceIds());
+        setFrom(query.getFrom());
+        setTo(query.getTo());
+        setManagerIds(query.getManagerIds());
+        setWithoutManager(query.isWithoutManager());
+        setAllowViewPrivate(query.isAllowViewPrivate());
+    }
+
     public Long getId() {
         return id;
     }

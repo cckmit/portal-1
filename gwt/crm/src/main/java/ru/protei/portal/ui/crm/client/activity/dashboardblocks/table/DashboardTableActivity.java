@@ -5,6 +5,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -29,12 +30,11 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         event.parent.add(view.asWidget());
 
 
-        DashboardTableModel model = new DashboardTableModel(view, event.query, event.fastOpenQuery, event.isLoaderShow);
+        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow);
         viewToModel.put(view, model);
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
         view.setSectionName(event.sectionName);
-        view.setFastOpenEnabled(event.isFastOpenEnabled);
 
         updateSection(model);
     }
@@ -62,10 +62,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
         model.query.setImportanceIds(importanceIds);
 
-        if (model.fastOpenQuery != null && !(model.fastOpenQuery.getImportanceIds() != null && model.fastOpenQuery.getImportanceIds().equals(importanceIds))) {
-            model.fastOpenQuery.setImportanceIds(importanceIds);
-        }
-
         updateSection(model);
     }
 
@@ -77,7 +73,10 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     @Override
     public void onFastOpenClicked(AbstractDashboardTableView view) {
         if (viewToModel.containsKey(view)) {
-            fireEvent(new IssueEvents.Show(viewToModel.get(view).fastOpenQuery));
+            CaseQuery query = new CaseQuery(viewToModel.get(view).query);
+            query.setFrom(null);
+            query.setTo(null);
+            fireEvent(new IssueEvents.Show(query));
         }
     }
 

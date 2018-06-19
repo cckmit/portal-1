@@ -26,8 +26,6 @@ public class DashboardEvents {
         public HasWidgets parent;
         public boolean isLoaderShow;
         public String sectionName;
-        public boolean isFastOpenEnabled;
-        public CaseQuery fastOpenQuery;
         public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName) {
             if(query == null || parent == null)
                 throw new NullPointerException("query or parent is nullable");
@@ -35,15 +33,11 @@ public class DashboardEvents {
             this.query = query;
             this.parent = parent;
             this.sectionName = sectionName;
-            this.isFastOpenEnabled = false;
-            this.fastOpenQuery = null;
         }
 
-        public ShowTableBlock (CaseQuery query, CaseQuery fastOpenQuery, HasWidgets parent, String sectionName, boolean showLoader, boolean fastOpenEnabled) {
+        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, boolean showLoader) {
             this(query, parent, sectionName);
             this.isLoaderShow = showLoader;
-            this.isFastOpenEnabled = fastOpenEnabled;
-            this.fastOpenQuery = fastOpenQuery;
         }
 
     }
