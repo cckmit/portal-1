@@ -82,8 +82,8 @@ public class MainConfiguration {
 
 
     @Bean
-    public CaseObjectDAOHelper sqlDefaultBuilder () {
-        return new CaseObjectDAOHelper();
+    public CaseObjectSqlBuilder sqlDefaultBuilder () {
+        return new CaseObjectSqlBuilder();
     }
 
 

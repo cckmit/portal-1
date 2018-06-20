@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -66,7 +67,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
+
         applyFilterByScope( token, query );
+        modifyQueryWithSearchAtComments(query);
+
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
@@ -373,7 +377,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
+
         applyFilterByScope( token, query );
+        modifyQueryWithSearchAtComments(query);
+
         Long count = caseObjectDAO.count(query);
 
         if (count == null)
@@ -444,6 +451,20 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public boolean isExistsAttachments(Long caseId) {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
+    }
+
+    private void modifyQueryWithSearchAtComments(CaseQuery query) {
+        if (
+                query.isSearchStringAtComments() &&
+                HelperFunc.isNotEmpty(query.getSearchString()) &&
+                query.getSearchString().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS
+        ) {
+            List<Long> foundByCommentsIds = caseCommentDAO.listColumnValue(
+                    "case_id", Long.class,
+                    "comment_text like ?", HelperFunc.makeLikeArg(query.getSearchString(), true)
+            );
+            query.setIncludeIds(foundByCommentsIds);
+        }
     }
 
     private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state){

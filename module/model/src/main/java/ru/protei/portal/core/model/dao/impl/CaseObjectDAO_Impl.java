@@ -20,8 +20,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     CaseTypeDAO caseTypeDAO;
 
     @Autowired
-    CaseObjectDAOHelper caseObjectDAOHelper;
-
+    CaseObjectSqlBuilder caseObjectSqlBuilder;
 
     public Map<Long,Long> getNumberToIdMap (En_CaseType caseType) {
         Map<Long, Long> numberToIdMap = new HashMap<>();
@@ -62,11 +61,6 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public Long count(CaseQuery query) {
-        return super.count(caseObjectDAOHelper.getQueryWithSearchAtComments(query));
-    }
-
-    @Override
     public List< CaseObject > getCases( CaseQuery query ) {
 //        SqlCondition condition = caseQueryCondition( query );
 //        return partialGetListByCondition( condition.condition, condition.args, query.offset, query.limit, TypeConverters.createSort( query ),
@@ -74,11 +68,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
 
         //
 
-        return listByQuery(caseObjectDAOHelper.getQueryWithSearchAtComments(query));
+        return listByQuery(query);
     }
 
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
-        return caseObjectDAOHelper.caseCommonQuery(query);
+        return caseObjectSqlBuilder.caseCommonQuery(query);
     }
 }

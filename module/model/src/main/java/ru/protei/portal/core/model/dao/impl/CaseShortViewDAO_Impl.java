@@ -15,15 +15,15 @@ import java.util.List;
 public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> implements CaseShortViewDAO {
 
     @Autowired
-    private CaseObjectDAOHelper caseObjectDAOHelper;
+    private CaseObjectSqlBuilder caseObjectSqlBuilder;
 
     @Override
     public List< CaseShortView > getCases( CaseQuery query ) {
-        return listByQuery(caseObjectDAOHelper.getQueryWithSearchAtComments(query));
+        return listByQuery(query);
     }
 
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
-        return caseObjectDAOHelper.caseCommonQuery(query);
+        return caseObjectSqlBuilder.caseCommonQuery(query);
     }
 }
