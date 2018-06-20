@@ -2,6 +2,7 @@ package ru.protei.portal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.model.dict.config.CaseLinkConfig;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 import ru.protei.winter.core.utils.duration.DurationUtils;
@@ -24,6 +25,7 @@ public class PortalConfigData {
     private final IntegrationConfig integrationConfig;
     private final SvnConfig svnConfig;
     private final ReportConfig reportConfig;
+    private final CaseLinkConfig caseLinkConfig;
 
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
@@ -36,6 +38,7 @@ public class PortalConfigData {
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
         reportConfig = new ReportConfig(wrapper);
+        caseLinkConfig = new CaseLinkConfigImpl(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -75,6 +78,10 @@ public class PortalConfigData {
 
     public ReportConfig reportConfig() {
         return reportConfig;
+    }
+
+    public CaseLinkConfig getCaseLinkConfig() {
+        return caseLinkConfig;
     }
 
     public static class SmtpConfig {
@@ -305,6 +312,30 @@ public class PortalConfigData {
 
         public String getStoragePath() {
             return storagePath;
+        }
+    }
+
+    public static class CaseLinkConfigImpl implements CaseLinkConfig {
+        private final String linkCrm;
+        private final String linkOldCrm;
+        private final String linkYouTrack;
+
+        public CaseLinkConfigImpl(PropertiesWrapper properties) throws ConfigException {
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
+            this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://newportal/crm/#issues/issue:id=%id%");
+            this.linkYouTrack = properties.getProperty("case.link.you_track", "https://youtrack.protei/issue/%id%");
+        }
+
+        public String getLinkCrm() {
+            return linkCrm;
+        }
+
+        public String getLinkOldCrm() {
+            return linkOldCrm;
+        }
+
+        public String getLinkYouTrack() {
+            return linkYouTrack;
         }
     }
 }

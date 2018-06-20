@@ -1,12 +1,13 @@
 package ru.protei.portal.ui.common.client.lang;
 
 import com.google.gwt.i18n.client.Messages;
+import ru.protei.portal.core.model.dict.lang.CaseLinkLang;
 import ru.protei.portal.core.model.dict.lang.ContactItemLang;
 
 /**
  * Интерфейс со строковыми константами
  */
-public interface Lang extends Messages, ContactItemLang {
+public interface Lang extends Messages, ContactItemLang, CaseLinkLang {
     String buttonLogout();
 
     String buttonLogin();
@@ -962,5 +963,11 @@ public interface Lang extends Messages, ContactItemLang {
     String searchByComments();
 
     String searchByCommentsUnavailable(int threshold);
+
+    String caseLinkCrm();
+
+    String caseLinkOldCrm();
+
+    String caseLinkYouTrack();
 
 }
