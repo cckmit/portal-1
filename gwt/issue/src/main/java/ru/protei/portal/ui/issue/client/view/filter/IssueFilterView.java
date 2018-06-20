@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -111,7 +112,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         dateRange.setValue( null );
         sortField.setValue( En_SortField.creation_date );
         sortDir.setValue( false );
-        search.setText( "" );
+        search.setValue( "" );
         userFilter.setValue( null );
         removeBtn.setVisible( false );
         filterName.removeStyleName( "required" );
@@ -346,7 +347,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -417,7 +418,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     ToggleButton sortDir;
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;

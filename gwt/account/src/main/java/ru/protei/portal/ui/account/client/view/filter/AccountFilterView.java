@@ -20,6 +20,7 @@ import ru.protei.portal.ui.account.client.widget.role.RoleMultiSelector;
 import ru.protei.portal.ui.account.client.widget.type.AuthTypeBtnGroupMulti;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 
@@ -33,7 +34,6 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     @Override
@@ -87,7 +87,7 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     public void resetFilter() {
         sortField.setValue( En_SortField.ulogin );
         sortDir.setValue( true );
-        search.setText( "" );
+        search.setValue( "" );
         types.setValue( new HashSet<>() );
         roles.setValue( new HashSet<>() );
         company.setValue(null);
@@ -137,7 +137,7 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -159,7 +159,7 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     ToggleButton sortDir;
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @Inject
     @UiField( provided = true )

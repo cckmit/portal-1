@@ -43,7 +43,7 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
         }
 
         vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( options.stream()
-                .filter( op -> op.getDisplayText().toLowerCase().contains( popup.search.getText().toLowerCase() ) )
+                .filter( op -> op.getDisplayText().toLowerCase().contains( popup.search.getValue().toLowerCase() ) )
                 .collect( Collectors.toList() )
         ) );
 

@@ -591,6 +591,44 @@ i.ban {
   font-weight: bold;
 }
 
+/** CLEANABLE SEARCH **/
+.cleanable-search {
+  position: relative;
+}
+
+.cleanable-search input { padding-right: 28px !important; }
+
+.cleanable-search .cleanable-search-icon {
+  position: absolute;
+  font-weight: 600;
+  height: 30px;
+  width: 30px;
+  top: 0;
+  right: 0;
+  margin-right: 0;
+  color: #a5acb5 !important;
+}
+
+.cleanable-search-icon:before {
+  content: "\e904";
+  position: relative;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  text-align: center;
+  line-height: 29px;
+}
+
+.cleanable-search-icon.clear:before {
+  content: "\2716";
+  cursor: pointer;
+}
+
+.cleanable-search-icon.clear:hover:before,
+.cleanable-search-icon.clear:active:before {
+  color: #314157 !important;
+}
+
 /* OVERRIDED STYLES! */
 .header_global > .rightBlock .topicTitle {
   //background: #F3F1F4 none !important;
@@ -1261,14 +1299,6 @@ td.info {
 
 .dropdown-searchbox {
   position: relative;
-}
-
-.dropdown-searchbox:after {
-  font: normal normal normal 14px/1 FontAwesome;
-  content: "\f002";
-  position: absolute;
-  right: 10px;
-  top: 5px;
 }
 
 .dropdown-addbutton {
