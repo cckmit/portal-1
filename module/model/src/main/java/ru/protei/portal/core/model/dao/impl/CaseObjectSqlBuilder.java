@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.util.stream.Collectors;
 
-public class SqlDefaultBuilder {
+public class CaseObjectSqlBuilder {
 
     public SqlCondition caseCommonQuery (CaseQuery query) {
         return new SqlCondition().build((condition, args) -> {
@@ -78,6 +78,12 @@ public class SqlDefaultBuilder {
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);
+            }
+
+            if (query.getIncludeIds() != null && !query.getIncludeIds().isEmpty()) {
+                condition.append(" or case_object.id in (");
+                condition.append(query.getIncludeIds().stream().map(Object::toString).collect(Collectors.joining(",")));
+                condition.append(")");
             }
         });
     }

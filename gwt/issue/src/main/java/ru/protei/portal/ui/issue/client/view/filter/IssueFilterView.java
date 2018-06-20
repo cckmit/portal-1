@@ -16,6 +16,7 @@ import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -23,6 +24,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -103,6 +105,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
+    public HasValue<Boolean> searchByComments() {
+        return searchByComments;
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue( null );
         products.setValue( null );
@@ -117,6 +124,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         removeBtn.setVisible( false );
         filterName.removeStyleName( "required" );
         filterName.setValue( "" );
+        searchByComments.setValue( false );
+        toggleMsgSearchThreshold();
     }
 
     @Override
@@ -235,6 +244,21 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             reportBtn.removeStyleName( "hide" );
         } else {
             reportBtn.addStyleName( "hide" );
+        }
+    }
+
+    @Override
+    public void toggleMsgSearchThreshold() {
+        if (searchByComments.getValue()) {
+            int actualLength = search.getValue().length();
+            if (actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS) {
+                searchByCommentsWarning.setVisible(false);
+            } else {
+                searchByCommentsWarning.setText(lang.searchByCommentsUnavailable(CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS));
+                searchByCommentsWarning.setVisible(true);
+            }
+        } else if (searchByCommentsWarning.isVisible()) {
+            searchByCommentsWarning.setVisible(false);
         }
     }
 
@@ -366,10 +390,19 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         filterNameChangedTimer.schedule( 300 );
     }
 
+    @UiHandler( "searchByComments" )
+    public void onSearchByCommentsChanged( ValueChangeEvent<Boolean> event ) {
+        toggleMsgSearchThreshold();
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
-            if ( activity != null ) {
+            toggleMsgSearchThreshold();
+            if (activity != null) {
                 activity.onFilterChanged();
             }
         }
@@ -419,6 +452,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     CleanableSearchBox search;
+
+    @UiField
+    OptionItem searchByComments;
+
+    @UiField
+    Label searchByCommentsWarning;
 
     @UiField
     Button resetBtn;

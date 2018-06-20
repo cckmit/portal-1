@@ -522,6 +522,29 @@ i.ban {
   content: "\e904";
 }
 
+.local-search-using-comments {
+  .warning {
+    display: inline-block;
+    padding: .3em 0 0 0;
+    font-size: 0.9em;
+    color: #d52021;
+    line-height: 1em;
+    font-weight: bold;
+  }
+  .toggle {
+    .checkbox {
+      label {
+        padding-left: 0;
+      }
+    }
+    .option-name {
+      padding: 0;
+      font-size: 0.9em;
+      color: inherit;
+    }
+  }
+}
+
 .edit-icon {
   font-size: 14px;
 }

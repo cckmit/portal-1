@@ -959,4 +959,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactRemoveConfirmMessage();
 
+    String searchByComments();
+
+    String searchByCommentsUnavailable(int threshold);
+
 }
