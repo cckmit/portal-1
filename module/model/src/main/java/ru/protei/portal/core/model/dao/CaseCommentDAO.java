@@ -16,6 +16,13 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     List<CaseComment> getCaseComments( CaseCommentQuery query );
 
+    /**
+     * Возвращает список идентификаторов CaseObject.id
+     * @param query
+     * @return
+     */
+    List<Long> getCaseCommentsCaseIds( CaseCommentQuery query );
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition( CaseCommentQuery query );
 }

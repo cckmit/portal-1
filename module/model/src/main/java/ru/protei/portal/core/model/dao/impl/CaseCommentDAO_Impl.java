@@ -24,18 +24,24 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         return listByQuery(query);
     }
 
+    @Override
+    public List<Long> getCaseCommentsCaseIds(CaseCommentQuery query) {
+        SqlCondition where = createSqlCondition(query);
+        return listColumnValue("case_id", Long.class, where.condition, where.args.toArray());
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CaseCommentQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
             if (query.getCaseId() != null) {
-                condition.append(" and case_comment.case_id=?");
+                condition.append(" and case_id=?");
                 args.add(query.getCaseId());
             }
 
             if (HelperFunc.isNotEmpty(query.getSearchString())) {
-                condition.append(" and case_comment.comment_text like ?");
+                condition.append(" and comment_text like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
         });

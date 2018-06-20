@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -459,10 +460,11 @@ public class CaseServiceImpl implements CaseService {
                 HelperFunc.isNotEmpty(query.getSearchString()) &&
                 query.getSearchString().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS
         ) {
-            List<Long> foundByCommentsIds = caseCommentDAO.listColumnValue(
-                    "case_id", Long.class,
-                    "comment_text like ?", HelperFunc.makeLikeArg(query.getSearchString(), true)
-            );
+
+            CaseCommentQuery commentQuery = new CaseCommentQuery();
+            commentQuery.setSearchString(query.getSearchString());
+
+            List<Long> foundByCommentsIds = caseCommentDAO.getCaseCommentsCaseIds(commentQuery);
             query.setIncludeIds(foundByCommentsIds);
         }
     }
