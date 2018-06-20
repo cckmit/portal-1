@@ -116,6 +116,9 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
     private Set<Person> notifiers; //may contain partially filled objects!
 
+    @JdbcOneToMany(table = "case_link", localColumn = "id", remoteColumn = "case_id")
+    private List<CaseLink> links;
+
     public CaseObject() {
 
     }
@@ -417,6 +420,14 @@ public class CaseObject extends AuditableObject {
         this.notifiers = notifiers;
     }
 
+    public List<CaseLink> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<CaseLink> links) {
+        this.links = links;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -454,6 +465,7 @@ public class CaseObject extends AuditableObject {
                 ", privateCase=" + privateCase +
                 ", locations=" + locations +
                 ", members=" + members +
+                ", links=" + links +
                 '}';
     }
 }

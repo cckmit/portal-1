@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
@@ -58,6 +59,9 @@ public class CaseServiceImpl implements CaseService {
     CaseNotifierDAO caseNotifierDAO;
 
     @Autowired
+    CaseLinkDAO caseLinkDAO;
+
+    @Autowired
     AttachmentService attachmentService;
 
     @Autowired
@@ -65,6 +69,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    PortalConfig config;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
@@ -91,6 +98,9 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+        jdbcManyRelationsHelper.fill( caseObject, "links");
+
+        applyCaseLinksByScope(token, caseObject);
 
         return new CoreResponse<CaseObject>().success(caseObject);
     }
@@ -143,6 +153,10 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        if (CollectionUtils.isNotEmpty(caseObject.getLinks())) {
+            caseLinkDAO.persistBatch(caseObject.getLinks());
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
@@ -160,6 +174,8 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
+        jdbcManyRelationsHelper.persist(caseObject, "links");
+
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
         if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
@@ -522,6 +538,7 @@ public class CaseServiceImpl implements CaseService {
 
     private boolean isCaseHasNoChanges(CaseObject co1, CaseObject co2){
         // without notifiers
+        // without links
         return
                 Objects.equals(co1.getName(), co2.getName())
                 && Objects.equals(co1.getInfo(), co2.getInfo())
@@ -532,6 +549,35 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 && Objects.equals(co1.getProductId(), co2.getProductId())
                 && Objects.equals(co1.getManagerId(), co2.getManagerId());
+    }
+
+    private void applyCaseLinksByScope(AuthToken token, CaseObject caseObject) {
+        List<CaseLink> caseLinks = caseObject.getLinks();
+        if (caseLinks == null || caseLinks.isEmpty()) {
+            return;
+        }
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            for (CaseLink caseLink : caseLinks) {
+                if (caseLink.getType().isForcePrivacy()) {
+                    caseLinks.remove(caseLink);
+                    continue;
+                }
+                CaseObject co = caseObjectDAO.getCaseById(caseLink.getCaseId());
+                if (co.isPrivateCase()) {
+                    caseLinks.remove(caseLink);
+                }
+            }
+        }
+        for (CaseLink caseLink : caseLinks) {
+            caseLink.setLink(
+                    caseLink.getType().getLink(
+                            config.data().getCaseLinkConfig(),
+                            caseLink.getRemoteId()
+                    )
+            );
+        }
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)

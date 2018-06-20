@@ -318,6 +318,11 @@ public class MainConfiguration {
         return new ReportDAO_Impl();
     }
 
+    @Bean
+    public CaseLinkDAO getCaseLinkDAO() {
+        return new CaseLinkDAO_Impl();
+    }
+
 /**
  *
  *

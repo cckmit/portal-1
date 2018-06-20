@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.dict.lang.CaseLinkLang;
 
 public enum En_CaseLink {
 
-    CRM(1, false) {
+    CRM(false) {
         @Override
         public String getName(CaseLinkLang lang) {
             return lang.caseLinkCrm();
@@ -15,7 +15,7 @@ public enum En_CaseLink {
             return config.getLinkCrm().replace("%id%", id);
         }
     },
-    OLD_CRM(2, true) {
+    CRM_OLD(true) {
         @Override
         public String getName(CaseLinkLang lang) {
             return lang.caseLinkOldCrm();
@@ -25,7 +25,7 @@ public enum En_CaseLink {
             return config.getLinkOldCrm().replace("%id%", id);
         }
     },
-    YT(3, true) {
+    YT(true) {
         @Override
         public String getName(CaseLinkLang lang) {
             return lang.caseLinkYouTrack();
@@ -36,17 +36,11 @@ public enum En_CaseLink {
         }
     };
 
-    En_CaseLink(int id, boolean forcePrivacy) {
-        this.id = id;
+    En_CaseLink(boolean forcePrivacy) {
         this.forcePrivacy = forcePrivacy;
     }
 
-    private final int id;
     private final boolean forcePrivacy;
-
-    public int getId() {
-        return id;
-    }
 
     public abstract String getName(CaseLinkLang lang);
 
@@ -54,14 +48,5 @@ public enum En_CaseLink {
 
     public boolean isForcePrivacy() {
         return forcePrivacy;
-    }
-
-    public static En_CaseLink findById(int id) {
-        for (En_CaseLink value : En_CaseLink.values()) {
-            if (value.getId() == id) {
-                return value;
-            }
-        }
-        return null;
     }
 }
