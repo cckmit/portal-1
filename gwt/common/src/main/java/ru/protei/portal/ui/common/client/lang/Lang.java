@@ -976,4 +976,6 @@ public interface Lang extends Messages, ContactItemLang {
     String caseStateUsagesInCompaniesAll();
 
     String caseStateUsagesInCompaniesSelected();
+
+    String previewCaseStatesCompanies();
 }

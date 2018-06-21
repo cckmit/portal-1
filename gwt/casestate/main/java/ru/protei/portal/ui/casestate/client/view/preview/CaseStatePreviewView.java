@@ -7,14 +7,18 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewActivity;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewView;
+import ru.protei.portal.ui.casestate.client.view.btngroup.UsageInCompaniesBtnGroup;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 
-import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.util.logging.Logger.getLogger;
@@ -24,7 +28,8 @@ import static java.util.logging.Logger.getLogger;
  */
 public class CaseStatePreviewView extends Composite implements AbstractCaseStatePreviewView {
 
-    public CaseStatePreviewView() {
+    @Inject
+    public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -56,21 +61,25 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     }
 
     @Override
-    public void setDescription( String value ) {
-        this.description.setInnerText( value );
-    }
-
-    @Override
-    public void setCompanies(List<Company> companies) {
-        log.warning("setCompanies(): Not implemented.");//NotImplemented
-
+    public HasValue<String> description() {
+        return description;
     }
 
     @Override
     public void setUsageInCompanies(String stateName) {
-        log.warning("setUsageInCompanies(): Not implemented.");//NotImplemented
+        usageInCompaniesTxt.setInnerText(stateName);
 
     }
+
+    @Override
+    public HasValue<Set<EntityOption>> companies() {
+        return companies;
+    }
+
+//    @UiHandler( "companies" )
+//    public void onCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
+//
+//    }
 
     private static final Logger log = getLogger(CaseStatePreviewView.class.getName());
 
@@ -80,11 +89,20 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     @UiField
     SpanElement name;
     @UiField
-    SpanElement description;
+    TextArea description;
+    @UiField
+    SpanElement usageInCompaniesTxt;
     @UiField
     LegendElement header;
     @UiField
     HTMLPanel preview;
+    @Inject
+    @UiField( provided = true )
+    CompanyMultiSelector companies;
+
+    @Inject
+    @UiField(provided = true)
+    UsageInCompaniesBtnGroup usageInCompanies;
 
     @Inject
     FixedPositioner positioner;

@@ -117,7 +117,7 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
         table.addColumn(name.header, name.values);
         table.addColumn(description.header, description.values);
-
+        table.addColumn(usageInCompanies.header, usageInCompanies.values);
 
         editClickColumn.setPrivilege( En_Privilege.CASE_STATES_EDIT );
         table.addColumn( editClickColumn.header, editClickColumn.values );

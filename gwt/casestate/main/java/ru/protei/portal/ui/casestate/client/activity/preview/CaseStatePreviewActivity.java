@@ -6,7 +6,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -16,8 +18,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
@@ -65,12 +70,29 @@ public abstract class CaseStatePreviewActivity
 
     }
 
-    private void fillView(CaseState value) {
+    private void fillView(CaseState state) {
         view.setHeader(lang.previewCaseStatesHeader());
-        view.setName(caseStateLang.getStateName(En_CaseState.getById(value.getId())));
-        view.setDescription(defaultString(value.getInfo(), ""));
-        view.setUsageInCompanies(caseStateUsageInCompaniesLang.getStateName(value.getUsageInCompanies()));
-        view.setCompanies(value.getCompanies());
+        view.setName(caseStateLang.getStateName(En_CaseState.getById(state.getId())));
+        view.description().setValue(defaultString(state.getInfo(), ""));
+        view.setUsageInCompanies(caseStateUsageInCompaniesLang.getStateName(state.getUsageInCompanies()));
+        if (SELECTED.equals(state.getUsageInCompanies())) {
+            view.companies().setValue(getCompanies(state.getCompanies()));
+        }
+    }
+
+    public static Set<EntityOption> getCompanies(List<Company> companies) {
+
+        if (companies == null || companies.isEmpty()) {
+            return null;
+        }
+        List<Long> companyIds = companies.stream().map(c -> c.getId()).collect(Collectors.toList());
+        Set<EntityOption> entityOptions = new HashSet<>();
+        for (Long id: companyIds) {
+            EntityOption company = new EntityOption();
+            company.setId(id);
+            entityOptions.add(company);
+        }
+        return entityOptions;
     }
 
 
