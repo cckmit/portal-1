@@ -1,9 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.winter.jdbc.annotations.IdInsertMode;
-import ru.protei.winter.jdbc.annotations.JdbcColumn;
-import ru.protei.winter.jdbc.annotations.JdbcEntity;
-import ru.protei.winter.jdbc.annotations.JdbcId;
+import ru.protei.winter.jdbc.annotations.*;
+
+import java.util.List;
 
 @JdbcEntity(table = "case_state")
 public class CaseState {
@@ -15,4 +14,7 @@ public class CaseState {
 
     @JdbcColumn(name="INFO")
     String info;
+
+    @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
+    public List<Company> companies;
 }
