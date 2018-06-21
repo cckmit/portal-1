@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
+import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -98,7 +99,7 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
-        jdbcManyRelationsHelper.fill( caseObject, "links");
+        jdbcManyRelationsHelper.fill( caseObject, "links", new JdbcSort(JdbcSort.Direction.ASC, "case_link.id"));
 
         applyCaseLinksByScope(token, caseObject);
 
@@ -154,6 +155,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (CollectionUtils.isNotEmpty(caseObject.getLinks())) {
+            mergeCaseLinksByScope(token, caseObject);
             caseLinkDAO.persistBatch(caseObject.getLinks());
         }
 
@@ -221,6 +223,7 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
+        mergeCaseLinksByScope(token, caseObject);
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
 
@@ -553,7 +556,7 @@ public class CaseServiceImpl implements CaseService {
 
     private void applyCaseLinksByScope(AuthToken token, CaseObject caseObject) {
         Set<CaseLink> caseLinks = caseObject.getLinks();
-        if (caseLinks == null || caseLinks.isEmpty()) {
+        if (CollectionUtils.isEmpty(caseLinks)) {
             return;
         }
         UserSessionDescriptor descriptor = authService.findSession(token);
@@ -578,6 +581,37 @@ public class CaseServiceImpl implements CaseService {
                     )
             );
         }
+    }
+
+    private void mergeCaseLinksByScope(AuthToken token, CaseObject caseObject) {
+        Set<CaseLink> updated = caseObject.getLinks();
+        if (updated == null) {
+            updated = new HashSet<>();
+        }
+
+        // если права ограничены, отфильтровываем updated чтобы не проскочили ссылки без права добавления/удаления
+        applyCaseLinksByScope(token, caseObject);
+
+        // если права ограничены, дополняем updated "невидимыми" ссылками
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            Set<CaseLink> current = new HashSet<>(caseLinkDAO.getByCaseId(caseObject.getId()));
+            for (CaseLink cl : current) {
+                if (cl.getType().isForcePrivacy()) {
+                    updated.add(cl);
+                    continue;
+                }
+                CaseObject co = caseObjectDAO.getCaseById(cl.getCaseId());
+                if (co.isPrivateCase()) {
+                    updated.add(cl);
+                    continue;
+                }
+            }
+        }
+
+        // ну и все
+        caseObject.setLinks(updated);
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)

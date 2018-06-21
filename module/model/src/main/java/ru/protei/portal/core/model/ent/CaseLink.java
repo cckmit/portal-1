@@ -70,6 +70,12 @@ public class CaseLink implements Serializable {
         this.link = link;
     }
 
+    public boolean equals(CaseLink caseLink) {
+        return  getCaseId().equals(caseLink.getCaseId()) &&
+                getRemoteId().equals(caseLink.getRemoteId()) &&
+                getType().equals(caseLink.getType());
+    }
+
     @Override
     public String toString() {
         return "CaseMember{" +
