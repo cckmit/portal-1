@@ -963,4 +963,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String searchByCommentsUnavailable(int threshold);
 
+    String caseStates();
+
+    String privilegeCaseStates();
 }
