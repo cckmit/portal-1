@@ -38,16 +38,13 @@ public abstract class CaseStateTableActivity implements Activity,
 
     @Override
     public void onItemClicked(CaseState value) {
-        if (!isShowTable) {
-            showPreview(value);
-        }
+        showPreview(value);
     }
 
     @Override
     public void onEditClicked(CaseState value) {
-        fireEvent(new CaseStateEvents.Edit(value.getId()));
+        showPreview(value);
     }
-
 
     private void requestRecords() {
         caseStateService.getCaseStates(new RequestCallback<List<CaseState>>() {
@@ -73,7 +70,6 @@ public abstract class CaseStateTableActivity implements Activity,
         }
     }
 
-    private boolean isShowTable = false;
 
     @Inject
     AbstractCaseStateTableView view;

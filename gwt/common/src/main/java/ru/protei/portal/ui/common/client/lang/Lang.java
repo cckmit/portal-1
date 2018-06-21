@@ -966,4 +966,6 @@ public interface Lang extends Messages, ContactItemLang {
     String caseStates();
 
     String privilegeCaseStates();
+
+    String previewCaseStatesHeader();
 }
