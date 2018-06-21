@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.ui.common.client.service.CaseStateController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 
 import javax.inject.Inject;
@@ -38,6 +39,12 @@ public class CaseStateControllerImpl implements CaseStateController {
     public List<CaseState> getCaseStates() throws Exception {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(caseStateService.caseStateList(authToken));
+    }
+
+    @Override
+    public CaseState getCaseState(Long id) throws Exception {
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseStateService.getCaseState(authToken, id));
     }
 
 

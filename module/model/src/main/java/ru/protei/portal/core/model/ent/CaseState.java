@@ -16,6 +16,10 @@ public class CaseState implements Serializable {
     @JdbcColumn(name="INFO")
     String info;
 
+    @JdbcColumn(name = "usage_in_companies")
+    @JdbcEnumerated( EnumType.ORDINAL )
+    private En_CaseStateUsageInCompanies usageInCompanies;
+
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
     public List<Company> companies;
 
@@ -49,5 +53,13 @@ public class CaseState implements Serializable {
 
     public void setCompanies(List<Company> companies) {
         this.companies = companies;
+    }
+
+    public En_CaseStateUsageInCompanies getUsageInCompanies() {
+        return usageInCompanies;
+    }
+
+    public void setUsageInCompanies(En_CaseStateUsageInCompanies usageInCompanies) {
+        this.usageInCompanies = usageInCompanies;
     }
 }

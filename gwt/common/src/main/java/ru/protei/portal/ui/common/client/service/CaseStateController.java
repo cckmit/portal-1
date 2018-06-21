@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.service;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -17,4 +18,6 @@ import java.util.List;
 public interface CaseStateController extends RemoteService {
 
     List<CaseState> getCaseStates() throws Exception;
+
+    CaseState getCaseState(Long id) throws Exception;
 }

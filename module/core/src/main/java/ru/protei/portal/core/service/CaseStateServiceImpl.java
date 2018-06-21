@@ -10,6 +10,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import javax.inject.Inject;
 import java.util.List;
 
+import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
+
 public class CaseStateServiceImpl implements CaseStateService {
 
     @Inject
@@ -31,7 +33,13 @@ public class CaseStateServiceImpl implements CaseStateService {
     @Override
     public CoreResponse<CaseState> getCaseState(AuthToken authToken, long id) {
         CaseState state = caseStateDAO.get(id);
-        jdbcManyRelationsHelper.fill( state, "companies" );
+        if (state == null)
+            return new CoreResponse<CaseState>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        if (SELECTED.equals(state.getUsageInCompanies())) {
+            jdbcManyRelationsHelper.fill(state, "companies");
+        }
+
         return new CoreResponse<CaseState>().success(state);
     }
 }

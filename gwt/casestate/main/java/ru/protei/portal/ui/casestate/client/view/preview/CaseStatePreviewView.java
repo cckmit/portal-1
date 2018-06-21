@@ -8,10 +8,16 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewActivity;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import java.util.List;
+import java.util.logging.Logger;
+
+import static java.util.logging.Logger.getLogger;
 
 /**
  * Вид превью роли
@@ -53,6 +59,20 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     public void setDescription( String value ) {
         this.description.setInnerText( value );
     }
+
+    @Override
+    public void setCompanies(List<Company> companies) {
+        log.warning("setCompanies(): Not implemented.");//NotImplemented
+
+    }
+
+    @Override
+    public void setUsageInCompanies(String stateName) {
+        log.warning("setUsageInCompanies(): Not implemented.");//NotImplemented
+
+    }
+
+    private static final Logger log = getLogger(CaseStatePreviewView.class.getName());
 
     @Inject
     @UiField

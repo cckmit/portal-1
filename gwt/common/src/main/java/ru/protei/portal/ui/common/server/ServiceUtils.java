@@ -8,6 +8,8 @@ import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
+import java.util.logging.Logger;
 
 public class ServiceUtils {
     /**

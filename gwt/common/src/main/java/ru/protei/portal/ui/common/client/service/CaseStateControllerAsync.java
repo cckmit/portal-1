@@ -14,4 +14,6 @@ import java.util.List;
 public interface CaseStateControllerAsync {
 
     void getCaseStates(AsyncCallback<List<CaseState>> callback);
+
+    void getCaseState(Long id, AsyncCallback<CaseState> callback);
 }

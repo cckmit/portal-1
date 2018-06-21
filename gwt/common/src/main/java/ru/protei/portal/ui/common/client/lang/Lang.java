@@ -37,6 +37,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errGetList();
 
+    String errGetItem();
+
     String msgHello();
 
     String unknownField();
@@ -968,4 +970,10 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeCaseStates();
 
     String previewCaseStatesHeader();
+
+    String caseStateUsagesInCompaniesNone();
+
+    String caseStateUsagesInCompaniesAll();
+
+    String caseStateUsagesInCompaniesSelected();
 }

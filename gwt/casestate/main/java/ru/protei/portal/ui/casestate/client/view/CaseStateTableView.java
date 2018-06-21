@@ -12,7 +12,6 @@ import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.casestate.client.activity.table.AbstractCaseStateTableActivity;
 import ru.protei.portal.ui.casestate.client.activity.table.AbstractCaseStateTableView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
@@ -20,6 +19,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +31,12 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
     private AbstractCaseStateTableActivity activity;
 
     @Inject
-    public void onInit(En_CaseStateLang caseStateLang, EditClickColumn< CaseState > editClickColumn) {
+    public void onInit(En_CaseStateLang caseStateLang,
+                       En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang,
+                       EditClickColumn< CaseState > editClickColumn
+    ) {
         this.caseStateLang = caseStateLang;
+        this.caseStateUsageInCompaniesLang = caseStateUsageInCompaniesLang;
         this.editClickColumn = editClickColumn;
         initWidget(ourUiBinder.createAndBindUi(this));
         initTable();
@@ -98,6 +102,19 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
         };
         columns.add(description);
 
+        ClickColumn<CaseState> usageInCompanies = new ClickColumn<CaseState>() {
+            @Override
+            protected void fillColumnHeader(Element element) {
+                element.setInnerText("Применим к компаниям");
+            }
+
+            @Override
+            public void fillColumnValue(Element cell, CaseState value) {
+                cell.setInnerText(defaultString(caseStateUsageInCompaniesLang.getStateName(value.getUsageInCompanies()), ""));
+            }
+        };
+        columns.add(usageInCompanies);
+
         table.addColumn(name.header, name.values);
         table.addColumn(description.header, description.values);
 
@@ -120,6 +137,7 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
     private ClickColumnProvider<CaseState> columnProvider = new ClickColumnProvider<>();
     private List<ClickColumn> columns = new ArrayList<>();
+    private En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang;
     private  EditClickColumn< CaseState > editClickColumn;
 
     private static CaseStateTableViewUiBinder ourUiBinder = GWT.create(CaseStateTableViewUiBinder.class);

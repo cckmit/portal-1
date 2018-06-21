@@ -6,13 +6,20 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.List;
 import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
 /**
@@ -38,13 +45,32 @@ public abstract class CaseStatePreviewActivity
         event.parent.add(view.asWidget());
 
         fillView(event.caseState);
+        if (SELECTED.equals(event.caseState.getUsageInCompanies())) {
+            requestData(event.caseState.getId());
+        }
+    }
+
+    private void requestData(Long id) {
+        service.getCaseState(id, new RequestCallback<CaseState>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errGetItem(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(CaseState result) {
+                fillView(result);
+            }
+        });
+
     }
 
     private void fillView(CaseState value) {
         view.setHeader(lang.previewCaseStatesHeader());
-        String stateName = caseStateLang.getStateName(En_CaseState.getById(value.getId()));
-        view.setName(stateName);
+        view.setName(caseStateLang.getStateName(En_CaseState.getById(value.getId())));
         view.setDescription(defaultString(value.getInfo(), ""));
+        view.setUsageInCompanies(caseStateUsageInCompaniesLang.getStateName(value.getUsageInCompanies()));
+        view.setCompanies(value.getCompanies());
     }
 
 
@@ -53,7 +79,11 @@ public abstract class CaseStatePreviewActivity
     @Inject
     En_CaseStateLang caseStateLang;
     @Inject
+    En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang;
+    @Inject
     AbstractCaseStatePreviewView view;
+    @Inject
+    CaseStateControllerAsync service;
 
     private static final Logger log = Logger.getLogger(CaseStatePreviewActivity.class.getName());
 
