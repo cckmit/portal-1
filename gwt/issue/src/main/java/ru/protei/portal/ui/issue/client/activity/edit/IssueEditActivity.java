@@ -234,6 +234,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
+        view.links().setValue(issue.getLinks() == null ? null : new HashSet<>(issue.getLinks()));
+
         view.name().setValue(issue.getName());
 
         view.numberVisibility().setVisible( issue.getId() != null );
@@ -272,6 +274,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
+        issue.setLinks(view.links().getValue());
     }
 
     private boolean validateView() {

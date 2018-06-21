@@ -552,7 +552,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private void applyCaseLinksByScope(AuthToken token, CaseObject caseObject) {
-        List<CaseLink> caseLinks = caseObject.getLinks();
+        Set<CaseLink> caseLinks = caseObject.getLinks();
         if (caseLinks == null || caseLinks.isEmpty()) {
             return;
         }

@@ -7,9 +7,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Клиентский профиль пользователя
@@ -107,6 +105,21 @@ public class Profile implements Serializable {
         return privileges.contains( privilege );
     }
 
+    public boolean hasGrantAccessFor( En_Privilege privilege ) {
+        if ( privilege == null ) {
+            return false;
+        }
+
+        Set<En_Scope> privilegeScopes = collectPrivilegeToScopeMap().get( privilege );
+        if (privilegeScopes == null || privilegeScopes.isEmpty()) {
+            return false;
+        }
+
+        // В случае, если для привилегии установлена системная область видимости – предоставляем доступ без ограничений
+        // Иначе если назначен scope в зависимости от entity или нет scope вообще – считаем что область видимости ограничена.
+        return privilegeScopes.contains( En_Scope.SYSTEM );
+    }
+
     public En_Gender getGender() {
         return gender;
     }
@@ -133,5 +146,25 @@ public class Profile implements Serializable {
 
     public Company getCompany() {
         return company;
+    }
+
+    private Map<En_Privilege, Set<En_Scope>> collectPrivilegeToScopeMap() {
+        if ( roles == null ) {
+            return Collections.emptyMap();
+        }
+
+        Map<En_Privilege, Set<En_Scope>> privilegeToScope = new HashMap<>();
+        for ( UserRole role : roles ) {
+            if ( role.getPrivileges() == null || role.getScope() == null ) {
+                continue;
+            }
+
+            for ( En_Privilege privilege : role.getPrivileges() ) {
+                Set<En_Scope> scopes = privilegeToScope.computeIfAbsent(privilege, k -> new HashSet<>());
+                scopes.add( role.getScope() );
+            }
+        }
+
+        return privilegeToScope;
     }
 }

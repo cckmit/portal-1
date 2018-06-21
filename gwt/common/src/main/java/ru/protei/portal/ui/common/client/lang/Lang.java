@@ -970,4 +970,8 @@ public interface Lang extends Messages, ContactItemLang, CaseLinkLang {
 
     String caseLinkYouTrack();
 
+    String linkedWith();
+
+    String id();
+
 }

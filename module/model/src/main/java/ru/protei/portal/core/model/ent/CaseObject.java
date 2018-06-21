@@ -117,7 +117,7 @@ public class CaseObject extends AuditableObject {
     private Set<Person> notifiers; //may contain partially filled objects!
 
     @JdbcOneToMany(table = "case_link", localColumn = "id", remoteColumn = "case_id")
-    private List<CaseLink> links;
+    private Set<CaseLink> links;
 
     public CaseObject() {
 
@@ -420,11 +420,11 @@ public class CaseObject extends AuditableObject {
         this.notifiers = notifiers;
     }
 
-    public List<CaseLink> getLinks() {
+    public Set<CaseLink> getLinks() {
         return links;
     }
 
-    public void setLinks(List<CaseLink> links) {
+    public void setLinks(Set<CaseLink> links) {
         this.links = links;
     }
 

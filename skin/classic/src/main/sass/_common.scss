@@ -1841,6 +1841,204 @@ a {
   }
 }
 
+/**** case links ****/
+
+.case-links {
+  .case-links-label {
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    float: left;
+  }
+
+  .case-links-container {
+    display: inline-block;
+    float: left;
+    margin: 0;
+    padding: 0;
+    line-height: 0.8em;
+
+    > div {
+      position: relative;
+      display: inline-block;
+      outline: none;
+
+      .case-link {
+        position: relative;
+        display: inline-block;
+        margin: 4px 0 0 4px;
+        text-align: center;
+        height: 20px;
+        line-height: 20px;
+        background-color: #ededed;
+        border: 1px solid #dadada;
+        border-radius: 4px;
+        cursor: pointer;
+
+        > * {
+          float: left;
+        }
+
+        .case-link-close {
+          height: 12px;
+          width: 12px;
+          padding: 4px 2px 4px 4px;
+          font-size: 0.8em;
+          color: inherit;
+          cursor: pointer;
+        }
+
+        .case-link-text {
+          padding: 0 2px 0 0;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+
+        .case-link-icon {
+          height: 12px;
+          width: 12px;
+          margin: 3px 3px 3px 2px;
+          background-color: #ededed;
+          border: 1px solid #dadada;
+          border-radius: 2px;
+        }
+
+        .case-link-icon:after {
+          content: "П";
+          position: absolute;
+          height: 12px;
+          width: 12px;
+          top: 0;
+          right: 4px;
+          text-align: center;
+          vertical-align: middle;
+          font-size: 0.7em;
+          font-weight: bold;
+        }
+
+        .case-link-icon.link-crm {
+          background-color: #4298ff;
+          border: 1px solid #6dbbff;
+        }
+
+        .case-link-icon.link-crm:after {
+          content: "П";
+          font-size: 0.7em;
+          color: #ffffff;
+        }
+
+        .case-link-icon.link-crm-old {
+          background-color: #4270b1;
+          border: 1px solid #365c92;
+        }
+
+        .case-link-icon.link-crm-old:after {
+          content: "ПС";
+          font-size: 0.6em;
+          color: #ffffff;
+        }
+
+        .case-link-icon.link-you-track {
+          background-color: #282828;
+          border: 1px solid #f8228a;
+        }
+
+        .case-link-icon.link-you-track:after {
+          content: "YT";
+          font-size: 0.6em;
+          color: #ffffff;
+        }
+      }
+
+      .case-link.without-link {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .case-links-button {
+    padding: 0;
+    margin: 2px 0 2px 2px;
+
+    i {
+      position: relative;
+      height: 26px;
+      line-height: 26px;
+      float: left;
+      vertical-align: middle;
+    }
+
+    i:nth-child(1) {
+      padding: 0 1px 0 8px;
+    }
+
+    i:nth-child(2) {
+      font-size: 0.6em;
+      padding: 0 8px 0 2px;
+    }
+  }
+}
+
+.case-link-popup {
+  z-index: 1000;
+  float: left;
+  min-width: 160px;
+  text-align: left;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  -webkit-box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  border: 1px solid #ced2d7;
+  width: 320px;
+
+  > .type-selector {
+    position: relative;
+    float: left;
+    display: inline-block;
+    width: 100%;
+
+    > div {
+      width: calc(100% - 2px);
+      padding-left: 0;
+      padding-right: 0;
+      margin: -1px 0px;
+    }
+
+    > div:first-child:nth-last-child(1) {
+      width: calc(100% - 2px);
+    }
+
+    > div:first-child:nth-last-child(2),
+    > div:first-child:nth-last-child(2) ~ div {
+      width: calc(50% - 2px);
+    }
+
+    > div:first-child:nth-last-child(3),
+    > div:first-child:nth-last-child(3) ~ div {
+      width: calc(33.3333% - 2px);
+    }
+  }
+
+  > .remote-id-input {
+    position: relative;
+    float: left;
+    display: inline-block;
+    width: 60%;
+  }
+
+  > .apply-btn {
+    position: relative;
+    float: left;
+    display: inline-block;
+    width: 40%;
+    height: 30px;
+  }
+}
+
 
 /****************/
 .text-danger {
