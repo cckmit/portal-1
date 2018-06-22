@@ -3,13 +3,14 @@ package ru.protei.portal.ui.casestate.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewActivity;
 import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePreviewView;
@@ -51,11 +52,6 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     }
 
     @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
-    }
-
-    @Override
     public void setName( String value ) {
         this.name.setInnerText( value );
     }
@@ -66,9 +62,13 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     }
 
     @Override
-    public void setUsageInCompanies(String stateName) {
-        usageInCompaniesTxt.setInnerText(stateName);
+    public HasValue<En_CaseStateUsageInCompanies> usageInCompanies() {
+        return usageInCompanies;
+    }
 
+    @Override
+    public void setCompaniesVisible(boolean isCompaniesVisible) {
+        companies.setVisible(isCompaniesVisible);
     }
 
     @Override
@@ -76,10 +76,15 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
         return companies;
     }
 
-//    @UiHandler( "companies" )
-//    public void onCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
-//
-//    }
+    @UiHandler( "usageInCompanies" )
+    public void onUsageInCompaniesChange( ValueChangeEvent<En_CaseStateUsageInCompanies> event ) {
+        activity.onUsageInCompaniesChange();
+    }
+
+    @UiHandler( "saveButton" )
+    public void onSaveClicked( ClickEvent event ) {
+        activity.onSaveClicked();
+    }
 
     private static final Logger log = getLogger(CaseStatePreviewView.class.getName());
 
@@ -103,6 +108,8 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     @Inject
     @UiField(provided = true)
     UsageInCompaniesBtnGroup usageInCompanies;
+    @UiField
+    Button saveButton;
 
     @Inject
     FixedPositioner positioner;

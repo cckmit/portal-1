@@ -61,4 +61,12 @@ public class CaseStateEvents {
      * Добавление / изменение / удаление ролей
      */
     public static class ChangeModel {}
+
+    public static class UpdateItem {
+        public CaseState caseState;
+
+        public UpdateItem(CaseState caseState) {
+            this.caseState = caseState;
+        }
+    }
 }

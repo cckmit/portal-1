@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonApply();
+
     String buttonCancel();
 
     String buttonCreate();
@@ -969,7 +971,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String privilegeCaseStates();
 
-    String previewCaseStatesHeader();
+    String caseStatesPreviewHeader();
 
     String caseStateUsagesInCompaniesNone();
 
@@ -977,5 +979,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseStateUsagesInCompaniesSelected();
 
-    String previewCaseStatesCompanies();
+    String caseStatesPreviewCompanies();
+
+    String caseStatesColumnUsageInCompanies();
+
+    String caseStatesColumnInfo();
+
+    String caseStatesColumnName();
 }

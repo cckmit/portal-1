@@ -4,6 +4,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 @JdbcEntity(table = "case_state")
 public class CaseState implements Serializable {
@@ -22,6 +23,13 @@ public class CaseState implements Serializable {
 
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "state_id", remoteLinkColumn = "company_id")
     public List<Company> companies;
+
+    public CaseState() {
+    }
+
+    public CaseState(Long id) {
+        this.id = id;
+    }
 
     public Long getId() {
         return id;
@@ -61,5 +69,18 @@ public class CaseState implements Serializable {
 
     public void setUsageInCompanies(En_CaseStateUsageInCompanies usageInCompanies) {
         this.usageInCompanies = usageInCompanies;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseState state = (CaseState) o;
+        return Objects.equals(id, state.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

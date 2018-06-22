@@ -16,4 +16,6 @@ public interface CaseStateControllerAsync {
     void getCaseStates(AsyncCallback<List<CaseState>> callback);
 
     void getCaseState(Long id, AsyncCallback<CaseState> callback);
+
+    void saveCaseState(CaseState state, AsyncCallback<CaseState> callback);
 }

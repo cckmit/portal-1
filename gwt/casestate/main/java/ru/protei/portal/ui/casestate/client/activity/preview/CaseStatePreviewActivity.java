@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.casestate.client.activity.preview;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -11,20 +12,19 @@ import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
 /**
@@ -49,50 +49,69 @@ public abstract class CaseStatePreviewActivity
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        caseState = event.caseState;
         fillView(event.caseState);
         if (SELECTED.equals(event.caseState.getUsageInCompanies())) {
             requestData(event.caseState.getId());
         }
     }
 
+    @Override
+    public void onUsageInCompaniesChange() {
+        En_CaseStateUsageInCompanies usage = view.usageInCompanies().getValue();
+        view.setCompaniesVisible(SELECTED.equals(usage));
+    }
+
+    @Override
+    public void onSaveClicked() {
+        CaseState state = fillData(new CaseState(caseState.getId()));
+
+        service.saveCaseState(state, new ShortRequestCallback<CaseState>().setErrorMessage(lang.errNotUpdated())
+                .setOnSuccess(result -> {
+                    caseState = result;
+                    fillView(result);
+                    //TODO table
+                    fireEvent(new CaseStateEvents.UpdateItem(caseState));
+                }));
+    }
+
     private void requestData(Long id) {
-        service.getCaseState(id, new RequestCallback<CaseState>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetItem(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(CaseState result) {
-                fillView(result);
-            }
-        });
-
+        service.getCaseState(id, new ShortRequestCallback<CaseState>().setErrorMessage(lang.errGetItem())
+                .setOnSuccess(result -> {
+                    caseState = result;
+                    fillView(result);
+                }));
     }
 
     private void fillView(CaseState state) {
-        view.setHeader(lang.previewCaseStatesHeader());
         view.setName(caseStateLang.getStateName(En_CaseState.getById(state.getId())));
         view.description().setValue(defaultString(state.getInfo(), ""));
-        view.setUsageInCompanies(caseStateUsageInCompaniesLang.getStateName(state.getUsageInCompanies()));
-        if (SELECTED.equals(state.getUsageInCompanies())) {
-            view.companies().setValue(getCompanies(state.getCompanies()));
-        }
+        view.usageInCompanies().setValue(state.getUsageInCompanies());
+        view.setCompaniesVisible(SELECTED.equals(state.getUsageInCompanies()));
+        view.companies().setValue(makeOptionsFromCompanies(state.getCompanies()));
     }
 
-    public static Set<EntityOption> getCompanies(List<Company> companies) {
+    private CaseState fillData(CaseState state) {
+        state.setState(caseState.getState());
+        state.setInfo(view.description().getValue());
+        state.setUsageInCompanies(view.usageInCompanies().getValue());
 
-        if (companies == null || companies.isEmpty()) {
-            return null;
+        if (SELECTED.equals(state.getUsageInCompanies())) {
+            List<Company> companies = makeCompaniesFromOptions(view.companies().getValue());
+            state.setCompanies(companies);
         }
-        List<Long> companyIds = companies.stream().map(c -> c.getId()).collect(Collectors.toList());
-        Set<EntityOption> entityOptions = new HashSet<>();
-        for (Long id: companyIds) {
-            EntityOption company = new EntityOption();
-            company.setId(id);
-            entityOptions.add(company);
-        }
-        return entityOptions;
+
+        return state;
+    }
+
+    private static List<Company> makeCompaniesFromOptions(Set<EntityOption> options) {
+        if (isEmpty(options)) return null;
+        return options.stream().map(o -> Company.fromEntityOption(o)).collect(Collectors.toList());
+    }
+
+    private static Set<EntityOption> makeOptionsFromCompanies(List<Company> companies) {
+        if (isEmpty(companies)) return null;
+        return companies.stream().map(c -> c.toEntityOption()).collect(Collectors.toSet());
     }
 
 
@@ -106,6 +125,9 @@ public abstract class CaseStatePreviewActivity
     AbstractCaseStatePreviewView view;
     @Inject
     CaseStateControllerAsync service;
+
+    @ContextAware
+    CaseState caseState;
 
     private static final Logger log = Logger.getLogger(CaseStatePreviewActivity.class.getName());
 

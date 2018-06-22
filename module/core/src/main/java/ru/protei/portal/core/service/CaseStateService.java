@@ -11,4 +11,8 @@ public interface CaseStateService {
     CoreResponse<List<CaseState>> caseStateList(AuthToken authToken);
 
     CoreResponse<CaseState> getCaseState(AuthToken authToken, long id);
+
+    CoreResponse<CaseState> saveCaseState(AuthToken authToken, CaseState state);
+
+    CoreResponse<CaseState> updateCaseState(AuthToken authToken, CaseState state);
 }

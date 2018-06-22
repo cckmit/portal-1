@@ -36,6 +36,11 @@ public abstract class CaseStateTableActivity implements Activity,
         requestRecords();
     }
 
+    @Event
+    public void onUpdateItem(CaseStateEvents.UpdateItem changedCaseState) {
+        view.updateRow(changedCaseState.caseState);
+    }
+
     @Override
     public void onItemClicked(CaseState value) {
         showPreview(value);
@@ -55,6 +60,7 @@ public abstract class CaseStateTableActivity implements Activity,
 
             @Override
             public void onSuccess(List<CaseState> result) {
+                view.clearRecords();
                 view.setData(result);
             }
         });

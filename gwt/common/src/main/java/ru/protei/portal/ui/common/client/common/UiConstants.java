@@ -22,7 +22,7 @@ public class UiConstants {
         String DOCUMENT = "fa fa-server";
         String DOCUMENT_TYPE = "fa fa-server";
         String ISSUE_REPORTS = "fa fa-tasks";
-        String CASE_STATE = "fa fa-check";
+        String CASE_STATE = "fa fa-bookmark ";
     }
 
     public interface ActionBarIcons {

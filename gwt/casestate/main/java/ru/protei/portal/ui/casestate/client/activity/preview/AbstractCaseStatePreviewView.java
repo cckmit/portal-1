@@ -2,16 +2,13 @@ package ru.protei.portal.ui.casestate.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 
-import java.util.List;
 import java.util.Set;
 
 public interface AbstractCaseStatePreviewView extends IsWidget {
     void setActivity(AbstractCaseStatePreviewActivity activity);
-
-    void setHeader(String header);
 
     void setName(String stateName);
 
@@ -19,7 +16,7 @@ public interface AbstractCaseStatePreviewView extends IsWidget {
 
     HasValue<Set<EntityOption>> companies();
 
+    HasValue<En_CaseStateUsageInCompanies> usageInCompanies();
 
-
-    void setUsageInCompanies(String stateName);
+    void setCompaniesVisible(boolean isCompaniesVisible);
 }

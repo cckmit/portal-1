@@ -20,9 +20,10 @@ public class UsageInCompaniesBtnGroup extends ToggleBtnGroup<En_CaseStateUsageIn
 
     private void fillOptions() {
         clear();
-        for ( En_CaseStateUsageInCompanies type : En_CaseStateUsageInCompanies.values() ) {
-            addBtnWithImage( "./images/eq_" + type.name().toLowerCase() + ".png", "btn btn-white btn-without-border eq-type", null, type, typeLang.getStateName( type ) );
-        }
+
+        addBtnWithIcon( "fa fa-users m-l-10 text-success", "btn btn-white ", typeLang.getStateName( En_CaseStateUsageInCompanies.ALL ), En_CaseStateUsageInCompanies.ALL );
+        addBtnWithIcon( "fa fa-user m-l-10 text-purple", "btn btn-white ", typeLang.getStateName( En_CaseStateUsageInCompanies.SELECTED ), En_CaseStateUsageInCompanies.SELECTED );
+        addBtnWithIcon( "fa fa-ban m-l-10", "btn btn-white ", typeLang.getStateName( En_CaseStateUsageInCompanies.NONE ), En_CaseStateUsageInCompanies.NONE );
     }
 
     @Inject

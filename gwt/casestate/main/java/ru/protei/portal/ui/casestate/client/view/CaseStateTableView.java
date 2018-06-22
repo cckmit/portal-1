@@ -20,10 +20,14 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.NONE;
+import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
+import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.ALL;
 import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
 public class CaseStateTableView extends Composite implements AbstractCaseStateTableView {
@@ -71,15 +75,24 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
         for (CaseState role: result) {
             table.addRow(role);
         }
-
     }
 
+    @Override
+    public void updateRow(CaseState changedCaseState) {
+        if(!isAttached()) return;
+        table.updateRow(changedCaseState);
+    }
+
+    @Override
+    public void clearRecords() {
+        table.clearRows();
+    }
 
     private void initTable() {
         ClickColumn<CaseState> name = new ClickColumn<CaseState>() {
             @Override
             protected void fillColumnHeader(Element element) {
-                element.setInnerText("Статус");
+                element.setInnerText(lang.caseStatesColumnName());
             }
 
             @Override
@@ -92,7 +105,7 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
         ClickColumn<CaseState> description = new ClickColumn<CaseState>() {
             @Override
             protected void fillColumnHeader(Element element) {
-                element.setInnerText("Описание");
+                element.setInnerText(lang.caseStatesColumnInfo());
             }
 
             @Override
@@ -105,12 +118,24 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
         ClickColumn<CaseState> usageInCompanies = new ClickColumn<CaseState>() {
             @Override
             protected void fillColumnHeader(Element element) {
-                element.setInnerText("Применим к компаниям");
+                element.setInnerText(lang.caseStatesColumnUsageInCompanies());
             }
 
             @Override
             public void fillColumnValue(Element cell, CaseState value) {
-                cell.setInnerText(defaultString(caseStateUsageInCompaniesLang.getStateName(value.getUsageInCompanies()), ""));
+                String message = "";
+                switch (value.getUsageInCompanies()) {
+                    case NONE:
+                        message = "<i class=\"fa fa-ban m-r-10\"></i>" + caseStateUsageInCompaniesLang.getStateName(NONE);
+                        break;
+                    case ALL:
+                        message = "<i class=\"fa fa-users m-r-10 text-success\"></i>" + caseStateUsageInCompaniesLang.getStateName(ALL);
+                        break;
+                    case SELECTED:
+                        message = "<i class=\"fa fa-user m-r-10 text-purple\"></i>" + caseStateUsageInCompaniesLang.getStateName(SELECTED);
+                        break;
+                }
+                cell.setInnerHTML(message);
             }
         };
         columns.add(usageInCompanies);
@@ -132,6 +157,9 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+
+    @UiField
+    Lang lang;
 
     En_CaseStateLang caseStateLang;
 

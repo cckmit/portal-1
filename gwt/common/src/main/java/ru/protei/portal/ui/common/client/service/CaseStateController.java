@@ -17,7 +17,9 @@ import java.util.List;
 @RemoteServiceRelativePath("springGwtServices/CaseStateController")
 public interface CaseStateController extends RemoteService {
 
-    List<CaseState> getCaseStates() throws Exception;
+    List<CaseState> getCaseStates() throws RequestFailedException;
 
-    CaseState getCaseState(Long id) throws Exception;
+    CaseState getCaseState(Long id) throws RequestFailedException;
+
+    CaseState saveCaseState(CaseState state) throws RequestFailedException;
 }
