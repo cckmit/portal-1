@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -71,6 +72,11 @@ public class CaseState implements Serializable {
         this.usageInCompanies = usageInCompanies;
     }
 
+    public static En_CaseState asState(CaseState state) {
+        if (state == null || state.getId() == null) return null;
+        return En_CaseState.getById(state.getId());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -82,5 +88,16 @@ public class CaseState implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "CaseState{" +
+                "id=" + id +
+                ", state='" + state + '\'' +
+                ", info='" + info + '\'' +
+                ", usageInCompanies=" + usageInCompanies +
+                ", companies=" + companies +
+                '}';
     }
 }

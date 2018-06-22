@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -18,15 +19,22 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
+import ru.protei.portal.ui.common.shared.model.SuccessHandler;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_CaseState.CREATED;
+import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.ALL;
+import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.NONE;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
  * Активность создания и редактирования обращения
@@ -46,6 +54,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+        view.setStateFilter(caseStateFilter);
     }
 
     @Event
@@ -163,19 +172,26 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCompanyChanged() {
-        if ( view.company().getValue() == null ) {
+        Company companyOption = Company.fromEntityOption(view.company().getValue());
+        if ( companyOption == null ) {
             view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()) );
         } else {
-            companyService.getCompanySubscription( view.company().getValue().getId(), new RequestCallback< List<CompanySubscription> >() {
-                @Override
-                public void onError( Throwable throwable ) {}
+            companyService.getCompany(companyOption.getId(), new ShortRequestCallback<Company>()
+                    .setOnSuccess(company -> {
+                        caseStateFilter.setCompanyCaseStates(company.getCaseStates());
+                        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
 
-                @Override
-                public void onSuccess( List<CompanySubscription> subscriptions ) {
-                    view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()) );
-                }
-            });
+                        view.setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(company.getSubscriptions(), lang.issueCompanySubscriptionNotDefined()));
+                    }));
         }
+
+        caseStateService.getCaseStates(new ShortRequestCallback<List<CaseState>>()
+                .setOnSuccess(states -> {
+                    caseStateFilter.setCaseStates(states);
+                    fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+                }));
+
+        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
     @Override
@@ -250,7 +266,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             initiatorCompany = policyService.getUserCompany();
         }
 
-        view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
+        view.company().setValue(EntityOption.fromCompany(initiatorCompany));
+        onCompanyChanged();
         view.initiator().setValue( decideInitiator(issue) );
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
@@ -338,6 +355,43 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     PolicyService policyService;
     @Inject
     CompanyServiceAsync companyService;
+    @Inject
+    CaseStateControllerAsync caseStateService;
+
+    CaseStateFilter caseStateFilter = new CaseStateFilter();
+
+   class CaseStateFilter implements Selector.SelectorFilter<En_CaseState>{
+       private Map<En_CaseState,CaseState> statesMap = new HashMap<>();
+       private Set<En_CaseState> companyCaseStates = new HashSet<>();
+
+       @Override
+       public boolean isDisplayed(En_CaseState value) {
+           if (!statesMap.containsKey(value)) {
+               return false;
+           }
+           if (ALL == statesMap.get(value).getUsageInCompanies()) {
+               return true;
+           }
+           if (NONE == statesMap.get(value).getUsageInCompanies()) {
+               return false;
+           }
+
+           boolean c2 = companyCaseStates.contains(value);
+           return c2;
+       }
+
+       public void setCaseStates(List<CaseState> states) {
+           statesMap.clear();
+           for (CaseState state: emptyIfNull(states)) {
+               statesMap.put(CaseState.asState(state), state);
+           }
+       }
+
+       public void setCompanyCaseStates(List<CaseState> companyCaseStates) {
+           this.companyCaseStates.clear();
+           CollectionUtils.transform(companyCaseStates, this.companyCaseStates, input -> CaseState.asState(input));
+       }
+   }
 
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;

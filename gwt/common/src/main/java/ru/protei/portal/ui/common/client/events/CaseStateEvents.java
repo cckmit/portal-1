@@ -1,8 +1,11 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.view.EntityOption;
 
 /**
  * События "Статусы обращений"
@@ -68,5 +71,8 @@ public class CaseStateEvents {
         public UpdateItem(CaseState caseState) {
             this.caseState = caseState;
         }
+    }
+
+    public static class UpdateSelectorOptions {
     }
 }

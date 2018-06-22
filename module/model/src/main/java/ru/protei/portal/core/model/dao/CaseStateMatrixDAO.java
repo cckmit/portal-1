@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.CaseStateMatrix;
 
 import java.util.List;

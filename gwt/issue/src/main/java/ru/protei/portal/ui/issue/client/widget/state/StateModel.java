@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
@@ -26,6 +27,11 @@ public abstract class StateModel implements Activity {
     @Event
     public void onStateListChanged(IssueEvents.ChangeStateModel event) {
         refreshOptions();
+    }
+
+    @Event
+    public void onUpdateSelectorOptions(CaseStateEvents.UpdateSelectorOptions event) {
+        notifySubscribers();
     }
 
     public void subscribe( ModelSelector<En_CaseState> selector ) {

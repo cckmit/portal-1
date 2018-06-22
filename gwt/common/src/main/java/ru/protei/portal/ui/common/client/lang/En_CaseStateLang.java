@@ -2,11 +2,19 @@ package ru.protei.portal.ui.common.client.lang;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.ent.CaseState;
 
 /**
  * Названия статусов
  */
 public class En_CaseStateLang {
+
+    public String getStateName(CaseState state){
+        if(state == null)
+            return lang.errUnknownResult();
+
+        return getStateName(En_CaseState.getById(state.getId()));
+    }
 
     public String getStateName(En_CaseState state){
         if(state == null)

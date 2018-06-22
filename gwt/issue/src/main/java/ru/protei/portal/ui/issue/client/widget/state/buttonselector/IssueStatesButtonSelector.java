@@ -28,7 +28,9 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
         if( defaultValue != null ) {
             addOption( null );
         }
-        options.forEach( this::addOption );
+        options.stream()
+                .filter(o -> filter == null || filter.isDisplayed(o))
+                .forEach( this::addOption );
     }
 
     public void setDefaultValue( String value ) {

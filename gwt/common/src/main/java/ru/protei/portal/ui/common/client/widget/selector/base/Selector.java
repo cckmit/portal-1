@@ -35,6 +35,10 @@ public abstract class Selector<T>
         HasSelectorChangeValHandlers,
         HasAddHandlers {
 
+    public interface SelectorFilter<T> {
+        boolean isDisplayed( T value );
+    }
+
     public void setValue(T value) {
         setValue(value, false);
     }
@@ -167,6 +171,10 @@ public abstract class Selector<T>
         }
 
         for (Map.Entry<T, DisplayOption> entry : itemToDisplayOptionModel.entrySet()) {
+            if ( filter != null && !filter.isDisplayed( entry.getKey() ) ) {
+                continue;
+            }
+
             String entryText = entry.getValue().getName().toLowerCase();
             if (searchText.isEmpty() || entryText.contains(searchText)) {
                 SelectorItem itemView = itemToViewModel.get(entry.getKey());
@@ -206,6 +214,10 @@ public abstract class Selector<T>
 
     public void addCloseHandler(CloseHandler<PopupPanel> handler) {
         popup.addCloseHandler(handler);
+    }
+
+    public void setFilter( SelectorFilter<T> selectorFilter ) {
+        filter = selectorFilter;
     }
 
     public abstract void fillSelectorView(DisplayOption selectedValue);
@@ -315,4 +327,5 @@ public abstract class Selector<T>
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
+    protected SelectorFilter<T> filter = null;
 }

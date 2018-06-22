@@ -37,4 +37,35 @@ public class CaseStateMatrixDAO_Impl extends PortalBaseJdbcDAO<CaseStateMatrix> 
 
         return caseStateList;
     }
+//
+//    @Override TODO remove
+//    public List<CaseState> getCaseStatesByCaseType(int caseTypeId) {
+//
+//        String sql = "SELECT cs.id, cs.STATE, cs.INFO, cs.usage_in_companies " +
+//                "FROM portal_dev.case_state_matrix mtx " +
+//                "LEFT JOIN case_state cs on mtx.CASE_STATE = cs.ID " +
+//                "WHERE mtx.CASE_TYPE=? " +
+//                "ORDER BY VIEW_ORDER";
+//        try {
+//            return jdbcTemplate.query(sql, rm, caseTypeId);
+//        } catch (Exception e) {
+//            return null;
+//        }
+//
+//    }
+//
+//    private RowMapper<CaseState> rm = new RowMapper<CaseState>() {
+//        @Override
+//        public CaseState mapRow(ResultSet rs, int rowNum) throws SQLException {
+//            CaseState state = new CaseState();
+//
+//            state.setId(rs.getLong("id"));
+//            state.setInfo(rs.getString("INFO"));
+//            state.setState(rs.getString("STATE"));
+//            state.setUsageInCompanies(En_CaseStateUsageInCompanies.getButOrdinal(rs.getInt("usage_in_companies")));
+//
+//            return state;
+//        }
+//    };
+
 }
