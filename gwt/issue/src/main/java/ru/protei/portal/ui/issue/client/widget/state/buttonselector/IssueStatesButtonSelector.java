@@ -29,7 +29,7 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
             addOption( null );
         }
         options.stream()
-                .filter(o -> filter == null || filter.isDisplayed(o))
+//                .filter(o -> filter == null || filter.isDisplayed(o))
                 .forEach( this::addOption );
     }
 

@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.shared.model.SuccessHandler;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -80,6 +81,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
         }
+
+        updateCaseStates();
     }
 
     @Event
@@ -184,12 +187,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         view.setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(company.getSubscriptions(), lang.issueCompanySubscriptionNotDefined()));
                     }));
         }
-
-        caseStateService.getCaseStates(new ShortRequestCallback<List<CaseState>>()
-                .setOnSuccess(states -> {
-                    caseStateFilter.setCaseStates(states);
-                    fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-                }));
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
@@ -343,6 +340,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 .collect(Collectors.joining(", "));
     }
 
+    private void updateCaseStates() {
+        caseStateService.getCaseStates(new ShortRequestCallback<List<CaseState>>()
+                .setOnSuccess(states -> {
+                    caseStateFilter.setCaseStates(states);
+                    fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+                }));
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -362,21 +367,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
    class CaseStateFilter implements Selector.SelectorFilter<En_CaseState>{
        private Map<En_CaseState,CaseState> statesMap = new HashMap<>();
-       private Set<En_CaseState> companyCaseStates = new HashSet<>();
+       private List<En_CaseState> companyCaseStates = new ArrayList<>();
 
        @Override
        public boolean isDisplayed(En_CaseState value) {
            if (!statesMap.containsKey(value)) {
+               log.config("isDisplayed(): False emptyMap " + value );//DEBUG
                return false;
            }
            if (ALL == statesMap.get(value).getUsageInCompanies()) {
+               log.config("isDisplayed(): Try ALL " + value );//DEBUG
                return true;
            }
            if (NONE == statesMap.get(value).getUsageInCompanies()) {
+               log.config("isDisplayed(): False NONE " + value );//DEBUG
                return false;
            }
 
            boolean c2 = companyCaseStates.contains(value);
+           log.config("isDisplayed(): "+c2+" companins " + value );//DEBUG
            return c2;
        }
 
@@ -398,4 +407,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private AppEvents.InitDetails initDetails;
     @ContextAware
     CaseObject issue;
+
+    private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

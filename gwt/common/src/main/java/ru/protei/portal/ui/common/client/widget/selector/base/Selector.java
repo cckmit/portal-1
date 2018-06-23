@@ -232,6 +232,7 @@ public abstract class Selector<T>
         scrollRegistration.removeHandler();
     }
 
+
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
         popup.setSearchVisible(searchEnabled);
@@ -239,7 +240,10 @@ public abstract class Selector<T>
         popup.setAddButton(addButtonVisible, addButtonText);
 
         popup.showNear(relative);
-        popup.addValueChangeHandler(this);
+        if (popupValueChangeHandlerRegistration != null) {
+            popupValueChangeHandlerRegistration.removeHandler();
+        }
+        popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
 
         if (!searchEnabled) {
@@ -321,6 +325,7 @@ public abstract class Selector<T>
     private T selectedOption = null;
     private SelectorItem nullItemView;
     private DisplayOptionCreator<T> displayOptionCreator;
+    private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
