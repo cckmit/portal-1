@@ -19,4 +19,6 @@ public interface AbstractCaseStatePreviewView extends IsWidget {
     HasValue<En_CaseStateUsageInCompanies> usageInCompanies();
 
     void setCompaniesVisible(boolean isCompaniesVisible);
+
+    void setViewEditable(boolean isEnabled);
 }

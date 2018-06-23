@@ -6,10 +6,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -46,6 +48,10 @@ public abstract class CaseStatePreviewActivity
 
     @Event
     public void onShow(CaseStateEvents.ShowPreview event) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CASE_STATES_VIEW)) {
+            return;
+        }
+
         event.parent.clear();
         event.parent.add(view.asWidget());
 
@@ -64,13 +70,16 @@ public abstract class CaseStatePreviewActivity
 
     @Override
     public void onSaveClicked() {
+        if (!policyService.hasPrivilegeFor(En_Privilege.CASE_STATES_EDIT)) {
+            return;
+        }
+
         CaseState state = fillData(new CaseState(caseState.getId()));
 
         service.saveCaseState(state, new ShortRequestCallback<CaseState>().setErrorMessage(lang.errNotUpdated())
                 .setOnSuccess(result -> {
                     caseState = result;
                     fillView(result);
-                    //TODO table
                     fireEvent(new CaseStateEvents.UpdateItem(caseState));
                 }));
     }
@@ -89,6 +98,8 @@ public abstract class CaseStatePreviewActivity
         view.usageInCompanies().setValue(state.getUsageInCompanies());
         view.setCompaniesVisible(SELECTED.equals(state.getUsageInCompanies()));
         view.companies().setValue(makeOptionsFromCompanies(state.getCompanies()));
+
+        view.setViewEditable(policyService.hasPrivilegeFor(En_Privilege.CASE_STATES_EDIT));
     }
 
     private CaseState fillData(CaseState state) {
@@ -120,17 +131,14 @@ public abstract class CaseStatePreviewActivity
     @Inject
     En_CaseStateLang caseStateLang;
     @Inject
-    En_CaseStateUsageInCompaniesLang caseStateUsageInCompaniesLang;
-    @Inject
     AbstractCaseStatePreviewView view;
     @Inject
     CaseStateControllerAsync service;
+    @Inject
+    PolicyService policyService;
 
     @ContextAware
     CaseState caseState;
-
-    private static final Logger log = Logger.getLogger(CaseStatePreviewActivity.class.getName());
-
 
     private AppEvents.InitDetails initDetails;
 }

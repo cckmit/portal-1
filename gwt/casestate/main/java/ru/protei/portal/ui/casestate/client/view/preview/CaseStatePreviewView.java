@@ -72,6 +72,13 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     }
 
     @Override
+    public void setViewEditable(boolean isEditable) {
+        description.setEnabled(isEditable);
+        saveButton.setEnabled(isEditable);
+        companies.setEnabled(isEditable);
+    }
+
+    @Override
     public HasValue<Set<EntityOption>> companies() {
         return companies;
     }
