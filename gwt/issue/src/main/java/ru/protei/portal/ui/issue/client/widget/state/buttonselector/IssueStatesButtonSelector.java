@@ -33,7 +33,19 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
                 .forEach( this::addOption );
     }
 
-    public void setDefaultValue( String value ) {
+    @Override
+    public void refreshValue() {
+        En_CaseState value = getValue();
+        if (value == null) return;
+        if (filter == null) return;
+        if (!filter.isDisplayed(value)) {
+            setValue(null);
+        }else{
+          super.refreshValue();
+        }
+    }
+
+    public void setDefaultValue(String value ) {
         this.defaultValue = value;
     }
 
