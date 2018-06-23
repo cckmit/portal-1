@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static ru.protei.portal.ui.common.server.ServiceUtils.checkResult;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 

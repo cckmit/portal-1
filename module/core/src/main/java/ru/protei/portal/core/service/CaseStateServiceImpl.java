@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseState;
@@ -23,7 +24,7 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     public CoreResponse<List<CaseState>> caseStateList(AuthToken authToken) {
-        List<CaseState> list = caseStateDAO.getAll();
+        List<CaseState> list = caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT );
 
         if ( list == null )
             return new CoreResponse<List<CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
