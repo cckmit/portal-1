@@ -34,12 +34,15 @@ public class Profile implements Serializable {
 
     private boolean fired;
 
+    private Map<En_Privilege, Set<En_Scope>> privileges2scopes;
+
     public Set<UserRole> getRoles() {
         return roles;
     }
 
     public void setRoles( Set<UserRole> roles ) {
         this.roles = roles;
+        this.privileges2scopes = collectPrivilegeToScopeMap();
     }
 
     public String getLogin() {
@@ -110,7 +113,7 @@ public class Profile implements Serializable {
             return false;
         }
 
-        Set<En_Scope> privilegeScopes = collectPrivilegeToScopeMap().get( privilege );
+        Set<En_Scope> privilegeScopes = privileges2scopes.get( privilege );
         if (privilegeScopes == null || privilegeScopes.isEmpty()) {
             return false;
         }
