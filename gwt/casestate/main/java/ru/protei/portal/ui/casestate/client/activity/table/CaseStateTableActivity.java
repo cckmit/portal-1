@@ -64,7 +64,6 @@ public abstract class CaseStateTableActivity implements Activity,
                 view.setData(result);
             }
         });
-
     }
 
     private void showPreview(CaseState value) {
@@ -81,8 +80,6 @@ public abstract class CaseStateTableActivity implements Activity,
     AbstractCaseStateTableView view;
     @Inject
     TableAnimation animation;
-    @Inject
-    PolicyService policyService;
     @Inject
     CaseStateControllerAsync caseStateService;
 

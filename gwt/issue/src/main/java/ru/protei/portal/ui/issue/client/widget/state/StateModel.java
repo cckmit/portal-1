@@ -32,6 +32,7 @@ public abstract class StateModel implements Activity {
     @Event
     public void onUpdateSelectorOptions(CaseStateEvents.UpdateSelectorOptions event) {
         for ( ModelSelector<En_CaseState > selector : subscribers ) {
+            selector.fillOptions( list );
             selector.refreshValue();
         }
     }

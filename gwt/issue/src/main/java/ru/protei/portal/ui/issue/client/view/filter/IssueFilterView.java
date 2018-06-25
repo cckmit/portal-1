@@ -25,10 +25,12 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.widget.filter.IssueFilterSelector;
@@ -260,6 +262,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         } else if (searchByCommentsWarning.isVisible()) {
             searchByCommentsWarning.setVisible(false);
         }
+    }
+
+    @Override
+    public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter){
+        state.setFilter(caseStateFilter);
     }
 
     @UiHandler( "resetBtn" )

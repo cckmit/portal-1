@@ -6,6 +6,7 @@ import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueComme
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
 import ru.protei.portal.ui.issue.client.activity.comment.list.IssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
+import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.page.IssuePage;
@@ -29,6 +30,7 @@ public class IssueClientModule extends AbstractGinModule {
     protected void configure() {
         bind( IssuePage.class ).asEagerSingleton();
 
+        bind( CaseStateFilterProvider.class ).asEagerSingleton();
         bind( IssueTableActivity.class ).asEagerSingleton();
         bind( AbstractIssueTableView.class ).to(IssueTableView.class);
 
