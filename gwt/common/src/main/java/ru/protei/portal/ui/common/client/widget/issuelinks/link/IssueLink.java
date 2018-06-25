@@ -2,8 +2,7 @@ package ru.protei.portal.ui.common.client.widget.issuelinks.link;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -15,7 +14,7 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 
-public class IssueLink extends Composite implements HasValue<CaseLink> {
+public class IssueLink extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink> {
 
     public IssueLink() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -67,15 +66,14 @@ public class IssueLink extends Composite implements HasValue<CaseLink> {
 
     @UiHandler("remove")
     public void closeClick(ClickEvent event) {
-        if (removeHandler != null) {
-            event.preventDefault();
-            event.stopPropagation();
-            removeHandler.onRemove(caseLink);
-        }
+        event.preventDefault();
+        event.stopPropagation();
+        CloseEvent.fire(this, caseLink);
     }
 
-    public void setRemoveHandler(RemoveEvent removeEvent) {
-        this.removeHandler = removeEvent;
+    @Override
+    public HandlerRegistration addCloseHandler(CloseHandler<CaseLink> handler) {
+        return addHandler(handler, CloseEvent.getType());
     }
 
     @Inject
@@ -93,7 +91,6 @@ public class IssueLink extends Composite implements HasValue<CaseLink> {
     Anchor remove;
 
     private CaseLink caseLink = null;
-    private RemoveEvent removeHandler = null;
 
     interface IssueLinkViewUiBinder extends UiBinder<FocusPanel, IssueLink> {}
     private static IssueLinkViewUiBinder ourUiBinder = GWT.create(IssueLinkViewUiBinder.class);

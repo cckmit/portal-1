@@ -14,12 +14,11 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.widget.issuelinks.link.IssueLink;
-import ru.protei.portal.ui.common.client.widget.issuelinks.link.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.issuelinks.popup.CreateLinkPopup;
 
 import java.util.*;
 
-public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, RemoveEvent {
+public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
 
     public IssueLinks() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -50,7 +49,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Re
         for (CaseLink item : items) {
             IssueLink itemView = itemViewProvider.get();
             itemView.setValue(item);
-            itemView.setRemoveHandler(this);
+            itemView.addCloseHandler(event -> removeValue(event.getTarget()));
             itemToViewModel.put(item, itemView);
             linksContainer.add(itemView);
         }
@@ -63,14 +62,6 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Re
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
-    }
-
-    @Override
-    public void onRemove(CaseLink item) {
-        if (item == null) {
-            return;
-        }
-        removeValue(item);
     }
 
     @UiHandler("addLinkButton")
@@ -114,11 +105,16 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Re
     }
 
     private void removeValue(CaseLink item) {
+        if (item == null) {
+            return;
+        }
+
         items.remove(item);
         IssueLink itemView = itemToViewModel.get(item);
         if (itemView != null) {
             linksContainer.remove(itemView);
         }
+
         toggleVisibility();
     }
 
