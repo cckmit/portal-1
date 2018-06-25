@@ -29,19 +29,15 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
             addOption( null );
         }
         options.stream()
-//                .filter(o -> filter == null || filter.isDisplayed(o))
                 .forEach( this::addOption );
     }
 
     @Override
     public void refreshValue() {
-        En_CaseState value = getValue();
-        if (value == null) return;
-        if (filter == null) return;
-        if (!filter.isDisplayed(value)) {
+        if (filter != null && !filter.isDisplayed(getValue())) {
             setValue(null);
-        }else{
-          super.refreshValue();
+        } else {
+            super.refreshValue();
         }
     }
 
