@@ -21,6 +21,9 @@ public class CaseLink implements Serializable {
     @JdbcColumn(name="remote_id")
     private String remoteId;
 
+    @JdbcJoinedObject(localColumn = "remote_id", remoteColumn = "caseno")
+    private CaseObject caseObject;
+
     // not db column
     private String link = "";
 
@@ -68,6 +71,14 @@ public class CaseLink implements Serializable {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public CaseObject getCaseObject() {
+        return caseObject;
+    }
+
+    public void setCaseObject(CaseObject caseObject) {
+        this.caseObject = caseObject;
     }
 
     public boolean equals(CaseLink caseLink) {

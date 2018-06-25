@@ -274,7 +274,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
-        issue.setLinks(view.links().getValue());
+        issue.setLinks(new ArrayList<>(view.links().getValue()));
     }
 
     private boolean validateView() {

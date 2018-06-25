@@ -20,7 +20,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
-import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,9 +59,6 @@ public class CaseServiceImpl implements CaseService {
     CaseNotifierDAO caseNotifierDAO;
 
     @Autowired
-    CaseLinkDAO caseLinkDAO;
-
-    @Autowired
     AttachmentService attachmentService;
 
     @Autowired
@@ -70,6 +66,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    CaseLinkService caseLinkService;
 
     @Autowired
     PortalConfig config;
@@ -99,9 +98,11 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
-        jdbcManyRelationsHelper.fill( caseObject, "links", new JdbcSort(JdbcSort.Direction.ASC, "case_link.id"));
 
-        applyCaseLinksByScope(token, caseObject);
+        CoreResponse<List<CaseLink>> caseLinks = caseLinkService.getLinks(token, caseObject.getId());
+        if (caseLinks.isOk()) {
+            caseObject.setLinks(caseLinks.getData());
+        }
 
         return new CoreResponse<CaseObject>().success(caseObject);
     }
@@ -155,8 +156,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (CollectionUtils.isNotEmpty(caseObject.getLinks())) {
-            mergeCaseLinksByScope(token, caseObject);
-            caseLinkDAO.persistBatch(caseObject.getLinks());
+            caseLinkService.saveLinks(token, caseObject.getId(), caseObject.getLinks());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -176,7 +176,6 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
-        jdbcManyRelationsHelper.persist(caseObject, "links");
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
@@ -223,7 +222,9 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
-        mergeCaseLinksByScope(token, caseObject);
+
+        caseLinkService.saveLinks(token, caseObject.getId(), caseObject.getLinks());
+
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
 
@@ -552,71 +553,6 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 && Objects.equals(co1.getProductId(), co2.getProductId())
                 && Objects.equals(co1.getManagerId(), co2.getManagerId());
-    }
-
-    private void applyCaseLinksByScope(AuthToken token, CaseObject caseObject) {
-        Set<CaseLink> caseLinks = caseObject.getLinks();
-        if (CollectionUtils.isEmpty(caseLinks)) {
-            return;
-        }
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
-        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            for (Iterator<CaseLink> it = caseLinks.iterator(); it.hasNext();) {
-                CaseLink caseLink = it.next();
-                if (caseLink.getType().isForcePrivacy()) {
-                    it.remove();
-                    continue;
-                }
-                if (En_CaseLink.CRM.equals(caseLink.getType())) {
-                    try {
-                        CaseObject co = caseObjectDAO.getCaseByCaseno(Long.parseLong(caseLink.getRemoteId()));
-                        if (co != null && co.isPrivateCase()) {
-                            it.remove();
-                        }
-                    } catch (NumberFormatException e) {
-                        // remote id is not a long value
-                    }
-                }
-            }
-        }
-    }
-
-    private void mergeCaseLinksByScope(AuthToken token, CaseObject caseObject) {
-        Set<CaseLink> updated = caseObject.getLinks();
-        if (updated == null) {
-            updated = new HashSet<>();
-        }
-
-        // если права ограничены, отфильтровываем updated чтобы не проскочили ссылки без права добавления/удаления
-        applyCaseLinksByScope(token, caseObject);
-
-        // если права ограничены, дополняем updated "невидимыми" ссылками
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
-        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            Set<CaseLink> current = new HashSet<>(caseLinkDAO.getByCaseId(caseObject.getId()));
-            for (CaseLink cl : current) {
-                if (cl.getType().isForcePrivacy()) {
-                    updated.add(cl);
-                    continue;
-                }
-                if (En_CaseLink.CRM.equals(cl.getType())) {
-                    try {
-                        CaseObject co = caseObjectDAO.getCaseByCaseno(Long.parseLong(cl.getRemoteId()));
-                        if (co != null && co.isPrivateCase()) {
-                            updated.add(cl);
-                            continue;
-                        }
-                    } catch (NumberFormatException e) {
-                        // remote id is not a long value
-                    }
-                }
-            }
-        }
-
-        // ну и все
-        caseObject.setLinks(updated);
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
