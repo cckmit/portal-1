@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.widget.issuelinks.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -11,12 +10,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
 
 public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandlers<CaseLink> {
 
@@ -25,8 +23,6 @@ public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandler
         setWidget(ourUiBinder.createAndBindUi(this));
         setAutoHideEnabled(true);
         setAutoHideOnHistoryEventsEnabled(true);
-
-        remoteIdInput.getElement().setPropertyString("placeholder", lang.id());
 
         resizeHandler = resizeEvent -> {
             if (isAttached()) {
@@ -88,9 +84,9 @@ public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandler
         }
     }
 
-    @UiHandler("applyBtn")
-    public void applyBtnClick(ClickEvent event) {
-        String remoteId = remoteIdInput.getValue();
+    @UiHandler( "remoteIdInput" )
+    public void onRemoteIdInputChanged( ValueChangeEvent<String> event ) {
+        String remoteId = event.getValue();
         if (HelperFunc.isEmpty(remoteId)) {
             return;
         }
@@ -117,11 +113,9 @@ public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandler
     HTMLPanel root;
     @Inject
     @UiField(provided = true)
-    IssueLinksTypeBtnGroup typeSelector;
+    IssueLinksTypeSelector typeSelector;
     @UiField
-    TextBox remoteIdInput;
-    @UiField
-    Button applyBtn;
+    EnterableTextBox remoteIdInput;
     @Inject
     @UiField
     Lang lang;
