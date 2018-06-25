@@ -20,7 +20,7 @@ public class StringUtils {
      * Checks if a String is not empty (""), not null and not whitespace only.
      */
     public static boolean isNotBlank( String string ) {
-        return null == string || string.trim().isEmpty();
+        return !isBlank(string);
     }
 
     /**

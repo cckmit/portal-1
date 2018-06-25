@@ -33,6 +33,11 @@ public class CaseStateServiceImpl implements CaseStateService {
     }
 
     @Override
+    public CoreResponse<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken) {
+        return caseStateList(authToken);
+    }
+
+    @Override
     public CoreResponse<CaseState> getCaseState(AuthToken authToken, long id) {
         CaseState state = caseStateDAO.get(id);
         if (state == null)
