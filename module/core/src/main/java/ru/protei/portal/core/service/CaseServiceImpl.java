@@ -562,16 +562,17 @@ public class CaseServiceImpl implements CaseService {
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set<UserRole> roles = descriptor.getLogin().getRoles();
         if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            for (CaseLink caseLink : caseLinks) {
+            for (Iterator<CaseLink> it = caseLinks.iterator(); it.hasNext();) {
+                CaseLink caseLink = it.next();
                 if (caseLink.getType().isForcePrivacy()) {
-                    caseLinks.remove(caseLink);
+                    it.remove();
                     continue;
                 }
                 if (En_CaseLink.CRM.equals(caseLink.getType())) {
                     try {
-                        CaseObject co = caseObjectDAO.getCaseById(Long.parseLong(caseLink.getRemoteId()));
+                        CaseObject co = caseObjectDAO.getCaseByCaseno(Long.parseLong(caseLink.getRemoteId()));
                         if (co != null && co.isPrivateCase()) {
-                            caseLinks.remove(caseLink);
+                            it.remove();
                         }
                     } catch (NumberFormatException e) {
                         // remote id is not a long value
@@ -610,7 +611,7 @@ public class CaseServiceImpl implements CaseService {
                 }
                 if (En_CaseLink.CRM.equals(cl.getType())) {
                     try {
-                        CaseObject co = caseObjectDAO.getCaseById(Long.parseLong(cl.getRemoteId()));
+                        CaseObject co = caseObjectDAO.getCaseByCaseno(Long.parseLong(cl.getRemoteId()));
                         if (co != null && co.isPrivateCase()) {
                             updated.add(cl);
                             continue;
