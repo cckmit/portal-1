@@ -13,9 +13,8 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.function.Consumer;
@@ -186,7 +185,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     Lang lang;
 
     @Inject
-    AccountServiceAsync accountService;
+    AccountControllerAsync accountService;
 
     private UserLogin account;
     private AppEvents.InitDetails initDetails;

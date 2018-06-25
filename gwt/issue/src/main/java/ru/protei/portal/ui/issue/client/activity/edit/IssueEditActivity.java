@@ -335,7 +335,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Inject
     AbstractIssueEditView view;
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject
@@ -343,7 +343,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Inject
     PolicyService policyService;
     @Inject
-    CompanyServiceAsync companyService;
+    CompanyControllerAsync companyService;
     @Inject
     CaseStateFilterProvider caseStateFilter;
 

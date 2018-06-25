@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -432,7 +432,7 @@ public abstract class IssueCommentListActivity
     @Inject
     Lang lang;
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
     @Inject
     AbstractIssueCommentListView view;
     @Inject

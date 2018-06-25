@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueFilterServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -56,7 +56,7 @@ public abstract class IssueFilterModel implements Activity {
     }
 
     @Inject
-    IssueFilterServiceAsync filterService;
+    IssueFilterControllerAsync filterService;
 
     @Inject
     Lang lang;

@@ -15,8 +15,8 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
-import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
 
@@ -220,10 +220,10 @@ public abstract class DocumentEditActivity
     Document document;
 
     @Inject
-    DocumentServiceAsync documentService;
+    DocumentControllerAsync documentService;
 
     @Inject
-    EquipmentServiceAsync equipmentService;
+    EquipmentControllerAsync equipmentService;
 
     private AppEvents.InitDetails initDetails;
 }

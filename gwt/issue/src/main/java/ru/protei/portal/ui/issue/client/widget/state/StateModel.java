@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -69,7 +69,7 @@ public abstract class StateModel implements Activity {
     }
 
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
 
     private List< En_CaseState > list = new ArrayList<>();
 

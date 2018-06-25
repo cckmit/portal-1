@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.PersonEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.EmployeeServiceAsync;
+import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -70,7 +70,7 @@ public abstract class EmployeeModel implements Activity {
     }
 
     @Inject
-    EmployeeServiceAsync employeeService;
+    EmployeeControllerAsync employeeService;
 
     @Inject
     Lang lang;

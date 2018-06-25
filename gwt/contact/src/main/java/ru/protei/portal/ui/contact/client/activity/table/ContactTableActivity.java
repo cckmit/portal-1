@@ -17,11 +17,10 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 
@@ -245,7 +244,7 @@ public abstract class ContactTableActivity
     AbstractContactFilterView filterView;
 
     @Inject
-    ContactServiceAsync contactService;
+    ContactControllerAsync contactService;
 
     @Inject
     TableAnimation animation;

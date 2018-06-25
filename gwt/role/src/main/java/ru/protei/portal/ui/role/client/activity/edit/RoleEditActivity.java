@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.RoleEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.RoleServiceAsync;
+import ru.protei.portal.ui.common.client.service.RoleControllerAsync;
 
 import java.util.HashSet;
 
@@ -120,7 +120,7 @@ public abstract class RoleEditActivity implements AbstractRoleEditActivity, Acti
     Lang lang;
 
     @Inject
-    RoleServiceAsync roleService;
+    RoleControllerAsync roleService;
 
     private UserRole role;
     private AppEvents.InitDetails initDetails;

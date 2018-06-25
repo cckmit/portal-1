@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentA
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
 import ru.protei.portal.ui.common.client.activity.attachment.AttachmentType;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.PersonServiceAsync;
+import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
@@ -186,7 +186,7 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     @Inject
     AttachmentPreview attachmentPreview;
     @Inject
-    PersonServiceAsync personService;
+    PersonControllerAsync personService;
 
 
     private boolean isSimpleMode;

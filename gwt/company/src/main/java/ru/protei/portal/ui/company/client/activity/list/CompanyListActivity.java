@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
@@ -158,7 +158,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
     @Inject
     PeriodicTaskService taskService;
     @Inject
-    CompanyServiceAsync companyService;
+    CompanyControllerAsync companyService;
     @Inject
     Lang lang;
     @Inject

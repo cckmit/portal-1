@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
@@ -224,7 +224,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     AbstractAccountFilterView filterView;
 
     @Inject
-    AccountServiceAsync accountService;
+    AccountControllerAsync accountService;
 
     @Inject
     TableAnimation animation;

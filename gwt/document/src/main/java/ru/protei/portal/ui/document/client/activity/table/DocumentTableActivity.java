@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
+import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
@@ -182,7 +182,7 @@ public abstract class DocumentTableActivity
     @Inject
     TableAnimation animation;
     @Inject
-    DocumentServiceAsync documentService;
+    DocumentControllerAsync documentService;
     @Inject
     PolicyService policyService;
 

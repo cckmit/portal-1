@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
+import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -65,7 +65,7 @@ public abstract class ProductModel implements Activity {
     }
 
     @Inject
-    ProductServiceAsync productService;
+    ProductControllerAsync productService;
 
     @Inject
     Lang lang;

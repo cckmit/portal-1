@@ -27,7 +27,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
@@ -466,7 +465,7 @@ public abstract class IssueTableActivity
     AbstractIssueFilterView filterView;
 
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
 
     @Inject
     TableAnimation animation;
@@ -481,13 +480,13 @@ public abstract class IssueTableActivity
     AttachmentServiceAsync attachmentService;
 
     @Inject
-    IssueFilterServiceAsync filterService;
+    IssueFilterControllerAsync filterService;
 
     @Inject
     PolicyService policyService;
 
     @Inject
-    ReportServiceAsync reportService;
+    ReportControllerAsync reportService;
 
     @Inject
     CaseStateFilterProvider caseStateFilter;

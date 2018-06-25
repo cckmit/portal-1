@@ -15,9 +15,9 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
-import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
@@ -297,14 +297,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Inject
     Lang lang;
     @Inject
-    ContactServiceAsync contactService;
+    ContactControllerAsync contactService;
     @Inject
     PolicyService policyService;
 
     @Inject
-    AccountServiceAsync accountService;
+    AccountControllerAsync accountService;
     @Inject
-    CompanyServiceAsync companyService;
+    CompanyControllerAsync companyService;
 
     private Person contact;
     private UserLogin account;

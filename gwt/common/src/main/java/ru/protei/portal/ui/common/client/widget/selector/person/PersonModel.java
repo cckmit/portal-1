@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.PersonServiceAsync;
+import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
@@ -54,7 +54,7 @@ public abstract class PersonModel implements Activity {
     }
 
     @Inject
-    PersonServiceAsync personService;
+    PersonControllerAsync personService;
 
     @Inject
     Lang lang;

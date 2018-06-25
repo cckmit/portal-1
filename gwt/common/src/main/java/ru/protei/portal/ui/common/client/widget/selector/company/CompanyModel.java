@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -79,7 +79,7 @@ public abstract class CompanyModel implements Activity {
     }
 
     @Inject
-    CompanyServiceAsync companyService;
+    CompanyControllerAsync companyService;
 
     @Inject
     Lang lang;
