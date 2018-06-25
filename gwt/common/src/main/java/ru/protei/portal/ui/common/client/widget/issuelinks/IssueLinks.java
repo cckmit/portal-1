@@ -90,7 +90,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
         }
         Set<CaseLink> value = getValue();
         if (value == null) {
-            return;
+            value = new HashSet<>();
         }
         for (CaseLink cl : value) {
             if (
