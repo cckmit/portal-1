@@ -1,0 +1,36 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-case-state-to-company-table" author="eliseev">
+        <createTable tableName="case_state_to_company">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" uniqueConstraintName="PK_CASE_STATE_TO_COMPANY"/>
+            </column>
+            <column name="state_id" type="INT" />
+            <column name="company_id" type="BIGINT" />
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-case-state-to-company-case-state-id" author="eliseev">
+        <addForeignKeyConstraint constraintName="FK_CASE_STATE_TO_COMPANY_CASE_STATE_ID" onDelete="CASCADE"
+                                 baseTableName="case_state_to_company" baseColumnNames="state_id"
+                                 referencedTableName="case_state" referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="add-fk-case-state-to-company-company-id" author="eliseev">
+        <addForeignKeyConstraint constraintName="FK_CASE_STATE_TO_COMPANY_COMPANY_ID" onDelete="CASCADE"
+                                 baseTableName="case_state_to_company" baseColumnNames="company_id"
+                                 referencedTableName="company" referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="add-column-usage-in-companies" author="eliseev">
+        <addColumn tableName="case_state">
+            <column name="usage_in_companies" type="INT" defaultValue="1"/>
+        </addColumn>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -19,7 +19,6 @@ public class HelperFunc {
         return s == null || s.trim().isEmpty();
     }
 
-
     public static boolean isNotEmpty (String s) {
         return !isEmpty(s);
     }

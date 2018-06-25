@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -197,7 +197,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     @Inject
     AbstractIssuePreviewView view;
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject

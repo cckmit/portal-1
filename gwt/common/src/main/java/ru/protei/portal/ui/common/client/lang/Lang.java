@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonApply();
+
     String buttonCancel();
 
     String buttonCreate();
@@ -36,6 +38,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errNoMatchesFound();
 
     String errGetList();
+
+    String errGetItem();
 
     String msgHello();
 
@@ -963,4 +967,23 @@ public interface Lang extends Messages, ContactItemLang {
 
     String searchByCommentsUnavailable(int threshold);
 
+    String caseStates();
+
+    String privilegeCaseStates();
+
+    String caseStatesPreviewHeader();
+
+    String caseStateUsagesInCompaniesNone();
+
+    String caseStateUsagesInCompaniesAll();
+
+    String caseStateUsagesInCompaniesSelected();
+
+    String caseStatesPreviewCompanies();
+
+    String caseStatesColumnUsageInCompanies();
+
+    String caseStatesColumnInfo();
+
+    String caseStatesColumnName();
 }

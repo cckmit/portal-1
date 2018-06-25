@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
+import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -134,7 +134,7 @@ public abstract class ProductTableActivity implements
     @Inject
     AbstractPagerView pagerView;
     @Inject
-    ProductServiceAsync productService;
+    ProductControllerAsync productService;
 
     private AppEvents.InitDetails init;
     private ProductQuery query;

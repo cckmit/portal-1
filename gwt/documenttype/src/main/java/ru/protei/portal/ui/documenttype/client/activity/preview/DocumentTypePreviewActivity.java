@@ -7,11 +7,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentTypeEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentTypeServiceAsync;
+import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
@@ -73,7 +71,7 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
     @Inject
     PolicyService policyService;
     @Inject
-    DocumentTypeServiceAsync service;
+    DocumentTypeControllerAsync service;
 
     private DocumentType documentType;
 }

@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -44,6 +45,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
     private List<CompanySubscription> subscriptions;
+
+    @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")
+    private List<CaseState> caseStates;
 
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
@@ -157,6 +161,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.subscriptions = subscriptions;
     }
 
+    public List<CaseState> getCaseStates() {
+        return caseStates;
+    }
+
+    public void setCaseStates(List<CaseState> caseStates) {
+        this.caseStates = caseStates;
+    }
+
     @Override
     public String getAuditType() {
         return "Company";
@@ -175,6 +187,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", created=" + created +
                 ", subscriptions=" + subscriptions +
                 ", oldID=" + String.valueOf(oldId) +
+                ", caseStates=" + caseStates +
                 '}';
     }
 }

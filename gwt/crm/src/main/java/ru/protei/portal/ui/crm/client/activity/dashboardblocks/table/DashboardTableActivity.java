@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -133,7 +133,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     Lang lang;
 
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
 
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;

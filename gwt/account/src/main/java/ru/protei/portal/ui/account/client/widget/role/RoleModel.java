@@ -11,8 +11,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.RoleEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
-import ru.protei.portal.ui.common.client.service.RoleServiceAsync;
+import ru.protei.portal.ui.common.client.service.RoleControllerAsync;
 import ru.protei.portal.ui.common.client.widget.optionlist.base.ModelList;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -64,7 +63,7 @@ public abstract class RoleModel implements Activity {
     }
 
     @Inject
-    RoleServiceAsync roleService;
+    RoleControllerAsync roleService;
 
     @Inject
     Lang lang;

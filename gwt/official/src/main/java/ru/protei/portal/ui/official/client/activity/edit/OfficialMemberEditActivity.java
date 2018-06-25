@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.OfficialMember;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
-import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+import ru.protei.portal.ui.common.client.service.OfficialControllerAsync;
 
 /**
  * Активность на форме редактирования должностного лица
@@ -124,7 +124,7 @@ public abstract class OfficialMemberEditActivity implements AbstractOfficialMemb
 
 
     @Inject
-    OfficialServiceAsync officialService;
+    OfficialControllerAsync officialService;
 
     @Inject
     private AbstractOfficialMemberEditView view;

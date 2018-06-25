@@ -35,6 +35,10 @@ public abstract class Selector<T>
         HasSelectorChangeValHandlers,
         HasAddHandlers {
 
+    public interface SelectorFilter<T> {
+        boolean isDisplayed( T value );
+    }
+
     public void setValue(T value) {
         setValue(value, false);
     }
@@ -167,6 +171,10 @@ public abstract class Selector<T>
         }
 
         for (Map.Entry<T, DisplayOption> entry : itemToDisplayOptionModel.entrySet()) {
+            if ( filter != null && !filter.isDisplayed( entry.getKey() ) ) {
+                continue;
+            }
+
             String entryText = entry.getValue().getName().toLowerCase();
             if (searchText.isEmpty() || entryText.contains(searchText)) {
                 SelectorItem itemView = itemToViewModel.get(entry.getKey());
@@ -208,6 +216,10 @@ public abstract class Selector<T>
         popup.addCloseHandler(handler);
     }
 
+    public void setFilter( SelectorFilter<T> selectorFilter ) {
+        filter = selectorFilter;
+    }
+
     public abstract void fillSelectorView(DisplayOption selectedValue);
 
     @Override
@@ -220,6 +232,7 @@ public abstract class Selector<T>
         scrollRegistration.removeHandler();
     }
 
+
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
         popup.setSearchVisible(searchEnabled);
@@ -227,7 +240,10 @@ public abstract class Selector<T>
         popup.setAddButton(addButtonVisible, addButtonText);
 
         popup.showNear(relative);
-        popup.addValueChangeHandler(this);
+        if (popupValueChangeHandlerRegistration != null) {
+            popupValueChangeHandlerRegistration.removeHandler();
+        }
+        popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
 
         if (!searchEnabled) {
@@ -309,10 +325,12 @@ public abstract class Selector<T>
     private T selectedOption = null;
     private SelectorItem nullItemView;
     private DisplayOptionCreator<T> displayOptionCreator;
+    private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
+    protected SelectorFilter<T> filter = null;
 }

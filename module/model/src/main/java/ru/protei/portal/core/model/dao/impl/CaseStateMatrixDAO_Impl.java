@@ -37,4 +37,5 @@ public class CaseStateMatrixDAO_Impl extends PortalBaseJdbcDAO<CaseStateMatrix> 
 
         return caseStateList;
     }
+
 }

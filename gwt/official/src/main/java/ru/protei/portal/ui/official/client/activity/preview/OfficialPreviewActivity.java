@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+import ru.protei.portal.ui.common.client.service.OfficialControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.official.client.OfficialUtils;
@@ -206,7 +206,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
     Provider<AbstractOfficialItemView> itemProvider;
 
     @Inject
-    OfficialServiceAsync officialService;
+    OfficialControllerAsync officialService;
 
     @Inject
     OfficialTableActivity officialTableActivity;

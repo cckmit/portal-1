@@ -1,3 +1,14 @@
+$danger_color: #d52020;
+
+$info_dark_color: #5481c1;
+$info_color: #42a5f5;
+$info_light_color: #00bcd4;
+
+$success_dark_color: teal;
+
+$purple_color: #9675ce;
+$error_color: #f54646;
+
 body {
   background-color: rgb(249, 249, 249) !important;
   color: #383838;
@@ -320,7 +331,7 @@ body {
 }
 
 .checkbox label::after {
-  color: #5481c1;
+  color: $info_dark_color;
   display: inline-block;
   font-size: 12px;
   height: 16px;
@@ -527,7 +538,7 @@ i.ban {
     display: inline-block;
     padding: .3em 0 0 0;
     font-size: 0.9em;
-    color: #d52021;
+    color: $danger_color;
     line-height: 1em;
     font-weight: bold;
   }
@@ -585,7 +596,7 @@ i.ban {
 
 .gl-search-button,
 .gl-close-button {
-  background: #5481c1;
+  background: $info_dark_color;
   border: none;
   height: 34px;
   width: 34px;
@@ -801,15 +812,15 @@ label.bordered:after{
 .input-field.required,
 .btn.required
 {
-  border: 1px solid #f54646 !important;
+  border: 1px solid $error_color !important;
 }
 
 .filter-container .form-group.required {
   .multi-input-select {
-    border: 1px solid #f54646 !important;
+    border: 1px solid $error_color !important;
   }
   label {
-    color: #f54646 !important
+    color: $error_color !important
   }
 }
 
@@ -1262,7 +1273,7 @@ label.bordered:after{
   text-align: center;
   white-space: nowrap;
   vertical-align: middle;
-  background-color: #5481c1;
+  background-color: $info_dark_color;
   border-radius: 50%;
   font-size: 1.5em;
 
@@ -1379,7 +1390,7 @@ td.info {
 }
 
 .basic {
-  color: #42a5f5 !important;
+  color: $info_color !important;
 }
 
 .cosmetic {
@@ -1438,11 +1449,11 @@ td.info {
 }
 
 .state-opened {
-  color: #42a5f5 !important;
+  color: $info_color !important;
 }
 
 .state-active {
-  color: #00bcd4 !important;
+  color: $info_light_color !important;
 }
 
 .state-done {
@@ -1501,17 +1512,18 @@ td.info {
   font-weight: bold;
 }
 
+
 .label-opened, .label-workaround, .label-info_request
 .label-technical_project,
 .option-technical_project .option-name,
 .option-opened .option-name,
 .option-workaround .option-name,
 .option-info_request .option-name {
-  background-color: #42a5f5;
+  background-color: $info_color;
 }
 
 .case-opened,.case-workaround,.case-info_request {
-  color: #42a5f5;
+  color: $info_color;
   font-weight: bold;
 }
 
@@ -1519,11 +1531,11 @@ td.info {
 .label-rkd_prototype,
 .option-rkd_prototype .option-name,
 .option-active .option-name {
-  background-color: #00bcd4;
+  background-color: $info_light_color;
 }
 
 .case-active {
-  color: #00bcd4;
+  color: $info_light_color;
   font-weight: bold;
 }
 
@@ -1580,7 +1592,7 @@ td.info {
 
 .label-report-process,
 .option-report-process {
-  background-color: #42a5f5;
+  background-color: $info_color;
 }
 
 .label-report-ready,
@@ -1844,11 +1856,15 @@ a {
 
 /****************/
 .text-danger {
-  color: #d52020;
+  color: $danger_color;
 }
 
 .text-success {
-  color: teal;
+  color: $success_dark_color;
+}
+
+.text-purple {
+  color: $purple_color;
 }
 
 
@@ -1895,7 +1911,7 @@ a {
         font-family: "FontAwesome";
         content: "\f024";
         font-size: 1.6em;
-        color: #d52020;
+        color: $danger_color;
       }
 
       &.btn-up:after,
@@ -1913,7 +1929,7 @@ a {
 
     &.has-error {
       label {
-        color: #f54646 !important
+        color: $error_color !important
       }
 
       input {
@@ -1921,7 +1937,7 @@ a {
       }
 
       .dn-msg a {
-        color: #f54646 !important;
+        color: $error_color !important;
         text-decoration: underline !important;
       }
     }
@@ -2018,7 +2034,7 @@ ul.privileges {
 }
 
 .locked {
-  color: #d52020;
+  color: $danger_color;
 }
 
 .accounts {
@@ -2317,4 +2333,19 @@ div.select2-container {
 
 .input-field-col {
   padding: 0 10px !important;
+}
+
+.case-state-preview{
+  .btn-group{
+    .btn{
+      &.btn-white{
+        border: none;
+
+        &.active{
+          background: #e4e6e7;
+          border-color: #bfbfc0;
+        }
+      }
+    }
+  }
 }

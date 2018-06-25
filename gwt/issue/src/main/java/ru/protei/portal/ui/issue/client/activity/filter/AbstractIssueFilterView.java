@@ -11,6 +11,8 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 
 import java.util.Set;
 
@@ -64,4 +66,6 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setReportButtonVisibility( boolean hasVisible );
 
     void toggleMsgSearchThreshold();
+
+    void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 }

@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.*;
 
@@ -52,6 +53,10 @@ public class OptionList<T>
 
 
     public void addOption( String name, T value, String styleName ) {
+        if ( filter != null && !filter.isDisplayed( value ) ) {
+            return;
+        }
+
         OptionItem itemView = itemFactory.get();
         itemView.setName( name );
         itemView.addValueChangeHandler( this );
@@ -113,6 +118,10 @@ public class OptionList<T>
         itemViewToModel.forEach((k, v) -> k.setEnabled(isEnabled));
     }
 
+    public void setFilter(Selector.SelectorFilter filter) {
+        this.filter = filter;
+    }
+
     @UiField
     FlowPanel container;
     @UiField
@@ -127,6 +136,8 @@ public class OptionList<T>
     Map<T, String> itemToNameModel = new HashMap< T, String >();
 
     private boolean isEnabled = true;
+    protected Selector.SelectorFilter<T> filter = null;
+
 
     interface OptionListUiBinder extends UiBinder< HTMLPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );

@@ -160,6 +160,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseStateDAO getStateDAO() {
+        return new CaseStateDAO_Impl();
+    }
+
+    @Bean
     public CaseObjectDAO getCaseDAO() {
         return new CaseObjectDAO_Impl();
     }
@@ -367,6 +372,9 @@ public class MainConfiguration {
 
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
+
+    @Bean
+    public CaseStateService getCaseStateService() { return new CaseStateServiceImpl(); }
 
     @Bean
     public AuditService getAuditService() {

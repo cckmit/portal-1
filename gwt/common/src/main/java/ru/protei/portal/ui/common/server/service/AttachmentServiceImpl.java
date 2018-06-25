@@ -16,7 +16,7 @@ import java.util.List;
  * Created by bondarenko on 13.01.17.
  */
 
-@Service( "AttachmentService" )
+@Service( "AttachmentController" )
 public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
