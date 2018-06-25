@@ -965,9 +965,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseLinkCrm();
 
+    String caseLinkCrmShort();
+
     String caseLinkOldCrm();
 
+    String caseLinkOldCrmShort();
+
     String caseLinkYouTrack();
+
+    String caseLinkYouTrackShort();
 
     String linkedWith();
 

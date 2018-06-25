@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.En_CaseLinkLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 
@@ -13,15 +14,24 @@ public class IssueLinksTypeSelector extends ButtonSelector<En_CaseLink> {
 
     @Inject
     public void init() {
-        setDisplayOptionCreator(value -> {
-            String name = lang.getCaseLinkName(value);
-            String style = "type-selector-item";
-            switch (value) {
-                case CRM: style += " type-selector-crm"; break;
-                case CRM_OLD: style += " type-selector-crm-old"; break;
-                case YT: style += " type-selector-youtrack"; break;
+        setDisplayOptionCreator(new DisplayOptionCreator<En_CaseLink>() {
+
+            @Override
+            public DisplayOption makeDisplayOption(En_CaseLink value) {
+                return new DisplayOption(lang.getCaseLinkName(value));
             }
-            return new DisplayOption(name, style, null);
+
+            @Override
+            public DisplayOption makeDisplaySelectedOption(En_CaseLink value) {
+                String name = lang.getCaseLinkShortName(value);
+                String style = "type-selector-item";
+                switch (value) {
+                    case CRM: style += " type-selector-crm"; break;
+                    case CRM_OLD: style += " type-selector-crm-old"; break;
+                    case YT: style += " type-selector-youtrack"; break;
+                }
+                return new DisplayOption(name, style, null);
+            }
         });
     }
 

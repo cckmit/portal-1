@@ -17,6 +17,15 @@ public class En_CaseLinkLang {
         }
     }
 
+    public String getCaseLinkShortName(En_CaseLink caseLink) {
+        switch (caseLink) {
+            case CRM: return lang.caseLinkCrmShort();
+            case CRM_OLD: return lang.caseLinkOldCrmShort();
+            case YT: return lang.caseLinkYouTrackShort();
+            default: return lang.unknownField();
+        }
+    }
+
     @Inject
     Lang lang;
 }
