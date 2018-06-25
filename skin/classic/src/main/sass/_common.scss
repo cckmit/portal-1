@@ -1895,10 +1895,10 @@ a {
       .case-link {
         position: relative;
         display: inline-block;
-        margin: 4px 0 0 4px;
+        margin: 3px 0 0 4px;
         text-align: center;
-        height: 20px;
-        line-height: 20px;
+        height: 22px;
+        line-height: 22px;
         background-color: #ededed;
         border: 1px solid #dadada;
         border-radius: 4px;
@@ -1911,7 +1911,7 @@ a {
         .case-link-close {
           height: 12px;
           width: 12px;
-          padding: 4px 2px 4px 4px;
+          padding: 5px 2px 5px 4px;
           font-size: 0.8em;
           color: inherit;
           cursor: pointer;
@@ -1928,37 +1928,37 @@ a {
         }
 
         .case-link-icon {
-          height: 12px;
-          width: 12px;
-          margin: 3px 3px 3px 2px;
-          line-height: 12px;
+          height: 16px;
+          width: 16px;
+          margin: 2px 2px 2px 3px;
+          line-height: 16px;
           background-color: #ededed;
           border: 1px solid #dadada;
           border-radius: 2px;
           text-align: center;
           vertical-align: middle;
-          font-size: 0.7em;
+          font-size: 0.8em;
           font-weight: bold;
         }
 
         .case-link-icon.link-crm {
           background-color: #4298ff;
           border: 1px solid #6dbbff;
-          font-size: 0.7em;
+          font-size: 0.53em;
           color: #ffffff;
         }
 
         .case-link-icon.link-crm-old {
           background-color: #4270b1;
           border: 1px solid #365c92;
-          font-size: 0.6em;
+          font-size: 0.62em;
           color: #ffffff;
         }
 
         .case-link-icon.link-you-track {
           background-color: #282828;
           border: 1px solid #f8228a;
-          font-size: 0.6em;
+          font-size: 0.7em;
           color: #ffffff;
         }
       }
@@ -2009,11 +2009,11 @@ a {
     position: relative;
     float: left;
     display: inline-block;
-    width: 54px;
+    width: 51px;
     height: 30px;
 
     button {
-      padding: 0 10px 0 0;
+      padding: 0 8px 0 0;
       margin: -1px 0 0 -1px;
     }
   }
@@ -2022,7 +2022,7 @@ a {
     position: relative;
     float: left;
     display: inline-block;
-    width: calc(100% - 50px);
+    width: calc(100% - 47px);
     margin: -1px -1px 0 -3px;
   }
 }
@@ -2032,9 +2032,9 @@ a {
 .type-selector-item:active,
 .type-selector-item:focus {
   display: inline-block;
-  height: 18px;
-  width: 18px;
-  margin: 4px;
+  height: 22px;
+  width: 22px;
+  margin: 2px;
   background-color: #ededed;
   border: 1px solid #dadada;
   border-radius: 2px;
@@ -2051,6 +2051,8 @@ a {
   background-color: #4298ff;
   border: 1px solid #6dbbff;
   color: #ffffff;
+  font-size: 0.75em;
+  line-height: 2.5em;
 }
 
 .type-selector-item.type-selector-crm-old,
@@ -2060,6 +2062,8 @@ a {
   background-color: #4270b1;
   border: 1px solid #365c92;
   color: #ffffff;
+  font-size: 0.8em;
+  line-height: 2.2em;
 }
 
 .type-selector-item.type-selector-youtrack,
@@ -2069,6 +2073,8 @@ a {
   background-color: #282828;
   border: 1px solid #f8228a;
   color: #ffffff;
+  font-size: 1em;
+  line-height: 1.8em;
 }
 
 .dropdown-menu {
