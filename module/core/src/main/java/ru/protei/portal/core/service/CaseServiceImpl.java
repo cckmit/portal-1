@@ -567,9 +567,15 @@ public class CaseServiceImpl implements CaseService {
                     caseLinks.remove(caseLink);
                     continue;
                 }
-                CaseObject co = caseObjectDAO.getCaseById(caseLink.getCaseId());
-                if (co.isPrivateCase()) {
-                    caseLinks.remove(caseLink);
+                if (En_CaseLink.CRM.equals(caseLink.getType())) {
+                    try {
+                        CaseObject co = caseObjectDAO.getCaseById(Long.parseLong(caseLink.getRemoteId()));
+                        if (co != null && co.isPrivateCase()) {
+                            caseLinks.remove(caseLink);
+                        }
+                    } catch (NumberFormatException e) {
+                        // remote id is not a long value
+                    }
                 }
             }
         }
@@ -602,10 +608,16 @@ public class CaseServiceImpl implements CaseService {
                     updated.add(cl);
                     continue;
                 }
-                CaseObject co = caseObjectDAO.getCaseById(cl.getCaseId());
-                if (co.isPrivateCase()) {
-                    updated.add(cl);
-                    continue;
+                if (En_CaseLink.CRM.equals(cl.getType())) {
+                    try {
+                        CaseObject co = caseObjectDAO.getCaseById(Long.parseLong(cl.getRemoteId()));
+                        if (co != null && co.isPrivateCase()) {
+                            updated.add(cl);
+                            continue;
+                        }
+                    } catch (NumberFormatException e) {
+                        // remote id is not a long value
+                    }
                 }
             }
         }
