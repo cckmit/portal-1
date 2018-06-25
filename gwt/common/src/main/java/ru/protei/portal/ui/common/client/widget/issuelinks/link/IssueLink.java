@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.lang.En_CaseLinkLang;
 
 public class IssueLink extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink> {
 
@@ -32,6 +33,7 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
         caseLink.setLink(caseLinkProvider.getLink(value.getType(), value.getRemoteId()));
 
         text.setText(caseLink.getRemoteId());
+        icon.setText(caseLinkLang.getCaseLinkShortName(caseLink.getType()));
         switch (caseLink.getType()) {
             case CRM: icon.addStyleName("link-crm"); break;
             case CRM_OLD: icon.addStyleName("link-crm-old"); break;
@@ -78,6 +80,8 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
 
     @Inject
     CaseLinkProvider caseLinkProvider;
+    @Inject
+    En_CaseLinkLang caseLinkLang;
 
     @UiField
     FocusPanel root;

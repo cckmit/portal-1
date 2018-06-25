@@ -1931,18 +1931,10 @@ a {
           height: 12px;
           width: 12px;
           margin: 3px 3px 3px 2px;
+          line-height: 12px;
           background-color: #ededed;
           border: 1px solid #dadada;
           border-radius: 2px;
-        }
-
-        .case-link-icon:after {
-          content: "П";
-          position: absolute;
-          height: 12px;
-          width: 12px;
-          top: 0;
-          right: 4px;
           text-align: center;
           vertical-align: middle;
           font-size: 0.7em;
@@ -1952,10 +1944,6 @@ a {
         .case-link-icon.link-crm {
           background-color: #4298ff;
           border: 1px solid #6dbbff;
-        }
-
-        .case-link-icon.link-crm:after {
-          content: "П";
           font-size: 0.7em;
           color: #ffffff;
         }
@@ -1963,10 +1951,6 @@ a {
         .case-link-icon.link-crm-old {
           background-color: #4270b1;
           border: 1px solid #365c92;
-        }
-
-        .case-link-icon.link-crm-old:after {
-          content: "ПС";
           font-size: 0.6em;
           color: #ffffff;
         }
@@ -1974,10 +1958,6 @@ a {
         .case-link-icon.link-you-track {
           background-color: #282828;
           border: 1px solid #f8228a;
-        }
-
-        .case-link-icon.link-you-track:after {
-          content: "YT";
           font-size: 0.6em;
           color: #ffffff;
         }
