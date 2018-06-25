@@ -484,6 +484,9 @@ public class MainConfiguration {
         return new ReportControlServiceImpl();
     }
 
+    @Bean
+    public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

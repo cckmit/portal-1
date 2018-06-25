@@ -2,7 +2,6 @@ package ru.protei.portal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.protei.portal.core.model.dict.config.CaseLinkConfig;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 import ru.protei.winter.core.utils.duration.DurationUtils;
@@ -38,7 +37,7 @@ public class PortalConfigData {
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
         reportConfig = new ReportConfig(wrapper);
-        caseLinkConfig = new CaseLinkConfigImpl(wrapper);
+        caseLinkConfig = new CaseLinkConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -315,15 +314,15 @@ public class PortalConfigData {
         }
     }
 
-    public static class CaseLinkConfigImpl implements CaseLinkConfig {
+    public static class CaseLinkConfig {
         private final String linkCrm;
         private final String linkOldCrm;
         private final String linkYouTrack;
 
-        public CaseLinkConfigImpl(PropertiesWrapper properties) throws ConfigException {
+        public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
             this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://newportal/crm/#issues/issue:id=%id%");
-            this.linkYouTrack = properties.getProperty("case.link.you_track", "https://youtrack.protei/issue/%id%");
+            this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei/issue/%id%");
         }
 
         public String getLinkCrm() {

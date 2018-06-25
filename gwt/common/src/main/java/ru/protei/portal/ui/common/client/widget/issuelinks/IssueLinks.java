@@ -54,6 +54,10 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Re
             itemToViewModel.put(item, itemView);
             linksContainer.add(itemView);
         }
+
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, value);
+        }
     }
 
     @Override
@@ -123,7 +127,6 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Re
 
     @Inject
     Provider<IssueLink> itemViewProvider;
-
     @Inject
     CreateLinkPopup popup;
 

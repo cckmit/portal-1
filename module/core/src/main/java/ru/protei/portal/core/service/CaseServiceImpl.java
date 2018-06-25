@@ -580,14 +580,6 @@ public class CaseServiceImpl implements CaseService {
                 }
             }
         }
-        for (CaseLink caseLink : caseLinks) {
-            caseLink.setLink(
-                    caseLink.getType().getLink(
-                            config.data().getCaseLinkConfig(),
-                            caseLink.getRemoteId()
-                    )
-            );
-        }
     }
 
     private void mergeCaseLinksByScope(AuthToken token, CaseObject caseObject) {

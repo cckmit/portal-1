@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.En_CaseLinkLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 
 public class IssueLinksTypeBtnGroup extends ToggleBtnGroup<En_CaseLink> {
@@ -20,12 +20,12 @@ public class IssueLinksTypeBtnGroup extends ToggleBtnGroup<En_CaseLink> {
             if (!isGranted && type.isForcePrivacy()) {
                 continue;
             }
-            addBtn(type.getName(lang), type, "btn btn-white");
+            addBtn(lang.getCaseLinkName(type), type, "btn btn-white");
         }
     }
 
     @Inject
-    Lang lang;
+    En_CaseLinkLang lang;
     @Inject
     PolicyService policyService;
 }

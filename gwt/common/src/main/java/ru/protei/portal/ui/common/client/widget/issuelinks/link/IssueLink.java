@@ -10,8 +10,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 
 public class IssueLink extends Composite implements HasValue<CaseLink> {
 
@@ -26,7 +28,10 @@ public class IssueLink extends Composite implements HasValue<CaseLink> {
 
     @Override
     public void setValue(CaseLink value, boolean fireEvents) {
+
         caseLink = value;
+        caseLink.setLink(caseLinkProvider.getLink(value.getType(), value.getRemoteId()));
+
         text.setText(caseLink.getRemoteId());
         switch (caseLink.getType()) {
             case CRM: icon.addStyleName("link-crm"); break;
@@ -35,6 +40,10 @@ public class IssueLink extends Composite implements HasValue<CaseLink> {
         }
         if (HelperFunc.isEmpty(caseLink.getLink())) {
             panel.addStyleName("without-link");
+        }
+
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, value);
         }
     }
 
@@ -68,6 +77,9 @@ public class IssueLink extends Composite implements HasValue<CaseLink> {
     public void setRemoveHandler(RemoveEvent removeEvent) {
         this.removeHandler = removeEvent;
     }
+
+    @Inject
+    CaseLinkProvider caseLinkProvider;
 
     @UiField
     FocusPanel root;
