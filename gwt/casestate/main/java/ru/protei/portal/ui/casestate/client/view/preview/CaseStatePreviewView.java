@@ -67,8 +67,8 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     }
 
     @Override
-    public void setCompaniesVisible(boolean isCompaniesVisible) {
-        companies.setVisible(isCompaniesVisible);
+    public HasVisibility companiesVisibility() {
+        return companies;
     }
 
     @Override

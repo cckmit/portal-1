@@ -15,14 +15,12 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
-import ru.protei.portal.ui.common.client.lang.En_CaseStateUsageInCompaniesLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseStateControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
@@ -65,7 +63,7 @@ public abstract class CaseStatePreviewActivity
     @Override
     public void onUsageInCompaniesChange() {
         En_CaseStateUsageInCompanies usage = view.usageInCompanies().getValue();
-        view.setCompaniesVisible(SELECTED.equals(usage));
+        view.companiesVisibility().setVisible(SELECTED.equals(usage));
     }
 
     @Override
@@ -96,7 +94,7 @@ public abstract class CaseStatePreviewActivity
         view.setName(caseStateLang.getStateName(En_CaseState.getById(state.getId())));
         view.description().setValue(defaultString(state.getInfo(), ""));
         view.usageInCompanies().setValue(state.getUsageInCompanies());
-        view.setCompaniesVisible(SELECTED.equals(state.getUsageInCompanies()));
+        view.companiesVisibility().setVisible(SELECTED.equals(state.getUsageInCompanies()));
         view.companies().setValue(makeOptionsFromCompanies(state.getCompanies()));
 
         view.setViewEditable(policyService.hasPrivilegeFor(En_Privilege.CASE_STATES_EDIT));

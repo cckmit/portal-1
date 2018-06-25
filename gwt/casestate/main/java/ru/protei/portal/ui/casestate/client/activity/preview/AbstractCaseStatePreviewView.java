@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.casestate.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -18,7 +19,7 @@ public interface AbstractCaseStatePreviewView extends IsWidget {
 
     HasValue<En_CaseStateUsageInCompanies> usageInCompanies();
 
-    void setCompaniesVisible(boolean isCompaniesVisible);
+    HasVisibility companiesVisibility();
 
     void setViewEditable(boolean isEnabled);
 }

@@ -121,19 +121,13 @@
             <artifactId>winter.core</artifactId>
             <version>${project.winter.version}</version>
         </dependency>
--->
-        <!--<dependency>-->
-            <!--<groupId>ru.protei</groupId>-->
-            <!--<artifactId>winter.jdbc</artifactId>-->
-            <!--<version>${project.winter.version}</version>-->
-        <!--</dependency>-->
 
-        <!--<dependency>-->
-            <!--<groupId>com.h2database</groupId>-->
-            <!--<artifactId>h2</artifactId>-->
-            <!--<version>1.4.196</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>ru.protei</groupId>
+            <artifactId>winter.jdbc</artifactId>
+            <version>${project.winter.version}</version>
+        </dependency>
+-->
 
         <dependency>
             <groupId>org.jxls</groupId>

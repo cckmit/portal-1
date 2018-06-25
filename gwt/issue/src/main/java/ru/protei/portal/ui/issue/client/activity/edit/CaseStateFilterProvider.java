@@ -41,26 +41,20 @@ public abstract class CaseStateFilterProvider implements Activity
             @Override
             public boolean isDisplayed(En_CaseState value) {
                 if (!statesMap.containsKey(value)) {
-                    log.config("isDisplayed(): False emptyMap " + value );//TODO DEBUG
                     return false;
                 }
                 if (ALL == statesMap.get(value).getUsageInCompanies()) {
-                    log.config("isDisplayed(): Try ALL " + value );//TODO DEBUG
                     return true;
                 }
                 if (NONE == statesMap.get(value).getUsageInCompanies()) {
-                    log.config("isDisplayed(): False NONE " + value );//TODO DEBUG
                     return false;
                 }
 
-                boolean c2 = companiesStates.contains(value);
-                log.config("isDisplayed(): "+c2+" companins " + value );//TODO DEBUG
-                return c2;
+                return companiesStates.contains(value);
             }
         };
 
     }
-
 
     private void setCaseStates(List<CaseState> states) {
         statesMap.clear();
@@ -70,13 +64,12 @@ public abstract class CaseStateFilterProvider implements Activity
     }
 
     private void updateCaseStates() {
-        caseStateService.getCaseStates(new ShortRequestCallback<List<CaseState>>()
+        caseStateService.getCaseStatesOmitPrivileges(new ShortRequestCallback<List<CaseState>>()
                 .setOnSuccess(states -> {
                     setCaseStates(states);
                     fireEvent(new CaseStateEvents.UpdateSelectorOptions());
                 }));
     }
-
 
     @Inject
     CaseStateControllerAsync caseStateService;

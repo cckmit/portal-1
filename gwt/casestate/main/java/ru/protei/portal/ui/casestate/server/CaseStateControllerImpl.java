@@ -43,6 +43,12 @@ public class CaseStateControllerImpl implements CaseStateController {
     }
 
     @Override
+    public List<CaseState> getCaseStatesOmitPrivileges() throws RequestFailedException {
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData(caseStateService.getCaseStatesOmitPrivileges(authToken));
+    }
+
+    @Override
     public CaseState getCaseState(Long id) throws RequestFailedException {
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData(caseStateService.getCaseState(authToken, id));

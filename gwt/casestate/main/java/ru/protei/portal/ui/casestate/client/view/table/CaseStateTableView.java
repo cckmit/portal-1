@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.casestate.client.view;
+package ru.protei.portal.ui.casestate.client.view.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;

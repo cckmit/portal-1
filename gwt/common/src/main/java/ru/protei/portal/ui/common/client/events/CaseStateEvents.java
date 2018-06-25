@@ -50,16 +50,6 @@ public class CaseStateEvents {
     }
 
 
-    @Url( value = "casestate" )
-    public static class Edit {
-
-        public Long id;
-
-        public Edit() {}
-
-        public Edit( Long id ) { this.id = id; }
-    }
-
     /**
      * Добавление / изменение / удаление ролей
      */

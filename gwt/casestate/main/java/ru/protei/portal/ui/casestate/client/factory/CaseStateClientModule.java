@@ -7,7 +7,7 @@ import ru.protei.portal.ui.casestate.client.activity.preview.AbstractCaseStatePr
 import ru.protei.portal.ui.casestate.client.activity.preview.CaseStatePreviewActivity;
 import ru.protei.portal.ui.casestate.client.activity.table.AbstractCaseStateTableView;
 import ru.protei.portal.ui.casestate.client.activity.table.CaseStateTableActivity;
-import ru.protei.portal.ui.casestate.client.view.CaseStateTableView;
+import ru.protei.portal.ui.casestate.client.view.table.CaseStateTableView;
 import ru.protei.portal.ui.casestate.client.view.preview.CaseStatePreviewView;
 
 
