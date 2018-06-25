@@ -17,5 +17,5 @@ public interface CaseLinkService {
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse<List<CaseLink>> getLinks(AuthToken token, long case_id);
 
-    CoreResponse saveLinks(AuthToken token, long case_id, List<CaseLink> links);
+    CoreResponse mergeLinks(AuthToken token, long case_id, List<CaseLink> links);
 }

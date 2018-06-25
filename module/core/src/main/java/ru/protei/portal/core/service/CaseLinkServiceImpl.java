@@ -50,15 +50,32 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
-    public CoreResponse saveLinks(AuthToken token, long case_id, List<CaseLink> caseLinks) {
+    public CoreResponse mergeLinks(AuthToken token, long case_id, List<CaseLink> caseLinks) {
 
         for (CaseLink caseLink : caseLinks) {
-            caseLink.setCaseId(case_id);
+            if (caseLink.getCaseId() == null) {
+                caseLink.setCaseId(case_id);
+            }
         }
 
         mergeCaseLinksByScope(token, case_id, caseLinks);
 
-        caseLinkDAO.persistBatch(caseLinks);
+        List<Long> idsToRemove = new ArrayList<>();
+        List<CaseLink> caseLinksOld = caseLinkDAO.getByCaseId(case_id);
+        outer: for (CaseLink caseLinkOld : caseLinksOld) {
+            for (CaseLink caseLink : caseLinks) {
+                if (caseLinkOld.getId().equals(caseLink.getId())) {
+                    // contains
+                    continue outer;
+                }
+            }
+            idsToRemove.add(caseLinkOld.getId());
+        }
+
+        for (CaseLink caseLink : caseLinks) {
+            caseLinkDAO.saveOrUpdate(caseLink);
+        }
+        caseLinkDAO.removeByKeys(idsToRemove);
 
         return new CoreResponse<>().success(null);
     }
