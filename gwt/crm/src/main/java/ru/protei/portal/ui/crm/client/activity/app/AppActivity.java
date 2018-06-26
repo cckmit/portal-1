@@ -68,6 +68,11 @@ public abstract class AppActivity
         changeLocale( locale );
     }
 
+    @Override
+    public void onLogoClicked() {
+        fireEvent(pageService.getFirstAvailablePageEvent());
+    }
+
     public void onUserClicked() {
         fireEvent( new AppEvents.ShowProfile());
     }
