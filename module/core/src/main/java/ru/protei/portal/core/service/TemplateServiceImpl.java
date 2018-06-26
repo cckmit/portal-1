@@ -119,7 +119,7 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > caseComment = new HashMap<>();
                     caseComment.put( "created", comment.getCreated() );
                     caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", HTMLHelper.prewrapMessage( HTMLHelper.htmlEscape( comment.getText() ) ) );
+                    caseComment.put( "text", comment.getText() == null ? null : HTMLHelper.prewrapMessage( HTMLHelper.htmlEscape( comment.getText() ) ) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
