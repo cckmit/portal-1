@@ -55,6 +55,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     public CoreResponse mergeLinks(AuthToken token, long case_id, List<CaseLink> caseLinks) {
 
+        if (caseLinks == null) {
+            return new CoreResponse<>().success(null);
+        }
+
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set<UserRole> roles = descriptor.getLogin().getRoles();
         boolean isShowOnlyPrivate = !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
