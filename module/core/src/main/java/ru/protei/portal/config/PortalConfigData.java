@@ -24,6 +24,7 @@ public class PortalConfigData {
     private final IntegrationConfig integrationConfig;
     private final SvnConfig svnConfig;
     private final ReportConfig reportConfig;
+    private final CaseLinkConfig caseLinkConfig;
 
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
@@ -36,6 +37,7 @@ public class PortalConfigData {
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
         reportConfig = new ReportConfig(wrapper);
+        caseLinkConfig = new CaseLinkConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -75,6 +77,10 @@ public class PortalConfigData {
 
     public ReportConfig reportConfig() {
         return reportConfig;
+    }
+
+    public CaseLinkConfig getCaseLinkConfig() {
+        return caseLinkConfig;
     }
 
     public static class SmtpConfig {
@@ -305,6 +311,30 @@ public class PortalConfigData {
 
         public String getStoragePath() {
             return storagePath;
+        }
+    }
+
+    public static class CaseLinkConfig {
+        private final String linkCrm;
+        private final String linkOldCrm;
+        private final String linkYouTrack;
+
+        public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
+            this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
+            this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei/issue/%id%");
+        }
+
+        public String getLinkCrm() {
+            return linkCrm;
+        }
+
+        public String getLinkOldCrm() {
+            return linkOldCrm;
+        }
+
+        public String getLinkYouTrack() {
+            return linkYouTrack;
         }
     }
 }

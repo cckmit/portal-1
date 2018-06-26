@@ -13,7 +13,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentTypeServiceAsync;
+import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterActivity;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterView;
@@ -165,7 +165,7 @@ public abstract class DocumentTypeTableActivity
     @Inject
     PolicyService policyService;
     @Inject
-    DocumentTypeServiceAsync documentTypeService;
+    DocumentTypeControllerAsync documentTypeService;
     @Inject
     Lang lang;
     @Inject

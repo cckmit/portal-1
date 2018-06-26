@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
@@ -36,7 +37,6 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-        name.getElement().setPropertyString("placeholder", lang.documentSearchNameOrProject());
         dateRange.setPlaceholder(lang.selectDate());
         sortField.setType(ModuleType.DOCUMENT);
         documentType.setDefaultValue(lang.documentTypeNotDefined());
@@ -114,7 +114,12 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         }
     }
 
-    @UiHandler({"name", "content"})
+    @UiHandler( "name" )
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("content")
     public void onKeyUpSearch(KeyUpEvent event) {
         fireChangeTimer();
     }
@@ -188,7 +193,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     Lang lang;
 
     @UiField
-    TextBox name;
+    CleanableSearchBox name;
 
     @UiField
     TextArea content;

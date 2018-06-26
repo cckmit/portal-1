@@ -9,7 +9,7 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
@@ -74,5 +74,5 @@ public abstract class EquipmentCopyActivity
     @Inject
     AbstractDialogDetailsView dialogView;
     @Inject
-    EquipmentServiceAsync equipmentService;
+    EquipmentControllerAsync equipmentService;
 }

@@ -7,7 +7,9 @@
              xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.importance.btngroup'
              xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.option'
              xmlns:filter='urn:import:ru.protei.portal.ui.issue.client.widget.filter'
-             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'>
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -19,9 +21,10 @@
 
         <div class="body">
 
-            <div class="form-group local-search col-xs-12">
-                <span class="icon local-search-icon"></span>
-                <g:TextBox ui:field="search" styleName="input-field"/>
+            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
+            <div class="form-group col-xs-12 local-search-using-comments">
+                <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
+                <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
             </div>
 
             <div class="col-xs-12">

@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -37,7 +38,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        name.getElement().setPropertyString( "placeholder", lang.equipmentSearchNameOrProject() );
     }
 
     @Override
@@ -117,7 +117,12 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         }
     }
 
-    @UiHandler( {"name", "classifierCode", "regNum"} )
+    @UiHandler( "name" )
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( {"classifierCode", "regNum"} )
     public void onKeyUpSearch( KeyUpEvent event ) {
         fireChangeTimer();
     }
@@ -190,7 +195,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @UiField
     Lang lang;
     @UiField
-    TextBox name;
+    CleanableSearchBox name;
     @Inject
     @UiField(provided = true)
     OrganizationBtnGroupMulti organizationCode;

@@ -1,8 +1,9 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
 
@@ -12,4 +13,16 @@ import java.util.List;
 public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     List<CaseComment> getCaseComments( long caseId );
+
+    List<CaseComment> getCaseComments( CaseCommentQuery query );
+
+    /**
+     * Возвращает список идентификаторов CaseObject.id
+     * @param query
+     * @return
+     */
+    List<Long> getCaseCommentsCaseIds( CaseCommentQuery query );
+
+    @SqlConditionBuilder
+    SqlCondition createSqlCondition( CaseCommentQuery query );
 }

@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
@@ -108,7 +108,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
     AbstractContactPreviewView view;
 
     @Inject
-    ContactServiceAsync contactService;
+    ContactControllerAsync contactService;
 
     private Long contactId;
     private AppEvents.InitDetails initDetails;

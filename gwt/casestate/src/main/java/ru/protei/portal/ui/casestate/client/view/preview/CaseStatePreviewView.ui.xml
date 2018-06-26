@@ -1,0 +1,47 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:bg='urn:import:ru.protei.portal.ui.casestate.client.view.btngroup'
+
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager case-state-preview">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+            <fieldset class="header">
+                <legend ui:field="header"><ui:text from="{lang.caseStatesPreviewHeader}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.roleName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="name"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.roleDescription}"/></label>
+                    <g:TextArea styleName="col-xs-7 col-md-7 pre-formatted-info project-details" ui:field="description"/>
+                </div>
+
+            </fieldset>
+
+            <fieldset class="header">
+                <div class="col-xs-12">
+                    <legend>
+                        <ui:text from="{lang.caseStatesPreviewCompanies}"/>
+                    </legend>
+                    <bg:UsageInCompaniesBtnGroup ui:field="usageInCompanies" />
+                    <companyselector:CompanyMultiSelector ui:field="companies" visible="false"
+                                                          header="{lang.issueCompany}"
+                                                          addStyleNames="form-group col-xs-12"/>
+                </div>
+                <div class="col-xs-12">
+                    <span class="col-xs-7 col-md-7" ui:field="usageInCompaniesTxt"/>
+                </div>
+            </fieldset>
+
+            <div class="footer">
+                <g:Button ui:field="saveButton" styleName="btn btn-success pull-right" text="{lang.buttonApply}"/>
+            </div>
+        </g:HTMLPanel>
+
+    </g:HTMLPanel>
+
+</ui:UiBinder>

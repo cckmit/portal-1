@@ -14,11 +14,10 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.RegionServiceAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 import java.util.Map;
@@ -188,7 +187,7 @@ public abstract class ProjectTableActivity
     @Inject
     AbstractProjectFilterView filterView;
     @Inject
-    RegionServiceAsync regionService;
+    RegionControllerAsync regionService;
     @Inject
     TableAnimation animation;
     @Inject

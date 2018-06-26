@@ -82,8 +82,8 @@ public class MainConfiguration {
 
 
     @Bean
-    public SqlDefaultBuilder sqlDefaultBuilder () {
-        return new SqlDefaultBuilder();
+    public CaseObjectSqlBuilder sqlDefaultBuilder () {
+        return new CaseObjectSqlBuilder();
     }
 
 
@@ -157,6 +157,11 @@ public class MainConfiguration {
     @Bean
     public CaseStateMatrixDAO getStateMatrixDAO() {
         return new CaseStateMatrixDAO_Impl();
+    }
+
+    @Bean
+    public CaseStateDAO getStateDAO() {
+        return new CaseStateDAO_Impl();
     }
 
     @Bean
@@ -318,6 +323,11 @@ public class MainConfiguration {
         return new ReportDAO_Impl();
     }
 
+    @Bean
+    public CaseLinkDAO getCaseLinkDAO() {
+        return new CaseLinkDAO_Impl();
+    }
+
 /**
  *
  *
@@ -367,6 +377,9 @@ public class MainConfiguration {
 
     @Bean
     public CaseService getCaseService() { return new CaseServiceImpl(); }
+
+    @Bean
+    public CaseStateService getCaseStateService() { return new CaseStateServiceImpl(); }
 
     @Bean
     public AuditService getAuditService() {
@@ -478,6 +491,9 @@ public class MainConfiguration {
     public ReportControlService getReportControlService() {
         return new ReportControlServiceImpl();
     }
+
+    @Bean
+    public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

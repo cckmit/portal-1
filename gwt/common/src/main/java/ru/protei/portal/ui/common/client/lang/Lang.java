@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonApply();
+
     String buttonCancel();
 
     String buttonCreate();
@@ -36,6 +38,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errNoMatchesFound();
 
     String errGetList();
+
+    String errGetItem();
 
     String msgHello();
 
@@ -892,8 +896,12 @@ public interface Lang extends Messages, ContactItemLang {
     String mobilePhone();
 
     String accountFilterCompany();
+    
+    String documentTypeCode();
 
     String errNotAvailable();
+    
+    String decimalNumberNotFound();
 
     String from();
 
@@ -955,4 +963,43 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactRemoveConfirmMessage();
 
+    String searchByComments();
+
+    String searchByCommentsUnavailable(int threshold);
+
+    String caseStates();
+
+    String privilegeCaseStates();
+
+    String caseStatesPreviewHeader();
+
+    String caseStateUsagesInCompaniesNone();
+
+    String caseStateUsagesInCompaniesAll();
+
+    String caseStateUsagesInCompaniesSelected();
+
+    String caseStatesPreviewCompanies();
+
+    String caseStatesColumnUsageInCompanies();
+
+    String caseStatesColumnInfo();
+
+    String caseStatesColumnName();
+
+    String caseLinkCrm();
+
+    String caseLinkCrmShort();
+
+    String caseLinkOldCrm();
+
+    String caseLinkOldCrmShort();
+
+    String caseLinkYouTrack();
+
+    String caseLinkYouTrackShort();
+
+    String linkedWith();
+
+    String id();
 }

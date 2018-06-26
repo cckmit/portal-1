@@ -35,6 +35,10 @@ public abstract class Selector<T>
         HasSelectorChangeValHandlers,
         HasAddHandlers {
 
+    public interface SelectorFilter<T> {
+        boolean isDisplayed( T value );
+    }
+
     public void setValue(T value) {
         setValue(value, false);
     }
@@ -49,10 +53,8 @@ public abstract class Selector<T>
         selectedOption = value;
         if ( value == null && nullItemOption != null ) {
             fillSelectorView( nullItemOption );
-        } else if ( !itemToDisplayOptionModel.containsKey(value) && displayOptionCreator != null ) {
-            fillSelectorView( displayOptionCreator.makeDisplayOption( value ) );
         } else {
-            fillSelectorView( itemToDisplayOptionModel.get(value) );
+            fillSelectorView( displayOptionCreator.makeDisplaySelectedOption( value ) );
         }
 
         if (fireEvents) {
@@ -98,8 +100,7 @@ public abstract class Selector<T>
         }
 
         DisplayOption option = displayOptionCreator.makeDisplayOption( value );
-        SelectorItem itemView = buildItemView(option.getName(),
-                option.getStyle(), itemHandler);
+        SelectorItem itemView = buildItemView(option.getName(), option.getStyle(), itemHandler);
         if ( option.getImageSrc() != null ) {
             itemView.setImage(option.getImageSrc());
         }
@@ -113,6 +114,8 @@ public abstract class Selector<T>
         } else {
             itemToDisplayOptionModel.put(value, option);
         }
+
+
 
         popup.getChildContainer().add(itemView.asWidget());
     }
@@ -135,7 +138,7 @@ public abstract class Selector<T>
             return;
         }
 
-        DisplayOption option = value != null ? itemToDisplayOptionModel.get(value) : nullItemOption;
+        DisplayOption option = value != null ? displayOptionCreator.makeDisplaySelectedOption(value) : nullItemOption;
         selectedOption = value;
         fillSelectorView(option);
 
@@ -167,6 +170,10 @@ public abstract class Selector<T>
         }
 
         for (Map.Entry<T, DisplayOption> entry : itemToDisplayOptionModel.entrySet()) {
+            if ( filter != null && !filter.isDisplayed( entry.getKey() ) ) {
+                continue;
+            }
+
             String entryText = entry.getValue().getName().toLowerCase();
             if (searchText.isEmpty() || entryText.contains(searchText)) {
                 SelectorItem itemView = itemToViewModel.get(entry.getKey());
@@ -208,6 +215,10 @@ public abstract class Selector<T>
         popup.addCloseHandler(handler);
     }
 
+    public void setFilter( SelectorFilter<T> selectorFilter ) {
+        filter = selectorFilter;
+    }
+
     public abstract void fillSelectorView(DisplayOption selectedValue);
 
     @Override
@@ -220,6 +231,7 @@ public abstract class Selector<T>
         scrollRegistration.removeHandler();
     }
 
+
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
         popup.setSearchVisible(searchEnabled);
@@ -227,7 +239,10 @@ public abstract class Selector<T>
         popup.setAddButton(addButtonVisible, addButtonText);
 
         popup.showNear(relative);
-        popup.addValueChangeHandler(this);
+        if (popupValueChangeHandlerRegistration != null) {
+            popupValueChangeHandlerRegistration.removeHandler();
+        }
+        popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
 
         if (!searchEnabled) {
@@ -309,10 +324,12 @@ public abstract class Selector<T>
     private T selectedOption = null;
     private SelectorItem nullItemView;
     private DisplayOptionCreator<T> displayOptionCreator;
+    private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
+    protected SelectorFilter<T> filter = null;
 }

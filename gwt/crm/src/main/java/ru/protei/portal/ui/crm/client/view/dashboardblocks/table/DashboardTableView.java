@@ -3,13 +3,12 @@ package ru.protei.portal.ui.crm.client.view.dashboardblocks.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -86,6 +85,12 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     @Override
+    public void setFastOpenEnabled(boolean enabled) {
+        fastOpen.setEnabled(enabled);
+        fastOpen.setVisible(enabled);
+    }
+
+    @Override
     public void showLoader(boolean isShow){
         if(isShow)
             loader.addClassName("active");
@@ -101,6 +106,14 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @UiHandler( "importance" )
     public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
         activity.updateImportance(this, event.getValue());
+    }
+
+    @UiHandler( "fastOpen" )
+    public void onFastOpenClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onFastOpenClicked(this);
+        }
     }
 
     private void initTable () {
@@ -132,6 +145,8 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     SpanElement sectionName;
     @UiField
     SpanElement count;
+    @UiField
+    Button fastOpen;
     @Inject
     @UiField( provided = true )
     CustomImportanceBtnGroupMulti importance;

@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -31,7 +32,6 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         company.setDefaultValue( lang.selectContactCompany() );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
         sortField.setType( ModuleType.CONTACT );
     }
 
@@ -83,7 +83,7 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
         showFired.setValue( false );
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
-        search.setText( "" );
+        search.setValue( "" );
     }
 
     @UiHandler( "resetBtn" )
@@ -123,7 +123,7 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -152,7 +152,7 @@ public class ContactFilterView  extends Composite implements AbstractContactFilt
     ToggleButton sortDir;
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;

@@ -12,9 +12,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseFilter;
-import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -29,6 +27,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.*;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
@@ -59,6 +58,7 @@ public abstract class IssueTableActivity
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
+        updateCaseStatesFilter();
     }
 
     @Event(Type.FILL_CONTENT)
@@ -77,6 +77,12 @@ public abstract class IssueTableActivity
         );
 
         filterView.setReportButtonVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_EXPORT));
+
+        if (event.query != null) {
+            fillFilterFields(event.query);
+        }
+
+        filterView.toggleMsgSearchThreshold();
 
         requestIssuesCount();
     }
@@ -126,6 +132,7 @@ public abstract class IssueTableActivity
             return;
         }
         requestIssuesCount();
+        filterView.toggleMsgSearchThreshold();
     }
 
     @Override
@@ -306,8 +313,13 @@ public abstract class IssueTableActivity
         filterView.removeFilterBtnVisibility().setVisible( true );
         filterView.filterName().setValue( filter.getName() );
 
-        CaseQuery params = filter.getParams();
+        fillFilterFields(filter.getParams());
+
+    }
+
+    private void fillFilterFields(CaseQuery params) {
         filterView.searchPattern().setValue( params.getSearchString() );
+        filterView.searchByComments().setValue( params.isSearchStringAtComments() );
         filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
         filterView.sortField().setValue( params.getSortField() );
         filterView.dateRange().setValue( new DateInterval( params.getFrom(), params.getTo() ) );
@@ -381,6 +393,7 @@ public abstract class IssueTableActivity
     }
 
     private void setQueryFields( CaseQuery query ) {
+        query.setSearchStringAtComments( filterView.searchByComments().getValue() );
         query.setSortField( filterView.sortField().getValue() );
         query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
         query.setCompanyIds( IssueFilterUtils.getCompaniesIdList( filterView.companies().getValue() ) );
@@ -439,6 +452,10 @@ public abstract class IssueTableActivity
         filterView.setUserFilterNameVisibility(false);
     }
 
+    private void updateCaseStatesFilter() {
+        filterView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
+    }
+
     @Inject
     Lang lang;
 
@@ -448,7 +465,7 @@ public abstract class IssueTableActivity
     AbstractIssueFilterView filterView;
 
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
 
     @Inject
     TableAnimation animation;
@@ -463,13 +480,16 @@ public abstract class IssueTableActivity
     AttachmentServiceAsync attachmentService;
 
     @Inject
-    IssueFilterServiceAsync filterService;
+    IssueFilterControllerAsync filterService;
 
     @Inject
     PolicyService policyService;
 
     @Inject
-    ReportServiceAsync reportService;
+    ReportControllerAsync reportService;
+
+    @Inject
+    CaseStateFilterProvider caseStateFilter;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

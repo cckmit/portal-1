@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 
 import java.util.List;
@@ -42,6 +41,8 @@ public interface EquipmentService {
     CoreResponse< Integer > getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery filter );
 
     CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number );
+
+    CoreResponse< DecimalNumber > findDecimalNumber(AuthToken token, DecimalNumber number);
 
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     @Auditable( En_AuditType.EQUIPMENT_COPY )

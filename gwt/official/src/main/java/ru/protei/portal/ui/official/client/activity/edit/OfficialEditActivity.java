@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.OfficialEvents;
 import ru.protei.portal.ui.common.client.events.OfficialMemberEvents;
-import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+import ru.protei.portal.ui.common.client.service.OfficialControllerAsync;
 
 /**
  * Представление формы редактирования матрицы принятия решений
@@ -116,7 +116,7 @@ public abstract class OfficialEditActivity implements AbstractOfficialEditActivi
     private Official official;
 
     @Inject
-    OfficialServiceAsync officialService;
+    OfficialControllerAsync officialService;
 
     @Inject
     private AbstractOfficialEditView view;

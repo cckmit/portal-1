@@ -17,12 +17,11 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.OfficialServiceAsync;
+import ru.protei.portal.ui.common.client.service.OfficialControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterActivity;
 import ru.protei.portal.ui.official.client.activity.filter.AbstractOfficialFilterView;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 import java.util.Map;
@@ -205,7 +204,7 @@ public abstract class OfficialTableActivity
     @Inject
     TableAnimation animation;
     @Inject
-    OfficialServiceAsync officialService;
+    OfficialControllerAsync officialService;
     @Inject
     Lang lang;
 

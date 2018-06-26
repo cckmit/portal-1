@@ -5,12 +5,13 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -60,6 +61,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             return;
 
         model.query.setImportanceIds(importanceIds);
+
         updateSection(model);
     }
 
@@ -68,6 +70,15 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         viewToModel.remove(view);
     }
 
+    @Override
+    public void onFastOpenClicked(AbstractDashboardTableView view) {
+        if (viewToModel.containsKey(view)) {
+            CaseQuery query = new CaseQuery(viewToModel.get(view).query);
+            query.setFrom(null);
+            query.setTo(null);
+            fireEvent(new IssueEvents.Show(query));
+        }
+    }
 
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();
@@ -122,7 +133,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     Lang lang;
 
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
 
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;

@@ -11,7 +11,7 @@ import java.util.List;
  * Created by bondarenko on 12.01.17.
  */
 
-@RemoteServiceRelativePath( "springGwtServices/AttachmentService" )
+@RemoteServiceRelativePath( "springGwtServices/AttachmentController" )
 public interface AttachmentService extends RemoteService {
 
     List<Attachment> getAttachmentsByCaseId(Long caseId) throws RequestFailedException;

@@ -37,7 +37,7 @@ public class DashboardEvents {
 
         public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, boolean showLoader) {
             this(query, parent, sectionName);
-            isLoaderShow = showLoader;
+            this.isLoaderShow = showLoader;
         }
 
     }

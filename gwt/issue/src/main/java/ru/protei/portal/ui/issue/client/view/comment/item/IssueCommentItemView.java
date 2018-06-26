@@ -13,6 +13,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -63,7 +64,7 @@ public class IssueCommentItemView
             return;
         }
 
-        this.message.getElement().setInnerHTML( IssueCommentUtils.prewrapMessage( SafeHtmlUtils.htmlEscape( value ) ) );
+        this.message.getElement().setInnerHTML( HTMLHelper.prewrapMessage( HTMLHelper.htmlEscape( value ) ) );
         this.messageBlock.removeClassName( "hide" );
     }
 

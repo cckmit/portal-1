@@ -35,22 +35,13 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
-        documentUploader.addChangeHandler(event ->
-                fileName.setValue(documentUploader.getFilename()));
+        typeCode.getElement().setAttribute("placeholder", lang.documentTypeCode());
+        documentUploader.addChangeHandler(event -> fileName.setValue(documentUploader.getFilename()));
     }
 
     @Override
     public void setActivity(AbstractDocumentEditActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public boolean isDecimalNumbersCorrect() {
-        if (decimalNumber.isValid()) {
-            return true;
-        }
-        decimalNumber.setValid(false);
-        return false;
     }
 
     @Override
@@ -102,6 +93,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public HasValue<String> created() {
         return created;
+    }
+
+    @Override
+    public HasValue<String> typeCode() {
+        return typeCode;
     }
 
     @Override
@@ -215,6 +211,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiField
     HTMLPanel selectFileContainer;
+
+    @UiField
+    TextBox typeCode;
 
     @Inject
     Lang lang;

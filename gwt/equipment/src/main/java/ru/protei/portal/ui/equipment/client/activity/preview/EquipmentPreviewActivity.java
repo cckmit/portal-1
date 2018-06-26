@@ -15,10 +15,9 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
 /**
@@ -128,7 +127,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     @Inject
     PolicyService policyService;
     @Inject
-    EquipmentServiceAsync equipmentService;
+    EquipmentControllerAsync equipmentService;
 
     private Equipment equipment;
 }

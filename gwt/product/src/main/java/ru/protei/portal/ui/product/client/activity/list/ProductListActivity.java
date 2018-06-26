@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ProductServiceAsync;
+import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
@@ -133,7 +133,7 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
     @Inject
     PeriodicTaskService taskService;
     @Inject
-    ProductServiceAsync productService;
+    ProductControllerAsync productService;
     @Inject
     PolicyService policyService;
     @Inject

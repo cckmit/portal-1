@@ -28,10 +28,20 @@ public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> impl
         if( defaultValue != null ) {
             addOption( null );
         }
-        options.forEach( this::addOption );
+        options.stream()
+                .forEach( this::addOption );
     }
 
-    public void setDefaultValue( String value ) {
+    @Override
+    public void refreshValue() {
+        if (filter != null && !filter.isDisplayed(getValue())) {
+            setValue(null);
+        } else {
+            super.refreshValue();
+        }
+    }
+
+    public void setDefaultValue(String value ) {
         this.defaultValue = value;
     }
 

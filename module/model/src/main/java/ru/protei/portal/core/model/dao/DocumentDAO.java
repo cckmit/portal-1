@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.query.DocumentQuery;
 import java.util.List;
 
 public interface DocumentDAO extends PortalBaseDAO<Document> {
-    List getListByQuery(DocumentQuery query);
+    List<Document> getListByQuery(DocumentQuery query);
 
-    Long countByQuery(DocumentQuery query);
+    int countByQuery(DocumentQuery query);
 }

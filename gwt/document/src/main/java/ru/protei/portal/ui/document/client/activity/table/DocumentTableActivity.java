@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentServiceAsync;
+import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
@@ -129,15 +129,15 @@ public abstract class DocumentTableActivity
     private void requestTotalCount() {
         view.clearRecords();
 
-        documentService.getDocumentCount(query, new RequestCallback<Long>() {
+        documentService.getDocumentCount(query, new RequestCallback<Integer>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(Long result) {
-                view.setRecordCount(result);
+            public void onSuccess(Integer result) {
+                view.setRecordCount(Long.valueOf(result));
                 pagerView.setTotalPages(view.getPageCount());
                 pagerView.setTotalCount( result );
             }
@@ -182,7 +182,7 @@ public abstract class DocumentTableActivity
     @Inject
     TableAnimation animation;
     @Inject
-    DocumentServiceAsync documentService;
+    DocumentControllerAsync documentService;
     @Inject
     PolicyService policyService;
 
