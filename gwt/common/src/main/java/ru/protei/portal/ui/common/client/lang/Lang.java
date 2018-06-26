@@ -986,4 +986,20 @@ public interface Lang extends Messages, ContactItemLang {
     String caseStatesColumnInfo();
 
     String caseStatesColumnName();
+
+    String caseLinkCrm();
+
+    String caseLinkCrmShort();
+
+    String caseLinkOldCrm();
+
+    String caseLinkOldCrmShort();
+
+    String caseLinkYouTrack();
+
+    String caseLinkYouTrackShort();
+
+    String linkedWith();
+
+    String id();
 }

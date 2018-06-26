@@ -53,10 +53,8 @@ public abstract class Selector<T>
         selectedOption = value;
         if ( value == null && nullItemOption != null ) {
             fillSelectorView( nullItemOption );
-        } else if ( !itemToDisplayOptionModel.containsKey(value) && displayOptionCreator != null ) {
-            fillSelectorView( displayOptionCreator.makeDisplayOption( value ) );
         } else {
-            fillSelectorView( itemToDisplayOptionModel.get(value) );
+            fillSelectorView( displayOptionCreator.makeDisplaySelectedOption( value ) );
         }
 
         if (fireEvents) {
@@ -102,8 +100,7 @@ public abstract class Selector<T>
         }
 
         DisplayOption option = displayOptionCreator.makeDisplayOption( value );
-        SelectorItem itemView = buildItemView(option.getName(),
-                option.getStyle(), itemHandler);
+        SelectorItem itemView = buildItemView(option.getName(), option.getStyle(), itemHandler);
         if ( option.getImageSrc() != null ) {
             itemView.setImage(option.getImageSrc());
         }
@@ -117,6 +114,8 @@ public abstract class Selector<T>
         } else {
             itemToDisplayOptionModel.put(value, option);
         }
+
+
 
         popup.getChildContainer().add(itemView.asWidget());
     }
@@ -139,7 +138,7 @@ public abstract class Selector<T>
             return;
         }
 
-        DisplayOption option = value != null ? itemToDisplayOptionModel.get(value) : nullItemOption;
+        DisplayOption option = value != null ? displayOptionCreator.makeDisplaySelectedOption(value) : nullItemOption;
         selectedOption = value;
         fillSelectorView(option);
 

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.factory;
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
+import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
@@ -66,6 +67,7 @@ public class CommonClientModule extends AbstractGinModule {
 
         bind( PolicyService.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
+        bind( CaseLinkProvider.class ).asEagerSingleton();
 
         requestStaticInjection(RequestCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);

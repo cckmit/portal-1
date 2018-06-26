@@ -79,7 +79,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
-        if (contact.isFired()) {
+        if (contact.getId() == null || contact.isFired()) {
             return;
         }
 
@@ -280,7 +280,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());
-        view.fireBtnVisibility().setVisible(!person.isFired());
+        view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
 
         view.showInfo(userLogin.getId() != null);
     }
