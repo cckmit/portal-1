@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.ui.common.client.service.CaseLinkService;
+import ru.protei.portal.ui.common.client.service.CaseLinkController;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.Map;
 
-@Service("CaseLinkService")
-public class CaseLinkServiceImpl implements CaseLinkService {
+@Service("CaseLinkController")
+public class CaseLinkControllerImpl implements CaseLinkController {
 
     @Override
     public Map<En_CaseLink, String> getLinkMap() throws RequestFailedException {

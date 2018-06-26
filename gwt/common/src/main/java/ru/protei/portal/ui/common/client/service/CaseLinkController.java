@@ -7,8 +7,8 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.Map;
 
-@RemoteServiceRelativePath( "springGwtServices/CaseLinkService" )
-public interface CaseLinkService extends RemoteService {
+@RemoteServiceRelativePath( "springGwtServices/CaseLinkController" )
+public interface CaseLinkController extends RemoteService {
 
     Map<En_CaseLink, String> getLinkMap() throws RequestFailedException;
 }

@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.dict.En_CaseLink;
 
 import java.util.Map;
 
-public interface CaseLinkServiceAsync {
+public interface CaseLinkControllerAsync {
 
     void getLinkMap(AsyncCallback<Map<En_CaseLink, String>> async);
 }

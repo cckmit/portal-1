@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.activity.caselinkprovider;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.ui.common.client.service.CaseLinkServiceAsync;
+import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Map;
@@ -29,7 +29,7 @@ public class CaseLinkProvider {
     }
 
     @Inject
-    CaseLinkServiceAsync caseLinkService;
+    CaseLinkControllerAsync caseLinkService;
 
     private Map<En_CaseLink, String> linkMap = null;
 }
