@@ -45,9 +45,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set<UserRole> roles = descriptor.getLogin().getRoles();
-        boolean showPrivate = policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+        boolean isShowOnlyPrivate = !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
 
-        List<CaseLink> caseLinks = caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, showPrivate));
+        List<CaseLink> caseLinks = caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, isShowOnlyPrivate));
 
         return new CoreResponse<List<CaseLink>>().success(caseLinks);
     }
@@ -57,7 +57,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set<UserRole> roles = descriptor.getLogin().getRoles();
-        boolean showPrivate = policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+        boolean isShowOnlyPrivate = !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
 
         for (CaseLink caseLink : caseLinks) {
             if (caseLink.getCaseId() == null) {
@@ -65,10 +65,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         }
 
-        mergeCaseLinksByScope(showPrivate, case_id, caseLinks);
+        mergeCaseLinksByScope(isShowOnlyPrivate, case_id, caseLinks);
 
         List<Long> idsToRemove = new ArrayList<>();
-        List<CaseLink> caseLinksOld = caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, showPrivate));
+        List<CaseLink> caseLinksOld = caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, isShowOnlyPrivate));
         outer: for (CaseLink caseLinkOld : caseLinksOld) {
             for (CaseLink caseLink : caseLinks) {
                 if (caseLinkOld.getId().equals(caseLink.getId())) {
@@ -87,17 +87,17 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return new CoreResponse<>().success(null);
     }
 
-    private void mergeCaseLinksByScope(boolean showPrivate, long case_id, List<CaseLink> updated) {
+    private void mergeCaseLinksByScope(boolean isShowOnlyPrivate, long case_id, List<CaseLink> updated) {
         if (updated == null) {
             updated = new ArrayList<>();
         }
 
         // если права ограничены, отфильтровываем updated чтобы не проскочили ссылки без права добавления/удаления
-        applyCaseLinksByScope(showPrivate, updated);
+        applyCaseLinksByScope(isShowOnlyPrivate, updated);
 
         // если права ограничены, дополняем updated "невидимыми" ссылками
-        if (!showPrivate) {
-            Set<CaseLink> current = new HashSet<>(caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, true)));
+        if (isShowOnlyPrivate) {
+            Set<CaseLink> current = new HashSet<>(caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, false)));
             for (CaseLink caseLink : current) {
                 if (caseLink.getType().isForcePrivacy() || (
                         En_CaseLink.CRM.equals(caseLink.getType()) &&
@@ -109,11 +109,11 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
     }
 
-    private void applyCaseLinksByScope(boolean showPrivate, List<CaseLink> caseLinks) {
+    private void applyCaseLinksByScope(boolean isShowOnlyPrivate, List<CaseLink> caseLinks) {
         if (CollectionUtils.isEmpty(caseLinks)) {
             return;
         }
-        if (!showPrivate) {
+        if (isShowOnlyPrivate) {
             caseLinks.removeIf(caseLink ->
                     caseLink.getType().isForcePrivacy() || (
                             En_CaseLink.CRM.equals(caseLink.getType()) &&

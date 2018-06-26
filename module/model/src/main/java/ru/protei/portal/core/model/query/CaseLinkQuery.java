@@ -6,18 +6,18 @@ import ru.protei.portal.core.model.dict.En_SortField;
 public class CaseLinkQuery extends BaseQuery {
 
     private Long caseId;
-    private Boolean showPrivate;
+    private Boolean showOnlyPrivate;
 
     public CaseLinkQuery() {}
 
-    public CaseLinkQuery(Long caseId, Boolean showPrivate) {
-        this(null, null, null, caseId, showPrivate);
+    public CaseLinkQuery(Long caseId, Boolean showOnlyPrivate) {
+        this(null, null, null, caseId, showOnlyPrivate);
     }
 
-    public CaseLinkQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Long caseId, Boolean showPrivate) {
+    public CaseLinkQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Long caseId, Boolean showOnlyPrivate) {
         super(searchString, sortField, sortDir);
         this.caseId = caseId;
-        this.showPrivate = showPrivate;
+        this.showOnlyPrivate = showOnlyPrivate;
     }
 
     public Long getCaseId() {
@@ -28,11 +28,11 @@ public class CaseLinkQuery extends BaseQuery {
         this.caseId = caseId;
     }
 
-    public Boolean isShowPrivate() {
-        return showPrivate;
+    public Boolean isShowOnlyPrivate() {
+        return showOnlyPrivate;
     }
 
-    public void setShowPrivate(Boolean showPrivate) {
-        this.showPrivate = showPrivate;
+    public void setShowOnlyPrivate(Boolean showPrivate) {
+        this.showOnlyPrivate = showPrivate;
     }
 }

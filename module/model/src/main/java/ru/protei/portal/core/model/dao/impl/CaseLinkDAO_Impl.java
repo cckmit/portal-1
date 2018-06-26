@@ -41,7 +41,7 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
                 args.add(query.getCaseId());
             }
 
-            if (query.isShowPrivate() == null || !query.isShowPrivate()) {
+            if (query.isShowOnlyPrivate()) {
                 condition.append(" and link_type = 'CRM'");
                 condition.append(" and (private_flag = FALSE or private_flag IS NULL)");
             }
