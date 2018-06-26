@@ -1944,21 +1944,21 @@ a {
         .case-link-icon.link-crm {
           background-color: #4298ff;
           border: 1px solid #6dbbff;
-          font-size: 0.53em;
+          font-size: 7px;
           color: #ffffff;
         }
 
         .case-link-icon.link-crm-old {
           background-color: #4270b1;
           border: 1px solid #365c92;
-          font-size: 0.62em;
+          font-size: 8px;
           color: #ffffff;
         }
 
         .case-link-icon.link-you-track {
           background-color: #282828;
           border: 1px solid #f8228a;
-          font-size: 0.7em;
+          font-size: 10px;
           color: #ffffff;
         }
       }
@@ -2035,6 +2035,7 @@ a {
   height: 22px;
   width: 22px;
   margin: 2px;
+  line-height: 22px;
   background-color: #ededed;
   border: 1px solid #dadada;
   border-radius: 2px;
@@ -2051,8 +2052,7 @@ a {
   background-color: #4298ff;
   border: 1px solid #6dbbff;
   color: #ffffff;
-  font-size: 0.75em;
-  line-height: 2.5em;
+  font-size: 9px;
 }
 
 .type-selector-item.type-selector-crm-old,
@@ -2062,8 +2062,7 @@ a {
   background-color: #4270b1;
   border: 1px solid #365c92;
   color: #ffffff;
-  font-size: 0.8em;
-  line-height: 2.2em;
+  font-size: 10px;
 }
 
 .type-selector-item.type-selector-youtrack,
@@ -2073,8 +2072,7 @@ a {
   background-color: #282828;
   border: 1px solid #f8228a;
   color: #ffffff;
-  font-size: 1em;
-  line-height: 1.8em;
+  font-size: 12px;
 }
 
 .dropdown-menu {

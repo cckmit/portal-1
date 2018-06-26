@@ -49,10 +49,8 @@ public abstract class Selector<T>
         selectedOption = value;
         if ( value == null && nullItemOption != null ) {
             fillSelectorView( nullItemOption );
-        } else if ( !itemToDisplaySelectedOptionModel.containsKey(value) && displayOptionCreator != null ) {
-            fillSelectorView( displayOptionCreator.makeDisplaySelectedOption( value ) );
         } else {
-            fillSelectorView( itemToDisplaySelectedOptionModel.get(value) );
+            fillSelectorView( displayOptionCreator.makeDisplaySelectedOption( value ) );
         }
 
         if (fireEvents) {
@@ -98,7 +96,6 @@ public abstract class Selector<T>
         }
 
         DisplayOption option = displayOptionCreator.makeDisplayOption( value );
-        DisplayOption optionSelected = displayOptionCreator.makeDisplaySelectedOption( value );
         SelectorItem itemView = buildItemView(option.getName(), option.getStyle(), itemHandler);
         if ( option.getImageSrc() != null ) {
             itemView.setImage(option.getImageSrc());
@@ -112,7 +109,6 @@ public abstract class Selector<T>
             nullItemView = itemView;
         } else {
             itemToDisplayOptionModel.put(value, option);
-            itemToDisplaySelectedOptionModel.put(value, optionSelected);
         }
 
 
@@ -125,7 +121,6 @@ public abstract class Selector<T>
 
         itemToViewModel.clear();
         itemToDisplayOptionModel.clear();
-        itemToDisplaySelectedOptionModel.clear();
         itemViewToModel.clear();
 
         nullItemOption = null;
@@ -139,7 +134,7 @@ public abstract class Selector<T>
             return;
         }
 
-        DisplayOption option = value != null ? itemToDisplaySelectedOptionModel.get(value) : nullItemOption;
+        DisplayOption option = value != null ? displayOptionCreator.makeDisplaySelectedOption(value) : nullItemOption;
         selectedOption = value;
         fillSelectorView(option);
 
@@ -319,5 +314,4 @@ public abstract class Selector<T>
     protected Map<T, SelectorItem> itemToViewModel = new HashMap<>();
 
     protected Map<T, DisplayOption> itemToDisplayOptionModel = new HashMap<>();
-    protected Map<T, DisplayOption> itemToDisplaySelectedOptionModel = new HashMap<>();
 }

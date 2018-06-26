@@ -121,10 +121,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     private boolean ifCaseObjectPrivate(CaseLink caseLink) {
-        if (caseLink.getCaseObject() != null) {
-            if (caseLink.getCaseObject().isPrivateCase()) {
-                return true;
-            }
+        if (caseLink.isPrivateCase() != null && caseLink.isPrivateCase()) {
+            return true;
         }
         try {
             CaseObject co = caseObjectDAO.getCaseByCaseno(Long.parseLong(caseLink.getRemoteId()));
