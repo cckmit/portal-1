@@ -15,7 +15,7 @@ import java.util.List;
 public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements CaseLinkDAO {
 
     @Override
-    public List<CaseLink> getByCaseId(CaseLinkQuery query) {
+    public List<CaseLink> getCaseLinks(CaseLinkQuery query) {
 
         if (query.getSortDir() == null) {
             query.setSortField(En_SortField.id);

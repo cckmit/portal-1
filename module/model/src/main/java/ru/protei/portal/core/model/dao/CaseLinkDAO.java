@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface CaseLinkDAO extends PortalBaseDAO<CaseLink> {
 
-    List<CaseLink> getByCaseId(CaseLinkQuery query);
+    List<CaseLink> getCaseLinks(CaseLinkQuery query);
 }

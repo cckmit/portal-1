@@ -47,7 +47,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         Set<UserRole> roles = descriptor.getLogin().getRoles();
         boolean isShowOnlyPrivate = !policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
 
-        List<CaseLink> caseLinks = caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, isShowOnlyPrivate));
+        List<CaseLink> caseLinks = caseLinkDAO.getCaseLinks(new CaseLinkQuery(case_id, isShowOnlyPrivate));
 
         return new CoreResponse<List<CaseLink>>().success(caseLinks);
     }
@@ -68,7 +68,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         mergeCaseLinksByScope(isShowOnlyPrivate, case_id, caseLinks);
 
         List<Long> idsToRemove = new ArrayList<>();
-        List<CaseLink> caseLinksOld = caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, isShowOnlyPrivate));
+        List<CaseLink> caseLinksOld = caseLinkDAO.getCaseLinks(new CaseLinkQuery(case_id, isShowOnlyPrivate));
         outer: for (CaseLink caseLinkOld : caseLinksOld) {
             for (CaseLink caseLink : caseLinks) {
                 if (caseLinkOld.getId().equals(caseLink.getId())) {
@@ -97,7 +97,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         // если права ограничены, дополняем updated "невидимыми" ссылками
         if (isShowOnlyPrivate) {
-            Set<CaseLink> current = new HashSet<>(caseLinkDAO.getByCaseId(new CaseLinkQuery(case_id, false)));
+            Set<CaseLink> current = new HashSet<>(caseLinkDAO.getCaseLinks(new CaseLinkQuery(case_id, false)));
             for (CaseLink caseLink : current) {
                 if (caseLink.getType().isForcePrivacy() || (
                         En_CaseLink.CRM.equals(caseLink.getType()) &&
