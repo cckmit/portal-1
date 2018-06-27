@@ -1823,12 +1823,16 @@ a {
 }
 
 .dashboard-importance-filter-btn{
-  display: inline-block;
+  display: block;
   padding: 0 8px;
   cursor: pointer;
   background: #eceeee;
   color: #c9d0d1;
   text-shadow: 1px 1px white;
+  height: 28px;
+  float: left;
+  vertical-align: middle;
+  line-height: 26px;
 }
 .dashboard-importance-filter-btn:hover,
 .dashboard-importance-filter-btn.active{
@@ -1837,6 +1841,11 @@ a {
 
 .dashboard-importance-filter-btn:not(.active) .importance{
   color: #c9d0d1 !important;
+}
+
+.dashboard-importance-filter-btn .importance-level {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .dashboard .Loader{
@@ -2098,10 +2107,22 @@ a {
 
 .importance-btn {
   padding: 5px 10px 5px 5px !important;
+
+  .importance-level {
+    position: relative;
+    float: left;
+    margin: 0 6px 0 0;
+  }
 }
 
 .importance-list {
   margin: 0 !important;
+
+  .importance-level {
+    position: relative;
+    float: left;
+    margin: 0 6px 0 0;
+  }
 }
 
 .importance-item:not(.selector-val) {
@@ -2125,12 +2146,10 @@ a {
 
 .importance-level {
   display: inline-block;
-  position: relative;
-  float: left;
   width: 18px;
   height: 18px;
-  margin: 0 6px 0 0;
   border-radius: 2px;
+  background-color: #e6e6e6;
 
   &:before {
     content: "?";
@@ -2143,6 +2162,7 @@ a {
     font-weight: bold;
     text-decoration: none;
     font-style: normal;
+    color: #333333;
   }
 
   &.cosmetic {
@@ -2175,6 +2195,22 @@ a {
       color: #ffffff;
     }
     background-color: #e30000 !important;
+  }
+
+  &.center {
+    display: block;
+    margin: 0 auto;
+  }
+
+  &.lg {
+    width: 22px;
+    height: 22px;
+    &:before {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      font-size: 12px;
+    }
   }
 }
 

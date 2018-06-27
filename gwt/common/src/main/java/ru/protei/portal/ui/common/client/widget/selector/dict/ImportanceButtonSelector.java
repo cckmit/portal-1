@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.dict;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.ui.common.client.common.CriticalityStyleBuilder;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
@@ -16,7 +17,7 @@ public class ImportanceButtonSelector extends ButtonSelector<En_ImportanceLevel>
         setDisplayOptionCreator(value -> new DisplayOption(
                 value == null ? defaultValue : lang.getImportanceName(value),
                 "importance-item",
-                value == null ? null : lang.getImportanceIcon(value)
+                value == null ? null : CriticalityStyleBuilder.getImportanceIcon(value)
         ));
 
         addBtnStyleName("importance-btn");

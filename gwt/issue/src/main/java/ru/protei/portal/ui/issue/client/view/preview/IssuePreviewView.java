@@ -87,8 +87,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setCriticality( int value ) {
         En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
-        this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString().toLowerCase() );
-        CriticalityStyleBuilder.make().addClassName( this.iconCriticality, En_ImportanceLevel.find( value ) );
+        //this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString().toLowerCase() );
+        this.iconCriticality.setClassName(CriticalityStyleBuilder.getImportanceIcon(En_ImportanceLevel.getById(value)));
         this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
     }
 

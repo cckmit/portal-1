@@ -23,18 +23,6 @@ public class En_CaseImportanceLang {
         }
     }
 
-    public String getImportanceIcon(En_ImportanceLevel importance) {
-        if (importance == null) {
-            return "fa fa-unknown";
-        }
-        switch (importance){
-            case BASIC: return "importance-level basic";
-            case IMPORTANT: return "importance-level important";
-            case CRITICAL: return "importance-level critical";
-            case COSMETIC: return "importance-level cosmetic";
-            default: return "fa fa-unknown";
-        }
-    }
     @Inject
     Lang lang;
 

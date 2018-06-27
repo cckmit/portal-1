@@ -19,11 +19,13 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_ImportanceLe
     public void fillButtons() {
         clear();
 
-        for ( En_ImportanceLevel type : En_ImportanceLevel.values() ) {
-            addBtnWithIcon( "importance importance-lg " + CriticalityStyleBuilder.make().getClassName( type ),
+        for (En_ImportanceLevel type : En_ImportanceLevel.values()) {
+            addBtnWithIcon(
+                    CriticalityStyleBuilder.getImportanceIcon(type) + " center",
                     "btn btn-white btn-without-border " + type.toString().toLowerCase(),
                     null,
-                    type );
+                    type
+            );
         }
     }
 

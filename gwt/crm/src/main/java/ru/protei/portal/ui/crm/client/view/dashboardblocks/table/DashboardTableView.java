@@ -37,7 +37,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         initWidget( ourUiBinder.createAndBindUi( this ) );
         initTable();
         importance.init(
-                "importance importance-lg",
+                "",
                 "dashboard-importance-filter-btn",
                 false,
                 null

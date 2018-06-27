@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.common;
 
-import com.google.gwt.dom.client.Element;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 
 /**
@@ -12,39 +11,16 @@ public class CriticalityStyleBuilder {
         return new CriticalityStyleBuilder();
     }
 
-    public Element addClassName ( Element element, En_ImportanceLevel importanceLevel ) {
-
-        switch ( importanceLevel ) {
-            case COSMETIC:
-                element.addClassName( "icon-cosmetic" );
-                break;
-            case BASIC:
-                element.addClassName( "icon-basic" );
-                break;
-            case IMPORTANT:
-                element.addClassName( "icon-important" );
-                break;
-            case CRITICAL:
-                element.addClassName( "icon-critical" );
-                break;
+    public static String getImportanceIcon(En_ImportanceLevel importance) {
+        if (importance == null) {
+            return "importance-level";
         }
-
-        return element;
-    };
-
-    public String getClassName ( En_ImportanceLevel importanceLevel ) {
-
-        switch ( importanceLevel ) {
-            case COSMETIC:
-                return "icon-cosmetic";
-            case BASIC:
-                return "icon-basic";
-            case IMPORTANT:
-                return "icon-important";
-            case CRITICAL:
-                return "icon-critical";
+        switch (importance){
+            case BASIC: return "importance-level basic";
+            case IMPORTANT: return "importance-level important";
+            case CRITICAL: return "importance-level critical";
+            case COSMETIC: return "importance-level cosmetic";
+            default: return "importance-level";
         }
-        return "";
-    };
-
+    }
 }

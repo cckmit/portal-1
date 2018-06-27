@@ -19,12 +19,14 @@ public class CustomImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_Import
     ){
         clear();
 
-        for ( En_ImportanceLevel type : En_ImportanceLevel.values() )
-            addBtnWithIcon( iconClassName +" "+ CriticalityStyleBuilder.make().getClassName( type ) +" "+ type.toString().toLowerCase(),
+        for (En_ImportanceLevel type : En_ImportanceLevel.values()) {
+            addBtnWithIcon(
+                    CriticalityStyleBuilder.getImportanceIcon(type) + " " + iconClassName,
                     buttonClassName,
-                    showCaption? lang.getImportanceName( type ): null,
-//                    outerClassName,
-                    type );
+                    showCaption ? lang.getImportanceName(type) : null,
+                    type
+            );
+        }
     }
 
     @Inject
