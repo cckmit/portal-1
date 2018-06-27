@@ -46,7 +46,7 @@ public class HTMLHelper {
         return s;
     }
 
-    public static String prewrapMessage( String message ) {
+    public static String prewrapBlockquote(String message ) {
 //        return message.replaceAll("<(.*?)(\\n\\r|$)+", "<blockquote>$1</blockquote>");
         return message.replaceAll("\\[quote\\]", "<blockquote>")
                 .replaceAll("\\[/quote\\]", "</blockquote>");
