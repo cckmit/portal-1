@@ -119,18 +119,28 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > caseComment = new HashMap<>();
                     caseComment.put( "created", comment.getCreated() );
                     caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", comment.getText() == null ? null : replaceLineBreaks( HTMLHelper.prewrapMessage( HTMLHelper.htmlEscape( comment.getText() ) ) ) );
+                    caseComment.put( "text", escapeTextComment( comment.getText() ) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
                     if(isChanged && oldCaseComment != null){
-                        caseComment.put( "oldText", oldCaseComment.getText() == null ? null : replaceLineBreaks( HTMLHelper.prewrapMessage( HTMLHelper.htmlEscape( oldCaseComment.getText() ) ) ) );
+                        caseComment.put( "oldText", escapeTextComment( oldCaseComment.getText() ) );
                     }
 
                     return caseComment;
                 } )
                 .collect( toList() );
+    }
+
+    private String escapeTextComment(String text) {
+        if (text == null) {
+            return null;
+        }
+        text = HTMLHelper.htmlEscape( text );
+        text = HTMLHelper.prewrapMessage( text );
+        text = replaceLineBreaks( text );
+        return text;
     }
 
     private String replaceLineBreaks(String text) {
