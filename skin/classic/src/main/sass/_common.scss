@@ -482,7 +482,7 @@ i.ban {
 .dropdown-menu ul {
   list-style: none;
   padding: 0px;
-  margin: 2px 0 0;
+  margin: 0;
 }
 
 .dropdown-menu ul > li > a:focus,
@@ -2107,22 +2107,6 @@ a {
 
 .importance-btn {
   padding: 5px 10px 5px 5px !important;
-
-  .importance-level {
-    position: relative;
-    float: left;
-    margin: 0 6px 0 0;
-  }
-}
-
-.importance-list {
-  margin: 0 !important;
-
-  .importance-level {
-    position: relative;
-    float: left;
-    margin: 0 6px 0 0;
-  }
 }
 
 .importance-item:not(.selector-val) {
@@ -2200,6 +2184,12 @@ a {
   &.center {
     display: block;
     margin: 0 auto;
+  }
+
+  &.selector {
+    position: relative;
+    float: left;
+    margin: 0 6px 0 0;
   }
 
   &.lg {

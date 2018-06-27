@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.ui.common.client.common.CriticalityStyleBuilder;
+import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -87,8 +87,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setCriticality( int value ) {
         En_ImportanceLevel importanceLevel = En_ImportanceLevel.find( value );
-        //this.iconCriticality.setClassName( "importance importance-lg none-vertical-align " + importanceLevel.toString().toLowerCase() );
-        this.iconCriticality.setClassName(CriticalityStyleBuilder.getImportanceIcon(En_ImportanceLevel.getById(value)));
+        this.iconCriticality.setClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value)));
         this.criticality.setInnerText( caseImportanceLang.getImportanceName( importanceLevel ) );
     }
 

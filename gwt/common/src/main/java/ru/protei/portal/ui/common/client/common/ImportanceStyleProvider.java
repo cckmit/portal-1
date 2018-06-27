@@ -3,13 +3,9 @@ package ru.protei.portal.ui.common.client.common;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 
 /**
- * Билдер css-класса для иконки критичности
+ * Провайдер css-класса для иконки критичности
  */
-public class CriticalityStyleBuilder {
-
-    public static CriticalityStyleBuilder make() {
-        return new CriticalityStyleBuilder();
-    }
+public class ImportanceStyleProvider {
 
     public static String getImportanceIcon(En_ImportanceLevel importance) {
         if (importance == null) {
