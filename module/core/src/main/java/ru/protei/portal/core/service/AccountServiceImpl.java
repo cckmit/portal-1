@@ -79,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< UserLogin > getAccountByPersonId ( AuthToken authToken, long personId ) {
+    public CoreResponse< UserLogin > getContactAccount(AuthToken authToken, long personId ) {
         UserLogin userLogin = userLoginDAO.findByPersonId( personId );
 
         if ( userLogin == null ) {
