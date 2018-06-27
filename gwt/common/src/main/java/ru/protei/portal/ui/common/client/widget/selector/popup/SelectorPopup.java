@@ -166,6 +166,20 @@ public class SelectorPopup
         searchAutoFocus = val;
     }
 
+    public void addListStyleName(String style) {
+        if (style == null || style.isEmpty()) {
+            return;
+        }
+        childContainer.addStyleName(style);
+    }
+
+    public void removeListStyleName(String style) {
+        if (style == null || style.isEmpty()) {
+            return;
+        }
+        childContainer.removeStyleName(style);
+    }
+
     Timer searchValueChangeTimer = new Timer() {
         @Override
         public void run() {

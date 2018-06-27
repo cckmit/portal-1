@@ -2094,7 +2094,93 @@ a {
   }
 }
 
+/**** Importance level icons ****/
+
+.importance-btn {
+  padding: 5px 10px 5px 5px !important;
+}
+
+.importance-list {
+  margin: 0 !important;
+}
+
+.importance-item:not(.selector-val) {
+  padding: 5px !important;
+  > span {
+    position: relative;
+    float: left;
+    line-height: 18px;
+    &:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  }
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
+.importance-level {
+  display: inline-block;
+  position: relative;
+  float: left;
+  width: 18px;
+  height: 18px;
+  margin: 0 6px 0 0;
+  border-radius: 2px;
+
+  &:before {
+    content: "?";
+    display: block;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    font-size: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    font-style: normal;
+  }
+
+  &.cosmetic {
+    &:before {
+      content: "C";
+      color: #333333;
+    }
+    background-color: #e6e6e6 !important;
+  }
+
+  &.basic {
+    &:before {
+      content: "B";
+      color: #333333;
+    }
+    background-color: #b7e281 !important;
+  }
+
+  &.important {
+    &:before {
+      content: "I";
+      color: #333333;
+    }
+    background-color: #fed74a !important;
+  }
+
+  &.critical {
+    &:before {
+      content: "C";
+      color: #ffffff;
+    }
+    background-color: #e30000 !important;
+  }
+}
+
+
 /****************/
+
 .text-danger {
   color: $danger_color;
 }

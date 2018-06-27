@@ -13,7 +13,15 @@ public class ImportanceButtonSelector extends ButtonSelector<En_ImportanceLevel>
 
     @Inject
     public void init( ) {
-        setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : lang.getImportanceName( value ) ) );
+        setDisplayOptionCreator(value -> new DisplayOption(
+                value == null ? defaultValue : lang.getImportanceName(value),
+                "importance-item",
+                value == null ? null : lang.getImportanceIcon(value)
+        ));
+
+        addBtnStyleName("importance-btn");
+        addListStyleName("importance-list");
+
         fillOptions();
     }
 
