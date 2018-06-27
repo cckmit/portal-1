@@ -484,6 +484,46 @@ public class ImportDataServiceImpl implements ImportDataService {
                         if (ext.getProductId() != null && productIdMap.containsKey(ext.getProductId()))
                             ourObj.setProductId(productIdMap.get(ext.getProductId()));
 
+                        if (ext.getCreated() != null && !ext.getCreated().equals(ourObj.getCreated())) {
+                            ourObj.setCreated(ext.getCreated());
+                        }
+
+                        if (companyMap.containsKey(ext.getCompanyId()) && !companyMap.get(ext.getCompanyId()).equals(ourObj.getInitiatorCompanyId())) {
+                            ourObj.setInitiatorCompanyId(companyMap.get(ext.getCompanyId()));
+                        }
+
+                        if (ext.getCreator() != null && !ext.getCreator().equals(ourObj.getCreatorInfo())) {
+                            ourObj.setCreatorInfo(ext.getCreator());
+                        }
+
+                        if (ext.getClientIp() != null && !ext.getClientIp().equals(ourObj.getCreatorIp())) {
+                            ourObj.setCreatorIp(ext.getClientIp());
+                        }
+
+                        if (ext.getRecipients() != null && !ext.getRecipients().equals(ourObj.getEmails())) {
+                            ourObj.setEmails(ext.getRecipients());
+                        }
+
+                        if (ext.isDeleted() != ourObj.isDeleted()) {
+                            ourObj.setDeleted(ext.isDeleted());
+                        }
+
+                        if (ext.isPrivate() != ourObj.isPrivateCase()) {
+                            ourObj.setPrivateCase(ext.isPrivate());
+                        }
+
+                        if (ext.getImportance() != null && !ext.getImportance().equals(ourObj.getImpLevel())) {
+                            ourObj.setImpLevel(ext.getImportance());
+                        }
+
+                        if (ext.getDescription() != null && !ext.getDescription().equals(ourObj.getInfo())) {
+                            ourObj.setInfo(ext.getDescription());
+                        }
+
+                        if (ext.getLastUpdate() != null && !ext.getLastUpdate().equals(ourObj.getModified())) {
+                            ourObj.setModified(ext.getLastUpdate());
+                        }
+
                         toUpdate.add(ourObj);
                     }
                 }
