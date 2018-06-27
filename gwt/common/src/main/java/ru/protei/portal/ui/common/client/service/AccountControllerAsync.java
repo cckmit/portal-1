@@ -20,7 +20,7 @@ public interface AccountControllerAsync {
 
     void getAccount ( long id, AsyncCallback< UserLogin > callback );
 
-    void getAccountByPersonId ( long personId, AsyncCallback< UserLogin > async );
+    void getContactAccount (long personId, AsyncCallback< UserLogin > async );
 
     void saveAccount ( UserLogin userLogin, AsyncCallback< UserLogin > callback );
 

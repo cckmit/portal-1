@@ -58,7 +58,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
-                    accountService.getAccountByPersonId (person.getId(), new RequestCallback<UserLogin>() {
+                    accountService.getContactAccount(person.getId(), new RequestCallback<UserLogin>() {
                         @Override
                         public void onError(Throwable throwable) {}
 
