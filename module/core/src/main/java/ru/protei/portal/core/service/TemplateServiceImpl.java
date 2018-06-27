@@ -139,6 +139,7 @@ public class TemplateServiceImpl implements TemplateService {
         }
         text = HTMLHelper.htmlEscape( text );
         text = HTMLHelper.prewrapMessage( text );
+        text = applyBlockquoteStyle( text );
         text = replaceLineBreaks( text );
         return text;
     }
@@ -148,6 +149,13 @@ public class TemplateServiceImpl implements TemplateService {
             return null;
         }
         return text.replaceAll("(\r\n|\n|\r)", "<br/>");
+    }
+
+    private String applyBlockquoteStyle(String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.replaceAll("<blockquote>", "<blockquote style=\"margin-left: 0;border-left: 2px solid #015d5d;padding-left: 5px;color: #015d5d;\">");
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
