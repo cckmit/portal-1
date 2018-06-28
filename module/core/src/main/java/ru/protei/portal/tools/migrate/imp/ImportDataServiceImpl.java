@@ -320,6 +320,7 @@ public class ImportDataServiceImpl implements ImportDataService {
         final Map<Long, Long> companyMap;
         final Map<Long, Long> personMap;
         final Map<Long, Long> caseIdMap = new HashMap<>();
+        final Map<Long, Integer> caseImportanceMap = new HashMap<>();
 
         public CaseImport() {
             supportStatusMap = caseStateMatrixDAO.getOldToNewStateMap(En_CaseType.CRM_SUPPORT);
@@ -403,6 +404,7 @@ public class ImportDataServiceImpl implements ImportDataService {
                 CaseComment comment = new CaseComment();
                 comment.setCaseId(ourCaseId);
                 comment.setCaseStateId(ext.getStatusId() != null ? supportStatusMap.get(ext.getStatusId()) : null);
+                comment.setCaseImpLevel(caseImportanceMap.getOrDefault(ext.getSessionId(), null));
                 comment.setCreated(ext.getCreated());
                 comment.setClientIp(ext.getClientIp());
                 comment.setAuthorId(personMap.get(ext.getCreatorId()));
@@ -514,6 +516,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 
                         if (ext.getImportance() != null && !ext.getImportance().equals(ourObj.getImpLevel())) {
                             ourObj.setImpLevel(ext.getImportance());
+                            caseImportanceMap.put(ext.getId(), ext.getImportance());
                         }
 
                         if (ext.getDescription() != null && !ext.getDescription().equals(ourObj.getInfo())) {
