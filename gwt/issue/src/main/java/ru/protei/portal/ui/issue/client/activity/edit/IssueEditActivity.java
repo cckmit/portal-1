@@ -251,6 +251,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.state().setValue(issue.getId() == null ? CREATED : En_CaseState.getById(issue.getStateId()));
         view.importance().setValue(issue.getId() == null ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
+        if (issue.getId() == null) {//TODO 176
+            view.timeEstimated().setTime(0L);
+            view.timeElapsed().setTime(null);
+        } else {
+            view.timeEstimated().setTime(issue.getTimeEstimated() == null ? 0L : issue.getTimeEstimated());
+            view.timeElapsed().setTime(issue.getTimeElapsed() == 0L ? null : issue.getTimeElapsed());
+        }
+        view.timeElapsedEnabled().setEnabled(false);//TODO 176
+
         Company initiatorCompany = issue.getInitiatorCompany();
         if ( initiatorCompany == null ) {
             initiatorCompany = policyService.getUserCompany();
@@ -273,6 +282,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
+
+        issue.setTimeEstimated(view.timeEstimated().getTime());//TODO 176
 
         issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
         issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));

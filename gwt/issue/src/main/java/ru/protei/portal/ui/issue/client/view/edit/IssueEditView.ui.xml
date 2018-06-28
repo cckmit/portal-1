@@ -8,6 +8,7 @@
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -27,19 +28,30 @@
                 <issuelinks:IssueLinks ui:field="links" styleName="form-group col-xs-12 m-b-0"/>
             </div>
             <div class="grid grid-indent">
-                <div class="form-group col-xs-6">
+                <div class="form-group col-xs-3">
                     <label>
                         <ui:text from="{lang.issueState}"/>
                     </label>
                     <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
                 </div>
-                <div class="form-group col-xs-6">
+                <div class="form-group col-xs-3">
                     <label>
                         <ui:text from="{lang.issueImportance}"/>
                     </label>
                     <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
                 </div>
-
+                <div class="form-group col-xs-3">
+                    <label>
+                        <ui:text from="{lang.timeEstimated}"/>
+                    </label>
+                    <timefield:TimeTextBox ui:field="timeEstimated" styleName="input-field" notNull="false"/>
+                </div>
+                <div class="form-group col-xs-3">
+                    <label>
+                        <ui:text from="{lang.timeElapsed}"/>
+                    </label>
+                    <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field" notNull="false"/>
+                </div>
                 <div class="form-group col-xs-3">
                     <label>
                         <ui:text from="{lang.issueCompany}"/>

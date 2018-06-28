@@ -895,14 +895,21 @@ public interface Lang extends Messages, ContactItemLang {
 
     String mobilePhone();
 
+    String timeDayLiteral();
+
+    String timeHourLiteral();
     String accountFilterCompany();
     
     String documentTypeCode();
 
+    String timeMinuteLiteral();
+
+    String timeEstimated();
     String errNotAvailable();
     
     String decimalNumberNotFound();
 
+    String timeElapsed();
     String from();
 
     String to();

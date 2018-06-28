@@ -1,0 +1,22 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2018-06-01-add_time_track_columns_to_case_object" author="buchmastov">
+        <addColumn tableName="case_object">
+            <column name="time_est" type="BIGINT" defaultValueNumeric="0"/>
+            <column name="time_elapsed" type="BIGINT" defaultValueNumeric="0"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="2018-06-01-remove_obsolete_columns_from_case_time_log" author="buchmastov">
+        <dropForeignKeyConstraint baseTableName="case_time_log" constraintName="FK_CTIME_TASK"/>
+        <dropIndex tableName="case_time_log" indexName="ix_ctime_task"/>
+        <dropColumn tableName="case_time_log" columnName="task_id"/>
+        <dropColumn tableName="case_time_log" columnName="from_time"/>
+        <dropColumn tableName="case_time_log" columnName="till_time"/>
+    </changeSet>
+
+</databaseChangeLog>
