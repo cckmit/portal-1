@@ -215,7 +215,9 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             if (request.getHpsmMessage().severity() != null) {
                 logger.debug("set severity to {}", request.getHpsmMessage().severity());
-                object.setImpLevel(request.getHpsmMessage().severity().getCaseImpLevel().getId());
+                int importanceId = request.getHpsmMessage().severity().getCaseImpLevel().getId();
+                object.setImpLevel(importanceId);
+                comment.setCaseImpLevel(importanceId);
             }
 
             caseObjectDAO.merge(object);
@@ -382,6 +384,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
         comment.setAuthor(contactPerson);
         comment.setCaseId(caseObjId);
         comment.setCaseStateId(obj.getStateId());
+        comment.setCaseImpLevel(obj.getImpLevel());
         comment.setClientIp("hpsm");
         comment.setText(appendCommentInfo (commentText, request.getHpsmMessage()).toString());
 
