@@ -482,7 +482,7 @@ i.ban {
 .dropdown-menu ul {
   list-style: none;
   padding: 0px;
-  margin: 2px 0 0;
+  margin: 0;
 }
 
 .dropdown-menu ul > li > a:focus,
@@ -1823,12 +1823,16 @@ a {
 }
 
 .dashboard-importance-filter-btn{
-  display: inline-block;
+  display: block;
   padding: 0 8px;
   cursor: pointer;
   background: #eceeee;
   color: #c9d0d1;
   text-shadow: 1px 1px white;
+  height: 28px;
+  float: left;
+  vertical-align: middle;
+  line-height: 26px;
 }
 .dashboard-importance-filter-btn:hover,
 .dashboard-importance-filter-btn.active{
@@ -1837,6 +1841,11 @@ a {
 
 .dashboard-importance-filter-btn:not(.active) .importance{
   color: #c9d0d1 !important;
+}
+
+.dashboard-importance-filter-btn .importance-level {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .dashboard .Loader{
@@ -2094,7 +2103,110 @@ a {
   }
 }
 
+/**** Importance level icons ****/
+
+.importance-btn {
+  padding: 5px 10px 5px 5px !important;
+}
+
+.importance-item:not(.selector-val) {
+  padding: 5px !important;
+  > span {
+    position: relative;
+    float: left;
+    line-height: 18px;
+    &:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  }
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
+.importance-level {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  background-color: #e6e6e6;
+
+  &:before {
+    content: "?";
+    display: block;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    font-size: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    font-style: normal;
+    color: #333333;
+  }
+
+  &.cosmetic {
+    &:before {
+      content: "C";
+      color: #333333;
+    }
+    background-color: #e6e6e6 !important;
+  }
+
+  &.basic {
+    &:before {
+      content: "B";
+      color: #333333;
+    }
+    background-color: #b7e281 !important;
+  }
+
+  &.important {
+    &:before {
+      content: "I";
+      color: #333333;
+    }
+    background-color: #fed74a !important;
+  }
+
+  &.critical {
+    &:before {
+      content: "C";
+      color: #ffffff;
+    }
+    background-color: #e30000 !important;
+  }
+
+  &.center {
+    display: block;
+    margin: 0 auto;
+  }
+
+  &.selector {
+    position: relative;
+    float: left;
+    margin: 0 6px 0 0;
+  }
+
+  &.lg {
+    width: 22px;
+    height: 22px;
+    &:before {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      font-size: 12px;
+    }
+  }
+}
+
+
 /****************/
+
 .text-danger {
   color: $danger_color;
 }
