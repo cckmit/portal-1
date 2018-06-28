@@ -1,0 +1,18 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-column-cimp_level" author="buchmastov">
+        <addColumn tableName="case_comment">
+            <column name="cimp_level" type="INT"/>
+        </addColumn>
+        <addForeignKeyConstraint
+                constraintName="fk_case_comment_importance"
+                baseTableName="case_comment" baseColumnNames="cimp_level"
+                referencedTableName="importance_level" referencedColumnNames="id"
+                onDelete="NO ACTION" onUpdate="NO ACTION"/>
+    </changeSet>
+
+</databaseChangeLog>

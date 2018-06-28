@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.comment.item;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 
 /**
@@ -20,6 +21,8 @@ public interface AbstractIssueCommentItemView extends IsWidget {
     void setMine();
 
     void setStatus( En_CaseState value );
+
+    void setImportanceLevel( En_ImportanceLevel importance );
 
     void enabledEdit( boolean isEnabled );
 
