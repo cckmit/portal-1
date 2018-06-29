@@ -2,6 +2,7 @@ package ru.protei.portal.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.config.utils.PropertiesWrapper;
 import ru.protei.winter.core.utils.duration.DurationUtils;

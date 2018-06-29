@@ -1,17 +1,19 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * Created by michael on 24.05.16.
  */
 @JdbcEntity(table = "case_time_log")
-public class CaseTimeLog {
+public class CaseTimeLog extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -79,5 +81,35 @@ public class CaseTimeLog {
 
     public void setInfo(String info) {
         this.info = info;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "CaseTime";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseTimeLog that = (CaseTimeLog) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "CaseTimeLog{" +
+                "id=" + id +
+                ", created=" + created +
+                ", caseId=" + caseId +
+                ", personId=" + personId +
+                ", workTime=" + workTime +
+                ", info='" + info + '\'' +
+                '}';
     }
 }

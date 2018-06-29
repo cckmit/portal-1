@@ -19,4 +19,10 @@
         <dropColumn tableName="case_time_log" columnName="till_time"/>
     </changeSet>
 
+    <changeSet id="add_case_comment_column_to_case_time_log" author="eliseev">
+        <addColumn tableName="case_time_log">
+            <column name="case_comment_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

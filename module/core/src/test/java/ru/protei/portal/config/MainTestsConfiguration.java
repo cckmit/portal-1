@@ -1,50 +1,37 @@
 package ru.protei.portal.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.portal.core.service.user.AuthServiceImpl;
-import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
-import ru.protei.portal.tools.migrate.export.DummyExportDataService;
-import ru.protei.portal.tools.migrate.export.ExportDataService;
-import ru.protei.portal.tools.migrate.imp.ImportDataService;
-import ru.protei.portal.tools.migrate.imp.ImportDataServiceImpl;
-import ru.protei.portal.tools.migrate.imp.MigrationRunner;
-import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
-import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
-import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
+import ru.protei.portal.mock.TestAuthService;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
+
+import org.springframework.core.io.Resource;
 
 
 @Configuration
-@EnableAspectJAutoProxy
-@EnableTransactionManagement
-@EnableScheduling
-public class MainConfiguration {
+public class MainTestsConfiguration {
+
+    @Value("classpath:portal_test.properties")
+    private Resource props;
 
     /**
      * Config
      * @return
      */
     @Bean
-    public PortalConfig getPortalConfig () throws ConfigException{
-        return new PortalConfigImpl("portal.properties");
+    public PortalConfig getPortalConfig () throws ConfigException {
+        return new TestPortalConfig(props);
     }
 
     @Bean
@@ -54,45 +41,12 @@ public class MainConfiguration {
     }
 
     @Bean
-    public Lang lang() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("Lang");
-        messageSource.setDefaultEncoding("UTF-8");
-        return new Lang(messageSource);
-    }
-
-    @Bean
-    public SybConnProvider getSybConnProvider (@Autowired PortalConfig config) throws Throwable {
-        return new SybConnWrapperImpl(
-                config.data().legacySysConfig().getJdbcDriver(),
-                config.data().legacySysConfig().getJdbcURL(),
-                config.data().legacySysConfig().getLogin(),
-                config.data().legacySysConfig().getPasswd()
-        );
-    }
-
-
-    @Bean
-    public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
-
-    @Bean
-    public LDAPAuthProvider getLDAPAuthProvider() {
-        return new LDAPAuthProvider();
-    }
-
-
-    @Bean
     public CaseObjectSqlBuilder sqlDefaultBuilder () {
         return new CaseObjectSqlBuilder();
     }
 
 
     /* DAO */
-
-    @Bean
-    public MigrationEntryDAO getMigrationEntryDAO() {
-        return new MigrationEntryDAO_Impl();
-    }
 
     @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
@@ -209,7 +163,6 @@ public class MainConfiguration {
         return new WorkerEntryDAO_Impl();
     }
 
-
     @Bean
     public CompanyGroupDAO getCompanyGroupDAO() {
         return new CompanyGroupDAO_Impl();
@@ -291,26 +244,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public RedmineEndpointDAO getRedmineEndpointDAO() {
-        return new RedmineEndpointDAO_Impl();
-    }
-
-    @Bean
-    public RedmineStatusMapEntryDAO getRedmineStatusMapEntryDAO() {
-        return new RedmineStatusMapEntryDAO_Impl();
-    }
-
-    @Bean
-    public RedmineToCrmStatusMapEntryDAO getRedmineToCrmStatusMapEntryDAO() {
-        return new RedmineToCrmStatusMapEntryDAO_Impl();
-    }
-
-    @Bean
-    public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
-        return new RedminePriorityMapEntryDAO_Impl();
-    }
-
-    @Bean
     public CaseFilterDAO getIssueFilterDAO() { return new CaseFilterDAO_Impl(); }
 
     @Bean
@@ -344,7 +277,7 @@ public class MainConfiguration {
 
     @Bean
     public AuthService getAuthService() {
-        return new AuthServiceImpl();
+        return new TestAuthService();
     }
 
     @Bean
@@ -463,21 +396,6 @@ public class MainConfiguration {
     }
 
     @Bean
-    public ExportDataService getExportDataService (@Autowired PortalConfig config) {
-        return config.data().legacySysConfig().isExportEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
-    }
-
-    @Bean
-    public MigrationRunner getImportDataRunner (@Autowired PortalConfig config) {
-        return config.data().legacySysConfig().isImportEnabled() ? new MigrationRunner() : null;
-    }
-
-    @Bean
-    public ImportDataService getImportDataService (@Autowired PortalConfig config) {
-        return new ImportDataServiceImpl();
-    }
-
-    @Bean
     public ReportStorageService getReportStorageService() {
         return new ReportStorageServiceImpl();
     }
@@ -495,9 +413,4 @@ public class MainConfiguration {
     @Bean
     public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
 
-    /** ASPECT/INTERCEPTORS **/
-    @Bean
-    public ServiceLayerInterceptor getServiceLayerInterceptor () {
-        return new ServiceLayerInterceptor();
-    }
 }

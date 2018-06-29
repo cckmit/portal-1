@@ -47,6 +47,9 @@ public class CaseComment extends AuditableObject {
     @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
     private List<CaseAttachment> caseAttachments;
 
+//    @JdbcJoinedObject(remoteColumn = )
+//    private CaseTimeLog caseTimeLog;
+
     public CaseComment() {}
 
     public CaseComment(String text) {
