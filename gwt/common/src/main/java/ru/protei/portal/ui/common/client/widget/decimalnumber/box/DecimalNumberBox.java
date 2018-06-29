@@ -170,6 +170,13 @@ public class DecimalNumberBox extends Composite
         }
     }
 
+    public void setExists(boolean isExists) {
+        if (isExists)
+            showMessage(lang.decimalNumberFound(), DisplayStyle.SUCCESS);
+        else
+            showMessage(lang.decimalNumberNotFound(), DisplayStyle.DANGER);
+    }
+
     @Override
     public boolean isValid() {
         return getValue().isValid();

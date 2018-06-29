@@ -895,6 +895,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String mobilePhone();
 
+    String download();
+
     String accountFilterCompany();
     
     String documentTypeCode();
@@ -910,8 +912,6 @@ public interface Lang extends Messages, ContactItemLang {
     String asc();
 
     String desc();
-
-    String download();
 
     String selected();
 
@@ -962,6 +962,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contactFireConfirmMessage();
 
     String contactRemoveConfirmMessage();
+
+    String decimalNumberFound();
 
     String searchByComments();
 

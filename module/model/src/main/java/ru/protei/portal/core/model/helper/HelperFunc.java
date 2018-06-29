@@ -162,10 +162,21 @@ public class HelperFunc {
         }
     }
 
-    public static String makeInArg(Collection<String> col) {
+    public static String makeInArg(Collection<?> col) {
         return "(" +
                 col.stream()
                         .map(s -> "'" + s + "'")
+                        .collect(Collectors.joining(","))
+                + ")";
+    }
+
+    public static String makeInArg(Collection<?> col, boolean needQuotation) {
+        if (needQuotation) {
+            return makeInArg(col);
+        }
+        return "(" +
+                col.stream()
+                        .map(Object::toString)
                         .collect(Collectors.joining(","))
                 + ")";
     }

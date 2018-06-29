@@ -11,6 +11,8 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
+import ru.protei.portal.core.controller.document.DocumentStorageIndex;
+import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.service.*;
@@ -30,6 +32,8 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 
 @Configuration
@@ -51,6 +55,11 @@ public class MainConfiguration {
     public FileStorage getFileStorage (@Autowired PortalConfig config){
         PortalConfigData.CloudConfig cloud = config.data().cloud();
         return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
+    }
+
+    @Bean
+    public DocumentStorageIndex getDocumentStorage() {
+        return new DocumentStorageIndexImpl();
     }
 
     @Bean
@@ -478,10 +487,20 @@ public class MainConfiguration {
     }
 
     @Bean
+    public LockService getLockService() {
+        return new LockServiceImpl();
+    }
+    
+    @Bean
     public ReportStorageService getReportStorageService() {
         return new ReportStorageServiceImpl();
     }
 
+    @Bean
+    public DocumentSvnService getDocumentSvnService() {
+        return new DocumentSvnServiceImpl();
+    }
+    
     @Bean
     public ReportService getReportService() {
         return new ReportServiceImpl();

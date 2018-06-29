@@ -23,6 +23,7 @@ public class PortalConfigData {
     private final LegacySystemConfig legacySystemConfig;
     private final IntegrationConfig integrationConfig;
     private final SvnConfig svnConfig;
+    private final LuceneConfig luceneConfig;
     private final ReportConfig reportConfig;
     private final CaseLinkConfig caseLinkConfig;
 
@@ -36,6 +37,7 @@ public class PortalConfigData {
         legacySystemConfig = new LegacySystemConfig(wrapper);
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
+        luceneConfig = new LuceneConfig(wrapper);
         reportConfig = new ReportConfig(wrapper);
         caseLinkConfig = new CaseLinkConfig(wrapper);
 
@@ -75,6 +77,10 @@ public class PortalConfigData {
         return svnConfig;
     }
 
+    public LuceneConfig lucene() {
+        return luceneConfig;
+    }
+    
     public ReportConfig reportConfig() {
         return reportConfig;
     }
@@ -259,12 +265,13 @@ public class PortalConfigData {
     }
 
     public static class SvnConfig {
-        private final String url, username, password;
+        private final String url, username, password, commitMessage;
 
         public SvnConfig(PropertiesWrapper properties) throws ConfigException {
             this.url = properties.getProperty("svn.url");
             this.username = properties.getProperty("svn.username");
             this.password = properties.getProperty("svn.password");
+            this.commitMessage = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
         }
 
         public String getUrl() {
@@ -277,6 +284,22 @@ public class PortalConfigData {
 
         public String getUsername() {
             return username;
+        }
+
+        public String getCommitMessage() {
+            return commitMessage;
+        }
+    }
+
+    public static class LuceneConfig {
+        private final String indexPath;
+
+        public LuceneConfig(PropertiesWrapper propertiesWrapper) {
+            this.indexPath = propertiesWrapper.getProperty("lucene.index_path", "./index");
+        }
+
+        public String getIndexPath() {
+            return indexPath;
         }
     }
 
