@@ -47,8 +47,9 @@ public class CaseComment extends AuditableObject {
     @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
     private List<CaseAttachment> caseAttachments;
 
-//    @JdbcJoinedObject(remoteColumn = )
-//    private CaseTimeLog caseTimeLog;
+    @JdbcJoinedObject(localColumn = "id", remoteColumn = "case_comment_id")
+    private CaseTimeLog caseTimeLog;
+
 
     public CaseComment() {}
 
@@ -153,6 +154,15 @@ public class CaseComment extends AuditableObject {
 
     public void setCaseAttachments(List<CaseAttachment> attachments) {
         this.caseAttachments = attachments;
+    }
+
+
+    public CaseTimeLog getCaseTimeLog() {
+        return caseTimeLog;
+    }
+
+    public void setCaseTimeLog(CaseTimeLog caseTimeLog) {
+        this.caseTimeLog = caseTimeLog;
     }
 
     @Override

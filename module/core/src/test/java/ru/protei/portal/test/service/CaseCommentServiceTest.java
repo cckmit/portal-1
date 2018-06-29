@@ -81,9 +81,20 @@ public class CaseCommentServiceTest {
         comment.setCaseId(caseObject.getId());
         comment.setAuthorId(person.getId());
         comment.setText("Test_Comment_Text");
+
+        CaseTimeLog caseTimeLog = new CaseTimeLog();
+        caseTimeLog.setWorkTime(2L);
+        caseTimeLog.setCreated(new Date());
+        caseTimeLog.setCaseId(caseObject.getId());
+        caseTimeLog.setPersonId(person.getId());
+
+        comment.setCaseTimeLog(caseTimeLog);
+
         assertNotNull(caseCommentDAO);
         Long commentId = caseCommentDAO.persist(comment);
-        List<CaseComment> all = caseCommentDAO.getAll();
+        CaseComment caseComment = caseCommentDAO.get(commentId);
+//        jdbcManyRelationsHelper.fill(caseComment, "caseTimeLog");
+//        List<CaseComment> all = caseCommentDAO.getAll();
         int stop = 0;
     }
 
