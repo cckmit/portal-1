@@ -69,6 +69,7 @@ public class ExternalCompany implements LegacyEntity {
         this.address = HelperFunc.nvlt(contactInfo.getFactAddress(), contactInfo.getHomeAddress());
         this.email = contactInfo.allEmailsAsString();
         this.website = contactInfo.getWebSite();
+        this.created = company.getCreated();
         return this;
     }
 
