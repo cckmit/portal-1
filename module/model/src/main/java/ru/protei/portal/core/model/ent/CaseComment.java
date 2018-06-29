@@ -32,6 +32,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="cstate_id")
     private Long caseStateId;
 
+    @JdbcColumn(name="cimp_level")
+    private Integer caseImpLevel;
+
     @JdbcColumn(name="reply_to")
     private Long replyTo;
 
@@ -112,6 +115,14 @@ public class CaseComment extends AuditableObject {
         this.caseStateId = caseStateId;
     }
 
+    public Integer getCaseImpLevel() {
+        return caseImpLevel;
+    }
+
+    public void setCaseImpLevel(Integer caseImpLevel) {
+        this.caseImpLevel = caseImpLevel;
+    }
+
     public Long getReplyTo() {
         return replyTo;
     }
@@ -166,6 +177,7 @@ public class CaseComment extends AuditableObject {
                 ", caseId=" + caseId +
                 ", authorId=" + author +
                 ", caseStateId=" + caseStateId +
+                ", caseImpLevel=" + caseImpLevel +
                 ", replyTo=" + replyTo +
                 ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +

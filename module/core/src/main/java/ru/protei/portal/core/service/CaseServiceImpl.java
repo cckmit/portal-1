@@ -126,9 +126,14 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long messageId = createAndPersistStateMessage(initiator, caseId, En_CaseState.CREATED);
-        if(messageId == null)
+        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, En_CaseState.CREATED);
+        if(stateMessageId == null)
             log.error("State message for the issue %d not saved!", caseId);
+
+        Long impMessageId = createAndPersistImportanceMessage(initiator, caseId, caseObject.getImpLevel());
+        if (impMessageId == null) {
+            log.error("Importance level message for the issue %d not saved!", caseId);
+        }
 
         if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
@@ -205,6 +210,13 @@ public class CaseServiceImpl implements CaseService {
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState());
             if(messageId == null)
                 log.error("State message for the issue %d isn't saved!", caseObject.getId());
+        }
+
+        if (!oldState.getImpLevel().equals(caseObject.getImpLevel())) {
+            Long messageId = createAndPersistImportanceMessage(initiator, caseObject.getId(), caseObject.getImpLevel());
+            if (messageId == null) {
+                log.error("Importance level message for the issue %d isn't saved!", caseObject.getId());
+            }
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -495,6 +507,19 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseStateId((long)state.getId());
+        return caseCommentDAO.persist(stateChangeMessage);
+    }
+
+    private Long createAndPersistImportanceMessage(Person author, Long caseId, En_ImportanceLevel importance) {
+        return createAndPersistImportanceMessage(author, caseId, importance.getId());
+    }
+
+    private Long createAndPersistImportanceMessage(Person author, Long caseId, int importance) {
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setAuthor(author);
+        stateChangeMessage.setCreated(new Date());
+        stateChangeMessage.setCaseId(caseId);
+        stateChangeMessage.setCaseImpLevel(importance);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 

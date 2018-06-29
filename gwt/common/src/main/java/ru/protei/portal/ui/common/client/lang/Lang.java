@@ -379,6 +379,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentChangeStatusTo();
 
+    String issueCommentChangeImportanceTo();
+
     String errNotRemoved();
 
     String errEditIssueCommentEmpty();
