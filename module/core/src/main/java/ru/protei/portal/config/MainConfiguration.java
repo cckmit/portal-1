@@ -30,6 +30,8 @@ import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
+import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
 
 @Configuration
@@ -494,6 +496,11 @@ public class MainConfiguration {
 
     @Bean
     public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
+
+    @Bean
+    public LockService getLockService() {
+        return new LockServiceImpl();
+    }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean
