@@ -11,8 +11,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
@@ -73,15 +76,34 @@ public class IssueCommentItemView
     @Override
     public void setStatus( En_CaseState value ) {
         if ( root.getStyleName().contains( "right" ) ) {
+            owner.removeClassName( "name" );
+            owner.addClassName( "status" );
             owner.addClassName( "case-" + value.name().toLowerCase() );
-            this.owner.setInnerText( stateLang.getStateName( value ) );
-            this.owner.removeClassName( "name" );
-            this.owner.addClassName( "status" );
-            this.info.removeClassName( "hide" );
+            owner.setInnerText( stateLang.getStateName( value ) );
+            info.setInnerText(lang.issueCommentChangeStatusTo());
+            info.removeClassName( "hide" );
         } else {
             status.addClassName( "case-" + value.name().toLowerCase() );
-            this.status.setInnerText( stateLang.getStateName( value ) );
-            this.info.removeClassName( "hide" );
+            status.setInnerText( stateLang.getStateName( value ) );
+            info.setInnerText(lang.issueCommentChangeStatusTo());
+            info.removeClassName( "hide" );
+        }
+    }
+
+    @Override
+    public void setImportanceLevel(En_ImportanceLevel importance) {
+        if (root.getStyleName().contains("right")) {
+            owner.removeClassName("name");
+            owner.addClassName("status");
+            owner.addClassName("case-importance-" + importance.getCode().toLowerCase());
+            owner.setInnerText(importanceLang.getImportanceName(importance));
+            info.setInnerText(lang.issueCommentChangeImportanceTo());
+            info.removeClassName("hide");
+        } else {
+            status.addClassName("case-importance-" + importance.getCode().toLowerCase());
+            status.setInnerText(importanceLang.getImportanceName(importance));
+            info.setInnerText(lang.issueCommentChangeImportanceTo());
+            info.removeClassName("hide");
         }
     }
 
@@ -173,7 +195,12 @@ public class IssueCommentItemView
     @UiField
     ImageElement icon;
     @Inject
+    @UiField
+    Lang lang;
+    @Inject
     En_CaseStateLang stateLang;
+    @Inject
+    En_CaseImportanceLang importanceLang;
 
     private AbstractIssueCommentItemActivity activity;
 
