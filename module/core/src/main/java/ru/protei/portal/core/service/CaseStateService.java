@@ -22,4 +22,6 @@ public interface CaseStateService {
 
     @Privileged({ En_Privilege.CASE_STATES_EDIT })
     CoreResponse<CaseState> updateCaseState(AuthToken authToken, CaseState state);
+
+    CoreResponse<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId);
 }

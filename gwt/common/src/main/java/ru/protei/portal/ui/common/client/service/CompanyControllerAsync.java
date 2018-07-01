@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanySubscription;
@@ -96,4 +96,9 @@ public interface CompanyControllerAsync {
      * @param companyId
      */
     void getCompanySubscription( Long companyId, AsyncCallback< List< CompanySubscription > > async );
+
+    /**
+     * Получить список доступных статусов обращения
+     */
+    void getCompanyCaseStates(Long id, AsyncCallback<List<CaseState>> async);
 }
