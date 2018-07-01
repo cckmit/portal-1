@@ -438,6 +438,10 @@ public class CaseObject extends AuditableObject {
         return timeElapsed;
     }
 
+    public void setTimeElapsed(Long timeElapsed) {
+        this.timeElapsed = timeElapsed;
+    }
+
     public List<CaseLink> getLinks() {
         return links;
     }
@@ -484,6 +488,8 @@ public class CaseObject extends AuditableObject {
                 ", locations=" + locations +
                 ", members=" + members +
                 ", links=" + links +
+                ", timeEstimated=" + timeEstimated +
+                ", timeElapsed=" + timeElapsed +
                 '}';
     }
 }

@@ -44,7 +44,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValidable stateValidator();
     HasValidable importanceValidator();
     HasValidable timeEstimatedValidator();
-    HasValidable timeElapsedValidator();
+//    HasValidable timeElapsedValidator();
     HasValidable companyValidator();
     HasValidable initiatorValidator();
     HasValidable productValidator();
@@ -70,7 +70,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility saveVisibility();
 
     HasEnabled timeEstimatedEnabled();
-    HasEnabled timeElapsedEnabled();
+//    HasEnabled timeElapsedEnabled();
     HasEnabled companyEnabled();
     HasEnabled productEnabled();
     HasEnabled managerEnabled();

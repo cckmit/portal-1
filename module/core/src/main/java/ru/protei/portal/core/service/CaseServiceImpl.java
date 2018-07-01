@@ -24,6 +24,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+
 /**
  * Реализация сервиса управления обращениями
  */
@@ -273,8 +275,13 @@ public class CaseServiceImpl implements CaseService {
 
         boolean isCaseChanged = updateCaseModified ( token, comment.getCaseId(), comment.getCreated() ).getData();
 
-        if (!isCaseChanged)
+        if (!isCaseChanged) {
             throw new RuntimeException( "failed to update case modifiedDate " );
+        }
+
+        if (!updateTimeElapsed(token, comment.getCaseId())) {
+            throw new RuntimeException( "failed to update time elapsed" );
+        }
 
         // re-read data from db to get full-filled object
         CaseComment result = caseCommentDAO.get( commentId );
@@ -344,6 +351,9 @@ public class CaseServiceImpl implements CaseService {
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
 
+        if (!updateTimeElapsed(token, comment.getCaseId())) {
+            throw new RuntimeException( "failed to update time elapsed" );
+        }
 
         // below building event
 
@@ -419,6 +429,18 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setModified(modified == null? new Date(): modified);
 
         boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "MODIFIED");
+
+        return new CoreResponse<Boolean>().success(isUpdated);
+    }
+
+    public CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed) {
+        if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = new CaseObject(caseId);
+        caseObject.setTimeElapsed(timeElapsed);
+
+        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "time_elapsed");
 
         return new CoreResponse<Boolean>().success(isUpdated);
     }
@@ -554,6 +576,13 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 && Objects.equals(co1.getProductId(), co2.getProductId())
                 && Objects.equals(co1.getManagerId(), co2.getManagerId());
+    }
+
+    private boolean updateTimeElapsed(AuthToken token, Long caseId) {
+        List<CaseComment> allCaseComments = caseCommentDAO.getListByCondition("CASE_ID=?", caseId);
+        long timeElapsed = stream(allCaseComments).filter(cmnt -> cmnt.getTimeElapsed() != null).mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
+
+        return updateCaseTimeElapsed ( token, caseId, timeElapsed ).getData();
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)

@@ -25,7 +25,7 @@
 
                             <div class="attachments">
                                 <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
-                                <g:Button styleName=" btn btn-white time-btn" ui:field="timeBtn" title="{lang.timeElapsed}">
+                                <g:Button styleName=" btn btn-white m-l-5 time-btn" ui:field="timeBtn" title="{lang.timeElapsed}">
                                     <i class="fa fa-clock-o"></i>
                                 </g:Button>
                                 <g:HTMLPanel styleName="form-group col-xs-12 time-block" ui:field="timePanel" visible="false">

@@ -36,6 +36,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
+import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -179,10 +180,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         return timeEstimated;
     }
 
-    @Override
-    public HasValidable timeElapsedValidator() {
-        return timeElapsed;
-    }
+//    @Override
+//    public HasValidable timeElapsedValidator() {
+//        return timeElapsed;
+//    }
 
     @Override
     public HasValidable companyValidator() { return company; }
@@ -250,10 +251,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         return timeEstimated;
     }
 
-    @Override
-    public HasEnabled timeElapsedEnabled() {
-        return timeElapsed;
-    }
+//    @Override
+//    public HasEnabled timeElapsedEnabled() {
+//        return timeElapsed;
+//    }
 
     @Override
     public HasEnabled companyEnabled() {
@@ -393,7 +394,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
 
     @Inject
     @UiField(provided = true)
-    TimeTextBox timeElapsed;
+    TimeLabel timeElapsed;
 
     @Inject
     @UiField(provided = true)
