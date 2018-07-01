@@ -28,7 +28,7 @@
 
     <changeSet id="add-column-usage-in-companies" author="eliseev">
         <addColumn tableName="case_state">
-            <column name="usage_in_companies" type="INT" defaultValue="0"/>
+            <column name="usage_in_companies" type="INT" defaultValue="1"/>
         </addColumn>
     </changeSet>
 

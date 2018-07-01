@@ -3,7 +3,6 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 import java.util.Set;

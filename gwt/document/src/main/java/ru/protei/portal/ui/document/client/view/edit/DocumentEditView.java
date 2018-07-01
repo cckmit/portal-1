@@ -56,6 +56,16 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public void resetFilename() {
+        fileName.setText(null);
+    }
+
+    @Override
+    public void setSaveEnabled(boolean isEnabled) {
+        this.saveButton.setEnabled(isEnabled);
+    }
+
+    @Override
     public HasValue<String> name() {
         return name;
     }
@@ -125,6 +135,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         return documentUploader;
     }
 
+    @Override
+    public void setDecimalNumberExists(boolean isExists) {
+        decimalNumber.setExists(isExists);
+    }
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {

@@ -18,4 +18,8 @@ public class CrmConstants {
         String CREATE_CONTACT_IDENTITY = "issue-edit";
         int MIN_LENGTH_FOR_SEARCH_BY_COMMENTS = 3;
     }
+
+    public interface FileUpload {
+        String FILE_ITEM_DESC = "file-item";
+    }
 }

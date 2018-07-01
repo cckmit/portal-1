@@ -16,7 +16,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.CaseState;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.issuelinks.IssueLinks;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -139,6 +140,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Override
     public HasValue<Set<PersonShortView>> notifiers() {
         return notifiers;
+    }
+
+    @Override
+    public HasValue<Set<CaseLink>> links() {
+        return links;
     }
 
     @Override
@@ -394,6 +400,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     HTMLPanel nameContainer;
     @UiField
     HTMLPanel caseSubscriptionContainers;
+    @Inject
+    @UiField(provided = true)
+    IssueLinks links;
 
     private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
 

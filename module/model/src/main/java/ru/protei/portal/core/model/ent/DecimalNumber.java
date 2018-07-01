@@ -138,7 +138,7 @@ public class DecimalNumber implements Serializable {
     }
 
     public boolean isCompletelyEmpty() {
-        return classifierCode == null && registerNumber == null;
+        return classifierCode == null && registerNumber == null && modification == null;
     }
 
     public boolean isSameNumber( DecimalNumber number ) {

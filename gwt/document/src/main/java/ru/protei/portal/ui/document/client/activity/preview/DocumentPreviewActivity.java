@@ -50,7 +50,10 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setNumberDecimal(DecimalNumberFormatter.formatNumber(document.getDecimalNumber()));
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
+        view.setDownloadLink(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId());
     }
+
+    private static final String DOWNLOAD_PATH = "Crm/springApi/document/";
 
     @Inject
     Lang lang;

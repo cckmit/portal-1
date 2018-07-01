@@ -15,12 +15,13 @@ public class DocumentQuery extends BaseQuery {
     private DocumentType documentType;
     private Date from, to;
     private List<String> keywords;
-    private String content;
+    private String inTextQuery;
+    private List<Long> onlyIds;
 
     public DocumentQuery() {
     }
 
-    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String content) {
+    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String inTextQuery) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;
         this.from = from;
@@ -28,7 +29,7 @@ public class DocumentQuery extends BaseQuery {
         this.keywords = keywords;
         this.documentType = documentType;
         this.managerId = managerId;
-        this.content = content;
+        this.inTextQuery = inTextQuery;
     }
 
     public List<String> getKeywords() {
@@ -79,11 +80,19 @@ public class DocumentQuery extends BaseQuery {
         this.managerId = managerId;
     }
 
-    public String getContent() {
-        return content;
+    public String getInTextQuery() {
+        return inTextQuery;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setInTextQuery(String inTextQuery) {
+        this.inTextQuery = inTextQuery;
+    }
+
+    public List<Long> getOnlyIds() {
+        return onlyIds;
+    }
+
+    public void setOnlyIds(List<Long> onlyIds) {
+        this.onlyIds = onlyIds;
     }
 }

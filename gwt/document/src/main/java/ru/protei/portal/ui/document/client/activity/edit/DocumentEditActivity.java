@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.document.client.activity.edit;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.common.ConsumeTimer;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
@@ -20,13 +22,14 @@ import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
 
+
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-
+        view.decimalNumber().addValueChangeHandler(valueChangeEvent -> onDecimalNumberChanged(valueChangeEvent.getValue()));
         view.documentUploader().setUploadHandler(new UploadHandler() {
             @Override
             public void onError() {
@@ -35,8 +38,7 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess() {
-                fireEvent(new DocumentEvents.ChangeModel());
-                fireEvent(new Back());
+                saveUploadedDocument();
             }
         });
     }
@@ -94,28 +96,19 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        if (decimalNumberEmpty) {
-            saveDocument(newDocument);
-            return;
-        }
-
-        equipmentService.findDecimalNumber(newDocument.getDecimalNumber(), new RequestCallback<DecimalNumber>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireErrorMessage(lang.decimalNumberNotFound());
-            }
-
-            @Override
-            public void onSuccess(DecimalNumber decimalNumber) {
-                newDocument.setDecimalNumber(decimalNumber);
-                saveDocument(newDocument);
-            }
-        });
+        saveDocument(newDocument);
     }
 
     private void saveDocument(Document document) {
-        boolean isNew = document.getId() == null;
-        documentService.saveDocument(document, new RequestCallback<Document>() {
+        this.document = document;
+        if (document.getId() == null)
+            view.documentUploader().uploadBindToDocument(document);
+        else
+            saveUploadedDocument();
+    }
+
+    private void saveUploadedDocument() {
+        documentService.saveDocument(this.document, new RequestCallback<Document>() {
             @Override
             public void onError(Throwable throwable) {
                 fireErrorMessage(lang.errDocumentNotSaved());
@@ -123,11 +116,44 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(Document result) {
-                if (isNew) {
-                    view.documentUploader().uploadBindToDocument(result);
-                } else {
-                    fireEvent(new Back());
+                fireEvent(new DocumentEvents.ChangeModel());
+                fireEvent(new Back());
+            }
+        });
+    }
+
+    private void onDecimalNumberChanged(DecimalNumber number) {
+        view.setSaveEnabled(false);
+        view.decimalNumberValidator().setValid(true);
+
+        if (number == null || number.isEmpty()) {
+            document.setDecimalNumber(number);
+            view.setSaveEnabled(true);
+            view.decimalNumberValidator().setValid(true);
+            return;
+        }
+        timer.cancel();
+        timer.setObject(number);
+        timer.schedule(300);
+    }
+
+    private void findDecimalNumber(DecimalNumber number) {
+        equipmentService.findDecimalNumber(number, new AsyncCallback<DecimalNumber>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                view.setDecimalNumberExists(false);
+            }
+
+            @Override
+            public void onSuccess(DecimalNumber decimalNumber) {
+                if (decimalNumber == null) {
+                    onFailure(null);
+                    return;
                 }
+                document.setDecimalNumber(decimalNumber);
+                view.setSaveEnabled(true);
+                view.decimalNumberValidator().setValid(true);
+                view.setDecimalNumberExists(true);
             }
         });
     }
@@ -208,8 +234,17 @@ public abstract class DocumentEditActivity
         view.nameValidator().setValid(true);
         view.decimalNumberValidator().setValid(true);
 
-        view.documentUploader().resetFilename();
+        view.resetFilename();
+        view.documentUploader().resetAction();
+        view.setSaveEnabled(true);
     }
+
+    private final ConsumeTimer<DecimalNumber> timer = new ConsumeTimer<DecimalNumber>() {
+        @Override
+        public void accept(DecimalNumber decimalNumber) {
+            findDecimalNumber(decimalNumber);
+        }
+    };
 
     @Inject
     AbstractDocumentEditView view;

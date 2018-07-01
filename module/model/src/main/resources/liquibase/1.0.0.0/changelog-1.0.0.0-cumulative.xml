@@ -52,4 +52,7 @@
   <include file="2018-05-17-add_report_table.xml" relativeToChangelogFile="true" />
   <include file="2018-06-13-add_document_columns.xml" relativeToChangelogFile="true" />
   <include file="2018-06-20-add_case_state_to_company_table.xml" relativeToChangelogFile="true" />
+  <include file="2018-06-20-create_case_link_table.xml" relativeToChangelogFile="true" />
+  <include file="2018-06-25-case_link_case_id_fk.xml" relativeToChangelogFile="true" />
+  <include file="2018-06-28-add-cimp_level-column.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

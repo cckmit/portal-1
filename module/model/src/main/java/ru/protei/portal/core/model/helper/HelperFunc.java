@@ -15,18 +15,10 @@ public class HelperFunc {
         return t == null ? v : t.getTime();
     }
 
-    /**
-     * @deprecated use {@link ru.protei.portal.core.model.helper.StringUtils#isBlank(String string)}
-     */
-    @Deprecated
     public static boolean isEmpty (String s) {
         return s == null || s.trim().isEmpty();
     }
 
-    /**
-     * @deprecated use {@link ru.protei.portal.core.model.helper.StringUtils#isNotBlank(String string)}
-     */
-    @Deprecated
     public static boolean isNotEmpty (String s) {
         return !isEmpty(s);
     }
@@ -170,10 +162,21 @@ public class HelperFunc {
         }
     }
 
-    public static String makeInArg(Collection<String> col) {
+    public static String makeInArg(Collection<?> col) {
         return "(" +
                 col.stream()
                         .map(s -> "'" + s + "'")
+                        .collect(Collectors.joining(","))
+                + ")";
+    }
+
+    public static String makeInArg(Collection<?> col, boolean needQuotation) {
+        if (needQuotation) {
+            return makeInArg(col);
+        }
+        return "(" +
+                col.stream()
+                        .map(Object::toString)
                         .collect(Collectors.joining(","))
                 + ")";
     }

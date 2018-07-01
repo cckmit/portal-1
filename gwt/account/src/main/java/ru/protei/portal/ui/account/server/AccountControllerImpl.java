@@ -52,14 +52,14 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public UserLogin getAccountByPersonId( long personId ) throws RequestFailedException {
-        log.debug( "getAccount(): personId={}", personId );
+    public UserLogin getContactAccount(long personId ) throws RequestFailedException {
+        log.debug( "getContactAccount(): personId={}", personId );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< UserLogin > response = accountService.getAccountByPersonId( descriptor.makeAuthToken(), personId );
+        CoreResponse< UserLogin > response = accountService.getContactAccount( descriptor.makeAuthToken(), personId );
 
-        log.debug( "getAccount(): personId={} -> {} ", personId, response.isError() ? "error" : response.getData().getUlogin() );
+        log.debug( "getContactAccount(): personId={} -> {} ", personId, response.isError() ? "error" : response.getData().getUlogin() );
 
         return response.getData();
     }

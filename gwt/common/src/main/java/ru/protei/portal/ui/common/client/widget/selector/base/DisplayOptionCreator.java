@@ -6,4 +6,8 @@ package ru.protei.portal.ui.common.client.widget.selector.base;
 public interface DisplayOptionCreator<T> {
 
     DisplayOption makeDisplayOption( T value );
+
+    default DisplayOption makeDisplaySelectedOption( T value ) {
+        return makeDisplayOption( value );
+    }
 }

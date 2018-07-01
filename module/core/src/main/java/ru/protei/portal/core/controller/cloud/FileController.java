@@ -25,16 +25,15 @@ import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.winter.core.utils.mime.MimeUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Base64;
+import java.util.Collections;
+
+import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 @RestController
 public class FileController {
@@ -216,29 +215,6 @@ public class FileController {
         return val + fileExt;
     }
 
-    public String encodeToRFC2231(String value) {
-        StringBuilder buf = new StringBuilder();
-        byte[] bytes;
-        try {
-            bytes = value.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            // cannot happen with UTF-8
-            bytes = new byte[]{ '?' };
-        }
-        for (byte b : bytes) {
-            if (b < '+' || b == ';' || b == ',' || b == '\\' || b > 'z') {
-                buf.append('%');
-                String s = Integer.toHexString(b & 0xff).toUpperCase();
-                if (s.length() < 2) {
-                    buf.append('0');
-                }
-                buf.append(s);
-            } else {
-                buf.append((char) b);
-            }
-        }
-        return buf.toString();
-    }
 
     private String getCaseNumberOrNull(Long caseNumber) {
         return caseNumber == null ? "null" : caseNumber.toString();

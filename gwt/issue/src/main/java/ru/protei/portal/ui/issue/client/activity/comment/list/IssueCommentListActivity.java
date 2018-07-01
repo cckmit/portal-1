@@ -6,6 +6,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
@@ -292,6 +293,11 @@ public abstract class IssueCommentListActivity
         if ( value.getCaseStateId() != null ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
             itemView.setStatus( caseState );
+        }
+
+        if (value.getCaseImpLevel() != null) {
+            En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
+            itemView.setImportanceLevel(importance);
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());

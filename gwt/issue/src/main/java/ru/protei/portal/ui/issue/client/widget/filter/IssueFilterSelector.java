@@ -8,10 +8,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
     public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements ModelSelector< CaseFilterShortView > {
 

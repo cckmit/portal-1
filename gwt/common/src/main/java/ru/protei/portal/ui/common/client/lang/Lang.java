@@ -379,6 +379,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentChangeStatusTo();
 
+    String issueCommentChangeImportanceTo();
+
     String errNotRemoved();
 
     String errEditIssueCommentEmpty();
@@ -895,6 +897,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String mobilePhone();
 
+    String download();
+
     String accountFilterCompany();
     
     String documentTypeCode();
@@ -910,8 +914,6 @@ public interface Lang extends Messages, ContactItemLang {
     String asc();
 
     String desc();
-
-    String download();
 
     String selected();
 
@@ -963,6 +965,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactRemoveConfirmMessage();
 
+    String decimalNumberFound();
+
     String searchByComments();
 
     String searchByCommentsUnavailable(int threshold);
@@ -986,4 +990,20 @@ public interface Lang extends Messages, ContactItemLang {
     String caseStatesColumnInfo();
 
     String caseStatesColumnName();
+
+    String caseLinkCrm();
+
+    String caseLinkCrmShort();
+
+    String caseLinkOldCrm();
+
+    String caseLinkOldCrmShort();
+
+    String caseLinkYouTrack();
+
+    String caseLinkYouTrackShort();
+
+    String linkedWith();
+
+    String id();
 }

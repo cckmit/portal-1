@@ -482,7 +482,7 @@ i.ban {
 .dropdown-menu ul {
   list-style: none;
   padding: 0px;
-  margin: 2px 0 0;
+  margin: 0;
 }
 
 .dropdown-menu ul > li > a:focus,
@@ -661,6 +661,35 @@ i.ban {
 .cleanable-search-icon.clear:hover:before,
 .cleanable-search-icon.clear:active:before {
   color: #314157 !important;
+}
+
+/** ENTERABLE TEXT BOX **/
+.enterable-text-box {
+  position: relative;
+}
+
+.enterable-text-box input { padding-right: 28px !important; }
+
+.enterable-text-box .enterable-text-box-icon {
+  position: absolute;
+  font-weight: 600;
+  height: 30px;
+  width: 30px;
+  top: 0;
+  right: 0;
+  margin-right: 0;
+  color: #a5acb5 !important;
+  cursor: pointer;
+}
+
+.enterable-text-box-icon:before {
+  content: "\21B5";
+  position: relative;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  text-align: center;
+  line-height: 29px;
 }
 
 /* OVERRIDED STYLES! */
@@ -1794,12 +1823,16 @@ a {
 }
 
 .dashboard-importance-filter-btn{
-  display: inline-block;
+  display: block;
   padding: 0 8px;
   cursor: pointer;
   background: #eceeee;
   color: #c9d0d1;
   text-shadow: 1px 1px white;
+  height: 28px;
+  float: left;
+  vertical-align: middle;
+  line-height: 26px;
 }
 .dashboard-importance-filter-btn:hover,
 .dashboard-importance-filter-btn.active{
@@ -1808,6 +1841,11 @@ a {
 
 .dashboard-importance-filter-btn:not(.active) .importance{
   color: #c9d0d1 !important;
+}
+
+.dashboard-importance-filter-btn .importance-level {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .dashboard .Loader{
@@ -1853,8 +1891,341 @@ a {
   }
 }
 
+/**** case links ****/
+
+.case-links {
+  .case-links-label {
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    float: left;
+  }
+
+  .case-links-container {
+    display: inline-block;
+    float: left;
+    margin: 0;
+    padding: 0;
+    line-height: 0.8em;
+
+    > div {
+      position: relative;
+      display: inline-block;
+      outline: none;
+
+      .case-link {
+        position: relative;
+        display: inline-block;
+        margin: 3px 0 0 4px;
+        text-align: center;
+        height: 22px;
+        line-height: 22px;
+        background-color: #ededed;
+        border: 1px solid #dadada;
+        border-radius: 4px;
+        cursor: pointer;
+
+        > * {
+          float: left;
+        }
+
+        .case-link-close {
+          height: 12px;
+          width: 12px;
+          padding: 5px 2px 5px 4px;
+          font-size: 0.8em;
+          color: inherit;
+          cursor: pointer;
+        }
+
+        .case-link-text {
+          padding: 0 2px 0 0;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+
+        .case-link-icon {
+          height: 16px;
+          width: 16px;
+          margin: 2px 2px 2px 3px;
+          line-height: 16px;
+          background-color: #ededed;
+          border: 1px solid #dadada;
+          border-radius: 2px;
+          text-align: center;
+          vertical-align: middle;
+          font-size: 0.8em;
+          font-weight: bold;
+        }
+
+        .case-link-icon.link-crm {
+          background-color: #4298ff;
+          border: 1px solid #6dbbff;
+          font-size: 7px;
+          color: #ffffff;
+        }
+
+        .case-link-icon.link-crm-old {
+          background-color: #4270b1;
+          border: 1px solid #365c92;
+          font-size: 8px;
+          color: #ffffff;
+        }
+
+        .case-link-icon.link-you-track {
+          background-color: #282828;
+          border: 1px solid #f8228a;
+          font-size: 10px;
+          color: #ffffff;
+        }
+      }
+
+      .case-link.without-link {
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .case-links-button {
+    padding: 0;
+    margin: 2px 0 2px 2px;
+
+    i {
+      position: relative;
+      height: 26px;
+      line-height: 26px;
+      float: left;
+      vertical-align: middle;
+    }
+
+    i:nth-child(1) {
+      padding: 0 1px 0 8px;
+    }
+
+    i:nth-child(2) {
+      font-size: 0.6em;
+      padding: 0 8px 0 2px;
+    }
+  }
+}
+
+.case-link-popup {
+  z-index: 1000;
+  float: left;
+  height: 30px;
+  width: 320px;
+  min-width: 160px;
+  text-align: left;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  -webkit-box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  border: 1px solid #ced2d7;
+
+  > .type-selector {
+    position: relative;
+    float: left;
+    display: inline-block;
+    width: 51px;
+    height: 30px;
+
+    button {
+      padding: 0 8px 0 0;
+      margin: -1px 0 0 -1px;
+    }
+  }
+
+  > .remote-id-input {
+    position: relative;
+    float: left;
+    display: inline-block;
+    width: calc(100% - 47px);
+    margin: -1px -1px 0 -3px;
+  }
+}
+
+.type-selector-item,
+.type-selector-item:hover,
+.type-selector-item:active,
+.type-selector-item:focus {
+  display: inline-block;
+  height: 22px;
+  width: 22px;
+  margin: 2px;
+  line-height: 22px;
+  background-color: #ededed;
+  border: 1px solid #dadada;
+  border-radius: 2px;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.type-selector-item.type-selector-crm,
+.type-selector-item.type-selector-crm:hover,
+.type-selector-item.type-selector-crm:active,
+.type-selector-item.type-selector-crm:focus {
+  background-color: #4298ff;
+  border: 1px solid #6dbbff;
+  color: #ffffff;
+  font-size: 9px;
+}
+
+.type-selector-item.type-selector-crm-old,
+.type-selector-item.type-selector-crm-old:hover,
+.type-selector-item.type-selector-crm-old:active,
+.type-selector-item.type-selector-crm-old:focus {
+  background-color: #4270b1;
+  border: 1px solid #365c92;
+  color: #ffffff;
+  font-size: 10px;
+}
+
+.type-selector-item.type-selector-youtrack,
+.type-selector-item.type-selector-youtrack:hover,
+.type-selector-item.type-selector-youtrack:active,
+.type-selector-item.type-selector-youtrack:focus {
+  background-color: #282828;
+  border: 1px solid #f8228a;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.dropdown-menu {
+  .type-selector-item {
+    display: block;
+    padding: 0;
+  }
+}
+
+/**** Importance level icons ****/
+
+.importance-btn {
+  padding: 5px 10px 5px 5px !important;
+}
+
+.importance-item:not(.selector-val) {
+  padding: 5px !important;
+  > span {
+    position: relative;
+    float: left;
+    line-height: 18px;
+    &:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  }
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
+.importance-level {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 2px;
+  background-color: #e6e6e6;
+
+  &:before {
+    content: "?";
+    display: block;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 18px;
+    font-size: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    font-style: normal;
+    color: #333333;
+  }
+
+  &.cosmetic {
+    &:before {
+      content: "C";
+      color: #333333;
+    }
+    background-color: #e6e6e6 !important;
+  }
+
+  &.basic {
+    &:before {
+      content: "B";
+      color: #333333;
+    }
+    background-color: #b7e281 !important;
+  }
+
+  &.important {
+    &:before {
+      content: "I";
+      color: #333333;
+    }
+    background-color: #fed74a !important;
+  }
+
+  &.critical {
+    &:before {
+      content: "C";
+      color: #ffffff;
+    }
+    background-color: #e30000 !important;
+  }
+
+  &.center {
+    display: block;
+    margin: 0 auto;
+  }
+
+  &.selector {
+    position: relative;
+    float: left;
+    margin: 0 6px 0 0;
+  }
+
+  &.lg {
+    width: 22px;
+    height: 22px;
+    &:before {
+      width: 22px;
+      height: 22px;
+      line-height: 22px;
+      font-size: 12px;
+    }
+  }
+}
+
+.case-importance-cometic {
+  color: #7b7b7b;
+  font-weight: bold;
+}
+
+.case-importance-basic {
+  color: #7cc71d;
+  font-weight: bold;
+}
+
+.case-importance-important {
+  color: #eaba0c;
+  font-weight: bold;
+}
+
+.case-importance-critical {
+  color: #e30000;
+  font-weight: bold;
+}
 
 /****************/
+
 .text-danger {
   color: $danger_color;
 }

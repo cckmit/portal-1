@@ -20,6 +20,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setVisibleUploader(boolean isVisible);
 
+    void resetFilename();
+
     HasValue<String> name();
 
     HasValue<DocumentType> documentType();
@@ -47,4 +49,8 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValidable nameValidator();
 
     HasValidable decimalNumberValidator();
+
+    void setDecimalNumberExists(boolean isExists);
+
+    void setSaveEnabled(boolean isEnabled);
 }

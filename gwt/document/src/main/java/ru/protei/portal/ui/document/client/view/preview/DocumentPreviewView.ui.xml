@@ -51,7 +51,9 @@
                     <span class="col-xs-12 col-md-12 equipment-number" ui:field="keyWords"></span>
                 </div>
             </fieldset>
-
+            <g:Anchor href="javascript:void(0)" ui:field="downloadButton" styleName="btn btn-white" target="_blank">
+                <ui:text from="{lang.download}"/>
+            </g:Anchor>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

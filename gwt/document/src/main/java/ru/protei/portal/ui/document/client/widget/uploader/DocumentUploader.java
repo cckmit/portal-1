@@ -28,8 +28,7 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
-    public void resetFilename() {
-        fileUpload.setName(null);
+    public void resetAction() {
         form.setAction("javascript:void(0);");
     }
 
@@ -56,12 +55,8 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
             return;
         }
 
-        Long documentId = document.getId();
-        Long projectId = document.getProjectId();
-        String url = UPLOAD_DOCUMENT_URL + projectId + "/" + documentId;
-
         form.addStyleName("attachment-uploading");
-        form.setAction(url);
+        form.setAction(UPLOAD_DOCUMENT_URL);
         form.submit();
         fileUpload.setEnabled(false);
     }

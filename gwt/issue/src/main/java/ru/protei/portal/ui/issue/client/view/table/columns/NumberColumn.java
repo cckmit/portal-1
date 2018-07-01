@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.common.CriticalityStyleBuilder;
+import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -38,8 +38,7 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
 
         if ( value.getImpLevel() != null ) {
             com.google.gwt.dom.client.Element i = DOM.createElement( "i" );
-            i.addClassName( "importance importance-lg " + En_ImportanceLevel.find( value.getImpLevel() ).toString().toLowerCase() );
-            CriticalityStyleBuilder.make().addClassName( i, En_ImportanceLevel.find( value.getImpLevel() ) );
+            i.addClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value.getImpLevel())) + " center");
             divElement.appendChild( i );
         }
 
