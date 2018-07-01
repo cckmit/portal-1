@@ -1,5 +1,6 @@
 package ru.protei.portal.test.service;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -7,10 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseStateDAO;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -30,9 +28,11 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static sun.nio.cs.Surrogate.MIN;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
+@Ignore //TODO требуется тестовая база данных
 public class CaseCommentServiceTest {
 
     public static final AuthToken TEST_AUTH_TOKEN = new AuthToken("TEST_SID", "127.0.0.1");
@@ -82,20 +82,12 @@ public class CaseCommentServiceTest {
         comment.setAuthorId(person.getId());
         comment.setText("Test_Comment_Text");
 
-        CaseTimeLog caseTimeLog = new CaseTimeLog();
-        caseTimeLog.setWorkTime(2L);
-        caseTimeLog.setCreated(new Date());
-        caseTimeLog.setCaseId(caseObject.getId());
-        caseTimeLog.setPersonId(person.getId());
+        comment.setTimeElapsed(2*MINUTE);
 
-        comment.setCaseTimeLog(caseTimeLog);
-
-        assertNotNull(caseCommentDAO);
         Long commentId = caseCommentDAO.persist(comment);
         CaseComment caseComment = caseCommentDAO.get(commentId);
-//        jdbcManyRelationsHelper.fill(caseComment, "caseTimeLog");
-//        List<CaseComment> all = caseCommentDAO.getAll();
-        int stop = 0;
+        assertNotNull(caseComment);
+        assertNotNull(caseComment.getTimeElapsed());
     }
 
 
@@ -108,4 +100,6 @@ public class CaseCommentServiceTest {
         checkResult(result);
         return result.getData();
     }
+
+    long MINUTE = 1L;
 }
