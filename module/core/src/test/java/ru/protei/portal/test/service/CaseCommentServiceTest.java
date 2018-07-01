@@ -1,5 +1,9 @@
 package ru.protei.portal.test.service;
 
+import com.wix.mysql.config.Charset;
+import com.wix.mysql.config.MysqldConfig;
+import com.wix.mysql.config.SchemaConfig;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +28,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static com.wix.mysql.EmbeddedMysql.anEmbeddedMysql;
+import static com.wix.mysql.config.MysqldConfig.aMysqldConfig;
+import static com.wix.mysql.config.SchemaConfig.aSchemaConfig;
+import static com.wix.mysql.distribution.Version.v5_5_40;
+import static com.wix.mysql.distribution.Version.v5_7_19;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,8 +51,23 @@ public class CaseCommentServiceTest {
     @Inject
     private CaseService caseService;
 
+    private final static MysqldConfig config = aMysqldConfig(v5_7_19)
+            .withCharset(Charset.UTF8)
+            .withPort(33062)
+            .withUser("sa", "")
+            .withServerVariable("lower_case_table_names", 1)
+//                .withTimeZone("Europe/Vilnius")
+            .build();
+
+    private final static SchemaConfig schemaConfig = aSchemaConfig("portal_test").build();
+
     @Inject
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @BeforeClass
+    public static void initTests() {
+        anEmbeddedMysql(config).addSchema(schemaConfig).start();
+    }
 
     @Test
     public void getCaseCommentsTest() throws Exception {
