@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -27,13 +28,15 @@
         </ul>
 
         <div ui:field="messageBlock" class="hide">
-            <a href="javascript:;" class="image">
-                <img alt="" src="./images/user-icon-m.png" ui:field="icon"></img>
-            </a>
+            <div class="meta">
+                <a href="javascript:;" class="image">
+                    <img alt="" src="./images/user-icon-m.png" ui:field="icon"></img>
+                </a>
+                <timefield:TimeLabel ui:field="timeElapsed" styleName="time-label"/>
+            </div>
 
             <div class="message">
                 <g:InlineLabel ui:field="message"/>
-
                 <div class="attachment-block" ui:field="attachBlock">
                     <label style="font-size: 11px;font-weight: bold;">
                         <ui:text from="{lang.issueAttachments}"/>

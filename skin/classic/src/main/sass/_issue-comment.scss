@@ -8,6 +8,7 @@
 
 .chats > li {
   position: relative;
+  min-height: 80px;
 }
 .chats > li + li {
   margin-top: 15px
@@ -61,6 +62,10 @@
 
 .chats .image + .message {
   margin-left: 60px
+}
+
+.chats .meta + .message {
+  margin-left: 60px;
 }
 
 .chats .message {
@@ -123,7 +128,16 @@
   float: right;
 }
 
+.chats .right .meta {
+  float: right;
+}
+
 .chats .right .image + .message {
+  margin-right: 75px;
+  margin-left: 0
+}
+
+.chats .right .meta + .message {
   margin-right: 75px;
   margin-left: 0
 }
@@ -195,5 +209,14 @@ blockquote {
       border: none;
       padding: 0px;
     }
+  }
+}
+
+.meta{
+  position: relative;
+  .time-label{
+    width: 60px;
+    position: absolute;
+    top: 50px;
   }
 }
