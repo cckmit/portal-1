@@ -10,7 +10,6 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -21,12 +20,10 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
-import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
 import javax.mail.MessagingException;
 import java.util.*;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -59,9 +56,6 @@ public class MailNotificationProcessor {
     MailMessageFactory messageFactory;
 
     @Autowired
-    CaseObjectDAO caseObjectDAO;
-
-    @Autowired
     LockService lockService;
 
     @Autowired
@@ -88,76 +82,67 @@ public class MailNotificationProcessor {
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
-            log.debug("Semaphore interrupted while waiting for green light: {}", e.getMessage());
+            log.warn("Semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
+            return;
         }
 
-        CaseObject newState = event.getCaseObject();
+        CaseObject caseObject = event.getCaseObject();
 
-        lockService.doWithLock(CaseObjectDAO.class, newState.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 2, () -> {
-            List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
+        List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
 
-            CoreResponse<List<CaseComment>> comments = caseService.getCaseCommentList(null, newState.getId());
-            if (comments.isError()) {
-                log.error("Failed to retrieve comments for caseId={}", newState.getId());
-                semaphore.release();
-                return null;
-            }
-
-            PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
-                    event, comments.getData(), config.data().getCrmCaseUrl(), recipients
-            );
-            if (bodyTemplate == null) {
-                log.error("Failed to prepare body template");
-                semaphore.release();
-                return null;
-            }
-
-            PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(newState, event.getInitiator());
-            if (subjectTemplate == null) {
-                log.error("Failed to prepare subject template");
-                semaphore.release();
-                return null;
-            }
-
-            Long lastMessageId;
-            try {
-                lastMessageId = caseObjectDAO.partialGet(newState.getId(), "email_last_id").getEmailLastId();
-                if (lastMessageId == null) {
-                    lastMessageId = 0L;
-                }
-            } catch (Exception e) {
-                lastMessageId = 0L;
-            }
-            String messageId = "case." + String.valueOf(newState.getCaseNumber()) + "." + String.valueOf(lastMessageId + 1);
-            String inReplyTo = "case." + String.valueOf(newState.getCaseNumber()) + "." + String.valueOf(lastMessageId);
-            List<String> references = new ArrayList<>();
-            for (long i = lastMessageId; i >= 0; i--) {
-                references.add("case." + String.valueOf(newState.getCaseNumber()) + "." + String.valueOf(i));
-            }
-
-            notifiers.forEach((entry) -> {
-                if (!isProteiRecipient(entry) && config.data().smtp().isBlockExternalRecipients()) {
-                    log.debug("block send mail to {} (external recipient)", entry.getAddress());
-                    return;
-                }
-
-                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry));
-                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry));
-
-                try {
-                    MimeMessageHelper msg = prepareMessage(messageId, inReplyTo, references, subject, body);
-                    msg.setTo(entry.getAddress());
-                    mailSendChannel.send(msg.getMimeMessage());
-                } catch (Exception e) {
-                    log.error("Failed to make MimeMessage", e);
-                }
-            });
-
-            newState.setEmailLastId(lastMessageId + 1);
-            caseObjectDAO.partialMerge(newState, "email_last_id");
+        CoreResponse<List<CaseComment>> comments = caseService.getCaseCommentList(null, caseObject.getId());
+        if (comments.isError()) {
+            log.error("Failed to retrieve comments for caseId={}", caseObject.getId());
             semaphore.release();
-            return null;
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(
+                event, comments.getData(), config.data().getCrmCaseUrl(), recipients
+        );
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template");
+            semaphore.release();
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(caseObject, event.getInitiator());
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template");
+            semaphore.release();
+            return;
+        }
+
+        CoreResponse<Long> response = caseService.getEmailLastId(caseObject.getId());
+        Long lastMessageId = response.isOk() ? response.getData() : 0L;
+        String messageId = "case." + String.valueOf(caseObject.getCaseNumber()) + "." + String.valueOf(lastMessageId + 1);
+        String inReplyTo = "case." + String.valueOf(caseObject.getCaseNumber()) + "." + String.valueOf(lastMessageId);
+        List<String> references = new ArrayList<>();
+        for (long i = lastMessageId; i >= 0; i--) {
+            references.add("case." + String.valueOf(caseObject.getCaseNumber()) + "." + String.valueOf(i));
+        }
+
+        notifiers.forEach((entry) -> {
+            if (!isProteiRecipient(entry) && config.data().smtp().isBlockExternalRecipients()) {
+                log.debug("block send mail to {} (external recipient)", entry.getAddress());
+                return;
+            }
+
+            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry));
+            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry));
+
+            try {
+                MimeMessageHelper msg = prepareMessage(messageId, inReplyTo, references, subject, body);
+                msg.setTo(entry.getAddress());
+                mailSendChannel.send(msg.getMimeMessage());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage", e);
+            }
         });
+
+        caseObject.setEmailLastId(lastMessageId + 1);
+        caseService.updateEmailLastId(caseObject);
+        semaphore.release();
     }
 
     private MimeMessageHelper prepareMessage( String messageId, String inReplyTo, List<String> references, String subj, String body ) throws MessagingException {
