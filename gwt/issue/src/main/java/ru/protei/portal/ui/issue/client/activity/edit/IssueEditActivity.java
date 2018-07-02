@@ -169,6 +169,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onCompanyChanged() {
         Company companyOption = Company.fromEntityOption(view.company().getValue());
+
+        view.initiatorState().setEnabled(companyOption != null);
+        view.initiatorUpdateCompany(companyOption);
+        view.initiator().setValue(null);
+
         if ( companyOption == null ) {
             view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()) );
         } else {

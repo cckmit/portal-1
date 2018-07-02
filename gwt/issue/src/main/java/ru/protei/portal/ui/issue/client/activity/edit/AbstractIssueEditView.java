@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -73,4 +74,6 @@ public interface AbstractIssueEditView extends IsWidget {
     void refreshFooterBtnPosition();
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
+
+    void initiatorUpdateCompany(Company company);
 }

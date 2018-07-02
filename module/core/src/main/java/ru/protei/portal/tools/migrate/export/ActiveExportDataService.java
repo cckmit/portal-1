@@ -180,7 +180,7 @@ public class ActiveExportDataService implements ExportDataService {
         }
 
         try {
-            final Company personCompany = person.getCompany() != null ? person.getCompany() : companyDAO.get(person.getCompanyId());
+            final Company personCompany = companyDAO.get(person.getCompanyId());
 
             return legacyDAO.runAction(transaction -> {
                 ExternalCompany externalCompany = transaction.dao(ExternalCompany.class).get(personCompany.getOldId());
