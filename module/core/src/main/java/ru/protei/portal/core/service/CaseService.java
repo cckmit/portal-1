@@ -67,4 +67,7 @@ public interface CaseService {
     boolean isExistsAttachments(Long caseId);
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag);
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId);
+
+    CoreResponse<Long> getEmailLastId(Long caseId);
+    CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject);
 }

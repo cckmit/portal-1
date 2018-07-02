@@ -454,6 +454,37 @@ public class CaseServiceImpl implements CaseService {
         return updateExistsAttachmentsFlag(caseId, isExistsAttachments(caseId));
     }
 
+    @Override
+    public CoreResponse<Long> getEmailLastId(Long caseId) {
+        if (caseId == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject caseObject = caseObjectDAO.partialGet(caseId, "email_last_id");
+
+        if (caseObject == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        Long lastMessageId = caseObject.getEmailLastId();
+        if (lastMessageId == null) {
+            lastMessageId = 0L;
+        }
+
+        return new CoreResponse<Long>().success(lastMessageId);
+    }
+
+    @Override
+    public CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject) {
+        if (caseObject == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = caseObjectDAO.partialMerge(caseObject, "email_last_id");
+
+        return new CoreResponse<Boolean>().success(result);
+    }
+
 
     @Override
     @Transactional
