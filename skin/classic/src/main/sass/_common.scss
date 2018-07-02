@@ -1880,6 +1880,13 @@ a {
   }
 }
 
+.dashboard-search-btn {
+  display: inline-block;
+  height: 28px;
+  width: 28px;
+  vertical-align: top;
+}
+
 @media (min-width: 1400px) {
   .dashboard-active-records {
     padding-right: 7.5px;
