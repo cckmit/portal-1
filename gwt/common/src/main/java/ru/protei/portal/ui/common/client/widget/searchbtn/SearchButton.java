@@ -20,6 +20,10 @@ public class SearchButton extends Composite implements HasValue<String> {
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        popup.addValueChangeHandler(event -> {
+            value = event.getValue();
+            ValueChangeEvent.fire(this, event.getValue());
+        });
     }
 
     @Override
@@ -41,6 +45,10 @@ public class SearchButton extends Composite implements HasValue<String> {
         }
     }
 
+    public void setPlaceholder(String value) {
+        popup.setPlaceholder(value);
+    }
+
     @UiHandler("searchBtn")
     public void searchBtnClick(ClickEvent event) {
         event.preventDefault();
@@ -55,10 +63,6 @@ public class SearchButton extends Composite implements HasValue<String> {
     private void showPopup() {
         popup.showNear(searchBtn);
         popup.setValue(value);
-        popup.addValueChangeHandler(event -> {
-            value = event.getValue();
-            ValueChangeEvent.fire(this, event.getValue());
-        });
     }
 
     @Inject

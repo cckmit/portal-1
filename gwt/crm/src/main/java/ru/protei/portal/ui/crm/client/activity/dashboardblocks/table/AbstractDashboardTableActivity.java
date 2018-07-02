@@ -13,4 +13,5 @@ public interface AbstractDashboardTableActivity extends ClickColumn.Handler<Case
     void updateImportance(AbstractDashboardTableView view, Set<En_ImportanceLevel> importanceLevels);
     void removeView(AbstractDashboardTableView view);
     void onFastOpenClicked(AbstractDashboardTableView view);
+    void onSearchChanged(AbstractDashboardTableView view, String search);
 }

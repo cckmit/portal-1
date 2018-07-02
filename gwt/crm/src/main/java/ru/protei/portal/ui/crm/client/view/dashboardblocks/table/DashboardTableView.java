@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.searchbtn.SearchButton;
 import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
 import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableView;
 import ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns.ContactColumn;
@@ -116,6 +117,13 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         }
     }
 
+    @UiHandler( "search" )
+    public void onSearchChanged(ValueChangeEvent<String> event) {
+        if (activity != null) {
+            activity.onSearchChanged(this, event.getValue());
+        }
+    }
+
     private void initTable () {
         issueNumber = new NumberColumn( lang, caseStateLang );
         contact = new ContactColumn( lang );
@@ -139,6 +147,7 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     En_CaseStateLang caseStateLang;
     @Inject
+    @UiField
     Lang lang;
 
     @UiField
@@ -156,6 +165,9 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     HTMLPanel tableContainer;
     @UiField
     TableWidget<CaseShortView> table;
+    @Inject
+    @UiField( provided = true )
+    SearchButton search;
 
     interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
     private static CaseTableViewUiBinder ourUiBinder = GWT.create(CaseTableViewUiBinder.class);

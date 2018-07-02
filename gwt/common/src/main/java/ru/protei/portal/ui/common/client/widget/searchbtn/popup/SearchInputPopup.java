@@ -73,6 +73,10 @@ public class SearchInputPopup extends PopupPanel implements HasValue<String> {
         }
     }
 
+    public void setPlaceholder(String value) {
+        searchInput.setPlaceholder(value);
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
         return addHandler(handler, ValueChangeEvent.getType());

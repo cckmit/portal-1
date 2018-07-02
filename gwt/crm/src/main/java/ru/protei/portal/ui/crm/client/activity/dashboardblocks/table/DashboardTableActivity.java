@@ -80,6 +80,19 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         }
     }
 
+    @Override
+    public void onSearchChanged(AbstractDashboardTableView view, String search) {
+        DashboardTableModel model = viewToModel.get(view);
+
+        if (model == null) {
+            return;
+        }
+
+        model.query.setSearchCasenoString(search);
+
+        updateSection(model);
+    }
+
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();
         updateRecordsCount(model);

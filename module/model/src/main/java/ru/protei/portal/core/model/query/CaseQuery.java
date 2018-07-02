@@ -47,6 +47,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> includeIds;
 
+    private String searchCasenoString;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -174,6 +176,14 @@ public class CaseQuery extends BaseQuery {
 
     public void setIncludeIds(List<Long> includeIds) {
         this.includeIds = includeIds;
+    }
+
+    public String getSearchCasenoString() {
+        return searchCasenoString;
+    }
+
+    public void setSearchCasenoString(String searchCasenoString) {
+        this.searchCasenoString = searchCasenoString;
     }
 
     @Override
