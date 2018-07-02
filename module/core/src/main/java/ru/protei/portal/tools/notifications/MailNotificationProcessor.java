@@ -79,13 +79,6 @@ public class MailNotificationProcessor {
         AssembledCaseEvent event, Collection<NotificationEntry> notifiers
     ) {
 
-        try {
-            semaphore.acquire();
-        } catch (InterruptedException e) {
-            log.warn("Semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
-            return;
-        }
-
         CaseObject caseObject = event.getCaseObject();
 
         List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
@@ -93,7 +86,6 @@ public class MailNotificationProcessor {
         CoreResponse<List<CaseComment>> comments = caseService.getCaseCommentList(null, caseObject.getId());
         if (comments.isError()) {
             log.error("Failed to retrieve comments for caseId={}", caseObject.getId());
-            semaphore.release();
             return;
         }
 
@@ -102,14 +94,19 @@ public class MailNotificationProcessor {
         );
         if (bodyTemplate == null) {
             log.error("Failed to prepare body template");
-            semaphore.release();
             return;
         }
 
         PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(caseObject, event.getInitiator());
         if (subjectTemplate == null) {
             log.error("Failed to prepare subject template");
-            semaphore.release();
+            return;
+        }
+
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            log.warn("Semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
             return;
         }
 
@@ -142,6 +139,7 @@ public class MailNotificationProcessor {
 
         caseObject.setEmailLastId(lastMessageId + 1);
         caseService.updateEmailLastId(caseObject);
+
         semaphore.release();
     }
 
