@@ -255,11 +255,11 @@
             <version>1.9.1</version>
         </dependency>
 
+        <!--EmbeddedDB-->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
-            <!--<scope>test</scope>-->
         </dependency>
 
         <dependency>
@@ -267,7 +267,6 @@
             <artifactId>wix-embedded-mysql</artifactId>
             <version>4.1.2</version>
             <scope>test</scope>
-
         </dependency>
     </dependencies>
 

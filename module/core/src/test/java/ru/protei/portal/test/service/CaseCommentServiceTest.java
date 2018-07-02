@@ -1,17 +1,11 @@
 package ru.protei.portal.test.service;
 
-import com.wix.mysql.EmbeddedMysql;
-import com.wix.mysql.config.Charset;
-import com.wix.mysql.config.MysqldConfig;
-import com.wix.mysql.config.SchemaConfig;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.EmbeddedDBConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -21,6 +15,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.embededb.EmbeddedDB;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -30,21 +25,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static com.wix.mysql.EmbeddedMysql.anEmbeddedMysql;
-import static com.wix.mysql.config.MysqldConfig.aMysqldConfig;
-import static com.wix.mysql.config.SchemaConfig.aSchemaConfig;
-import static com.wix.mysql.distribution.Version.v5_5_40;
-import static com.wix.mysql.distribution.Version.v5_7_19;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
-//@Ignore //TODO требуется тестовая база данных
+@ContextConfiguration(classes = {EmbeddedDBConfiguration.class, CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
 public class CaseCommentServiceTest {
 
     public static final AuthToken TEST_AUTH_TOKEN = new AuthToken("TEST_SID", "127.0.0.1");
-    static EmbeddedMysql mysqld;
 
+    @Inject
+    EmbeddedDB embeddedDB;
     @Inject
     private CaseCommentDAO caseCommentDAO;
     @Inject
@@ -56,27 +46,6 @@ public class CaseCommentServiceTest {
 
     @Inject
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    private final static MysqldConfig config = aMysqldConfig(v5_7_19)
-            .withCharset(Charset.UTF8)
-            .withPort(33062)
-            .withUser("sa", "")
-            .withServerVariable("lower_case_table_names", 1)
-//                .withTimeZone("Europe/Vilnius")
-            .build();
-
-    private final static SchemaConfig schemaConfig = aSchemaConfig("portal_test").build();
-
-    @BeforeClass
-    public static void initTests() {
-        mysqld = anEmbeddedMysql(config).addSchema(schemaConfig).start();
-    }
-
-    @Before
-    public void reloadSchema() {
-//        mysqld.reloadSchema(schemaConfig);
-    }
-
 
     @Test
     public void getCaseCommentsTest() throws Exception {
@@ -141,7 +110,6 @@ public class CaseCommentServiceTest {
 
         caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(TEST_AUTH_TOKEN, caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", new Long(timeElapsed1Changed + timeElapsed2), caseObjectWithComment.getTimeElapsed());
-
     }
 
 
