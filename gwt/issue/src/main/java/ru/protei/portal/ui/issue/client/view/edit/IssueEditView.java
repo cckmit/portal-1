@@ -272,6 +272,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         state.setFilter(filter);
     }
 
+    @Override
+    public void initiatorUpdateCompany(Company company) {
+        initiator.updateCompany(company);
+    }
+
     private void setFooterFixed(boolean isFixed) {
         if (isFixed) {
             root.addStyleName("footer-fixed");
@@ -282,12 +287,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
 
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
-        Company company = Company.fromEntityOption( event.getValue() );
-
-        initiator.setEnabled( company != null );
-        initiator.updateCompany(company);
-        initiator.setValue( null );
-
         if ( activity != null ) {
             activity.onCompanyChanged();
         }
