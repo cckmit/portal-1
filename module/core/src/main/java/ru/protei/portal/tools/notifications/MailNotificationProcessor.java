@@ -25,6 +25,7 @@ import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
 import javax.mail.MessagingException;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,8 @@ import static java.util.stream.Collectors.toList;
 public class MailNotificationProcessor {
 
     private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
+
+    private final static Semaphore semaphore = new Semaphore(1);
 
     @Autowired
     CaseSubscriptionService subscriptionService;
@@ -82,14 +85,21 @@ public class MailNotificationProcessor {
         AssembledCaseEvent event, Collection<NotificationEntry> notifiers
     ) {
 
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            log.debug("Semaphore interrupted while waiting for green light: {}", e.getMessage());
+        }
+
         CaseObject newState = event.getCaseObject();
 
-        lockService.doWithLock(CaseObjectDAO.class, newState.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+        lockService.doWithLock(CaseObjectDAO.class, newState.getId(), LockStrategy.TRANSACTION, TimeUnit.SECONDS, 2, () -> {
             List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
 
             CoreResponse<List<CaseComment>> comments = caseService.getCaseCommentList(null, newState.getId());
             if (comments.isError()) {
                 log.error("Failed to retrieve comments for caseId={}", newState.getId());
+                semaphore.release();
                 return null;
             }
 
@@ -98,12 +108,14 @@ public class MailNotificationProcessor {
             );
             if (bodyTemplate == null) {
                 log.error("Failed to prepare body template");
+                semaphore.release();
                 return null;
             }
 
             PreparedTemplate subjectTemplate = templateService.getCrmEmailNotificationSubject(newState, event.getInitiator());
             if (subjectTemplate == null) {
                 log.error("Failed to prepare subject template");
+                semaphore.release();
                 return null;
             }
 
@@ -143,6 +155,7 @@ public class MailNotificationProcessor {
 
             newState.setEmailLastId(lastMessageId + 1);
             caseObjectDAO.partialMerge(newState, "email_last_id");
+            semaphore.release();
             return null;
         });
     }
