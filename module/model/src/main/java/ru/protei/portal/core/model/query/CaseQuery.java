@@ -23,6 +23,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> companyIds;
 
+    private List<Long> initiatorIds;
+
     private List<Long> productIds;
 
     private List<Long> managerIds;
@@ -99,6 +101,14 @@ public class CaseQuery extends BaseQuery {
 
     public void setCompanyIds( List<Long> companyIds) {
         this.companyIds = companyIds;
+    }
+
+    public List<Long> getInitiatorIds() {
+        return initiatorIds;
+    }
+
+    public void setInitiatorIds(List<Long> initiatorIds) {
+        this.initiatorIds = initiatorIds;
     }
 
     public List<Long> getProductIds() {
@@ -190,6 +200,7 @@ public class CaseQuery extends BaseQuery {
     public String toString () {
         return "CaseQuery{" +
                 "companyIds=" + companyIds +
+                ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
                 ", withoutManager=" + withoutManager +
@@ -201,6 +212,7 @@ public class CaseQuery extends BaseQuery {
                 ", showPrivate=" + allowViewPrivate +
                 ", searchStringAtComments=" + searchStringAtComments +
                 ", includeIds=" + includeIds +
+                ", searchCasenoString=" + searchCasenoString +
                 '}';
     }
 }

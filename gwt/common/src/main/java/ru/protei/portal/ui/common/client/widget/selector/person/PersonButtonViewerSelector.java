@@ -27,7 +27,7 @@ public class PersonButtonViewerSelector extends Selector<PersonShortView> implem
         setSearchAutoFocus(true);
         setDisplayOptionCreator(value -> {
             if (value == null) {
-                return null;
+                return new DisplayOption(defaultValue);
             }
             return new DisplayOption(
                     value.getDisplayShortName(),
@@ -43,9 +43,14 @@ public class PersonButtonViewerSelector extends Selector<PersonShortView> implem
     @Override
     public void fillOptions(List<PersonShortView> persons) {
         clearOptions();
+        addOption(null);
         if (persons != null) {
             persons.forEach(this::addOption);
         }
+    }
+
+    public void setDefaultValue(String value) {
+        this.defaultValue = value;
     }
 
     @UiHandler("button")
@@ -57,6 +62,8 @@ public class PersonButtonViewerSelector extends Selector<PersonShortView> implem
     HTMLPanel inputContainer;
     @UiField
     Button button;
+
+    private String defaultValue = "";
 
     interface PersonButtonViewerSelectorUiBinder extends UiBinder<HTMLPanel, PersonButtonViewerSelector> {}
     private static PersonButtonViewerSelectorUiBinder ourUiBinder = GWT.create(PersonButtonViewerSelectorUiBinder.class);

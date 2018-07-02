@@ -5,12 +5,9 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -39,12 +36,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
         view.setSectionName(event.sectionName);
-
-        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
-            view.showInitiatorsBtn();
-        } else {
-            view.hideInitiatorsBtn();
-        }
 
         updateSection(model);
     }
@@ -105,7 +96,15 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
     @Override
     public void onInitiatorSelected(AbstractDashboardTableView view, PersonShortView person) {
-        fireEvent(ContactEvents.Edit.byId(person.getId()));
+        DashboardTableModel model = viewToModel.get(view);
+
+        if (model == null) {
+            return;
+        }
+
+        model.query.setInitiatorIds(person == null ? null : Collections.singletonList(person.getId()));
+
+        updateSection(model);
     }
 
     private void updateSection(DashboardTableModel model){
@@ -168,8 +167,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
     @Inject
     IssueControllerAsync issueService;
-    @Inject
-    PolicyService policyService;
 
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;

@@ -1004,4 +1004,6 @@ public interface Lang extends Messages, ContactItemLang {
     String linkedWith();
 
     String id();
+
+    String withoutContact();
 }

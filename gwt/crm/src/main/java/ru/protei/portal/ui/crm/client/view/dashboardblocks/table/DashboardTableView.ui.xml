@@ -13,7 +13,7 @@
             <span ui:field="count" class="dashboard-total-count"/>
             <div class="rightSide">
                 <searchbtn:SearchButton ui:field="search" styleName="dashboard-search-btn" placeholder="{lang.issueNumber}"/>
-                <person:PersonButtonViewerSelector ui:field="initiatorsBtn" styleName="dashboard-btn"/>
+                <person:PersonButtonViewerSelector ui:field="initiatorsBtn" styleName="dashboard-btn" defaultValue="{lang.withoutContact}"/>
                 <g:Button ui:field="fastOpen" styleName="btn dashboard-btn">
                     <i class="fa fa-lg fa-external-link"/>
                 </g:Button>

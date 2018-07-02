@@ -111,16 +111,6 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         return importance;
     }
 
-    @Override
-    public void showInitiatorsBtn() {
-        initiatorsBtn.removeStyleName("hide");
-    }
-
-    @Override
-    public void hideInitiatorsBtn() {
-        initiatorsBtn.addStyleName("hide");
-    }
-
     @UiHandler( "importance" )
     public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
         activity.updateImportance(this, event.getValue());

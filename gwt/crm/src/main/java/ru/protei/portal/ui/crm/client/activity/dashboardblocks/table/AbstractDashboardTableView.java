@@ -25,8 +25,4 @@ public interface AbstractDashboardTableView extends IsWidget {
     void setFastOpenEnabled(boolean enabled);
     void showLoader(boolean isShow);
     HasValue<Set<En_ImportanceLevel>> getImportance();
-
-    void showInitiatorsBtn();
-    void hideInitiatorsBtn();
-
 }

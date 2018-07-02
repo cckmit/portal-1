@@ -37,6 +37,12 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and initiator_company in (" + query.getCompanyIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
+            if ( query.getInitiatorIds() != null && !query.getInitiatorIds().isEmpty() ) {
+                condition.append(" and initiator in (")
+                        .append(query.getInitiatorIds().stream().map(Object::toString).collect(Collectors.joining(",")))
+                        .append(")");
+            }
+
             if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
                 if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
                     condition.append(" and (product_id is null");
