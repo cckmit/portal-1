@@ -13,10 +13,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.searchbtn.SearchButton;
+import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonViewerSelector;
 import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableActivity;
 import ru.protei.portal.ui.crm.client.activity.dashboardblocks.table.AbstractDashboardTableView;
 import ru.protei.portal.ui.crm.client.view.dashboardblocks.table.columns.ContactColumn;
@@ -63,6 +65,11 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     }
 
     @Override
+    public void putPersons(List<PersonShortView> persons) {
+        initiatorsBtn.fillOptions(persons);
+    }
+
+    @Override
     public void setActivity(AbstractDashboardTableActivity activity) {
         this.activity = activity;
         issueNumber.setHandler( activity );
@@ -104,6 +111,16 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         return importance;
     }
 
+    @Override
+    public void showInitiatorsBtn() {
+        initiatorsBtn.removeStyleName("hide");
+    }
+
+    @Override
+    public void hideInitiatorsBtn() {
+        initiatorsBtn.addStyleName("hide");
+    }
+
     @UiHandler( "importance" )
     public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
         activity.updateImportance(this, event.getValue());
@@ -121,6 +138,13 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     public void onSearchChanged(ValueChangeEvent<String> event) {
         if (activity != null) {
             activity.onSearchChanged(this, event.getValue());
+        }
+    }
+
+    @UiHandler( "initiatorsBtn" )
+    public void onInitiatorSelected(ValueChangeEvent<PersonShortView> event) {
+        if (activity != null) {
+            activity.onInitiatorSelected(this, event.getValue());
         }
     }
 
@@ -168,6 +192,9 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
     @Inject
     @UiField( provided = true )
     SearchButton search;
+    @Inject
+    @UiField( provided = true )
+    PersonButtonViewerSelector initiatorsBtn;
 
     interface CaseTableViewUiBinder extends UiBinder<HTMLPanel, DashboardTableView> {}
     private static CaseTableViewUiBinder ourUiBinder = GWT.create(CaseTableViewUiBinder.class);

@@ -1864,7 +1864,9 @@ a {
   display: none;
 }
 
-.dashboard-fast-open-btn {
+.dashboard-btn {
+  display: inline-block;
+  vertical-align: top;
   background: transparent !important;
   border: none !important;
   color: white !important;
