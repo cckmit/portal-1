@@ -81,4 +81,14 @@ public class CaseStateServiceImpl implements CaseStateService {
 
         return new CoreResponse<CaseState>().success(state);
     }
+
+    @Override
+    public CoreResponse<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId) {
+        if (companyId == null)
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        List<CaseState> caseStates = caseStateDAO.getCaseStatesForCompany(companyId);
+
+        return new CoreResponse<List<CaseState>>().success(caseStates);
+    }
 }

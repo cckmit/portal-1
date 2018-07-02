@@ -20,4 +20,14 @@ public class CaseStateDAO_Impl extends PortalBaseJdbcDAO<CaseState> implements C
 
         return caseStates;
     }
+
+    @Override
+    public List<CaseState> getCaseStatesForCompany(Long companyId) {
+        List<CaseState> caseStates = getList(new JdbcQueryParameters()
+                .withJoins("JOIN case_state_to_company cstc on cstc.state_id = case_state.ID ")
+                .withCondition("cstc.company_id=? ", companyId)
+        );
+
+        return caseStates;
+    }
 }

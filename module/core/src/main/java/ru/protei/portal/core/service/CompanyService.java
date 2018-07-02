@@ -33,8 +33,7 @@ public interface CompanyService {
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
     CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
 
-    // TODO: change to separate request
-//    @Privileged( En_Privilege.COMPANY_VIEW )
+    @Privileged( En_Privilege.COMPANY_VIEW )
     CoreResponse getCompany(AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )

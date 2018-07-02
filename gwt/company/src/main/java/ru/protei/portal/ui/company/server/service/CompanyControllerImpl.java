@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
@@ -19,6 +20,9 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Set;
+
+import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
+import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
 /**
  * Реализация сервиса по работе с компаниями
@@ -218,6 +222,12 @@ public class CompanyControllerImpl implements CompanyController {
         return result.getData();
     }
 
+    @Override
+    public List<CaseState> getCompanyCaseStates(Long companyId) throws RequestFailedException {
+        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
+        return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );
@@ -230,6 +240,9 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private CaseStateService caseStateService;
 
     @Autowired
     SessionService sessionService;
