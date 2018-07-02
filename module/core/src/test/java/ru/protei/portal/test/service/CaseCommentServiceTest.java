@@ -1,8 +1,10 @@
 package ru.protei.portal.test.service;
 
+import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.config.Charset;
 import com.wix.mysql.config.MysqldConfig;
 import com.wix.mysql.config.SchemaConfig;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -41,6 +43,7 @@ import static org.junit.Assert.*;
 public class CaseCommentServiceTest {
 
     public static final AuthToken TEST_AUTH_TOKEN = new AuthToken("TEST_SID", "127.0.0.1");
+    static EmbeddedMysql mysqld;
 
     @Inject
     private CaseCommentDAO caseCommentDAO;
@@ -50,6 +53,9 @@ public class CaseCommentServiceTest {
     PersonDAO personDAO;
     @Inject
     private CaseService caseService;
+
+    @Inject
+    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     private final static MysqldConfig config = aMysqldConfig(v5_7_19)
             .withCharset(Charset.UTF8)
@@ -61,13 +67,16 @@ public class CaseCommentServiceTest {
 
     private final static SchemaConfig schemaConfig = aSchemaConfig("portal_test").build();
 
-    @Inject
-    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
     @BeforeClass
     public static void initTests() {
-        anEmbeddedMysql(config).addSchema(schemaConfig).start();
+        mysqld = anEmbeddedMysql(config).addSchema(schemaConfig).start();
     }
+
+    @Before
+    public void reloadSchema() {
+//        mysqld.reloadSchema(schemaConfig);
+    }
+
 
     @Test
     public void getCaseCommentsTest() throws Exception {
