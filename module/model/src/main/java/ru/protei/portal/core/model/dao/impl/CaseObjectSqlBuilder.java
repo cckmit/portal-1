@@ -37,6 +37,12 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and initiator_company in (" + query.getCompanyIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
+            if ( query.getInitiatorIds() != null && !query.getInitiatorIds().isEmpty() ) {
+                condition.append(" and initiator in (")
+                        .append(query.getInitiatorIds().stream().map(Object::toString).collect(Collectors.joining(",")))
+                        .append(")");
+            }
+
             if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
                 if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
                     condition.append(" and (product_id is null");
@@ -84,6 +90,11 @@ public class CaseObjectSqlBuilder {
                 condition.append(" or case_object.id in (");
                 condition.append(query.getIncludeIds().stream().map(Object::toString).collect(Collectors.joining(",")));
                 condition.append(")");
+            }
+
+            if (query.getSearchCasenoString() != null && !query.getSearchCasenoString().isEmpty()) {
+                condition.append(" and caseno like ?");
+                args.add(HelperFunc.makeLikeArg(query.getSearchCasenoString(), true));
             }
         });
     }
