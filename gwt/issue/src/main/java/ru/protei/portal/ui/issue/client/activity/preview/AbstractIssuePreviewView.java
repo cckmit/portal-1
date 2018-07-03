@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
 /**
@@ -27,7 +29,8 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setName( String value );
     void setInfo( String value );
     void setSubscriptionEmails( String value );
-
+    HasTime timeElapsed();
+    HasVisibility timeElapsedContainer();
     void showFullScreen( boolean value );
 
     HasWidgets getCommentsContainer();

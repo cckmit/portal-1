@@ -116,9 +116,6 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
     private Set<Person> notifiers; //may contain partially filled objects!
 
-    @JdbcColumn(name = "time_est")
-    private Long timeEstimated;
-
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
@@ -426,14 +423,6 @@ public class CaseObject extends AuditableObject {
         this.notifiers = notifiers;
     }
 
-    public Long getTimeEstimated() {
-        return timeEstimated;
-    }
-
-    public void setTimeEstimated(Long timeEstimated) {
-        this.timeEstimated = timeEstimated;
-    }
-
     public Long getTimeElapsed() {
         return timeElapsed;
     }
@@ -488,7 +477,6 @@ public class CaseObject extends AuditableObject {
                 ", locations=" + locations +
                 ", members=" + members +
                 ", links=" + links +
-                ", timeEstimated=" + timeEstimated +
                 ", timeElapsed=" + timeElapsed +
                 '}';
     }

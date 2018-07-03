@@ -97,7 +97,7 @@ public class AuthControllerImpl implements AuthController {
         // дополняем список клиентских привилегий по scope
         Set<En_Scope> scopesIssueEntity = privilegeEntityToScope.get( En_PrivilegeEntity.ISSUE );
         if ( !CollectionUtils.isEmpty( scopesIssueEntity ) && scopesIssueEntity.contains( En_Scope.SYSTEM ) ) {
-            userPrivileges.addAll( Arrays.asList( En_Privilege.DEFAULT_SCOPE_PRIVILEGES ) );
+            userPrivileges.addAll( Arrays.asList( En_Privilege.CLIENT_SYSTEM_SCOPE_PRIVILEGES) );
         }
 
         return userPrivileges;

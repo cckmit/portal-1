@@ -30,7 +30,6 @@ public interface AbstractIssueEditView extends IsWidget {
     HasText description();
     HasValue<En_CaseState> state();
     HasValue<En_ImportanceLevel> importance();
-    HasTime timeEstimated();
     HasTime timeElapsed();
     HasValue<EntityOption> company();
     HasValue<PersonShortView> initiator();
@@ -43,8 +42,9 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValidable nameValidator();
     HasValidable stateValidator();
     HasValidable importanceValidator();
-    HasValidable timeEstimatedValidator();
-//    HasValidable timeElapsedValidator();
+
+    HasVisibility timeElapsedContainer();
+
     HasValidable companyValidator();
     HasValidable initiatorValidator();
     HasValidable productValidator();
@@ -69,8 +69,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility saveVisibility();
 
-    HasEnabled timeEstimatedEnabled();
-//    HasEnabled timeElapsedEnabled();
     HasEnabled companyEnabled();
     HasEnabled productEnabled();
     HasEnabled managerEnabled();

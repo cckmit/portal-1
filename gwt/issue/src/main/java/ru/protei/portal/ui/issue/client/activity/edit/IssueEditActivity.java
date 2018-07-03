@@ -124,7 +124,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
             @Override
             public void onSuccess(CaseObject caseObject) {
-                if (issue.getId() != null) {
+                if (!isNew(issue)) {
                     fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -157,7 +157,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.attachmentsContainer().remove(attachment);
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                if(issue.getId() != null)
+                if(!isNew(issue))
                     fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId() ) );
 
             }
@@ -213,7 +213,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue) {
-        view.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) && issue.getId() == null );
+        view.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) && isNew(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
         view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
@@ -221,13 +221,13 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.attachmentsContainer().clear();
         view.setCaseNumber(issue.getCaseNumber());
 
-        if ( issue.getId() != null ) {
+        if (isNew(issue)) {
+            view.showComments(false);
+            view.getCommentsContainer().clear();
+        } else {
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
             fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId()) );
-        } else {
-            view.showComments(false);
-            view.getCommentsContainer().clear();
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
@@ -242,21 +242,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.name().setValue(issue.getName());
 
-        view.numberVisibility().setVisible( issue.getId() != null );
-        view.number().setValue( issue.getId() == null ? null : issue.getCaseNumber().intValue() );
+        view.numberVisibility().setVisible( !isNew(issue) );
+        view.number().setValue( isNew(issue) ? null : issue.getCaseNumber().intValue() );
 
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
-        view.state().setValue(issue.getId() == null ? CREATED : En_CaseState.getById(issue.getStateId()));
-        view.importance().setValue(issue.getId() == null ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
+        view.state().setValue(isNew(issue) ? CREATED : En_CaseState.getById(issue.getStateId()));
+        view.importance().setValue(isNew(issue) ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
-        if (issue.getId() == null) {
-            view.timeEstimated().setTime(0L);
+        view.timeElapsedContainer().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
+        if (isNew(issue)) {
             view.timeElapsed().setTime(null);
         } else {
-            view.timeEstimated().setTime(issue.getTimeEstimated() == null ? 0L : issue.getTimeEstimated());
-            view.timeElapsed().setTime(issue.getTimeElapsed());
+            Long timeElapsed = issue.getTimeElapsed();
+            view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
         }
 
         Company initiatorCompany = issue.getInitiatorCompany();
@@ -281,8 +281,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
-
-        issue.setTimeEstimated(view.timeEstimated().getTime());//TODO 176
 
         issue.setInitiatorCompany(Company.fromEntityOption(view.company().getValue()));
         issue.setInitiator(Person.fromPersonShortView(view.initiator().getValue()));

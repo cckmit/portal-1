@@ -4,9 +4,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="2018-06-01-add_time_track_columns_to_case_object" author="buchmastov">
+    <changeSet id="add_time_track_columns_to_case_object" author="buchmastov">
         <addColumn tableName="case_object">
-            <column name="time_est" type="BIGINT" defaultValueNumeric="0"/>
             <column name="time_elapsed" type="BIGINT" defaultValueNumeric="0"/>
         </addColumn>
     </changeSet>

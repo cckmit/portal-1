@@ -55,6 +55,11 @@ public class UiConstants {
         String FEMALE = "./images/user-icon-f.svg";
     }
 
+    public interface Styles {
+        String FOOTER = "footer-fixed";
+        String HIDE = "hide";
+    }
+
     /**
      * from {@link ru.protei.portal.ui.common.client.events.AuthEvents}
      */

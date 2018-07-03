@@ -28,29 +28,17 @@
                 <issuelinks:IssueLinks ui:field="links" styleName="form-group col-xs-12 m-b-0"/>
             </div>
             <div class="grid grid-indent">
-                <div class="form-group col-xs-3">
+                <div class="form-group col-xs-6">
                     <label>
                         <ui:text from="{lang.issueState}"/>
                     </label>
                     <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
                 </div>
-                <div class="form-group col-xs-3">
+                <div class="form-group col-xs-6">
                     <label>
                         <ui:text from="{lang.issueImportance}"/>
                     </label>
                     <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
-                </div>
-                <div class="form-group col-xs-3">
-                    <label>
-                        <ui:text from="{lang.timeEstimated}"/>
-                    </label>
-                    <timefield:TimeTextBox ui:field="timeEstimated" styleName="input-field" notNull="false"/>
-                </div>
-                <div class="form-group col-xs-3">
-                    <label>
-                        <ui:text from="{lang.timeElapsed}"/>
-                    </label>
-                    <timefield:TimeLabel ui:field="timeElapsed" styleName="label-field"/>
                 </div>
                 <div class="form-group col-xs-3">
                     <label>
@@ -78,6 +66,13 @@
                     </label>
                     <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
+
+                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="col-xs-12">
+                    <label>
+                        <ui:text from="{lang.timeElapsed}"/>
+                    </label>
+                    <timefield:TimeLabel ui:field="timeElapsed" styleName="inline-block m-l-10"/>
+                </g:HTMLPanel>
 
                 <div class="form-group col-xs-12">
                     <label>
