@@ -93,6 +93,21 @@ public class SelectorPopup
 
     }
 
+    public void showNearInlineRight( final IsWidget nearWidget ) {
+        this.relative = nearWidget;
+
+        root.getElement().getStyle().setPosition( Style.Position.RELATIVE );
+        root.getElement().getStyle().setDisplay( Style.Display.BLOCK );
+
+        setPopupPositionAndShow((popupWidth, popupHeight) -> {
+            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
+            int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
+            int popupLeft = relativeLeft - widthDiff;
+            int popupTop = nearWidget.asWidget().getAbsoluteTop();
+            setPopupPosition(popupLeft, popupTop);
+        });
+    }
+
     public void setSearchVisible( boolean searchVisible ) {
         this.searchVisible = searchVisible;
         if ( searchVisible ) {

@@ -36,6 +36,9 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
         view.setSectionName(event.sectionName);
+        view.getSearch().setValue(model.query.getSearchCasenoString());
+        view.toggleSearchIndicator(model.query.getSearchCasenoString() != null && !model.query.getSearchCasenoString().isEmpty());
+        view.toggleInitiatorsIndicator(model.query.getInitiatorIds() != null && model.query.getInitiatorIds().size() > 0);
 
         updateSection(model);
     }
@@ -90,6 +93,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         }
 
         model.query.setSearchCasenoString(search);
+        view.toggleSearchIndicator(search != null && !search.isEmpty());
 
         updateSection(model);
     }
@@ -103,6 +107,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         }
 
         model.query.setInitiatorIds(person == null ? null : Collections.singletonList(person.getId()));
+        view.toggleInitiatorsIndicator(person != null);
 
         updateSection(model);
     }

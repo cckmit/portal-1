@@ -55,7 +55,7 @@ public class PersonButtonViewerSelector extends Selector<PersonShortView> implem
 
     @UiHandler("button")
     public void onBtnClick (ClickEvent event) {
-        showPopup(button);
+        showPopupInlineRight(button);
     }
 
     @UiField

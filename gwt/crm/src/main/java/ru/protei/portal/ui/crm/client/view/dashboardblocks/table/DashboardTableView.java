@@ -111,6 +111,29 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         return importance;
     }
 
+    @Override
+    public HasValue<String> getSearch() {
+        return search;
+    }
+
+    @Override
+    public void toggleSearchIndicator(boolean show) {
+        if (show) {
+            search.addStyleName("indicator");
+        } else {
+            search.removeStyleName("indicator");
+        }
+    }
+
+    @Override
+    public void toggleInitiatorsIndicator(boolean show) {
+        if (show) {
+            initiatorsBtn.addStyleName("indicator");
+        } else {
+            initiatorsBtn.removeStyleName("indicator");
+        }
+    }
+
     @UiHandler( "importance" )
     public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
         activity.updateImportance(this, event.getValue());

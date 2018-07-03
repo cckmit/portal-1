@@ -234,11 +234,27 @@ public abstract class Selector<T>
 
     protected void showPopup(IsWidget relative) {
         this.relative = relative;
+        popup.showNear(relative);
+        showPopup();
+    }
+
+    protected void showPopupRight(IsWidget relative) {
+        this.relative = relative;
+        popup.showNearRight(relative);
+        showPopup();
+    }
+
+    protected void showPopupInlineRight(IsWidget relative) {
+        this.relative = relative;
+        popup.showNearInlineRight(relative);
+        showPopup();
+    }
+
+    private void showPopup() {
         popup.setSearchVisible(searchEnabled);
         popup.setSearchAutoFocus(searchAutoFocusEnabled);
         popup.setAddButton(addButtonVisible, addButtonText);
 
-        popup.showNear(relative);
         if (popupValueChangeHandlerRegistration != null) {
             popupValueChangeHandlerRegistration.removeHandler();
         }

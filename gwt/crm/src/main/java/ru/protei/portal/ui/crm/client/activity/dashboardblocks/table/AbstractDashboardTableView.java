@@ -25,4 +25,8 @@ public interface AbstractDashboardTableView extends IsWidget {
     void setFastOpenEnabled(boolean enabled);
     void showLoader(boolean isShow);
     HasValue<Set<En_ImportanceLevel>> getImportance();
+    HasValue<String> getSearch();
+
+    void toggleSearchIndicator(boolean show);
+    void toggleInitiatorsIndicator(boolean show);
 }
