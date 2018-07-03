@@ -426,6 +426,9 @@ public abstract class IssueCommentListActivity
                 tempAttachments.clear();
                 fireEvent( new IssueEvents.ChangeModel() );
                 fireEvent( new IssueEvents.ChangeCommentsView() );
+                if(result.getTimeElapsed()!=null){
+                    fireEvent( new IssueEvents.ChangeTimeElapsed(result.getTimeElapsed()) );
+                }
             }
         } );
     };

@@ -126,5 +126,12 @@ public class IssueEvents {
      * Изменилась модель фильтров пользователя
      */
     public static class ChangeUserFilterModel{}
+
+    public static class ChangeTimeElapsed {
+        public ChangeTimeElapsed(Long timeElapsed) {
+            this.timeElapsed = timeElapsed;
+        }
+        public Long timeElapsed;
+    }
 }
 

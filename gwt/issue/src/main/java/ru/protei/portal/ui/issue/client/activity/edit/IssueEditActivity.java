@@ -84,6 +84,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     @Event
+    public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
+        view.timeElapsed().setTime(issue.getTimeElapsed()+event.timeElapsed);
+    }
+
+    @Event
     public void onRemovingAttachments( AttachmentEvents.Remove event ) {
         if(view.isAttached() && issue.getId().equals(event.issueId)) {
             event.attachments.forEach(view.attachmentsContainer()::remove);
