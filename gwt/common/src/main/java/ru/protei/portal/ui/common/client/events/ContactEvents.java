@@ -26,9 +26,9 @@ public class ContactEvents {
     /**
      * Показать таблицу котактов
      */
-    public static class ShowTable {
+    public static class ShowFiniteTable {
 
-        public ShowTable ( HasWidgets parent, Long companyId) {
+        public ShowFiniteTable(HasWidgets parent, Long companyId) {
             this.parent = parent;
             this.companyId = companyId;
         }

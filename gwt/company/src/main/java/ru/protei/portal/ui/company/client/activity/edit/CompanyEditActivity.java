@@ -57,7 +57,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             initialView(new Company());
         }else {
             fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
-            fireEvent( new ContactEvents.ShowTable( view.tableContainer(), event.getCompanyId() ) );
+            fireEvent( new ContactEvents.ShowFiniteTable( view.tableContainer(), event.getCompanyId() ) );
             requestCompany(event.getCompanyId());
         }
     }

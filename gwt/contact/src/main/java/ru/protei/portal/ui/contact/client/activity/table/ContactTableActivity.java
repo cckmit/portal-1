@@ -81,20 +81,6 @@ public abstract class ContactTableActivity
     }
 
     @Event
-    public void onShowTable( ContactEvents.ShowTable event ) {
-        event.parent.clear();
-        event.parent.add( view.asWidget() );
-
-        isShowTable = true;
-
-        query = makeQuery( event.companyId );
-
-        requestTotalCount();
-
-        view.hideElements();
-    }
-
-    @Event
     public void onInitDetails( AppEvents.InitDetails initDetails ) {
         this.init = initDetails;
     }
