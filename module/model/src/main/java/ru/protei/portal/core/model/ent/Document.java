@@ -27,10 +27,7 @@ public class Document implements Serializable {
     /**
      * Децимальный номер
      */
-    @JdbcJoinedObject(joinData = {
-            @JdbcJoinData(localColumn = "id", remoteColumn = "entity_id"),
-            @JdbcJoinData(remoteColumn = "entity_type", value = "\"DOCUMENT\"")
-    })
+    @JdbcJoinedObject(localColumn = "decimal_number_id")
     private DecimalNumber decimalNumber;
 
 
@@ -78,6 +75,12 @@ public class Document implements Serializable {
      */
     @JdbcColumnCollection(name = "tags", separator = ",")
     private List<String> keywords;
+
+    /**
+     * Код вида документа
+     */
+    @JdbcColumn(name = "dn_type_code")
+    private String typeCode;
 
     public Document() {
     }
@@ -171,8 +174,7 @@ public class Document implements Serializable {
     }
 
     public boolean isValid() {
-        return this.getDecimalNumber() != null &&
-                this.getType() != null &&
+        return  this.getType() != null &&
                 this.getManagerId() != null &&
                 this.getInventoryNumber() != null &&
                 this.getInventoryNumber() > 0 &&
@@ -194,5 +196,13 @@ public class Document implements Serializable {
 
     public void setProjectInfo(ProjectInfo projectInfo) {
         this.projectInfo = projectInfo;
+    }
+
+    public String getTypeCode() {
+        return typeCode;
+    }
+
+    public void setTypeCode(String typeCode) {
+        this.typeCode = typeCode;
     }
 }

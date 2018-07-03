@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -33,7 +34,6 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     public void resetFilter() {
         sortField.setValue( En_SortField.prod_name );
         sortDir.setValue( true );
-        search.setText( "" );
+        search.setValue( "" );
         districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
     }
@@ -136,7 +136,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -158,7 +158,7 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     ToggleButton sortDir;
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;

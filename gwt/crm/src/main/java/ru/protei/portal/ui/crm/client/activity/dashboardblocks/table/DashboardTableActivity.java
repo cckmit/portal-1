@@ -5,12 +5,14 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.DashboardEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -34,6 +36,9 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
         view.setSectionName(event.sectionName);
+        view.getSearch().setValue(model.query.getSearchCasenoString());
+        view.toggleSearchIndicator(model.query.getSearchCasenoString() != null && !model.query.getSearchCasenoString().isEmpty());
+        view.toggleInitiatorsIndicator(model.query.getInitiatorIds() != null && model.query.getInitiatorIds().size() > 0);
 
         updateSection(model);
     }
@@ -60,6 +65,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             return;
 
         model.query.setImportanceIds(importanceIds);
+
         updateSection(model);
     }
 
@@ -68,6 +74,43 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         viewToModel.remove(view);
     }
 
+    @Override
+    public void onFastOpenClicked(AbstractDashboardTableView view) {
+        if (viewToModel.containsKey(view)) {
+            CaseQuery query = new CaseQuery(viewToModel.get(view).query);
+            query.setFrom(null);
+            query.setTo(null);
+            fireEvent(new IssueEvents.Show(query));
+        }
+    }
+
+    @Override
+    public void onSearchChanged(AbstractDashboardTableView view, String search) {
+        DashboardTableModel model = viewToModel.get(view);
+
+        if (model == null) {
+            return;
+        }
+
+        model.query.setSearchCasenoString(search);
+        view.toggleSearchIndicator(search != null && !search.isEmpty());
+
+        updateSection(model);
+    }
+
+    @Override
+    public void onInitiatorSelected(AbstractDashboardTableView view, PersonShortView person) {
+        DashboardTableModel model = viewToModel.get(view);
+
+        if (model == null) {
+            return;
+        }
+
+        model.query.setInitiatorIds(person == null ? null : Collections.singletonList(person.getId()));
+        view.toggleInitiatorsIndicator(person != null);
+
+        updateSection(model);
+    }
 
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();
@@ -89,6 +132,12 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             @Override
             public void onSuccess( List<CaseShortView> caseObjects ) {
                 model.view.putRecords(caseObjects);
+                model.view.putPersons(caseObjects.stream()
+                        .filter(caseObject -> caseObject.getInitiatorId() != null && caseObject.getInitiatorShortName() != null)
+                        .map(caseObject -> new PersonShortView(caseObject.getInitiatorShortName(), caseObject.getInitiatorId(), false))
+                        .distinct()
+                        .collect(Collectors.toList())
+                );
                 if(model.isLoaderShow)
                     model.view.showLoader(false);
             }
@@ -122,7 +171,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     Lang lang;
 
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
 
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;

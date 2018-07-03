@@ -24,8 +24,8 @@ public interface AccountService {
     @Privileged({ En_Privilege.ACCOUNT_VIEW })
     CoreResponse< UserLogin > getAccount( AuthToken authToken, long id );
 
-    @Privileged({ En_Privilege.ACCOUNT_VIEW })
-    CoreResponse< UserLogin > getAccountByPersonId( AuthToken authToken, long personId );
+    @Privileged({ En_Privilege.CONTACT_VIEW })
+    CoreResponse< UserLogin > getContactAccount(AuthToken authToken, long personId );
 
     @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )

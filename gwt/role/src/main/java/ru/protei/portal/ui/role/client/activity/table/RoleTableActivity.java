@@ -13,11 +13,10 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.RoleServiceAsync;
+import ru.protei.portal.ui.common.client.service.RoleControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterActivity;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterView;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.List;
 
@@ -176,7 +175,7 @@ public abstract class RoleTableActivity
     AbstractRoleFilterView filterView;
 
     @Inject
-    RoleServiceAsync roleService;
+    RoleControllerAsync roleService;
 
     @Inject
     TableAnimation animation;

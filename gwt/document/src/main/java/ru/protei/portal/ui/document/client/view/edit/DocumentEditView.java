@@ -35,22 +35,13 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
-        documentUploader.addChangeHandler(event ->
-                fileName.setValue(documentUploader.getFilename()));
+        typeCode.getElement().setAttribute("placeholder", lang.documentTypeCode());
+        documentUploader.addChangeHandler(event -> fileName.setValue(documentUploader.getFilename()));
     }
 
     @Override
     public void setActivity(AbstractDocumentEditActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public boolean isDecimalNumbersCorrect() {
-        if (decimalNumber.isValid()) {
-            return true;
-        }
-        decimalNumber.setValid(false);
-        return false;
     }
 
     @Override
@@ -62,6 +53,16 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void setVisibleUploader(boolean isVisible) {
         selectFileContainer.setVisible(isVisible);
         nameContainer.getElement().setClassName("form-group " + (isVisible ? "col-xs-6" : "col-xs-9"));
+    }
+
+    @Override
+    public void resetFilename() {
+        fileName.setText(null);
+    }
+
+    @Override
+    public void setSaveEnabled(boolean isEnabled) {
+        this.saveButton.setEnabled(isEnabled);
     }
 
     @Override
@@ -105,6 +106,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public HasValue<String> typeCode() {
+        return typeCode;
+    }
+
+    @Override
     public HasValue<Long> inventoryNumber() {
         return inventoryNumber;
     }
@@ -129,6 +135,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         return documentUploader;
     }
 
+    @Override
+    public void setDecimalNumberExists(boolean isExists) {
+        decimalNumber.setExists(isExists);
+    }
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
@@ -215,6 +225,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiField
     HTMLPanel selectFileContainer;
+
+    @UiField
+    TextBox typeCode;
 
     @Inject
     Lang lang;

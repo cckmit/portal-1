@@ -31,4 +31,10 @@ public interface ContactService {
     @Privileged( requireAny = { En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE })
     @Auditable( En_AuditType.CONTACT_MODIFY )
     CoreResponse<Person> saveContact( AuthToken token, Person p );
+
+    @Privileged( En_Privilege.CONTACT_EDIT )
+    CoreResponse<Boolean> fireContact( AuthToken token, long id );
+
+    @Privileged( En_Privilege.CONTACT_REMOVE )
+    CoreResponse<Boolean> removeContact( AuthToken token, long id );
 }

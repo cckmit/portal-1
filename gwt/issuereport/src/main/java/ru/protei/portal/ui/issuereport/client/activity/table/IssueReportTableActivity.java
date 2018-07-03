@@ -1,26 +1,24 @@
 package ru.protei.portal.ui.issuereport.client.activity.table;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueReportEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ReportServiceAsync;
+import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
@@ -80,7 +78,7 @@ public abstract class IssueReportTableActivity implements
         if (value.getId() == null) {
             return;
         }
-        Window.open("/Crm/download/report?id=" + value.getId().toString(), "_blank", "");
+        Window.open(GWT.getModuleBaseURL() + "download/report?id=" + value.getId().toString(), "_blank", "");
     }
 
     @Override
@@ -164,7 +162,7 @@ public abstract class IssueReportTableActivity implements
     AbstractIssueReportTableView view;
 
     @Inject
-    ReportServiceAsync reportService;
+    ReportControllerAsync reportService;
 
     @Inject
     Lang lang;

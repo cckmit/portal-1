@@ -1,23 +1,16 @@
 package ru.protei.portal.ui.crm.client.activity.profile;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CompanyService;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
-import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -86,7 +79,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
     @Inject
     AbstractProfilePageView view;
     @Inject
-    CompanyServiceAsync companyService;
+    CompanyControllerAsync companyService;
 
     @Inject
     PolicyService policyService;

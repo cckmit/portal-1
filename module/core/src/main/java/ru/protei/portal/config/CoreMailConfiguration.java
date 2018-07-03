@@ -3,24 +3,9 @@ package ru.protei.portal.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
-import ru.protei.portal.core.controller.auth.AuthInterceptor;
-import ru.protei.portal.core.mail.JavaMailMessageFactory;
-import ru.protei.portal.core.mail.JavaMailSendChannel;
-import ru.protei.portal.core.mail.MailMessageFactory;
-import ru.protei.portal.core.mail.MailSendChannel;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dao.impl.*;
-import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.user.AuthService;
-import ru.protei.portal.core.service.user.AuthServiceImpl;
-import ru.protei.portal.core.service.user.LDAPAuthProvider;
-import ru.protei.portal.core.utils.SessionIdGen;
-import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.winter.core.utils.config.exception.ConfigException;
+import ru.protei.portal.core.mail.*;
 
 @Configuration
 public class CoreMailConfiguration {
@@ -41,9 +26,19 @@ public class CoreMailConfiguration {
         return impl;
     }
 
+    @Bean(name = "coreMimeMessageProvider")
+    public MimeMessageProvider getMimeMessageProvider( @Autowired PortalConfig config ) {
+
+        PortalConfigData.SmtpConfig smtp = config.data().smtp();
+
+        MimeMessageProvider provider = new JavaMimeMessageProvider();
+        provider.setMessageIdPattern(smtp.getMessageIdPattern());
+        return provider;
+    }
+
     @Bean(name = "coreMailMessageFactory")
     public MailMessageFactory createMailMessageFactory( @Autowired PortalConfig config ) throws Exception {
-        return new JavaMailMessageFactory(mailSender( config ));
+        return new JavaMailMessageFactory(mailSender( config ), getMimeMessageProvider( config ) );
     }
 
     @Bean(name = "coreMailSendChannel")

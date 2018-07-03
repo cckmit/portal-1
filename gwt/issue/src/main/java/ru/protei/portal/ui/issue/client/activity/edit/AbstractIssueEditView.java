@@ -3,13 +3,20 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
+import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -29,6 +36,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<ProductShortView> product();
     HasValue<Boolean> isLocal();
     HasValue<Set<PersonShortView>> notifiers();
+    HasValue<Set<CaseLink>> links();
 
     HasValidable nameValidator();
     HasValidable stateValidator();
@@ -44,7 +52,7 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasValue<Integer> number();
 
-    void setSubscriptionEmails( String value );
+    void setSubscriptionEmails(String value);
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
@@ -62,4 +70,10 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled managerEnabled();
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
+
+    void refreshFooterBtnPosition();
+
+    void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
+
+    void initiatorUpdateCompany(Company company);
 }

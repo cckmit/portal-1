@@ -6,7 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.service.RegionServiceAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -59,7 +59,7 @@ public abstract class DistrictModel implements Activity {
     }
 
     @Inject
-    RegionServiceAsync regionService;
+    RegionControllerAsync regionService;
 
     private List<DistrictInfo> list = new ArrayList<>();
 

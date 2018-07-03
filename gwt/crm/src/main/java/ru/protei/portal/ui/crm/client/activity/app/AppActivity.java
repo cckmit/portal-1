@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.PingServiceAsync;
+import ru.protei.portal.ui.common.client.service.PingControllerAsync;
 import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
@@ -66,6 +66,11 @@ public abstract class AppActivity
     @Override
     public void onLocaleChanged( String locale ) {
         changeLocale( locale );
+    }
+
+    @Override
+    public void onLogoClicked() {
+        fireEvent(pageService.getFirstAvailablePageEvent());
     }
 
     public void onUserClicked() {
@@ -130,7 +135,7 @@ public abstract class AppActivity
     @Inject
     PageService pageService;
     @Inject
-    PingServiceAsync pingService;
+    PingControllerAsync pingService;
     @Inject
     Lang lang;
 

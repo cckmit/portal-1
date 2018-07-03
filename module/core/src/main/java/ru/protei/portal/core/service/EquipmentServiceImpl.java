@@ -121,8 +121,16 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     public CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number ) {
-        boolean isExist = decimalNumberDAO.checkIfExist( number );
+        boolean isExist = decimalNumberDAO.checkExists( number );
         return new CoreResponse<Boolean>().success( isExist );
+    }
+
+    @Override
+    public CoreResponse<DecimalNumber> findDecimalNumber(AuthToken token, DecimalNumber number) {
+        DecimalNumber foundedNumber = decimalNumberDAO.find(number);
+        if (foundedNumber == null)
+            return new CoreResponse<DecimalNumber>().error(En_ResultStatus.NOT_FOUND);
+        return new CoreResponse<DecimalNumber>().success(foundedNumber);
     }
 
     @Override

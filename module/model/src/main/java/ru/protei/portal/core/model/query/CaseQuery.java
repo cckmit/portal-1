@@ -23,6 +23,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> companyIds;
 
+    private List<Long> initiatorIds;
+
     private List<Long> productIds;
 
     private List<Long> managerIds;
@@ -43,6 +45,12 @@ public class CaseQuery extends BaseQuery {
 
     private Date to;
 
+    private boolean searchStringAtComments = false;
+
+    private List<Long> includeIds;
+
+    private String searchCasenoString;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -54,6 +62,25 @@ public class CaseQuery extends BaseQuery {
         this.type = type;
         this.limit = 1000;
         this.allowViewPrivate = true;
+    }
+
+    public CaseQuery(CaseQuery query) {
+        setSearchString(query.getSearchString());
+        setSortField(query.getSortField());
+        setSortDir(query.getSortDir());
+
+        setId(query.getId());
+        setCaseNo(query.getCaseNo());
+        setCompanyIds(query.getCompanyIds());
+        setProductIds(query.getProductIds());
+        setType(query.getType());
+        setStateIds(query.getStateIds());
+        setImportanceIds(query.getImportanceIds());
+        setFrom(query.getFrom());
+        setTo(query.getTo());
+        setManagerIds(query.getManagerIds());
+        setWithoutManager(query.isWithoutManager());
+        setAllowViewPrivate(query.isAllowViewPrivate());
     }
 
     public Long getId() {
@@ -74,6 +101,14 @@ public class CaseQuery extends BaseQuery {
 
     public void setCompanyIds( List<Long> companyIds) {
         this.companyIds = companyIds;
+    }
+
+    public List<Long> getInitiatorIds() {
+        return initiatorIds;
+    }
+
+    public void setInitiatorIds(List<Long> initiatorIds) {
+        this.initiatorIds = initiatorIds;
     }
 
     public List<Long> getProductIds() {
@@ -137,10 +172,35 @@ public class CaseQuery extends BaseQuery {
         this.allowViewPrivate = isAllowViewPrivate;
     }
 
+    public boolean isSearchStringAtComments() {
+        return searchStringAtComments;
+    }
+
+    public void setSearchStringAtComments(boolean searchStringAtComments) {
+        this.searchStringAtComments = searchStringAtComments;
+    }
+
+    public List<Long> getIncludeIds() {
+        return includeIds;
+    }
+
+    public void setIncludeIds(List<Long> includeIds) {
+        this.includeIds = includeIds;
+    }
+
+    public String getSearchCasenoString() {
+        return searchCasenoString;
+    }
+
+    public void setSearchCasenoString(String searchCasenoString) {
+        this.searchCasenoString = searchCasenoString;
+    }
+
     @Override
     public String toString () {
         return "CaseQuery{" +
                 "companyIds=" + companyIds +
+                ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
                 ", withoutManager=" + withoutManager +
@@ -150,6 +210,9 @@ public class CaseQuery extends BaseQuery {
                 ", from=" + from +
                 ", to=" + to +
                 ", showPrivate=" + allowViewPrivate +
+                ", searchStringAtComments=" + searchStringAtComments +
+                ", includeIds=" + includeIds +
+                ", searchCasenoString=" + searchCasenoString +
                 '}';
     }
 }

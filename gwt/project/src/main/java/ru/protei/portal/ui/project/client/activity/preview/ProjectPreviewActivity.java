@@ -8,18 +8,16 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.RegionServiceAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.HashSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -133,7 +131,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     @Inject
     AbstractProjectPreviewView view;
     @Inject
-    RegionServiceAsync regionService;
+    RegionControllerAsync regionService;
     @Inject
     PolicyService policyService;
 

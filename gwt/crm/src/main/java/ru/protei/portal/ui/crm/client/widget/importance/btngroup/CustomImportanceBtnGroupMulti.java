@@ -2,7 +2,7 @@ package ru.protei.portal.ui.crm.client.widget.importance.btngroup;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.ui.common.client.common.CriticalityStyleBuilder;
+import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
@@ -19,12 +19,14 @@ public class CustomImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_Import
     ){
         clear();
 
-        for ( En_ImportanceLevel type : En_ImportanceLevel.values() )
-            addBtnWithIcon( iconClassName +" "+ CriticalityStyleBuilder.make().getClassName( type ) +" "+ type.toString().toLowerCase(),
+        for (En_ImportanceLevel type : En_ImportanceLevel.values()) {
+            addBtnWithIcon(
+                    ImportanceStyleProvider.getImportanceIcon(type) + " " + iconClassName,
                     buttonClassName,
-                    showCaption? lang.getImportanceName( type ): null,
-//                    outerClassName,
-                    type );
+                    showCaption ? lang.getImportanceName(type) : null,
+                    type
+            );
+        }
     }
 
     @Inject

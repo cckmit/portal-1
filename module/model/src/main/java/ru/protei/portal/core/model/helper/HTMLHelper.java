@@ -22,4 +22,34 @@ public class HTMLHelper {
         return wrap("div", content);
     }
 
+    public static String htmlEscape(String s) {
+        if (s.indexOf("&") != -1) {
+            s = s.replaceAll("&", "&amp;");
+        }
+
+        if (s.indexOf("<") != -1) {
+            s = s.replaceAll("<", "&lt;");
+        }
+
+        if (s.indexOf(">") != -1) {
+            s = s.replaceAll(">", "&gt;");
+        }
+
+        if (s.indexOf("\"") != -1) {
+            s = s.replaceAll("\"", "&quot;");
+        }
+
+        if (s.indexOf("'") != -1) {
+            s = s.replaceAll("'", "&#39;");
+        }
+
+        return s;
+    }
+
+    public static String prewrapBlockquote(String message ) {
+//        return message.replaceAll("<(.*?)(\\n\\r|$)+", "<blockquote>$1</blockquote>");
+        return message.replaceAll("\\[quote\\]", "<blockquote>")
+                .replaceAll("\\[/quote\\]", "</blockquote>");
+    }
+
 }

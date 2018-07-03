@@ -4,7 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
-import ru.protei.portal.ui.common.client.service.EquipmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 
 /**
  * Валидатор децимальных чисел
@@ -33,5 +33,5 @@ public class DecimalNumberDataProvider  {
     }
 
     @Inject
-    EquipmentServiceAsync equipmentService;
+    EquipmentControllerAsync equipmentService;
 }

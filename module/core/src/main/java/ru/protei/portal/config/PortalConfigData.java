@@ -23,7 +23,9 @@ public class PortalConfigData {
     private final LegacySystemConfig legacySystemConfig;
     private final IntegrationConfig integrationConfig;
     private final SvnConfig svnConfig;
+    private final LuceneConfig luceneConfig;
     private final ReportConfig reportConfig;
+    private final CaseLinkConfig caseLinkConfig;
 
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
@@ -35,7 +37,9 @@ public class PortalConfigData {
         legacySystemConfig = new LegacySystemConfig(wrapper);
         integrationConfig = new IntegrationConfig(wrapper);
         svnConfig = new SvnConfig(wrapper);
+        luceneConfig = new LuceneConfig(wrapper);
         reportConfig = new ReportConfig(wrapper);
+        caseLinkConfig = new CaseLinkConfig(wrapper);
 
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -73,8 +77,16 @@ public class PortalConfigData {
         return svnConfig;
     }
 
+    public LuceneConfig lucene() {
+        return luceneConfig;
+    }
+    
     public ReportConfig reportConfig() {
         return reportConfig;
+    }
+
+    public CaseLinkConfig getCaseLinkConfig() {
+        return caseLinkConfig;
     }
 
     public static class SmtpConfig {
@@ -83,6 +95,7 @@ public class PortalConfigData {
         private final int port;
         private final String fromAddress;
         private final boolean blockExternalRecipients;
+        private final String messageIdPattern;
 
         public SmtpConfig(PropertiesWrapper properties) throws ConfigException{
             host = properties.getProperty("smtp.host", "smtp.protei.ru");
@@ -90,6 +103,7 @@ public class PortalConfigData {
             fromAddress = properties.getProperty("smtp.from", "PORTAL");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
+            messageIdPattern = properties.getProperty("smtp.message_id_pattern", "%id%@smtp.protei.ru");
         }
 
         public boolean isBlockExternalRecipients() {
@@ -110,6 +124,10 @@ public class PortalConfigData {
 
         public String getFromAddress() {
             return fromAddress;
+        }
+
+        public String getMessageIdPattern() {
+            return messageIdPattern;
         }
     }
 
@@ -253,12 +271,13 @@ public class PortalConfigData {
     }
 
     public static class SvnConfig {
-        private final String url, username, password;
+        private final String url, username, password, commitMessage;
 
         public SvnConfig(PropertiesWrapper properties) throws ConfigException {
             this.url = properties.getProperty("svn.url");
             this.username = properties.getProperty("svn.username");
             this.password = properties.getProperty("svn.password");
+            this.commitMessage = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
         }
 
         public String getUrl() {
@@ -271,6 +290,22 @@ public class PortalConfigData {
 
         public String getUsername() {
             return username;
+        }
+
+        public String getCommitMessage() {
+            return commitMessage;
+        }
+    }
+
+    public static class LuceneConfig {
+        private final String indexPath;
+
+        public LuceneConfig(PropertiesWrapper propertiesWrapper) {
+            this.indexPath = propertiesWrapper.getProperty("lucene.index_path", "./index");
+        }
+
+        public String getIndexPath() {
+            return indexPath;
         }
     }
 
@@ -305,6 +340,30 @@ public class PortalConfigData {
 
         public String getStoragePath() {
             return storagePath;
+        }
+    }
+
+    public static class CaseLinkConfig {
+        private final String linkCrm;
+        private final String linkOldCrm;
+        private final String linkYouTrack;
+
+        public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
+            this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
+            this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
+            this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei/issue/%id%");
+        }
+
+        public String getLinkCrm() {
+            return linkCrm;
+        }
+
+        public String getLinkOldCrm() {
+            return linkOldCrm;
+        }
+
+        public String getLinkYouTrack() {
+            return linkYouTrack;
         }
     }
 }

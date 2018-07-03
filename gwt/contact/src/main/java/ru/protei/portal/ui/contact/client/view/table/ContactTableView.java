@@ -5,7 +5,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
@@ -17,6 +19,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.separator.Separator;
@@ -32,9 +35,10 @@ import java.util.List;
 public class ContactTableView extends Composite implements AbstractContactTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Person> editClickColumn) {
+    public void onInit(EditClickColumn<Person> editClickColumn, RemoveClickColumn<Person> removeClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
+        this.removeClickColumn = removeClickColumn;
         initTable();
     }
 
@@ -45,6 +49,12 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+
+        removeClickColumn.setHandler( activity );
+        removeClickColumn.setRemoveHandler( activity );
+        removeClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setPrivilege( En_Privilege.CONTACT_REMOVE );
+
         columns.forEach( clickColumn -> {
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
@@ -125,6 +135,24 @@ public class ContactTableView extends Composite implements AbstractContactTableV
                 fioElement.setInnerHTML( "<b>" + value.getDisplayName() + "<b>" );
                 root.appendChild( fioElement );
 
+                if (value.isFired() || value.isDeleted()) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<i class='fa fa-info-circle'></i> <b>");
+                    if (value.isFired()) {
+                        sb.append(lang.contactFiredShort());
+                        if (value.isDeleted()) {
+                            sb.append(", ");
+                        }
+                    }
+                    if (value.isDeleted()) {
+                        sb.append(value.isFired() ? lang.contactDeletedShort().toLowerCase() : lang.contactDeletedShort());
+                    }
+                    sb.append("</b>");
+                    Element stateElement = DOM.createDiv();
+                    stateElement.setInnerHTML(sb.toString());
+                    root.appendChild(stateElement);
+                }
+
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( value.getContactInfo() );
                 root.appendChild( ContactColumnBuilder.make().add( "ion-android-call", infoFacade.getWorkPhone() )
                         .add( "ion-android-call", infoFacade.getMobilePhone() )
@@ -166,6 +194,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
         table.addColumn( company.header, company.values );
         table.addColumn( displayName.header, displayName.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn( removeClickColumn.header, removeClickColumn.values );
     }
 
     @UiField
@@ -190,6 +219,7 @@ public class ContactTableView extends Composite implements AbstractContactTableV
     ClickColumnProvider<Person> columnProvider = new ClickColumnProvider<>();
     SelectionColumn< Person > selectionColumn = new SelectionColumn<>();
     EditClickColumn<Person > editClickColumn;
+    RemoveClickColumn<Person> removeClickColumn;
     List<ClickColumn > columns = new ArrayList<>();
 
 

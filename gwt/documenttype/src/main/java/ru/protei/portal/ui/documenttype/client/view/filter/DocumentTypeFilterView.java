@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.documenttype.client.activity.filter.AbstractDocumentTypeFilterActivity;
@@ -27,7 +28,6 @@ public class DocumentTypeFilterView extends Composite implements AbstractDocumen
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-        name.getElement().setPropertyString("placeholder", lang.documentSearchNameOrProject());
         resetFilter();
     }
 
@@ -75,7 +75,7 @@ public class DocumentTypeFilterView extends Composite implements AbstractDocumen
     }
 
     @UiHandler("name")
-    public void onKeyUpSearch(KeyUpEvent event) {
+    public void onSearchChanged( ValueChangeEvent<String> event) {
         fireChangeTimer();
     }
 
@@ -126,7 +126,7 @@ public class DocumentTypeFilterView extends Composite implements AbstractDocumen
     @UiField
     Lang lang;
     @UiField
-    TextBox name;
+    CleanableSearchBox name;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;

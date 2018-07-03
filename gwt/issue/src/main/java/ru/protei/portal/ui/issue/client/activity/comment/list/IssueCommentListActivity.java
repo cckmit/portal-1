@@ -6,6 +6,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
@@ -20,7 +21,7 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
-import ru.protei.portal.ui.common.client.service.IssueServiceAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -107,6 +108,7 @@ public abstract class IssueCommentListActivity
                 @Override
                 public void onSuccess(CaseComment caseComment) {
                     itemView.setMessage(null);
+                    fireEvent(new IssueEvents.ChangeCommentsView());
                 }
             });
             return;
@@ -127,6 +129,7 @@ public abstract class IssueCommentListActivity
                 view.removeComment( itemView );
                 itemViewToModel.remove(itemView);
                 fireEvent( new IssueEvents.ChangeModel() );
+                fireEvent( new IssueEvents.ChangeCommentsView() );
             }
         });
     }
@@ -265,6 +268,8 @@ public abstract class IssueCommentListActivity
             AbstractIssueCommentItemView itemView = makeCommentView( value );
             view.addCommentToFront( itemView.asWidget() );
         }
+
+        fireEvent( new IssueEvents.ChangeCommentsView() );
     }
 
     private AbstractIssueCommentItemView makeCommentView( CaseComment value ) {
@@ -288,6 +293,11 @@ public abstract class IssueCommentListActivity
         if ( value.getCaseStateId() != null ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
             itemView.setStatus( caseState );
+        }
+
+        if (value.getCaseImpLevel() != null) {
+            En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
+            itemView.setImportanceLevel(importance);
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
@@ -410,6 +420,7 @@ public abstract class IssueCommentListActivity
                 view.attachmentContainer().clear();
                 tempAttachments.clear();
                 fireEvent( new IssueEvents.ChangeModel() );
+                fireEvent( new IssueEvents.ChangeCommentsView() );
             }
         } );
     };
@@ -417,14 +428,17 @@ public abstract class IssueCommentListActivity
     private void issueSavedAlso(boolean withComeback){
         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
         fireEvent(new IssueEvents.ChangeModel());
-        if(withComeback)
+        if (withComeback) {
             fireEvent(new Back());
+        } else {
+            fireEvent(new IssueEvents.ChangeCommentsView());
+        }
     }
 
     @Inject
     Lang lang;
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
     @Inject
     AbstractIssueCommentListView view;
     @Inject

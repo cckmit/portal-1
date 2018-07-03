@@ -72,4 +72,10 @@ public interface AbstractContactEditView extends IsWidget {
     HasVisibility saveVisibility();
 
     HasEnabled companyEnabled ();
+
+    HasVisibility fireBtnVisibility();
+
+    HasVisibility firedMsgVisibility();
+
+    HasVisibility deletedMsgVisibility();
 }

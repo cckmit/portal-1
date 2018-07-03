@@ -29,6 +29,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonSave();
 
+    String buttonApply();
+
     String buttonCancel();
 
     String buttonCreate();
@@ -36,6 +38,8 @@ public interface Lang extends Messages, ContactItemLang {
     String errNoMatchesFound();
 
     String errGetList();
+
+    String errGetItem();
 
     String msgHello();
 
@@ -374,6 +378,8 @@ public interface Lang extends Messages, ContactItemLang {
     String dashboard();
 
     String issueCommentChangeStatusTo();
+
+    String issueCommentChangeImportanceTo();
 
     String errNotRemoved();
 
@@ -891,9 +897,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String mobilePhone();
 
+    String download();
+
     String accountFilterCompany();
+    
+    String documentTypeCode();
 
     String errNotAvailable();
+    
+    String decimalNumberNotFound();
 
     String from();
 
@@ -902,8 +914,6 @@ public interface Lang extends Messages, ContactItemLang {
     String asc();
 
     String desc();
-
-    String download();
 
     String selected();
 
@@ -940,4 +950,62 @@ public interface Lang extends Messages, ContactItemLang {
     String reportRequested();
 
     String errProductNotSelected();
+
+    String contactFired();
+
+    String contactDeleted();
+
+    String contactFiredShort();
+
+    String contactDeletedShort();
+
+    String contactFire();
+
+    String contactFireConfirmMessage();
+
+    String contactRemoveConfirmMessage();
+
+    String decimalNumberFound();
+
+    String searchByComments();
+
+    String searchByCommentsUnavailable(int threshold);
+
+    String caseStates();
+
+    String privilegeCaseStates();
+
+    String caseStatesPreviewHeader();
+
+    String caseStateUsagesInCompaniesNone();
+
+    String caseStateUsagesInCompaniesAll();
+
+    String caseStateUsagesInCompaniesSelected();
+
+    String caseStatesPreviewCompanies();
+
+    String caseStatesColumnUsageInCompanies();
+
+    String caseStatesColumnInfo();
+
+    String caseStatesColumnName();
+
+    String caseLinkCrm();
+
+    String caseLinkCrmShort();
+
+    String caseLinkOldCrm();
+
+    String caseLinkOldCrmShort();
+
+    String caseLinkYouTrack();
+
+    String caseLinkYouTrackShort();
+
+    String linkedWith();
+
+    String id();
+
+    String withoutContact();
 }

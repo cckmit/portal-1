@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
@@ -24,7 +25,6 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
         showDeprecated.setValue( false );
         sortField.setValue( En_SortField.prod_name );
         sortDir.setValue( true );
-        search.setText( "" );
+        search.setValue( "" );
     }
 
     @UiHandler( "resetBtn" )
@@ -100,7 +100,7 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -125,7 +125,7 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     ToggleButton sortDir;
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;

@@ -1,0 +1,20 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel>
+
+        <div class="grid grid-indent">
+            <div class="form-group col-xs-12 m-b-0 case-links">
+                <label ui:field="linksLabel" class="case-links-label"><ui:text from="{lang.linkedWith}"/>: </label>
+                <g:HTMLPanel ui:field="linksContainer" tag="ul" styleName="case-links-container"/>
+                <g:Button ui:field="addLinkButton" styleName="btn btn-white pull-right case-links-button">
+                    <i class="fa fa-link"/>
+                    <i class="fa fa-chevron-down"/>
+                </g:Button>
+            </div>
+        </div>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

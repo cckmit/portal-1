@@ -7,15 +7,16 @@
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
-             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
+             xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root" styleName="panel">
+    <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
 
         <div class="body">
             <div class="grid grid-indent">
 
-                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-12">
+                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-12 m-b-0">
                     <label><ui:text from="{lang.issueName}"/></label>
                     <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="issue-main-info">
                             <g:ToggleButton ui:field="local" styleName="btn btn-danger private-btn"/>
@@ -23,6 +24,7 @@
                             <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
+                <issuelinks:IssueLinks ui:field="links" styleName="form-group col-xs-12 m-b-0"/>
             </div>
             <div class="grid grid-indent">
                 <div class="form-group col-xs-6">

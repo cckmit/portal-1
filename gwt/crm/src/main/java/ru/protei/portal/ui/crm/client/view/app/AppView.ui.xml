@@ -8,7 +8,7 @@
 
     <g:HTMLPanel styleName="global">
         <g:HTMLPanel tag="header" styleName="main-header">
-            <a href="http://protei.ru" class="logo">
+            <g:Anchor ui:field="logo" href="#" styleName="logo">
                 <span class="logo-lg">
                     <img src="./images/logo.svg"/>
                     <b>PROTEI</b>
@@ -18,7 +18,7 @@
                 <span class="logo-mini">
                     <img src="./images/logo.svg"/>
                 </span>
-            </a>
+            </g:Anchor>
 
             <nav class="navbar">
                 <g:Anchor ui:field="toggleButton" styleName="sidebar-toggle" href="#">

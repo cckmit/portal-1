@@ -22,7 +22,8 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditView;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
 
 /**
  * Представление создания и редактирования контактного лица
@@ -199,6 +200,21 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return company;
     }
 
+    @Override
+    public HasVisibility firedMsgVisibility() {
+        return contactFired;
+    }
+
+    @Override
+    public HasVisibility deletedMsgVisibility() {
+        return contactDeleted;
+    }
+
+    @Override
+    public HasVisibility fireBtnVisibility() {
+        return fireBtn;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -210,6 +226,13 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     public void onCancelClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onCancelClicked();
+        }
+    }
+
+    @UiHandler( "fireBtn" )
+    public void onFireClicked( ClickEvent event ) {
+        if (activity != null) {
+            activity.onFireClicked();
         }
     }
 
@@ -225,6 +248,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     Button cancelButton;
+
+    @UiField
+    Button fireBtn;
 
     @UiField
     ValidableTextBox firstName;
@@ -303,6 +329,15 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     PasswordTextBox confirmPassword;
+
+    @UiField
+    HTMLPanel contactFired;
+
+    @UiField
+    HTMLPanel contactDeleted;
+
+    //@UiField
+    //HTMLPanel contactDeleted;
 
     Timer timer = new Timer() {
         @Override

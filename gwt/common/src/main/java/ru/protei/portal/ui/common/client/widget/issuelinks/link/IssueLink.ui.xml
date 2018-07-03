@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:FocusPanel ui:field="root">
+        <g:HTMLPanel ui:field="panel" tag="li" styleName="case-link">
+            <g:Anchor ui:field="remove" href="#" styleName="case-link-close fa fa-close"/>
+            <g:InlineLabel ui:field="text" styleName="case-link-text"/>
+            <g:InlineLabel ui:field="icon" styleName="case-link-icon"/>
+        </g:HTMLPanel>
+    </g:FocusPanel>
+</ui:UiBinder>

@@ -15,9 +15,9 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.AccountServiceAsync;
-import ru.protei.portal.ui.common.client.service.CompanyServiceAsync;
-import ru.protei.portal.ui.common.client.service.ContactServiceAsync;
+import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
@@ -58,7 +58,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                 @Override
                 public void onSuccess(Person person) {
-                    accountService.getAccountByPersonId (person.getId(), new RequestCallback<UserLogin>() {
+                    accountService.getContactAccount(person.getId(), new RequestCallback<UserLogin>() {
                         @Override
                         public void onError(Throwable throwable) {}
 
@@ -71,6 +71,34 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                 }
             });
         }
+    }
+
+    @Event
+    public void onConfirmFire( ConfirmDialogEvents.Confirm event ) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        if (contact.getId() == null || contact.isFired()) {
+            return;
+        }
+
+        contactService.fireContact(contact.getId(), new AsyncCallback<Boolean>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                fireErrorMessage(throwable.getMessage());
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    fireEvent(new NotifyEvents.Show(lang.contactFired(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new Back());
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.errInternalError(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
     }
 
     @Override
@@ -146,6 +174,16 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
+    }
+
+    @Override
+    public void onFireClicked() {
+
+        if (contact.isFired()) {
+            return;
+        }
+
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.contactFireConfirmMessage(), lang.contactFire()));
     }
 
     private void resetValidationStatus(){
@@ -240,6 +278,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.password().setText("");
         view.confirmPassword().setText("");
 
+        view.deletedMsgVisibility().setVisible(person.isDeleted());
+        view.firedMsgVisibility().setVisible(person.isFired());
+        view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
+
         view.showInfo(userLogin.getId() != null);
     }
 
@@ -255,14 +297,14 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
     @Inject
     Lang lang;
     @Inject
-    ContactServiceAsync contactService;
+    ContactControllerAsync contactService;
     @Inject
     PolicyService policyService;
 
     @Inject
-    AccountServiceAsync accountService;
+    AccountControllerAsync accountService;
     @Inject
-    CompanyServiceAsync companyService;
+    CompanyControllerAsync companyService;
 
     private Person contact;
     private UserLogin account;

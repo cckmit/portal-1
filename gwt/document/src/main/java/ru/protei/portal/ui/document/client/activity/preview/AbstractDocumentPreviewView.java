@@ -25,4 +25,6 @@ public interface AbstractDocumentPreviewView extends IsWidget {
     void setNumberInventory(String numberInventory);
 
     void setKeyWords(String keyWords);
+
+    void setDownloadLink(String link);
 }

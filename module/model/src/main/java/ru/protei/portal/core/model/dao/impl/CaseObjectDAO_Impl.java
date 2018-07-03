@@ -6,12 +6,10 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Created by michael on 19.05.16.
@@ -22,8 +20,7 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     CaseTypeDAO caseTypeDAO;
 
     @Autowired
-    SqlDefaultBuilder sqlDefaultBuilder;
-
+    CaseObjectSqlBuilder caseObjectSqlBuilder;
 
     public Map<Long,Long> getNumberToIdMap (En_CaseType caseType) {
         Map<Long, Long> numberToIdMap = new HashMap<>();
@@ -46,6 +43,11 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public CaseObject getCaseByCaseno(long caseno) {
+        return getByCondition("case_object.caseno=?", caseno);
+    }
+
+    @Override
     public CaseObject getCase(En_CaseType caseType, long number) {
         return getByCondition("case_type=? and caseno=?", caseType.getId(), number);
     }
@@ -63,20 +65,19 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         return persist(object);
     }
 
-
-
-
     @Override
     public List< CaseObject > getCases( CaseQuery query ) {
 //        SqlCondition condition = caseQueryCondition( query );
 //        return partialGetListByCondition( condition.condition, condition.args, query.offset, query.limit, TypeConverters.createSort( query ),
 //                "id", "CASENO", "IMPORTANCE", "STATE", "CREATED", "INFO", "InitiatorName" ).getResults();
 
+        //
+
         return listByQuery(query);
     }
 
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
-        return sqlDefaultBuilder.caseCommonQuery(query);
+        return caseObjectSqlBuilder.caseCommonQuery(query);
     }
 }

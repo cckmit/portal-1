@@ -88,6 +88,12 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
         this.isValidable = isValidable;
     }
 
+    public void addBtnStyleName(String style) {
+        if (style == null || style.isEmpty()) {
+            return;
+        }
+        button.addStyleName(style);
+    }
 
     @UiField
     HTMLPanel inputContainer;

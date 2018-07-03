@@ -9,7 +9,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.crm.client.service.AuthServiceAsync;
+import ru.protei.portal.ui.crm.client.service.AuthControllerAsync;
 
 /**
  * Активность окна авторизации
@@ -93,7 +93,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     AbstractAuthView view;
 
     @Inject
-    AuthServiceAsync authService;
+    AuthControllerAsync authService;
 
     @Inject
     Lang lang;

@@ -16,7 +16,7 @@ import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.RegionServiceAsync;
+import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
@@ -193,7 +193,7 @@ public abstract class RegionListActivity
     @Inject
     PolicyService policyService;
     @Inject
-    RegionServiceAsync regionService;
+    RegionControllerAsync regionService;
     @Inject
     PlateListAnimation animation;
 

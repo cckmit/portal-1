@@ -96,6 +96,14 @@ public class AppView extends Composite
         RootPanel.get().addStyleName( "sidebar-collapse" );
     }
 
+    @UiHandler("logo")
+    public void logoClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onLogoClicked();
+        }
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent event ) {
         if ( event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown() ) {
@@ -145,6 +153,8 @@ public class AppView extends Composite
     HTMLPanel userPanel;
     @UiField
     ImageElement icon;
+    @UiField
+    Anchor logo;
 
     AbstractAppActivity activity;
 

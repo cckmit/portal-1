@@ -1,17 +1,24 @@
 package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -20,6 +27,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.issuelinks.IssueLinks;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -33,12 +42,15 @@ import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
+import java.util.List;
 import java.util.Set;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditView {
+public class IssueEditView extends Composite implements AbstractIssueEditView, ResizeHandler {
 
     @Inject
     public void onInit() {
@@ -51,11 +63,28 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
         initiator.setAddButtonVisible(true);
+        Window.addResizeHandler(this);
     }
 
     @Override
     protected void onAttach() {
         super.onAttach();
+    }
+
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        if (resizeFinishedTimer.isRunning()) {
+            resizeFinishedTimer.cancel();
+        }
+    }
+
+    @Override
+    public void onResize(ResizeEvent event) {
+        if (resizeFinishedTimer.isRunning()) {
+            resizeFinishedTimer.cancel();
+        }
+        resizeFinishedTimer.schedule(200);
     }
 
     @Override
@@ -114,6 +143,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasValue<Set<CaseLink>> links() {
+        return links;
+    }
+
+    @Override
     public HasValidable nameValidator() {
         return name;
     }
@@ -160,8 +194,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setSubscriptionEmails( String value ) {
-        this.subscriptions.setInnerText( value );
+    public void setSubscriptionEmails(String value) {
+        subscriptions.setInnerText(value);
     }
 
     @Override
@@ -224,14 +258,35 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         };
     }
 
+    @Override
+    public void refreshFooterBtnPosition() {
+        Scheduler.get().scheduleDeferred(() -> {
+            int wHeight = Window.getClientHeight();
+            int pHeight = root.getOffsetHeight();
+            setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
+        });
+    }
+
+    @Override
+    public void setStateFilter(Selector.SelectorFilter<En_CaseState> filter) {
+        state.setFilter(filter);
+    }
+
+    @Override
+    public void initiatorUpdateCompany(Company company) {
+        initiator.updateCompany(company);
+    }
+
+    private void setFooterFixed(boolean isFixed) {
+        if (isFixed) {
+            root.addStyleName("footer-fixed");
+        } else {
+            root.removeStyleName("footer-fixed");
+        }
+    }
+
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
-        Company company = Company.fromEntityOption( event.getValue() );
-
-        initiator.setEnabled( company != null );
-        initiator.updateCompany(company);
-        initiator.setValue( null );
-
         if ( activity != null ) {
             activity.onCompanyChanged();
         }
@@ -261,6 +316,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         activity.onCreateContactClicked();
     }
 
+    @UiHandler("local")
+    public void onLocalClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onLocalClicked();
+        }
+    }
+
     @Override
     public void showComments(boolean isShow) {
         if(isShow)
@@ -268,6 +330,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         else
             comments.addClassName("hide");
     }
+
+    @UiField
+    HTMLPanel root;
 
     @UiField
     ValidableTextBox name;
@@ -334,7 +399,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel nameContainer;
     @UiField
     HTMLPanel caseSubscriptionContainers;
+    @Inject
+    @UiField(provided = true)
+    IssueLinks links;
 
+    private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
+
+    private Timer resizeFinishedTimer = new Timer() {
+        @Override
+        public void run() {
+            refreshFooterBtnPosition();
+        }
+    };
 
     private AbstractIssueEditActivity activity;
 

@@ -17,13 +17,17 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.*;
+import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dict.En_CaseState.CREATED;
@@ -71,6 +75,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
         }
+
     }
 
     @Event
@@ -98,6 +103,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
             }
         }
+    }
+
+    @Event
+    public void onChangeCommentsView(IssueEvents.ChangeCommentsView event) {
+        view.refreshFooterBtnPosition();
     }
 
     @Override
@@ -158,24 +168,26 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCompanyChanged() {
-        if ( view.company().getValue() == null ) {
-            view.setSubscriptionEmails( lang.issueCompanySubscriptionNeedSelectCompany() );
-        } else {
-            companyService.getCompanySubscription( view.company().getValue().getId(), new RequestCallback< List<CompanySubscription> >() {
-                @Override
-                public void onError( Throwable throwable ) {}
+        Company companyOption = Company.fromEntityOption(view.company().getValue());
 
-                @Override
-                public void onSuccess( List<CompanySubscription> subscriptions ) {
-                    view.setSubscriptionEmails(
-                            subscriptions == null || subscriptions.isEmpty()
-                                    ? lang.issueCompanySubscriptionNotDefined()
-                                    : subscriptions.stream()
-                                    .map( CompanySubscription::getEmail )
-                                    .collect( Collectors.joining( ", " ) ) );
-                }
-            });
+        view.initiatorState().setEnabled(companyOption != null);
+        view.initiatorUpdateCompany(companyOption);
+        view.initiator().setValue(null);
+
+        if ( companyOption == null ) {
+            view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()) );
+        } else {
+            companyService.getCompanySubscription(companyOption.getId(), new ShortRequestCallback<List<CompanySubscription>>()
+                    .setOnSuccess(subscriptions -> view.setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
+
+            companyService.getCompanyCaseStates(companyOption.getId(), new ShortRequestCallback<List<CaseState>>()
+                    .setOnSuccess(caseStates -> {
+                        view.setStateFilter(caseStateFilter.makeFilter(caseStates));
+                        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+                    }));
         }
+
+        fireEvent(new CaseStateEvents.UpdateSelectorOptions());
     }
 
     @Override
@@ -184,6 +196,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             fillIssueObject(issue);
             fireEvent(new ContactEvents.Edit(null, Company.fromEntityOption(view.company().getValue()), CrmConstants.Issue.CREATE_CONTACT_IDENTITY));
         }
+    }
+
+    @Override
+    public void onLocalClicked() {
+        view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage) );
     }
 
     private void initialView(CaseObject issue){
@@ -229,6 +246,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
+        view.links().setValue(issue.getLinks() == null ? null : new HashSet<>(issue.getLinks()));
+
         view.name().setValue(issue.getName());
 
         view.numberVisibility().setVisible( issue.getId() != null );
@@ -245,11 +264,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             initiatorCompany = policyService.getUserCompany();
         }
 
-        view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
+        view.company().setValue(EntityOption.fromCompany(initiatorCompany));
+        onCompanyChanged();
         view.initiator().setValue( decideInitiator(issue) );
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
+
+        view.refreshFooterBtnPosition();
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -265,6 +287,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setProduct( DevUnit.fromProductShortView( view.product().getValue() ) );
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
+        issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
     }
 
     private boolean validateView() {
@@ -308,10 +331,22 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return issue.getId() == null;
     }
 
+    private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
+        this.subscriptionsList = subscriptionsList;
+        this.subscriptionsListEmptyMessage = emptyMessage;
+        return subscriptionsList == null || subscriptionsList.isEmpty()
+                ? subscriptionsListEmptyMessage
+                : subscriptionsList.stream()
+                .map(CompanySubscription::getEmail)
+                .filter(mail -> !view.isLocal().getValue() || mail.endsWith("@protei.ru"))
+                .collect(Collectors.joining(", "));
+    }
+
+
     @Inject
     AbstractIssueEditView view;
     @Inject
-    IssueServiceAsync issueService;
+    IssueControllerAsync issueService;
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject
@@ -319,9 +354,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Inject
     PolicyService policyService;
     @Inject
-    CompanyServiceAsync companyService;
+    CompanyControllerAsync companyService;
+    @Inject
+    CaseStateFilterProvider caseStateFilter;
 
+    private List<CompanySubscription> subscriptionsList;
+    private String subscriptionsListEmptyMessage;
     private AppEvents.InitDetails initDetails;
     @ContextAware
     CaseObject issue;
+
+    private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }

@@ -9,6 +9,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
@@ -118,18 +119,44 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > caseComment = new HashMap<>();
                     caseComment.put( "created", comment.getCreated() );
                     caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", comment.getText() );
+                    caseComment.put( "text", escapeTextComment( comment.getText() ) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
+                    caseComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
                     if(isChanged && oldCaseComment != null){
-                        caseComment.put( "oldText", oldCaseComment.getText() );
+                        caseComment.put( "oldText", escapeTextComment( oldCaseComment.getText() ) );
                     }
 
                     return caseComment;
                 } )
                 .collect( toList() );
+    }
+
+    private String escapeTextComment(String text) {
+        if (text == null) {
+            return null;
+        }
+        text = HTMLHelper.htmlEscape( text );
+        text = prewrapBlockquote( text ); // HTMLHelper.prewrapBlockquote( text );
+        text = replaceLineBreaks( text );
+        return text;
+    }
+
+    private String replaceLineBreaks(String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.replaceAll("(\r\n|\n|\r)", "<br/>");
+    }
+
+    private String prewrapBlockquote(String text) {
+        if (text == null) {
+            return null;
+        }
+        return text.replaceAll("\\[quote\\]", "<blockquote style=\"margin-left: 0;border-left: 2px solid #015d5d;padding-left: 5px;color: #015d5d;\">")
+                .replaceAll("\\[/quote\\]", "</blockquote>");
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){

@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 /**
@@ -92,15 +93,30 @@ public class SelectorPopup
 
     }
 
+    public void showNearInlineRight( final IsWidget nearWidget ) {
+        this.relative = nearWidget;
+
+        root.getElement().getStyle().setPosition( Style.Position.RELATIVE );
+        root.getElement().getStyle().setDisplay( Style.Display.BLOCK );
+
+        setPopupPositionAndShow((popupWidth, popupHeight) -> {
+            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
+            int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
+            int popupLeft = relativeLeft - widthDiff;
+            int popupTop = nearWidget.asWidget().getAbsoluteTop();
+            setPopupPosition(popupLeft, popupTop);
+        });
+    }
+
     public void setSearchVisible( boolean searchVisible ) {
         this.searchVisible = searchVisible;
         if ( searchVisible ) {
             search.getElement().setPropertyString("placeholder", lang.search());
-            searchContainer.removeClassName( "hide" );
+            search.removeStyleName( "hide" );
             return;
         }
 
-        searchContainer.addClassName( "hide" );
+        search.addStyleName( "hide" );
     }
 
     public void setAddButton(boolean addVisible) {
@@ -118,7 +134,7 @@ public class SelectorPopup
     }
 
     @UiHandler( "search" )
-    public void onSearchInputChanged( KeyUpEvent event ) {
+    public void onSearchKeyUpEvent( KeyUpEvent event ) {
         if(event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
             event.preventDefault();
             if (childContainer.getWidgetCount() == 0) {
@@ -126,8 +142,11 @@ public class SelectorPopup
             }
             SelectorItem item = (SelectorItem) childContainer.getWidget(0);
             item.setFocus(true);
-            return;
         }
+    }
+
+    @UiHandler( "search" )
+    public void onSearchInputChanged( ValueChangeEvent<String> event ) {
         fireChangeValueTimer();
     }
 
@@ -149,8 +168,8 @@ public class SelectorPopup
     }
 
     public void clearSearchField() {
-        search.setText( "" );
-        ValueChangeEvent.fire( SelectorPopup.this, search.getText() );
+        search.setValue( "" );
+        ValueChangeEvent.fire( SelectorPopup.this, search.getValue() );
     }
 
     private void fireChangeValueTimer() {
@@ -166,7 +185,7 @@ public class SelectorPopup
         @Override
         public void run() {
             searchValueChangeTimer.cancel();
-            ValueChangeEvent.fire( SelectorPopup.this, search.getText() );
+            ValueChangeEvent.fire( SelectorPopup.this, search.getValue() );
         }
     };
     IsWidget relative;
@@ -180,17 +199,16 @@ public class SelectorPopup
     @UiField
     public HTMLPanel childContainer;
     @UiField
-    public TextBox search;
+    public CleanableSearchBox search;
     @UiField
     public Button addButton;
-    @UiField
-    DivElement searchContainer;
     @UiField
     DivElement addContainer;
     @UiField
     HTMLPanel root;
 
     @Inject
+    @UiField
     Lang lang;
 
     interface SelectorPopupViewUiBinder extends UiBinder<HTMLPanel, SelectorPopup > {}

@@ -54,6 +54,27 @@ public class DecimalNumber implements Serializable {
     @JdbcColumn( name = "is_reserve")
     private boolean isReserve;
 
+    public DecimalNumber( En_OrganizationCode organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {
+        this.organizationCode = organizationCode;
+        this.classifierCode = classifierCode;
+        this.registerNumber = registerNumber;
+        this.modification = modification;
+    }
+
+    public DecimalNumber(DecimalNumber number) {
+        if (number == null)
+            return;
+        this.setId(number.getId());
+        this.setClassifierCode(number.getClassifierCode());
+        this.setEntityId(number.getId());
+        this.setModification(number.getModification());
+        this.setOrganizationCode(number.getOrganizationCode());
+        this.setRegisterNumber(number.getRegisterNumber());
+        this.setReserve(number.isReserve());
+    }
+
+    public DecimalNumber() {}
+
     public Long getId() {
         return id;
     }
@@ -116,6 +137,10 @@ public class DecimalNumber implements Serializable {
                 || ( registerNumber == null || registerNumber < 1 );
     }
 
+    public boolean isCompletelyEmpty() {
+        return classifierCode == null && registerNumber == null && modification == null;
+    }
+
     public boolean isSameNumber( DecimalNumber number ) {
         return  organizationCode == number.getOrganizationCode()
                 && Objects.equals( modification, number.getModification() )
@@ -123,19 +148,10 @@ public class DecimalNumber implements Serializable {
                 && Objects.equals( registerNumber, number.getRegisterNumber() );
     }
 
-    public DecimalNumber( En_OrganizationCode organizationCode, Integer classifierCode, Integer registerNumber, Integer modification ) {
-        this.organizationCode = organizationCode;
-        this.classifierCode = classifierCode;
-        this.registerNumber = registerNumber;
-        this.modification = modification;
-    }
-
     public boolean isValid() {
         return getClassifierCode() != null &&
                 getRegisterNumber() != null;
     }
-
-    public DecimalNumber() {}
 
     public En_DecimalNumberEntityType getEntityType() {
         return entityType;

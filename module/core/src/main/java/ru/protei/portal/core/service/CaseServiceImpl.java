@@ -7,13 +7,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -64,9 +67,18 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     AuthService authService;
 
+    @Autowired
+    CaseLinkService caseLinkService;
+
+    @Autowired
+    PortalConfig config;
+
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
+
         applyFilterByScope( token, query );
+        modifyQueryWithSearchAtComments(query);
+
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
@@ -86,6 +98,11 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
+
+        CoreResponse<List<CaseLink>> caseLinks = caseLinkService.getLinks(token, caseObject.getId());
+        if (caseLinks.isOk()) {
+            caseObject.setLinks(caseLinks.getData());
+        }
 
         return new CoreResponse<CaseObject>().success(caseObject);
     }
@@ -109,9 +126,14 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long messageId = createAndPersistStateMessage(initiator, caseId, En_CaseState.CREATED);
-        if(messageId == null)
+        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, En_CaseState.CREATED);
+        if(stateMessageId == null)
             log.error("State message for the issue %d not saved!", caseId);
+
+        Long impMessageId = createAndPersistImportanceMessage(initiator, caseId, caseObject.getImpLevel());
+        if (impMessageId == null) {
+            log.error("Importance level message for the issue %d not saved!", caseId);
+        }
 
         if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
@@ -138,6 +160,10 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
+        if (CollectionUtils.isNotEmpty(caseObject.getLinks())) {
+            caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getLinks());
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
@@ -155,6 +181,7 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
+
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
         if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
@@ -185,6 +212,13 @@ public class CaseServiceImpl implements CaseService {
                 log.error("State message for the issue %d isn't saved!", caseObject.getId());
         }
 
+        if (!oldState.getImpLevel().equals(caseObject.getImpLevel())) {
+            Long messageId = createAndPersistImportanceMessage(initiator, caseObject.getId(), caseObject.getImpLevel());
+            if (messageId == null) {
+                log.error("Importance level message for the issue %d isn't saved!", caseObject.getId());
+            }
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseObject.getId());
         newState.setAttachments(caseObject.getAttachments());
@@ -200,6 +234,9 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
+
+        caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getLinks());
+
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
 
@@ -373,7 +410,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
+
         applyFilterByScope( token, query );
+        modifyQueryWithSearchAtComments(query);
+
         Long count = caseObjectDAO.count(query);
 
         if (count == null)
@@ -414,6 +454,37 @@ public class CaseServiceImpl implements CaseService {
         return updateExistsAttachmentsFlag(caseId, isExistsAttachments(caseId));
     }
 
+    @Override
+    public CoreResponse<Long> getEmailLastId(Long caseId) {
+        if (caseId == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        CaseObject caseObject = caseObjectDAO.partialGet(caseId, "email_last_id");
+
+        if (caseObject == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        Long lastMessageId = caseObject.getEmailLastId();
+        if (lastMessageId == null) {
+            lastMessageId = 0L;
+        }
+
+        return new CoreResponse<Long>().success(lastMessageId);
+    }
+
+    @Override
+    public CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject) {
+        if (caseObject == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        boolean result = caseObjectDAO.partialMerge(caseObject, "email_last_id");
+
+        return new CoreResponse<Boolean>().success(result);
+    }
+
 
     @Override
     @Transactional
@@ -446,12 +517,40 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
+    private void modifyQueryWithSearchAtComments(CaseQuery query) {
+        if (
+                query.isSearchStringAtComments() &&
+                HelperFunc.isNotEmpty(query.getSearchString()) &&
+                query.getSearchString().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS
+        ) {
+
+            CaseCommentQuery commentQuery = new CaseCommentQuery();
+            commentQuery.setSearchString(query.getSearchString());
+
+            List<Long> foundByCommentsIds = caseCommentDAO.getCaseCommentsCaseIds(commentQuery);
+            query.setIncludeIds(foundByCommentsIds);
+        }
+    }
+
     private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
         stateChangeMessage.setCreated(new Date());
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseStateId((long)state.getId());
+        return caseCommentDAO.persist(stateChangeMessage);
+    }
+
+    private Long createAndPersistImportanceMessage(Person author, Long caseId, En_ImportanceLevel importance) {
+        return createAndPersistImportanceMessage(author, caseId, importance.getId());
+    }
+
+    private Long createAndPersistImportanceMessage(Person author, Long caseId, int importance) {
+        CaseComment stateChangeMessage = new CaseComment();
+        stateChangeMessage.setAuthor(author);
+        stateChangeMessage.setCreated(new Date());
+        stateChangeMessage.setCaseId(caseId);
+        stateChangeMessage.setCaseImpLevel(importance);
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
@@ -499,6 +598,7 @@ public class CaseServiceImpl implements CaseService {
 
     private boolean isCaseHasNoChanges(CaseObject co1, CaseObject co2){
         // without notifiers
+        // without links
         return
                 Objects.equals(co1.getName(), co2.getName())
                 && Objects.equals(co1.getInfo(), co2.getInfo())

@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterActivity;
 import ru.protei.portal.ui.role.client.activity.filter.AbstractRoleFilterView;
@@ -25,7 +26,6 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        search.getElement().setPropertyString( "placeholder", lang.search() );
     }
 
     @Override
@@ -62,7 +62,7 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
 
     @Override
     public void resetFilter() {
-        search.setText( "" );
+        search.setValue( "" );
         sortField.setValue( En_SortField.role_name );
         sortDir.setValue( true );
     }
@@ -76,7 +76,7 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
     }
 
     @UiHandler( "search" )
-    public void onKeyUpSearch( KeyUpEvent event ) {
+    public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -96,7 +96,7 @@ public class RoleFilterView extends Composite implements AbstractRoleFilterView 
     }
 
     @UiField
-    TextBox search;
+    CleanableSearchBox search;
 
     @UiField
     Button resetBtn;
