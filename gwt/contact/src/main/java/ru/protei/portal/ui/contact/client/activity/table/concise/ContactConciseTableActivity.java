@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contact.client.activity.table.finite;
+package ru.protei.portal.ui.contact.client.activity.table.concise;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 
-public abstract class ContactFiniteTableActivity implements AbstractContactFiniteTableActivity, Activity {
+public abstract class ContactConciseTableActivity implements AbstractContactConciseTableActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -26,7 +26,7 @@ public abstract class ContactFiniteTableActivity implements AbstractContactFinit
     }
 
     @Event
-    public void onShowFinite(ContactEvents.ShowFiniteTable event) {
+    public void onShow(ContactEvents.ShowConciseTable event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
 
@@ -110,7 +110,7 @@ public abstract class ContactFiniteTableActivity implements AbstractContactFinit
     @Inject
     Lang lang;
     @Inject
-    AbstractContactFiniteTableView view;
+    AbstractContactConciseTableView view;
     @Inject
     ContactControllerAsync contactService;
 
