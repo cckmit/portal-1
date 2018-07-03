@@ -514,11 +514,6 @@ public class MainConfiguration {
     @Bean
     public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
 
-    @Bean
-    public LockService getLockService() {
-        return new LockServiceImpl();
-    }
-
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

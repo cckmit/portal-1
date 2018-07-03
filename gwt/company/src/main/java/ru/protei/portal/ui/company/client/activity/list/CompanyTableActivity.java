@@ -1,11 +1,14 @@
 package ru.protei.portal.ui.company.client.activity.list;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -21,12 +24,13 @@ import java.util.List;
  * Активность таблицы компаний
  */
 public abstract class CompanyTableActivity implements
-        Activity, AbstractCompanyTableActivity {
+        Activity, AbstractCompanyTableActivity, AbstractPagerActivity {
 
     @PostConstruct
     public void init() {
         view.setActivity( this );
         view.setAnimation( animation );
+        pagerView.setActivity( this );
     }
 
     @Event
@@ -42,9 +46,10 @@ public abstract class CompanyTableActivity implements
         this.query = event.query;
         init.parent.clear();
         init.parent.add( view.asWidget() );
+        init.parent.add( pagerView.asWidget() );
 
         view.getFilterContainer().add(event.filter);
-        requestCompanies();
+        requestCompaniesCount();
     }
 
     @Event
@@ -53,7 +58,22 @@ public abstract class CompanyTableActivity implements
             return;
 
         this.query = event.query;
-        requestCompanies();
+        requestCompaniesCount();
+    }
+
+    @Override
+    public void onFirstClicked() {
+        view.scrollTo( 0 );
+    }
+
+    @Override
+    public void onLastClicked() {
+        view.scrollTo( view.getPageCount()-1 );
+    }
+
+    @Override
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage( page + 1 );
     }
 
     @Override
@@ -76,19 +96,40 @@ public abstract class CompanyTableActivity implements
         }
     }
 
-    private void requestCompanies() {
-        view.clearRecords();
-        animation.closeDetails();
+    @Override
+    public void loadData( int offset, int limit, AsyncCallback<List<Company>> asyncCallback ) {
+        query.setOffset( offset );
+        query.setLimit( limit );
 
-        companyService.getCompanies(query, new RequestCallback<List<Company>>() {
+        companyService.getCompanies(query, new RequestCallback< List <Company> >() {
             @Override
-            public void onError(Throwable throwable) {
+            public void onError( Throwable throwable ) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(List<Company> result) {
-                view.setData(result);
+            public void onSuccess( List< Company > companies ) {
+                asyncCallback.onSuccess( companies );
+            }
+        });
+
+    }
+
+    private void requestCompaniesCount() {
+        view.clearRecords();
+        animation.closeDetails();
+
+        companyService.getCompaniesCount(query, new RequestCallback< Long >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess( Long count ) {
+                view.setCompaniesCount( count );
+                pagerView.setTotalPages( view.getPageCount() );
+                pagerView.setTotalCount( count );
             }
         });
     }
@@ -99,6 +140,8 @@ public abstract class CompanyTableActivity implements
     TableAnimation animation;
     @Inject
     Lang lang;
+    @Inject
+    AbstractPagerView pagerView;
     @Inject
     CompanyControllerAsync companyService;
 
