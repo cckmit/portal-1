@@ -10,6 +10,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.crm.client.service.AuthControllerAsync;
+import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
  * Активность окна авторизации
@@ -52,7 +53,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             @Override
             public void onSuccess( Profile profile ) {
                 view.hideError();
-                fireEvent(new AuthEvents.Success(profile ) );
+                fireAuthSuccess(profile);
                 fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
             }
         } );
@@ -76,7 +77,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                     return;
                 }
 
-                fireEvent( new AuthEvents.Success( profile ) );
+                fireAuthSuccess(profile);
             }
         });
     }
@@ -88,6 +89,10 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         view.setFocus();
     }
 
+    private void fireAuthSuccess(Profile profile) {
+        fireEvent(new MenuEvents.Clear());
+        fireEvent(new AuthEvents.Success(profile));
+    }
 
     @Inject
     AbstractAuthView view;
