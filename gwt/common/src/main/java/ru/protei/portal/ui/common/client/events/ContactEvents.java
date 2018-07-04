@@ -26,9 +26,9 @@ public class ContactEvents {
     /**
      * Показать таблицу котактов
      */
-    public static class ShowTable {
+    public static class ShowConciseTable {
 
-        public ShowTable ( HasWidgets parent, Long companyId) {
+        public ShowConciseTable(HasWidgets parent, Long companyId) {
             this.parent = parent;
             this.companyId = companyId;
         }

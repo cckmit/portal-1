@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -20,8 +20,6 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView;
-
-import java.util.List;
 
 /**
  * Created by bondarenko on 30.10.17.
@@ -48,6 +46,8 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         category.setColumnProvider( columnProvider );
         group.setHandler( activity );
         group.setColumnProvider( columnProvider );
+        table.setLoadHandler( activity );
+        table.setPagerListener( activity );
     }
 
     @Override
@@ -57,6 +57,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     @Override
     public void clearRecords() {
+        table.clearCache();
         table.clearRows();
     }
 
@@ -71,10 +72,29 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     @Override
-    public void setData(List<Company> companies) {
-        for (Company company : companies) {
-            table.addRow(company);
-        }
+    public void setCompaniesCount(Long issuesCount) {
+        table.setTotalRecords( issuesCount.intValue() );
+    }
+
+    @Override
+    public int getPageSize() {
+        return table.getPageSize();
+    }
+
+    @Override
+    public int getPageCount() {
+        return table.getPageCount();
+    }
+
+    @Override
+    public void scrollTo(int page) {
+        table.scrollToPage( page );
+    }
+
+    @Override
+    public void updateRow(Company item) {
+        if(item != null)
+            table.updateRow(item);
     }
 
     private void initTable () {
@@ -148,7 +168,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     @UiField
-    TableWidget<Company> table;
+    InfiniteTableWidget<Company> table;
 
     @UiField
     HTMLPanel tableContainer;
