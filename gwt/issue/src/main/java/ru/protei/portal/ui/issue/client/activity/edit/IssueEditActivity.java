@@ -338,7 +338,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 ? subscriptionsListEmptyMessage
                 : subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
-                .filter(mail -> !view.isLocal().getValue() || mail.endsWith("@protei.ru"))
+                .filter(mail -> !view.isLocal().getValue() || CompanySubscription.isProteiRecipient(mail))
                 .collect(Collectors.joining(", "));
     }
 
@@ -350,7 +350,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
         return subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
-                .allMatch(mail -> mail.endsWith("@protei.ru"));
+                .allMatch(CompanySubscription::isProteiRecipient);
     }
 
     private void setSubscriptionEmails(String value) {

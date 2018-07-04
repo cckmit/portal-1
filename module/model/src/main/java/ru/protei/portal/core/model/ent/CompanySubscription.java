@@ -64,6 +64,10 @@ public class CompanySubscription implements Serializable {
         return (this.email + "_" + String.valueOf(this.companyId));
     }
 
+    public static boolean isProteiRecipient(String email){
+        return email.endsWith("@protei.ru");
+    }
+
     @Override
     public int hashCode() {
         return uniqueKey().hashCode();
