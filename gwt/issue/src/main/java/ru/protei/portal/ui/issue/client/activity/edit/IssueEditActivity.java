@@ -85,7 +85,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
-        view.timeElapsed().setTime(issue.getTimeElapsed()+event.timeElapsed);
+        view.timeElapsed().setTime(event.timeElapsed);
     }
 
     @Event

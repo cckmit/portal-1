@@ -10,10 +10,11 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AttachmentEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
@@ -32,6 +33,8 @@ import ru.protei.portal.ui.issue.client.view.comment.item.IssueCommentItemView;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 /**
  * Активность списка комментариев
@@ -70,6 +73,7 @@ public abstract class IssueCommentListActivity
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
+        view.timeElapsedVisibility().setVisible(false);
 
         requestData( event.caseId );
     }
@@ -130,6 +134,7 @@ public abstract class IssueCommentListActivity
                 itemViewToModel.remove(itemView);
                 fireEvent( new IssueEvents.ChangeModel() );
                 fireEvent( new IssueEvents.ChangeCommentsView() );
+                updateTimeElapsedInIssue(itemViewToModel.values());
             }
         });
     }
@@ -157,6 +162,10 @@ public abstract class IssueCommentListActivity
 
         String editedMessage = caseComment.getText();
         view.message().setValue( editedMessage );
+        if (comment.getTimeElapsed() != null) {
+            view.timeElapsed().setTime(comment.getTimeElapsed());
+            view.timeElapsedVisibility().setVisible(true);
+        }
         view.focus();
     }
 
@@ -364,7 +373,7 @@ public abstract class IssueCommentListActivity
         boolean isEdit = comment.getId() != null;
 
         String message = view.message().getValue();
-        if ( HelperFunc.isEmpty( message ) ) {
+        if ( isBlank( message ) ) {
             if ( id == null ) {
                 fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
             }
@@ -373,16 +382,12 @@ public abstract class IssueCommentListActivity
 
         comment.setCaseId( id != null ? id : show.caseId );
         comment.setText( message );
+        comment.setTimeElapsed(view.timeElapsed().getTime());
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(show.caseId, a.getId(), isEdit? comment.getId(): null))
                         .collect(Collectors.toList())
         );
-
-        Long timeElapsed = view.timeElapsed().getTime();
-        if(timeElapsed!=null){
-            comment.setTimeElapsed(timeElapsed);
-        }
 
         issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
             @Override
@@ -423,15 +428,20 @@ public abstract class IssueCommentListActivity
                 view.message().setValue( null );
                 view.attachmentContainer().clear();
                 view.clearTimeElapsed();
+                view.timeElapsedVisibility().setVisible(false);
                 tempAttachments.clear();
                 fireEvent( new IssueEvents.ChangeModel() );
                 fireEvent( new IssueEvents.ChangeCommentsView() );
-                if(result.getTimeElapsed()!=null){
-                    fireEvent( new IssueEvents.ChangeTimeElapsed(result.getTimeElapsed()) );
-                }
+                updateTimeElapsedInIssue(itemViewToModel.values());
             }
         } );
     };
+
+    private void updateTimeElapsedInIssue(Collection<CaseComment> comments) {
+        Long timeElapsed = CollectionUtils.stream(comments).filter(cmnt -> cmnt.getTimeElapsed() != null)
+                .mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
+        fireEvent( new IssueEvents.ChangeTimeElapsed(timeElapsed) );
+    }
 
     private void issueSavedAlso(boolean withComeback){
         fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

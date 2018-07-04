@@ -77,7 +77,11 @@ public class IssueCommentListView
     @Override
     public void clearTimeElapsed() {
         timeElapsed.setValue(null);
-        timePanel.setVisible(false);
+    }
+
+    @Override
+    public HasVisibility timeElapsedVisibility() {
+        return timePanel;
     }
 
     @Override
