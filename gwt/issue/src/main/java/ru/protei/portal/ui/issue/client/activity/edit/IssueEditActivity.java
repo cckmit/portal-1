@@ -175,10 +175,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.initiator().setValue(null);
 
         if ( companyOption == null ) {
-            view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()) );
+            setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
         } else {
             companyService.getCompanySubscription(companyOption.getId(), new ShortRequestCallback<List<CompanySubscription>>()
-                    .setOnSuccess(subscriptions -> view.setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
+                    .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
 
             companyService.getCompanyCaseStates(companyOption.getId(), new ShortRequestCallback<List<CaseState>>()
                     .setOnSuccess(caseStates -> {
@@ -200,7 +200,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onLocalClicked() {
-        view.setSubscriptionEmails( getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage) );
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
     }
 
     private void initialView(CaseObject issue){
@@ -221,7 +221,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private void fillView(CaseObject issue) {
-        view.companyEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_COMPANY_EDIT ) && issue.getId() == null );
+        view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
         view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
@@ -342,6 +342,21 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 .collect(Collectors.joining(", "));
     }
 
+    private boolean isCompanyChangeAllowed(CaseObject issue) {
+        if (policyService.hasPrivilegeFor(En_Privilege.ISSUE_COMPANY_EDIT) &&
+                (issue.getId() == null || subscriptionsList == null || subscriptionsList.isEmpty() || view.isLocal().getValue())
+        ) {
+            return true;
+        }
+        return subscriptionsList.stream()
+                .map(CompanySubscription::getEmail)
+                .allMatch(mail -> mail.endsWith("@protei.ru"));
+    }
+
+    private void setSubscriptionEmails(String value) {
+        view.setSubscriptionEmails(value);
+        view.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
+    }
 
     @Inject
     AbstractIssueEditView view;
