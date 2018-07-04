@@ -13,6 +13,7 @@ import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -152,7 +153,7 @@ public class MailNotificationProcessor {
     }
 
     private boolean isProteiRecipient(NotificationEntry entry){
-        return entry.getAddress().endsWith("@protei.ru");
+        return CompanySubscription.isProteiRecipient(entry.getAddress());
     }
 
     /**
