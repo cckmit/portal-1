@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -130,7 +131,17 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     userLogin.setPersonId(person.getId());
                     userLogin.setInfo(person.getDisplayName());
                 }
-                contactService.saveAccount(userLogin, new RequestCallback<Boolean>() {
+                NotificationEntry notificationEntry = view.notificationEmail().getValue();
+                if (notificationEntry != null) {
+                    PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
+                    String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
+                    if (address == null || address.isEmpty()) {
+                        notificationEntry = null;
+                    } else {
+                        notificationEntry.setAddress(address);
+                    }
+                }
+                contactService.saveAccount(userLogin, notificationEntry, new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireErrorMessage(lang.errEditContactLogin());
@@ -281,6 +292,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());
         view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
+        view.notificationEmailVisibility().setVisible(person.getId() == null);
+        view.notificationEmail().setValue(null);
 
         view.showInfo(userLogin.getId() != null);
     }

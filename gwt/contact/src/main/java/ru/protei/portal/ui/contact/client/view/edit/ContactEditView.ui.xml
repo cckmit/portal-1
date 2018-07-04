@@ -3,7 +3,8 @@
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:dict="urn:import:ru.protei.portal.ui.common.client.widget.selector.dict"
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:checkedlocale='urn:import:ru.protei.portal.ui.common.client.widget.subscription.checkedlocale'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -189,6 +190,7 @@
                 </div>
             </div>
             <div class="footer">
+                <checkedlocale:CheckedLocale ui:field="notificationEmail" name="{lang.sendEmail}" locale="ru"/>
                 <g:Button ui:field="fireBtn" styleName="btn btn-danger" text="{lang.contactFire}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>

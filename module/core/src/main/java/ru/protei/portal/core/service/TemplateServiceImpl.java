@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.UserLoginPassword;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
 
@@ -108,6 +109,32 @@ public class TemplateServiceImpl implements TemplateService {
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getUserLoginNotificationBody(UserLoginPassword userLoginPassword, String url) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("url", url);
+        templateModel.put("hasDisplayName", HelperFunc.isNotEmpty(userLoginPassword.getDisplayName()));
+        templateModel.put("displayName", userLoginPassword.getDisplayName());
+        templateModel.put("login", userLoginPassword.getLogin());
+        templateModel.put("password", userLoginPassword.getPassword());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/user.login.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getUserLoginNotificationSubject(String url) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("url", url);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/user.login.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 

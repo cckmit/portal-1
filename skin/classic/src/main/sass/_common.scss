@@ -381,8 +381,30 @@ body {
   color: #c3c3c3;
 }
 
+.checkbox.single {
+  cursor: pointer;
 
+  .option-name {
+    color: inherit !important;
+    padding: 0 1em 0 0 !important;
+    font-size: 90% !important;
+  }
 
+  label {
+    padding-left: 0 !important;
+  }
+
+  label::after {
+    padding-left: 0 !important;
+  }
+}
+
+.checked-locale {
+  display: inline-block;
+  > div {
+    display: inline-block;
+  }
+}
 
 
 /** SELECTOR **/

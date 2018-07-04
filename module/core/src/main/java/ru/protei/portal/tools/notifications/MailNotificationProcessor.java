@@ -8,15 +8,18 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.UserLoginPassword;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
@@ -61,6 +64,10 @@ public class MailNotificationProcessor {
     @Autowired
     PortalConfig config;
 
+    // ------------------------
+    // CaseObject notifications
+    // ------------------------
+
     @EventListener
     public void onCaseChanged(AssembledCaseEvent event){
         Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers( event );
@@ -72,12 +79,10 @@ public class MailNotificationProcessor {
                         event.getCaseObject().isPrivateCase());
 
         if(!notifiers.isEmpty())
-            performNotification( event, notifiers );
+            performCaseObjectNotification( event, notifiers );
     }
 
-    private void performNotification(
-        AssembledCaseEvent event, Collection<NotificationEntry> notifiers
-    ) {
+    private void performCaseObjectNotification(AssembledCaseEvent event, Collection<NotificationEntry> notifiers) {
 
         CaseObject caseObject = event.getCaseObject();
 
@@ -129,7 +134,7 @@ public class MailNotificationProcessor {
             String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipient(entry));
 
             try {
-                MimeMessageHelper msg = prepareMessage(messageId, inReplyTo, references, subject, body);
+                MimeMessageHelper msg = prepareCaseObjectMessage(messageId, inReplyTo, references, subject, body);
                 msg.setTo(entry.getAddress());
                 mailSendChannel.send(msg.getMimeMessage());
             } catch (Exception e) {
@@ -143,7 +148,7 @@ public class MailNotificationProcessor {
         semaphore.release();
     }
 
-    private MimeMessageHelper prepareMessage( String messageId, String inReplyTo, List<String> references, String subj, String body ) throws MessagingException {
+    private MimeMessageHelper prepareCaseObjectMessage(String messageId, String inReplyTo, List<String> references, String subj, String body) throws MessagingException {
         MimeMessageHelper helper = new MimeMessageHelper( messageFactory.createMailMessage( messageId, inReplyTo, references ), true, config.data().smtp().getDefaultCharset() );
         helper.setSubject( subj );
         helper.setFrom( config.data().smtp().getFromAddress() );
@@ -184,5 +189,56 @@ public class MailNotificationProcessor {
         return isPrivateCase?
                 allNotifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList()):
                 allNotifiers;
+    }
+
+    // -----------------------
+    // UserLogin notifications
+    // -----------------------
+
+    @EventListener
+    public void onUserLoginCreated(UserLoginCreatedEvent event) {
+        if (event.getNotificationEntry() != null) {
+            performUserLoginNotification(event, event.getNotificationEntry());
+        }
+    }
+
+    private void performUserLoginNotification(UserLoginCreatedEvent event, NotificationEntry notificationEntry) {
+        UserLoginPassword userLoginPassword = event.getUserLoginPassword();
+
+        if (userLoginPassword.getLogin() == null || userLoginPassword.getLogin().isEmpty()) {
+            log.info("Failed send notification to userLogin with login={}: login is empty", userLoginPassword.getLogin());
+            return;
+        }
+
+        if (userLoginPassword.getPassword() == null || userLoginPassword.getPassword().isEmpty()) {
+            log.info("Failed send notification to userLogin with login={}: password is empty", userLoginPassword.getLogin());
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getUserLoginNotificationBody(userLoginPassword, config.data().getCrmUrl());
+        if (bodyTemplate == null) {
+            log.info("Failed to prepare userLogin body template");
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getUserLoginNotificationSubject(config.data().getCrmUrl());
+        if (subjectTemplate == null) {
+            log.info("Failed to prepare userLogin subject template");
+            return;
+        }
+
+        String body = bodyTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
+        String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
+
+        try {
+            MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+            msg.setSubject(subject);
+            msg.setFrom(config.data().smtp().getFromAddress());
+            msg.setText(HelperFunc.nvlt(body, ""), true);
+            msg.setTo(notificationEntry.getAddress());
+            mailSendChannel.send(msg.getMimeMessage());
+        } catch (Exception e) {
+            log.error("Failed to make MimeMessage", e);
+        }
     }
 }

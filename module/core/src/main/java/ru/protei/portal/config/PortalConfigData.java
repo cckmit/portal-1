@@ -27,6 +27,7 @@ public class PortalConfigData {
     private final ReportConfig reportConfig;
     private final CaseLinkConfig caseLinkConfig;
 
+    private final String crmUrl;
     private final String crmCaseUrl;
     private final String loginSuffixConfig;
 
@@ -41,6 +42,7 @@ public class PortalConfigData {
         reportConfig = new ReportConfig(wrapper);
         caseLinkConfig = new CaseLinkConfig(wrapper);
 
+        crmUrl = wrapper.getProperty( "crm.url", "http://newportal/crm/" );
         crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
@@ -55,6 +57,10 @@ public class PortalConfigData {
 
     public SmtpConfig smtp () {
         return this.smtpConfig;
+    }
+
+    public String getCrmUrl() {
+        return crmUrl;
     }
 
     public String getCrmCaseUrl() {

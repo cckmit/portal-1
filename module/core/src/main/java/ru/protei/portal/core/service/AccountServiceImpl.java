@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.*;
@@ -15,6 +16,8 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.UserLoginPassword;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -41,6 +44,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
@@ -93,7 +99,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin ) {
+    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, NotificationEntry notificationEntry ) {
         if ( !isValidLogin( userLogin ) )
             return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
 
@@ -109,6 +115,11 @@ public class AccountServiceImpl implements AccountService {
 
         UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
 
+        UserLoginPassword userLoginPassword = null;
+        if (userLogin.getId() == null && userLogin.getUlogin() != null && userLogin.getUpass() != null) {
+            userLoginPassword = new UserLoginPassword(userLogin.getUlogin(), userLogin.getUpass(), userLogin.getPerson() == null ? null : userLogin.getPerson().getDisplayName());
+        }
+
         if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
                 ( account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase( userLogin.getUpass().trim() ) ) ) {
             userLogin.setUpass( DigestUtils.md5DigestAsHex( userLogin.getUpass().trim().getBytes() ) );
@@ -123,6 +134,10 @@ public class AccountServiceImpl implements AccountService {
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
 
+            if (userLoginPassword != null) {
+                publisherService.publishEvent(new UserLoginCreatedEvent(userLoginPassword, notificationEntry));
+            }
+
             return new CoreResponse< UserLogin >().success( userLogin );
         }
 
@@ -130,14 +145,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin) {
+    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin, NotificationEntry notificationEntry) {
 
         if (userLogin.getId() == null) {
             Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
             userLogin.setRoles(userRoles);
         }
 
-        return saveAccount(token, userLogin);
+        return saveAccount(token, userLogin, notificationEntry);
     }
 
     @Override

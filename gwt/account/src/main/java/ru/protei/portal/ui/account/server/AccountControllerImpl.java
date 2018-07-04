@@ -77,7 +77,7 @@ public class AccountControllerImpl implements AccountController {
         if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
             throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-        CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin );
+        CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin, null );
 
         log.debug( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
