@@ -53,7 +53,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             @Override
             public void onSuccess( Profile profile ) {
                 view.hideError();
-                authSuccess(profile);
+                fireAuthSuccess(profile);
                 fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
             }
         } );
@@ -77,7 +77,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                     return;
                 }
 
-                authSuccess(profile);
+                fireAuthSuccess(profile);
             }
         });
     }
@@ -89,7 +89,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         view.setFocus();
     }
 
-    private void authSuccess(Profile profile) {
+    private void fireAuthSuccess(Profile profile) {
         fireEvent(new MenuEvents.Clear());
         fireEvent(new AuthEvents.Success(profile));
     }
