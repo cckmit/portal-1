@@ -6,6 +6,7 @@ import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
@@ -108,6 +109,32 @@ public class TemplateServiceImpl implements TemplateService {
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getUserLoginNotificationBody(UserLoginCreatedEvent event, String url) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("url", url);
+        templateModel.put("hasDisplayName", HelperFunc.isNotEmpty(event.getDisplayName()));
+        templateModel.put("displayName", event.getDisplayName());
+        templateModel.put("login", event.getLogin());
+        templateModel.put("password", event.getPasswordRaw());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/user.login.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getUserLoginNotificationSubject(String url) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("url", url);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/user.login.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
         return template;
     }
 

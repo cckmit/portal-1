@@ -57,6 +57,10 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasValue<En_Gender> gender ();
 
+    HasValue<String> locale();
+
+    HasValue<Boolean> sendWelcomeEmail();
+
     HasValidable companyValidator();
 
     HasValidable firstNameValidator();
@@ -78,4 +82,6 @@ public interface AbstractContactEditView extends IsWidget {
     HasVisibility firedMsgVisibility();
 
     HasVisibility deletedMsgVisibility();
+
+    HasVisibility sendWelcomeEmailVisibility();
 }

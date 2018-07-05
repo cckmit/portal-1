@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.*;
@@ -15,6 +17,8 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -34,6 +38,9 @@ public class AccountServiceImpl implements AccountService {
     UserRoleDAO userRoleDAO;
 
     @Autowired
+    PersonDAO personDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -41,6 +48,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     AuthService authService;
+
+    @Autowired
+    EventPublisherService publisherService;
 
     @Override
     public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
@@ -93,7 +103,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin ) {
+    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail ) {
         if ( !isValidLogin( userLogin ) )
             return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
 
@@ -109,6 +119,9 @@ public class AccountServiceImpl implements AccountService {
 
         UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
 
+        sendWelcomeEmail = sendWelcomeEmail && (account == null || account.getId() == null);
+        String passwordRaw = sendWelcomeEmail ? userLogin.getUpass() : null;
+
         if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
                 ( account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase( userLogin.getUpass().trim() ) ) ) {
             userLogin.setUpass( DigestUtils.md5DigestAsHex( userLogin.getUpass().trim().getBytes() ) );
@@ -123,6 +136,18 @@ public class AccountServiceImpl implements AccountService {
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
 
+            if (sendWelcomeEmail) {
+
+                userLogin.setPerson(personDAO.get(userLogin.getPersonId()));
+
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
+                String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
+                NotificationEntry notificationEntry = NotificationEntry.email(address, userLogin.getPerson().getLocale());
+                UserLoginCreatedEvent userLoginCreatedEvent = new UserLoginCreatedEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), notificationEntry);
+
+                publisherService.publishEvent(userLoginCreatedEvent);
+            }
+
             return new CoreResponse< UserLogin >().success( userLogin );
         }
 
@@ -130,14 +155,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin) {
+    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail) {
 
         if (userLogin.getId() == null) {
             Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
             userLogin.setRoles(userRoles);
         }
 
-        return saveAccount(token, userLogin);
+        return saveAccount(token, userLogin, sendWelcomeEmail);
     }
 
     @Override

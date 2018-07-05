@@ -15,8 +15,10 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.GenderButtonSelector;
+import ru.protei.portal.ui.common.client.widget.subscription.locale.LocaleButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contact.client.activity.edit.AbstractContactEditActivity;
@@ -140,6 +142,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
+    public HasValue<String> locale() {
+        return locale;
+    }
+
+    @Override
     public HasText personInfo() {
         return personInfo;
     }
@@ -163,6 +170,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public HasText confirmPassword() {
         return confirmPassword;
+    }
+
+    @Override
+    public HasValue<Boolean> sendWelcomeEmail() {
+        return sendWelcomeEmail;
     }
 
     @Override
@@ -208,6 +220,11 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @Override
     public HasVisibility deletedMsgVisibility() {
         return contactDeleted;
+    }
+
+    @Override
+    public HasVisibility sendWelcomeEmailVisibility() {
+        return sendWelcomeEmail;
     }
 
     @Override
@@ -335,6 +352,13 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
 
     @UiField
     HTMLPanel contactDeleted;
+
+    @Inject
+    @UiField(provided = true)
+    LocaleButtonSelector locale;
+
+    @UiField
+    OptionItem sendWelcomeEmail;
 
     //@UiField
     //HTMLPanel contactDeleted;

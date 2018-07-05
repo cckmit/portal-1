@@ -20,6 +20,11 @@
                 <legend><ui:text from="{lang.documentTypeShortName}"/></legend>
                 <g:TextBox ui:field="shortName" styleName="col-xs-12" />
             </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.documentTypeGost}"/></legend>
+                <g:TextBox ui:field="gost" styleName="col-xs-12" />
+            </fieldset>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

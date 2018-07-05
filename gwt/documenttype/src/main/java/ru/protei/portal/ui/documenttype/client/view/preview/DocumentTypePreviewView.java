@@ -49,12 +49,17 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
         return documentCategory;
     }
 
+    @Override
+    public HasValue<String> gost() {
+        return gost;
+    }
+
     @UiHandler("documentCategory")
     public void onCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
         fireValueChanged();
     }
 
-    @UiHandler({"name", "shortName"})
+    @UiHandler({"name", "shortName", "gost"})
     public void onTextFieldsChanged(KeyUpEvent event) {
         fireValueChanged();
     }
@@ -74,6 +79,8 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
     TextBox shortName;
     @UiField
     TextBox name;
+    @UiField
+    TextBox gost;
     @Inject
     @UiField(provided = true)
     DocumentCategorySelector documentCategory;

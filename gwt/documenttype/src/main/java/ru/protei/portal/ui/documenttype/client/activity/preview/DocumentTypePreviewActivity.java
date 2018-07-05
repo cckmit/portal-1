@@ -41,6 +41,7 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
         documentType.setDocumentCategory(view.category().getValue());
         documentType.setShortName(view.shortName().getValue());
         documentType.setName(view.name().getValue());
+        documentType.setGost(view.gost().getValue());
 
         service.saveDocumentType(documentType, new RequestCallback<DocumentType>() {
             @Override
@@ -62,6 +63,7 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
         view.name().setValue(documentType.getName());
         view.shortName().setValue(documentType.getShortName());
         view.category().setValue(documentType.getDocumentCategory());
+        view.gost().setValue(documentType.getGost());
     }
 
     @Inject

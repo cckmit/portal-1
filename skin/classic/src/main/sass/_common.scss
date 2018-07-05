@@ -381,8 +381,30 @@ body {
   color: #c3c3c3;
 }
 
+.checkbox.single {
+  cursor: pointer;
 
+  .option-name {
+    color: inherit !important;
+    padding: 0 1em 0 0 !important;
+    font-size: 90% !important;
+  }
 
+  label {
+    padding-left: 0 !important;
+  }
+
+  label::after {
+    padding-left: 0 !important;
+  }
+}
+
+.checked-locale {
+  display: inline-block;
+  > div {
+    display: inline-block;
+  }
+}
 
 
 /** SELECTOR **/
@@ -1287,6 +1309,105 @@ label.bordered:after{
 .preview-wrapper.with-table-pager,
 .filter-container .panel.with-table-pager{
   max-height: calc(100vh - 60px);
+}
+
+/**** Collapsable filter ****/
+.grid {
+  position: relative;
+}
+
+.filter-collapsable {
+
+  > .collapsed {
+    display: none;
+
+    > .header {
+      vertical-align: bottom;
+      text-align: left;
+      text-transform: uppercase;
+      word-spacing: 0.15em;
+
+      > .btn {
+        padding: 8px 8px;
+        position: relative;
+        line-height: 1.42857143;
+        width: calc(100% - 16px);
+        height: calc(100% - 16px);
+        border: none;
+
+        > span {
+          height: initial;
+          margin: 6px;
+        }
+      }
+    }
+  }
+
+  > .full {
+    display: block;
+
+    > .header {
+      border-bottom: 2px solid #ddd;
+      vertical-align: bottom;
+      text-align: left;
+      text-transform: uppercase;
+      word-spacing: 0.15em;
+
+      > * {
+        padding: 8px;
+        position: relative;
+        line-height: 1.42857143;
+      }
+
+      > label {
+        float: left;
+      }
+
+      > .btn {
+        float: right;
+        border: none;
+        padding: 10px 16px 7px 16px;
+      }
+
+      &:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+    }
+  }
+}
+
+.filter-container.collapsed {
+  position: absolute;
+  height: 100%;
+  width: 50px;
+  top: 0;
+  right: 0;
+
+  * {
+    height: 100%;
+  }
+
+  > .filter-collapsable {
+    padding-bottom: 0;
+
+    > .collapsed {
+      display: block;
+    }
+
+    > .full {
+      display: none;
+    }
+  }
+
+  > .filter-collapsable.fixed {
+    width: 40px;
+  }
+}
+
+.global-table-container.filter-collapsed {
+  width: calc(100% - 50px) !important;
 }
 
 /************************/

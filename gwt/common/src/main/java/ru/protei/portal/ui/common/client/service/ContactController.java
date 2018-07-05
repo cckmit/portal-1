@@ -40,5 +40,5 @@ public interface ContactController extends RemoteService {
      */
     List<PersonShortView> getContactViewList( ContactQuery query ) throws RequestFailedException;
 
-    boolean saveAccount ( UserLogin userLogin ) throws RequestFailedException;
+    boolean saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException;
 }

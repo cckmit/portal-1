@@ -881,6 +881,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentTypeShortName();
 
+    String documentTypeGost();
+
     String documentTypeRemoveSuccessed();
 
     String documentTypeRemoveConfirmMessage();
@@ -1008,4 +1010,10 @@ public interface Lang extends Messages, ContactItemLang {
     String id();
 
     String withoutContact();
+
+    String filters();
+
+    String sendEmail();
+
+    String locale();
 }

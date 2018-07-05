@@ -405,6 +405,20 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
+    @UiHandler("filterRestoreBtn")
+    public void onFilterRestoreBtnClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onFilterRestore();
+        }
+    }
+
+    @UiHandler("filterCollapseBtn")
+    public void onFilterCollapseBtnClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onFilterCollapse();
+        }
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -489,6 +503,12 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     DivElement filterNameContainer;
+
+    @UiField
+    Anchor filterRestoreBtn;
+
+    @UiField
+    Anchor filterCollapseBtn;
 
     @Inject
     FixedPositioner positioner;

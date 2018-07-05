@@ -22,7 +22,7 @@ public interface AccountControllerAsync {
 
     void getContactAccount (long personId, AsyncCallback< UserLogin > async );
 
-    void saveAccount ( UserLogin userLogin, AsyncCallback< UserLogin > callback );
+    void saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< UserLogin > callback );
 
     void getAccountsCount( AccountQuery query, AsyncCallback< Long > async );
 

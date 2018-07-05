@@ -34,6 +34,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
+import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 
 import java.util.List;
@@ -57,6 +58,8 @@ public abstract class IssueTableActivity
         view.getFilterContainer().add( filterView.asWidget() );
 
         pagerView.setActivity( this );
+
+        toggleFilterCollapseState();
     }
 
     @Event
@@ -128,6 +131,18 @@ public abstract class IssueTableActivity
     @Override
     public void onEditClicked( CaseShortView value ) {
         fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
+    }
+
+    @Override
+    public void onFilterCollapse() {
+        animation.filterCollapse();
+        issueFilterService.setFilterCollapsed(true);
+    }
+
+    @Override
+    public void onFilterRestore() {
+        animation.filterRestore();
+        issueFilterService.setFilterCollapsed(false);
     }
 
     @Override
@@ -460,6 +475,18 @@ public abstract class IssueTableActivity
         filterView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
     }
 
+    private void toggleFilterCollapseState() {
+        Boolean isCollapsed = issueFilterService.isFilterCollapsed();
+        if (isCollapsed == null) {
+            return;
+        }
+        if (isCollapsed) {
+            animation.filterCollapse();
+        } else {
+            animation.filterRestore();
+        }
+    }
+
     @Inject
     Lang lang;
 
@@ -494,6 +521,9 @@ public abstract class IssueTableActivity
 
     @Inject
     CaseStateFilterProvider caseStateFilter;
+
+    @Inject
+    IssueFilterService issueFilterService;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

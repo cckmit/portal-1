@@ -95,6 +95,9 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     @JdbcColumn(name = "relations")
     private String relations;
 
+    @JdbcColumn(name = "locale")
+    private String locale;
+
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
             return null;
@@ -299,6 +302,14 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
     public void setGender (En_Gender gender) {
         this.genderCode = gender.getCode();
+    }
+
+    public String getLocale() {
+        return locale;
+    }
+
+    public void setLocale(String locale) {
+        this.locale = locale;
     }
 
     @Override
