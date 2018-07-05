@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
+import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -51,6 +52,7 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
+        templateModel.put( "timeElapsedFormatter", new WorkTimeFormatter() );
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getCaseNumber() ) );
         templateModel.put( "isCreated", event.isCreateEvent() );
         templateModel.put( "createdByMe", false );
@@ -67,6 +69,10 @@ public class TemplateServiceImpl implements TemplateService {
 
         templateModel.put( "caseChanged", event.isCaseStateChanged() );
         templateModel.put( "oldCaseState", oldState == null ? null : En_CaseState.getById( oldState.getStateId() ).getName() );
+
+        templateModel.put("timeElapsedChanged", event.isTimeElapsedChanged());
+        templateModel.put("elapsed", newState.getTimeElapsed());
+        templateModel.put("oldElapsed", oldState == null ? null : oldState.getTimeElapsed());
 
         templateModel.put( "customerChanged", event.isInitiatorChanged() || event.isInitiatorCompanyChanged() );
         templateModel.put( "oldInitiator", oldState == null ? null : oldState.getInitiator() );

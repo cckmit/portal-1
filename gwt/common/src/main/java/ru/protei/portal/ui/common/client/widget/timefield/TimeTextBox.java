@@ -12,7 +12,7 @@ public class TimeTextBox extends ValidableTextBox implements HasTime {
 
     @Inject
     public void init(Lang lang) {
-        workTime = new WorkTime(lang);
+        workTimeFormatter = new WorkTimeFormatter(lang);
     }
 
     @Override
@@ -21,13 +21,13 @@ public class TimeTextBox extends ValidableTextBox implements HasTime {
         getElement().setAttribute("autocapitalize", "off");
         getElement().setAttribute("autocorrect", "off");
         getElement().setAttribute("autocomplete", "off");
-        getElement().setAttribute("placeholder", workTime.getPlaceholder());
-        setRegexp(workTime.getPattern());
+        getElement().setAttribute("placeholder", workTimeFormatter.getPlaceholder());
+        setRegexp(workTimeFormatter.getPattern());
     }
 
     @Override
     public void setTime(Long minutes) {
-        setValue( workTime.asString(minutes));
+        setValue( workTimeFormatter.asString(minutes));
     }
 
     @Override
@@ -37,8 +37,8 @@ public class TimeTextBox extends ValidableTextBox implements HasTime {
             return null;
         }
 
-        return workTime.asTime(value);
+        return workTimeFormatter.asTime(value);
     }
 
-    WorkTime workTime;
+    WorkTimeFormatter workTimeFormatter;
 }

@@ -4,9 +4,9 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-public class WorkTime {
+public class WorkTimeFormatter {
 
-    public WorkTime(Lang lang) {
+    public WorkTimeFormatter(Lang lang) {
         day = lang.timeDayLiteral();
         hour = lang.timeHourLiteral();
         minute = lang.timeMinuteLiteral();

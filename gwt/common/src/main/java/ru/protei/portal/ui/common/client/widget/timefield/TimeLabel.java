@@ -10,13 +10,13 @@ public class TimeLabel extends Label implements HasTime {
 
     @Inject
     public void init(Lang lang) {
-        workTime = new WorkTime(lang);
+        workTimeFormatter = new WorkTimeFormatter(lang);
     }
 
     @Override
     public void setTime(Long minutes) {
         this.minutes = minutes;
-        setText(workTime.asString(minutes));
+        setText(workTimeFormatter.asString(minutes));
     }
 
     @Override
@@ -24,5 +24,5 @@ public class TimeLabel extends Label implements HasTime {
         return minutes;
     }
 
-    WorkTime workTime;
+    WorkTimeFormatter workTimeFormatter;
 }

@@ -113,7 +113,7 @@ public class CaseCommentServiceTest {
     }
 
 
-    private CaseComment createNewComment(Person person, CaseObject caseObject, String text) {
+    public static CaseComment createNewComment(Person person, CaseObject caseObject, String text) {
         CaseComment comment = new CaseComment(text);
         comment.setCreated(new Date());
         comment.setCaseId(caseObject.getId());
@@ -123,7 +123,7 @@ public class CaseCommentServiceTest {
         return comment;
     }
 
-    private CaseObject createNewCaseObject(Person person) {
+    public static CaseObject createNewCaseObject(Person person) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseType(En_CaseType.TASK);
         caseObject.setName("Test_Case_Name");
@@ -138,7 +138,7 @@ public class CaseCommentServiceTest {
         );
     }
 
-    private Person createNewPerson(Company company) {
+    public static Person createNewPerson(Company company) {
         Person person = new Person();
         person.setCreated(new Date());
         person.setCreator("TEST");
@@ -154,7 +154,7 @@ public class CaseCommentServiceTest {
         return person;
     }
 
-    private Company createNewCompany(CompanyCategory category) {
+    public static Company createNewCompany(CompanyCategory category) {
         Company company = new Company();
         company.setCname("Test_Company");
         company.setCategory(category);
