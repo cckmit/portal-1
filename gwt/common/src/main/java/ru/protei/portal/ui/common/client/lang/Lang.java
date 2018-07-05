@@ -1010,4 +1010,6 @@ public interface Lang extends Messages, ContactItemLang {
     String withoutContact();
 
     String sendEmail();
+
+    String locale();
 }

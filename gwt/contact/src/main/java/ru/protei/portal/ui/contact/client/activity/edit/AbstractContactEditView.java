@@ -2,7 +2,6 @@ package ru.protei.portal.ui.contact.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -58,13 +57,15 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasValue<En_Gender> gender ();
 
+    HasValue<String> locale();
+
+    HasValue<Boolean> sendWelcomeEmail();
+
     HasValidable companyValidator();
 
     HasValidable firstNameValidator();
 
     HasValidable lastNameValidator();
-
-    HasValue<NotificationEntry> notificationEmail();
 
     void setContactLoginStatus(NameStatus status);
 
@@ -82,5 +83,5 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasVisibility deletedMsgVisibility();
 
-    HasVisibility notificationEmailVisibility();
+    HasVisibility sendWelcomeEmailVisibility();
 }

@@ -15,11 +15,9 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.model.struct.UserLoginPassword;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
@@ -203,19 +201,18 @@ public class MailNotificationProcessor {
     }
 
     private void performUserLoginNotification(UserLoginCreatedEvent event, NotificationEntry notificationEntry) {
-        UserLoginPassword userLoginPassword = event.getUserLoginPassword();
 
-        if (userLoginPassword.getLogin() == null || userLoginPassword.getLogin().isEmpty()) {
-            log.info("Failed send notification to userLogin with login={}: login is empty", userLoginPassword.getLogin());
+        if (event.getLogin() == null || event.getLogin().isEmpty()) {
+            log.info("Failed send notification to userLogin with login={}: login is empty", event.getLogin());
             return;
         }
 
-        if (userLoginPassword.getPassword() == null || userLoginPassword.getPassword().isEmpty()) {
-            log.info("Failed send notification to userLogin with login={}: password is empty", userLoginPassword.getLogin());
+        if (event.getPasswordRaw() == null || event.getPasswordRaw().isEmpty()) {
+            log.info("Failed send notification to userLogin with login={}: password is empty", event.getLogin());
             return;
         }
 
-        PreparedTemplate bodyTemplate = templateService.getUserLoginNotificationBody(userLoginPassword, config.data().getCrmUrl());
+        PreparedTemplate bodyTemplate = templateService.getUserLoginNotificationBody(event, config.data().getCrmUrl());
         if (bodyTemplate == null) {
             log.info("Failed to prepare userLogin body template");
             return;

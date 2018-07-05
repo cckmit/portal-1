@@ -1,10 +1,10 @@
 package ru.protei.portal.core.service;
 
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.struct.UserLoginPassword;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import java.util.Collection;
@@ -19,7 +19,7 @@ public interface TemplateService {
 
     PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson );
 
-    PreparedTemplate getUserLoginNotificationBody(UserLoginPassword userLoginPassword, String url);
+    PreparedTemplate getUserLoginNotificationBody(UserLoginCreatedEvent event, String url);
 
     PreparedTemplate getUserLoginNotificationSubject(String url);
 }

@@ -6,12 +6,12 @@ import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.struct.UserLoginPassword;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
 
@@ -113,13 +113,13 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getUserLoginNotificationBody(UserLoginPassword userLoginPassword, String url) {
+    public PreparedTemplate getUserLoginNotificationBody(UserLoginCreatedEvent event, String url) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("url", url);
-        templateModel.put("hasDisplayName", HelperFunc.isNotEmpty(userLoginPassword.getDisplayName()));
-        templateModel.put("displayName", userLoginPassword.getDisplayName());
-        templateModel.put("login", userLoginPassword.getLogin());
-        templateModel.put("password", userLoginPassword.getPassword());
+        templateModel.put("hasDisplayName", HelperFunc.isNotEmpty(event.getDisplayName()));
+        templateModel.put("displayName", event.getDisplayName());
+        templateModel.put("login", event.getLogin());
+        templateModel.put("password", event.getPasswordRaw());
 
         PreparedTemplate template = new PreparedTemplate("notification/email/user.login.body.%s.ftl");
         template.setModel(templateModel);

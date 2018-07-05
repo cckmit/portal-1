@@ -56,4 +56,5 @@
   <include file="2018-06-25-case_link_case_id_fk.xml" relativeToChangelogFile="true" />
   <include file="2018-06-28-add-cimp_level-column.xml" relativeToChangelogFile="true" />
   <include file="2018-06-29-add-email_last_id-column.xml" relativeToChangelogFile="true" />
+  <include file="2018-07-05-add-locale-column-to-person-table.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

@@ -17,7 +17,7 @@ import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
-import ru.protei.portal.core.model.struct.UserLoginPassword;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -99,7 +99,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, NotificationEntry notificationEntry ) {
+    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail ) {
         if ( !isValidLogin( userLogin ) )
             return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
 
@@ -115,10 +115,8 @@ public class AccountServiceImpl implements AccountService {
 
         UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
 
-        UserLoginPassword userLoginPassword = null;
-        if (userLogin.getId() == null && userLogin.getUlogin() != null && userLogin.getUpass() != null) {
-            userLoginPassword = new UserLoginPassword(userLogin.getUlogin(), userLogin.getUpass(), userLogin.getInfo());
-        }
+        sendWelcomeEmail = sendWelcomeEmail && (account == null || account.getId() == null);
+        String passwordRaw = sendWelcomeEmail ? userLogin.getUpass() : null;
 
         if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
                 ( account.getUpass() != null && userLogin.getUpass() != null && !account.getUpass().equalsIgnoreCase( userLogin.getUpass().trim() ) ) ) {
@@ -134,8 +132,14 @@ public class AccountServiceImpl implements AccountService {
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
 
-            if (userLoginPassword != null) {
-                publisherService.publishEvent(new UserLoginCreatedEvent(userLoginPassword, notificationEntry));
+            if (sendWelcomeEmail && userLogin.getPerson() != null) {
+
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
+                String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
+                NotificationEntry notificationEntry = NotificationEntry.email(address, userLogin.getPerson().getLocale());
+                UserLoginCreatedEvent userLoginCreatedEvent = new UserLoginCreatedEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), notificationEntry);
+
+                publisherService.publishEvent(userLoginCreatedEvent);
             }
 
             return new CoreResponse< UserLogin >().success( userLogin );
@@ -145,14 +149,14 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin, NotificationEntry notificationEntry) {
+    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail) {
 
         if (userLogin.getId() == null) {
             Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
             userLogin.setRoles(userRoles);
         }
 
-        return saveAccount(token, userLogin, notificationEntry);
+        return saveAccount(token, userLogin, sendWelcomeEmail);
     }
 
     @Override

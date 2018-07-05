@@ -1,9 +1,0 @@
-<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:lang='urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
-    <g:HTMLPanel styleName="checked-locale">
-        <lang:LocaleButtonSelector ui:field="locale"/>
-        <option:OptionItem ui:field="option" styleName="checkbox single"/>
-    </g:HTMLPanel>
-</ui:UiBinder>

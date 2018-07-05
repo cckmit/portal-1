@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
@@ -38,5 +37,5 @@ public interface ContactControllerAsync {
      */
     void getContactViewList( ContactQuery query, AsyncCallback< List<PersonShortView> > callback );
 
-    void saveAccount (UserLogin userLogin, NotificationEntry notificationEntry, AsyncCallback< Boolean > callback );
+    void saveAccount (UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< Boolean > callback );
 }

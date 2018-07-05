@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.ContactService;
@@ -129,7 +128,7 @@ public class ContactControllerImpl implements ContactController {
     }
 
     @Override
-    public boolean saveAccount( UserLogin userLogin, NotificationEntry notificationEntry ) throws RequestFailedException {
+    public boolean saveAccount( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException {
         if ( userLogin == null ) {
             log.warn( "null account in request" );
             throw new RequestFailedException( En_ResultStatus.INTERNAL_ERROR );
@@ -160,7 +159,7 @@ public class ContactControllerImpl implements ContactController {
             if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
                 throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-            CoreResponse< UserLogin > response = accountService.saveContactAccount( descriptor.makeAuthToken(), userLogin, notificationEntry );
+            CoreResponse< UserLogin > response = accountService.saveContactAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
 
             log.debug( "store account, result: {}", response.isOk() ? "ok" : response.getStatus() );
 

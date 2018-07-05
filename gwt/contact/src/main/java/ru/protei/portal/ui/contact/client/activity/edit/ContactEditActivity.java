@@ -119,6 +119,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             return;
         }
 
+        Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
+
         contactService.saveContact(applyChangesContact(), new AsyncCallback<Person>() {
             @Override
             public void onFailure(Throwable throwable) {
@@ -129,19 +131,10 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
             public void onSuccess(Person person) {
                 if (userLogin.getId() == null) {
                     userLogin.setPersonId(person.getId());
+                    userLogin.setPerson(person);
                     userLogin.setInfo(person.getDisplayName());
                 }
-                NotificationEntry notificationEntry = view.notificationEmail().getValue();
-                if (notificationEntry != null) {
-                    PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
-                    String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
-                    if (address == null || address.isEmpty()) {
-                        notificationEntry = null;
-                    } else {
-                        notificationEntry.setAddress(address);
-                    }
-                }
-                contactService.saveAccount(userLogin, notificationEntry, new RequestCallback<Boolean>() {
+                contactService.saveAccount(userLogin, sendWelcomeEmail, new RequestCallback<Boolean>() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireErrorMessage(lang.errEditContactLogin());
@@ -215,6 +208,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         contact.setDisplayName(view.displayName().getText());
         contact.setDisplayShortName(view.shortName().getText());
         contact.setBirthday(view.birthDay().getValue());
+        contact.setLocale(view.locale().getValue());
         contact.setInfo(view.personInfo().getText());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(contact.getContactInfo());
@@ -268,6 +262,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.displayName().setText(person.getDisplayName());
         view.shortName().setText(person.getDisplayShortName());
         view.birthDay().setValue(person.getBirthday());
+        view.locale().setValue(person.getLocale());
 
         ((IsWidget)view.personInfo()).asWidget().getElement().setInnerHTML(person.getInfo());
 
@@ -292,8 +287,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());
         view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
-        view.notificationEmailVisibility().setVisible(person.getId() == null);
-        view.notificationEmail().setValue(null);
+        view.sendWelcomeEmailVisibility().setVisible(person.getId() == null);
+        view.sendWelcomeEmail().setValue(false);
 
         view.showInfo(userLogin.getId() != null);
     }

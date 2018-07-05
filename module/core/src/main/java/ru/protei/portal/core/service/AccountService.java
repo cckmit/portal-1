@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
-import ru.protei.portal.core.model.struct.NotificationEntry;
 
 import java.util.List;
 
@@ -30,11 +29,11 @@ public interface AccountService {
 
     @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
-    CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, NotificationEntry notificationEntry );
+    CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
 
     @Privileged( requireAny = { En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
-    CoreResponse< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin, NotificationEntry notificationEntry );
+    CoreResponse< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
 
     CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
 
