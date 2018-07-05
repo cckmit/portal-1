@@ -138,9 +138,7 @@ public class AccountServiceImpl implements AccountService {
 
             if (sendWelcomeEmail) {
 
-                if (userLogin.getPerson() == null) {
-                    userLogin.setPerson(personDAO.get(userLogin.getPersonId()));
-                }
+                userLogin.setPerson(personDAO.get(userLogin.getPersonId()));
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
                 String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
