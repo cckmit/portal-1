@@ -131,6 +131,16 @@ public abstract class IssueTableActivity
     }
 
     @Override
+    public void onFilterCollapse() {
+        animation.filterCollapse();
+    }
+
+    @Override
+    public void onFilterRestore() {
+        animation.filterRestore();
+    }
+
+    @Override
     public void onFilterChanged() {
         if ( !validateMultiSelectorsTotalCount() ){
             return;
