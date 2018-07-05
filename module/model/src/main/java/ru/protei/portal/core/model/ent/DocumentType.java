@@ -25,6 +25,9 @@ public class DocumentType implements Serializable, Removable {
     @JdbcEnumerated(EnumType.STRING)
     private En_DocumentCategory documentCategory;
 
+    @JdbcColumn(name = "gost")
+    private String gost;
+
     public DocumentType() {
     }
 
@@ -58,6 +61,14 @@ public class DocumentType implements Serializable, Removable {
 
     public void setShortName(String shortName) {
         this.shortName = shortName;
+    }
+
+    public String getGost() {
+        return gost;
+    }
+
+    public void setGost(String gost) {
+        this.gost = gost;
     }
 
     @Override
