@@ -67,6 +67,9 @@ public enum En_Privilege {
     DOCUMENT_TYPE_EDIT(DOCUMENT_TYPE, EDIT),
     DOCUMENT_TYPE_CREATE(DOCUMENT_TYPE, CREATE),
 
+    @Deprecated
+    DOCUMENT_TYPE_REMOVE(DOCUMENT_TYPE, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
