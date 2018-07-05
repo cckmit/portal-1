@@ -14,6 +14,4 @@ public interface DocumentTypeController extends RemoteService {
     List<DocumentType> getDocumentTypes(DocumentTypeQuery query) throws RequestFailedException;
 
     DocumentType saveDocumentType(DocumentType type) throws RequestFailedException;
-
-    boolean removeDocumentType(Long forRemoveId) throws RequestFailedException;
 }

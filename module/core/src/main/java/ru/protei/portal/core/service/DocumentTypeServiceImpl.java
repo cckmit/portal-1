@@ -31,14 +31,4 @@ public class DocumentTypeServiceImpl implements DocumentTypeService {
 
         return new CoreResponse<DocumentType>().success(documentType);
     }
-
-    @Override
-    public CoreResponse<Boolean> removeDocumentType(AuthToken authToken, Long id) {
-        if ( documentTypeDAO.removeByKey( id ) ) {
-            return new CoreResponse< Boolean >().success( true );
-        }
-
-        return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
-
-    }
 }

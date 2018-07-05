@@ -55,22 +55,6 @@ public class DocumentTypeControllerImpl implements DocumentTypeController {
         throw new RequestFailedException(response.getStatus());
     }
 
-    @Override
-    public boolean removeDocumentType(Long id)throws RequestFailedException {
-        log.debug( "removeDocumentType(): id={}", id );
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse< Boolean > response = documentTypeService.removeDocumentType( descriptor.makeAuthToken(), id );
-        log.debug( "removeDocumentType(): result={}", response.isOk() ? "ok" : response.getStatus() );
-
-        if (response.isOk()) {
-            return response.getData();
-        }
-
-        throw new RequestFailedException(response.getStatus());
-    }
-
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);

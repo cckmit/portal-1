@@ -881,6 +881,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentTypeShortName();
 
+    String documentTypeGost();
+
     String documentTypeRemoveSuccessed();
 
     String documentTypeRemoveConfirmMessage();
