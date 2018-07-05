@@ -83,24 +83,6 @@ public abstract class DocumentTypeTableActivity
         view.updateRow(event.doctype);
     }
 
-    @Event
-    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
-        if ( !event.identity.equals( getClass().getName() ) ) {
-            return;
-        }
-
-        documentTypeService.removeDocumentType(forRemoveId, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-                fireEvent( new DocumentTypeEvents.Show() );
-                fireEvent( new NotifyEvents.Show( lang.documentTypeRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS ) );
-                forRemoveId = null;
-            }
-        } );
-    }
 
     @Override
     public void onFilterChanged() {
@@ -126,13 +108,6 @@ public abstract class DocumentTypeTableActivity
         onItemClicked(value);
     }
 
-    @Override
-    public void onRemoveClicked(DocumentType value) {
-        if ( value != null ) {
-            forRemoveId = value.getId();
-            fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.documentTypeRemoveConfirmMessage() ) );
-        }
-    }
 
     private void updateListAndSelect(DocumentType type ) {
         requestDocumentTypes();
