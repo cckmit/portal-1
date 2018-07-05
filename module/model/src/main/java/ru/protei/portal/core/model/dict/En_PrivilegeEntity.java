@@ -19,5 +19,6 @@ public enum En_PrivilegeEntity {
     DASHBOARD,
     DOCUMENT,
     DOCUMENT_TYPE,
-    CASE_STATES
+    CASE_STATES,
+    SITE_FOLDER
 }

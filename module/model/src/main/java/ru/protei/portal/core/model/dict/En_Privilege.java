@@ -70,6 +70,11 @@ public enum En_Privilege {
     @Deprecated
     DOCUMENT_TYPE_REMOVE(DOCUMENT_TYPE, REMOVE),
 
+    SITE_FOLDER_VIEW (SITE_FOLDER, VIEW),
+    SITE_FOLDER_EDIT (SITE_FOLDER, EDIT),
+    SITE_FOLDER_CREATE (SITE_FOLDER, CREATE),
+    SITE_FOLDER_REMOVE (SITE_FOLDER, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),

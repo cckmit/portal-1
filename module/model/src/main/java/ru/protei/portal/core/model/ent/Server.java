@@ -27,7 +27,7 @@ public class Server implements Serializable {
     private String comment;
 
     @JdbcOneToMany(localColumn = "id", table = "application", remoteColumn = "server_id")
-    private List<Application> servers;
+    private List<Application> applications;
 
     @JdbcJoinedObject(localColumn = "platform_id", table = "platform")
     private Platform platform;
@@ -80,12 +80,12 @@ public class Server implements Serializable {
         this.comment = comment;
     }
 
-    public List<Application> getServers() {
-        return servers;
+    public List<Application> getApplications() {
+        return applications;
     }
 
-    public void setServers(List<Application> servers) {
-        this.servers = servers;
+    public void setApplications(List<Application> applications) {
+        this.applications = applications;
     }
 
     public Platform getPlatform() {

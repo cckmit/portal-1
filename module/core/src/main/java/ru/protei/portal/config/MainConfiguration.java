@@ -337,6 +337,21 @@ public class MainConfiguration {
         return new CaseLinkDAO_Impl();
     }
 
+    @Bean
+    public PlatformDAO getPlatformDAO() {
+        return new PlatformDAO_Impl();
+    }
+
+    @Bean
+    public ServerDAO getServerDAO() {
+        return new ServerDAO_Impl();
+    }
+
+    @Bean
+    public ApplicationDAO getApplicationDAO() {
+        return new ApplicationDAO_Impl();
+    }
+
 /**
  *
  *
@@ -513,6 +528,11 @@ public class MainConfiguration {
 
     @Bean
     public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
+
+    @Bean
+    public SiteFolderService getSiteFolderService() {
+        return new SiteFolderServiceImpl();
+    }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean
