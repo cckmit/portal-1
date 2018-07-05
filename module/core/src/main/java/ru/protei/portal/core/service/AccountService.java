@@ -29,11 +29,11 @@ public interface AccountService {
 
     @Privileged( requireAny = { En_Privilege.ACCOUNT_EDIT, En_Privilege.ACCOUNT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
-    CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin );
+    CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
 
     @Privileged( requireAny = { En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
-    CoreResponse< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin );
+    CoreResponse< UserLogin > saveContactAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail );
 
     CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId );
 

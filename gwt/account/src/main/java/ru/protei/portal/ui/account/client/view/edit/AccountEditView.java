@@ -19,6 +19,7 @@ import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditActiv
 import ru.protei.portal.ui.account.client.activity.edit.AbstractAccountEditView;
 import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
+import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -72,12 +73,22 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     }
 
     @Override
+    public HasValue<Boolean> sendWelcomeEmail() {
+        return sendWelcomeEmail;
+    }
+
+    @Override
     public HasValidable loginValidator(){
         return login;
     }
 
     @Override
     public HasValidable personValidator() { return person; }
+
+    @Override
+    public HasVisibility sendWelcomeEmailVisibility() {
+        return sendWelcomeEmail;
+    }
 
     @Override
     public void setLoginStatus( NameStatus status ) {
@@ -169,6 +180,9 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
 
     @UiField
     Button cancelButton;
+
+    @UiField
+    OptionItem sendWelcomeEmail;
 
     Timer timer = new Timer() {
         @Override

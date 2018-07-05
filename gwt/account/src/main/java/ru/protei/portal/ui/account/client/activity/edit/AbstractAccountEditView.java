@@ -2,6 +2,7 @@ package ru.protei.portal.ui.account.client.activity.edit;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -31,9 +32,13 @@ public interface AbstractAccountEditView extends IsWidget {
 
     HasValue< Set< UserRole > > roles();
 
+    HasValue<Boolean> sendWelcomeEmail();
+
     HasValidable loginValidator();
 
     HasValidable personValidator();
+
+    HasVisibility sendWelcomeEmailVisibility();
 
     void showInfo( boolean isShow );
 

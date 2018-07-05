@@ -25,7 +25,7 @@ public interface AccountController extends RemoteService {
 
     UserLogin getContactAccount (long personId ) throws RequestFailedException;
 
-    UserLogin saveAccount ( UserLogin userLogin ) throws RequestFailedException;
+    UserLogin saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException;
 
     Long getAccountsCount( AccountQuery query ) throws RequestFailedException;
 

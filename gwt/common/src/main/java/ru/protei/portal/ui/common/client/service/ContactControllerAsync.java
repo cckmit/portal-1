@@ -37,5 +37,5 @@ public interface ContactControllerAsync {
      */
     void getContactViewList( ContactQuery query, AsyncCallback< List<PersonShortView> > callback );
 
-    void saveAccount ( UserLogin userLogin, AsyncCallback< Boolean > callback );
+    void saveAccount (UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< Boolean > callback );
 }
