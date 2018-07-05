@@ -117,7 +117,7 @@ public class AccountServiceImpl implements AccountService {
 
         UserLoginPassword userLoginPassword = null;
         if (userLogin.getId() == null && userLogin.getUlogin() != null && userLogin.getUpass() != null) {
-            userLoginPassword = new UserLoginPassword(userLogin.getUlogin(), userLogin.getUpass(), userLogin.getPerson() == null ? null : userLogin.getPerson().getDisplayName());
+            userLoginPassword = new UserLoginPassword(userLogin.getUlogin(), userLogin.getUpass(), userLogin.getInfo());
         }
 
         if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
