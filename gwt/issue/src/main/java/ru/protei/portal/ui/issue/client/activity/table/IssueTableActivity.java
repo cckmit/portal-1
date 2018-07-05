@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.table;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
@@ -50,6 +51,8 @@ public abstract class IssueTableActivity
     public void onInit() {
         CREATE_ACTION = lang.buttonCreate();
 
+        localStorage = Storage.getLocalStorageIfSupported();
+
         view.setActivity( this );
         view.setAnimation( animation );
 
@@ -57,6 +60,8 @@ public abstract class IssueTableActivity
         view.getFilterContainer().add( filterView.asWidget() );
 
         pagerView.setActivity( this );
+
+        toggleFilterCollapseState();
     }
 
     @Event
@@ -133,11 +138,17 @@ public abstract class IssueTableActivity
     @Override
     public void onFilterCollapse() {
         animation.filterCollapse();
+        if (localStorage != null) {
+            localStorage.setItem(ISSUE_FILTER_COLLAPSED, ISSUE_FILTER_COLLAPSED_TRUE);
+        }
     }
 
     @Override
     public void onFilterRestore() {
         animation.filterRestore();
+        if (localStorage != null) {
+            localStorage.setItem(ISSUE_FILTER_COLLAPSED, ISSUE_FILTER_COLLAPSED_FALSE);
+        }
     }
 
     @Override
@@ -470,6 +481,17 @@ public abstract class IssueTableActivity
         filterView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
     }
 
+    private void toggleFilterCollapseState() {
+        if (localStorage != null) {
+            String value = localStorage.getItem(ISSUE_FILTER_COLLAPSED);
+            if (value != null && !value.isEmpty() && ISSUE_FILTER_COLLAPSED_TRUE.equals(value)) {
+                animation.filterCollapse();
+            } else {
+                animation.filterRestore();
+            }
+        }
+    }
+
     @Inject
     Lang lang;
 
@@ -507,6 +529,10 @@ public abstract class IssueTableActivity
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
+    private Storage localStorage = null;
 
     private final RegExp caseNoPattern = RegExp.compile("\\d+");
+    private final String ISSUE_FILTER_COLLAPSED = "issue_filter_collapsed";
+    private final String ISSUE_FILTER_COLLAPSED_TRUE = "1";
+    private final String ISSUE_FILTER_COLLAPSED_FALSE = "0";
 }
