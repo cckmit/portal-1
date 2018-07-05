@@ -65,7 +65,7 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public UserLogin saveAccount( UserLogin userLogin ) throws RequestFailedException {
+    public UserLogin saveAccount( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException {
         log.debug( "saveAccount(): account={} ", userLogin );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -77,7 +77,7 @@ public class AccountControllerImpl implements AccountController {
         if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
             throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-        CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin, null );
+        CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
 
         log.debug( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 

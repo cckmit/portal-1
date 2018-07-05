@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.*;
@@ -35,6 +36,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     UserRoleDAO userRoleDAO;
+
+    @Autowired
+    PersonDAO personDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -132,7 +136,11 @@ public class AccountServiceImpl implements AccountService {
         if ( userLoginDAO.saveOrUpdate( userLogin ) ) {
             jdbcManyRelationsHelper.persist( userLogin, "roles" );
 
-            if (sendWelcomeEmail && userLogin.getPerson() != null) {
+            if (sendWelcomeEmail) {
+
+                if (userLogin.getPerson() == null) {
+                    userLogin.setPerson(personDAO.get(userLogin.getPersonId()));
+                }
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
                 String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);

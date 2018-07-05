@@ -3,7 +3,8 @@
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:rolelist='urn:import:ru.protei.portal.ui.account.client.widget.role'
-             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'>
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -56,6 +57,7 @@
             </div>
         </div>
         <div class="footer">
+            <option:OptionItem ui:field="sendWelcomeEmail" styleName="checkbox single" name="{lang.sendEmail}"/>
             <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
             <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
         </div>

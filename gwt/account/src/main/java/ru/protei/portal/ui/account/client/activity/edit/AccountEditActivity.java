@@ -68,7 +68,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
             return;
         }
 
-        accountService.saveAccount( applyChangesLogin(), new RequestCallback< UserLogin >() {
+        Boolean sendWelcomeEmail = view.sendWelcomeEmail().getValue();
+
+        accountService.saveAccount( applyChangesLogin(), sendWelcomeEmail, new RequestCallback< UserLogin >() {
             @Override
             public void onError( Throwable throwable ) {}
 
@@ -153,6 +155,8 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
         view.enabledFields( userLogin.getId() == null );
         view.enabledPassword( !userLogin.isLDAP_Auth() );
         view.showInfo( userLogin.getId() != null && !userLogin.isLDAP_Auth() );
+        view.sendWelcomeEmailVisibility().setVisible(userLogin.getId() == null);
+        view.sendWelcomeEmail().setValue(false);
     }
 
     private boolean validate() {
