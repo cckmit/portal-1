@@ -101,6 +101,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return isUpdateEvent() && lastState.getState() != initState.getState();
     }
 
+    public boolean isTimeElapsedChanged() {
+        return isUpdateEvent() && !HelperFunc.equals(lastState.getTimeElapsed(), initState.getTimeElapsed());
+    }
+
     public boolean isCaseImportanceChanged() {
         return isUpdateEvent() && !lastState.getImpLevel().equals(initState.getImpLevel());
     }

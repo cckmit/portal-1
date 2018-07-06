@@ -19,6 +19,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
+import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
 
@@ -136,6 +138,16 @@ public class IssueCommentItemView
         this.icon.setSrc( iconSrc );
     }
 
+    @Override
+    public HasTime timeElapsed() {
+        return timeElapsed;
+    }
+
+    @Override
+    public void clearElapsedTime() {
+        timeElapsed.setText("");
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -178,6 +190,9 @@ public class IssueCommentItemView
     @Inject
     @UiField(provided = true)
     AttachmentList attachList;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel timeElapsed;
     @UiField
     DivElement attachBlock;
     @UiField
