@@ -26,22 +26,32 @@ public class WorkTimeFormatter {
 
     }
 
+    /**
+     * @return количество дней отбросив часы и минуты
+     */
     public static Long getDays(Long minutes) {
         if (minutes == null) return null;
         return minutes / DAY;
     }
 
+    /**
+     * @return количество часов за вычетом дней отбросив минуты
+     */
     public static Long getHours(Long minutes) {
         if (minutes == null) return null;
         return (minutes % DAY) / HOUR;
     }
 
+    /**
+     * @return количество минут за вычетом дней и часов
+     */
     public static Long getMinutes(Long minutes) {
         if (minutes == null) return null;
         return (minutes % DAY) % HOUR;
     }
 
-    private final static Long HOUR = 60L;
-    private final static Long DAY = 8L * HOUR;
+    public final static Long MINUTE = 1L;
+    public final static Long HOUR = 60 * MINUTE;
+    public final static Long DAY = 8 * HOUR;
 
 }

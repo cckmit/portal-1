@@ -146,11 +146,11 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
                         <#if timeElapsedChanged>
                             <@changeTo
-                                old="${timeElapsedFormatter.format(oldElapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}"
-                                new="${timeElapsedFormatter.format(elapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}"
+                                old="${TimeElapsedFormatter.format(oldElapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}"
+                                new="${TimeElapsedFormatter.format(elapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}"
                             />
                         <#else>
-                            ${timeElapsedFormatter.format(elapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}
+                            ${TimeElapsedFormatter.format(elapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}
                         </#if>
                 </tr>
             </#if>

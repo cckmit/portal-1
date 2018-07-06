@@ -161,7 +161,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public HasVisibility timeElapsedContainer() {
+    public HasVisibility timeElapsedContainerVisibility() {
         return timeElapsedContainer;
     }
 

@@ -43,7 +43,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValidable stateValidator();
     HasValidable importanceValidator();
 
-    HasVisibility timeElapsedContainer();
+    HasVisibility timeElapsedContainerVisibility();
 
     HasValidable companyValidator();
     HasValidable initiatorValidator();

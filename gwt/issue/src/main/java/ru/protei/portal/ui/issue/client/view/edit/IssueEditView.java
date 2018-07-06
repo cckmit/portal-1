@@ -168,7 +168,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
-    public HasVisibility timeElapsedContainer() {
+    public HasVisibility timeElapsedContainerVisibility() {
         return timeElapsedContainer;
     }
 

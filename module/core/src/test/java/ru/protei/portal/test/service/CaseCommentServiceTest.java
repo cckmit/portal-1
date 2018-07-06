@@ -48,7 +48,7 @@ public class CaseCommentServiceTest {
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Test
-    public void getCaseCommentsTest() throws Exception {
+    public void getCaseObjectsTest() throws Exception {
         assertNotNull(caseService);
         List<CaseShortView> all = checkResultAndGetData(caseService.caseObjectList(TEST_AUTH_TOKEN, new CaseQuery()));
         assertNotNull(all);

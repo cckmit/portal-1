@@ -52,7 +52,7 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
-        templateModel.put( "timeElapsedFormatter", new WorkTimeFormatter() );
+        templateModel.put( "TimeElapsedFormatter", new WorkTimeFormatter() );
         templateModel.put( "linkToIssue", String.format( urlTemplate, newState.getCaseNumber() ) );
         templateModel.put( "isCreated", event.isCreateEvent() );
         templateModel.put( "createdByMe", false );

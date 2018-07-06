@@ -256,7 +256,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.state().setValue(isNew(issue) ? CREATED : En_CaseState.getById(issue.getStateId()));
         view.importance().setValue(isNew(issue) ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
-        view.timeElapsedContainer().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
+        view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         if (isNew(issue)) {
             view.timeElapsed().setTime(null);
         } else {

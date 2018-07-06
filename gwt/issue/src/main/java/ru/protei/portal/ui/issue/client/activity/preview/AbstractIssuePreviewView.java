@@ -30,7 +30,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setInfo( String value );
     void setSubscriptionEmails( String value );
     HasTime timeElapsed();
-    HasVisibility timeElapsedContainer();
+    HasVisibility timeElapsedContainerVisibility();
     void showFullScreen( boolean value );
 
     HasWidgets getCommentsContainer();

@@ -146,7 +146,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         }
         view.setSubscriptionEmails(formSubscribers(value, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW), value.isPrivateCase())); //TODO change rule
 
-        view.timeElapsedContainer().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
+        view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         Long timeElapsed = value.getTimeElapsed();
         view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
 

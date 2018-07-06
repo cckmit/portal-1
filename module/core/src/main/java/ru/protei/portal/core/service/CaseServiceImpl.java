@@ -275,9 +275,8 @@ public class CaseServiceImpl implements CaseService {
 
         boolean isCaseChanged = updateCaseModified ( token, comment.getCaseId(), comment.getCreated() ).getData();
 
-        if (!isCaseChanged) {
+        if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
-        }
 
         if (!updateTimeElapsed(token, comment.getCaseId())) {
             throw new RuntimeException( "failed to update time elapsed" );
@@ -433,18 +432,6 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<Boolean>().success(isUpdated);
     }
 
-    public CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed) {
-        if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
-            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
-
-        CaseObject caseObject = new CaseObject(caseId);
-        caseObject.setTimeElapsed(timeElapsed);
-
-        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "time_elapsed");
-
-        return new CoreResponse<Boolean>().success(isUpdated);
-    }
-
     @Override
     public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag){
         if(caseId == null)
@@ -578,8 +565,20 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.getManagerId(), co2.getManagerId());
     }
 
+    private CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed) {
+        if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = new CaseObject(caseId);
+        caseObject.setTimeElapsed(timeElapsed);
+
+        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "time_elapsed");
+
+        return new CoreResponse<Boolean>().success(isUpdated);
+    }
+
     private boolean updateTimeElapsed(AuthToken token, Long caseId) {
-        List<CaseComment> allCaseComments = caseCommentDAO.getListByCondition("CASE_ID=?", caseId);
+        List<CaseComment> allCaseComments = caseCommentDAO.partialGetListByCondition("CASE_ID=?", Collections.singletonList(caseId), "id", "time_elapsed");
         long timeElapsed = stream(allCaseComments).filter(cmnt -> cmnt.getTimeElapsed() != null).mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
 
         return updateCaseTimeElapsed ( token, caseId, timeElapsed ).getData();

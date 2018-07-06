@@ -181,6 +181,7 @@ public class CaseComment extends AuditableObject {
                 ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
+                ", timeElapsed=" + timeElapsed +
                 '}';
     }
 }
