@@ -46,23 +46,23 @@ public interface SiteFolderService {
 
 
     @Privileged(En_Privilege.SITE_FOLDER_CREATE)
-    CoreResponse<Boolean> createPlatform(AuthToken token, Platform platform);
+    CoreResponse<Platform> createPlatform(AuthToken token, Platform platform);
 
     @Privileged(En_Privilege.SITE_FOLDER_CREATE)
-    CoreResponse<Boolean> createServer(AuthToken token, Server server);
+    CoreResponse<Server> createServer(AuthToken token, Server server);
 
     @Privileged(En_Privilege.SITE_FOLDER_CREATE)
-    CoreResponse<Boolean> createApplication(AuthToken token, Application application);
+    CoreResponse<Application> createApplication(AuthToken token, Application application);
 
 
     @Privileged(En_Privilege.SITE_FOLDER_EDIT)
-    CoreResponse<Boolean> updatePlatform(AuthToken token, Platform platform);
+    CoreResponse<Platform> updatePlatform(AuthToken token, Platform platform);
 
     @Privileged(En_Privilege.SITE_FOLDER_EDIT)
-    CoreResponse<Boolean> updateServer(AuthToken token, Server server);
+    CoreResponse<Server> updateServer(AuthToken token, Server server);
 
     @Privileged(En_Privilege.SITE_FOLDER_EDIT)
-    CoreResponse<Boolean> updateApplication(AuthToken token, Application application);
+    CoreResponse<Application> updateApplication(AuthToken token, Application application);
 
 
     @Privileged(En_Privilege.SITE_FOLDER_REMOVE)

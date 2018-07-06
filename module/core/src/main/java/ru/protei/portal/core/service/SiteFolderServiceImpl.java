@@ -147,52 +147,112 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
-    public CoreResponse<Boolean> createPlatform(AuthToken token, Platform platform) {
+    public CoreResponse<Platform> createPlatform(AuthToken token, Platform platform) {
 
-        platformDAO.persist(platform);
+        Long id = platformDAO.persist(platform);
 
-        return new CoreResponse<Boolean>().success(true);
+        if (id == null) {
+            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        Platform result = platformDAO.get(id);
+
+        if (result == null) {
+            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        return new CoreResponse<Platform>().success(result);
     }
 
     @Override
-    public CoreResponse<Boolean> createServer(AuthToken token, Server server) {
+    public CoreResponse<Server> createServer(AuthToken token, Server server) {
 
-        serverDAO.persist(server);
+        Long id = serverDAO.persist(server);
 
-        return new CoreResponse<Boolean>().success(true);
+        if (id == null) {
+            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        Server result = serverDAO.get(id);
+
+        if (result == null) {
+            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        return new CoreResponse<Server>().success(result);
     }
 
     @Override
-    public CoreResponse<Boolean> createApplication(AuthToken token, Application application) {
+    public CoreResponse<Application> createApplication(AuthToken token, Application application) {
 
-        applicationDAO.persist(application);
+        Long id = applicationDAO.persist(application);
 
-        return new CoreResponse<Boolean>().success(true);
+        if (id == null) {
+            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        Application result = applicationDAO.get(id);
+
+        if (result == null) {
+            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        return new CoreResponse<Application>().success(result);
     }
 
 
     @Override
-    public CoreResponse<Boolean> updatePlatform(AuthToken token, Platform platform) {
+    public CoreResponse<Platform> updatePlatform(AuthToken token, Platform platform) {
 
-        platformDAO.merge(platform);
+        boolean status = platformDAO.merge(platform);
 
-        return new CoreResponse<Boolean>().success(true);
+        if (!status) {
+            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        Platform result = platformDAO.get(platform.getId());
+
+        if (result == null) {
+            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        return new CoreResponse<Platform>().success(result);
     }
 
     @Override
-    public CoreResponse<Boolean> updateServer(AuthToken token, Server server) {
+    public CoreResponse<Server> updateServer(AuthToken token, Server server) {
 
-        serverDAO.merge(server);
+        boolean status = serverDAO.merge(server);
 
-        return new CoreResponse<Boolean>().success(true);
+        if (!status) {
+            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        Server result = serverDAO.get(server.getId());
+
+        if (result == null) {
+            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        return new CoreResponse<Server>().success(result);
     }
 
     @Override
-    public CoreResponse<Boolean> updateApplication(AuthToken token, Application application) {
+    public CoreResponse<Application> updateApplication(AuthToken token, Application application) {
 
-        applicationDAO.merge(application);
+        boolean status = applicationDAO.merge(application);
 
-        return new CoreResponse<Boolean>().success(true);
+        if (!status) {
+            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        Application result = applicationDAO.get(application.getId());
+
+        if (result == null) {
+            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+        }
+
+        return new CoreResponse<Application>().success(result);
     }
 
 

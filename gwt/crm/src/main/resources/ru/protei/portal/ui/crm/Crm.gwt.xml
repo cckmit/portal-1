@@ -17,6 +17,7 @@
     <inherits name="ru.protei.portal.ui.document.Document"/>
     <inherits name="ru.protei.portal.ui.documenttype.DocumentType"/>
     <inherits name="ru.protei.portal.ui.casestate.CaseState"/>
+    <inherits name="ru.protei.portal.ui.sitefolder.SiteFolder"/>
 
     <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 

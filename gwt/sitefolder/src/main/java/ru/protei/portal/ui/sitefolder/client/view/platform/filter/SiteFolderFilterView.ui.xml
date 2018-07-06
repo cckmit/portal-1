@@ -1,0 +1,37 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="panel">
+        <div class="body">
+
+            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.siteFolderName}" styleName="form-group col-xs-12"/>
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.sortBy}"/></label>
+                <div class="control-group">
+                    <sortfield:SortFieldSelector ui:field="sortField" type="SITE_FOLDER" hasNullValue="false"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                </div>
+            </div>
+
+            <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-xs-12"/>
+
+            <cleanablesearchbox:CleanableSearchBox ui:field="parameters" placeholder="{lang.siteFolderParams}" styleName="form-group col-xs-12"/>
+
+            <div class="form-group col-xs-12">
+                <label>
+                    <ui:text from="{lang.siteFolderComment}"/>
+                </label>
+                <g:TextArea ui:field="comment" styleName="input-field description"/>
+            </div>
+        </div>
+        <div class="footer">
+            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

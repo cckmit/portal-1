@@ -15,7 +15,7 @@
             <column name="name" type="VARCHAR(128)">
                 <constraints nullable="false"/>
             </column>
-            <column name="parameters" type="VARCHAR(128)"/>
+            <column name="parameters" type="VARCHAR(256)"/>
             <column name="comment" type="VARCHAR(1024)"/>
         </createTable>
         <addForeignKeyConstraint constraintName="platform_company_fk"
@@ -34,7 +34,7 @@
             </column>
             <column name="name" type="VARCHAR(128)"/>
             <column name="ip" type="VARCHAR(64)"/>
-            <column name="parameters" type="VARCHAR(128)"/>
+            <column name="parameters" type="VARCHAR(256)"/>
             <column name="comment" type="VARCHAR(1024)"/>
         </createTable>
         <addForeignKeyConstraint constraintName="server_platform_fk"
@@ -53,7 +53,7 @@
             </column>
             <column name="name" type="VARCHAR(128)"/>
             <column name="comment" type="VARCHAR(1024)"/>
-            <column name="paths" type="VARCHAR(1024)"/>
+            <column name="paths" type="VARCHAR(2048)"/>
         </createTable>
         <addForeignKeyConstraint constraintName="application_server_fk"
                                  baseTableName="application" baseColumnNames="server_id"

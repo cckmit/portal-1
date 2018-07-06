@@ -1018,4 +1018,38 @@ public interface Lang extends Messages, ContactItemLang {
     String locale();
 
     String privilegeSiteFolder();
+
+    String amountShort();
+
+
+    String siteFolder();
+
+    String siteFolderName();
+
+    String siteFolderCompany();
+
+    String siteFolderParams();
+
+    String siteFolderComment();
+
+
+    String siteFolderPlatform();
+
+    String siteFolderPlatformCreate();
+
+    String siteFolderPlatformConfirmRemove();
+
+    String siteFolderPlatformRemoved();
+
+    String siteFolderPlatformNotRemoved();
+
+
+    String siteFolderServers();
+
+    String siteFolderServerCreate();
+
+
+    String siteFolderApplicationCreate();
+
+
 }
