@@ -74,6 +74,7 @@ public abstract class IssueCommentListActivity
         view.clearCommentsContainer();
         view.clearTimeElapsed();
         view.timeElapsedVisibility().setVisible(false);
+        view.setTimeElapsedEnabled(event.isElapsedTimeEnabled);
 
         requestData( event.caseId );
     }
@@ -292,10 +293,12 @@ public abstract class IssueCommentListActivity
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
         itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
+
         itemView.clearElapsedTime();
         if (value.getTimeElapsed() != null) {
             itemView.timeElapsed().setTime(value.getTimeElapsed());
         }
+
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
         } else {

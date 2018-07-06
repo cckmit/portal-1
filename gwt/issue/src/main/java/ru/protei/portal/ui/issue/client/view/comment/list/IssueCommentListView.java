@@ -85,6 +85,11 @@ public class IssueCommentListView
     }
 
     @Override
+    public void setTimeElapsedEnabled(boolean isElapsedTimeEnabled) {
+        timeBtn.setVisible(isElapsedTimeEnabled);
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );

@@ -163,7 +163,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
                 if(!isNew(issue))
-                    fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId() ) );
+                    fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), true ) );
 
             }
         });
@@ -232,7 +232,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId()) );
+            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), true) );
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule

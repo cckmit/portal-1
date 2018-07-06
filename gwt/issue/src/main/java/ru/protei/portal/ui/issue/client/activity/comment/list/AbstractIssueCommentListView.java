@@ -33,4 +33,6 @@ public interface AbstractIssueCommentListView extends IsWidget {
     void clearTimeElapsed();
 
     HasVisibility timeElapsedVisibility();
+
+    void setTimeElapsedEnabled(boolean isElapsedTimeEnabled);
 }

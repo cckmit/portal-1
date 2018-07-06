@@ -90,6 +90,11 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.showFullScreen( true );
     }
 
+    @Event
+    public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
+        view.timeElapsed().setTime(event.timeElapsed);
+    }
+
     @Override
     public void removeAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
@@ -109,7 +114,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(issueId));
 
-                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId) );
+                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId, true) );
             }
         });
     }
@@ -148,7 +153,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
 
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), true ) );
     }
 
     private void fillView( Long number ) {
