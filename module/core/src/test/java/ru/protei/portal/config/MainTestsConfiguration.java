@@ -22,8 +22,6 @@ import org.springframework.core.io.Resource;
 @Configuration
 public class MainTestsConfiguration {
 
-    @Value("classpath:portal_test.properties")
-    private Resource props;
 
     /**
      * Config
@@ -31,7 +29,7 @@ public class MainTestsConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException {
-        return new TestPortalConfig(props);
+        return new PortalConfig("portal_test.properties");
     }
 
     @Bean

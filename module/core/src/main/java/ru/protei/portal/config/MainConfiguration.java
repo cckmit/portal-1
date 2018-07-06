@@ -44,7 +44,7 @@ public class MainConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException{
-        return new PortalConfigImpl("portal.properties");
+        return new PortalConfig("portal.properties");
     }
 
     @Bean
