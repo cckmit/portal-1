@@ -2,6 +2,8 @@ package ru.protei.portal.ui.issue.client.view.table.columns;
 
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventListener;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -20,7 +22,9 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
     public NumberColumn( Lang lang, En_CaseStateLang caseStateLang) {
         this.lang = lang;
         this.caseStateLang = caseStateLang;
+        setStopPropogationElementClassName("number-size");
     }
+
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
         columnHeader.addClassName( "number" );
@@ -41,7 +45,6 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
             i.addClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value.getImpLevel())) + " center");
             divElement.appendChild( i );
         }
-
 
         com.google.gwt.dom.client.Element numberElement = DOM.createElement( "p" );
         numberElement.addClassName( "number-size" );

@@ -43,6 +43,15 @@ public abstract class ClickColumn<T> {
             }
 
             com.google.gwt.dom.client.Element target = event.getEventTarget().cast();
+
+            // сделано посредством обработки клика в базовой колонке,
+            // чтобы не плодить хэндлеры на конкретных элементах в реализации
+            if ( stopPropogationElementClassName != null
+                    && target.getClassName().contains(stopPropogationElementClassName)) {
+                event.stopPropagation();
+                return;
+            }
+
             if ( "a".equalsIgnoreCase( target.getNodeName() ) ) {
                 if (actionClickHandler != null) {
                     event.preventDefault();
@@ -92,7 +101,12 @@ public abstract class ClickColumn<T> {
         columnProvider.setSelectRowHandler( values.getSelectRowHandler() );
     }
 
+    public void setStopPropogationElementClassName( String className ) {
+        this.stopPropogationElementClassName = className;
+    }
+
     Handler<T> columnClickHandler;
     Handler<T> actionClickHandler;
     ClickColumnProvider<T> columnProvider;
+    String stopPropogationElementClassName = null;
 }
