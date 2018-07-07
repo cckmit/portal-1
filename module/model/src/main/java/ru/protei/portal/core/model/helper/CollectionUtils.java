@@ -10,7 +10,7 @@ public class CollectionUtils {
         return (null == collection || collection.isEmpty());
     }
 
-    public static <T> Stream<T> stream(Collection collection) {
+    public static <T> Stream<T> stream(Collection<T> collection) {
         return null == collection ? Stream.empty() : collection.stream();
     }
 

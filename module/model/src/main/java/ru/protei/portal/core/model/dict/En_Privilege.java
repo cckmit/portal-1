@@ -70,20 +70,21 @@ public enum En_Privilege {
     @Deprecated
     DOCUMENT_TYPE_REMOVE(DOCUMENT_TYPE, REMOVE),
 
+    CASE_STATES_VIEW (CASE_STATES, VIEW),
+    CASE_STATES_EDIT (CASE_STATES, EDIT),
+    CASE_STATES_CREATE (CASE_STATES, CREATE),
+    CASE_STATES_REMOVE (CASE_STATES, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
     ISSUE_MANAGER_EDIT(ISSUE, null),
     ISSUE_PRIVACY_VIEW(ISSUE, null),
+    ISSUE_WORK_TIME_VIEW(ISSUE, null),
 
     ISSUE_FILTER_COMPANY_VIEW(ISSUE, null),
     ISSUE_FILTER_MANAGER_VIEW(ISSUE, null),
     ISSUE_FILTER_PRODUCT_VIEW(ISSUE, null),
-
-    CASE_STATES_VIEW (CASE_STATES, VIEW),
-    CASE_STATES_EDIT (CASE_STATES, EDIT),
-    CASE_STATES_CREATE (CASE_STATES, CREATE),
-    CASE_STATES_REMOVE (CASE_STATES, REMOVE),
 
     @Deprecated
     DASHBOARD_ALL_COMPANIES_VIEW(DASHBOARD, VIEW);
@@ -91,11 +92,12 @@ public enum En_Privilege {
     private final En_PrivilegeEntity entity;
     private final En_PrivilegeAction action;
 
-    public final static En_Privilege [] DEFAULT_SCOPE_PRIVILEGES = {
+    public final static En_Privilege [] CLIENT_SYSTEM_SCOPE_PRIVILEGES = {
             ISSUE_COMPANY_EDIT,
             ISSUE_PRODUCT_EDIT,
             ISSUE_MANAGER_EDIT,
             ISSUE_PRIVACY_VIEW,
+            ISSUE_WORK_TIME_VIEW,
 
             ISSUE_FILTER_COMPANY_VIEW,
             ISSUE_FILTER_MANAGER_VIEW,

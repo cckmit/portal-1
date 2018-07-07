@@ -1,8 +1,6 @@
 package ru.protei.portal.ui.issue.client.view.comment.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -19,6 +17,8 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttach
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
+import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
@@ -68,6 +68,26 @@ public class IssueCommentListView
     }
 
     @Override
+    public HasTime timeElapsed() {
+        return timeElapsed;
+    }
+
+    @Override
+    public void clearTimeElapsed() {
+        timeElapsed.setValue(null);
+    }
+
+    @Override
+    public HasVisibility timeElapsedVisibility() {
+        return timePanel;
+    }
+
+    @Override
+    public void setTimeElapsedEnabled(boolean isElapsedTimeEnabled) {
+        timeBtn.setVisible(isElapsedTimeEnabled);
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );
@@ -106,6 +126,11 @@ public class IssueCommentListView
         activity.removeTempAttachment(event.getAttachment());
     }
 
+    @UiHandler("timeBtn")
+    public void onTimeBtn(ClickEvent event){
+        timePanel.setVisible(!timePanel.isVisible());
+    }
+
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
@@ -119,6 +144,8 @@ public class IssueCommentListView
     FlowPanel commentsContainer;
     @UiField
     Button send;
+    @UiField
+    Button timeBtn;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentList;
@@ -129,6 +156,11 @@ public class IssueCommentListView
     Lang lang;
     @UiField
     HTMLPanel newMessage;
+    @Inject
+    @UiField(provided = true)
+    TimeTextBox timeElapsed;
+    @UiField
+    HTMLPanel timePanel;
 
     private AbstractIssueCommentListActivity activity;
 
