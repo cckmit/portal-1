@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -42,10 +41,7 @@ import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
-import java.util.List;
 import java.util.Set;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Вид создания и редактирования обращения
@@ -62,7 +58,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
-        initiator.setAddButtonVisible(true);
         Window.addResizeHandler(this);
     }
 
@@ -275,6 +270,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Override
     public void initiatorUpdateCompany(Company company) {
         initiator.updateCompany(company);
+    }
+
+    @Override
+    public void initiatorSelectorAllowAddNew(boolean isVisible) {
+        initiator.setAddButtonVisible(isVisible);
     }
 
     private void setFooterFixed(boolean isFixed) {
