@@ -5,9 +5,17 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
+import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Активность превью компании
@@ -51,10 +59,31 @@ public abstract class CompanyPreviewActivity
         view.setAddressDejure( infoFacade.getLegalAddress() );
         view.setAddressFact( infoFacade.getFactAddress() );
         view.setInfo( value.getInfo() );
+
+        requestSubscriptionEmails(value.getId());
+
+        fireEvent( new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()));
+    }
+
+    private void requestSubscriptionEmails(Long companyId) {
+        companyController.getCompanySubscription(companyId, new ShortRequestCallback<List<CompanySubscription>>()
+                .setOnSuccess(subscriptions -> {
+                    String subscriptionsStr =  lang.issueCompanySubscriptionNotDefined();
+                    if (!CollectionUtils.isEmpty(subscriptions) ) {
+                        subscriptionsStr = subscriptions.stream()
+                                .map(CompanySubscription::getEmail)
+                                .collect(Collectors.joining(", "));
+                    }
+                    view.setSubscriptionEmails(subscriptionsStr);
+                }));
+
     }
 
     @Inject
     Lang lang;
     @Inject
     AbstractCompanyPreviewView view;
+
+    @Inject
+    CompanyControllerAsync companyController;
 }

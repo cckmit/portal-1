@@ -105,6 +105,16 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         return asWidget();
     }
 
+    @Override
+    public HasWidgets getContactsContainer() {
+        return contactsContainer;
+    }
+
+    @Override
+    public void setSubscriptionEmails(String value) {
+        subscription.setInnerText(value);
+    }
+
     @UiField
     SpanElement phone;
     @UiField
@@ -133,6 +143,10 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     HTMLPanel rootWrapper;
     @UiField
     FieldSetElement comments;
+    @UiField
+    HTMLPanel contactsContainer;
+    @UiField
+    SpanElement subscription;
 
     @Inject
     FixedPositioner positioner;

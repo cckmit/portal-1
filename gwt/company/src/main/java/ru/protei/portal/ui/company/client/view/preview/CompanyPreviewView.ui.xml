@@ -45,9 +45,20 @@
                 </div>
             </fieldset>
 
+            <fieldset class="header">
+                <legend><ui:text from="{lang.companySubscription}"/></legend>
+                <span ui:field="subscription"/>
+            </fieldset>
+
             <fieldset ui:field="comments" class="comments">
                 <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
                 <span ui:field="info" class="pre-formatted-info"></span>
+            </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.contacts}"/></legend>
+
+                <g:HTMLPanel ui:field="contactsContainer" styleName="col-xs-12"/>
             </fieldset>
         </g:HTMLPanel>
     </g:HTMLPanel>
