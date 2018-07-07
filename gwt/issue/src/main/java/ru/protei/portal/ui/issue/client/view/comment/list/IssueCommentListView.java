@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.view.comment.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -88,6 +89,11 @@ public class IssueCommentListView
     }
 
     @Override
+    public void setUserIcon(String iconSrc) {
+        this.icon.setSrc( iconSrc );
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );
@@ -161,6 +167,8 @@ public class IssueCommentListView
     TimeTextBox timeElapsed;
     @UiField
     HTMLPanel timePanel;
+    @UiField
+    ImageElement icon;
 
     private AbstractIssueCommentListActivity activity;
 

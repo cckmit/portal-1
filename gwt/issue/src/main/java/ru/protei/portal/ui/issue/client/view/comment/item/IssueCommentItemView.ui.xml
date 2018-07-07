@@ -29,9 +29,9 @@
 
         <div ui:field="messageBlock" class="hide">
             <div class="meta">
-                <a href="javascript:;" class="image">
-                    <img alt="" src="./images/user-icon-m.png" ui:field="icon"></img>
-                </a>
+                <div class="image">
+                    <img alt="" src="./images/user-icon-m.png" ui:field="icon"/>
+                </div>
                 <timefield:TimeLabel ui:field="timeElapsed" styleName="time-label"/>
             </div>
 

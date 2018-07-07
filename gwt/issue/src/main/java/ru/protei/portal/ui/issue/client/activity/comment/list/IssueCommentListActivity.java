@@ -76,6 +76,7 @@ public abstract class IssueCommentListActivity
         view.clearTimeElapsed();
         view.timeElapsedVisibility().setVisible(false);
         view.setTimeElapsedEnabled(event.isElapsedTimeEnabled);
+        view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
 
         requestData( event.caseId );
     }
