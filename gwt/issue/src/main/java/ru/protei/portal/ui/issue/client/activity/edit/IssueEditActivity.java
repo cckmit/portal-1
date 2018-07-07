@@ -262,6 +262,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.description().setText(issue.getInfo());
 
         view.state().setValue(isNew(issue) ? CREATED : En_CaseState.getById(issue.getStateId()));
+        view.stateEnabled().setEnabled(!isNew(issue));
         view.importance().setValue(isNew(issue) ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
         view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
@@ -362,7 +363,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         ) {
             return true;
         }
-        return subscriptionsList.stream()
+        return subscriptionsList == null || subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .allMatch(CompanySubscription::isProteiRecipient);
     }

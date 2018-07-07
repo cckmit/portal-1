@@ -248,6 +248,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
+    public HasEnabled stateEnabled() {
+        return state;
+    }
+
+    @Override
     public HasVisibility caseSubscriptionContainer() {
         return caseSubscriptionContainers;
     }

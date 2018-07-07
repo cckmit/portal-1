@@ -73,6 +73,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled companyEnabled();
     HasEnabled productEnabled();
     HasEnabled managerEnabled();
+    HasEnabled stateEnabled();
+
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
 
@@ -83,4 +85,5 @@ public interface AbstractIssueEditView extends IsWidget {
     void initiatorUpdateCompany(Company company);
 
     void initiatorSelectorAllowAddNew(boolean b);
+
 }
