@@ -62,7 +62,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
-        initiator.setAddButtonVisible(true);
         Window.addResizeHandler(this);
     }
 
@@ -285,6 +284,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Override
     public void initiatorUpdateCompany(Company company) {
         initiator.updateCompany(company);
+    }
+
+    @Override
+    public void initiatorSelectorAllowAddNew(boolean isVisible) {
+        initiator.setAddButtonVisible(isVisible);
     }
 
     private void setFooterFixed(boolean isFixed) {

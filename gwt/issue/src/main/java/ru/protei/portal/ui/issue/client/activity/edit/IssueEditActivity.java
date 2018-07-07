@@ -283,6 +283,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
+        view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
 
         view.refreshFooterBtnPosition();
     }
