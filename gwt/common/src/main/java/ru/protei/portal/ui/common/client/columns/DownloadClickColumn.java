@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.ent.Downloadable;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-public class DownloadClickColumn<T> extends ClickColumn<T> {
+public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
 
     public interface DownloadHandler<T> extends AbstractColumnHandler<T> {
         void onDownloadClicked(T value);
@@ -28,14 +28,15 @@ public class DownloadClickColumn<T> extends ClickColumn<T> {
 
     @Override
     public void fillColumnValue(Element cell, T value) {
-        if (((Downloadable) value).isAllowedDownload()) {
-            AnchorElement a = DOM.createAnchor().cast();
-            a.setHref("#");
-            a.addClassName("fa fa-lg fa-cloud-download");
-            a.setTitle(lang.download());
-            setDownloadEnabled(a);
-            cell.appendChild(a);
-        }
+        if (!value.isAllowedDownload())
+            return;
+
+        AnchorElement a = DOM.createAnchor().cast();
+        a.setHref("#");
+        a.addClassName("fa fa-lg fa-cloud-download");
+        a.setTitle(lang.download());
+        setDownloadEnabled(a);
+        cell.appendChild(a);
     }
 
     public void setPrivilege(En_Privilege privilege) {

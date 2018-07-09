@@ -70,7 +70,7 @@ public class DocumentController {
         try {
             documentSvnService.getDocument(projectId, documentId, response.getOutputStream());
         } catch (SVNException e) {
-            logger.error("Failed to get document from repository: projectId=" + projectId + ", documentId=" + documentId, e);
+            logger.error("Failed to get document from repository: projectId=" + projectId + ", documentIdColumnHeader=" + documentId, e);
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return;
         }
