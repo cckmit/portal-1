@@ -902,11 +902,11 @@ public interface Lang extends Messages, ContactItemLang {
     String download();
 
     String accountFilterCompany();
-    
+
     String documentTypeCode();
 
     String errNotAvailable();
-    
+
     String decimalNumberNotFound();
 
     String from();
@@ -1016,4 +1016,24 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmail();
 
     String locale();
+
+    String projectCustomerCompany();
+
+    String projectDescription();
+
+    String projectProducts();
+
+    String projectCustomerType();
+
+    String customerTypeMinistryOfDefence();
+
+    String customerTypeStageBudget();
+
+    String customerTypeCommercialRf();
+
+    String customerTypeCommercialNearAbroad();
+
+    String customerTypeCommercialFarAbroad();
+
+    String customerTypeCommercialProtei();
 }

@@ -11,6 +11,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by michael on 23.05.16.
@@ -207,5 +208,18 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", oldId=" + oldId +
                 ", subscriptions=" + subscriptions +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DevUnit devUnit = (DevUnit) o;
+        return Objects.equals(id, devUnit.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

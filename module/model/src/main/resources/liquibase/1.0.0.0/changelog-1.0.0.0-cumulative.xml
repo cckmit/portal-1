@@ -58,4 +58,5 @@
   <include file="2018-06-29-add-email_last_id-column.xml" relativeToChangelogFile="true" />
   <include file="2018-07-05-add-locale-column-to-person-table.xml" relativeToChangelogFile="true" />
   <include file="2018-07-05-add-gost-to-document_type.xml" relativeToChangelogFile="true" />
+  <include file="2018-07-06-create-project_to_product-table.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

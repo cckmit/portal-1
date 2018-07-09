@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -112,8 +113,12 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );
         view.headManager().setValue( value.getHeadManager() );
         view.deployManagers().setValue( new HashSet<>( value.getManagers() ) );
-        view.details().setText( value.getDetails() == null ? "" : value.getDetails() );
+        view.details().setText( value.getDescription() == null ? "" : value.getDescription() );
         view.region().setValue( value.getRegion() );
+        Company customer = value.getCustomer();
+        view.company().setValue(customer == null ? null : customer.toEntityOption());
+        view.products().setValue(value.getProducts());
+        view.customerType().setValue(value.getCustomerType());
     }
 
     private void readView() {
@@ -122,8 +127,11 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         project.setHeadManager( view.headManager().getValue() );
         project.setManagers( view.deployManagers().getValue().stream().collect( Collectors.toList() ) );
         project.setState( view.state().getValue() );
-        project.setDetails( view.details().getText() );
+        project.setDescription( view.details().getText() );
         project.setRegion( view.region().getValue() );
+        project.setProducts(view.products().getValue());
+        project.setCustomer(Company.fromEntityOption(view.company().getValue()));
+        project.setCustomerType(view.customerType().getValue());
     }
 
     @Inject

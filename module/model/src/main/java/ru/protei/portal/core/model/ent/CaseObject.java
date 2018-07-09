@@ -119,6 +119,9 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "email_last_id")
     private Long emailLastId;
 
+    @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
+    private Set<DevUnit> products;
+
     // not db column
     private List<CaseLink> links;
 
@@ -437,6 +440,14 @@ public class CaseObject extends AuditableObject {
 
     public void setEmailLastId(Long emailLastId) {
         this.emailLastId = emailLastId;
+    }
+
+    public Set<DevUnit> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<DevUnit> products) {
+        this.products = products;
     }
 
     @Override
