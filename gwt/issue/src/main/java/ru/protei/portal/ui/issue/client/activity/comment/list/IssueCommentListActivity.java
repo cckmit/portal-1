@@ -74,8 +74,7 @@ public abstract class IssueCommentListActivity
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
-        view.timeElapsedVisibility().setVisible(false);
-        view.setTimeElapsedEnabled(event.isElapsedTimeEnabled);
+        view.timeElapsedVisibility().setVisible(event.isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
 
         requestData( event.caseId );
@@ -167,7 +166,6 @@ public abstract class IssueCommentListActivity
         view.message().setValue( editedMessage );
         if (comment.getTimeElapsed() != null) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
-            view.timeElapsedVisibility().setVisible(true);
         }
         view.focus();
     }
@@ -438,7 +436,6 @@ public abstract class IssueCommentListActivity
                 view.message().setValue( null );
                 view.attachmentContainer().clear();
                 view.clearTimeElapsed();
-                view.timeElapsedVisibility().setVisible(false);
                 tempAttachments.clear();
                 fireEvent( new IssueEvents.ChangeModel() );
                 fireEvent( new IssueEvents.ChangeCommentsView() );
