@@ -337,6 +337,11 @@ public class MainConfiguration {
         return new CaseLinkDAO_Impl();
     }
 
+    @Bean
+    public ProjectToProductDAO getProjectToProductDAO() {
+        return new ProjectToProductDAO_Impl();
+    }
+
 /**
  *
  *

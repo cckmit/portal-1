@@ -23,7 +23,7 @@ public class InfoColumn extends ClickColumn< ProjectInfo > {
 
         StringBuilder content = new StringBuilder();
         content.append( "<b>" ).append( value.getName() ).append( "</b><br/>" )
-                .append( value.getDetails() );
+                .append( value.getDescription() );
 
         cell.setInnerHTML( content.toString() );
     }

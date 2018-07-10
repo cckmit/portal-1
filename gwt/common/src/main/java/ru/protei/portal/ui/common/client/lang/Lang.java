@@ -904,14 +904,14 @@ public interface Lang extends Messages, ContactItemLang {
 
     String timeHourLiteral();
     String accountFilterCompany();
-    
+
     String documentTypeCode();
 
     String timeMinuteLiteral();
 
     String timeEstimated();
     String errNotAvailable();
-    
+
     String decimalNumberNotFound();
 
     String timeElapsed();
@@ -1022,4 +1022,24 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmail();
 
     String locale();
+
+    String projectCustomerCompany();
+
+    String projectDescription();
+
+    String projectProducts();
+
+    String projectCustomerType();
+
+    String customerTypeMinistryOfDefence();
+
+    String customerTypeStageBudget();
+
+    String customerTypeCommercialRf();
+
+    String customerTypeCommercialNearAbroad();
+
+    String customerTypeCommercialFarAbroad();
+
+    String customerTypeCommercialProtei();
 }
