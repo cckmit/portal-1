@@ -186,7 +186,7 @@ public class ProjectInfo extends AuditableObject {
 
         List<PersonShortView> deployManagers = new ArrayList<>();
         projectInfo.setManagers( deployManagers );
-        projectInfo.setCustomerType(En_CustomerType.forId(project.getTypeId()));
+        projectInfo.setCustomerType(En_CustomerType.find(project.getLocal()));
         projectInfo.setCustomer(project.getInitiatorCompany());
 
         if ( project.getMembers() != null ) {

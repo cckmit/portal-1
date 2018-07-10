@@ -151,7 +151,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setInfo( project.getDescription() );
         caseObject.setStateId( project.getState().getId() );
         if (project.getCustomerType() != null)
-            caseObject.setTypeId(project.getCustomerType().ordinal());
+            caseObject.setLocal(project.getCustomerType().getId());
 
         if ( project.getProductDirection() == null ) {
             caseObject.setProductId( null );
