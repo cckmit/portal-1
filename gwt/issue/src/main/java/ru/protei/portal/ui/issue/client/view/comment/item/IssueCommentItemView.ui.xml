@@ -8,20 +8,21 @@
     <g:HTMLPanel tag="li" ui:field="root" styleName="left">
 
         <ul class="list-inline m-b-5">
-            <li ui:field="date" class="date-time"></li>
-            <li ui:field="owner" class="name"></li>
-            <li ui:field="info" class="info hide p-l-5 p-r-5"></li>
-            <li ui:field="status" class="status"></li>
+            <li ui:field="date" class="date-time"/>
+            <li ui:field="owner" class="name"/>
+            <timefield:TimeLabel ui:field="timeElapsed" displayFormat="( +%time )" styleName="time-label p-l-5 p-r-5"/>
+            <li ui:field="info" class="info hide p-l-5 p-r-5"/>
+            <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">
-                        <i class="fa fa-reply"></i>
+                        <i class="fa fa-reply"/>
                     </g:Anchor>
                     <g:Anchor href="javascript:;" ui:field="edit">
-                        <i class="fa fa-pencil"></i>
+                        <i class="fa fa-pencil"/>
                     </g:Anchor>
                     <g:Anchor href="javascript:;" ui:field="remove">
-                        <i class="fa fa-trash"></i>
+                        <i class="fa fa-trash"/>
                     </g:Anchor>
                 </span>
             </li>
@@ -32,7 +33,6 @@
                 <div class="image">
                     <img alt="" src="./images/user-icon-m.png" ui:field="icon"/>
                 </div>
-                <timefield:TimeLabel ui:field="timeElapsed" styleName="time-label"/>
             </div>
 
             <div class="message">

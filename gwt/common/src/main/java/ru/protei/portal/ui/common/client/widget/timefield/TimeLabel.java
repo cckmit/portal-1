@@ -24,5 +24,9 @@ public class TimeLabel extends Label implements HasTime {
         return minutes;
     }
 
+    public void setDisplayFormat(String format) {
+        workTimeFormatter.setDisplayFomat(format);
+    }
+
     WorkTimeFormatter workTimeFormatter;
 }

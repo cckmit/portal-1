@@ -6,6 +6,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class WorkTimeFormatter {
 
+
     public WorkTimeFormatter(Lang lang) {
         day = lang.timeDayLiteral();
         hour = lang.timeHourLiteral();
@@ -36,7 +37,12 @@ public class WorkTimeFormatter {
             value += String.valueOf(minutes) + minute + " ";
         }
 
-        return value.trim();
+        value = value.trim();
+        if (displayFormat != null) {
+            return displayFormat.replace("%time", value);
+        }
+
+        return value;
     }
 
     public Long asTime(String value) {
@@ -60,6 +66,9 @@ public class WorkTimeFormatter {
         return minutes;
     }
 
+    public void setDisplayFomat(String format) {
+        this.displayFormat = format;
+    }
 
     public String getPattern() {
         return pattern;
@@ -85,6 +94,8 @@ public class WorkTimeFormatter {
     private String placeholder = "";
     private String pattern = "\\S+";
     private RegExp regexp = null;
+    private String displayFormat = null;
+
     private final static Long MINUTE2HOUR = 60L;
     private final static Long MINUTE2DAY = 8L * MINUTE2HOUR; // 8 hours per day
 
