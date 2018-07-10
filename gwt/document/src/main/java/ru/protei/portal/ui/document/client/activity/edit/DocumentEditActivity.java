@@ -13,20 +13,28 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.ConsumeTimer;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
+import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
 
 
 public abstract class DocumentEditActivity
         implements Activity, AbstractDocumentEditActivity {
+
+    @Event
+    public void onAuthSuccess( AuthEvents.Success event ) {
+        this.authorizedProfile = event.profile;
+    }
 
     @PostConstruct
     public void onInit() {
@@ -195,7 +203,7 @@ public abstract class DocumentEditActivity
         d.setVersion(view.version().getValue());
         d.setOrganizationCode(view.organizationCode().getValue());
         d.setProjectId(view.project().getValue().getId());
-        d.setEquipment(new Equipment(view.equipment().getValue().getId()));
+        d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         return d;
     }
 
@@ -206,6 +214,8 @@ public abstract class DocumentEditActivity
 
     private void fillView(Document document) {
         this.document = document;
+
+        boolean isNew = document.getId() == null;
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -222,9 +232,17 @@ public abstract class DocumentEditActivity
         view.organizationCode().setValue(document.getOrganizationCode());
         view.version().setValue(document.getVersion());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
-        view.manager().setValue(document.getManager().toShortNameShortView());
-        view.registrar().setValue(document.getRegistrar().toShortNameShortView());
-        view.contractor().setValue(document.getContractor().toShortNameShortView());
+
+        if (isNew) {
+            PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
+            view.manager().setValue(currentPerson);
+            view.registrar().setValue(currentPerson);
+            view.contractor().setValue(currentPerson);
+        } else {
+            view.manager().setValue(document.getManager() == null ? null : document.getManager().toShortNameShortView());
+            view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
+            view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
+        }
 
         view.setEnabledProject(document.getId() == null);
         view.setVisibleUploader(document.getId() == null);
@@ -252,7 +270,7 @@ public abstract class DocumentEditActivity
     @Inject
     Lang lang;
 
-    Document document;
+    private Document document;
 
     boolean decimalNumberIsSet = false;
 
@@ -263,4 +281,5 @@ public abstract class DocumentEditActivity
     EquipmentControllerAsync equipmentService;
 
     private AppEvents.InitDetails initDetails;
+    private Profile authorizedProfile;
 }
