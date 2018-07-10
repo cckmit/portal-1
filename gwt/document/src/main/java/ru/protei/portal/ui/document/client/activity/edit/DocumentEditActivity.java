@@ -6,11 +6,13 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.common.ConsumeTimer;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -159,22 +161,16 @@ public abstract class DocumentEditActivity
     }
 
     private String getValidationErrorMessage(Document doc) {
-        if (doc.getDecimalNumber() == null) {
-            return lang.decimalNumberNotSet();
-        }
         if (doc.getType() == null) {
             return lang.documentTypeIsEmpty();
         }
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (doc.getManagerId() == null) {
+        if (doc.getManager() == null) {
             return lang.customerNotSet();
         }
-        if (doc.getInventoryNumber() == null) {
-            return lang.inventoryNumberIsEmpty();
-        }
-        if (doc.getInventoryNumber() <= 0) {
+        if (doc.getInventoryNumber() != null && doc.getInventoryNumber() < 0) {
             return lang.negativeInventoryNumber();
         }
         if (HelperFunc.isEmpty(doc.getName())) {
@@ -189,16 +185,17 @@ public abstract class DocumentEditActivity
         d.setId(document.getId());
         d.setName(view.name().getValue());
         d.setAnnotation(view.annotation().getValue());
-        DecimalNumber decimalNumber = view.decimalNumber().getValue();
-        if (decimalNumber != null)
-            decimalNumber.setEntityType(En_DecimalNumberEntityType.DOCUMENT);
-        d.setDecimalNumber(decimalNumber);
+        d.setDecimalNumber(view.decimalNumber().getValue());
         d.setType(view.documentType().getValue());
-        d.setTypeCode(view.typeCode().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
-        d.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
+        d.setManager(Person.fromPersonShortView(view.manager().getValue()));
+        d.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
+        d.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
+        d.setVersion(view.version().getValue());
+        d.setOrganizationCode(view.organizationCode().getValue());
         d.setProjectId(view.project().getValue().getId());
+        d.setEquipment(new Equipment(view.equipment().getValue().getId()));
         return d;
     }
 
@@ -213,20 +210,21 @@ public abstract class DocumentEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        PersonShortView manager = new PersonShortView();
-        manager.setId(document.getManagerId());
-
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
-        view.typeCode().setValue(document.getTypeCode());
         view.decimalNumber().setValue(document.getDecimalNumber());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
         view.documentType().setValue(document.getType(), true);
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
-        view.manager().setValue(manager);
         view.project().setValue(document.getProjectInfo());
+        view.organizationCode().setValue(document.getOrganizationCode());
+        view.version().setValue(document.getVersion());
+        view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
+        view.manager().setValue(document.getManager().toShortNameShortView());
+        view.registrar().setValue(document.getRegistrar().toShortNameShortView());
+        view.contractor().setValue(document.getContractor().toShortNameShortView());
 
         view.setEnabledProject(document.getId() == null);
         view.setVisibleUploader(document.getId() == null);
@@ -237,6 +235,8 @@ public abstract class DocumentEditActivity
         view.resetFilename();
         view.documentUploader().resetAction();
         view.setSaveEnabled(true);
+
+        decimalNumberIsSet = StringUtils.isEmpty(document.getDecimalNumberStr());
     }
 
     private final ConsumeTimer<DecimalNumber> timer = new ConsumeTimer<DecimalNumber>() {
@@ -253,6 +253,8 @@ public abstract class DocumentEditActivity
     Lang lang;
 
     Document document;
+
+    boolean decimalNumberIsSet = false;
 
     @Inject
     DocumentControllerAsync documentService;

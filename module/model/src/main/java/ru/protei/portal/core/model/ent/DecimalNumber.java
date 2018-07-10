@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -22,13 +21,6 @@ public class DecimalNumber implements Serializable {
     @JdbcColumn( name = "org_code" )
     @JdbcEnumerated(EnumType.STRING)
     private En_OrganizationCode organizationCode;
-
-    /**
-     * Тип сущности, которой принадлежит децимальный номер
-     */
-    @JdbcColumn(name = "entity_type")
-    @JdbcEnumerated(EnumType.STRING)
-    private En_DecimalNumberEntityType entityType;
 
     /**
      * Код по классификатору ЕСКД
@@ -151,13 +143,5 @@ public class DecimalNumber implements Serializable {
     public boolean isValid() {
         return getClassifierCode() != null &&
                 getRegisterNumber() != null;
-    }
-
-    public En_DecimalNumberEntityType getEntityType() {
-        return entityType;
-    }
-
-    public void setEntityType(En_DecimalNumberEntityType entityType) {
-        this.entityType = entityType;
     }
 }

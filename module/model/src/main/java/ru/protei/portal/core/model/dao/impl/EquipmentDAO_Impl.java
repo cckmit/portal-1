@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements EquipmentDAO {
 
-    private final static String DECIMAL_NUMBER_JOIN = "LEFT JOIN decimal_number DN ON DN.entity_id = equipment.id AND DN.entity_type = 'EQUIPMENT'";
+    private final static String DECIMAL_NUMBER_JOIN = "LEFT JOIN decimal_number DN ON DN.entity_id = equipment.id";
 
     @Override
     public List<Equipment> getListByQuery(EquipmentQuery query) {

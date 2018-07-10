@@ -2,6 +2,7 @@ package ru.protei.portal.ui.document.client.widget.uploader;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.FormPanel;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -17,10 +18,10 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
         fileUpload.click();
     }
 
-    public void addChangeHandler(ChangeHandler changeHandler) {
-        fileUpload.addChangeHandler(changeHandler);
+    @Override
+    public HandlerRegistration addChangeHandler(ChangeHandler changeHandler) {
+        return fileUpload.addChangeHandler(changeHandler);
     }
-
 
     @Override
     public String getFilename() {

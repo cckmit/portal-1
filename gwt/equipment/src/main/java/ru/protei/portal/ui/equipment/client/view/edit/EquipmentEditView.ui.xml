@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
-             xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector"
+             xmlns:selector="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.multiple"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person">

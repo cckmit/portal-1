@@ -1016,4 +1016,16 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmail();
 
     String locale();
+
+    String documentContractor();
+
+    String documentRegistrar();
+
+    String documentVersion();
+
+    String documentManagers();
+
+    String documentOrganizationCode();
+
+    String documentEquipment();
 }

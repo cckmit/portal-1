@@ -41,14 +41,7 @@ public class BootstrapService {
     public void init() {
         migrateUserRoleScopeToSingleValue();
         removeObsoletePrivileges();
-        autoPatchDecimalNumbers();
 //        autoPatchDefaultRoles();
-    }
-
-    private void autoPatchDecimalNumbers() {
-        // после рефакторинга таблицы децимальных номеров, связанного с добалением раздела документации
-        // требуется для всех номеров с не заполненным entityType установить entityType=equipment
-        decimalNumberDAO.updateAllNumbersWithEmptyEntityType();
     }
 
     private void autoPatchDefaultRoles () {

@@ -6,7 +6,7 @@
 
     <changeSet id="add-columns-to-document" author="efremov">
         <addColumn tableName="document">
-            <column name="сontractor_id" type="BIGINT">
+            <column name="contractor_id" type="BIGINT">
                 <constraints referencedTableName="person"
                              referencedColumnNames="id"
                              foreignKeyName="document_contractor_id_fk" />
@@ -19,5 +19,31 @@
             <column name="version" type="VARCHAR(16)"/>
             <column name="org_code" type="VARCHAR(4)"/>
         </addColumn>
+    </changeSet>
+
+    <changeSet id="drop-inventory_number-notnull-constraint" author="efremov">
+        <dropNotNullConstraint tableName="document"
+                               columnName="inventory_number"
+                               columnDataType="BIGINT"/>
+    </changeSet>
+    
+    <changeSet id="decimal_number-and-equipment_id-columns-in-document" author="efremov">
+        <dropForeignKeyConstraint baseTableName="document" constraintName="document_decimal_number_id_fk"/>
+        <renameColumn tableName="document"
+                      oldColumnName="decimal_number_id"
+                      newColumnName="decimal_number"
+                      columnDataType="VARCHAR(32)"/>
+        <addUniqueConstraint tableName="document" columnNames="decimal_number"/>
+        <addColumn tableName="document">
+            <column name="equipment_id" type="BIGINT">
+                <constraints foreignKeyName="document_equipment_id_fk"
+                             referencedTableName="equipment"
+                             referencedColumnNames="id"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="drop-dn_type_code-column" author="efremov">
+        <dropColumn tableName="document" columnName="dn_type_code"/>
     </changeSet>
 </databaseChangeLog>

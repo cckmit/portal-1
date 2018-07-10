@@ -5,7 +5,7 @@
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
-             xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector"
+             xmlns:selector="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />

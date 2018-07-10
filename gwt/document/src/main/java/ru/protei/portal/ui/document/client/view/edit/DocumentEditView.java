@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.document.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,12 +10,17 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecimalNumberInput;
+import ru.protei.portal.ui.common.client.widget.organization.OrganizationButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -27,6 +33,8 @@ import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class DocumentEditView extends Composite implements AbstractDocumentEditView {
@@ -35,8 +43,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
-        typeCode.getElement().setAttribute("placeholder", lang.documentTypeCode());
-        documentUploader.addChangeHandler(event -> fileName.setValue(documentUploader.getFilename()));
+        equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
     }
 
     @Override
@@ -101,13 +108,28 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<String> created() {
-        return created;
+    public HasValue<PersonShortView> contractor() {
+        return contractor;
     }
 
     @Override
-    public HasValue<String> typeCode() {
-        return typeCode;
+    public HasValue<PersonShortView> registrar() {
+        return registrar;
+    }
+
+    @Override
+    public HasValue<En_OrganizationCode> organizationCode() {
+        return organization;
+    }
+
+    @Override
+    public HasValue<EquipmentShortView> equipment() {
+        return equipment;
+    }
+
+    @Override
+    public HasValue<String> created() {
+        return created;
     }
 
     @Override
@@ -123,6 +145,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public HasValue<DecimalNumber> decimalNumber() {
         return decimalNumber;
+    }
+
+    @Override
+    public HasValue<String> version() {
+        return version;
     }
 
     @Override
@@ -168,6 +195,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         }
     }
 
+    @UiHandler("documentUploader")
+    public void onFilenameChanged(ChangeEvent event) {
+        fileName.setValue(documentUploader.getFilename());
+    }
+
 
     @UiField
     ValidableTextBox name;
@@ -209,8 +241,19 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField(provided = true)
     EmployeeButtonSelector manager;
 
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector contractor;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector registrar;
+
     @UiField
     TextBox created;
+
+    @UiField
+    TextBox version;
 
     @Inject
     @UiField(provided = true)
@@ -226,8 +269,14 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField
     HTMLPanel selectFileContainer;
 
-    @UiField
-    TextBox typeCode;
+    @Inject
+    @UiField(provided = true)
+    OrganizationButtonSelector organization;
+
+    @Inject
+    @UiField(provided = true)
+    EquipmentSelector equipment;
+
 
     @Inject
     Lang lang;
