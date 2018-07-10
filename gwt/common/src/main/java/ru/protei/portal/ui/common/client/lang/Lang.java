@@ -1022,4 +1022,6 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmail();
 
     String locale();
+
+    String workTime();
 }
