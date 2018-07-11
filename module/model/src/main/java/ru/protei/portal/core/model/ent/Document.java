@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.annotations.*;
@@ -29,11 +28,6 @@ public class Document implements Serializable {
     private String decimalNumberStr;
 
 
-    @JdbcColumn(name = "org_code")
-    @JdbcEnumerated(value = EnumType.STRING)
-    private En_OrganizationCode organizationCode;
-
-
     /**
      * Инвентарный номер
      */
@@ -51,14 +45,6 @@ public class Document implements Serializable {
      */
     @JdbcColumn
     private String annotation;
-
-    /**
-     * Менеджер
-     */
-    @JdbcJoinedColumn(localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
-    private String managerShortName;
-    @JdbcJoinedObject(localColumn = "manager_id")
-    private Person manager;
 
     /**
      * Ответственный за регистрацию
@@ -123,14 +109,6 @@ public class Document implements Serializable {
 
     public void setAnnotation(String annotation) {
         this.annotation = annotation;
-    }
-
-    public String getManagerShortName() {
-        return managerShortName;
-    }
-
-    public void setManagerShortName(String managerShortName) {
-        this.managerShortName = managerShortName;
     }
 
     public List<String> getKeywords() {
@@ -212,28 +190,12 @@ public class Document implements Serializable {
         this.version = version;
     }
 
-    public En_OrganizationCode getOrganizationCode() {
-        return organizationCode;
-    }
-
-    public void setOrganizationCode(En_OrganizationCode organizationCode) {
-        this.organizationCode = organizationCode;
-    }
-
     public Long getEquipmentId() {
         return equipmentId;
     }
 
     public void setEquipmentId(Long equipmentId) {
         this.equipmentId = equipmentId;
-    }
-
-    public Person getManager() {
-        return manager;
-    }
-
-    public void setManager(Person manager) {
-        this.manager = manager;
     }
 
     public Person getRegistrar() {
@@ -254,7 +216,6 @@ public class Document implements Serializable {
 
     public boolean isValid() {
         return  this.getType() != null &&
-                this.getManager() != null &&
                 (this.getInventoryNumber() == null || this.getInventoryNumber() > 0) &&
                 this.getProjectId() != null &&
                 HelperFunc.isNotEmpty(this.getName());

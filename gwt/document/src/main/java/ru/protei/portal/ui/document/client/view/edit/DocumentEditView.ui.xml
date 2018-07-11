@@ -7,7 +7,6 @@
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.single'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.document.client.widget.uploader'
-             xmlns:organization='urn:import:ru.protei.portal.ui.common.client.widget.organization'
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -74,22 +73,15 @@
                     <ui:text from="{lang.documentManagers}"/>
                 </legend>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-4">
-                        <label>
-                            <ui:text from="{lang.documentManager}"/>
-                        </label>
-                        <person:EmployeeButtonSelector ui:field="manager"
-                                                       hasNullValue="false"/>
-                    </div>
 
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.documentRegistrar}"/>
                         </label>
                         <person:EmployeeButtonSelector ui:field="registrar"/>
                     </div>
 
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.documentContractor}"/>
                         </label>
@@ -122,14 +114,8 @@
                         </label>
                         <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
                     </div>
-                    <div class="form-group col-xs-1">
-                        <!--<label>-->
-                            <!--<ui:text from="{lang.documentOrganizationCode}"/>-->
-                        <!--</label>-->
-                        <organization:OrganizationButtonSelector ui:field="organization" styleName="input-field" useLongNames="true"/>
-                    </div>
 
-                    <div class="form-group col-xs-11">
+                    <div class="form-group col-xs-12">
                         <decnum:SingleDecimalNumberInput ui:field="decimalNumber"
                                                          removeVisible="false"
                                                          organizationCodeEnabled="true"

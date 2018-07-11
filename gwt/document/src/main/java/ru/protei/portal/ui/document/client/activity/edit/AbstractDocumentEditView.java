@@ -3,7 +3,6 @@ package ru.protei.portal.ui.document.client.activity.edit;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -30,8 +29,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<ProjectInfo> project();
 
-    HasValue<PersonShortView> manager();
-
     HasValue<PersonShortView> contractor();
 
     HasValue<PersonShortView> registrar();
@@ -51,8 +48,6 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasValue<DecimalNumber> decimalNumber();
 
     HasValue<String> version();
-
-    HasValue<En_OrganizationCode> organizationCode();
 
     AbstractDocumentUploader documentUploader();
 

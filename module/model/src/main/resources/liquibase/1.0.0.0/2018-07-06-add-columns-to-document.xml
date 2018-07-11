@@ -46,4 +46,10 @@
     <changeSet id="drop-dn_type_code-column" author="efremov">
         <dropColumn tableName="document" columnName="dn_type_code"/>
     </changeSet>
+
+    <changeSet id="drop-org_code-column" author="efremov">
+        <dropColumn tableName="document" columnName="org_code"/>
+        <dropForeignKeyConstraint baseTableName="document" constraintName="documentation_manager_id_fk"/>
+        <dropColumn tableName="document" columnName="manager_id"/>
+    </changeSet>
 </databaseChangeLog>

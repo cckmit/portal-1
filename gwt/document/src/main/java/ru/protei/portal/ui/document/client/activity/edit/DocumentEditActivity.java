@@ -175,9 +175,6 @@ public abstract class DocumentEditActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (doc.getManager() == null) {
-            return lang.customerNotSet();
-        }
         if (doc.getInventoryNumber() != null && doc.getInventoryNumber() < 0) {
             return lang.negativeInventoryNumber();
         }
@@ -197,11 +194,9 @@ public abstract class DocumentEditActivity
         d.setType(view.documentType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
-        d.setManager(Person.fromPersonShortView(view.manager().getValue()));
         d.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
         d.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         d.setVersion(view.version().getValue());
-        d.setOrganizationCode(view.organizationCode().getValue());
         d.setProjectId(view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         return d;
@@ -229,17 +224,14 @@ public abstract class DocumentEditActivity
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
         view.project().setValue(document.getProjectInfo());
-        view.organizationCode().setValue(document.getOrganizationCode());
         view.version().setValue(document.getVersion());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
-            view.manager().setValue(currentPerson);
             view.registrar().setValue(currentPerson);
             view.contractor().setValue(currentPerson);
         } else {
-            view.manager().setValue(document.getManager() == null ? null : document.getManager().toShortNameShortView());
             view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
         }

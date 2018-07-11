@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
-import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -19,7 +18,6 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecimalNumberInput;
-import ru.protei.portal.ui.common.client.widget.organization.OrganizationButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
@@ -103,11 +101,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<PersonShortView> manager() {
-        return manager;
-    }
-
-    @Override
     public HasValue<PersonShortView> contractor() {
         return contractor;
     }
@@ -115,11 +108,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public HasValue<PersonShortView> registrar() {
         return registrar;
-    }
-
-    @Override
-    public HasValue<En_OrganizationCode> organizationCode() {
-        return organization;
     }
 
     @Override
@@ -239,10 +227,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector manager;
-
-    @Inject
-    @UiField(provided = true)
     EmployeeButtonSelector contractor;
 
     @Inject
@@ -268,10 +252,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiField
     HTMLPanel selectFileContainer;
-
-    @Inject
-    @UiField(provided = true)
-    OrganizationButtonSelector organization;
 
     @Inject
     @UiField(provided = true)

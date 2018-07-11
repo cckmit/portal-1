@@ -46,7 +46,6 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setType(document.getType().getName());
         view.setAnnotation(document.getAnnotation());
         view.setProject(document.getProjectInfo() == null ? "" : document.getProjectInfo().getName());
-        view.setManager(document.getManagerShortName() == null ? "" : document.getManagerShortName());
         view.setNumberDecimal(DecimalNumberFormatter.formatNumber(document.getDecimalNumber()));
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));

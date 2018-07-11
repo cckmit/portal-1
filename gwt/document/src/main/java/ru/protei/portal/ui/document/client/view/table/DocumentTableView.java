@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -153,8 +154,14 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             @Override
             public void fillColumnValue(Element cell, Document value) {
                 String html = "";
-                if (value.getManagerShortName() != null && value.getProjectInfo() != null) {
-                    html = value.getProjectInfo().getName() + "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
+                ProjectInfo project = value.getProjectInfo();
+                if (project != null) {
+                    html = project.getName();
+                    if (project.getHeadManager() != null) {
+                        html += "<div><i><small><i class='fa fa-user-o m-r-5'></i>" +
+                                project.getHeadManager().getDisplayShortName() +
+                                "</small></i></div>";
+                    }
                 }
                 cell.setInnerHTML(HTMLHelper.wrapDiv(html));
             }
