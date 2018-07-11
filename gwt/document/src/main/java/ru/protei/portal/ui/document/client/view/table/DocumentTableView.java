@@ -75,8 +75,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     }
 
     @Override
-    public void setRecordCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void setRecordCount(int count) {
+        table.setTotalRecords(count);
     }
 
     @Override

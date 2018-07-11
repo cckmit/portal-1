@@ -9,7 +9,7 @@ public interface AbstractDocumentTableView extends IsWidget {
 
     void clearRecords();
 
-    void setRecordCount(Long count);
+    void setRecordCount(int count);
 
     int getPageSize();
 

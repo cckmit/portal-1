@@ -76,17 +76,28 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             }
 
             if (query.getManagerId() != null) {
-                condition.append(" and document.manager_id=?");
+                condition.append(" and (document.registrar_id=? or document.contractor_id=?) ");
+                args.add(query.getManagerId());
                 args.add(query.getManagerId());
             }
 
             if (CollectionUtils.isNotEmpty(query.getOrganizationCodes())) {
-                String orgCodes = HelperFunc.makeInArg(query
-                        .getOrganizationCodes()
+                condition.append(" and (");
+                condition.append(query.getOrganizationCodes()
                         .stream()
-                        .map(Enum::toString)
-                        .collect(Collectors.toSet()));
-                condition.append(" and document.org_code in " + orgCodes);
+                        .map(oc -> " document.decimal_number like ? ")
+                        .collect(Collectors.joining(" or ")));
+                condition.append(" ) ");
+                query.getOrganizationCodes().forEach(oc -> {
+                    switch (oc) {
+                        case PAMR:
+                            args.add("ПАМР%");
+                            break;
+                        case PDRA:
+                            args.add("ПДРА%");
+                            break;
+                    }
+                });
             }
 
             if (query.getOnlyIds() != null) {
