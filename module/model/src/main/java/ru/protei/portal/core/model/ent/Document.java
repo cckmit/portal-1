@@ -61,7 +61,7 @@ public class Document implements Serializable {
     @JdbcColumn(name = "project_id")
     private Long projectId;
     @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
-    private ProjectInfo projectInfo;
+    private CaseObject projectInfo;
 
     @JdbcJoinedObject(localColumn = "equipment_id")
     private Equipment equipment;
@@ -166,10 +166,10 @@ public class Document implements Serializable {
     }
 
     public ProjectInfo getProjectInfo() {
-        return projectInfo;
+        return ProjectInfo.fromCaseObject(projectInfo);
     }
 
-    public void setProjectInfo(ProjectInfo projectInfo) {
+    public void setProjectInfo(CaseObject projectInfo) {
         this.projectInfo = projectInfo;
     }
 

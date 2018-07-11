@@ -48,6 +48,11 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
+    public void setVersion(String text) {
+        this.version.setInnerText(text);
+    }
+
+    @Override
     public void setCreatedDate(String created) {
         this.created.setInnerText(created);
     }
@@ -70,6 +75,16 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @Override
     public void setManager(String manager) {
         this.manager.setInnerText(manager);
+    }
+
+    @Override
+    public void setRegistrar(String text) {
+        this.registrar.setInnerText(text);
+    }
+
+    @Override
+    public void setContractor(String text) {
+        this.contractor.setInnerText(text);
     }
 
     @Override
@@ -96,11 +111,14 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField Anchor downloadButton;
     @UiField LegendElement header;
     @UiField SpanElement name;
+    @UiField SpanElement version;
     @UiField SpanElement created;
     @UiField SpanElement type;
     @UiField SpanElement annotation;
     @UiField SpanElement project;
     @UiField SpanElement manager;
+    @UiField SpanElement registrar;
+    @UiField SpanElement contractor;
     @UiField SpanElement numberDecimal;
     @UiField SpanElement numberInventory;
     @UiField SpanElement keyWords;

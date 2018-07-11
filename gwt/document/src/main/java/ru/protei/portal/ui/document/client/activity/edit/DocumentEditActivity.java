@@ -214,10 +214,12 @@ public abstract class DocumentEditActivity
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
         }
 
+        boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
+
         view.projectEnabled().setEnabled(isNew);
         view.uploaderVisible().setVisible(isNew);
-        view.equipmentEnabled().setEnabled(isNew);
-        view.decimalNumberEnabled().setEnabled(StringUtils.isEmpty(document.getDecimalNumber()));
+        view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
+        view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
 
         view.nameValidator().setValid(true);
 

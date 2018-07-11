@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -41,14 +42,26 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
     private void fillView(Document document) {
         view.setHeader(lang.documentDescription() + " #" + document.getId());
         view.setName(document.getName());
+        view.setVersion(document.getVersion());
         view.setCreatedDate(document.getCreated() == null ? "" : DateFormatter.formatDateTime(document.getCreated()));
         view.setType(document.getType().getName());
         view.setAnnotation(document.getAnnotation());
-        view.setProject(document.getProjectInfo() == null ? "" : document.getProjectInfo().getName());
         view.setNumberDecimal(document.getDecimalNumber());
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
         view.setDownloadLink(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId());
+
+        ProjectInfo project = document.getProjectInfo();
+        if (project == null) {
+            view.setProject("");
+            view.setManager("");
+        } else {
+            view.setProject(project.getName());
+            view.setManager(project.getHeadManager() == null ? "" : project.getHeadManager().getDisplayShortName());
+        }
+
+        view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());
+        view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
     }
 
     private static final String DOWNLOAD_PATH = "Crm/springApi/document/";
