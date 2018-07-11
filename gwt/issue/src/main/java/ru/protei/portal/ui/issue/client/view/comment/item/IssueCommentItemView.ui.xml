@@ -10,8 +10,8 @@
         <ul class="list-inline m-b-5">
             <li ui:field="date" class="date-time"/>
             <li ui:field="owner" class="name"/>
-            <timefield:TimeLabel ui:field="timeElapsed" displayFormat="( +%time )" styleName="time-label p-l-5 p-r-5"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
+            <timefield:TimeLabel ui:field="timeElapsed" displayFormat="( +%time )" styleName="time-label p-l-5 p-r-5"/>
             <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">
