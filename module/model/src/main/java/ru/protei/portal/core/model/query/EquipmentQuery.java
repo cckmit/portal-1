@@ -1,9 +1,7 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,6 +21,7 @@ public class EquipmentQuery extends BaseQuery {
     private Long managerId;
 
     private Long equipmentId;
+    private Long projectId;
 
     public Set<En_EquipmentStage> getStages() {
         return stages;
@@ -78,6 +77,14 @@ public class EquipmentQuery extends BaseQuery {
 
     public void setEquipmentId(Long equipmentId) {
         this.equipmentId = equipmentId;
+    }
+
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public Long getProjectId() {
+        return projectId;
     }
 
     public EquipmentQuery() {

@@ -76,6 +76,10 @@ public class EquipmentSelector
         refillOptions();
     }
 
+    public void setProjectId(Long projectId) {
+        model.setProjectId(projectId);
+    }
+
     private void refillOptions() {
         fillOptions(options);
     }
