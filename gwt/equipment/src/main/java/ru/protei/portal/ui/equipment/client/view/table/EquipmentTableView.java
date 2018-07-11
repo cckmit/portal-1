@@ -6,7 +6,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
@@ -239,7 +241,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                     managerHtml = "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
                 }
 
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getProject() == null ? "" : value.getProject() + managerHtml ) );
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getProject() == null ? "" : value.getProject().getName() + managerHtml ) );
             }
         };
         columns.add( project );

@@ -4,6 +4,7 @@
              xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
              xmlns:selector="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
+             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.multiple"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -46,7 +47,7 @@
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
-                        <g:TextBox ui:field="project" styleName="input-field"/>
+                        <project:ProjectButtonSelector ui:field="project"/>
                     </g:HTMLPanel>
 
                     <g:HTMLPanel styleName="form-group" ui:field="managerBox">

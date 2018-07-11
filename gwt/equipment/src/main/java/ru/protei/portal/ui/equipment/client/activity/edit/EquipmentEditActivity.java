@@ -95,7 +95,7 @@ public abstract class EquipmentEditActivity
         equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
         equipment.setDecimalNumbers( view.numbers().getValue() );
         equipment.setManagerId( view.manager().getValue() == null ? null : view.manager().getValue().getId() );
-        equipment.setProject( view.project().getValue() );
+        equipment.setProject(view.project().getValue());
         return equipment;
     }
 

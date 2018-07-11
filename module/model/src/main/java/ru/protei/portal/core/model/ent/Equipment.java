@@ -4,6 +4,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -71,8 +72,11 @@ public class Equipment extends AuditableObject {
     @JdbcJoinedColumn( localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
     private String managerShortName;
 
-    @JdbcColumn
-    private String project;
+    /**
+     * Проект
+     */
+    @JdbcJoinedObject(localColumn = "project_id")
+    private CaseObject projectCaseObject;
 
     /**
      * Привязанные децимальные номера
@@ -103,7 +107,7 @@ public class Equipment extends AuditableObject {
         this.stage = equipment.getStage();
         this.type = equipment.getType();
         this.managerId = equipment.getManagerId();
-        this.project = equipment.getProject();
+        this.projectCaseObject = equipment.getProjectCaseObject();
         this.comment = equipment.getComment();
     }
 
@@ -211,12 +215,20 @@ public class Equipment extends AuditableObject {
         this.managerShortName = managerShortName;
     }
 
-    public String getProject() {
-        return project;
+    public ProjectInfo getProject() {
+        return ProjectInfo.fromCaseObject(getProjectCaseObject());
     }
 
-    public void setProject( String project ) {
-        this.project = project;
+    public void setProject(ProjectInfo project) {
+        setProjectCaseObject(project == null ? null : new CaseObject(project.getId()));
+    }
+
+    public CaseObject getProjectCaseObject() {
+        return projectCaseObject;
+    }
+
+    public void setProjectCaseObject(CaseObject projectCaseObject) {
+        this.projectCaseObject = projectCaseObject;
     }
 
     @Override

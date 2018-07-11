@@ -10,11 +10,13 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
@@ -95,7 +97,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasValue< String > project() {
+    public HasValue<ProjectInfo> project() {
         return project;
     }
 
@@ -162,8 +164,9 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
-    @UiField
-    TextBox project;
+    @Inject
+    @UiField(provided = true)
+    ProjectButtonSelector project;
     @UiField
     HTMLPanel date;
     @UiField
