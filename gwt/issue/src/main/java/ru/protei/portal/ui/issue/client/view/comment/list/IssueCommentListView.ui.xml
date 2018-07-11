@@ -25,13 +25,7 @@
 
                             <div class="attachments">
                                 <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
-                                <g:Button styleName=" btn btn-white m-l-5 time-btn" ui:field="timeBtn" title="{lang.timeElapsed}">
-                                    <i class="fa fa-clock-o"></i>
-                                </g:Button>
-                                <g:HTMLPanel styleName="form-group col-xs-12 time-block" ui:field="timePanel" visible="false">
-                                    <label><ui:text from="{lang.timeElapsed}"/></label>
-                                    <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field" notNull="false"/>
-                                </g:HTMLPanel>
+
                                 <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
                                     <div class="btn btn-white attach-add-btn">
                                         <ui:text from='{lang.addAttachmentBtn}'/>
@@ -39,6 +33,9 @@
                                         <i class="icon-verifiable"/>
                                     </div>
                                 </fileuploader:AttachmentUploader>
+
+                                <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field inline-block time-elapsed" notNull="false"/>
+
                                 <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                             </div>
                         </div>

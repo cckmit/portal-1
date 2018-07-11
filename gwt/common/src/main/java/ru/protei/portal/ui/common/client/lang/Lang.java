@@ -1042,4 +1042,6 @@ public interface Lang extends Messages, ContactItemLang {
     String customerTypeCommercialFarAbroad();
 
     String customerTypeCommercialProtei();
+
+    String workTime();
 }

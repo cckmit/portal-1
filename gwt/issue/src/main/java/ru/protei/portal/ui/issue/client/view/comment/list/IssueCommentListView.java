@@ -80,12 +80,7 @@ public class IssueCommentListView
 
     @Override
     public HasVisibility timeElapsedVisibility() {
-        return timePanel;
-    }
-
-    @Override
-    public void setTimeElapsedEnabled(boolean isElapsedTimeEnabled) {
-        timeBtn.setVisible(isElapsedTimeEnabled);
+        return timeElapsed;
     }
 
     @Override
@@ -132,11 +127,6 @@ public class IssueCommentListView
         activity.removeTempAttachment(event.getAttachment());
     }
 
-    @UiHandler("timeBtn")
-    public void onTimeBtn(ClickEvent event){
-        timePanel.setVisible(!timePanel.isVisible());
-    }
-
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
@@ -150,8 +140,6 @@ public class IssueCommentListView
     FlowPanel commentsContainer;
     @UiField
     Button send;
-    @UiField
-    Button timeBtn;
     @Inject
     @UiField(provided = true)
     AttachmentList attachmentList;
@@ -165,8 +153,6 @@ public class IssueCommentListView
     @Inject
     @UiField(provided = true)
     TimeTextBox timeElapsed;
-    @UiField
-    HTMLPanel timePanel;
     @UiField
     ImageElement icon;
 
