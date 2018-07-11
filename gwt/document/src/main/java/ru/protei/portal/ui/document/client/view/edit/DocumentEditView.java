@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.document.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,12 +10,16 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.decimalnumber.single.SingleDecimalNumberInput;
+import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -27,6 +32,8 @@ import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class DocumentEditView extends Composite implements AbstractDocumentEditView {
@@ -35,24 +42,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
-        typeCode.getElement().setAttribute("placeholder", lang.documentTypeCode());
-        documentUploader.addChangeHandler(event -> fileName.setValue(documentUploader.getFilename()));
+        equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
     }
 
     @Override
     public void setActivity(AbstractDocumentEditActivity activity) {
         this.activity = activity;
-    }
-
-    @Override
-    public void setEnabledProject(boolean isEnabled) {
-        project.setEnabled(isEnabled);
-    }
-
-    @Override
-    public void setVisibleUploader(boolean isVisible) {
-        selectFileContainer.setVisible(isVisible);
-        nameContainer.getElement().setClassName("form-group " + (isVisible ? "col-xs-6" : "col-xs-9"));
     }
 
     @Override
@@ -96,18 +91,23 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<PersonShortView> manager() {
-        return manager;
+    public HasValue<PersonShortView> contractor() {
+        return contractor;
+    }
+
+    @Override
+    public HasValue<PersonShortView> registrar() {
+        return registrar;
+    }
+
+    @Override
+    public HasValue<EquipmentShortView> equipment() {
+        return equipment;
     }
 
     @Override
     public HasValue<String> created() {
         return created;
-    }
-
-    @Override
-    public HasValue<String> typeCode() {
-        return typeCode;
     }
 
     @Override
@@ -121,13 +121,13 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<DecimalNumber> decimalNumber() {
+    public HasValue<String> decimalNumber() {
         return decimalNumber;
     }
 
     @Override
-    public HasValidable decimalNumberValidator() {
-        return decimalNumber;
+    public HasValue<String> version() {
+        return version;
     }
 
     @Override
@@ -136,8 +136,50 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public void setDecimalNumberExists(boolean isExists) {
-        decimalNumber.setExists(isExists);
+    public HasEnabled decimalNumberEnabled() {
+        return decimalNumber;
+    }
+
+    @Override
+    public HasVisibility equipmentVisible() {
+        return equipmentSelectorContainer;
+    }
+
+    @Override
+    public HasEnabled projectEnabled() {
+        return project;
+    }
+
+    @Override
+    public HasVisibility uploaderVisible() {
+        return new HasVisibility() {
+            @Override
+            public boolean isVisible() {
+                return documentUploader.isVisible();
+            }
+
+            @Override
+            public void setVisible(boolean visible) {
+                documentUploader.setVisible(visible);
+                nameContainer.getElement().setClassName("form-group " + (visible ? "col-xs-6" : "col-xs-9"));
+            }
+        };
+    }
+
+    @Override
+    public HasEnabled equipmentEnabled() {
+        return new HasEnabled() {
+            @Override
+            public boolean isEnabled() {
+                return equipmentDecimalNumber.isEnabled() && equipment.isEnabled();
+            }
+
+            @Override
+            public void setEnabled(boolean enabled) {
+                equipmentDecimalNumber.setEnabled(enabled);
+                equipment.setEnabled(enabled);
+            }
+        };
     }
 
     @UiHandler("saveButton")
@@ -159,6 +201,50 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         documentUploader.click();
     }
 
+    @UiHandler("equipment")
+    public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
+        equipmentDecimalNumber.setValue(null, true);
+        if (event.getValue() == null || event.getValue().getDecimalNumbers()== null) {
+            equipmentDecimalNumber.setEnabled(false);
+        } else {
+            List<DecimalNumber> decimalNumbers = event.getValue().getDecimalNumbers();
+            equipmentDecimalNumber.fillOptions(decimalNumbers);
+            equipmentDecimalNumber.setEnabled(true);
+
+            if (!decimalNumbers.isEmpty())
+                equipmentDecimalNumber.setValue(decimalNumbers.get(0), true);
+        }
+
+        if (activity != null)
+            activity.onEquipmentChanged();
+    }
+
+    @UiHandler("equipmentDecimalNumber")
+    public void onEquipmentDecimalNumberChanged(ValueChangeEvent<DecimalNumber> event) {
+        if (event.getValue() == null)
+            decimalNumber.setValue("");
+        else
+            decimalNumber.setValue(DecimalNumberFormatter.formatNumber(event.getValue()));
+    }
+
+    @UiHandler("decimalNumber")
+    public void onDecimalNumberChanged(ValueChangeEvent<String> event) {
+        if (activity != null)
+            activity.onDecimalNumberChanged();
+    }
+
+    @UiHandler("documentCategory")
+    public void onDocumentCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
+        if (activity != null)
+            activity.onDocumentCategoryChanged();
+    }
+
+    @UiHandler("project")
+    public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
+        if (activity != null)
+            activity.onProjectChanged();
+    }
+
     @UiHandler("documentCategory")
     public void onCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
         documentType.setEnabled(true);
@@ -166,6 +252,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         if (documentType.getValue() != null && !documentType.getValue().getDocumentCategory().equals(event.getValue())) {
             documentType.setValue(null);
         }
+    }
+
+    @UiHandler("documentUploader")
+    public void onFilenameChanged(ChangeEvent event) {
+        fileName.setValue(documentUploader.getFilename());
     }
 
 
@@ -207,18 +298,24 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Inject
     @UiField(provided = true)
-    EmployeeButtonSelector manager;
+    EmployeeButtonSelector contractor;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector registrar;
 
     @UiField
     TextBox created;
+
+    @UiField
+    TextBox version;
 
     @Inject
     @UiField(provided = true)
     StringSelectInput keywords;
 
-    @Inject
-    @UiField(provided = true)
-    SingleDecimalNumberInput decimalNumber;
+    @UiField
+    TextBox decimalNumber;
 
     @UiField
     Button selectFileButton;
@@ -226,8 +323,16 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField
     HTMLPanel selectFileContainer;
 
+    @Inject
+    @UiField(provided = true)
+    EquipmentSelector equipment;
+
+    @Inject
+    @UiField(provided = true)
+    DecimalNumberSelector equipmentDecimalNumber;
+
     @UiField
-    TextBox typeCode;
+    HTMLPanel equipmentSelectorContainer;
 
     @Inject
     Lang lang;

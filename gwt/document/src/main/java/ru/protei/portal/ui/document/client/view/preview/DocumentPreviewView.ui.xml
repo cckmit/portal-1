@@ -12,6 +12,10 @@
                     <span class="col-xs-7" ui:field="name"></span>
                 </div>
                 <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentVersion}"/></label>
+                    <span class="col-xs-7" ui:field="version"></span>
+                </div>
+                <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.created}"/></label>
                     <span class="col-xs-7" ui:field="created"></span>
                 </div>
@@ -31,6 +35,14 @@
                     <label class="col-xs-5"><ui:text from="{lang.documentManager}"/></label>
                     <span class="col-xs-7" ui:field="manager"></span>
                 </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentRegistrar}"/></label>
+                    <span class="col-xs-7" ui:field="registrar"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentContractor}"/></label>
+                    <span class="col-xs-7" ui:field="contractor"></span>
+                </div>
             </fieldset>
 
             <fieldset class="header">
@@ -48,7 +60,7 @@
             <fieldset class="header">
                 <legend><ui:text from="{lang.documentKeywords}"/></legend>
                 <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 equipment-number" ui:field="keyWords"></span>
+                    <span class="col-xs-12 col-md-12 decimal-number" ui:field="keyWords"></span>
                 </div>
             </fieldset>
             <g:Anchor href="javascript:void(0)" ui:field="downloadButton" styleName="btn btn-white" target="_blank">

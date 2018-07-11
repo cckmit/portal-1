@@ -3,7 +3,6 @@ package ru.protei.portal.ui.document.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -11,16 +10,15 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
+import ru.protei.portal.ui.common.client.common.DateUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
@@ -79,8 +77,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     }
 
     @Override
-    public void setRecordCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void setRecordCount(int count) {
+        table.setTotalRecords(count);
     }
 
     @Override
@@ -147,23 +145,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         }
     };
 
-    private final ClickColumn<Document> name = new ClickColumn<Document>() {
-        @Override
-        protected void fillColumnHeader(Element element) {
-            element.setInnerText(lang.equipmentNameBySpecification());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            cell.setInnerHTML(HTMLHelper.wrapDiv(
-                    value.getName() +
-                            "<div><i><small><i class='fa fa-clock-o m-r-5'></i>" +
-                            DateFormatter.formatDateTime(value.getCreated()) +
-                            "</small></i></div>"
-            ));
-        }
-    };
-
     private final ClickColumn<Document> decimalNumber = new ClickColumn<Document>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
@@ -173,21 +154,15 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            DecimalNumber dNumber = value.getDecimalNumber();
-            if (dNumber == null) {
-                return;
+            String html = "";
+
+            if (!StringUtils.isEmpty(value.getDecimalNumber())) {
+                html += "<div class=\"decimal-number\">" + value.getDecimalNumber() + "</div> ";
             }
 
-            Element numElem = DOM.createDiv();
-            numElem.setClassName("equipment-number");
-            numElem.setInnerHTML(DecimalNumberFormatter.formatNumber(dNumber));
-            if (dNumber.isReserve()) {
-                Element isReserveEl = DOM.createElement("i");
-                isReserveEl.addClassName("fa fa-flag text-danger m-l-10");
-                numElem.appendChild(isReserveEl);
-            }
-            cell.appendChild(numElem);
-
+            html += "<div class=\"document-name\">\"" + value.getName() + "\"</div><br/>";
+            html += "<b>" + value.getType().getName() + " " + DateUtils.getYearFromDate(value.getCreated()) + "</b>";
+            cell.setInnerHTML(html);
         }
     };
 
@@ -199,26 +174,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            String html = "";
-            if (value.getManagerShortName() != null && value.getProjectName() != null) {
-                html = value.getProjectName() + "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
-            }
-            cell.setInnerHTML(HTMLHelper.wrapDiv(html));
-        }
-    };
-
-    private final ClickColumn<Document> annotation = new ClickColumn<Document>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.annotation());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            if (value.getAnnotation() == null) {
-                return;
-            }
-            cell.setInnerHTML("<div><i><small>" + value.getAnnotation() + "</i></small></div>");
+            ProjectInfo project = value.getProjectInfo();
+            if (project != null)
+                cell.setInnerText(project.getName());
         }
     };
 

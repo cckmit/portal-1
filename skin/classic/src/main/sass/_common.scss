@@ -2460,9 +2460,15 @@ a {
   }
 }
 
-.equipment-number {
+.decimal-number {
   font-family: GostARegular;
   font-size: 18px;
+  display: inline-block;
+}
+
+.document-name {
+  font-size: 15px;
+  display: inline-block;
 }
 
 .eq-type,

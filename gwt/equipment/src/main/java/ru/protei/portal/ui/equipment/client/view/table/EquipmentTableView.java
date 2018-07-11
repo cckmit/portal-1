@@ -6,7 +6,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
@@ -135,7 +137,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
-                root.setClassName( "equipment-number" );
+                root.setClassName( "decimal-number" );
 
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
@@ -215,7 +217,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                cell.setClassName( "equipment-number" );
+                cell.setClassName( "decimal-number" );
 
                 if ( value != null && value.getLinkedEquipmentDecimalNumbers() != null ) {
                     cell.setInnerHTML( HTMLHelper.wrapDiv(

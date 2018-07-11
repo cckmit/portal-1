@@ -146,9 +146,13 @@ public abstract class DocumentTableActivity
 
             @Override
             public void onSuccess(Integer result) {
-                view.setRecordCount(Long.valueOf(result));
+                if (result == null) {
+                    onError(null);
+                    return;
+                }
+                view.setRecordCount(result);
                 pagerView.setTotalPages(view.getPageCount());
-                pagerView.setTotalCount( result );
+                pagerView.setTotalCount(result);
             }
         });
     }

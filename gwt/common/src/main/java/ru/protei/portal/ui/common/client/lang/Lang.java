@@ -1018,4 +1018,16 @@ public interface Lang extends Messages, ContactItemLang {
     String locale();
 
     String documentIdColumnHeader();
+    
+    String documentContractor();
+
+    String documentRegistrar();
+
+    String documentVersion();
+
+    String documentManagers();
+
+    String documentOrganizationCode();
+
+    String documentEquipment();
 }

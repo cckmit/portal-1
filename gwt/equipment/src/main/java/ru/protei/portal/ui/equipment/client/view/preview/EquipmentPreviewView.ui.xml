@@ -52,14 +52,14 @@
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
-                <div class="col-xs-12 equipment-number" ui:field="number"></div>
+                <div class="col-xs-12 decimal-number" ui:field="number"></div>
             </fieldset>
 
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentPrimaryUse}"/></legend>
                 <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 equipment-number" ui:field="primaryUse"></span>
+                    <span class="col-xs-12 col-md-12 decimal-number" ui:field="primaryUse"></span>
                 </div>
             </fieldset>
 

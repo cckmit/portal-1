@@ -13,11 +13,11 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
-import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
 import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 

@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
-import ru.protei.portal.core.model.dict.En_DecimalNumberEntityType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
@@ -23,7 +22,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
 
     @Override
     public List< Long > getDecimalNumbersByEquipmentId( Long id ) {
-        StringBuilder sql = new StringBuilder("SELECT id FROM ").append(getTableName()).append( " WHERE entity_id=? AND entity_type='EQUIPMENT'" );
+        StringBuilder sql = new StringBuilder("SELECT id FROM ").append(getTableName()).append( " WHERE entity_id=?" );
         return jdbcTemplate.queryForList(sql.toString(), Long.class, id);
     }
 
@@ -105,11 +104,6 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
                 filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber(),
                 filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber());
    }
-
-    @Override
-    public void updateAllNumbersWithEmptyEntityType() {
-        jdbcTemplate.batchUpdate("UPDATE " + getTableName() + " SET entity_type='" + En_DecimalNumberEntityType.EQUIPMENT.name() + "' WHERE entity_type IS NULL OR entity_type=''");
-    }
 
     @Override
     public DecimalNumber find(DecimalNumber decimalNumber) {

@@ -1,11 +1,13 @@
 package ru.protei.portal.ui.document.client.activity.edit;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
@@ -16,10 +18,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setActivity(AbstractDocumentEditActivity activity);
 
-    void setEnabledProject(boolean isEnabled);
-
-    void setVisibleUploader(boolean isVisible);
-
     void resetFilename();
 
     HasValue<String> name();
@@ -28,29 +26,40 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<ProjectInfo> project();
 
-    HasValue<PersonShortView> manager();
+    HasValue<PersonShortView> contractor();
+
+    HasValue<PersonShortView> registrar();
 
     HasValue<En_DocumentCategory> documentCategory();
 
     HasValue<String> annotation();
 
-    HasValue<String> created();
+    HasValue<EquipmentShortView> equipment();
 
-    HasValue<String> typeCode();
+    HasValue<String> created();
 
     HasValue<Long> inventoryNumber();
 
     HasValue<List<String>> keywords();
 
-    HasValue<DecimalNumber> decimalNumber();
+    HasValue<String> decimalNumber();
+
+    HasValue<String> version();
 
     AbstractDocumentUploader documentUploader();
 
     HasValidable nameValidator();
 
-    HasValidable decimalNumberValidator();
+    HasEnabled decimalNumberEnabled();
 
-    void setDecimalNumberExists(boolean isExists);
+    HasEnabled projectEnabled();
+
+    HasEnabled equipmentEnabled();
+
+    HasVisibility uploaderVisible();
+
+    HasVisibility equipmentVisible();
 
     void setSaveEnabled(boolean isEnabled);
+
 }
