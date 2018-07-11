@@ -11,16 +11,15 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
@@ -126,21 +125,15 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
             @Override
             public void fillColumnValue(Element cell, Document value) {
-                DecimalNumber dNumber = value.getDecimalNumber();
-                if (dNumber == null) {
+                String dNumber = value.getDecimalNumber();
+                if (StringUtils.isEmpty(dNumber)) {
                     return;
                 }
 
                 Element numElem = DOM.createDiv();
                 numElem.setClassName("equipment-number");
-                numElem.setInnerHTML(DecimalNumberFormatter.formatNumber(dNumber));
-                if (dNumber.isReserve()) {
-                    Element isReserveEl = DOM.createElement("i");
-                    isReserveEl.addClassName("fa fa-flag text-danger m-l-10");
-                    numElem.appendChild(isReserveEl);
-                }
+                numElem.setInnerHTML(dNumber);
                 cell.appendChild(numElem);
-
             }
         };
         columns.add(decimalNumber);

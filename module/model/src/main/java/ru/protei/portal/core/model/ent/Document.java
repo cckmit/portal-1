@@ -25,7 +25,7 @@ public class Document implements Serializable {
     private String name;
 
     @JdbcColumn(name = "decimal_number")
-    private String decimalNumberStr;
+    private String decimalNumber;
 
 
     /**
@@ -63,8 +63,6 @@ public class Document implements Serializable {
     @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
     private ProjectInfo projectInfo;
 
-    @JdbcColumn(name = "equipment_id")
-    private Long equipmentId;
     @JdbcJoinedObject(localColumn = "equipment_id")
     private Equipment equipment;
 
@@ -143,19 +141,12 @@ public class Document implements Serializable {
         this.type = type;
     }
 
-    public DecimalNumber getDecimalNumber() {
-        return null;
+    public String getDecimalNumber() {
+        return decimalNumber;
     }
 
-    public void setDecimalNumber(DecimalNumber decimalNumber) {
-    }
-
-    public String getDecimalNumberStr() {
-        return decimalNumberStr;
-    }
-
-    public void setDecimalNumberStr(String decimalNumberStr) {
-        this.decimalNumberStr = decimalNumberStr;
+    public void setDecimalNumber(String decimalNumberStr) {
+        this.decimalNumber = decimalNumberStr;
     }
 
     public Equipment getEquipment() {
@@ -188,14 +179,6 @@ public class Document implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public Long getEquipmentId() {
-        return equipmentId;
-    }
-
-    public void setEquipmentId(Long equipmentId) {
-        this.equipmentId = equipmentId;
     }
 
     public Person getRegistrar() {

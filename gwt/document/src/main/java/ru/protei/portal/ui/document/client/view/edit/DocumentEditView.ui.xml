@@ -5,7 +5,7 @@
              xmlns:doccategory="urn:import:ru.protei.portal.ui.document.client.widget.doccategory"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
-             xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.single'
+             xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.selector.decimalnumber'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.document.client.widget.uploader'
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
@@ -54,12 +54,15 @@
                         <project:ProjectButtonSelector ui:field="project"/>
                     </div>
 
-                    <div class="form-group col-xs-3">
+                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="equipmentSelectorContainer">
                         <label>
                             <ui:text from="{lang.documentEquipment}"/>
                         </label>
-                        <equipment:EquipmentSelector ui:field="equipment"/>
-                    </div>
+                        <div class="grid">
+                            <div class="col-xs-6"><equipment:EquipmentSelector ui:field="equipment" printDecimalNumbers="false"/></div>
+                            <div class="col-xs-6"><decnum:DecimalNumberSelector ui:field="equipmentDecimalNumber" enabled="false"/></div>
+                        </div>
+                    </g:HTMLPanel>
 
                     <div class="form-group col-xs-2">
                         <label>
@@ -116,12 +119,7 @@
                     </div>
 
                     <div class="form-group col-xs-12">
-                        <decnum:SingleDecimalNumberInput ui:field="decimalNumber"
-                                                         removeVisible="false"
-                                                         organizationCodeEnabled="true"
-                                                         reserveVisible="false"
-                                                         nextVisible="false"
-                                                         getNextModificationMessageVisible="false"/>
+                        <g:TextBox ui:field="decimalNumber" styleName="input-field"/>
                     </div>
 
                 </div>

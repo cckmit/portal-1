@@ -9,6 +9,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +35,7 @@ public class EquipmentSelector
                 sb.append( lang.equipmentPrimaryUseNotDefinied() );
             } else {
                 sb.append( value.getName() == null ? "" : value.getName() );
-                if ( value.getDecimalNumbers() != null ) {
+                if ( printDecimalNumbers && value.getDecimalNumbers() != null ) {
                     sb
                             .append( " (" )
                             .append( value.getDecimalNumbers().stream().map( DecimalNumberFormatter:: formatNumber ).collect( Collectors.joining( ", " ) ) )
@@ -48,6 +49,8 @@ public class EquipmentSelector
 
     @Override
     public void fillOptions( List< EquipmentShortView > options ) {
+        this.options = options;
+
         clearOptions();
         if (hasNullValue) {
             addOption(null);
@@ -68,6 +71,17 @@ public class EquipmentSelector
             model.setEquipmentTypes(types);
     }
 
+    public void setPrintDecimalNumbers(boolean isPrintDecimalNumbers) {
+        this.printDecimalNumbers = isPrintDecimalNumbers;
+        refillOptions();
+    }
+
+    private void refillOptions() {
+        fillOptions(options);
+    }
+
+    private List<EquipmentShortView> options = Collections.emptyList();
     private boolean hasNullValue;
+    private boolean printDecimalNumbers = true;
     private EquipmentModel model;
 }
