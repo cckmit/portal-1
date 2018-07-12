@@ -132,6 +132,15 @@ public class IssueCommentListView
         return addHandler( handler, RemoveEvent.getType() );
     }
 
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+
+        if ( activity != null ) {
+            activity.onDetachView();
+        }
+    }
+
     @UiField
     HTMLPanel root;
     @UiField

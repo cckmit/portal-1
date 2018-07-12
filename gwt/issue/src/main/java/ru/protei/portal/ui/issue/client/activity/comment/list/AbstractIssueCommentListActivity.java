@@ -12,4 +12,6 @@ public interface AbstractIssueCommentListActivity {
     void onEditLastMessage();
 
     void removeTempAttachment(Attachment attachment);
+
+    void onDetachView();
 }

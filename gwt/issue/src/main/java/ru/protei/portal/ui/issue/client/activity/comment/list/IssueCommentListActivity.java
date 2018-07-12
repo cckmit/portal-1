@@ -70,6 +70,9 @@ public abstract class IssueCommentListActivity
 
         event.parent.clear();
         event.parent.add(view.asWidget());
+
+        tempAttachments.clear();
+
         view.message().setValue(null);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
@@ -211,6 +214,17 @@ public abstract class IssueCommentListActivity
             //deleting the newly created attachment
             removeAttachment(attachment.getId(), removeTempAttachmentAction);
         }
+    }
+
+    @Override
+    public void onDetachView() {
+        attachmentService.clearUploadedAttachmentsCache(new RequestCallback<Void>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Void aVoid) {}
+        });
     }
 
     @Override
