@@ -164,7 +164,7 @@ public abstract class IssueCommentListActivity
 
         String editedMessage = caseComment.getText();
         view.message().setValue( editedMessage );
-        if (comment.getTimeElapsed() != null) {
+        if (comment.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
         }
         view.focus();
@@ -295,7 +295,7 @@ public abstract class IssueCommentListActivity
         itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
 
         itemView.clearElapsedTime();
-        if (value.getTimeElapsed() != null) {
+        if (value.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) {
             itemView.timeElapsed().setTime(value.getTimeElapsed());
         }
 
