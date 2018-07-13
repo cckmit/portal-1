@@ -29,6 +29,8 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
         }
     }
 
+    List<T> partialListByQuery(DataQuery query, String... columns);
+
     /**
      * @return Возвращает максимальное значение ключа для записей в таблице. если таблица пустая, то null
      */

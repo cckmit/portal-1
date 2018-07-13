@@ -30,5 +30,12 @@ public class StringUtils {
         return value != null ? value : defaultString;
     }
 
+    public static int length(String string) {
+        return null == string ? 0 : string.length();
+    }
+
+    public static String trim( String string ) {
+        return null == string ? null : string.trim();
+    }
 
 }
