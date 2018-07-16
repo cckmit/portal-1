@@ -7,9 +7,12 @@ import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.*;
+
+import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 
 /**
  * Created by michael on 19.05.16.
@@ -79,5 +82,18 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);
+    }
+
+    @Override
+    public Long count(CaseQuery query) {
+        if (!isSearchAtComments(query)) {
+            return super.count(query);
+        }
+
+        String join = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
+        SqlCondition where = createSqlCondition(query);
+        boolean distinct = false;
+
+        return (long) getObjectsCount( where.condition, where.args, join, distinct );
     }
 }

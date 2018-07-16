@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
@@ -18,6 +19,8 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     List<CaseObject> getCases( CaseQuery query );
 
     //public Long getNextCaseNumber (En_CaseType caseType);
+
+    Long count(CaseQuery query);
 
     Long insertCase (CaseObject object);
 

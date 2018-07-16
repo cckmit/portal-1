@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
+
 public class CaseObjectSqlBuilder {
 
     public SqlCondition caseCommonQuery (CaseQuery query) {
@@ -80,7 +82,12 @@ public class CaseObjectSqlBuilder {
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
-                condition.append( " and ( case_name like ? or case_object.info like ?)" );
+                condition.append( " and ( case_name like ? or case_object.info like ?");
+                if (isSearchAtComments(query)) {
+                    condition.append(" or case_comment.comment_text like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+                }
+                condition.append( ")" );
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);

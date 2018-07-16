@@ -15,6 +15,8 @@ import java.util.Map;
 public interface CaseShortViewDAO extends PortalBaseDAO<CaseShortView> {
     List<CaseShortView> getCases( CaseQuery query );
 
+    Long count(CaseQuery query);
+
     @SqlConditionBuilder
     SqlCondition caseQueryCondition( CaseQuery query );
 }
