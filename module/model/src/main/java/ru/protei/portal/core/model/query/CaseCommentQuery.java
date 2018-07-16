@@ -3,33 +3,28 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Set;
-
 public class CaseCommentQuery extends BaseQuery {
 
-    private Collection<Long> caseIds;
+    private Long caseId;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
     }
 
-    public CaseCommentQuery(Long caseId) {
-        this(caseId, null, En_SortField.creation_date, En_SortDir.ASC);
+    public CaseCommentQuery(Long id) {
+        this(id, null, En_SortField.creation_date, En_SortDir.ASC);
     }
 
-    public CaseCommentQuery(Long caseId, String searchString, En_SortField sortField, En_SortDir sortDir) {
+    public CaseCommentQuery(Long id, String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
-        setCaseIds(Arrays.asList(caseId));
+        setCaseId(id);
     }
 
-    public Collection<Long> getCaseIds() {
-        return caseIds;
+    public Long getCaseId() {
+        return caseId;
     }
 
-    public void setCaseIds(Collection<Long> caseIds) {
-        this.caseIds = caseIds;
+    public void setCaseId(Long caseId) {
+        this.caseId = caseId;
     }
 }

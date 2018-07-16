@@ -1,7 +1,7 @@
 package ru.protei.portal.core.service;
 
 
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,9 +24,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
-import static ru.protei.portal.core.model.helper.StringUtils.*;
 
 /**
  * Реализация сервиса управления обращениями
@@ -81,27 +79,14 @@ public class CaseServiceImpl implements CaseService {
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
 
         applyFilterByScope( token, query );
+        modifyQueryWithSearchAtComments(query);
 
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
             return new CoreResponse<List<CaseShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        list = filterCasesByComments(query, list);
-
         return new CoreResponse<List<CaseShortView>>().success(list);
-    }
-
-    private List<CaseShortView> filterCasesByComments(CaseQuery query, List<CaseShortView> list) {
-        if (isSearchAtComments(query) && !isEmpty(list)) {
-            Collection<Long> caseIds = stream(list).map(caseShort -> caseShort.getId()).collect(Collectors.toList());
-            Set<Long> caseIdsWithComments = new HashSet<>(getCaseIdsWithComments(caseIds, query.getSearchString()));
-
-            list = list.stream()
-                    .filter(caseShort -> caseIdsWithComments.contains(caseShort.getId()))
-                    .collect(Collectors.toList());
-        }
-        return list;
     }
 
     @Override
@@ -436,16 +421,14 @@ public class CaseServiceImpl implements CaseService {
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
 
         applyFilterByScope( token, query );
-        List<CaseObject> caseWithIds = caseObjectDAO.partialListByQuery(query, "id");
+        modifyQueryWithSearchAtComments(query);
 
-//        getCaseIdsWithComments(ids, query);
-        Integer count = caseWithIds == null ? null : caseWithIds.size();
-
+        Long count = caseObjectDAO.count(query);
 
         if (count == null)
             return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
-//
-        return new CoreResponse<Long>().success(new Long(count));
+
+        return new CoreResponse<Long>().success(count);
     }
 
     @Override
@@ -543,13 +526,19 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
-    private Collection<Long> getCaseIdsWithComments(Collection<Long> caseObjectsIds, String searchString) {
-        CaseCommentQuery commentQuery = new CaseCommentQuery();
-        commentQuery.setCaseIds(caseObjectsIds);
-        commentQuery.setSearchString(searchString);
+    private void modifyQueryWithSearchAtComments(CaseQuery query) {
+        if (
+                query.isSearchStringAtComments() &&
+                HelperFunc.isNotEmpty(query.getSearchString()) &&
+                query.getSearchString().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS
+        ) {
 
-        List<Long> caseIds = caseCommentDAO.getCaseCommentsCaseIds(commentQuery);
-        return CollectionUtils.emptyIfNull(caseIds);
+            CaseCommentQuery commentQuery = new CaseCommentQuery();
+            commentQuery.setSearchString(query.getSearchString());
+
+            List<Long> foundByCommentsIds = caseCommentDAO.getCaseCommentsCaseIds(commentQuery);
+            query.setIncludeIds(foundByCommentsIds);
+        }
     }
 
     private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state){
@@ -649,11 +638,6 @@ public class CaseServiceImpl implements CaseService {
         long timeElapsed = stream(allCaseComments).filter(cmnt -> cmnt.getTimeElapsed() != null).mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
 
         return updateCaseTimeElapsed ( token, caseId, timeElapsed ).getData();
-    }
-
-    private boolean isSearchAtComments(CaseQuery query) {
-        return query.isSearchStringAtComments()
-                && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)

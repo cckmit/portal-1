@@ -123,12 +123,6 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
         return getList(parameters);
     }
 
-    @Override
-    public List<T> partialListByQuery(DataQuery query, String... columns) {
-        SqlCondition where = createSqlCondition(query);
-        return partialGetListByCondition(where.condition, where.args, columns);
-    }
-
 
     public Long getMaxId () {
         return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);

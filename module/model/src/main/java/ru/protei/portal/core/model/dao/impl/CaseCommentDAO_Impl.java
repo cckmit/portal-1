@@ -3,16 +3,11 @@ package ru.protei.portal.core.model.dao.impl;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;
-
-import static ru.protei.portal.core.model.helper.CollectionUtils.getFirst;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 
 /**
  * Created by michael on 20.05.16.
@@ -40,17 +35,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
-            if (isNotEmpty(query.getCaseIds())) {
-                if (query.getCaseIds().size() == 1) {
-                    condition.append(" and case_id=?");
-                    args.add(getFirst(query.getCaseIds()));
-                } else {
-                    condition.append(" and case_id in ");
-                    condition.append(HelperFunc.makeInArg(query.getCaseIds()));
-                }
+            if (query.getCaseId() != null) {
+                condition.append(" and case_id=?");
+                args.add(query.getCaseId());
             }
 
-            if (!isBlank(query.getSearchString())) {
+            if (HelperFunc.isNotEmpty(query.getSearchString())) {
                 condition.append(" and comment_text like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }

@@ -7,10 +7,7 @@ import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.utils.TypeConverters;
-import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
 
