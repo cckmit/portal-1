@@ -93,12 +93,6 @@ public class CaseObjectSqlBuilder {
                 args.add(likeArg);
             }
 
-            if (query.getIncludeIds() != null && !query.getIncludeIds().isEmpty()) {
-                condition.append(" or case_object.id in (");
-                condition.append(query.getIncludeIds().stream().map(Object::toString).collect(Collectors.joining(",")));
-                condition.append(")");
-            }
-
             if (query.getSearchCasenoString() != null && !query.getSearchCasenoString().isEmpty()) {
                 condition.append(" and caseno like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchCasenoString(), true));

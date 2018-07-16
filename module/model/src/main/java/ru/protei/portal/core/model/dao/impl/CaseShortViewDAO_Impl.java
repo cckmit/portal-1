@@ -57,12 +57,9 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         SqlCondition where = createSqlCondition(query);
         boolean distinct = false;
 
-        System.out.println("count(): join " + join + " condition " + where.condition + " args: " + where.args);//DEBUG
-
         return (long) getObjectsCount( where.condition, where.args, join, distinct );
     }
 
-    private static final Logger log = LoggerFactory.getLogger(CaseShortViewDAO_Impl.class);
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);
