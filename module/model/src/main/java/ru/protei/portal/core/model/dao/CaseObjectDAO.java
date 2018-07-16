@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.List;

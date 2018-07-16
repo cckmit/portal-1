@@ -1,11 +1,8 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseShortViewDAO;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -23,16 +20,13 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.trim;
  */
 public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> implements CaseShortViewDAO {
 
+    public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
+
     @Autowired
     private CaseObjectSqlBuilder caseObjectSqlBuilder;
 
     @Override
     public List< CaseShortView > getCases( CaseQuery query ) {
-        String join = "";
-        if (isSearchAtComments(query)) {
-            join += " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
-        }
-
         SqlCondition where = createSqlCondition(query);
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -42,7 +36,9 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
-        parameters.withJoins( join );
+        if (isSearchAtComments(query)) {
+            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+        }
 
         return getList(parameters);
     }
@@ -52,12 +48,16 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         if (!isSearchAtComments(query)) {
             return super.count(query);
         }
+        StringBuilder sql = new StringBuilder("select count(*) from ").append(getTableName())
+                .append(LEFT_JOIN_CASE_COMMENT);
 
-        String join = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
-        SqlCondition where = createSqlCondition(query);
-        boolean distinct = false;
+        SqlCondition whereCondition = createSqlCondition(query);
 
-        return (long) getObjectsCount( where.condition, where.args, join, distinct );
+        if (!whereCondition.condition.isEmpty()) {
+            sql.append(" where ").append(whereCondition.condition);
+        }
+
+        return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
     }
 
     @SqlConditionBuilder

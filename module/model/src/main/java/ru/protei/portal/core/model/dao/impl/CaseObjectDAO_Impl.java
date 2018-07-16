@@ -7,12 +7,9 @@ import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.*;
-
-import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
 
 /**
  * Created by michael on 19.05.16.
