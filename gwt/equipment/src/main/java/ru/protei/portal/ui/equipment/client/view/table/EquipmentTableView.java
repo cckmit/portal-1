@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.HTMLHelper;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -241,7 +242,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                     managerHtml = "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
                 }
 
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getProjectName() + managerHtml ) );
+                cell.setInnerHTML( HTMLHelper.wrapDiv( StringUtils.emptyIfNull(value.getProjectName()) + managerHtml ) );
             }
         };
         columns.add( project );

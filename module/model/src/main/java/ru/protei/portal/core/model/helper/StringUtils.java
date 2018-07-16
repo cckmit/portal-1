@@ -31,4 +31,7 @@ public class StringUtils {
     }
 
 
+    public static String emptyIfNull(String s) {
+        return s == null ? "" : s;
+    }
 }
