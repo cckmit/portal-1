@@ -14,9 +14,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -77,24 +75,15 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
-                prof.start();
+
         applyFilterByScope( token, query );
-//        modifyQueryWithSearchAtComments(query);
 
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
         if ( list == null )
             return new CoreResponse<List<CaseShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        prof.check();
-
-
         return new CoreResponse<List<CaseShortView>>().success(list);
-    }
-
-    private void logd(String s) {
-        System.out.append(s+"\n");
-        log.debug(s);//DEBUG
     }
 
     @Override
@@ -429,7 +418,6 @@ public class CaseServiceImpl implements CaseService {
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
 
         applyFilterByScope( token, query );
-//        modifyQueryWithSearchAtComments(query);
 
         Long count = caseShortViewDAO.count(query);
 
@@ -534,21 +522,6 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
-    private void modifyQueryWithSearchAtComments(CaseQuery query) {
-        if (
-                query.isSearchStringAtComments() &&
-                HelperFunc.isNotEmpty(query.getSearchString()) &&
-                query.getSearchString().length() >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS
-        ) {
-
-            CaseCommentQuery commentQuery = new CaseCommentQuery();
-            commentQuery.setSearchString(query.getSearchString());
-
-            List<Long> foundByCommentsIds = caseCommentDAO.getCaseCommentsCaseIds(commentQuery);
-            query.setIncludeIds(foundByCommentsIds);
-        }
-    }
-
     private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
@@ -649,116 +622,4 @@ public class CaseServiceImpl implements CaseService {
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
-
-    AveragingProfiler prof = new AveragingProfiler( new AveragingProfiler.Appender() {
-        private long current;
-        private long min;
-        private long max;
-
-        @Override
-        public void average( long time ) {
-            logd( "current: " + current + " average: " + time + " " + min + "-" + max );
-        }
-
-        @Override
-        public void max( long max ) {
-            this.max = max;
-        }
-
-        @Override
-        public void min( long min ) {
-            this.min = min;
-        }
-
-        @Override
-        public void current(long current) {
-            this.current = current;
-        }
-    } );
-}
-
-/***
- * Возвращает усредненное значение по числу произведенных замеров
- * (до 100 последних замеров)
- */
-class AveragingProfiler {
-
-    interface Appender {
-        void average( long time );
-
-        void max( long max );
-
-        void min( long min );
-
-        void current(long current);
-    }
-
-    public Appender appender = new Appender() {
-        public void average( long time ) {
-            System.out.append( "average: " + time );
-        }
-
-        @Override
-        public void max( long max ) {
-            System.out.append( "max: " + max );
-        }
-
-        @Override
-        public void min( long min ) {
-            System.out.append( "min: " + min );
-        }
-
-        @Override
-        public void current( long current ) {
-            System.out.append( "current: " + current );
-        }
-    };
-
-    public AveragingProfiler( Appender appender ) {
-        this.appender = appender;
-    }
-
-    public void start() {
-        currentTimeMillis = System.currentTimeMillis();
-    }
-
-    public void check() {
-      long current =  timeIntervals[i] = (System.currentTimeMillis() - currentTimeMillis);
-
-        if ( ++i >= SAMPLE_SIZE ) {
-            i = 0;
-        }
-        if ( count < i ) {
-            count = i;
-        }
-        long summ = 0;
-        int cnt = 0;
-        for (int j = 0; j < count; j++) {
-            if ( timeIntervals[j] <= min ) continue;
-            if ( max <= timeIntervals[j] ) continue;
-            summ += timeIntervals[j];
-            cnt++;
-        }
-        if(cnt < 1 ) cnt = 1;
-
-        long average = summ / cnt;
-        if ( current < min ) min = current;
-        if ( max < current ) max = current;
-        appender.min( min );
-        appender.max( max );
-        appender.current( current );
-        appender.average( average );
-
-    }
-
-    int i = 0;
-    int count = 0;
-    long[] timeIntervals = new long[SAMPLE_SIZE];
-
-    long currentTimeMillis;
-    public long min = Long.MAX_VALUE;
-    public long max = 0;
-
-    //количество усредняемых измерений
-    private static final int SAMPLE_SIZE = 100;
 }

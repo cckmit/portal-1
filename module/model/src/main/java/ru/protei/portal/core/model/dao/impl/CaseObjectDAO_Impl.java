@@ -83,17 +83,4 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     public SqlCondition caseQueryCondition ( CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);
     }
-
-    @Override
-    public Long count(CaseQuery query) {
-        if (!isSearchAtComments(query)) {
-            return super.count(query);
-        }
-
-        String join = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
-        SqlCondition where = createSqlCondition(query);
-        boolean distinct = false;
-
-        return (long) getObjectsCount( where.condition, where.args, join, distinct );
-    }
 }

@@ -19,9 +19,6 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
     List<CaseObject> getCases( CaseQuery query );
 
     //public Long getNextCaseNumber (En_CaseType caseType);
-
-    Long count(CaseQuery query);
-
     Long insertCase (CaseObject object);
 
     CaseObject getCase(En_CaseType caseType, long number);
