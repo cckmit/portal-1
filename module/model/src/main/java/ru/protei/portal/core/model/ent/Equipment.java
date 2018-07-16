@@ -4,7 +4,6 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
@@ -75,8 +74,11 @@ public class Equipment extends AuditableObject {
     /**
      * Проект
      */
-    @JdbcJoinedObject(localColumn = "project_id")
-    private CaseObject projectCaseObject;
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME")
+    private String projectName;
 
     /**
      * Привязанные децимальные номера
@@ -107,7 +109,6 @@ public class Equipment extends AuditableObject {
         this.stage = equipment.getStage();
         this.type = equipment.getType();
         this.managerId = equipment.getManagerId();
-        this.projectCaseObject = equipment.getProjectCaseObject();
         this.comment = equipment.getComment();
     }
 
@@ -215,20 +216,20 @@ public class Equipment extends AuditableObject {
         this.managerShortName = managerShortName;
     }
 
-    public ProjectInfo getProject() {
-        return ProjectInfo.fromCaseObject(getProjectCaseObject());
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setProject(ProjectInfo project) {
-        setProjectCaseObject(project == null ? null : new CaseObject(project.getId()));
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
     }
 
-    public CaseObject getProjectCaseObject() {
-        return projectCaseObject;
+    public String getProjectName() {
+        return projectName;
     }
 
-    public void setProjectCaseObject(CaseObject projectCaseObject) {
-        this.projectCaseObject = projectCaseObject;
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     @Override

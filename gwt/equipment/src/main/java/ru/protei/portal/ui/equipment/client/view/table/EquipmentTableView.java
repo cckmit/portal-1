@@ -241,7 +241,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                     managerHtml = "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
                 }
 
-                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getProject() == null ? "" : value.getProject().getName() + managerHtml ) );
+                cell.setInnerHTML( HTMLHelper.wrapDiv( value.getProjectName() + managerHtml ) );
             }
         };
         columns.add( project );

@@ -5,7 +5,6 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
     <changeSet id="project-link-in-equipment" author="efremov">
-        <dropColumn tableName="equipment" columnName="project"/>
         <addColumn tableName="equipment">
             <column name="project_id" type="BIGINT">
                 <constraints foreignKeyName="equipment_project_id_fk"
@@ -13,5 +12,13 @@
                              referencedColumnNames="id"/>
             </column>
         </addColumn>
+        
+        <sql>
+            update equipment e
+            inner join case_object co on e.project = co.CASE_NAME and co.CASE_TYPE=9
+            set e.project_id = co.id;
+        </sql>
+
+        <dropColumn tableName="equipment" columnName="project"/>
     </changeSet>
 </databaseChangeLog>
