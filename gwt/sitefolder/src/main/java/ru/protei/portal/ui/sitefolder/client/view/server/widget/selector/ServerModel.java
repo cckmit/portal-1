@@ -1,10 +1,10 @@
-package ru.protei.portal.ui.sitefolder.client.view.platform.widget.btnselector;
+package ru.protei.portal.ui.sitefolder.client.view.server.widget.selector;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.query.PlatformQuery;
+import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class PlatformModel implements Activity {
+public abstract class ServerModel implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
@@ -27,8 +27,8 @@ public abstract class PlatformModel implements Activity {
         selector.fillOptions(list);
     }
 
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
         refreshOptions();
     }
 
@@ -40,14 +40,14 @@ public abstract class PlatformModel implements Activity {
     }
 
     private void refreshOptions() {
-        PlatformQuery query = new PlatformQuery();
-        query.setCompanyId(companyId);
-        siteFolderController.getPlatforms(query, new RequestCallback<List<Platform>>() {
+        ServerQuery query = new ServerQuery();
+        query.setPlatformId(platformId);
+        siteFolderController.getServers(query, new RequestCallback<List<Server>>() {
             @Override
             public void onError(Throwable throwable) {}
 
             @Override
-            public void onSuccess(List<Platform> result) {
+            public void onSuccess(List<Server> result) {
                 list.clear();
                 list.addAll(result.stream()
                         .map(p -> new EntityOption(p.getName(), p.getId()))
@@ -61,7 +61,7 @@ public abstract class PlatformModel implements Activity {
     @Inject
     SiteFolderControllerAsync siteFolderController;
 
-    private Long companyId = null;
+    private Long platformId = null;
     private List<EntityOption> list = new ArrayList<>();
     private List<ModelSelector<EntityOption>> subscribers = new ArrayList<>();
 }

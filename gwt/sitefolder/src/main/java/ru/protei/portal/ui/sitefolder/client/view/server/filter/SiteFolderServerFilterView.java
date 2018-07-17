@@ -11,12 +11,16 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractSiteFolderServerFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractSiteFolderServerFilterView;
+import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformMultiSelector;
+
+import java.util.Set;
 
 public class SiteFolderServerFilterView extends Composite implements AbstractSiteFolderServerFilterView {
 
@@ -45,6 +49,7 @@ public class SiteFolderServerFilterView extends Composite implements AbstractSit
     @Override
     public void resetFilter() {
         name.setValue(null);
+        platforms.setValue(null);
         sortField.setValue(En_SortField.name);
         sortDir.setValue(false);
         ip.setValue(null);
@@ -55,6 +60,11 @@ public class SiteFolderServerFilterView extends Composite implements AbstractSit
     @Override
     public HasValue<String> name() {
         return name;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> platforms() {
+        return platforms;
     }
 
     @Override
@@ -92,6 +102,11 @@ public class SiteFolderServerFilterView extends Composite implements AbstractSit
 
     @UiHandler("name")
     public void onNameChanged(ValueChangeEvent<String> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("platforms")
+    public void onPlatformsSelected(ValueChangeEvent<Set<EntityOption>> event) {
         fireChangeTimer();
     }
 
@@ -141,6 +156,9 @@ public class SiteFolderServerFilterView extends Composite implements AbstractSit
     Button resetBtn;
     @UiField
     CleanableSearchBox name;
+    @Inject
+    @UiField(provided = true)
+    PlatformMultiSelector platforms;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;

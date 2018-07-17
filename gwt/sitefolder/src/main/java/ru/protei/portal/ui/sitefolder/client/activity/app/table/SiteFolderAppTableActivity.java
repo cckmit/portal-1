@@ -2,7 +2,6 @@ package ru.protei.portal.ui.sitefolder.client.activity.app.table;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -10,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.query.ApplicationQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -22,7 +22,10 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractSiteFolderAppFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractSiteFolderAppFilterView;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public abstract class SiteFolderAppTableActivity implements
         AbstractSiteFolderAppTableActivity, AbstractSiteFolderAppFilterActivity,
@@ -56,16 +59,19 @@ public abstract class SiteFolderAppTableActivity implements
         initDetails.parent.add(view.asWidget());
         initDetails.parent.add(pagerView.asWidget());
 
-        if (event.serverId == null) {
-            fireEvent(new Back());
-            return;
-        }
         serverId = event.serverId;
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
             fireEvent(new ActionBarEvents.Add(lang.siteFolderAppCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_APP));
         }
+
+
+        Set<EntityOption> options = new HashSet<>();
+        EntityOption option = new EntityOption();
+        option.setId(serverId);
+        options.add(option);
+        filterView.servers().setValue(options);
 
         requestAppsCount();
     }
@@ -224,7 +230,12 @@ public abstract class SiteFolderAppTableActivity implements
         query.setSearchString(filterView.name().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setServerId(serverId);
+        query.setServerIds(filterView.servers().getValue() == null
+                ? null
+                : filterView.servers().getValue().stream()
+                .map(EntityOption::getId)
+                .collect(Collectors.toList())
+        );
         query.setComment(filterView.comment().getValue());
         return query;
     }

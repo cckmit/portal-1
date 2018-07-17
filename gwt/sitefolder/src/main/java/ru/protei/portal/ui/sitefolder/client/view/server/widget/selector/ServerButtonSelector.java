@@ -1,19 +1,18 @@
-package ru.protei.portal.ui.sitefolder.client.view.platform.widget.btnselector;
+package ru.protei.portal.ui.sitefolder.client.view.server.widget.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class PlatformButtonSelector extends ButtonSelector<EntityOption> implements ModelSelector<EntityOption> {
+public class ServerButtonSelector extends ButtonSelector<EntityOption> implements ModelSelector<EntityOption> {
 
     @Inject
     void init() {
-        platformModel.subscribe(this);
+        serverModel.subscribe(this);
         setSearchEnabled(true);
         setHasNullValue(true);
 
@@ -26,10 +25,10 @@ public class PlatformButtonSelector extends ButtonSelector<EntityOption> impleme
         options.forEach(this::addOption);
     }
 
-    public void setCompanyId(Long companyId) {
-        platformModel.setCompanyId(companyId);
+    public void setPlatformId(Long platformId) {
+        serverModel.setPlatformId(platformId);
     }
 
     @Inject
-    PlatformModel platformModel;
+    ServerModel serverModel;
 }

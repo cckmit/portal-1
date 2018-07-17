@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.AbstractSiteFolderServerEditActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.AbstractSiteFolderServerEditView;
-import ru.protei.portal.ui.sitefolder.client.view.platform.widget.btnselector.PlatformButtonSelector;
+import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformButtonSelector;
 
 public class SiteFolderServerEditView extends Composite implements AbstractSiteFolderServerEditView {
 

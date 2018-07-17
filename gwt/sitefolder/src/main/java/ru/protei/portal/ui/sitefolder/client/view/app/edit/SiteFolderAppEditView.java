@@ -1,20 +1,18 @@
 package ru.protei.portal.ui.sitefolder.client.view.app.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.struct.PathInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.sitefolder.client.activity.app.edit.AbstractSiteFolderAppEditActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.edit.AbstractSiteFolderAppEditView;
-import ru.protei.portal.ui.sitefolder.client.view.server.widget.btnselector.ServerButtonSelector;
+import ru.protei.portal.ui.sitefolder.client.view.server.widget.selector.ServerButtonSelector;
 
 public class SiteFolderAppEditView extends Composite implements AbstractSiteFolderAppEditView {
 

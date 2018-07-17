@@ -11,12 +11,16 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractSiteFolderAppFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractSiteFolderAppFilterView;
+import ru.protei.portal.ui.sitefolder.client.view.server.widget.selector.ServerMultiSelector;
+
+import java.util.Set;
 
 public class SiteFolderAppFilterView extends Composite implements AbstractSiteFolderAppFilterView {
 
@@ -45,6 +49,7 @@ public class SiteFolderAppFilterView extends Composite implements AbstractSiteFo
     @Override
     public void resetFilter() {
         name.setValue(null);
+        servers.setValue(null);
         sortField.setValue(En_SortField.name);
         sortDir.setValue(false);
         comment.setValue(null);
@@ -53,6 +58,11 @@ public class SiteFolderAppFilterView extends Composite implements AbstractSiteFo
     @Override
     public HasValue<String> name() {
         return name;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> servers() {
+        return servers;
     }
 
     @Override
@@ -80,6 +90,11 @@ public class SiteFolderAppFilterView extends Composite implements AbstractSiteFo
 
     @UiHandler("name")
     public void onNameChanged(ValueChangeEvent<String> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("servers")
+    public void onServersSelected(ValueChangeEvent<Set<EntityOption>> event) {
         fireChangeTimer();
     }
 
@@ -119,6 +134,9 @@ public class SiteFolderAppFilterView extends Composite implements AbstractSiteFo
     Button resetBtn;
     @UiField
     CleanableSearchBox name;
+    @Inject
+    @UiField(provided = true)
+    ServerMultiSelector servers;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;
