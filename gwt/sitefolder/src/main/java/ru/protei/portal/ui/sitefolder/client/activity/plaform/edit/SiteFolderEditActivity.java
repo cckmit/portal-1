@@ -94,7 +94,6 @@ public abstract class SiteFolderEditActivity implements Activity, AbstractSiteFo
         this.platform = platform;
         view.name().setValue(platform.getName());
         view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
-        view.companyEnabled().setEnabled(platform.getId() == null);
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
         view.openButtonVisibility().setVisible(platform.getId() != null);

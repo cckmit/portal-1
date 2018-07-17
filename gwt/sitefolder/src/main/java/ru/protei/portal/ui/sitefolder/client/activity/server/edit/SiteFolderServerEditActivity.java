@@ -95,7 +95,6 @@ public abstract class SiteFolderServerEditActivity implements Activity, Abstract
         view.setCompanyId(server.getPlatform() == null ? null : server.getPlatform().getCompanyId());
         view.name().setValue(server.getName());
         view.platform().setValue(server.getPlatform() == null ? null : new EntityOption(server.getPlatform().getName(), server.getPlatform().getId()));
-        view.platformEnabled().setEnabled(server.getId() == null);
         view.ip().setValue(server.getIp());
         view.parameters().setValue(server.getParams());
         view.comment().setValue(server.getComment());

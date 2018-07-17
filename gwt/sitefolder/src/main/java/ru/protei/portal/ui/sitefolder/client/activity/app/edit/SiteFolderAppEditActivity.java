@@ -90,7 +90,6 @@ public abstract class SiteFolderAppEditActivity implements Activity, AbstractSit
         view.setPlatformId(application.getServer() == null ? null : application.getServer().getPlatformId());
         view.name().setValue(application.getName());
         view.server().setValue(application.getServer() == null ? null : new EntityOption(application.getServer().getName(), application.getServer().getId()));
-        view.serverEnabled().setEnabled(application.getId() == null);
         view.comment().setValue(application.getComment());
         List<PathItem> paths = application.getPaths() == null ? null : application.getPaths().getPaths();
         if (paths == null) {
