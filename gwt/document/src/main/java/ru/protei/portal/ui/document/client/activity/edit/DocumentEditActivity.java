@@ -173,7 +173,7 @@ public abstract class DocumentEditActivity
         d.setId(document.getId());
         d.setName(view.name().getValue());
         d.setAnnotation(view.annotation().getValue());
-        d.setDecimalNumber(view.decimalNumber().getValue());
+        d.setDecimalNumber(view.decimalNumber().getText());
         d.setType(view.documentType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
@@ -196,7 +196,7 @@ public abstract class DocumentEditActivity
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
-        view.decimalNumber().setValue(document.getDecimalNumber());
+        view.decimalNumber().setText(document.getDecimalNumber());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
         view.documentType().setValue(document.getType(), true);
         view.inventoryNumber().setValue(document.getInventoryNumber());
@@ -220,6 +220,7 @@ public abstract class DocumentEditActivity
         view.uploaderVisible().setVisible(isNew);
         view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
         view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
+        view.decimalNumberVisible().setVisible(isNew || En_DocumentCategory.KD.equals(document.getType().getDocumentCategory()));
 
         view.nameValidator().setValid(true);
 

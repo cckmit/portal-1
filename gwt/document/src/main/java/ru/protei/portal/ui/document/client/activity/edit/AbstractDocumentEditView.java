@@ -1,9 +1,6 @@
 package ru.protei.portal.ui.document.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -42,7 +39,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<List<String>> keywords();
 
-    HasValue<String> decimalNumber();
+    HasText decimalNumber();
 
     HasValue<String> version();
 
@@ -60,6 +57,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasVisibility equipmentVisible();
 
-    void setSaveEnabled(boolean isEnabled);
+    HasVisibility decimalNumberVisible();
 
+    void setSaveEnabled(boolean isEnabled);
 }

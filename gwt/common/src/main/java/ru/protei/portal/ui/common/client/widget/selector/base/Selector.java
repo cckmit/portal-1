@@ -339,7 +339,7 @@ public abstract class Selector<T>
     private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;
-    private DisplayOptionCreator<T> displayOptionCreator;
+    protected DisplayOptionCreator<T> displayOptionCreator;
     private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private HandlerRegistration scrollRegistration;

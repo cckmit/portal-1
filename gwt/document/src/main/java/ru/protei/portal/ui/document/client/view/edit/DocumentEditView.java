@@ -16,9 +16,8 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberSelector;
+import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
@@ -121,7 +120,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<String> decimalNumber() {
+    public HasText decimalNumber() {
         return decimalNumber;
     }
 
@@ -143,6 +142,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public HasVisibility equipmentVisible() {
         return equipmentSelectorContainer;
+    }
+
+    @Override
+    public HasVisibility decimalNumberVisible() {
+        return decimalNumber;
     }
 
     @Override
@@ -168,18 +172,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public HasEnabled equipmentEnabled() {
-        return new HasEnabled() {
-            @Override
-            public boolean isEnabled() {
-                return equipmentDecimalNumber.isEnabled() && equipment.isEnabled();
-            }
-
-            @Override
-            public void setEnabled(boolean enabled) {
-                equipmentDecimalNumber.setEnabled(enabled);
-                equipment.setEnabled(enabled);
-            }
-        };
+        return equipment;
     }
 
     @UiHandler("saveButton")
@@ -203,16 +196,13 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiHandler("equipment")
     public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
-        equipmentDecimalNumber.setValue(null, true);
+        decimalNumber.setValue(null, true);
         if (event.getValue() == null || event.getValue().getDecimalNumbers()== null) {
-            equipmentDecimalNumber.setEnabled(false);
+            decimalNumber.setEnabled(false);
         } else {
             List<DecimalNumber> decimalNumbers = event.getValue().getDecimalNumbers();
-            equipmentDecimalNumber.fillOptions(decimalNumbers);
-            equipmentDecimalNumber.setEnabled(true);
-
-            if (!decimalNumbers.isEmpty())
-                equipmentDecimalNumber.setValue(decimalNumbers.get(0), true);
+            decimalNumber.setEnabled(true);
+            decimalNumber.setHints(decimalNumbers);
         }
 
         if (activity != null)
@@ -221,10 +211,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiHandler("equipmentDecimalNumber")
     public void onEquipmentDecimalNumberChanged(ValueChangeEvent<DecimalNumber> event) {
-        if (event.getValue() == null)
-            decimalNumber.setValue("");
-        else
-            decimalNumber.setValue(DecimalNumberFormatter.formatNumber(event.getValue()));
+        decimalNumber.setValue(event.getValue());
     }
 
     @UiHandler("decimalNumber")
@@ -315,7 +302,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     StringSelectInput keywords;
 
     @UiField
-    TextBox decimalNumber;
+    DecimalNumberInput decimalNumber;
 
     @UiField
     Button selectFileButton;
@@ -327,17 +314,13 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField(provided = true)
     EquipmentSelector equipment;
 
-    @Inject
-    @UiField(provided = true)
-    DecimalNumberSelector equipmentDecimalNumber;
-
     @UiField
     HTMLPanel equipmentSelectorContainer;
 
     @Inject
     Lang lang;
 
-    AbstractDocumentEditActivity activity;
+    private AbstractDocumentEditActivity activity;
 
     private static DocumentViewUiBinder ourUiBinder = GWT.create(DocumentViewUiBinder.class);
 
