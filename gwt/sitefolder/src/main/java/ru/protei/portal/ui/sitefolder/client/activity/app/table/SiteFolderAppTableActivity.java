@@ -66,12 +66,13 @@ public abstract class SiteFolderAppTableActivity implements
             fireEvent(new ActionBarEvents.Add(lang.siteFolderAppCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_APP));
         }
 
-
-        Set<EntityOption> options = new HashSet<>();
-        EntityOption option = new EntityOption();
-        option.setId(serverId);
-        options.add(option);
-        filterView.servers().setValue(options);
+        if (serverId != null) {
+            Set<EntityOption> options = new HashSet<>();
+            EntityOption option = new EntityOption();
+            option.setId(serverId);
+            options.add(option);
+            filterView.servers().setValue(options);
+        }
 
         requestAppsCount();
     }

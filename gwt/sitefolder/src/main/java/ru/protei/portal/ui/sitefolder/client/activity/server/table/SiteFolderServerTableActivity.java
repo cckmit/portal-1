@@ -66,11 +66,13 @@ public abstract class SiteFolderServerTableActivity implements
             fireEvent(new ActionBarEvents.Add(lang.siteFolderServerCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_SERVER));
         }
 
-        Set<EntityOption> options = new HashSet<>();
-        EntityOption option = new EntityOption();
-        option.setId(platformId);
-        options.add(option);
-        filterView.platforms().setValue(options);
+        if (platformId != null) {
+            Set<EntityOption> options = new HashSet<>();
+            EntityOption option = new EntityOption();
+            option.setId(platformId);
+            options.add(option);
+            filterView.platforms().setValue(options);
+        }
 
         requestServersCount();
     }
