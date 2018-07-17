@@ -88,6 +88,15 @@ public class SiteFolderEvents {
             }
         }
 
+        public static class ShowList {
+            public HasWidgets parent;
+            public Long platformId;
+            public ShowList(HasWidgets parent, Long platformId) {
+                this.parent = parent;
+                this.platformId = platformId;
+            }
+        }
+
         public static class Changed {
             public ru.protei.portal.core.model.ent.Server server;
             public Changed(ru.protei.portal.core.model.ent.Server server) {
@@ -133,6 +142,15 @@ public class SiteFolderEvents {
             public ShowPreview(HasWidgets parent, ru.protei.portal.core.model.ent.Application app) {
                 this.parent = parent;
                 this.app = app;
+            }
+        }
+
+        public static class ShowList {
+            public HasWidgets parent;
+            public Long serverId;
+            public ShowList(HasWidgets parent, Long serverId) {
+                this.parent = parent;
+                this.serverId = serverId;
             }
         }
 

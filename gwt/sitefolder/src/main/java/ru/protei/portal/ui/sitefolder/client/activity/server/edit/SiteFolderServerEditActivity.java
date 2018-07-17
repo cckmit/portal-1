@@ -99,6 +99,11 @@ public abstract class SiteFolderServerEditActivity implements Activity, Abstract
         view.parameters().setValue(server.getParams());
         view.comment().setValue(server.getComment());
         view.openButtonVisibility().setVisible(server.getId() != null);
+        view.listContainerVisibility().setVisible(server.getId() != null);
+        view.listContainerHeaderVisibility().setVisible(server.getId() != null);
+        if (server.getId() != null) {
+            fireEvent(new SiteFolderEvents.App.ShowList(view.listContainer(), server.getId()));
+        }
     }
 
     private void fillServer(Server server) {

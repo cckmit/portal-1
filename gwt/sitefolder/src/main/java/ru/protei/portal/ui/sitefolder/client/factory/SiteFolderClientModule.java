@@ -5,6 +5,9 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.sitefolder.client.activity.app.edit.AbstractSiteFolderAppEditView;
 import ru.protei.portal.ui.sitefolder.client.activity.app.edit.SiteFolderAppEditActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractSiteFolderAppFilterView;
+import ru.protei.portal.ui.sitefolder.client.activity.app.list.AbstractSiteFolderAppListView;
+import ru.protei.portal.ui.sitefolder.client.activity.app.list.SiteFolderAppListActivity;
+import ru.protei.portal.ui.sitefolder.client.activity.app.list.item.AbstractSiteFolderAppListItemView;
 import ru.protei.portal.ui.sitefolder.client.activity.app.preview.AbstractSiteFolderAppPreviewView;
 import ru.protei.portal.ui.sitefolder.client.activity.app.preview.SiteFolderAppPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.table.AbstractSiteFolderAppTableView;
@@ -20,12 +23,17 @@ import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.SiteFolderTa
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.AbstractSiteFolderServerEditView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.SiteFolderServerEditActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractSiteFolderServerFilterView;
+import ru.protei.portal.ui.sitefolder.client.activity.server.list.AbstractSiteFolderServerListView;
+import ru.protei.portal.ui.sitefolder.client.activity.server.list.SiteFolderServerListActivity;
+import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractSiteFolderServerListItemView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.AbstractSiteFolderServerPreviewView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.SiteFolderServerPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractSiteFolderServerTableView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.SiteFolderServerTableActivity;
 import ru.protei.portal.ui.sitefolder.client.view.app.edit.SiteFolderAppEditView;
 import ru.protei.portal.ui.sitefolder.client.view.app.filter.SiteFolderAppFilterView;
+import ru.protei.portal.ui.sitefolder.client.view.app.list.SiteFolderAppListView;
+import ru.protei.portal.ui.sitefolder.client.view.app.list.item.SiteFolderAppListItemView;
 import ru.protei.portal.ui.sitefolder.client.view.app.preview.SiteFolderAppPreviewView;
 import ru.protei.portal.ui.sitefolder.client.view.app.table.SiteFolderAppTableView;
 import ru.protei.portal.ui.sitefolder.client.view.platform.edit.SiteFolderEditView;
@@ -34,6 +42,8 @@ import ru.protei.portal.ui.sitefolder.client.view.platform.preview.SiteFolderPre
 import ru.protei.portal.ui.sitefolder.client.view.platform.table.SiteFolderTableView;
 import ru.protei.portal.ui.sitefolder.client.view.server.edit.SiteFolderServerEditView;
 import ru.protei.portal.ui.sitefolder.client.view.server.filter.SiteFolderServerFilterView;
+import ru.protei.portal.ui.sitefolder.client.view.server.list.SiteFolderServerListView;
+import ru.protei.portal.ui.sitefolder.client.view.server.list.item.SiteFolderServerListItemView;
 import ru.protei.portal.ui.sitefolder.client.view.server.preview.SiteFolderServerPreviewView;
 import ru.protei.portal.ui.sitefolder.client.view.server.table.SiteFolderServerTableView;
 
@@ -62,6 +72,9 @@ public class SiteFolderClientModule extends AbstractGinModule {
         bind(AbstractSiteFolderServerFilterView.class).to(SiteFolderServerFilterView.class).in(Singleton.class);
         bind(AbstractSiteFolderServerPreviewView.class).to(SiteFolderServerPreviewView.class).in(Singleton.class);
         bind(AbstractSiteFolderServerEditView.class).to(SiteFolderServerEditView.class).in(Singleton.class);
+        bind(SiteFolderServerListActivity.class).asEagerSingleton();
+        bind(AbstractSiteFolderServerListView.class).to(SiteFolderServerListView.class);
+        bind(AbstractSiteFolderServerListItemView.class).to(SiteFolderServerListItemView.class);
 
         // App
         bind(SiteFolderAppTableActivity.class).asEagerSingleton();
@@ -71,5 +84,8 @@ public class SiteFolderClientModule extends AbstractGinModule {
         bind(AbstractSiteFolderAppFilterView.class).to(SiteFolderAppFilterView.class).in(Singleton.class);
         bind(AbstractSiteFolderAppPreviewView.class).to(SiteFolderAppPreviewView.class).in(Singleton.class);
         bind(AbstractSiteFolderAppEditView.class).to(SiteFolderAppEditView.class).in(Singleton.class);
+        bind(SiteFolderAppListActivity.class).asEagerSingleton();
+        bind(AbstractSiteFolderAppListView.class).to(SiteFolderAppListView.class);
+        bind(AbstractSiteFolderAppListItemView.class).to(SiteFolderAppListItemView.class);
     }
 }

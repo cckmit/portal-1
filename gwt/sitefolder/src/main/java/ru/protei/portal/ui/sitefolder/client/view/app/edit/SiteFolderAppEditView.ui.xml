@@ -33,8 +33,8 @@
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
             <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

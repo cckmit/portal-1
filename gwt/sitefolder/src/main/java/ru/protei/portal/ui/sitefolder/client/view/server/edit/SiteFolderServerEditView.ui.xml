@@ -34,12 +34,19 @@
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
                     <g:TextArea ui:field="comment" styleName="input-field sf-comment"/>
                 </div>
+
+                <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-xs-12">
+                    <label><ui:text from="{lang.siteFolderApps}"/></label>
+                    <g:Button ui:field="openButton" styleName="btn btn-white pull-right" text="{lang.openTableView}"/>
+                </g:HTMLPanel>
+
+                <g:HTMLPanel styleName="form-group col-xs-12" ui:field="listContainer"/>
+
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="openButton" styleName="btn btn-white" text="{lang.siteFolderApps}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
             <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

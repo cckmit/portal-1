@@ -97,6 +97,11 @@ public abstract class SiteFolderEditActivity implements Activity, AbstractSiteFo
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
         view.openButtonVisibility().setVisible(platform.getId() != null);
+        view.listContainerVisibility().setVisible(platform.getId() != null);
+        view.listContainerHeaderVisibility().setVisible(platform.getId() != null);
+        if (platform.getId() != null) {
+            fireEvent(new SiteFolderEvents.Server.ShowList(view.listContainer(), platform.getId()));
+        }
     }
 
     private void fillPlatform(Platform platform) {

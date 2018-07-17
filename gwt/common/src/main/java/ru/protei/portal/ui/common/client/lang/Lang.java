@@ -1021,7 +1021,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String amountShort();
 
-
     String siteFolder();
 
     String siteFolderName();
@@ -1033,7 +1032,6 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderComment();
 
     String siteFolderIP();
-
 
     String siteFolderPlatform();
 
@@ -1055,7 +1053,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderPlatformName();
 
-
     String siteFolderServer();
 
     String siteFolderServers();
@@ -1075,7 +1072,6 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderServerNotSaved();
 
     String siteFolderServerName();
-
 
     String siteFolderApp();
 
@@ -1101,4 +1097,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderPaths();
 
+    String openTableView();
 }

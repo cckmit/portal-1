@@ -57,6 +57,21 @@ public class SiteFolderServerEditView extends Composite implements AbstractSiteF
     }
 
     @Override
+    public HasWidgets listContainer() {
+        return listContainer;
+    }
+
+    @Override
+    public HasVisibility listContainerVisibility() {
+        return listContainer;
+    }
+
+    @Override
+    public HasVisibility listContainerHeaderVisibility() {
+        return listContainerHeader;
+    }
+
+    @Override
     public HasEnabled platformEnabled() {
         return platform;
     }
@@ -108,6 +123,10 @@ public class SiteFolderServerEditView extends Composite implements AbstractSiteF
     TextArea parameters;
     @UiField
     TextArea comment;
+    @UiField
+    HTMLPanel listContainerHeader;
+    @UiField
+    HTMLPanel listContainer;
     @UiField
     Button saveButton;
     @UiField
