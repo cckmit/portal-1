@@ -20,6 +20,7 @@ public class PlatformQuery extends BaseQuery {
 
     public PlatformQuery(String name, En_SortField sortField, En_SortDir sortDir) {
         super(name, sortField, sortDir);
+        this.companyIds = new ArrayList<>();
     }
 
     public static PlatformQuery forId(Long platformId) {
@@ -41,17 +42,18 @@ public class PlatformQuery extends BaseQuery {
     }
 
     public void setCompanyIds(List<Long> companyIds) {
-        this.companyIds = companyIds;
+        this.companyIds = companyIds != null ? companyIds : new ArrayList<>();
     }
 
     public void setCompanyId(Long companyId) {
+        if (companyId == null) {
+            this.companyIds.clear();
+            return;
+        }
         this.companyIds = Collections.singletonList(companyId);
     }
 
     public void addCompanyId(Long companyId) {
-        if (this.companyIds == null) {
-            this.companyIds = new ArrayList<>();
-        }
         this.companyIds.add(companyId);
     }
 

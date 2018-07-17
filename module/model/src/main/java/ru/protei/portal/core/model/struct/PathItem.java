@@ -14,6 +14,15 @@ public class PathItem implements Serializable {
     @JsonProperty("d")
     private String desc;
 
+    public PathItem() {
+        this("", "");
+    }
+
+    public PathItem(String path, String desc) {
+        this.path = path;
+        this.desc = desc;
+    }
+
     public String getPath() {
         return path;
     }

@@ -35,6 +35,8 @@ public class SiteFolderTableView extends Composite implements AbstractSiteFolder
     public void setActivity(AbstractSiteFolderTableActivity activity) {
         editClickColumn.setEditHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
+        table.setLoadHandler(activity);
+        table.setPagerListener(activity);
         columns.forEach(c -> {
             c.setHandler(activity);
             c.setColumnProvider(columnProvider);
@@ -148,7 +150,7 @@ public class SiteFolderTableView extends Composite implements AbstractSiteFolder
 
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText(value.getServers() == null ? "?" : String.valueOf(value.getServers().size()) + lang.amountShort());
+            cell.setInnerText((value.getServers() == null ? "0" : String.valueOf(value.getServers().size())) + " " +lang.amountShort());
         }
     };
     private Collection<ClickColumn<Platform>> columns = new LinkedList<>();

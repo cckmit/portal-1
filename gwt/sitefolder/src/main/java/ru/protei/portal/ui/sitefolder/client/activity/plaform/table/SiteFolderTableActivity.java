@@ -52,15 +52,15 @@ public abstract class SiteFolderTableActivity implements
     }
 
     @Event
-    public void onShow(SiteFolderEvents.Show event) {
+    public void onShow(SiteFolderEvents.Platform.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         initDetails.parent.add(pagerView.asWidget());
 
-        fireEvent(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE) ?
-                new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM) :
-                new ActionBarEvents.Clear()
-        );
+        fireEvent(new ActionBarEvents.Clear());
+        if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
+        }
 
         requestPlatformsCount();
     }
@@ -103,7 +103,7 @@ public abstract class SiteFolderTableActivity implements
             public void onSuccess(Boolean result) {
                 platformIdForRemove = null;
                 if (result) {
-                    fireEvent(new SiteFolderEvents.Show());
+                    fireEvent(new SiteFolderEvents.Platform.Show());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));

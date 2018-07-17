@@ -2369,6 +2369,43 @@ a {
   font-weight: bold;
 }
 
+/**** SITE FOLDER ****/
+
+.sf-meta-info > button {
+  width: 100%;
+  text-align: left;
+  border-left: none !important;
+}
+
+.sf-comment {
+  min-height: 120px;
+}
+
+.sf-parameters {
+  min-height: 80px;
+}
+
+.autoadd-pi-group {
+  width: 100%;
+
+  .autoadd-pi-item + .autoadd-pi-item{
+    margin-top: 7px;
+  }
+
+  .autoadd-pi-item {
+    display: flex;
+
+    .autoadd-pi-item-p,
+    .autoadd-pi-item-d {
+      width: 100%;
+    }
+
+    .autoadd-pi-item-p {
+      margin-right: 7px;
+    }
+  }
+}
+
 /****************/
 
 .text-danger {

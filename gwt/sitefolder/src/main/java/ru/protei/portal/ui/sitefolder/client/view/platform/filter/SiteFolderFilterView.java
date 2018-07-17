@@ -89,11 +89,9 @@ public class SiteFolderFilterView extends Composite implements AbstractSiteFolde
 
     @UiHandler("resetBtn")
     public void resetBtnClick(ClickEvent event) {
+        resetFilter();
         if (activity != null) {
-            resetFilter();
-            if (activity != null) {
-                activity.onFilterChanged();
-            }
+            activity.onFilterChanged();
         }
     }
 

@@ -77,6 +77,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<List<Platform>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
+        jdbcManyRelationsHelper.fill(result, "servers");
+
         return new CoreResponse<List<Platform>>().success(result);
     }
 
@@ -88,6 +90,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         if (result == null) {
             return new CoreResponse<List<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
+
+        jdbcManyRelationsHelper.fill(result, "applications");
 
         return new CoreResponse<List<Server>>().success(result);
     }

@@ -19,6 +19,7 @@ public class ApplicationQuery extends BaseQuery {
 
     public ApplicationQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
+        this.serverIds = new ArrayList<>();
     }
 
     public static ApplicationQuery forId(Long applicationId) {
@@ -40,17 +41,18 @@ public class ApplicationQuery extends BaseQuery {
     }
 
     public void setServerIds(List<Long> serverIds) {
-        this.serverIds = serverIds;
+        this.serverIds = serverIds != null ? serverIds : new ArrayList<>();
     }
 
     public void setServerId(Long serverId) {
+        if (serverId == null) {
+            this.serverIds.clear();
+            return;
+        }
         this.serverIds = Collections.singletonList(serverId);
     }
 
     public void addServerId(Long serverId) {
-        if (this.serverIds == null) {
-            this.serverIds = new ArrayList<>();
-        }
         this.serverIds.add(serverId);
     }
 

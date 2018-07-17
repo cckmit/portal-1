@@ -21,6 +21,7 @@ public class ServerQuery extends BaseQuery {
 
     public ServerQuery(String name, En_SortField sortField, En_SortDir sortDir) {
         super(name, sortField, sortDir);
+        this.platformIds = new ArrayList<>();
     }
 
     public static ServerQuery forId(Long serverId) {
@@ -42,17 +43,18 @@ public class ServerQuery extends BaseQuery {
     }
 
     public void setPlatformIds(List<Long> platformIds) {
-        this.platformIds = platformIds;
+        this.platformIds = platformIds != null ? platformIds : new ArrayList<>();
     }
 
     public void setPlatformId(Long platformId) {
+        if (platformId == null) {
+            this.platformIds.clear();
+            return;
+        }
         this.platformIds = Collections.singletonList(platformId);
     }
 
     public void addPlatformId(Long platformId) {
-        if (this.platformIds == null) {
-            this.platformIds = new ArrayList<>();
-        }
         this.platformIds.add(platformId);
     }
 

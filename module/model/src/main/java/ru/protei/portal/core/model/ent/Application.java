@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @JdbcEntity(table = "application")
-public class Application implements Serializable {
+public class Application implements Serializable, Removable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -24,7 +24,7 @@ public class Application implements Serializable {
     @JdbcColumn(name="paths", converterType = ConverterType.JSON)
     private PathInfo paths;
 
-    @JdbcJoinedObject(localColumn = "server_id", table = "server")
+    @JdbcJoinedObject(localColumn = "server_id", remoteColumn = "id")
     private Server server;
 
     public Long getId() {
@@ -73,6 +73,11 @@ public class Application implements Serializable {
 
     public void setServer(Server server) {
         this.server = server;
+    }
+
+    @Override
+    public boolean isAllowedRemove() {
+        return id != null;
     }
 
     @Override

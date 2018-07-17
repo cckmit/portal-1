@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @JdbcEntity(table = "platform")
-public class Platform implements Serializable {
+public class Platform implements Serializable, Removable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -26,7 +26,7 @@ public class Platform implements Serializable {
     @JdbcOneToMany(localColumn = "id", table = "server", remoteColumn = "platform_id")
     private List<Server> servers;
 
-    @JdbcJoinedObject(localColumn = "company_id", table = "company")
+    @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
 
     public Long getId() {
@@ -83,6 +83,11 @@ public class Platform implements Serializable {
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    @Override
+    public boolean isAllowedRemove() {
+        return id != null;
     }
 
     @Override

@@ -33,7 +33,7 @@ public abstract class SiteFolderPage implements Activity {
     }
 
     @Event
-    public void onShowTable(SiteFolderEvents.Show event) {
+    public void onShowTable(SiteFolderEvents.Platform.Show event) {
         fireSelectTab();
     }
 
@@ -56,5 +56,5 @@ public abstract class SiteFolderPage implements Activity {
     Lang lang;
 
     private String ТAB;
-    private SiteFolderEvents.Show show = new SiteFolderEvents.Show();
+    private SiteFolderEvents.Platform.Show show = new SiteFolderEvents.Platform.Show();
 }
