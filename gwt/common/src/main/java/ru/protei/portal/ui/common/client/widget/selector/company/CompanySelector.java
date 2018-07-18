@@ -53,19 +53,6 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
         fillFilteredItems( options );
     }
 
-    @Override
-    public void setValue(EntityOption value) {
-        if (value != null && value.getId() != null && value.getDisplayText() == null) {
-            for (EntityOption option : itemToViewModel.keySet()) {
-                if (value.getId().equals(option.getId())) {
-                    value = option;
-                    break;
-                }
-            }
-        }
-        super.setValue(value);
-    }
-
     private void fillFilteredItems( List<EntityOption> options ) {
         StringBuilder result = new StringBuilder();
 

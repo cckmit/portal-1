@@ -41,6 +41,11 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         requestApps();
     }
 
+    @Event
+    public void onAppChanged(SiteFolderAppEvents.Changed event) {
+        onChanged(event.app);
+    }
+
     @Override
     public void onEditClicked(AbstractApplicationListItemView itemView) {
 
@@ -92,14 +97,14 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
 
             @Override
             public void onSuccess(Boolean result) {
-                appIdForRemove = null;
                 if (result) {
                     fireEvent(new SiteFolderAppEvents.ChangeModel());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    requestApps();
+                    onRemoved(appIdForRemove);
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
                 }
+                appIdForRemove = null;
             }
         });
     }
@@ -134,6 +139,42 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         itemView.setComment(application.getComment());
         itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT));
         return itemView;
+    }
+
+    private void onRemoved(Long id) {
+
+        if (id == null) {
+            return;
+        }
+
+        for (Map.Entry<AbstractApplicationListItemView, Application> entry : itemViewToModel.entrySet()) {
+            AbstractApplicationListItemView itemView = entry.getKey();
+            Application application = entry.getValue();
+            if (id.equals(application.getId())) {
+                view.getChildContainer().remove(itemView.asWidget());
+                itemViewToModel.remove(itemView);
+                break;
+            }
+        }
+    }
+
+    private void onChanged(Application application) {
+
+        if (application == null || application.getId() == null) {
+            return;
+        }
+
+        for (Map.Entry<AbstractApplicationListItemView, Application> entry : itemViewToModel.entrySet()) {
+            AbstractApplicationListItemView iw = entry.getKey();
+            Application a = entry.getValue();
+            if (application.getId().equals(a.getId())) {
+                AbstractApplicationListItemView itemView = makeItemView(application);
+                view.getChildContainer().remove(iw.asWidget());
+                view.getChildContainer().add(itemView.asWidget());
+                itemViewToModel.replace(iw, a, application);
+                break;
+            }
+        }
     }
 
     @Inject

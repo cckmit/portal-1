@@ -2,7 +2,9 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.Company;
 
 /**
  * События платформ
@@ -18,17 +20,17 @@ public class SiteFolderPlatformEvents {
     public static class Edit {
         @Name("platform")
         public Long platformId;
-        @Name("company")
-        public Long companyId;
+        @Omit
+        public Company company;
         public Edit() {
             this(null);
         }
         public Edit(Long platformId) {
             this.platformId = platformId;
         }
-        public static Edit withCompany(Long companyId) {
+        public static Edit withCompany(Company company) {
             Edit edit = new Edit();
-            edit.companyId = companyId;
+            edit.company = company;
             return edit;
         }
     }

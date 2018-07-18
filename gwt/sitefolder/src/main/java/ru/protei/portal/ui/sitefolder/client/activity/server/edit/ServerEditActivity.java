@@ -37,12 +37,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         if (event.serverId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerNew()));
             Server server = new Server();
-            if (event.platformId != null) {
-                Platform platform = new Platform();
-                platform.setName(null);
-                platform.setId(event.platformId);
-                server.setPlatform(platform);
-            }
+            server.setPlatform(event.platform);
             fillView(server);
             return;
         }
@@ -108,7 +103,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
             return;
         }
 
-        fireEvent(SiteFolderAppEvents.Edit.withServer(server.getId()));
+        fireEvent(SiteFolderAppEvents.Edit.withServer(server));
     }
 
     private void fillView(Server server) {

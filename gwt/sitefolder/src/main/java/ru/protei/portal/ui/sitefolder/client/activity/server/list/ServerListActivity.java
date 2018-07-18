@@ -20,6 +20,7 @@ import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractS
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemView;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -39,6 +40,11 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         platformId = event.platformId;
 
         requestServers();
+    }
+
+    @Event
+    public void onServerChanged(SiteFolderServerEvents.Changed event) {
+        onChanged(event.server);
     }
 
     @Override
@@ -92,14 +98,14 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
 
             @Override
             public void onSuccess(Boolean result) {
-                serverIdForRemove = null;
                 if (result) {
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    requestServers();
+                    onRemoved(serverIdForRemove);
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
                 }
+                serverIdForRemove = null;
             }
         });
     }
@@ -135,6 +141,42 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         itemView.setComment(server.getComment());
         itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT));
         return itemView;
+    }
+
+    private void onRemoved(Long id) {
+
+        if (id == null) {
+            return;
+        }
+
+        for (Map.Entry<AbstractServerListItemView, Server> entry : itemViewToModel.entrySet()) {
+            AbstractServerListItemView itemView = entry.getKey();
+            Server server = entry.getValue();
+            if (id.equals(server.getId())) {
+                view.getChildContainer().remove(itemView.asWidget());
+                itemViewToModel.remove(itemView);
+                break;
+            }
+        }
+    }
+
+    private void onChanged(Server server) {
+
+        if (server == null || server.getId() == null) {
+            return;
+        }
+
+        for (Map.Entry<AbstractServerListItemView, Server> entry : itemViewToModel.entrySet()) {
+            AbstractServerListItemView iw = entry.getKey();
+            Server s = entry.getValue();
+            if (server.getId().equals(s.getId())) {
+                AbstractServerListItemView itemView = makeItemView(server);
+                view.getChildContainer().remove(iw.asWidget());
+                view.getChildContainer().add(itemView.asWidget());
+                itemViewToModel.replace(iw, s, server);
+                break;
+            }
+        }
     }
 
     @Inject

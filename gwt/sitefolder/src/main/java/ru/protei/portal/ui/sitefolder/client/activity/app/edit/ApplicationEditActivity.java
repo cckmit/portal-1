@@ -40,12 +40,7 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         if (event.appId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppNew()));
             Application application = new Application();
-            if (event.serverId != null) {
-                Server server = new Server();
-                server.setName(null);
-                server.setId(event.serverId);
-                application.setServer(server);
-            }
+            application.setServer(event.server);
             fillView(application);
             return;
         }

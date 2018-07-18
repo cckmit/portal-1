@@ -2,7 +2,9 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.Server;
 
 /**
  * События приложений
@@ -25,17 +27,17 @@ public class SiteFolderAppEvents {
     public static class Edit {
         @Name("app")
         public Long appId;
-        @Name("server")
-        public Long serverId;
+        @Omit
+        public Server server;
         public Edit() {
             this(null);
         }
         public Edit(Long appId) {
             this.appId = appId;
         }
-        public static Edit withServer(Long serverId) {
+        public static Edit withServer(Server server) {
             Edit edit = new Edit();
-            edit.serverId = serverId;
+            edit.server = server;
             return edit;
         }
     }

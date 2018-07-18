@@ -37,12 +37,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         if (event.platformId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformNew()));
             Platform platform = new Platform();
-            if (event.companyId != null) {
-                Company company = new Company();
-                company.setCname(null);
-                company.setId(event.companyId);
-                platform.setCompany(company);
-            }
+            platform.setCompany(event.company);
             fillView(platform);
             return;
         }
@@ -108,7 +103,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             return;
         }
 
-        fireEvent(SiteFolderServerEvents.Edit.withPlatform(platform.getId()));
+        fireEvent(SiteFolderServerEvents.Edit.withPlatform(platform));
     }
 
     private void fillView(Platform platform) {
