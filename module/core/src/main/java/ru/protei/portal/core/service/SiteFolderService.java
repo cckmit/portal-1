@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -33,6 +34,11 @@ public interface SiteFolderService {
 
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
     CoreResponse<List<Application>> listApplications(AuthToken token, ApplicationQuery query);
+
+
+    CoreResponse<List<EntityOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query);
+
+    CoreResponse<List<EntityOption>> listServersOptionList(AuthToken token, ServerQuery query);
 
 
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)

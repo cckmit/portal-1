@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.List;
 
@@ -23,6 +24,10 @@ public interface SiteFolderControllerAsync {
     void getServers(ServerQuery query, AsyncCallback<List<Server>> async);
 
     void getApplications(ApplicationQuery query, AsyncCallback<List<Application>> async);
+
+    void getServersOptionList(ServerQuery query, AsyncCallback<List<EntityOption>> async);
+
+    void getPlatformsOptionList(PlatformQuery query, AsyncCallback<List<EntityOption>> async);
 
     void getPlatform(long id, AsyncCallback<Platform> async);
 

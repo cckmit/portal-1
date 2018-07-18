@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.SiteFolderService;
 import ru.protei.portal.ui.common.client.service.SiteFolderController;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -81,6 +82,30 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         log.debug("getApplications(): query={}", query);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         CoreResponse<List<Application>> response = siteFolderService.listApplications(descriptor.makeAuthToken(), query);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
+    public List<EntityOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException {
+
+        log.debug("getPlatformsOptionList(): query={}", query);
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse<List<EntityOption>> response = siteFolderService.listPlatformsOptionList(descriptor.makeAuthToken(), query);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
+    public List<EntityOption> getServersOptionList(ServerQuery query) throws RequestFailedException {
+
+        log.debug("getServersOptionList(): query={}", query);
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse<List<EntityOption>> response = siteFolderService.listServersOptionList(descriptor.makeAuthToken(), query);
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

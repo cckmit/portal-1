@@ -6,16 +6,15 @@ import ru.protei.portal.core.model.dao.ApplicationDAO;
 import ru.protei.portal.core.model.dao.PlatformDAO;
 import ru.protei.portal.core.model.dao.ServerDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Application;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
 
@@ -106,6 +105,39 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         }
 
         return new CoreResponse<List<Application>>().success(result);
+    }
+
+
+    @Override
+    public CoreResponse<List<EntityOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query) {
+
+        List<Platform> result = platformDAO.listByQuery(query);
+
+        if (result == null) {
+            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+        }
+
+        List<EntityOption> options = result.stream()
+                .map(p -> new EntityOption(p.getName(), p.getId()))
+                .collect(Collectors.toList());
+
+        return new CoreResponse<List<EntityOption>>().success(options, options.size());
+    }
+
+    @Override
+    public CoreResponse<List<EntityOption>> listServersOptionList(AuthToken token, ServerQuery query) {
+
+        List<Server> result = serverDAO.listByQuery(query);
+
+        if (result == null) {
+            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+        }
+
+        List<EntityOption> options = result.stream()
+                .map(p -> new EntityOption(p.getName(), p.getId()))
+                .collect(Collectors.toList());
+
+        return new CoreResponse<List<EntityOption>>().success(options, options.size());
     }
 
 
