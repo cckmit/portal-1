@@ -6,10 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
@@ -33,7 +30,7 @@ public abstract class SiteFolderPage implements Activity {
     }
 
     @Event
-    public void onShowTable(SiteFolderEvents.Platform.Show event) {
+    public void onShowTable(SiteFolderPlatformEvents.Show event) {
         fireSelectTab();
     }
 
@@ -56,5 +53,5 @@ public abstract class SiteFolderPage implements Activity {
     Lang lang;
 
     private String ТAB;
-    private SiteFolderEvents.Platform.Show show = new SiteFolderEvents.Platform.Show();
+    private SiteFolderPlatformEvents.Show show = new SiteFolderPlatformEvents.Show();
 }

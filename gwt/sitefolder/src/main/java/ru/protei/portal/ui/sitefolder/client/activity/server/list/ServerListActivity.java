@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -32,7 +32,7 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
     }
 
     @Event
-    public void onShow(SiteFolderEvents.Server.ShowList event) {
+    public void onShow(SiteFolderServerEvents.ShowList event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
 
@@ -54,7 +54,7 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
             return;
         }
 
-        fireEvent(new SiteFolderEvents.Server.Edit(value.getId()));
+        fireEvent(new SiteFolderServerEvents.Edit(value.getId()));
     }
 
     @Override
@@ -94,7 +94,7 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
             public void onSuccess(Boolean result) {
                 serverIdForRemove = null;
                 if (result) {
-                    fireEvent(new SiteFolderEvents.Server.ChangeModel());
+                    fireEvent(new SiteFolderServerEvents.ChangeModel());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     requestServers();
                 } else {

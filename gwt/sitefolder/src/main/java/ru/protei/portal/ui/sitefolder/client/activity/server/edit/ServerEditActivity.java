@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -31,7 +28,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     }
 
     @Event
-    public void onShow(SiteFolderEvents.Server.Edit event) {
+    public void onShow(SiteFolderServerEvents.Edit event) {
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -81,8 +78,8 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
             @Override
             public void onSuccess(Server result) {
-                fireEvent(new SiteFolderEvents.Server.ChangeModel());
-                fireEvent(new SiteFolderEvents.Server.Changed(result));
+                fireEvent(new SiteFolderServerEvents.ChangeModel());
+                fireEvent(new SiteFolderServerEvents.Changed(result));
                 fireEvent(new Back());
             }
         });
@@ -96,7 +93,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     @Override
     public void onOpenClicked() {
         if (server != null) {
-            fireEvent(new SiteFolderEvents.App.Show(server.getId()));
+            fireEvent(new SiteFolderAppEvents.Show(server.getId()));
         }
     }
 
@@ -111,7 +108,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
             return;
         }
 
-        fireEvent(SiteFolderEvents.App.Edit.withServer(server.getId()));
+        fireEvent(SiteFolderAppEvents.Edit.withServer(server.getId()));
     }
 
     private void fillView(Server server) {
@@ -127,7 +124,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         view.listContainerVisibility().setVisible(server.getId() != null);
         view.listContainerHeaderVisibility().setVisible(server.getId() != null);
         if (server.getId() != null) {
-            fireEvent(new SiteFolderEvents.App.ShowList(view.listContainer(), server.getId()));
+            fireEvent(new SiteFolderAppEvents.ShowList(view.listContainer(), server.getId()));
         }
     }
 

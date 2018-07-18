@@ -54,7 +54,7 @@ public abstract class ServerTableActivity implements
     }
 
     @Event
-    public void onShow(SiteFolderEvents.Server.Show event) {
+    public void onShow(SiteFolderServerEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         initDetails.parent.add(pagerView.asWidget());
@@ -87,11 +87,11 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderEvents.Server.Edit());
+        fireEvent(new SiteFolderServerEvents.Edit());
     }
 
     @Event
-    public void onServerChanged(SiteFolderEvents.Server.Changed event) {
+    public void onServerChanged(SiteFolderServerEvents.Changed event) {
         view.updateRow(event.server);
     }
 
@@ -115,8 +115,8 @@ public abstract class ServerTableActivity implements
             public void onSuccess(Boolean result) {
                 serverIdForRemove = null;
                 if (result) {
-                    fireEvent(new SiteFolderEvents.Server.ChangeModel());
-                    fireEvent(new SiteFolderEvents.Server.Show(platformId));
+                    fireEvent(new SiteFolderServerEvents.ChangeModel());
+                    fireEvent(new SiteFolderServerEvents.Show(platformId));
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -139,7 +139,7 @@ public abstract class ServerTableActivity implements
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new SiteFolderEvents.Server.ShowPreview(view.getPreviewContainer(), value));
+            fireEvent(new SiteFolderServerEvents.ShowPreview(view.getPreviewContainer(), value));
         }
     }
 
@@ -153,7 +153,7 @@ public abstract class ServerTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderEvents.Server.Edit(value.getId()));
+        fireEvent(new SiteFolderServerEvents.Edit(value.getId()));
     }
 
     @Override

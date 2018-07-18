@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderAppEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -32,7 +32,7 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
     }
 
     @Event
-    public void onShow(SiteFolderEvents.App.ShowList event) {
+    public void onShow(SiteFolderAppEvents.ShowList event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
 
@@ -54,7 +54,7 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
             return;
         }
 
-        fireEvent(new SiteFolderEvents.App.Edit(value.getId()));
+        fireEvent(new SiteFolderAppEvents.Edit(value.getId()));
     }
 
     @Override
@@ -94,7 +94,7 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
             public void onSuccess(Boolean result) {
                 appIdForRemove = null;
                 if (result) {
-                    fireEvent(new SiteFolderEvents.App.ChangeModel());
+                    fireEvent(new SiteFolderAppEvents.ChangeModel());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
                     requestApps();
                 } else {

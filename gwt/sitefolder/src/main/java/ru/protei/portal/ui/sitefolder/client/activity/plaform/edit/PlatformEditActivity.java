@@ -10,10 +10,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -31,7 +28,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     }
 
     @Event
-    public void onShow(SiteFolderEvents.Platform.Edit event) {
+    public void onShow(SiteFolderPlatformEvents.Edit event) {
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -81,8 +78,8 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
             @Override
             public void onSuccess(Platform result) {
-                fireEvent(new SiteFolderEvents.Platform.ChangeModel());
-                fireEvent(new SiteFolderEvents.Platform.Changed(result));
+                fireEvent(new SiteFolderPlatformEvents.ChangeModel());
+                fireEvent(new SiteFolderPlatformEvents.Changed(result));
                 fireEvent(new Back());
             }
         });
@@ -96,7 +93,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     @Override
     public void onOpenClicked() {
         if (platform != null) {
-            fireEvent(new SiteFolderEvents.Server.Show(platform.getId()));
+            fireEvent(new SiteFolderServerEvents.Show(platform.getId()));
         }
     }
 
@@ -111,7 +108,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             return;
         }
 
-        fireEvent(SiteFolderEvents.Server.Edit.withPlatform(platform.getId()));
+        fireEvent(SiteFolderServerEvents.Edit.withPlatform(platform.getId()));
     }
 
     private void fillView(Platform platform) {
@@ -125,7 +122,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         view.listContainerVisibility().setVisible(platform.getId() != null);
         view.listContainerHeaderVisibility().setVisible(platform.getId() != null);
         if (platform.getId() != null) {
-            fireEvent(new SiteFolderEvents.Server.ShowList(view.listContainer(), platform.getId()));
+            fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
         }
     }
 

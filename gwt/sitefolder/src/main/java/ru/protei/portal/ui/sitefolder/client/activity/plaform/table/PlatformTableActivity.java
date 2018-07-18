@@ -52,7 +52,7 @@ public abstract class PlatformTableActivity implements
     }
 
     @Event
-    public void onShow(SiteFolderEvents.Platform.Show event) {
+    public void onShow(SiteFolderPlatformEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         initDetails.parent.add(pagerView.asWidget());
@@ -75,11 +75,11 @@ public abstract class PlatformTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderEvents.Platform.Edit());
+        fireEvent(new SiteFolderPlatformEvents.Edit());
     }
 
     @Event
-    public void onPlatformChanged(SiteFolderEvents.Platform.Changed event) {
+    public void onPlatformChanged(SiteFolderPlatformEvents.Changed event) {
         view.updateRow(event.platform);
     }
 
@@ -103,7 +103,7 @@ public abstract class PlatformTableActivity implements
             public void onSuccess(Boolean result) {
                 platformIdForRemove = null;
                 if (result) {
-                    fireEvent(new SiteFolderEvents.Platform.Show());
+                    fireEvent(new SiteFolderPlatformEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -126,7 +126,7 @@ public abstract class PlatformTableActivity implements
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new SiteFolderEvents.Platform.ShowPreview(view.getPreviewContainer(), value));
+            fireEvent(new SiteFolderPlatformEvents.ShowPreview(view.getPreviewContainer(), value));
         }
     }
 
@@ -140,7 +140,7 @@ public abstract class PlatformTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderEvents.Platform.Edit(value.getId()));
+        fireEvent(new SiteFolderPlatformEvents.Edit(value.getId()));
     }
 
     @Override

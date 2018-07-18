@@ -6,7 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -22,7 +22,7 @@ public abstract class PlatformModel implements Activity {
     }
 
     @Event
-    public void onPlatformListChanged(SiteFolderEvents.Platform.ChangeModel event) {
+    public void onPlatformListChanged(SiteFolderPlatformEvents.ChangeModel event) {
         refreshOptions();
     }
 

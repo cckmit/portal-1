@@ -54,7 +54,7 @@ public abstract class ApplicationTableActivity implements
     }
 
     @Event
-    public void onShow(SiteFolderEvents.App.Show event) {
+    public void onShow(SiteFolderAppEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         initDetails.parent.add(pagerView.asWidget());
@@ -87,11 +87,11 @@ public abstract class ApplicationTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderEvents.App.Edit());
+        fireEvent(new SiteFolderAppEvents.Edit());
     }
 
     @Event
-    public void onAppChanged(SiteFolderEvents.App.Changed event) {
+    public void onAppChanged(SiteFolderAppEvents.Changed event) {
         view.updateRow(event.app);
     }
 
@@ -115,8 +115,8 @@ public abstract class ApplicationTableActivity implements
             public void onSuccess(Boolean result) {
                 appIdForRemove = null;
                 if (result) {
-                    fireEvent(new SiteFolderEvents.App.ChangeModel());
-                    fireEvent(new SiteFolderEvents.App.Show(serverId));
+                    fireEvent(new SiteFolderAppEvents.ChangeModel());
+                    fireEvent(new SiteFolderAppEvents.Show(serverId));
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -139,7 +139,7 @@ public abstract class ApplicationTableActivity implements
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new SiteFolderEvents.App.ShowPreview(view.getPreviewContainer(), value));
+            fireEvent(new SiteFolderAppEvents.ShowPreview(view.getPreviewContainer(), value));
         }
     }
 
@@ -153,7 +153,7 @@ public abstract class ApplicationTableActivity implements
             return;
         }
 
-        fireEvent(new SiteFolderEvents.App.Edit(value.getId()));
+        fireEvent(new SiteFolderAppEvents.Edit(value.getId()));
     }
 
     @Override

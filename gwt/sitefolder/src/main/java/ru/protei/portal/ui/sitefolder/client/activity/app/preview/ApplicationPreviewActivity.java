@@ -5,7 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Application;
-import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderAppEvents;
 
 public abstract class ApplicationPreviewActivity implements Activity, AbstractApplicationPreviewActivity {
 
@@ -15,7 +15,7 @@ public abstract class ApplicationPreviewActivity implements Activity, AbstractAp
     }
 
     @Event
-    public void onShow(SiteFolderEvents.App.ShowPreview event) {
+    public void onShow(SiteFolderAppEvents.ShowPreview event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
 

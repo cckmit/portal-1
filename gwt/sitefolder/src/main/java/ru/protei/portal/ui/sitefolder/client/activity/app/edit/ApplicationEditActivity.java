@@ -31,7 +31,7 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
     }
 
     @Event
-    public void onShow(SiteFolderEvents.App.Edit event) {
+    public void onShow(SiteFolderAppEvents.Edit event) {
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -81,8 +81,8 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
 
             @Override
             public void onSuccess(Application result) {
-                fireEvent(new SiteFolderEvents.App.ChangeModel());
-                fireEvent(new SiteFolderEvents.App.Changed(result));
+                fireEvent(new SiteFolderAppEvents.ChangeModel());
+                fireEvent(new SiteFolderAppEvents.Changed(result));
                 fireEvent(new Back());
             }
         });
