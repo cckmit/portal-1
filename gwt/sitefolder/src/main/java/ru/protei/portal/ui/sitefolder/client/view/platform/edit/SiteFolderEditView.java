@@ -81,6 +81,11 @@ public class SiteFolderEditView extends Composite implements AbstractSiteFolderE
         return openButton;
     }
 
+    @Override
+    public HasVisibility createButtonVisibility() {
+        return createButton;
+    }
+
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -102,6 +107,13 @@ public class SiteFolderEditView extends Composite implements AbstractSiteFolderE
         }
     }
 
+    @UiHandler("createButton")
+    public void createButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCreateClicked();
+        }
+    }
+
     @UiField
     ValidableTextBox name;
     @Inject
@@ -119,6 +131,8 @@ public class SiteFolderEditView extends Composite implements AbstractSiteFolderE
     Button saveButton;
     @UiField
     Button cancelButton;
+    @UiField
+    Button createButton;
     @UiField
     Button openButton;
 

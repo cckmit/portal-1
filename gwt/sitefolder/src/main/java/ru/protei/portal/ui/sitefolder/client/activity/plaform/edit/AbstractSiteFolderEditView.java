@@ -29,4 +29,6 @@ public interface AbstractSiteFolderEditView extends IsWidget {
     HasValidable companyValidator();
 
     HasVisibility openButtonVisibility();
+
+    HasVisibility createButtonVisibility();
 }

@@ -10,19 +10,27 @@
             <div class="grid grid-indent">
                 <div class="form-group col-xs-12">
                     <div class="form-group col-xs-12 m-b-0">
-                        <label><ui:text from="{lang.siteFolderServerName}"/></label>
+                        <div class="form-group col-xs-5 m-b-0 p-r-10 border-box">
+                            <label><ui:text from="{lang.siteFolderServerName}"/></label>
+                        </div>
+                        <div class="form-group col-xs-3 m-b-0 p-r-10 border-box">
+                            <label><ui:text from="{lang.siteFolderIP}"/></label>
+                        </div>
+                        <div class="form-group col-xs-4 m-b-0">
+                            <label><ui:text from="{lang.siteFolderPlatform}"/></label>
+                        </div>
                     </div>
-                    <div class="form-group col-xs-8 m-b-0">
-                        <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                    <div class="form-group col-xs-12 m-b-0">
+                        <div class="form-group col-xs-5 m-b-0 p-r-10 border-box">
+                            <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                        </div>
+                        <div class="form-group col-xs-3 m-b-0 p-r-10 border-box">
+                            <g:TextBox ui:field="ip" styleName="input-field"/>
+                        </div>
+                        <div class="form-group col-xs-4 m-b-0">
+                            <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="btn-selector"/>
+                        </div>
                     </div>
-                    <div class="form-group col-xs-4 m-b-0">
-                        <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="sf-meta-info"/>
-                    </div>
-                </div>
-
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.siteFolderIP}"/></label>
-                    <g:TextBox ui:field="ip" styleName="input-field"/>
                 </div>
 
                 <div class="form-group col-xs-12">
@@ -37,7 +45,8 @@
 
                 <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-xs-12">
                     <label><ui:text from="{lang.siteFolderApps}"/></label>
-                    <g:Button ui:field="openButton" styleName="btn btn-white pull-right" text="{lang.openTableView}"/>
+                    <g:Button ui:field="openButton" styleName="btn btn-white pull-right m-l-10" text="{lang.openTableView}"/>
+                    <g:Button ui:field="createButton" styleName="btn btn-white pull-right m-l-10" text="{lang.siteFolderAppCreate}"/>
                 </g:HTMLPanel>
 
                 <g:HTMLPanel styleName="form-group col-xs-12" ui:field="listContainer"/>

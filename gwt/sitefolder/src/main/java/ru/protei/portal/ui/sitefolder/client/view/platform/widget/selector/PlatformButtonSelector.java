@@ -25,8 +25,17 @@ public class PlatformButtonSelector extends ButtonSelector<EntityOption> impleme
         options.forEach(this::addOption);
     }
 
-    public void setCompanyId(Long companyId) {
-        platformModel.setCompanyId(companyId);
+    @Override
+    public void setValue(EntityOption value) {
+        if (value != null && value.getId() != null && value.getDisplayText() == null) {
+            for (EntityOption option : itemToViewModel.keySet()) {
+                if (value.getId().equals(option.getId())) {
+                    value = option;
+                    break;
+                }
+            }
+        }
+        super.setValue(value);
     }
 
     @Inject

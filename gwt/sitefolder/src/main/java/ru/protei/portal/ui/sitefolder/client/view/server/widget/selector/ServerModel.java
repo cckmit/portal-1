@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -19,6 +20,11 @@ public abstract class ServerModel implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
+        refreshOptions();
+    }
+
+    @Event
+    public void onServerListChanged(SiteFolderEvents.Server.ChangeModel event) {
         refreshOptions();
     }
 

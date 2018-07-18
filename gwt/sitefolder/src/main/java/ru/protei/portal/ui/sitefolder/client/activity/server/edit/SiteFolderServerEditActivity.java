@@ -5,8 +5,11 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -36,7 +39,14 @@ public abstract class SiteFolderServerEditActivity implements Activity, Abstract
         fireEvent(new ActionBarEvents.Clear());
         if (event.serverId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerNew()));
-            fillView(new Server());
+            Server server = new Server();
+            if (event.platformId != null) {
+                Platform platform = new Platform();
+                platform.setName(null);
+                platform.setId(event.platformId);
+                server.setPlatform(platform);
+            }
+            fillView(server);
             return;
         }
         fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerEdit()));
@@ -90,6 +100,20 @@ public abstract class SiteFolderServerEditActivity implements Activity, Abstract
         }
     }
 
+    @Override
+    public void onCreateClicked() {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return;
+        }
+
+        if (server == null) {
+            return;
+        }
+
+        fireEvent(SiteFolderEvents.App.Edit.withServer(server.getId()));
+    }
+
     private void fillView(Server server) {
         this.server = server;
         view.setCompanyId(server.getPlatform() == null ? null : server.getPlatform().getCompanyId());
@@ -98,6 +122,7 @@ public abstract class SiteFolderServerEditActivity implements Activity, Abstract
         view.ip().setValue(server.getIp());
         view.parameters().setValue(server.getParams());
         view.comment().setValue(server.getComment());
+        view.createButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
         view.openButtonVisibility().setVisible(server.getId() != null);
         view.listContainerVisibility().setVisible(server.getId() != null);
         view.listContainerHeaderVisibility().setVisible(server.getId() != null);
@@ -124,6 +149,8 @@ public abstract class SiteFolderServerEditActivity implements Activity, Abstract
     AbstractSiteFolderServerEditView view;
     @Inject
     SiteFolderControllerAsync siteFolderController;
+    @Inject
+    PolicyService policyService;
 
     private Server server;
     private AppEvents.InitDetails initDetails;

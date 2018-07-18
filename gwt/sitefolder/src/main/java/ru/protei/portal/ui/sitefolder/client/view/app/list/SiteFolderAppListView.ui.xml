@@ -6,7 +6,7 @@
 
     <g:HTMLPanel styleName="grid col-xs-12">
 
-        <platelist:PlateList ui:field="childContainer" styleName="plate-list sf-list blue" createButtonVisible="true" createButtonStyleName="sf-list-add"/>
+        <platelist:PlateList ui:field="childContainer" styleName="plate-list sf-list" createButtonVisible="false"/>
 
     </g:HTMLPanel>
 </ui:UiBinder>

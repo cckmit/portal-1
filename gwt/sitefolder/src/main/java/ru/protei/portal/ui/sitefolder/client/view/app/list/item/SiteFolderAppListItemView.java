@@ -48,12 +48,22 @@ public class SiteFolderAppListItemView extends Composite implements AbstractSite
         }
     }
 
+    @UiHandler("remove")
+    public void removeClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onRemoveClicked(this);
+        }
+    }
+
     @UiField
     SpanElement name;
     @UiField
     SpanElement comment;
     @UiField
     Anchor edit;
+    @UiField
+    Anchor remove;
 
     private AbstractSiteFolderAppListItemActivity activity;
 

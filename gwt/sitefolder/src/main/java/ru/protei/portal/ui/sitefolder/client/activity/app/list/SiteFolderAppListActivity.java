@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -57,13 +58,50 @@ public abstract class SiteFolderAppListActivity implements Activity, AbstractSit
     }
 
     @Override
-    public void onCreateClicked() {
+    public void onRemoveClicked(AbstractSiteFolderAppListItemView itemView) {
 
-        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE)) {
             return;
         }
 
-        fireEvent(new SiteFolderEvents.App.Edit());
+        Application value = itemViewToModel.get(itemView);
+
+        if (value == null) {
+            return;
+        }
+
+        appIdForRemove = value.getId();
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderAppConfirmRemove()));
+    }
+
+    @Event
+    public void onServerConfirmRemove(ConfirmDialogEvents.Confirm event) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        if (appIdForRemove == null) {
+            return;
+        }
+
+        siteFolderController.removeApplication(appIdForRemove, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                appIdForRemove = null;
+                if (result) {
+                    fireEvent(new SiteFolderEvents.App.ChangeModel());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    requestApps();
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
     }
 
     private void requestApps() {
@@ -120,6 +158,7 @@ public abstract class SiteFolderAppListActivity implements Activity, AbstractSit
         }
     };
     private Long serverId = null;
+    private Long appIdForRemove = null;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private Map<AbstractSiteFolderAppListItemView, Application> itemViewToModel = new HashMap<>();
 }

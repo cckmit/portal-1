@@ -23,11 +23,18 @@ public class SiteFolderEvents {
         public static class Edit {
             @Name("platform")
             public Long platformId;
+            @Name("company")
+            public Long companyId;
             public Edit() {
                 this(null);
             }
             public Edit(Long platformId) {
                 this.platformId = platformId;
+            }
+            public static Edit withCompany(Long companyId) {
+                Edit edit = new Edit();
+                edit.companyId = companyId;
+                return edit;
             }
         }
 
@@ -71,11 +78,18 @@ public class SiteFolderEvents {
         public static class Edit {
             @Name("server")
             public Long serverId;
+            @Name("platform")
+            public Long platformId;
             public Edit() {
                 this(null);
             }
             public Edit(Long serverId) {
                 this.serverId = serverId;
+            }
+            public static Edit withPlatform(Long platformId) {
+                Edit edit = new Edit();
+                edit.platformId = platformId;
+                return edit;
             }
         }
 
@@ -128,11 +142,18 @@ public class SiteFolderEvents {
         public static class Edit {
             @Name("app")
             public Long appId;
+            @Name("server")
+            public Long serverId;
             public Edit() {
                 this(null);
             }
             public Edit(Long appId) {
                 this.appId = appId;
+            }
+            public static Edit withServer(Long serverId) {
+                Edit edit = new Edit();
+                edit.serverId = serverId;
+                return edit;
             }
         }
 

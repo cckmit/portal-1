@@ -5,7 +5,10 @@
         <div class="sf-list-item-header">
             <span ui:field="name" class="name"/>
             <span ui:field="ip" class="ip"/>
-            <g:Anchor ui:field="edit" styleName="fa fa-fw fa-pencil edit" href="#"/>
+        </div>
+        <div class="sf-list-item-controls">
+            <g:Anchor ui:field="edit" styleName="fa fa-lg fa-pencil" href="#"/>
+            <g:Anchor ui:field="remove" styleName="fa fa-lg fa-trash-o" href="#"/>
         </div>
         <div class="sf-list-item-separator"/>
         <div class="sf-list-item-footer">

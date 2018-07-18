@@ -284,6 +284,9 @@ body {
   display: none !important
 }
 
+.border-box {
+  box-sizing: border-box;
+}
 
 /**   SORT BUTTON   **/
 .button.empty {
@@ -2371,12 +2374,6 @@ a {
 
 /**** SITE FOLDER ****/
 
-.sf-meta-info > button {
-  width: 100%;
-  text-align: left;
-  border-left: none !important;
-}
-
 .sf-comment {
   min-height: 120px;
 }
@@ -2388,93 +2385,143 @@ a {
 .sf-list {
   margin: -5px !important;
 
-  .sf-list-add {
-    width: 120px !important;
-    height: 120px !important;
-    max-width: 120px !important;
-    margin: 5px !important;
-    overflow: hidden;
-
-    img {
-      width: 120px !important;
-      height: 120px !important;
-    }
-  }
-
   .sf-list-item {
-    width: 120px !important;
+    position: relative;
+    width: 300px !important;
     height: 120px !important;
-    max-width: 120px !important;
+    /*max-width: 300px !important;*/
     margin: 5px !important;
     overflow: hidden;
+    animation: animation-sf-shadow-fade-out 0.3s;
 
     .sf-list-item-header {
       position: relative;
-      margin: 5px;
+      margin: 10px 40px 10px 10px;
       line-height: 1.2em;
 
-      > .name, > .ip {
+      > span {
         display: inline-block;
-        width: calc(100% - 10px);
-        margin-right: 10px;
+        width: 100%;
         word-wrap: break-word;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
+    }
 
-      > .edit {
-        position: absolute;
+    .sf-list-item-controls {
+      position: absolute;
+      display: block;
+      top: 0;
+      right: 0;
+      width: 36px;
+      height: 100%;
+      vertical-align: middle;
+      text-align: center;
+
+      > * {
         display: block;
-        top: 0;
-        right: 0;
-        width: 40px;
-        height: 40px;
+        float: left;
+        width: 20px;
+        padding: 10px 8px;
         vertical-align: middle;
         text-align: center;
       }
 
-      > .edit::before {
-        position: absolute;
+      &:after {
+        content: "";
         display: block;
-        padding: 2px 2px 18px 18px;
-        width: 20px;
-        height: 20px;
-        right: 0;
-        top: 0;
-        text-align: right;
+        clear: both;
       }
     }
 
     .sf-list-item-separator {
       position: relative;
       border-top: 1px solid #d3d3d3;
-      margin: 5px 50px 5px 5px;
+      margin: 10px 46px 10px 10px;
     }
 
     .sf-list-item-footer {
       position: relative;
-      margin: 5px;
+      margin: 10px 40px 10px 10px;
       line-height: 1.2em;
 
-      > .comment {
+      > span {
         display: inline-block;
+        width: 100%;
         word-wrap: break-word;
       }
     }
   }
+
+  .sf-list-item:hover, .sf-list-item:active {
+    animation: animation-sf-shadow-fade-in 0.3s;
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
 }
 
-.sf-list.blue {
-
-  .sf-list-item {
-    background: #426fb1;
-    color: #ffffff;
-    box-shadow: 2px 2px 5px 1px #cfd2d7;
-
-    .edit {
-      color: #ffffff;
-    }
+@-moz-keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@-webkit-keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@-o-keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@-moz-keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@-webkit-keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@-o-keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
   }
 }
 

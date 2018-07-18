@@ -8,16 +8,22 @@
     <g:HTMLPanel ui:field="root" styleName="panel">
         <div class="body">
             <div class="grid grid-indent">
-
                 <div class="form-group col-xs-12">
                     <div class="form-group col-xs-12 m-b-0">
-                        <label><ui:text from="{lang.siteFolderPlatformName}"/></label>
+                        <div class="form-group col-xs-8 m-b-0 p-r-10 border-box">
+                            <label><ui:text from="{lang.siteFolderPlatformName}"/></label>
+                        </div>
+                        <div class="form-group col-xs-4 m-b-0">
+                            <label><ui:text from="{lang.siteFolderCompany}"/></label>
+                        </div>
                     </div>
-                    <div class="form-group col-xs-8 m-b-0">
-                        <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
-                    </div>
-                    <div class="form-group col-xs-4 m-b-0">
-                        <company:CompanySelector ui:field="company" validation="true" styleName="sf-meta-info"/>
+                    <div class="form-group col-xs-12 m-b-0">
+                        <div class="form-group col-xs-8 m-b-0 p-r-10 border-box">
+                            <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                        </div>
+                        <div class="form-group col-xs-4 m-b-0">
+                            <company:CompanySelector ui:field="company" validation="true" styleName="btn-selector"/>
+                        </div>
                     </div>
                 </div>
 
@@ -33,7 +39,8 @@
 
                 <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-xs-12">
                     <label><ui:text from="{lang.siteFolderServers}"/></label>
-                    <g:Button ui:field="openButton" styleName="btn btn-white pull-right" text="{lang.openTableView}"/>
+                    <g:Button ui:field="openButton" styleName="btn btn-white pull-right m-l-10" text="{lang.openTableView}"/>
+                    <g:Button ui:field="createButton" styleName="btn btn-white pull-right m-l-10" text="{lang.siteFolderServerCreate}"/>
                 </g:HTMLPanel>
 
                 <g:HTMLPanel styleName="form-group col-xs-12" ui:field="listContainer"/>

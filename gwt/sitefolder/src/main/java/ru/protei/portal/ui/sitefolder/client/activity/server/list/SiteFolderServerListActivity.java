@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -57,13 +58,50 @@ public abstract class SiteFolderServerListActivity implements Activity, Abstract
     }
 
     @Override
-    public void onCreateClicked() {
+    public void onRemoveClicked(AbstractSiteFolderServerListItemView itemView) {
 
-        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE)) {
             return;
         }
 
-        fireEvent(new SiteFolderEvents.Server.Edit());
+        Server value = itemViewToModel.get(itemView);
+
+        if (value == null) {
+            return;
+        }
+
+        serverIdForRemove = value.getId();
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderServerConfirmRemove()));
+    }
+
+    @Event
+    public void onServerConfirmRemove(ConfirmDialogEvents.Confirm event) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        if (serverIdForRemove == null) {
+            return;
+        }
+
+        siteFolderController.removeServer(serverIdForRemove, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                serverIdForRemove = null;
+                if (result) {
+                    fireEvent(new SiteFolderEvents.Server.ChangeModel());
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
+                    requestServers();
+                } else {
+                    fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
+                }
+            }
+        });
     }
 
     private void requestServers() {
@@ -121,6 +159,7 @@ public abstract class SiteFolderServerListActivity implements Activity, Abstract
         }
     };
     private Long platformId = null;
+    private Long serverIdForRemove = null;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private Map<AbstractSiteFolderServerListItemView, Server> itemViewToModel = new HashMap<>();
 }

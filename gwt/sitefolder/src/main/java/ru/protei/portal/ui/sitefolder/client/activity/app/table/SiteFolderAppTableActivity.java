@@ -115,6 +115,7 @@ public abstract class SiteFolderAppTableActivity implements
             public void onSuccess(Boolean result) {
                 appIdForRemove = null;
                 if (result) {
+                    fireEvent(new SiteFolderEvents.App.ChangeModel());
                     fireEvent(new SiteFolderEvents.App.Show(serverId));
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
                 } else {

@@ -32,5 +32,7 @@ public interface AbstractSiteFolderServerEditView extends IsWidget {
 
     HasValidable platformValidator();
 
+    HasVisibility createButtonVisibility();
+
     HasVisibility openButtonVisibility();
 }

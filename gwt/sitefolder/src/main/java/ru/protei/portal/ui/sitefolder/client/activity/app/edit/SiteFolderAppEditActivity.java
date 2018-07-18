@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Application;
+import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.struct.PathInfo;
 import ru.protei.portal.core.model.struct.PathItem;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -38,7 +39,14 @@ public abstract class SiteFolderAppEditActivity implements Activity, AbstractSit
         fireEvent(new ActionBarEvents.Clear());
         if (event.appId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppNew()));
-            fillView(new Application());
+            Application application = new Application();
+            if (event.serverId != null) {
+                Server server = new Server();
+                server.setName(null);
+                server.setId(event.serverId);
+                application.setServer(server);
+            }
+            fillView(application);
             return;
         }
         fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppEdit()));

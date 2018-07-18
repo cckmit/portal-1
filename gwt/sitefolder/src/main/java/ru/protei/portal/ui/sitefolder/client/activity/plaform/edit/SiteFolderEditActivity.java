@@ -5,8 +5,11 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -36,7 +39,14 @@ public abstract class SiteFolderEditActivity implements Activity, AbstractSiteFo
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformNew()));
-            fillView(new Platform());
+            Platform platform = new Platform();
+            if (event.companyId != null) {
+                Company company = new Company();
+                company.setCname(null);
+                company.setId(event.companyId);
+                platform.setCompany(company);
+            }
+            fillView(platform);
             return;
         }
         fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformEdit()));
@@ -90,12 +100,27 @@ public abstract class SiteFolderEditActivity implements Activity, AbstractSiteFo
         }
     }
 
+    @Override
+    public void onCreateClicked() {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return;
+        }
+
+        if (platform == null) {
+            return;
+        }
+
+        fireEvent(SiteFolderEvents.Server.Edit.withPlatform(platform.getId()));
+    }
+
     private void fillView(Platform platform) {
         this.platform = platform;
         view.name().setValue(platform.getName());
         view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
+        view.createButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
         view.openButtonVisibility().setVisible(platform.getId() != null);
         view.listContainerVisibility().setVisible(platform.getId() != null);
         view.listContainerHeaderVisibility().setVisible(platform.getId() != null);
@@ -121,6 +146,8 @@ public abstract class SiteFolderEditActivity implements Activity, AbstractSiteFo
     AbstractSiteFolderEditView view;
     @Inject
     SiteFolderControllerAsync siteFolderController;
+    @Inject
+    PolicyService policyService;
 
     private Platform platform;
     private AppEvents.InitDetails initDetails;

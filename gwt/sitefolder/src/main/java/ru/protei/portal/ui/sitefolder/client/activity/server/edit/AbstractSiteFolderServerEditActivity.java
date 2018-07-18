@@ -5,4 +5,5 @@ public interface AbstractSiteFolderServerEditActivity {
     void onSaveClicked();
     void onCancelClicked();
     void onOpenClicked();
+    void onCreateClicked();
 }

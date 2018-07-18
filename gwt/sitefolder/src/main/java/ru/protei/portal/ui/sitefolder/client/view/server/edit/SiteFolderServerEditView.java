@@ -27,9 +27,7 @@ public class SiteFolderServerEditView extends Composite implements AbstractSiteF
     }
 
     @Override
-    public void setCompanyId(Long companyId) {
-        platform.setCompanyId(companyId);
-    }
+    public void setCompanyId(Long companyId) {}
 
     @Override
     public HasValue<String> name() {
@@ -87,6 +85,11 @@ public class SiteFolderServerEditView extends Composite implements AbstractSiteF
     }
 
     @Override
+    public HasVisibility createButtonVisibility() {
+        return createButton;
+    }
+
+    @Override
     public HasVisibility openButtonVisibility() {
         return openButton;
     }
@@ -112,6 +115,13 @@ public class SiteFolderServerEditView extends Composite implements AbstractSiteF
         }
     }
 
+    @UiHandler("createButton")
+    public void createButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCreateClicked();
+        }
+    }
+
     @UiField
     ValidableTextBox name;
     @Inject
@@ -131,6 +141,8 @@ public class SiteFolderServerEditView extends Composite implements AbstractSiteF
     Button saveButton;
     @UiField
     Button cancelButton;
+    @UiField
+    Button createButton;
     @UiField
     Button openButton;
 

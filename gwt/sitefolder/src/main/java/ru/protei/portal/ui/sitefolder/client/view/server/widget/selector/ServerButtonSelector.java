@@ -25,8 +25,17 @@ public class ServerButtonSelector extends ButtonSelector<EntityOption> implement
         options.forEach(this::addOption);
     }
 
-    public void setPlatformId(Long platformId) {
-        serverModel.setPlatformId(platformId);
+    @Override
+    public void setValue(EntityOption value) {
+        if (value != null && value.getId() != null && value.getDisplayText() == null) {
+            for (EntityOption option : itemToViewModel.keySet()) {
+                if (value.getId().equals(option.getId())) {
+                    value = option;
+                    break;
+                }
+            }
+        }
+        super.setValue(value);
     }
 
     @Inject

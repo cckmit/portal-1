@@ -21,26 +21,15 @@ public class SiteFolderAppListView extends Composite implements AbstractSiteFold
     }
 
     @Override
-    public void setActivity(AbstractSiteFolderAppListActivity activity) {
-        this.activity = activity;
-    }
+    public void setActivity(AbstractSiteFolderAppListActivity activity) {}
 
     @Override
     public HasWidgets getChildContainer() {
         return childContainer;
     }
 
-    @UiHandler("childContainer")
-    public void onAddClicked(AddEvent event) {
-        if (activity != null) {
-            activity.onCreateClicked();
-        }
-    }
-
     @UiField
     PlateList childContainer;
-
-    private AbstractSiteFolderAppListActivity activity;
 
     interface SiteFolderAppListViewUiBinder extends UiBinder<HTMLPanel, SiteFolderAppListView> {}
     private static SiteFolderAppListViewUiBinder ourUiBinder = GWT.create(SiteFolderAppListViewUiBinder.class);

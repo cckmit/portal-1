@@ -27,9 +27,7 @@ public class SiteFolderAppEditView extends Composite implements AbstractSiteFold
     }
 
     @Override
-    public void setPlatformId(Long platformId) {
-        server.setPlatformId(platformId);
-    }
+    public void setPlatformId(Long platformId) {}
 
     @Override
     public HasValue<String> name() {

@@ -1,6 +1,3 @@
 package ru.protei.portal.ui.sitefolder.client.activity.app.list;
 
-public interface AbstractSiteFolderAppListActivity {
-
-    void onCreateClicked();
-}
+public interface AbstractSiteFolderAppListActivity {}

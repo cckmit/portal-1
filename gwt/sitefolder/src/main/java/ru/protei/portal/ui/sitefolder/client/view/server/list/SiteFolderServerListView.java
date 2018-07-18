@@ -21,26 +21,15 @@ public class SiteFolderServerListView extends Composite implements AbstractSiteF
     }
 
     @Override
-    public void setActivity(AbstractSiteFolderServerListActivity activity) {
-        this.activity = activity;
-    }
+    public void setActivity(AbstractSiteFolderServerListActivity activity) {}
 
     @Override
     public HasWidgets getChildContainer() {
         return childContainer;
     }
 
-    @UiHandler("childContainer")
-    public void onAddClicked(AddEvent event) {
-        if (activity != null) {
-            activity.onCreateClicked();
-        }
-    }
-
     @UiField
     PlateList childContainer;
-
-    private AbstractSiteFolderServerListActivity activity;
 
     interface SiteFolderServerListViewUiBinder extends UiBinder<HTMLPanel, SiteFolderServerListView> {}
     private static SiteFolderServerListViewUiBinder ourUiBinder = GWT.create(SiteFolderServerListViewUiBinder.class);
