@@ -1044,4 +1044,86 @@ public interface Lang extends Messages, ContactItemLang {
     String customerTypeCommercialProtei();
 
     String workTime();
+
+    String privilegeSiteFolder();
+
+    String amountShort();
+
+    String siteFolder();
+
+    String siteFolderName();
+
+    String siteFolderCompany();
+
+    String siteFolderParams();
+
+    String siteFolderComment();
+
+    String siteFolderIP();
+
+    String siteFolderPlatform();
+
+    String siteFolderPlatforms();
+
+    String siteFolderPlatformNew();
+
+    String siteFolderPlatformEdit();
+
+    String siteFolderPlatformCreate();
+
+    String siteFolderPlatformConfirmRemove();
+
+    String siteFolderPlatformRemoved();
+
+    String siteFolderPlatformNotRemoved();
+
+    String siteFolderPlatformNotSaved();
+
+    String siteFolderPlatformName();
+
+    String siteFolderServer();
+
+    String siteFolderServers();
+
+    String siteFolderServerNew();
+
+    String siteFolderServerEdit();
+
+    String siteFolderServerCreate();
+
+    String siteFolderServerConfirmRemove();
+
+    String siteFolderServerRemoved();
+
+    String siteFolderServerNotRemoved();
+
+    String siteFolderServerNotSaved();
+
+    String siteFolderServerName();
+
+    String siteFolderApp();
+
+    String siteFolderApps();
+
+    String siteFolderAppNew();
+
+    String siteFolderAppEdit();
+
+    String siteFolderAppCreate();
+
+    String siteFolderAppConfirmRemove();
+
+    String siteFolderAppRemoved();
+
+    String siteFolderAppNotRemoved();
+
+    String siteFolderAppNotSaved();
+
+    String siteFolderAppName();
+
+    String siteFolderPath();
+
+    String siteFolderPaths();
+
+    String openTableView();
 }

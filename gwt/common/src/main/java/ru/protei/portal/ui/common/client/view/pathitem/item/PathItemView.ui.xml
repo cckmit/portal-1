@@ -1,0 +1,10 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="autoadd-pi-item">
+        <g:TextBox ui:field="path" styleName="input-field autoadd-pi-item-p"/>
+        <g:TextBox ui:field="desc" styleName="input-field autoadd-pi-item-d"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

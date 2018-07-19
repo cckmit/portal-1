@@ -284,6 +284,9 @@ body {
   display: none !important
 }
 
+.border-box {
+  box-sizing: border-box;
+}
 
 /**   SORT BUTTON   **/
 .button.empty {
@@ -2368,6 +2371,180 @@ a {
 .case-importance-critical {
   color: #e30000;
   font-weight: bold;
+}
+
+/**** SITE FOLDER ****/
+
+.sf-comment {
+  min-height: 120px;
+}
+
+.sf-parameters {
+  min-height: 80px;
+}
+
+.sf-list {
+  margin: -5px !important;
+
+  .sf-list-item {
+    position: relative;
+    width: 300px !important;
+    height: 120px !important;
+    /*max-width: 300px !important;*/
+    margin: 5px !important;
+    overflow: hidden;
+    animation: animation-sf-shadow-fade-out 0.3s;
+
+    .sf-list-item-header {
+      position: relative;
+      margin: 10px 40px 10px 10px;
+      line-height: 1.2em;
+
+      > span {
+        display: inline-block;
+        width: 100%;
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .sf-list-item-controls {
+      position: absolute;
+      display: block;
+      top: 0;
+      right: 0;
+      width: 36px;
+      height: 100%;
+      vertical-align: middle;
+      text-align: center;
+
+      > * {
+        display: block;
+        float: left;
+        width: 20px;
+        padding: 10px 8px;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      &:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+    }
+
+    .sf-list-item-separator {
+      position: relative;
+      border-top: 1px solid #d3d3d3;
+      margin: 10px 46px 10px 10px;
+    }
+
+    .sf-list-item-footer {
+      position: relative;
+      margin: 10px 40px 10px 10px;
+      line-height: 1.2em;
+
+      > span {
+        display: inline-block;
+        width: 100%;
+        word-wrap: break-word;
+      }
+    }
+  }
+
+  .sf-list-item:hover, .sf-list-item:active {
+    animation: animation-sf-shadow-fade-in 0.3s;
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+
+@-moz-keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@-webkit-keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@-o-keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@keyframes animation-sf-shadow-fade-in {
+  0% {
+    box-shadow: none;
+  }
+  100% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}
+@-moz-keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@-webkit-keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@-o-keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+@keyframes animation-sf-shadow-fade-out {
+  0% {
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+  100% {
+    box-shadow: none;
+  }
+}
+
+.autoadd-pi-group {
+  width: 100%;
+
+  .autoadd-pi-item + .autoadd-pi-item{
+    margin-top: 7px;
+  }
+
+  .autoadd-pi-item {
+    display: flex;
+
+    .autoadd-pi-item-p,
+    .autoadd-pi-item-d {
+      width: 100%;
+    }
+
+    .autoadd-pi-item-p {
+      margin-right: 7px;
+    }
+  }
 }
 
 /****************/

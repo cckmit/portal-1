@@ -14,6 +14,9 @@ import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDe
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.activity.pathitem.PathItemActivity;
+import ru.protei.portal.ui.common.client.activity.pathitem.item.AbstractPathItemView;
+import ru.protei.portal.ui.common.client.activity.pathitem.list.AbstractPathItemListView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -25,6 +28,8 @@ import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
 import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 import ru.protei.portal.ui.common.client.view.notify.NotifyView;
+import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
+import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.view.PagerView;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
@@ -68,6 +73,10 @@ public class CommonClientModule extends AbstractGinModule {
         bind( PolicyService.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
         bind( CaseLinkProvider.class ).asEagerSingleton();
+
+        bind( PathItemActivity.class ).asEagerSingleton();
+        bind( AbstractPathItemListView.class ).to( PathItemListView.class );
+        bind( AbstractPathItemView.class ).to( PathItemView.class );
 
         requestStaticInjection(RequestCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);

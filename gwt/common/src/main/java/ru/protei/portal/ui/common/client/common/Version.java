@@ -153,9 +153,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.56.2 - CRM-176 Новый CRM: Возможность указания затраченного времени. (исправления по привилегиям на отображение данных по затраченным часам)
  *            CRM-211 Добавление вложения в не корректную CRM
  * 4.0.56.3 - CRM-202 При поиске по комментариям - игнорируется фильтр
+ * 4.0.57.0 - CRM-187 Раздел Site Folder
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.56.3";
+        return "4.0.57.0";
     }
 }

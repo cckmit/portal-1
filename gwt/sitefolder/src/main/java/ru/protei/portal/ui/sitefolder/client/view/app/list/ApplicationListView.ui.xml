@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:platelist="urn:import:ru.protei.portal.ui.common.client.widget.platelist">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="grid col-xs-12">
+
+        <platelist:PlateList ui:field="childContainer" styleName="plate-list sf-list" createButtonVisible="false"/>
+
+    </g:HTMLPanel>
+</ui:UiBinder>

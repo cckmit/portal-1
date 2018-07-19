@@ -1,0 +1,17 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="root" tag="li" styleName="sf-list-item">
+        <div class="sf-list-item-header">
+            <span ui:field="name" class="name"/>
+        </div>
+        <div class="sf-list-item-controls">
+            <g:Anchor ui:field="edit" styleName="fa fa-lg fa-pencil" href="#"/>
+            <g:Anchor ui:field="remove" styleName="fa fa-lg fa-trash-o" href="#"/>
+        </div>
+        <div class="sf-list-item-separator"/>
+        <div class="sf-list-item-footer">
+            <span ui:field="comment" class="comment"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

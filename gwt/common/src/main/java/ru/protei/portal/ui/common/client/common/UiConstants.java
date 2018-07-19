@@ -8,6 +8,7 @@ public class UiConstants {
      * Иконки вкладок приложения
      */
     public interface TabIcons {
+        String SUB_ITEM = "fa fa-chevron-right";
         String COMPANY = "icon icon-organization";
         String CONTACT = "fa fa-address-book";
         String PRODUCT = "icon icon-product";
@@ -23,6 +24,7 @@ public class UiConstants {
         String DOCUMENT_TYPE = "fa fa-server";
         String ISSUE_REPORTS = "fa fa-tasks";
         String CASE_STATE = "fa fa-bookmark ";
+        String SITE_FOLDER = "fa fa-folder";
     }
 
     public interface ActionBarIcons {
@@ -48,6 +50,9 @@ public class UiConstants {
         String DOCUMENT = "document";
         String DOCUMENT_TYPE = "document_type";
         String ISSUE_REPORTS = "issue_reports";
+        String SITE_FOLDER_PLATFORM = "site_folder_platform";
+        String SITE_FOLDER_SERVER = "site_folder_server";
+        String SITE_FOLDER_APP = "site_folder_app";
     }
 
     public interface UserIcon {

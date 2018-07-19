@@ -75,6 +75,11 @@ public enum En_Privilege {
     CASE_STATES_CREATE (CASE_STATES, CREATE),
     CASE_STATES_REMOVE (CASE_STATES, REMOVE),
 
+    SITE_FOLDER_VIEW (SITE_FOLDER, VIEW),
+    SITE_FOLDER_EDIT (SITE_FOLDER, EDIT),
+    SITE_FOLDER_CREATE (SITE_FOLDER, CREATE),
+    SITE_FOLDER_REMOVE (SITE_FOLDER, REMOVE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
