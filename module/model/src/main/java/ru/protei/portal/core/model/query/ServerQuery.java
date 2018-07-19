@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ServerQuery extends BaseQuery {
@@ -51,7 +50,8 @@ public class ServerQuery extends BaseQuery {
             this.platformIds.clear();
             return;
         }
-        this.platformIds = Collections.singletonList(platformId);
+        this.platformIds = new ArrayList<>();
+        this.platformIds.add(platformId);
     }
 
     public void addPlatformId(Long platformId) {

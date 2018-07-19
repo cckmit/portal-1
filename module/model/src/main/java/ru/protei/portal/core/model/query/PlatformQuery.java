@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class PlatformQuery extends BaseQuery {
@@ -50,7 +49,8 @@ public class PlatformQuery extends BaseQuery {
             this.companyIds.clear();
             return;
         }
-        this.companyIds = Collections.singletonList(companyId);
+        this.companyIds = new ArrayList<>();
+        this.companyIds.add(companyId);
     }
 
     public void addCompanyId(Long companyId) {

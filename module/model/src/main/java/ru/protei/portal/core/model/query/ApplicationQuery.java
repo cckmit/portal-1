@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ApplicationQuery extends BaseQuery {
@@ -49,7 +48,8 @@ public class ApplicationQuery extends BaseQuery {
             this.serverIds.clear();
             return;
         }
-        this.serverIds = Collections.singletonList(serverId);
+        this.serverIds = new ArrayList<>();
+        this.serverIds.add(serverId);
     }
 
     public void addServerId(Long serverId) {
