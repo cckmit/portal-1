@@ -186,9 +186,8 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        text = HTMLHelper.htmlEscape( text );
+        text = escapeText( text );
         text = prewrapBlockquote( text ); // HTMLHelper.prewrapBlockquote( text );
-        text = replaceLineBreaks( text );
         return text;
     }
 
