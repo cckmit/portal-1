@@ -8,6 +8,7 @@ public class UiConstants {
      * Иконки вкладок приложения
      */
     public interface TabIcons {
+        String SUB_ITEM = "fa fa-chevron-right";
         String COMPANY = "icon icon-organization";
         String CONTACT = "fa fa-address-book";
         String PRODUCT = "icon icon-product";
