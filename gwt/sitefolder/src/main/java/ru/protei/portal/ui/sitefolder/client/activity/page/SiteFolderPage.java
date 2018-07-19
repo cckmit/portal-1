@@ -28,9 +28,9 @@ public abstract class SiteFolderPage implements Activity {
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.SITE_FOLDER));
-            fireEvent(new MenuEvents.AddSub(TAB, SUB_TAB_PLATFORMS));
-            fireEvent(new MenuEvents.AddSub(TAB, SUB_TAB_SERVERS));
-            fireEvent(new MenuEvents.AddSub(TAB, SUB_TAB_APPS));
+            fireEvent(new MenuEvents.Add(SUB_TAB_PLATFORMS).withParent(TAB));
+            fireEvent(new MenuEvents.Add(SUB_TAB_SERVERS).withParent(TAB));
+            fireEvent(new MenuEvents.Add(SUB_TAB_APPS).withParent(TAB));
             fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show()));
         }
     }
