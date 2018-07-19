@@ -11,7 +11,7 @@ import ru.protei.portal.core.model.ent.Company;
  */
 public class SiteFolderPlatformEvents {
 
-    @Url(value = "sitefolder", primary = true)
+    @Url(value = "sfplatforms", primary = true)
     public static class Show {
         public Show() {}
     }

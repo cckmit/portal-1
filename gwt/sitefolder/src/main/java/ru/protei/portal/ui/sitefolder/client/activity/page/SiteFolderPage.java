@@ -10,10 +10,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
-import ru.protei.winter.web.common.client.struct.SubSection;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Активность по работе с вкладкой "Площадки заказчиков"
@@ -31,32 +27,34 @@ public abstract class SiteFolderPage implements Activity {
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
-
-            List<SubSection> subSections = new ArrayList<>();
-            subSections.add(new SubSection(SUB_TAB_PLATFORMS, UiConstants.TabIcons.SUB_ITEM));
-            subSections.add(new SubSection(SUB_TAB_SERVERS, UiConstants.TabIcons.SUB_ITEM));
-            subSections.add(new SubSection(SUB_TAB_APPS, UiConstants.TabIcons.SUB_ITEM));
-
-            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.SITE_FOLDER, subSections));
+            fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.SITE_FOLDER));
+            fireEvent(new MenuEvents.AddSub(TAB, SUB_TAB_PLATFORMS));
+            fireEvent(new MenuEvents.AddSub(TAB, SUB_TAB_SERVERS));
+            fireEvent(new MenuEvents.AddSub(TAB, SUB_TAB_APPS));
             fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show()));
         }
     }
 
     @Event
     public void onShowTable(SiteFolderPlatformEvents.Show event) {
-        fireSelectTab();
+        fireSelectTab(SUB_TAB_PLATFORMS);
+    }
+
+    @Event
+    public void onShowTable(SiteFolderServerEvents.Show event) {
+        fireSelectTab(SUB_TAB_SERVERS);
+    }
+
+    @Event
+    public void onShowTable(SiteFolderAppEvents.Show event) {
+        fireSelectTab(SUB_TAB_APPS);
     }
 
     @Event
     public void onClickSection(SectionEvents.Clicked event) {
-        if (!TAB.equals(event.identity) && !SUB_TAB_PLATFORMS.equals(event.identity) &&
-            !SUB_TAB_SERVERS.equals(event.identity) && !SUB_TAB_APPS.equals(event.identity)) {
-            return;
-        }
-
-        fireSelectTab();
-
-        if (TAB.equals(event.identity) || SUB_TAB_PLATFORMS.equals(event.identity)) {
+        if (TAB.equals(event.identity)) {
+            fireSelectTab(null);
+        } else if (SUB_TAB_PLATFORMS.equals(event.identity)) {
             fireEvent(new SiteFolderPlatformEvents.Show());
         } else if (SUB_TAB_SERVERS.equals(event.identity)) {
             fireEvent(new SiteFolderServerEvents.Show());
@@ -65,9 +63,9 @@ public abstract class SiteFolderPage implements Activity {
         }
     }
 
-    private void fireSelectTab() {
+    private void fireSelectTab(String sub) {
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new MenuEvents.Select(TAB));
+        fireEvent(sub == null ? new MenuEvents.Select(TAB) : new MenuEvents.Select(sub, TAB));
     }
 
     @Inject
