@@ -41,11 +41,6 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         requestApps();
     }
 
-    @Event
-    public void onAppChanged(SiteFolderAppEvents.Changed event) {
-        onChanged(event.app);
-    }
-
     @Override
     public void onEditClicked(AbstractApplicationListItemView itemView) {
 
@@ -69,13 +64,8 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
             return;
         }
 
-        Application value = itemViewToModel.get(itemView);
+        itemViewForRemove = itemView;
 
-        if (value == null) {
-            return;
-        }
-
-        appIdForRemove = value.getId();
         fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderAppConfirmRemove()));
     }
 
@@ -85,11 +75,17 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
             return;
         }
 
-        if (appIdForRemove == null) {
+        if (itemViewForRemove == null) {
             return;
         }
 
-        siteFolderController.removeApplication(appIdForRemove, new RequestCallback<Boolean>() {
+        Application value = itemViewToModel.get(itemViewForRemove);
+
+        if (value == null) {
+            return;
+        }
+
+        siteFolderController.removeApplication(value.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -100,11 +96,11 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
                 if (result) {
                     fireEvent(new SiteFolderAppEvents.ChangeModel());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    onRemoved(appIdForRemove);
+                    onRemoved(itemViewForRemove);
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderAppNotRemoved(), NotifyEvents.NotifyType.ERROR));
                 }
-                appIdForRemove = null;
+                itemViewForRemove = null;
             }
         });
     }
@@ -141,40 +137,14 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         return itemView;
     }
 
-    private void onRemoved(Long id) {
+    private void onRemoved(AbstractApplicationListItemView itemViewForRemove) {
 
-        if (id == null) {
+        if (itemViewForRemove == null) {
             return;
         }
 
-        for (Map.Entry<AbstractApplicationListItemView, Application> entry : itemViewToModel.entrySet()) {
-            AbstractApplicationListItemView itemView = entry.getKey();
-            Application application = entry.getValue();
-            if (id.equals(application.getId())) {
-                view.getChildContainer().remove(itemView.asWidget());
-                itemViewToModel.remove(itemView);
-                break;
-            }
-        }
-    }
-
-    private void onChanged(Application application) {
-
-        if (application == null || application.getId() == null) {
-            return;
-        }
-
-        for (Map.Entry<AbstractApplicationListItemView, Application> entry : itemViewToModel.entrySet()) {
-            AbstractApplicationListItemView iw = entry.getKey();
-            Application a = entry.getValue();
-            if (application.getId().equals(a.getId())) {
-                AbstractApplicationListItemView itemView = makeItemView(application);
-                view.getChildContainer().remove(iw.asWidget());
-                view.getChildContainer().add(itemView.asWidget());
-                itemViewToModel.replace(iw, a, application);
-                break;
-            }
-        }
+        view.getChildContainer().remove(itemViewForRemove.asWidget());
+        itemViewToModel.remove(itemViewForRemove);
     }
 
     @Inject
@@ -199,7 +169,7 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         }
     };
     private Long serverId = null;
-    private Long appIdForRemove = null;
+    private AbstractApplicationListItemView itemViewForRemove = null;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private Map<AbstractApplicationListItemView, Application> itemViewToModel = new HashMap<>();
 }

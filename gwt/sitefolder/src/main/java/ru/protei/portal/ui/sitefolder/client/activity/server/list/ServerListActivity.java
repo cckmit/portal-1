@@ -20,7 +20,6 @@ import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractS
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemView;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -40,11 +39,6 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         platformId = event.platformId;
 
         requestServers();
-    }
-
-    @Event
-    public void onServerChanged(SiteFolderServerEvents.Changed event) {
-        onChanged(event.server);
     }
 
     @Override
@@ -70,13 +64,8 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
             return;
         }
 
-        Server value = itemViewToModel.get(itemView);
+        itemViewForRemove = itemView;
 
-        if (value == null) {
-            return;
-        }
-
-        serverIdForRemove = value.getId();
         fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.siteFolderServerConfirmRemove()));
     }
 
@@ -86,11 +75,17 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
             return;
         }
 
-        if (serverIdForRemove == null) {
+        if (itemViewForRemove == null) {
             return;
         }
 
-        siteFolderController.removeServer(serverIdForRemove, new RequestCallback<Boolean>() {
+        Server value = itemViewToModel.get(itemViewForRemove);
+
+        if (value == null) {
+            return;
+        }
+
+        siteFolderController.removeServer(value.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
@@ -101,11 +96,11 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
                 if (result) {
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerRemoved(), NotifyEvents.NotifyType.SUCCESS));
-                    onRemoved(serverIdForRemove);
+                    onRemoved(itemViewForRemove);
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.siteFolderServerNotRemoved(), NotifyEvents.NotifyType.ERROR));
                 }
-                serverIdForRemove = null;
+                itemViewForRemove = null;
             }
         });
     }
@@ -143,40 +138,14 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         return itemView;
     }
 
-    private void onRemoved(Long id) {
+    private void onRemoved(AbstractServerListItemView itemViewForRemove) {
 
-        if (id == null) {
+        if (itemViewForRemove == null) {
             return;
         }
 
-        for (Map.Entry<AbstractServerListItemView, Server> entry : itemViewToModel.entrySet()) {
-            AbstractServerListItemView itemView = entry.getKey();
-            Server server = entry.getValue();
-            if (id.equals(server.getId())) {
-                view.getChildContainer().remove(itemView.asWidget());
-                itemViewToModel.remove(itemView);
-                break;
-            }
-        }
-    }
-
-    private void onChanged(Server server) {
-
-        if (server == null || server.getId() == null) {
-            return;
-        }
-
-        for (Map.Entry<AbstractServerListItemView, Server> entry : itemViewToModel.entrySet()) {
-            AbstractServerListItemView iw = entry.getKey();
-            Server s = entry.getValue();
-            if (server.getId().equals(s.getId())) {
-                AbstractServerListItemView itemView = makeItemView(server);
-                view.getChildContainer().remove(iw.asWidget());
-                view.getChildContainer().add(itemView.asWidget());
-                itemViewToModel.replace(iw, s, server);
-                break;
-            }
-        }
+        view.getChildContainer().remove(itemViewForRemove.asWidget());
+        itemViewToModel.remove(itemViewForRemove);
     }
 
     @Inject
@@ -201,7 +170,7 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         }
     };
     private Long platformId = null;
-    private Long serverIdForRemove = null;
+    private AbstractServerListItemView itemViewForRemove = null;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private Map<AbstractServerListItemView, Server> itemViewToModel = new HashMap<>();
 }

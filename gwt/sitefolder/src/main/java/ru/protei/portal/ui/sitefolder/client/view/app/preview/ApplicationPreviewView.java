@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PathInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.sitefolder.client.activity.app.preview.AbstractApplicationPreviewActivity;
@@ -55,7 +56,7 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     @Override
     public void setPaths(PathInfo value) {
         paths.setInnerHTML(value.getPaths().stream()
-                .map(pathItem -> pathItem.getDesc() + " (" + pathItem.getPath() + ")")
+                .map(pathItem -> pathItem.getPath() + (HelperFunc.isNotEmpty(pathItem.getDesc()) ? " (" + pathItem.getDesc() + ")" : ""))
                 .collect(Collectors.joining("<br>"))
         );
     }
