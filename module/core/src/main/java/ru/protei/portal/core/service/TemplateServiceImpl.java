@@ -49,6 +49,12 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
 
+        if (newState != null) {
+            newState.setInfo(escapeText(newState.getInfo()));
+        }
+        if (oldState != null) {
+            oldState.setInfo(escapeText(oldState.getInfo()));
+        }
 
         Map<String, Object> templateModel = new HashMap<>();
 
@@ -165,6 +171,15 @@ public class TemplateServiceImpl implements TemplateService {
                     return caseComment;
                 } )
                 .collect( toList() );
+    }
+
+    private String escapeText(String text) {
+        if (text == null) {
+            return null;
+        }
+        text = HTMLHelper.htmlEscape( text );
+        text = replaceLineBreaks( text );
+        return text;
     }
 
     private String escapeTextComment(String text) {
