@@ -78,6 +78,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         createCrossCRMLinks(caseLinks, caseLinksOld);
 
+        removeCrossCRMLinks(caseLinksOld, idsToRemove);
+
         for (CaseLink caseLink : caseLinks) {
             caseLinkDAO.saveOrUpdate(caseLink);
         }
@@ -149,6 +151,40 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             idsToRemove.add(caseLinkOld.getId());
         }
         return idsToRemove;
+    }
+
+    private void removeCrossCRMLinks(List<CaseLink> caseLinks, List<Long> idsToRemove) {
+        outer: for (ListIterator<Long> it = idsToRemove.listIterator(); it.hasNext();) {
+            Long caseLinkId = it.next();
+            Long caseId = null;
+            Long caseIdRemote = null;
+            for (CaseLink caseLink : caseLinks) {
+                if (caseLinkId.equals(caseLink.getId())) {
+                    caseId = caseLink.getCaseId();
+                    caseIdRemote = getCaseIdFromLinkRemoteId(caseLink);
+                    break;
+                }
+            }
+            if (caseIdRemote == null) {
+                continue;
+            }
+            // попытаемся найти перекресную ссылку
+            List<CaseLink> crossCaseLinks = caseLinkDAO.getCaseLinks(new CaseLinkQuery(caseIdRemote, false));
+            if (crossCaseLinks != null) {
+                for (CaseLink ccl : crossCaseLinks) {
+                    Long cclCaseId = ccl.getCaseId();
+                    Long cclCaseIdRemote = getCaseIdFromLinkRemoteId(ccl);
+                    if (cclCaseIdRemote == null) {
+                        continue;
+                    }
+                    if (caseId.equals(cclCaseIdRemote) && caseIdRemote.equals(cclCaseId)) {
+                        // мы нашли перекрестную ссылку, надо бы ее удалить
+                        it.add(ccl.getId());
+                        continue outer;
+                    }
+                }
+            }
+        }
     }
 
     private void createCrossCRMLinks(List<CaseLink> caseLinks, List<CaseLink> caseLinksOld) {
