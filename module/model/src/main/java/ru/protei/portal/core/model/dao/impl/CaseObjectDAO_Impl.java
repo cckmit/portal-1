@@ -43,6 +43,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public Long getCaseNo(long caseId) {
+        CaseObject obj = partialGetByCondition("id=?", Collections.singletonList(caseId), "CASENO");
+        return obj != null ? obj.getCaseNumber() : null;
+    }
+
+    @Override
     public CaseObject getCaseByCaseno(long caseno) {
         return getByCondition("case_object.caseno=?", caseno);
     }
