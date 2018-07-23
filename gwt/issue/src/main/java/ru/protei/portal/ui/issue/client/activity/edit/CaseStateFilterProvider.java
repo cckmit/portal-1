@@ -36,22 +36,19 @@ public abstract class CaseStateFilterProvider implements Activity
 
     public Selector.SelectorFilter<En_CaseState> makeFilter(List<CaseState> companyCaseStates) {
         final Set<En_CaseState> companiesStates = new HashSet<>();
-        CollectionUtils.transform(companyCaseStates, companiesStates, input -> CaseState.asState(input));
-        return new Selector.SelectorFilter<En_CaseState>(){
-            @Override
-            public boolean isDisplayed(En_CaseState value) {
-                if (!statesMap.containsKey(value)) {
-                    return false;
-                }
-                if (ALL == statesMap.get(value).getUsageInCompanies()) {
-                    return true;
-                }
-                if (NONE == statesMap.get(value).getUsageInCompanies()) {
-                    return false;
-                }
-
-                return companiesStates.contains(value);
+        CollectionUtils.transform(companyCaseStates, companiesStates, CaseState::asState);
+        return value -> {
+            if (!statesMap.containsKey(value)) {
+                return false;
             }
+            if (ALL == statesMap.get(value).getUsageInCompanies()) {
+                return true;
+            }
+            if (NONE == statesMap.get(value).getUsageInCompanies()) {
+                return false;
+            }
+
+            return companiesStates.contains(value);
         };
 
     }

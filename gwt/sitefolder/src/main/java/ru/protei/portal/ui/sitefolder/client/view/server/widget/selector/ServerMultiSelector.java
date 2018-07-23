@@ -14,6 +14,7 @@ public class ServerMultiSelector extends MultipleInputSelector<EntityOption> imp
     public void init() {
         serverModel.subscribe(this);
         setAddName(lang.buttonAdd());
+        setClearName( lang.buttonClear() );
     }
 
     public void fillOptions(List<EntityOption> options) {

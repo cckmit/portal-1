@@ -18,6 +18,7 @@ public class ProductMultiSelector extends MultipleInputSelector< ProductShortVie
     public void init( ProductModel model, Lang lang ) {
         model.subscribe( this );
         setAddName( lang.buttonAdd() );
+        setClearName( lang.buttonClear() );
     }
 
     public void fillOptions( List< ProductShortView > options ) {
