@@ -61,4 +61,5 @@
   <include file="2018-07-05-add-locale-column-to-person-table.xml" relativeToChangelogFile="true" />
   <include file="2018-07-05-add-gost-to-document_type.xml" relativeToChangelogFile="true" />
   <include file="2018-07-06-create-project_to_product-table.xml" relativeToChangelogFile="true" />
+  <include file="2018-07-23-add_remote_case_id_column_to_case_link_table.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

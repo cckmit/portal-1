@@ -21,6 +21,9 @@ public class CaseLink implements Serializable {
     @JdbcColumn(name="remote_id")
     private String remoteId;
 
+    @JdbcColumn(name="remote_case_id")
+    private Long remoteCaseId;
+
     @JdbcJoinedColumn(mappedColumn = "private_flag", table = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
             @JdbcJoinData(remoteColumn = "CASENO", value = "(SELECT CAST(remote_id AS UNSIGNED INTEGER))")
@@ -84,6 +87,14 @@ public class CaseLink implements Serializable {
         this.privateCase = privateCase;
     }
 
+    public Long getRemoteCaseId() {
+        return remoteCaseId;
+    }
+
+    public void setRemoteCaseId(Long remoteCaseId) {
+        this.remoteCaseId = remoteCaseId;
+    }
+
     public boolean equals(CaseLink caseLink) {
         return  getCaseId().equals(caseLink.getCaseId()) &&
                 getRemoteId().equals(caseLink.getRemoteId()) &&
@@ -97,6 +108,7 @@ public class CaseLink implements Serializable {
                 ", caseId=" + caseId +
                 ", type=" + type +
                 ", remoteId=" + remoteId +
+                ", remoteCaseId=" + remoteCaseId +
                 ", link='" + link + '\'' +
                 '}';
     }

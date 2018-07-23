@@ -81,6 +81,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         List<CaseLink> caseLinksOnlyNew = makeCaseLinkListOnlyNew(caseLinks, caseLinksOld);
 
+        applyCaseLinkRemoteCaseId(caseLinksOnlyNew);
+
         caseLinks.addAll(createCrossCRMLinks(caseLinksOnlyNew));
 
         caseLinksToRemove.addAll(removeCrossCRMLinks(caseLinksToRemove));
@@ -178,6 +180,32 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return false;
     }
 
+    private void applyCaseLinkRemoteCaseId(List<CaseLink> caseLinks) {
+
+        List<CaseLink> caseLinksCRM = makeCaseLinkListOnlyCRM(caseLinks);
+
+        if (CollectionUtils.isEmpty(caseLinksCRM)) {
+            return;
+        }
+
+        List<Long> remoteCaseNumberList = makeCaseNumberList(caseLinksCRM);
+
+        List<CaseObject> partialCaseObjects = caseObjectDAO.getCaseIdAndNumbersByCaseNumbers(remoteCaseNumberList);
+
+        if (CollectionUtils.isEmpty(partialCaseObjects)) {
+            return;
+        }
+
+        for (CaseObject pco : partialCaseObjects) {
+            for (CaseLink cl : caseLinks) {
+                if (Objects.equals(cl.getRemoteId(), String.valueOf(pco.getCaseNumber()))) {
+                    cl.setRemoteCaseId(pco.getId());
+                    break;
+                }
+            }
+        }
+    }
+
     private List<CaseLink> createCrossCRMLinks(List<CaseLink> caseLinks) {
 
         List<CaseLink> caseLinksCRM = makeCaseLinkListOnlyCRM(caseLinks);
@@ -238,6 +266,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         crossCaseLink.setCaseId(clWithId.remoteId);
         crossCaseLink.setType(En_CaseLink.CRM);
         crossCaseLink.setRemoteId(String.valueOf(caseNo));
+        crossCaseLink.setRemoteCaseId(clWithId.caseLink.getCaseId());
         return crossCaseLink;
     }
 
