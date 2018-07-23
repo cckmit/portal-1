@@ -2,18 +2,19 @@ package ru.protei.portal.core.service;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.user.AuthService;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -54,6 +55,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     }
 
     @Override
+    @Transactional
     public CoreResponse mergeLinks(AuthToken token, long case_id, List<CaseLink> caseLinks) {
 
         if (caseLinks == null) {
@@ -70,25 +72,34 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             }
         }
 
-        mergeCaseLinksByScope(isShowOnlyPrivate, case_id, caseLinks);
+
+        caseLinks = mergeCaseLinksByScope(caseLinks, isShowOnlyPrivate, case_id);
 
         List<CaseLink> caseLinksOld = caseLinkDAO.getCaseLinks(new CaseLinkQuery(case_id, isShowOnlyPrivate));
 
-        List<Long> idsToRemove = getLinkIdsToRemove(caseLinks, caseLinksOld);
+        List<CaseLink> caseLinksToRemove = makeCaseLinkListToRemove(caseLinks, caseLinksOld);
 
-        createCrossCRMLinks(caseLinks, caseLinksOld);
+        List<CaseLink> caseLinksOnlyNew = makeCaseLinkListOnlyNew(caseLinks, caseLinksOld);
 
-        removeCrossCRMLinks(caseLinksOld, idsToRemove);
+        caseLinks.addAll(createCrossCRMLinks(caseLinksOnlyNew));
+
+        caseLinksToRemove.addAll(removeCrossCRMLinks(caseLinksToRemove));
+
 
         for (CaseLink caseLink : caseLinks) {
             caseLinkDAO.saveOrUpdate(caseLink);
         }
-        caseLinkDAO.removeByKeys(idsToRemove);
+
+        caseLinkDAO.removeByKeys(caseLinksToRemove.stream()
+                .map(CaseLink::getId)
+                .collect(Collectors.toList())
+        );
+
 
         return new CoreResponse<>().success(null);
     }
 
-    private void mergeCaseLinksByScope(boolean isShowOnlyPrivate, long case_id, List<CaseLink> updated) {
+    private List<CaseLink> mergeCaseLinksByScope(List<CaseLink> updated, boolean isShowOnlyPrivate, long case_id) {
         if (updated == null) {
             updated = new ArrayList<>();
         }
@@ -100,155 +111,308 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         if (isShowOnlyPrivate) {
             Set<CaseLink> current = new HashSet<>(caseLinkDAO.getCaseLinks(new CaseLinkQuery(case_id, false)));
             for (CaseLink caseLink : current) {
-                if (caseLink.getType().isForcePrivacy() || (
-                        En_CaseLink.CRM.equals(caseLink.getType()) &&
-                        ifCaseObjectPrivate(caseLink)
-                )) {
+                if (caseLink.getType().isForcePrivacy() || ifCaseLinkIsPrivate(caseLink)) {
                     updated.add(caseLink);
                 }
             }
         }
+
+        return updated;
     }
 
     private void applyCaseLinksByScope(boolean isShowOnlyPrivate, List<CaseLink> caseLinks) {
+
         if (CollectionUtils.isEmpty(caseLinks)) {
             return;
         }
+
         if (isShowOnlyPrivate) {
             caseLinks.removeIf(caseLink ->
-                    caseLink.getType().isForcePrivacy() || (
-                            En_CaseLink.CRM.equals(caseLink.getType()) &&
-                            ifCaseObjectPrivate(caseLink)
-                    )
+                    caseLink.getType().isForcePrivacy() || ifCaseLinkIsPrivate(caseLink)
             );
         }
     }
 
-    private boolean ifCaseObjectPrivate(CaseLink caseLink) {
-        if (caseLink.isPrivateCase() != null && caseLink.isPrivateCase()) {
+    private List<CaseLink> makeCaseLinkListToRemove(List<CaseLink> caseLinks, List<CaseLink> caseLinksOld) {
+
+        if (CollectionUtils.isEmpty(caseLinks) || CollectionUtils.isEmpty(caseLinksOld)) {
+            return new ArrayList<>();
+        }
+
+        return caseLinksOld.stream()
+                .filter(cl -> !ifContainsCaseLinkById(caseLinks, cl))
+                .collect(Collectors.toList());
+    }
+
+    private boolean ifCaseLinkIsPrivate(CaseLink caseLink) {
+
+        if (caseLink == null || !En_CaseLink.CRM.equals(caseLink.getType())) {
+            return false;
+        }
+
+        if (caseLink.isPrivateCase()) {
             return true;
         }
-        try {
-            CaseObject co = caseObjectDAO.getCaseByCaseno(Long.parseLong(caseLink.getRemoteId()));
-            if (co != null && co.isPrivateCase()) {
+
+        Long caseNo = parseRemoteIdAsCaseObjectNumber(caseLink.getRemoteId());
+        if (caseNo == null) {
+            return false;
+        }
+
+        CaseObject co = caseObjectDAO.getCaseByCaseno(caseNo);
+        return co != null && co.isPrivateCase();
+    }
+
+    private boolean ifContainsCaseLinkById(List<CaseLink> caseLinks, CaseLink caseLink) {
+
+        if (CollectionUtils.isEmpty(caseLinks)) {
+            return false;
+        }
+
+        for (CaseLink cl : caseLinks) {
+            if (Objects.equals(cl.getId(), caseLink.getId())) {
                 return true;
             }
-        } catch (NumberFormatException e) {
-            // remote id is not a long value
+        }
+
+        return false;
+    }
+
+    private List<CaseLink> createCrossCRMLinks(List<CaseLink> caseLinks) {
+
+        List<CaseLink> caseLinksCRM = makeCaseLinkListOnlyCRM(caseLinks);
+
+        if (CollectionUtils.isEmpty(caseLinksCRM)) {
+            return new ArrayList<>();
+        }
+
+        List<Long> remoteCaseNumberList = makeCaseNumberList(caseLinksCRM);
+
+        List<CaseObject> partialCaseObjects = caseObjectDAO.getCaseIdAndNumbersByCaseNumbers(remoteCaseNumberList);
+
+        List<CaseLinkWithCaseId> caseLinksCRMWithIds = makeCaseLinkListWithIds(caseLinksCRM, partialCaseObjects);
+
+        List<CaseLink> crossCaseCRMLinks = new ArrayList<>();
+
+        caseLinksCRMWithIds.forEach(clWithId -> {
+            CaseLink cl = createCrossCRMLink(clWithId);
+            if (cl != null) {
+                crossCaseCRMLinks.add(cl);
+            }
+        });
+
+        return crossCaseCRMLinks;
+    }
+
+    private CaseLink createCrossCRMLink(CaseLinkWithCaseId clWithId) {
+
+        List<CaseLink> crossCaseLinks = caseLinkDAO.getCaseLinks(new CaseLinkQuery(clWithId.remoteId, false));
+
+        List<CaseLink> crossCaseLinksCRM = makeCaseLinkListOnlyCRM(crossCaseLinks);
+
+        if (CollectionUtils.isEmpty(crossCaseLinksCRM)) {
+            return createLink(clWithId);
+        }
+
+        List<Long> remoteCaseNumberList = makeCaseNumberList(crossCaseLinksCRM);
+
+        List<CaseObject> partialCaseObjects = caseObjectDAO.getCaseIdAndNumbersByCaseNumbers(remoteCaseNumberList);
+
+        List<CaseLinkWithCaseId> crossCaseLinksCRMWithIds = makeCaseLinkListWithIds(crossCaseLinksCRM, partialCaseObjects);
+
+        for (CaseLinkWithCaseId crossClWithId : crossCaseLinksCRMWithIds) {
+            if (Objects.equals(crossClWithId.remoteId, clWithId.caseLink.getCaseId())) {
+                return null;
+            }
+        }
+
+        return createLink(clWithId);
+    }
+
+    private CaseLink createLink(CaseLinkWithCaseId clWithId) {
+        Long caseNo = caseObjectDAO.getCaseNo(clWithId.caseLink.getCaseId());
+        if (caseNo == null) {
+            return null;
+        }
+        CaseLink crossCaseLink = new CaseLink();
+        crossCaseLink.setCaseId(clWithId.remoteId);
+        crossCaseLink.setType(En_CaseLink.CRM);
+        crossCaseLink.setRemoteId(String.valueOf(caseNo));
+        return crossCaseLink;
+    }
+
+    private List<CaseLink> removeCrossCRMLinks(List<CaseLink> caseLinks) {
+
+        List<CaseLink> caseLinksCRM = makeCaseLinkListOnlyCRM(caseLinks);
+
+        if (CollectionUtils.isEmpty(caseLinksCRM)) {
+            return new ArrayList<>();
+        }
+
+        List<Long> remoteCaseNumberList = makeCaseNumberList(caseLinksCRM);
+
+        List<CaseObject> partialCaseObjects = caseObjectDAO.getCaseIdAndNumbersByCaseNumbers(remoteCaseNumberList);
+
+        List<CaseLinkWithCaseId> caseLinksCRMWithIds = makeCaseLinkListWithIds(caseLinksCRM, partialCaseObjects);
+
+        List<CaseLink> crossCaseCRMLinks = new ArrayList<>();
+
+        caseLinksCRMWithIds.forEach(clWithId -> {
+            CaseLink cl = removeCrossCRMLinks(clWithId);
+            if (cl != null) {
+                crossCaseCRMLinks.add(cl);
+            }
+        });
+
+        return crossCaseCRMLinks;
+    }
+
+    private CaseLink removeCrossCRMLinks(CaseLinkWithCaseId clWithId) {
+
+        List<CaseLink> crossCaseLinks = caseLinkDAO.getCaseLinks(new CaseLinkQuery(clWithId.remoteId, false));
+
+        List<CaseLink> crossCaseLinksCRM = makeCaseLinkListOnlyCRM(crossCaseLinks);
+
+        if (CollectionUtils.isEmpty(crossCaseLinksCRM)) {
+            return null;
+        }
+
+        List<Long> remoteCaseNumberList = makeCaseNumberList(crossCaseLinksCRM);
+
+        List<CaseObject> partialCaseObjects = caseObjectDAO.getCaseIdAndNumbersByCaseNumbers(remoteCaseNumberList);
+
+        List<CaseLinkWithCaseId> crossCaseLinksCRMWithIds = makeCaseLinkListWithIds(crossCaseLinksCRM, partialCaseObjects);
+
+        for (CaseLinkWithCaseId crossClWithId : crossCaseLinksCRMWithIds) {
+            if (Objects.equals(crossClWithId.remoteId, clWithId.caseLink.getCaseId())) {
+                return crossClWithId.caseLink;
+            }
+        }
+
+        return null;
+    }
+
+    private List<CaseLink> makeCaseLinkListOnlyNew(List<CaseLink> caseLinks, List<CaseLink> caseLinksOld) {
+
+        if (CollectionUtils.isEmpty(caseLinks)) {
+            return new ArrayList<>();
+        }
+
+        return caseLinks.stream()
+                .filter(cl -> !ifContainsCaseLink(caseLinksOld, cl))
+                .collect(Collectors.toList());
+    }
+
+    private List<CaseLink> makeCaseLinkListOnlyCRM(List<CaseLink> caseLinks) {
+
+        if (CollectionUtils.isEmpty(caseLinks)) {
+            return new ArrayList<>();
+        }
+
+        return caseLinks.stream()
+                .filter(cl -> En_CaseLink.CRM.equals(cl.getType()))
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> makeCaseNumberList(List<CaseLink> caseLinks) {
+
+        if (CollectionUtils.isEmpty(caseLinks)) {
+            return new ArrayList<>();
+        }
+
+        return caseLinks.stream()
+                .filter(cl -> parseRemoteIdAsCaseObjectNumber(cl.getRemoteId()) != null)
+                .map(cl -> parseRemoteIdAsCaseObjectNumber(cl.getRemoteId()))
+                .collect(Collectors.toList());
+    }
+
+    private List<CaseLinkWithCaseId> makeCaseLinkListWithIds(List<CaseLink> caseLinks, List<CaseObject> partialCaseObjects) {
+
+        List<CaseLinkWithCaseId> caseLinksCRMWithIds = new ArrayList<>();
+
+        if (CollectionUtils.isEmpty(caseLinks) || CollectionUtils.isEmpty(partialCaseObjects)) {
+            return caseLinksCRMWithIds;
+        }
+
+        for (CaseLink cl : caseLinks) {
+
+            Long caseNo = parseRemoteIdAsCaseObjectNumber(cl.getRemoteId());
+            if (caseNo == null) {
+                continue;
+            }
+
+            for (CaseObject pco : partialCaseObjects) {
+                if (Objects.equals(pco.getCaseNumber(), caseNo)) {
+                    caseLinksCRMWithIds.add(new CaseLinkWithCaseId(cl, pco.getId()));
+                    break;
+                }
+            }
+
+        }
+
+        return caseLinksCRMWithIds;
+    }
+
+    private boolean ifContainsCaseLink(List<CaseLink> caseLinks, CaseLink caseLink) {
+
+        if (CollectionUtils.isEmpty(caseLinks)) {
+            return false;
+        }
+
+        for (CaseLink cl : caseLinks) {
+            if (cl.equals(caseLink)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean ifCaseObjectListContainsCaseNo(List<CaseObject> caseObjects, Long caseNo) {
+
+        if (CollectionUtils.isEmpty(caseObjects) || caseNo == null) {
+            return false;
+        }
+
+        for (CaseObject caseObject : caseObjects) {
+            if (Objects.equals(caseObject.getCaseNumber(), caseNo)) {
+                return true;
+            }
         }
         return false;
     }
 
-    private List<Long> getLinkIdsToRemove(List<CaseLink> caseLinks, List<CaseLink> caseLinksOld) {
-        List<Long> idsToRemove = new ArrayList<>();
-        outer: for (CaseLink caseLinkOld : caseLinksOld) {
-            for (CaseLink caseLink : caseLinks) {
-                if (caseLinkOld.getId().equals(caseLink.getId())) {
-                    // contains
-                    continue outer;
-                }
-            }
-            idsToRemove.add(caseLinkOld.getId());
-        }
-        return idsToRemove;
-    }
+    private CaseLink findCaseLinkById(List<CaseLink> caseLinks, Long caseLinkId) {
 
-    private void removeCrossCRMLinks(List<CaseLink> caseLinks, List<Long> idsToRemove) {
-        outer: for (ListIterator<Long> it = idsToRemove.listIterator(); it.hasNext();) {
-            Long caseLinkId = it.next();
-            Long caseId = null;
-            Long caseIdRemote = null;
-            for (CaseLink caseLink : caseLinks) {
-                if (caseLinkId.equals(caseLink.getId())) {
-                    caseId = caseLink.getCaseId();
-                    caseIdRemote = getCaseIdFromLinkRemoteId(caseLink);
-                    break;
-                }
-            }
-            if (caseIdRemote == null) {
-                continue;
-            }
-            // попытаемся найти перекресную ссылку
-            List<CaseLink> crossCaseLinks = caseLinkDAO.getCaseLinks(new CaseLinkQuery(caseIdRemote, false));
-            if (crossCaseLinks != null) {
-                for (CaseLink ccl : crossCaseLinks) {
-                    Long cclCaseId = ccl.getCaseId();
-                    Long cclCaseIdRemote = getCaseIdFromLinkRemoteId(ccl);
-                    if (cclCaseIdRemote == null) {
-                        continue;
-                    }
-                    if (caseId.equals(cclCaseIdRemote) && caseIdRemote.equals(cclCaseId)) {
-                        // мы нашли перекрестную ссылку, надо бы ее удалить
-                        it.add(ccl.getId());
-                        continue outer;
-                    }
-                }
-            }
-        }
-    }
-
-    private void createCrossCRMLinks(List<CaseLink> caseLinks, List<CaseLink> caseLinksOld) {
-        outer: for (ListIterator<CaseLink> it = caseLinks.listIterator(); it.hasNext();) {
-            CaseLink caseLink = it.next();
-            for (CaseLink caseLinkOld : caseLinksOld) {
-                if (caseLinkOld.equals(caseLink)) {
-                    continue outer;
-                }
-            }
-            // у нас тут оказывается новая ссылка
-            Long caseId = caseLink.getCaseId();
-            Long caseIdRemote = getCaseIdFromLinkRemoteId(caseLink);
-            if (caseIdRemote == null) {
-                continue;
-            }
-            // да еще и ссылается на crm обращение
-            // проверим, может перекрестная ссылка уже существует
-            List<CaseLink> crossCaseLinks = caseLinkDAO.getCaseLinks(new CaseLinkQuery(caseIdRemote, false));
-            if (crossCaseLinks != null) {
-                for (CaseLink ccl : crossCaseLinks) {
-                    Long cclCaseId = ccl.getCaseId();
-                    Long cclCaseIdRemote = getCaseIdFromLinkRemoteId(ccl);
-                    if (cclCaseIdRemote == null) {
-                        continue;
-                    }
-                    if (caseId.equals(cclCaseIdRemote) && caseIdRemote.equals(cclCaseId)) {
-                        // да, существует
-                        continue outer;
-                    }
-                }
-            }
-            // неа, создаем перекрестную ссылку на CRM обращение
-            Long caseNo = getCaseNoFromLinkCaseId(caseLink);
-            if (caseNo == null) {
-                continue;
-            }
-            CaseLink cl = new CaseLink();
-            cl.setCaseId(caseIdRemote);
-            cl.setType(En_CaseLink.CRM);
-            cl.setRemoteId(String.valueOf(caseNo));
-            it.add(cl);
-        }
-    }
-
-    private Long getCaseIdFromLinkRemoteId(CaseLink caseLink) {
-        if (!En_CaseLink.CRM.equals(caseLink.getType())) {
+        if (CollectionUtils.isEmpty(caseLinks)) {
             return null;
         }
+
+        for (CaseLink caseLink : caseLinks) {
+            if (Objects.equals(caseLink.getId(), caseLinkId)) {
+                return caseLink;
+            }
+        }
+
+        return null;
+    }
+
+    private Long parseRemoteIdAsCaseObjectNumber(String remoteId) {
         try {
-            return caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT, Long.parseLong(caseLink.getRemoteId()));
+            return Long.parseLong(remoteId);
         } catch (NumberFormatException e) {
             return null;
         }
     }
 
-    private Long getCaseNoFromLinkCaseId(CaseLink caseLink) {
-        if (!En_CaseLink.CRM.equals(caseLink.getType())) {
-            return null;
+    private class CaseLinkWithCaseId {
+
+        private CaseLinkWithCaseId(CaseLink caseLink, Long remoteId) {
+            this.caseLink = caseLink;
+            this.remoteId = remoteId;
         }
-        try {
-            return caseObjectDAO.getCaseNo(caseLink.getCaseId());
-        } catch (NumberFormatException e) {
-            return null;
-        }
+
+        private CaseLink caseLink;
+        private Long remoteId;
     }
 }
