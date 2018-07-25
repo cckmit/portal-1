@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -20,9 +21,6 @@ public class CaseLink implements Serializable {
 
     @JdbcColumn(name="remote_id")
     private String remoteId;
-
-    @JdbcColumn(name="remote_case_id")
-    private Long remoteCaseId;
 
     @JdbcJoinedColumn(mappedColumn = "private_flag", table = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
@@ -87,18 +85,14 @@ public class CaseLink implements Serializable {
         this.privateCase = privateCase;
     }
 
-    public Long getRemoteCaseId() {
-        return remoteCaseId;
-    }
-
-    public void setRemoteCaseId(Long remoteCaseId) {
-        this.remoteCaseId = remoteCaseId;
-    }
-
     public boolean equals(CaseLink caseLink) {
         return  getCaseId().equals(caseLink.getCaseId()) &&
                 getRemoteId().equals(caseLink.getRemoteId()) &&
                 getType().equals(caseLink.getType());
+    }
+
+    public boolean isPrivate() {
+        return ( privateCase != null && privateCase ) || ( type != null && type.isForcePrivacy());
     }
 
     @Override
@@ -108,7 +102,6 @@ public class CaseLink implements Serializable {
                 ", caseId=" + caseId +
                 ", type=" + type +
                 ", remoteId=" + remoteId +
-                ", remoteCaseId=" + remoteCaseId +
                 ", link='" + link + '\'' +
                 '}';
     }

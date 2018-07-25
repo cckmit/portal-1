@@ -160,7 +160,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (CollectionUtils.isNotEmpty(caseObject.getLinks())) {
-            caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getLinks());
+            caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -234,7 +234,7 @@ public class CaseServiceImpl implements CaseService {
     public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
 
-        caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getLinks());
+        caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
 
         return updateCaseObject (caseObject, descriptor.getPerson());
     }

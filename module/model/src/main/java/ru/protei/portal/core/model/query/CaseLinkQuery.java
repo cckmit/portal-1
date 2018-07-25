@@ -7,17 +7,23 @@ public class CaseLinkQuery extends BaseQuery {
 
     private Long caseId;
     private Boolean showOnlyPrivate;
+    private String remoteId;
 
     public CaseLinkQuery() {}
 
-    public CaseLinkQuery(Long caseId, Boolean showOnlyPrivate) {
-        this(null, null, null, caseId, showOnlyPrivate);
+    public CaseLinkQuery(Long caseId, Boolean showOnlyPrivate, String remoteId) {
+        this(null, null, null, caseId, showOnlyPrivate, remoteId);
     }
 
-    public CaseLinkQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Long caseId, Boolean showOnlyPrivate) {
+    public CaseLinkQuery(Long caseId, Boolean showOnlyPrivate) {
+        this(null, null, null, caseId, showOnlyPrivate, null);
+    }
+
+    public CaseLinkQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Long caseId, Boolean showOnlyPrivate, String remoteId) {
         super(searchString, sortField, sortDir);
         this.caseId = caseId;
         this.showOnlyPrivate = showOnlyPrivate;
+        this.remoteId = remoteId;
     }
 
     public Long getCaseId() {
@@ -34,5 +40,17 @@ public class CaseLinkQuery extends BaseQuery {
 
     public void setShowOnlyPrivate(Boolean showPrivate) {
         this.showOnlyPrivate = showPrivate;
+    }
+
+    public Boolean getShowOnlyPrivate() {
+        return showOnlyPrivate;
+    }
+
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 }
