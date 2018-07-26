@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.issuelinks;
+package ru.protei.portal.ui.common.client.widget.issuelinks.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
@@ -12,9 +12,14 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.widget.issuelinks.link.IssueLink;
 import ru.protei.portal.ui.common.client.widget.issuelinks.popup.CreateLinkPopup;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 
@@ -46,14 +51,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
             return;
         }
 
-        for (CaseLink item : items) {
-            IssueLink itemView = itemViewProvider.get();
-            itemView.setValue(item);
-            itemView.addCloseHandler(event -> removeValue(event.getTarget()));
-            itemToViewModel.put(item, itemView);
-            linksContainer.add(itemView);
-        }
-
+        items.forEach(this::makeItemAndAddToParent);
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
@@ -88,20 +86,55 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
         if (item == null) {
             return;
         }
-        Set<CaseLink> value = getValue();
-        if (value == null) {
-            value = new HashSet<>();
-        }
-        for (CaseLink cl : value) {
-            if (
-                    cl.getRemoteId().equals(item.getRemoteId()) &&
-                    cl.getType().equals(item.getType())
-            ) {
+
+        if (En_CaseLink.CRM.equals(item.getType())) {
+            Long crmRemoteId;
+            try {
+                crmRemoteId = Long.parseLong(item.getRemoteId());
+            } catch (NumberFormatException ex) {
+                // показать ошибку
                 return;
             }
+
+            caseLinkProvider.checkExistCrmLink(crmRemoteId, new RequestCallback<CaseShortView>() {
+                @Override
+                public void onError(Throwable throwable) {}
+
+                @Override
+                public void onSuccess(CaseShortView caseInfo) {
+                    if ( caseInfo == null ) {
+                        // показать ошибку
+                        return;
+                    }
+
+                    item.setRemoteId(caseInfo.getId().toString());
+                    item.setCaseInfo(caseInfo);
+                    item.setLink(caseLinkProvider.getLink(item.getType(), crmRemoteId.toString()));
+
+                    if (items == null) {
+                        items = new HashSet<>();
+                    }
+
+                    if ( items.stream()
+                            .anyMatch(cl -> cl.getRemoteId().equals(item.getRemoteId())
+                                    && cl.getType().equals(item.getType()))) {
+                        return;
+                    }
+                    items.add(item);
+                    makeItemAndAddToParent(item);
+
+                    ValueChangeEvent.fire(IssueLinks.this, items );
+                }
+            });
         }
-        value.add(item);
-        setValue(value);
+    }
+
+    private void makeItemAndAddToParent(CaseLink item) {
+        IssueLink itemView = itemViewProvider.get();
+        itemView.setValue(item);
+        itemView.addCloseHandler(event -> removeValue(event.getTarget()));
+        itemToViewModel.put(item, itemView);
+        linksContainer.add(itemView);
     }
 
     private void removeValue(CaseLink item) {
@@ -118,9 +151,8 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
         toggleVisibility();
     }
 
-    private Map<CaseLink, IssueLink> itemToViewModel = new HashMap<>();
-    private Set<CaseLink> items = null;
-
+    @Inject
+    CaseLinkProvider caseLinkProvider;
     @Inject
     Provider<IssueLink> itemViewProvider;
     @Inject
@@ -132,6 +164,9 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
     HTMLPanel linksContainer;
     @UiField
     Button addLinkButton;
+
+    private Map<CaseLink, IssueLink> itemToViewModel = new HashMap<>();
+    private Set<CaseLink> items = null;
 
     interface IssueLinksViewUiBinder extends UiBinder<HTMLPanel, IssueLinks> {}
     private static IssueLinksViewUiBinder ourUiBinder = GWT.create(IssueLinksViewUiBinder.class);

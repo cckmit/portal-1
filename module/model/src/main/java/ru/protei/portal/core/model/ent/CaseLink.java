@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -32,6 +33,8 @@ public class CaseLink implements Serializable {
             @JdbcJoinData(remoteColumn = "CASENO", value = "(SELECT CAST(remote_id AS UNSIGNED INTEGER))")
     })
     private Boolean privateCase;
+
+    private CaseShortView caseInfo;
 
     // not db column
     private String link = "";
@@ -96,6 +99,14 @@ public class CaseLink implements Serializable {
 
     public void setRemoteCaseId(Long remoteCaseId) {
         this.remoteCaseId = remoteCaseId;
+    }
+
+    public CaseShortView getCaseInfo() {
+        return caseInfo;
+    }
+
+    public void setCaseInfo(CaseShortView caseInfo) {
+        this.caseInfo = caseInfo;
     }
 
     @Override

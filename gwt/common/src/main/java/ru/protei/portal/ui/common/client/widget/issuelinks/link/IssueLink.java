@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.issuelinks.link;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -30,7 +31,6 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
     public void setValue(CaseLink value, boolean fireEvents) {
 
         caseLink = value;
-        caseLink.setLink(caseLinkProvider.getLink(value.getType(), value.getRemoteId()));
 
         text.setText(caseLink.getRemoteId());
         icon.setText(caseLinkLang.getCaseLinkShortName(caseLink.getType()));
@@ -78,8 +78,7 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
         return addHandler(handler, CloseEvent.getType());
     }
 
-    @Inject
-    CaseLinkProvider caseLinkProvider;
+
     @Inject
     En_CaseLinkLang caseLinkLang;
 
@@ -93,6 +92,10 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
     InlineLabel icon;
     @UiField
     Anchor remove;
+    @UiField
+    HTMLPanel caseInfoPanel;
+    @UiField
+    HeadingElement header;
 
     private CaseLink caseLink = null;
 

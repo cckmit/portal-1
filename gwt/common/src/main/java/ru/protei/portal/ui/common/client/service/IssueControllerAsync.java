@@ -44,4 +44,6 @@ public interface IssueControllerAsync {
      * Редактирование комментария обращения
      */
     void editIssueComment(CaseComment comment, AsyncCallback<CaseComment> async);
+
+    void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseShortView> async);
 }

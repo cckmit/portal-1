@@ -490,6 +490,15 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<Boolean>().success(result);
     }
 
+    @Override
+    public CoreResponse<CaseShortView> getCaseShortInfo(AuthToken token, Long caseNumber) {
+        CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
+
+        if(caseObject == null)
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+
+        return new CoreResponse<CaseShortView>().success(caseObject);
+    }
 
     @Override
     @Transactional

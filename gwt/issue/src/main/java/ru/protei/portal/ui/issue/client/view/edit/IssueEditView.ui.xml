@@ -9,7 +9,8 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
-             xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'>
+             xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'
+             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
@@ -25,7 +26,7 @@
                             <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
-                <issuelinks:IssueLinks ui:field="links" styleName="form-group col-xs-12 m-b-0"/>
+                <list:IssueLinks ui:field="links" styleName="form-group col-xs-12 m-b-0"/>
             </div>
             <div class="grid grid-indent">
                 <div class="form-group col-xs-6">

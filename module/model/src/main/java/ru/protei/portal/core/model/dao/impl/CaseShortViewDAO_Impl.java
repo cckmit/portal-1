@@ -44,6 +44,11 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     }
 
     @Override
+    public CaseShortView getCase(Long caseNo) {
+        return getByCondition("case_object.caseno=?", caseNo);
+    }
+
+    @Override
     public Long count(CaseQuery query) {
         if (!isSearchAtComments(query)) {
             return super.count(query);

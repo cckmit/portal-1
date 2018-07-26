@@ -49,4 +49,6 @@ public interface IssueController extends RemoteService {
      * Удаляет все вложения из БД и Cloud которые ранее были привязаны к комментарию
      */
     CaseComment editIssueComment( CaseComment comment ) throws RequestFailedException;
+
+    CaseShortView getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 }
