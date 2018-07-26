@@ -138,10 +138,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
-//    @Override
-//    public HasWidgets getCommentsContainer() {
-//        return commentsContainer;
-//    }
+    @Override
+    public HasWidgets getCommentsContainer() {
+        return commentsContainer;
+    }
 
     @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
@@ -231,8 +231,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     Lang lang;
 
-//    @UiField
-//    HTMLPanel commentsContainer;
+    @UiField
+    HTMLPanel commentsContainer;
 
     @UiField
     TextBox projectName;
