@@ -1126,4 +1126,6 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderPaths();
 
     String openTableView();
+
+    String buttonClear();
 }

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.input;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -45,6 +46,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
             itemContainer.addStyleName( "inactive" );
         }
         caretButton.setEnabled( isEnabled );
+        clearButton.setVisible( isEnabled );
         itemViews.forEach((v) -> v.setEnabled(isEnabled));
     }
 
@@ -56,6 +58,14 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         showPopup( itemContainer );
     }
 
+    @UiHandler( { "clearButton" } )
+    public void onClearClicked( ClickEvent event ) {
+        if (!isEnabled) {
+            return;
+        }
+        clearValues(true );
+    }
+
     public void fillSelectorView( List<String> selectedValues ) {
         itemContainer.clear();
         itemViews.clear();
@@ -63,11 +73,27 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         for ( String val : selectedValues ) {
             addItem( val );
         }
+        clearButton.setVisible(!selectedValues.isEmpty());
     }
 
     public void setAddName( String string ) {
         add.setInnerText( string );
         add.removeClassName( "caret" );
+    }
+
+    public void setClearName( String string ) {
+        clear.setInnerText( string );
+        clear.setClassName( "" );
+    }
+
+    private void clearValues(boolean fireEvents) {
+        itemContainer.clear();
+        itemViews.clear();
+        clearSelected();
+        clearButton.setVisible(false);
+        if ( fireEvents ) {
+            ValueChangeEvent.fire(this, null);
+        }
     }
 
     private void addItem( final String val ) {
@@ -76,7 +102,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         itemView.setEnabled(isEnabled);
 
         itemViews.add( itemView );
-        itemView.setActivity( itemView1 -> removeItem( itemView1, val ) );
+        itemView.setActivity( item -> removeItem( item, val ) );
         itemContainer.add( itemView );
     }
 
@@ -86,7 +112,6 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
         removeItemByName( name );
     }
-
 
     private void initHandlers() {
         itemContainer.addDomHandler( event -> {
@@ -105,6 +130,10 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     HTMLPanel itemContainer;
     @UiField
     SpanElement add;
+    @UiField
+    SpanElement clear;
+    @UiField
+    Button clearButton;
 
     @Inject
     Provider<SelectItemView> itemViewProvider;

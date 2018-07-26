@@ -14,6 +14,7 @@ public class PlatformMultiSelector extends MultipleInputSelector<EntityOption> i
     public void init() {
         platformModel.subscribe(this);
         setAddName(lang.buttonAdd());
+        setClearName( lang.buttonClear() );
     }
 
     public void fillOptions(List<EntityOption> options) {

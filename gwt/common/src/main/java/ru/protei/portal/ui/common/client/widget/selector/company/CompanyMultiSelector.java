@@ -19,6 +19,7 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
     public void init( CompanyModel model, Lang lang ) {
         model.subscribe( this, categories );
         setAddName( lang.buttonAdd() );
+        setClearName( lang.buttonClear() );
     }
 
     public void fillOptions( List< EntityOption > options ) {
@@ -29,9 +30,7 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
     }
 
     @Override
-    public void refreshValue() {
-
-    }
+    public void refreshValue() {}
 
     private List<En_CompanyCategory > categories = Arrays.asList(
             En_CompanyCategory.CUSTOMER,

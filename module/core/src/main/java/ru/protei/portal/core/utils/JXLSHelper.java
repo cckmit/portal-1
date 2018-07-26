@@ -139,6 +139,7 @@ public final class JXLSHelper {
         if (issues.size() != issuesComments.size()) {
             throw new IllegalArgumentException("Not equal size of issues and their comments");
         }
+        WorkTimeFormatter workTimeFormatter = new WorkTimeFormatter();
         writeReport(issues, outputStream, lang, new ReportWriter() {
             @Override
             public int[] getColumnsWidth() {
@@ -153,6 +154,7 @@ public final class JXLSHelper {
                         3350,
                         4600,
                         4200,
+                        5800,
                         5800,
                         5800,
                         5800,
@@ -181,7 +183,8 @@ public final class JXLSHelper {
                         "ir_date_done",
                         "ir_date_verify",
                         "ir_time_solution_first",
-                        "ir_time_solution_full"
+                        "ir_time_solution_full",
+                        "ir_time_elapsed"
                 };
             }
             @Override
@@ -232,7 +235,10 @@ public final class JXLSHelper {
                         done != null ? dateFormat.format(done) : "",
                         verified != null ? dateFormat.format(verified) : "",
                         solutionDurationFirst != null ? duration2string(solutionDurationFirst, lang) : "",
-                        solutionDurationFull != null ? duration2string(solutionDurationFull, lang) : ""
+                        solutionDurationFull != null ? duration2string(solutionDurationFull, lang) : "",
+                        issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ?
+                                workTimeFormatter.format(issue.getTimeElapsed(), lang.get("timeDayLiteral"), lang.get("timeHourLiteral"), lang.get("timeMinuteLiteral"))
+                                : ""
                 };
             }
             @Override

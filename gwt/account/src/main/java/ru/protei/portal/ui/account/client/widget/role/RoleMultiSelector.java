@@ -19,6 +19,7 @@ public class RoleMultiSelector
     public void init( RoleModel model, Lang lang ) {
         model.subscribe( this );
         setAddName( lang.roleAdd() );
+        setClearName( lang.buttonClear() );
     }
 
     @Override
