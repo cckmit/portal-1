@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.view.view;
+package ru.protei.portal.ui.common.client.view.pager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;

@@ -120,7 +120,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasText decimalNumber() {
+    public HasText decimalNumberText() {
+        return decimalNumber;
+    }
+
+    @Override
+    public HasValue<DecimalNumber> decimalNumber() {
         return decimalNumber;
     }
 
@@ -175,6 +180,26 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         return equipment;
     }
 
+    @Override
+    public HasEnabled documentTypeEnabled() {
+        return documentType;
+    }
+
+    @Override
+    public void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints) {
+        decimalNumber.setHints(decimalNumberHints);
+    }
+
+    @Override
+    public void setEquipmentProjectId(Long id) {
+        equipment.setProjectId(id);
+    }
+
+    @Override
+    public void setDocumentTypeCategoryFilter(En_DocumentCategory value) {
+        documentType.setCategoryFilter(value);
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -196,26 +221,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiHandler("equipment")
     public void onEquipmentChanged(ValueChangeEvent<EquipmentShortView> event) {
-        decimalNumber.setValue(null, true);
-        if (event.getValue() == null || event.getValue().getDecimalNumbers()== null) {
-            decimalNumber.setEnabled(false);
-        } else {
-            List<DecimalNumber> decimalNumbers = event.getValue().getDecimalNumbers();
-            decimalNumber.setEnabled(true);
-            decimalNumber.setHints(decimalNumbers);
-        }
-
         if (activity != null)
             activity.onEquipmentChanged();
     }
 
-    @UiHandler("equipmentDecimalNumber")
-    public void onEquipmentDecimalNumberChanged(ValueChangeEvent<DecimalNumber> event) {
-        decimalNumber.setValue(event.getValue());
-    }
-
     @UiHandler("decimalNumber")
-    public void onDecimalNumberChanged(ValueChangeEvent<String> event) {
+    public void onDecimalNumberChanged(ValueChangeEvent<DecimalNumber> event) {
         if (activity != null)
             activity.onDecimalNumberChanged();
     }
@@ -228,26 +239,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiHandler("project")
     public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
-        ProjectInfo value = event.getValue();
-        if (value == null) {
-            equipmentEnabled().setEnabled(false);
-            equipment.setValue(null, true);
-        } else {
-            equipment.setValue(null, true);
-            equipmentEnabled().setEnabled(true);
-            equipment.setProjectId(value.getId());
-        }
         if (activity != null)
             activity.onProjectChanged();
-    }
-
-    @UiHandler("documentCategory")
-    public void onCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
-        documentType.setEnabled(true);
-        documentType.setCategoryFilter(event.getValue());
-        if (documentType.getValue() != null && !documentType.getValue().getDocumentCategory().equals(event.getValue())) {
-            documentType.setValue(null);
-        }
     }
 
     @UiHandler("documentUploader")
@@ -310,7 +303,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField(provided = true)
     StringSelectInput keywords;
 
-    @UiField
+    @Inject
+    @UiField(provided = true)
     DecimalNumberInput decimalNumber;
 
     @UiField

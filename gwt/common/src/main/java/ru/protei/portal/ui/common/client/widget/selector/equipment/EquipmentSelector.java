@@ -26,7 +26,6 @@ public class EquipmentSelector
         this.model = model;
         model.subscribe( this );
         setSearchEnabled( true );
-        setHasNullValue( true );
         setSearchAutoFocus(true);
 
         setDisplayOptionCreator( value -> {
@@ -85,7 +84,7 @@ public class EquipmentSelector
     }
 
     private List<EquipmentShortView> options = Collections.emptyList();
-    private boolean hasNullValue;
+    private boolean hasNullValue = true;
     private boolean printDecimalNumbers = true;
     private EquipmentModel model;
 }

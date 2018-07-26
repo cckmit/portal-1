@@ -3,10 +3,13 @@ package ru.protei.portal.ui.common.client.widget.selector.hints;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasText;
@@ -16,6 +19,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,10 +27,11 @@ import java.util.stream.Collectors;
 /**
  * Текстовое поле с всплывающими подсказками
  */
-public class InputWithHintsSelector<T> extends Selector<T> implements HasValidable, HasEnabled, HasText {
 
+public class InputWithHintsSelector<T> extends Selector<T> implements HasValidable, HasEnabled, HasText {
     public InputWithHintsSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setAutoSelectFirst(false);
     }
 
     @Override
@@ -83,15 +88,19 @@ public class InputWithHintsSelector<T> extends Selector<T> implements HasValidab
     }
 
     @UiHandler("text")
-    public void onValueChange(ValueChangeEvent<String> event) {
-        setFilteredHints();
-
-        if (hintToOption.isEmpty()) {
-            closePopup();
-        } else {
-            if (!popup.isAttached())
-                showPopup();
+    public void onTextChange(KeyUpEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_DOWN) {
+            selectFirstElement();
+            return;
         }
+        textChangeTimer.cancel();
+        textChangeTimer.schedule(300);
+    }
+
+    @UiHandler("text")
+    public void onTextFocus(FocusEvent event) {
+        textChangeTimer.cancel();
+        textChangeTimer.schedule(300);
     }
 
     public void setHeader( String header ) {
@@ -101,6 +110,10 @@ public class InputWithHintsSelector<T> extends Selector<T> implements HasValidab
     public void setHints(List<T> hints) {
         if (displayOptionCreator == null)
             return;
+
+        if (hints == null) {
+            hints = new LinkedList<>();
+        }
 
         hintToOption.clear();
 
@@ -116,18 +129,25 @@ public class InputWithHintsSelector<T> extends Selector<T> implements HasValidab
         isValidable = validable;
     }
 
+    private void showHintsIfNotEmpty() {
+        if (filteredHints.isEmpty())
+            closePopup();
+        else if (!popup.isAttached())
+            showPopup();
+    }
 
     private void setFilteredHints() {
-        String query = text.getText();
+        filteredHints = filterHintsByQuery(text.getText());
+        clearOptions();
+        filteredHints.forEach(this::addOption);
+    }
 
-        List<T> filteredHints = hintToOption.entrySet()
+    private List<T> filterHintsByQuery(String query) {
+        return hintToOption.entrySet()
                 .stream()
                 .filter(e -> e.getValue().getName().contains(query))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
-
-        clearOptions();
-        filteredHints.forEach(this::addOption);
     }
 
     private void showPopup() {
@@ -139,12 +159,22 @@ public class InputWithHintsSelector<T> extends Selector<T> implements HasValidab
     @UiField
     TextBox text;
 
+    protected Map<T, DisplayOption> hintToOption = new HashMap<>();
+
+    private List<T> filteredHints = filterHintsByQuery("");
     private boolean isValidable = false;
     private boolean isValid;
     private static final String REQUIRED_STYLE_NAME ="required";
-    protected Map<T, DisplayOption> hintToOption = new HashMap<>();
 
-    interface InputSelectorUiBinder extends UiBinder<HTMLPanel, InputWithHintsSelector> { }
-    private static InputSelectorUiBinder ourUiBinder = GWT.create(InputSelectorUiBinder.class);
+    private final Timer textChangeTimer = new Timer() {
+        @Override
+        public void run() {
+            setFilteredHints();
+            showHintsIfNotEmpty();
+        }
+    };
+
+    interface InputWithHintsSelectorUiBinder extends UiBinder<HTMLPanel, InputWithHintsSelector> { }
+    private static InputWithHintsSelectorUiBinder ourUiBinder = GWT.create(InputWithHintsSelectorUiBinder.class);
 
 }

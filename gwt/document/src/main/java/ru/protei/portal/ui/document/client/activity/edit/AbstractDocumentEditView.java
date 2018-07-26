@@ -2,6 +2,7 @@ package ru.protei.portal.ui.document.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -14,8 +15,6 @@ import java.util.List;
 public interface AbstractDocumentEditView extends IsWidget {
 
     void setActivity(AbstractDocumentEditActivity activity);
-
-    void resetFilename();
 
     HasValue<String> name();
 
@@ -39,13 +38,15 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<List<String>> keywords();
 
-    HasText decimalNumber();
-
     HasValue<String> version();
 
-    AbstractDocumentUploader documentUploader();
+    HasValue<DecimalNumber> decimalNumber();
+
+    HasText decimalNumberText();
+
 
     HasValidable nameValidator();
+
 
     HasEnabled decimalNumberEnabled();
 
@@ -53,11 +54,25 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasEnabled equipmentEnabled();
 
+    HasEnabled documentTypeEnabled();
+
+
     HasVisibility uploaderVisible();
 
     HasVisibility equipmentVisible();
 
     HasVisibility decimalNumberVisible();
 
+
+    AbstractDocumentUploader documentUploader();
+
+    void resetFilename();
+
     void setSaveEnabled(boolean isEnabled);
+
+    void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
+
+    void setEquipmentProjectId(Long id);
+
+    void setDocumentTypeCategoryFilter(En_DocumentCategory value);
 }

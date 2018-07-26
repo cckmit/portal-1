@@ -58,7 +58,9 @@
                         <label>
                             <ui:text from="{lang.documentEquipment}"/>
                         </label>
-                        <equipment:EquipmentSelector ui:field="equipment" printDecimalNumbers="false"/>
+                        <equipment:EquipmentSelector ui:field="equipment"
+                                                     printDecimalNumbers="false"
+                                                     hasNullValue="false"/>
                     </g:HTMLPanel>
 
                     <div class="form-group col-xs-2">

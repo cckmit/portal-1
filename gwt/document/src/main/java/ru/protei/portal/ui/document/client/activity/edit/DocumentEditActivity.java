@@ -6,11 +6,13 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -24,6 +26,8 @@ import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
+
+import java.util.List;
 
 
 public abstract class DocumentEditActivity
@@ -90,21 +94,57 @@ public abstract class DocumentEditActivity
     }
 
     @Override
-    public void onEquipmentChanged() {
-    }
-
-    @Override
     public void onDecimalNumberChanged() {
     }
 
     @Override
     public void onDocumentCategoryChanged() {
-        En_DocumentCategory value = view.documentCategory().getValue();
-        view.equipmentVisible().setVisible(En_DocumentCategory.KD.equals(value));
+        En_DocumentCategory category = view.documentCategory().getValue();
+
+        if (category == null) {
+            view.equipmentVisible().setVisible(false);
+            view.documentTypeEnabled().setEnabled(false);
+            return;
+        }
+
+        boolean isForEquipment = category.isForEquipment();
+
+        view.equipmentVisible().setVisible(isForEquipment);
+        view.documentTypeEnabled().setEnabled(true);
+        view.setDocumentTypeCategoryFilter(category);
+
+        setDecimalNumberEnabled();
+
+        if (view.documentType().getValue() != null && !category.equals(view.documentType().getValue().getDocumentCategory())) {
+            view.documentType().setValue(null, true);
+        }
     }
 
     @Override
     public void onProjectChanged() {
+        ProjectInfo project = view.project().getValue();
+        view.equipmentEnabled().setEnabled(project != null);
+        view.equipment().setValue(null, true);
+
+        if (project != null)
+            view.setEquipmentProjectId(project.getId());
+    }
+
+    @Override
+    public void onEquipmentChanged() {
+        view.decimalNumber().setValue(null, true);
+        EquipmentShortView equipment = view.equipment().getValue();
+        if (equipment == null) {
+            setDecimalNumberEnabled();
+        } else {
+            List<DecimalNumber> decimalNumbers = equipment.getDecimalNumbers();
+            view.decimalNumberEnabled().setEnabled(true);
+            view.setDecimalNumberHints(decimalNumbers);
+        }
+    }
+
+    private void setDecimalNumberEnabled() {
+        view.decimalNumberEnabled().setEnabled(view.documentCategory().getValue() != null && !view.documentCategory().getValue().isForEquipment());
     }
 
     private boolean checkDocumentUploadValid(Document newDocument) {
@@ -173,7 +213,7 @@ public abstract class DocumentEditActivity
         d.setId(document.getId());
         d.setName(view.name().getValue());
         d.setAnnotation(view.annotation().getValue());
-        d.setDecimalNumber(view.decimalNumber().getText());
+        d.setDecimalNumber(view.decimalNumberText().getText());
         d.setType(view.documentType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
@@ -196,14 +236,14 @@ public abstract class DocumentEditActivity
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
         view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
-        view.decimalNumber().setText(document.getDecimalNumber());
+        view.decimalNumberText().setText(document.getDecimalNumber());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
         view.documentType().setValue(document.getType(), true);
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
-        view.project().setValue(document.getProjectInfo());
+        view.project().setValue(document.getProjectInfo(), true);
         view.version().setValue(document.getVersion());
-        view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
+        view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()), true);
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
@@ -220,7 +260,6 @@ public abstract class DocumentEditActivity
         view.uploaderVisible().setVisible(isNew);
         view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
         view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
-        view.decimalNumberVisible().setVisible(isNew || En_DocumentCategory.KD.equals(document.getType().getDocumentCategory()));
 
         view.nameValidator().setValid(true);
 
