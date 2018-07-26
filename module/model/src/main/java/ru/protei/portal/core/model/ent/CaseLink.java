@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -21,6 +20,12 @@ public class CaseLink implements Serializable {
 
     @JdbcColumn(name="remote_id")
     private String remoteId;
+
+    @JdbcJoinedColumn(mappedColumn = "id", table = "case_object", joinData = {
+            @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
+            @JdbcJoinData(remoteColumn = "CASENO", value = "(SELECT CAST(remote_id AS UNSIGNED INTEGER))")
+    })
+    private Long remoteCaseId;
 
     @JdbcJoinedColumn(mappedColumn = "private_flag", table = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
@@ -85,10 +90,33 @@ public class CaseLink implements Serializable {
         this.privateCase = privateCase;
     }
 
-    public boolean equals(CaseLink caseLink) {
-        return  getCaseId().equals(caseLink.getCaseId()) &&
-                getRemoteId().equals(caseLink.getRemoteId()) &&
-                getType().equals(caseLink.getType());
+    public Long getRemoteCaseId() {
+        return remoteCaseId;
+    }
+
+    public void setRemoteCaseId(Long remoteCaseId) {
+        this.remoteCaseId = remoteCaseId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CaseLink)) return false;
+
+        CaseLink caseLink = (CaseLink) o;
+
+        if (getCaseId() != null ? !getCaseId().equals(caseLink.getCaseId()) : caseLink.getCaseId() != null)
+            return false;
+        if (getType() != caseLink.getType()) return false;
+        return getRemoteId() != null ? getRemoteId().equals(caseLink.getRemoteId()) : caseLink.getRemoteId() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getCaseId() != null ? getCaseId().hashCode() : 0;
+        result = 31 * result + (getType() != null ? getType().hashCode() : 0);
+        result = 31 * result + (getRemoteId() != null ? getRemoteId().hashCode() : 0);
+        return result;
     }
 
     public boolean isPrivate() {

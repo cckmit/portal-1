@@ -80,19 +80,18 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         // работаем только с пулом доступных линков по приватности
         List<CaseLink> oldCaseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivate));
-        if ( CollectionUtils.isEqualCollection(caseLinks, oldCaseLinks)) {
-            return new CoreResponse<>().success();
-        }
-
         List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseNumber.toString()));
-        Set<Long> toRemoveIds = new HashSet<>();
         // линки не могут быть изменены, поэтому удаляем старые и создаем новые. Кросс ссылки добавляем только для новых
         DiffCollectionResult<CaseLink> caseLinksDiffResult = ru.protei.winter.core.utils.collections.CollectionUtils.diffCollection(oldCaseLinks, caseLinks);
         if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
+            Set<Long> toRemoveIds = new HashSet<>();
             caseLinksDiffResult.getRemovedEntries().forEach( link -> {
                 toRemoveIds.add(link.getId());
+                if ( isNotCrmLink(link) ) {
+                    return;
+                }
                 oldCaseCrossLinks.forEach(cl -> {
-                    if ( Objects.equals(caseNumber.toString(), cl.getRemoteId())) {
+                    if ( Objects.equals(link.getRemoteCaseId(), cl.getCaseId())) {
                         toRemoveIds.add(cl.getId());
                     }
                 });
@@ -103,13 +102,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getAddedEntries())) {
             List<CaseLink> toAddLinks = new ArrayList<>();
             CollectionUtils.emptyIfNull(caseLinksDiffResult.getAddedEntries()).forEach( link -> {
-                if ( link.isPrivate() ) {
+                if ( isNotCrmLink(link) ) {
                     return;
                 }
-                if ( !checkCrossLinkAlreadyExist(oldCaseCrossLinks, caseNumber.toString() ) ) {
-                    Long cId = parseRemoteIdAsLongValue(link.getRemoteId());
-                    toAddLinks.add(createCrossCRMLink(cId, caseNumber));
+                if ( link.getRemoteCaseId() != null && crossLinkAlreadyExist( oldCaseCrossLinks, link.getRemoteCaseId() )) {
+                    return;
                 }
+                Long cId = parseRemoteIdAsLongValue(link.getRemoteId());
+                toAddLinks.add(createCrossCRMLink(cId, caseNumber));
             });
             toAddLinks.addAll(caseLinksDiffResult.getAddedEntries());
             caseLinkDAO.persistBatch(toAddLinks);
@@ -118,8 +118,12 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return new CoreResponse<>().success();
     }
 
-    private boolean checkCrossLinkAlreadyExist(List<CaseLink> caseLinks, String remoteId){
-        return caseLinks.stream().anyMatch(cl -> Objects.equals(remoteId, cl.getRemoteId()));
+    private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){
+        return caseLinks.stream().anyMatch(cl -> Objects.equals(remoteCaseId, cl.getCaseId()));
+    }
+
+    private boolean isNotCrmLink(CaseLink link) {
+        return !En_CaseLink.CRM.equals(link.getType());
     }
 
     private boolean checkLinksIsValid(List<CaseLink> caseLinks) {
