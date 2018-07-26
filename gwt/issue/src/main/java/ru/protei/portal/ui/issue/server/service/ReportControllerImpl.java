@@ -24,7 +24,7 @@ import java.util.Set;
 @Service("ReportController")
 public class ReportControllerImpl implements ReportController {
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(ReportControllerImpl.class);
 
     @Autowired
     HttpServletRequest httpServletRequest;

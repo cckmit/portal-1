@@ -54,5 +54,5 @@ public class PersonControllerImpl implements PersonController {
     @Autowired
     private PersonService personService;
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(PersonControllerImpl.class);
 }

@@ -157,5 +157,5 @@ public class RegionControllerImpl implements RegionController {
     @Autowired
     HttpServletRequest httpServletRequest;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(RegionControllerImpl.class);
 }

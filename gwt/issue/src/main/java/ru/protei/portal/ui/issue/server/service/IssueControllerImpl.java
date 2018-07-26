@@ -177,6 +177,6 @@ public class IssueControllerImpl implements IssueController {
     @Autowired
     HttpServletRequest request;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(IssueControllerImpl.class);
 
 }

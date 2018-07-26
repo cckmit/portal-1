@@ -230,6 +230,6 @@ public class EquipmentControllerImpl implements EquipmentController {
     @Autowired
     HttpServletRequest httpRequest;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(EquipmentControllerImpl.class);
 
 }

@@ -159,5 +159,5 @@ public class ProductControllerImpl implements ProductController {
     @Autowired
     HttpServletRequest httpServletRequest;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(ProductControllerImpl.class);
 }

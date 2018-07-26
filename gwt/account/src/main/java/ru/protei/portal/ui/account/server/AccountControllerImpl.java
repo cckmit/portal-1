@@ -148,5 +148,5 @@ public class AccountControllerImpl implements AccountController {
     @Autowired
     HttpServletRequest httpServletRequest;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(AccountControllerImpl.class);
 }
