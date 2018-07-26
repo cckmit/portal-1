@@ -116,8 +116,14 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "case_notifier", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
     private Set<Person> notifiers; //may contain partially filled objects!
 
+    @JdbcColumn(name = "time_elapsed")
+    private Long timeElapsed;
+
     @JdbcColumn(name = "email_last_id")
     private Long emailLastId;
+
+    @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
+    private Set<DevUnit> products;
 
     // not db column
     private List<CaseLink> links;
@@ -423,6 +429,14 @@ public class CaseObject extends AuditableObject {
         this.notifiers = notifiers;
     }
 
+    public Long getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    public void setTimeElapsed(Long timeElapsed) {
+        this.timeElapsed = timeElapsed;
+    }
+
     public List<CaseLink> getLinks() {
         return links;
     }
@@ -437,6 +451,14 @@ public class CaseObject extends AuditableObject {
 
     public void setEmailLastId(Long emailLastId) {
         this.emailLastId = emailLastId;
+    }
+
+    public Set<DevUnit> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<DevUnit> products) {
+        this.products = products;
     }
 
     @Override
@@ -478,6 +500,7 @@ public class CaseObject extends AuditableObject {
                 ", members=" + members +
                 ", links=" + links +
                 ", emailLastId=" + emailLastId +
+                ", timeElapsed=" + timeElapsed +
                 '}';
     }
 }

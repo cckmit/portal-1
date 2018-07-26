@@ -22,17 +22,8 @@ public class CaseTimeLog {
     @JdbcColumn(name = "case_id")
     private Long caseId;
 
-    @JdbcColumn(name = "task_id")
-    private Long taskId;
-
     @JdbcColumn(name = "person_id")
     private Long personId;
-
-    @JdbcColumn(name = "from_time")
-    private Date fromTime;
-
-    @JdbcColumn(name = "till_time")
-    private Date toTime;
 
     @JdbcColumn(name = "work_time")
     private Long workTime;
@@ -40,8 +31,7 @@ public class CaseTimeLog {
     @JdbcColumn(name = "info")
     private String info;
 
-    public CaseTimeLog() {
-    }
+    public CaseTimeLog() {}
 
     public Long getId() {
         return id;
@@ -67,36 +57,12 @@ public class CaseTimeLog {
         this.caseId = caseId;
     }
 
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
     public Long getPersonId() {
         return personId;
     }
 
     public void setPersonId(Long personId) {
         this.personId = personId;
-    }
-
-    public Date getFromTime() {
-        return fromTime;
-    }
-
-    public void setFromTime(Date fromTime) {
-        this.fromTime = fromTime;
-    }
-
-    public Date getToTime() {
-        return toTime;
-    }
-
-    public void setToTime(Date toTime) {
-        this.toTime = toTime;
     }
 
     public Long getWorkTime() {

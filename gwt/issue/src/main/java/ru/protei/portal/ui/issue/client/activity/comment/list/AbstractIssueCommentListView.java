@@ -1,7 +1,10 @@
 package ru.protei.portal.ui.issue.client.activity.comment.list;
 
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
+import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 
 /**
@@ -26,4 +29,14 @@ public interface AbstractIssueCommentListView extends IsWidget {
     HasAttachments attachmentContainer();
 
     void enabledNewComment( boolean value );
+
+    HasTime timeElapsed();
+
+    void clearTimeElapsed();
+
+    HasVisibility timeElapsedVisibility();
+
+    void setTimeElapsedEnabled(boolean isElapsedTimeEnabled);
+
+    void setUserIcon(String icon);
 }

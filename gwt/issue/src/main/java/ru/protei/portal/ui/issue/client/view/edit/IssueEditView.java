@@ -18,23 +18,25 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.issuelinks.IssueLinks;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
+import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -42,10 +44,8 @@ import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
-import java.util.List;
 import java.util.Set;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Вид создания и редактирования обращения
@@ -62,7 +62,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
-        initiator.setAddButtonVisible(true);
         Window.addResizeHandler(this);
     }
 
@@ -113,6 +112,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
+    public HasTime timeElapsed() {
+        return timeElapsed;
+    }
+
+    @Override
     public HasValue<EntityOption> company() {
         return company;
     }
@@ -160,6 +164,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Override
     public HasValidable importanceValidator() {
         return importance;
+    }
+
+    @Override
+    public HasVisibility timeElapsedContainerVisibility() {
+        return timeElapsedContainer;
     }
 
     @Override
@@ -239,6 +248,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
+    public HasEnabled stateEnabled() {
+        return state;
+    }
+
+    @Override
     public HasVisibility caseSubscriptionContainer() {
         return caseSubscriptionContainers;
     }
@@ -277,11 +291,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         initiator.updateCompany(company);
     }
 
+    @Override
+    public void initiatorSelectorAllowAddNew(boolean isVisible) {
+        initiator.setAddButtonVisible(isVisible);
+    }
+
     private void setFooterFixed(boolean isFixed) {
         if (isFixed) {
-            root.addStyleName("footer-fixed");
+            root.addStyleName(UiConstants.Styles.FOOTER);
         } else {
-            root.removeStyleName("footer-fixed");
+            root.removeStyleName(UiConstants.Styles.FOOTER);
         }
     }
 
@@ -326,9 +345,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Override
     public void showComments(boolean isShow) {
         if(isShow)
-            comments.removeClassName("hide");
+            comments.removeClassName(UiConstants.Styles.HIDE);
         else
-            comments.addClassName("hide");
+            comments.addClassName(UiConstants.Styles.HIDE);
     }
 
     @UiField
@@ -353,6 +372,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Inject
     @UiField(provided = true)
     ImportanceButtonSelector importance;
+
+    @Inject
+    @UiField(provided = true)
+    TimeLabel timeElapsed;
 
     @Inject
     @UiField(provided = true)
@@ -402,6 +425,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Inject
     @UiField(provided = true)
     IssueLinks links;
+    @UiField
+    HTMLPanel timeElapsedContainer;
 
     private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
 

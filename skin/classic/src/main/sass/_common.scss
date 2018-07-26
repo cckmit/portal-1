@@ -2012,12 +2012,13 @@ a {
 
 @media (min-width: 1400px) {
   .dashboard-active-records {
-    padding-right: 7.5px;
     margin-top: 0 !important;
   }
   .dashboard-new-records {
+    padding-right: 7.5px;
+  }
+  .dashboard-completed-records {
     padding-left: 7.5px;
-    margin-top: 0 !important;
   }
 }
 

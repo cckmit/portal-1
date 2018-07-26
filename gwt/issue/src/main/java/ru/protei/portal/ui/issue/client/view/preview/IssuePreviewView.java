@@ -9,21 +9,20 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
+import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewView;
@@ -161,6 +160,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         fileUploader.setUploadHandler(handler);
     }
 
+    @Override
+    public HasVisibility timeElapsedContainerVisibility() {
+        return timeElapsedContainer;
+    }
+
+    @Override
+    public HasTime timeElapsed() {
+        return timeElapsed;
+    }
 
 
     @UiHandler( "fullScreen" )
@@ -221,6 +229,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     AttachmentList attachmentContainer;
     @UiField
     DivElement subscriptions;
+    @UiField
+    HTMLPanel timeElapsedContainer;
+    @Inject
+    @UiField(provided = true)
+    TimeLabel timeElapsed;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
     @Inject

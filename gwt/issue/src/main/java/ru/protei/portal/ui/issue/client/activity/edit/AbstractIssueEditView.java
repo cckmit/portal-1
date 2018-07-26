@@ -5,18 +5,15 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,6 +27,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasText description();
     HasValue<En_CaseState> state();
     HasValue<En_ImportanceLevel> importance();
+    HasTime timeElapsed();
     HasValue<EntityOption> company();
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
@@ -41,6 +39,9 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValidable nameValidator();
     HasValidable stateValidator();
     HasValidable importanceValidator();
+
+    HasVisibility timeElapsedContainerVisibility();
+
     HasValidable companyValidator();
     HasValidable initiatorValidator();
     HasValidable productValidator();
@@ -68,6 +69,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled companyEnabled();
     HasEnabled productEnabled();
     HasEnabled managerEnabled();
+    HasEnabled stateEnabled();
+
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
 
@@ -76,4 +79,7 @@ public interface AbstractIssueEditView extends IsWidget {
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 
     void initiatorUpdateCompany(Company company);
+
+    void initiatorSelectorAllowAddNew(boolean b);
+
 }

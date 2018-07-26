@@ -21,6 +21,10 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_attachments" value="${attachments}"/>
 <@set name="_updated" value="${updated_just_now}"/>
 <@set name="_description" value="${description}"/>
+<@set name="_timeElapsed" value="${timeElapsed}"/>
+<@set name="_timeDayLiteral" value="${timeDayLiteral}"/>
+<@set name="_timeHourLiteral" value="${timeHourLiteral}"/>
+<@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -135,6 +139,22 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         </#if>
                     </td>
                 </tr>
+                <#if showPrivacy>
+                    <tr>
+                        <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                            ${_timeElapsed}
+                        </td>
+                        <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
+                            <#if timeElapsedChanged>
+                                <@changeTo
+                                    old="${TimeElapsedFormatter.format(oldElapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}"
+                                    new="${TimeElapsedFormatter.format(elapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}"
+                                />
+                            <#else>
+                                ${TimeElapsedFormatter.format(elapsed,_timeDayLiteral,_timeHourLiteral,_timeMinuteLiteral)}
+                            </#if>
+                    </tr>
+                </#if>
                 <tr>
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_criticality}

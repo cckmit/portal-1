@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
+             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
         >
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -35,6 +36,12 @@
                         <div ui:field="state"></div>
                     </span>
                 </div>
+                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="col-xs-6">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.timeElapsed}"/>
+                    </label>
+                    <timefield:TimeLabel ui:field="timeElapsed" styleName="col-xs-5 col-md-5"/>
+                </g:HTMLPanel>
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.issueContactHeader}"/></legend>
