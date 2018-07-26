@@ -126,5 +126,5 @@ public class RoleControllerImpl implements RoleController {
     @Autowired
     HttpServletRequest httpServletRequest;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(RoleControllerImpl.class);
 }

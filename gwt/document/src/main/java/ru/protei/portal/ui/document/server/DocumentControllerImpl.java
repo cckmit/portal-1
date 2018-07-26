@@ -113,5 +113,5 @@ public class DocumentControllerImpl implements DocumentController {
     @Autowired
     HttpServletRequest httpRequest;
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(DocumentControllerImpl.class);
 }

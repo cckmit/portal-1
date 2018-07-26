@@ -264,5 +264,5 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     @Autowired
     HttpServletRequest request;
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(SiteFolderControllerImpl.class);
 }

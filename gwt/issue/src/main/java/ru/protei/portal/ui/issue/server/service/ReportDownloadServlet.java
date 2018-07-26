@@ -24,7 +24,7 @@ import java.net.URLEncoder;
 
 public class ReportDownloadServlet extends HttpServlet {
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(ReportDownloadServlet.class);
 
     @Autowired
     HttpServletRequest httpServletRequest;

@@ -32,5 +32,5 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     @Autowired
     ru.protei.portal.core.service.CaseLinkService caseLinkService;
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(CaseLinkControllerImpl.class);
 }
