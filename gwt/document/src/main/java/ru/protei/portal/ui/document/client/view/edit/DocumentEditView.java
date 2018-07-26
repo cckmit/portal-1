@@ -151,7 +151,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Override
     public HasVisibility decimalNumberVisible() {
-        return decimalNumber;
+        return decimalNumberContainer;
+    }
+
+    @Override
+    public HasVisibility inventoryNumberVisible() {
+        return inventoryNumberContainer;
     }
 
     @Override
@@ -319,6 +324,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiField
     HTMLPanel equipmentSelectorContainer;
+    @UiField
+    HTMLPanel decimalNumberContainer;
+    @UiField
+    HTMLPanel inventoryNumberContainer;
 
     @Inject
     Lang lang;

@@ -63,6 +63,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasVisibility decimalNumberVisible();
 
+    HasVisibility inventoryNumberVisible();
+
 
     AbstractDocumentUploader documentUploader();
 

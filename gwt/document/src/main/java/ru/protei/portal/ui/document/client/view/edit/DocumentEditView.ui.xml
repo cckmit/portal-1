@@ -110,16 +110,16 @@
                         <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
 
-                    <div class="form-group col-xs-4">
+                    <g:HTMLPanel styleName="form-group col-xs-4" ui:field="inventoryNumberContainer">
                         <label>
                             <ui:text from="{lang.inventoryNumber}"/>
                         </label>
                         <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
-                    </div>
+                    </g:HTMLPanel>
 
-                    <div class="form-group col-xs-12">
+                    <g:HTMLPanel styleName="form-group col-xs-12" ui:field="decimalNumberContainer">
                         <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="input-field"/>
-                    </div>
+                    </g:HTMLPanel>
 
                 </div>
 

@@ -5,6 +5,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
@@ -128,6 +129,8 @@ public abstract class DocumentEditActivity
 
         if (project != null)
             view.setEquipmentProjectId(project.getId());
+
+        setDesignationVisibility();
     }
 
     @Override
@@ -141,6 +144,14 @@ public abstract class DocumentEditActivity
             view.decimalNumberEnabled().setEnabled(true);
             view.setDecimalNumberHints(decimalNumbers);
         }
+    }
+
+    private void setDesignationVisibility() {
+        ProjectInfo project = view.project().getValue();
+        boolean isDesignationVisible = project != null &&
+                (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE || project.getCustomerType() == En_CustomerType.STATE_BUDGET);
+        view.decimalNumberVisible().setVisible(isDesignationVisible);
+        view.inventoryNumberVisible().setVisible(isDesignationVisible);
     }
 
     private void setDecimalNumberEnabled() {
@@ -267,7 +278,7 @@ public abstract class DocumentEditActivity
         view.documentUploader().resetAction();
         view.setSaveEnabled(true);
 
-        decimalNumberIsSet = StringUtils.isEmpty(document.getDecimalNumber());
+        setDesignationVisibility();
     }
 
     @Inject
@@ -277,8 +288,6 @@ public abstract class DocumentEditActivity
     Lang lang;
 
     private Document document;
-
-    boolean decimalNumberIsSet = false;
 
     @Inject
     DocumentControllerAsync documentService;
