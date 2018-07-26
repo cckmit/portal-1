@@ -71,8 +71,14 @@ public class Equipment extends AuditableObject {
     @JdbcJoinedColumn( localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
     private String managerShortName;
 
-    @JdbcColumn
-    private String project;
+    /**
+     * Проект
+     */
+    @JdbcColumn(name = "project_id")
+    private Long projectId;
+
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME")
+    private String projectName;
 
     /**
      * Привязанные децимальные номера
@@ -103,7 +109,6 @@ public class Equipment extends AuditableObject {
         this.stage = equipment.getStage();
         this.type = equipment.getType();
         this.managerId = equipment.getManagerId();
-        this.project = equipment.getProject();
         this.comment = equipment.getComment();
     }
 
@@ -211,12 +216,20 @@ public class Equipment extends AuditableObject {
         this.managerShortName = managerShortName;
     }
 
-    public String getProject() {
-        return project;
+    public Long getProjectId() {
+        return projectId;
     }
 
-    public void setProject( String project ) {
-        this.project = project;
+    public void setProjectId(Long projectId) {
+        this.projectId = projectId;
+    }
+
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
     }
 
     @Override

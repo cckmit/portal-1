@@ -52,6 +52,11 @@ public abstract class EquipmentModel implements Activity {
         refreshOptions();
     }
 
+    public void setProjectId(Long projectId) {
+        query.setProjectId(projectId);
+        refreshOptions();
+    }
+
     @Inject
     EquipmentControllerAsync equipmentService;
 
@@ -75,6 +80,7 @@ public abstract class EquipmentModel implements Activity {
             notifySubscribers();
         }
     };
+
     private List< EquipmentShortView > list = new ArrayList<>();
     List< ModelSelector< EquipmentShortView > > subscribers = new ArrayList<>();
 }

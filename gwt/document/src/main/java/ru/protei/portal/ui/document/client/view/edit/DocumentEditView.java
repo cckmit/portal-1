@@ -228,6 +228,15 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiHandler("project")
     public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
+        ProjectInfo value = event.getValue();
+        if (value == null) {
+            equipmentEnabled().setEnabled(false);
+            equipment.setValue(null, true);
+        } else {
+            equipment.setValue(null, true);
+            equipmentEnabled().setEnabled(true);
+            equipment.setProjectId(value.getId());
+        }
         if (activity != null)
             activity.onProjectChanged();
     }
