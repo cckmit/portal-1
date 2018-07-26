@@ -42,10 +42,6 @@ public class CaseLinkQuery extends BaseQuery {
         this.showOnlyPrivate = showPrivate;
     }
 
-    public Boolean getShowOnlyPrivate() {
-        return showOnlyPrivate;
-    }
-
     public String getRemoteId() {
         return remoteId;
     }
