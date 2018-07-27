@@ -110,5 +110,5 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     @Autowired
     SessionService sessionService;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(IssueFilterControllerImpl.class);
 }

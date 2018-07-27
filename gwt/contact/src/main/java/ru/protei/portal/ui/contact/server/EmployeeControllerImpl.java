@@ -51,6 +51,6 @@ public class EmployeeControllerImpl implements EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(EmployeeControllerImpl.class);
 
 }
