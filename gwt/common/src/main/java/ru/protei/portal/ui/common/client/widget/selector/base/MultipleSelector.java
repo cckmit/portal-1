@@ -78,7 +78,6 @@ public abstract class MultipleSelector<T>
         itemToDisplayOptionModel.clear();
     }
 
-
     @Override
     public void onValueChange( ValueChangeEvent< Boolean > event ) {
         T value = itemViewToModel.get( event.getSource() );
@@ -173,6 +172,13 @@ public abstract class MultipleSelector<T>
         }
 
         itemView.setValue( false, true );
+    }
+
+    protected void clearSelected() {
+        selected.clear();
+        for ( Map.Entry< SelectableItem, T > entry : itemViewToModel.entrySet() ) {
+            entry.getKey().setValue( false );
+        }
     }
 
     private void selectAnyValue( boolean isAnyValueSelected ) {

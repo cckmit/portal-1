@@ -92,7 +92,6 @@ public abstract class EquipmentEditActivity
         equipment.setName( view.name().getValue() );
         equipment.setComment( view.comment().getValue() );
         equipment.setType( view.type().getValue() );
-        equipment.setStage( view.stage().getValue() );
         equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
         equipment.setDecimalNumbers( view.numbers().getValue() );
         equipment.setManagerId( view.manager().getValue() == null ? null : view.manager().getValue().getId() );
@@ -119,7 +118,6 @@ public abstract class EquipmentEditActivity
         view.date().setValue(DateFormatter.formatDateTime(equipment.getCreated()));
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( isCreate ? En_EquipmentType.DETAIL : equipment.getType() );
-        view.stage().setValue( equipment.getStage() );
         EquipmentShortView linkedEquipment = null;
         if ( equipment.getLinkedEquipmentId() != null ) {
             linkedEquipment = new EquipmentShortView( null, equipment.getLinkedEquipmentId(), equipment.getLinkedEquipmentDecimalNumbers() );

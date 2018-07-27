@@ -70,12 +70,14 @@ public abstract class IssueCommentListActivity
 
         event.parent.clear();
         event.parent.add(view.asWidget());
+
+        tempAttachments.clear();
+
         view.message().setValue(null);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
-        view.timeElapsedVisibility().setVisible(false);
-        view.setTimeElapsedEnabled(event.isElapsedTimeEnabled);
+        view.timeElapsedVisibility().setVisible(event.isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
 
         requestData( event.caseId );
@@ -165,9 +167,8 @@ public abstract class IssueCommentListActivity
 
         String editedMessage = caseComment.getText();
         view.message().setValue( editedMessage );
-        if (comment.getTimeElapsed() != null) {
+        if (comment.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
-            view.timeElapsedVisibility().setVisible(true);
         }
         view.focus();
     }
@@ -213,6 +214,17 @@ public abstract class IssueCommentListActivity
             //deleting the newly created attachment
             removeAttachment(attachment.getId(), removeTempAttachmentAction);
         }
+    }
+
+    @Override
+    public void onDetachView() {
+        attachmentService.clearUploadedAttachmentsCache(new RequestCallback<Void>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Void aVoid) {}
+        });
     }
 
     @Override
@@ -297,7 +309,7 @@ public abstract class IssueCommentListActivity
         itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
 
         itemView.clearElapsedTime();
-        if (value.getTimeElapsed() != null) {
+        if (value.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) {
             itemView.timeElapsed().setTime(value.getTimeElapsed());
         }
 
@@ -438,7 +450,6 @@ public abstract class IssueCommentListActivity
                 view.message().setValue( null );
                 view.attachmentContainer().clear();
                 view.clearTimeElapsed();
-                view.timeElapsedVisibility().setVisible(false);
                 tempAttachments.clear();
                 fireEvent( new IssueEvents.ChangeModel() );
                 fireEvent( new IssueEvents.ChangeCommentsView() );

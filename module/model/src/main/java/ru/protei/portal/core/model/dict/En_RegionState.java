@@ -13,12 +13,12 @@ public enum En_RegionState {
     /**
      * Установлен конкурент
      */
-    RIVAL(23),
+    MARKETING(23),
 
     /**
      * Идут переговоры
      */
-    TALK(24),
+    PRESALE(24),
 
     /**
      * Проектирование (документы)
@@ -36,14 +36,21 @@ public enum En_RegionState {
     DEPLOYMENT(27),
 
     /**
+     * Тестирование
+     */
+    TESTING(28),
+
+    /**
      * Поддержка
      */
-    SUPPORT(28),
+    SUPPORT(29),
 
     /**
      * Поддержка закончилась
      */
-    SUPPORT_FINISHED(29);
+    FINISHED(32),
+
+    CANCELED(33);
 
     private En_RegionState( long id ) {
         this.id = id;

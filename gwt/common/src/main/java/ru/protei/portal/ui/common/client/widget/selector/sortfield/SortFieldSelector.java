@@ -65,6 +65,9 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
             case DOCUMENT_TYPE:
                 addOption( En_SortField.name );
                 break;
+            case SITE_FOLDER:
+                addOption( En_SortField.name );
+                break;
         }
     }
 

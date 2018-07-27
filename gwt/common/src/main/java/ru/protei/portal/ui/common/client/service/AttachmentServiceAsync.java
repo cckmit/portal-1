@@ -19,4 +19,9 @@ public interface AttachmentServiceAsync {
      */
     void removeAttachmentEverywhere(Long attachmentId, AsyncCallback<Boolean> async);
 
+    /**
+     * Очистка кэша загрузки
+     * @param async
+     */
+    void clearUploadedAttachmentsCache(AsyncCallback<Void> async);
 }

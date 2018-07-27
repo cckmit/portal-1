@@ -253,6 +253,6 @@ public class CompanyControllerImpl implements CompanyController {
     @Autowired
     HttpServletRequest httpServletRequest;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(CompanyControllerImpl.class);
 
 }

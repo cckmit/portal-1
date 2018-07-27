@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -119,6 +120,9 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.company().setValue(customer == null ? null : customer.toEntityOption());
         view.products().setValue(value.getProducts());
         view.customerType().setValue(value.getCustomerType());
+
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), false ) );
+
     }
 
     private void readView() {

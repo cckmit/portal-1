@@ -55,6 +55,7 @@
                 <module>gwt/documenttype</module>
                 <!--<module>app/crm</module>-->
                 <module>gwt/casestate</module>
+                <module>gwt/sitefolder</module>
             </modules>
         </profile>
 

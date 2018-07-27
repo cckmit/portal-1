@@ -49,6 +49,11 @@ public class AttachmentServiceImpl implements AttachmentService{
         return response.getData();
     }
 
+    @Override
+    public void clearUploadedAttachmentsCache() {
+        sessionService.clearFileItem(httpServletRequest);
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         if ( descriptor == null ) {

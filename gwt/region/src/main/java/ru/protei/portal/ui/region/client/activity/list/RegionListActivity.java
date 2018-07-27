@@ -159,7 +159,7 @@ public abstract class RegionListActivity
         }
 
         switch ( region.state ) {
-            case RIVAL:
+            case MARKETING:
                 return details+" ("+region.details+")";
             case DEPLOYMENT:
                 return region.details;

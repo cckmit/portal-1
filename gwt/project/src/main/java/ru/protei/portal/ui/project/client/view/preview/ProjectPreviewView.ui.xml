@@ -84,8 +84,8 @@
                     <state:RegionStateIconSelector ui:field="projectState" />
                 </div>
             </fieldset>
-            <!--<legend><ui:text from="{lang.comments}"/></legend>-->
-            <!--<g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>-->
+            <legend><ui:text from="{lang.comments}"/></legend>
+            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

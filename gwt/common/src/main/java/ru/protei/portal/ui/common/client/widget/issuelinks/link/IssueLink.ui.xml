@@ -8,6 +8,15 @@
             <g:Anchor ui:field="remove" href="#" styleName="case-link-close fa fa-close"/>
             <g:InlineLabel ui:field="text" styleName="case-link-text"/>
             <g:InlineLabel ui:field="icon" styleName="case-link-icon"/>
+            <g:HTMLPanel styleName="case-link-info" ui:field="caseInfoPanel" visible="false">
+                <div class="case-info">
+                    <span ui:field="state" class="pull-left"/>
+                    <span ui:field="importance" class="pull-right"/>
+                    <h2 ui:field="header"/>
+                </div>
+
+                <div ui:field="info" class="case-description"/>
+            </g:HTMLPanel>
         </g:HTMLPanel>
     </g:FocusPanel>
 </ui:UiBinder>

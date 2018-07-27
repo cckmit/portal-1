@@ -208,5 +208,5 @@ public class ContactControllerImpl implements ContactController {
     @Autowired
     HttpServletRequest httpServletRequest;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(ContactControllerImpl.class);
 }

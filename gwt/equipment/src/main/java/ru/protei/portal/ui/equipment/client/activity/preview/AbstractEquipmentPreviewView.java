@@ -21,8 +21,6 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
 
     void setLinkedEquipment( String value );
 
-    void setStage( String value, String styleNamePrefix );
-
     void setDecimalNumbers( String value );
 
     void setProject( String value );

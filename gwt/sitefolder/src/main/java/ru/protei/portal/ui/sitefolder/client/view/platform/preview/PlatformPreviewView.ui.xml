@@ -1,0 +1,35 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
+        <g:HTMLPanel ui:field="preview" styleName="preview">
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.siteFolderPlatform}"/></legend>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.siteFolderName}"/></label>
+                    <span class="col-xs-8" ui:field="name"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.siteFolderCompany}"/></label>
+                    <span class="col-xs-8" ui:field="company"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.siteFolderParams}"/></label>
+                    <span class="col-xs-8" ui:field="parameters"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.siteFolderComment}"/></label>
+                    <span class="col-xs-8" ui:field="comment"/>
+                </div>
+
+            </fieldset>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

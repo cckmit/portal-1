@@ -29,6 +29,11 @@ public class SessionServiceImpl implements SessionService {
     public FileItem getFileItem(HttpServletRequest request) {
         return (FileItem) request.getSession().getAttribute( CrmConstants.FileUpload.FILE_ITEM_DESC);
     }
+
+    @Override
+    public void clearFileItem(HttpServletRequest request) {
+        request.getSession().setAttribute( CrmConstants.FileUpload.FILE_ITEM_DESC, null );
+    }
 }
 
 

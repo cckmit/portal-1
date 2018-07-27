@@ -112,5 +112,5 @@ public class AuthControllerImpl implements AuthController {
     @Autowired
     private AuthService authService;
 
-    private static final Logger log = LoggerFactory.getLogger( "web" );
+    private static final Logger log = LoggerFactory.getLogger(AuthControllerImpl.class);
 }

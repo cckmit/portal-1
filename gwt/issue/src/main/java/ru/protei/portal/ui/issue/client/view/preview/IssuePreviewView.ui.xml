@@ -3,7 +3,8 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
-        >
+             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list"
+>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
@@ -15,6 +16,8 @@
 
             <fieldset class="header">
                 <legend><lable ui:field="header"/></legend>
+                <list:IssueLinks ui:field="links" styleName="form-group col-xs-12 " enabled="false"/>
+
                 <div class="col-xs-6">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>
                     <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>

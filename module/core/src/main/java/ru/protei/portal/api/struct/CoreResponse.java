@@ -63,6 +63,12 @@ public class CoreResponse<T> {
         return this;
     }
 
+
+    public CoreResponse<T> success () {
+        this.status = En_ResultStatus.OK;
+        return this;
+    }
+
     public CoreResponse<T> success (T data) {
         return this.success(data, data instanceof Collection ? ((Collection)data).size() : 1);
     }

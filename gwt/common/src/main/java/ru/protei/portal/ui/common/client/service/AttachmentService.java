@@ -25,4 +25,9 @@ public interface AttachmentService extends RemoteService {
      * и из облака
      */
     boolean removeAttachmentEverywhere(Long attachmentId) throws RequestFailedException;
+
+    /**
+     * Очистка кэша загрузки
+     */
+    void clearUploadedAttachmentsCache();
 }

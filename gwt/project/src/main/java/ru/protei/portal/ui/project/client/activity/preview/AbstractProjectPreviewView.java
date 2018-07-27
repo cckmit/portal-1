@@ -2,6 +2,7 @@ package ru.protei.portal.ui.project.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
@@ -37,6 +38,5 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setName( String name );
     String getName();
 
-
-//    HasWidgets getCommentsContainer();
+    HasWidgets getCommentsContainer();
 }

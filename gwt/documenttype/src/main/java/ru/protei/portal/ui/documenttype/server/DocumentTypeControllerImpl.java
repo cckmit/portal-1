@@ -20,7 +20,7 @@ import java.util.List;
 @Service("DocumentTypeController")
 public class DocumentTypeControllerImpl implements DocumentTypeController {
 
-    private static final Logger log = LoggerFactory.getLogger("web");
+    private static final Logger log = LoggerFactory.getLogger(DocumentTypeControllerImpl.class);
 
     @Override
     public List<DocumentType> getDocumentTypes(DocumentTypeQuery query) throws RequestFailedException {

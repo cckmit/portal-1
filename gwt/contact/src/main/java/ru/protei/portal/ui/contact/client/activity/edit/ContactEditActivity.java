@@ -218,7 +218,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         infoFacade.setMobilePhone(view.mobilePhone().getText());
 
         infoFacade.setEmail(view.workEmail().getText());
-//        contact.setEmail_own(view.personalEmail().getText());
+        infoFacade.setEmail_own(view.personalEmail().getText());
         infoFacade.setFactAddress(view.workAddress().getText());
         infoFacade.setHomeAddress(view.homeAddress().getText());
         infoFacade.setFax(view.workFax().getText());
@@ -273,6 +273,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.mobilePhone().setText(infoFacade.getMobilePhone());
 
         view.workEmail().setText(infoFacade.getEmail());
+        view.personalEmail().setText(infoFacade.getEmail_own());
         view.workAddress().setText(infoFacade.getFactAddress());
         view.homeAddress().setText(infoFacade.getHomeAddress());
 

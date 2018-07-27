@@ -1,0 +1,64 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="create_platform_table" author="buchmastov">
+        <createTable tableName="platform">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="company_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parameters" type="VARCHAR(256)"/>
+            <column name="comment" type="VARCHAR(1024)"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="platform_company_fk"
+                                 baseTableName="platform" baseColumnNames="company_id"
+                                 referencedTableName="company" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="create_server_table" author="buchmastov">
+        <createTable tableName="server">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="platform_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(128)"/>
+            <column name="ip" type="VARCHAR(64)"/>
+            <column name="parameters" type="VARCHAR(256)"/>
+            <column name="comment" type="VARCHAR(1024)"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="server_platform_fk"
+                                 baseTableName="server" baseColumnNames="platform_id"
+                                 referencedTableName="platform" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="create_application_table" author="buchmastov">
+        <createTable tableName="application">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="server_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(128)"/>
+            <column name="comment" type="VARCHAR(1024)"/>
+            <column name="paths" type="VARCHAR(2048)"/>
+        </createTable>
+        <addForeignKeyConstraint constraintName="application_server_fk"
+                                 baseTableName="application" baseColumnNames="server_id"
+                                 referencedTableName="server" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -70,4 +70,7 @@ public interface CaseService {
 
     CoreResponse<Long> getEmailLastId(Long caseId);
     CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject);
+
+    @Privileged({ En_Privilege.ISSUE_VIEW })
+    CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber);
 }

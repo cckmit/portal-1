@@ -30,8 +30,6 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.dict.En_CaseState.CREATED;
-
 /**
  * Активность создания и редактирования обращения
  */
@@ -165,7 +163,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
                 if(!isNew(issue))
-                    fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), true ) );
+                    fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) );
 
             }
         });
@@ -240,7 +238,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), true) );
+            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)));
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
@@ -261,7 +259,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
-        view.state().setValue(isNew(issue) ? CREATED : En_CaseState.getById(issue.getStateId()));
+        view.state().setValue(isNew(issue) ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
         view.stateEnabled().setEnabled(!isNew(issue));
         view.importance().setValue(isNew(issue) ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
@@ -313,11 +311,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if(!isFieldsValid) return false;
 
-        if(view.manager().getValue() != null && view.state().getValue() == CREATED){
-            fireEvent(new NotifyEvents.Show(lang.errCreatedStateSelected(), NotifyEvents.NotifyType.ERROR));
+        if(!En_CaseState.CREATED.equals(view.state().getValue()) && view.manager().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
-        if(CREATED != view.state().getValue() && view.product().getValue() == null){
+
+        if(!En_CaseState.CREATED.equals(view.state().getValue()) && view.product().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
             return false;
         }

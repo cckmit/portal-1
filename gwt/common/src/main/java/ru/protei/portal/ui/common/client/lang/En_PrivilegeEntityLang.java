@@ -38,6 +38,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeDocumentType();
             case CASE_STATES:
                 return lang.privilegeCaseStates();
+            case SITE_FOLDER:
+                return lang.privilegeSiteFolder();
             default:
                 return lang.unknownField();
         }

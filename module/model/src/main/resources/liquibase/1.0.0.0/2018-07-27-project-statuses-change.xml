@@ -1,0 +1,54 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2018-07-27-project-statuses-change" author="shagaleev">
+        <update tableName="case_state">
+            <column name="STATE" value="marketing" />
+            <column name="INFO" value="marketing" />
+            <where>ID = 23</where>
+        </update>
+
+        <update tableName="case_state">
+            <column name="STATE" value="presale" />
+            <column name="INFO" value="presale" />
+            <where>ID = 24</where>
+        </update>
+
+        <update tableName="case_state">
+            <column name="STATE" value="testing" />
+            <column name="INFO" value="testing" />
+            <where>ID = 28</where>
+        </update>
+
+        <update tableName="case_state">
+            <column name="STATE" value="support" />
+            <column name="INFO" value="support" />
+            <where>ID = 29</where>
+        </update>
+
+        <insert tableName="case_state">
+            <column name="ID" value="32" />
+            <column name="STATE" value="finished" />
+            <column name="INFO" value="finished" />
+        </insert>
+
+        <insert tableName="case_state">
+            <column name="ID" value="33" />
+            <column name="STATE" value="canceled" />
+            <column name="INFO" value="canceled" />
+        </insert>
+
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="32" />
+        </insert>
+        <insert tableName="case_state_matrix">
+            <column name="CASE_TYPE" value="9" />
+            <column name="CASE_STATE" value="33" />
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

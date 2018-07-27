@@ -47,8 +47,6 @@ public class CaseQuery extends BaseQuery {
 
     private boolean searchStringAtComments = false;
 
-    private List<Long> includeIds;
-
     private String searchCasenoString;
 
     public CaseQuery() {}
@@ -180,14 +178,6 @@ public class CaseQuery extends BaseQuery {
         this.searchStringAtComments = searchStringAtComments;
     }
 
-    public List<Long> getIncludeIds() {
-        return includeIds;
-    }
-
-    public void setIncludeIds(List<Long> includeIds) {
-        this.includeIds = includeIds;
-    }
-
     public String getSearchCasenoString() {
         return searchCasenoString;
     }
@@ -211,7 +201,6 @@ public class CaseQuery extends BaseQuery {
                 ", to=" + to +
                 ", showPrivate=" + allowViewPrivate +
                 ", searchStringAtComments=" + searchStringAtComments +
-                ", includeIds=" + includeIds +
                 ", searchCasenoString=" + searchCasenoString +
                 '}';
     }

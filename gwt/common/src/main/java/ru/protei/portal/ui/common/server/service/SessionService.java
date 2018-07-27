@@ -28,4 +28,6 @@ public interface SessionService {
      * Получает из сессии загружаемый файл
      */
     FileItem getFileItem(HttpServletRequest request);
+
+    void clearFileItem(HttpServletRequest request);
 }

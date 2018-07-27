@@ -10,7 +10,6 @@ import java.util.Set;
 public class EquipmentQuery extends BaseQuery {
 
     private Set<En_OrganizationCode> organizationCodes;
-    private Set<En_EquipmentStage> stages;
 
     private Set<En_EquipmentType> types;
 
@@ -21,15 +20,8 @@ public class EquipmentQuery extends BaseQuery {
     private Long managerId;
 
     private Long equipmentId;
+
     private Long projectId;
-
-    public Set<En_EquipmentStage> getStages() {
-        return stages;
-    }
-
-    public void setStages( Set<En_EquipmentStage> stages ) {
-        this.stages = stages;
-    }
 
     public Set<En_EquipmentType> getTypes() {
         return types;
@@ -94,11 +86,10 @@ public class EquipmentQuery extends BaseQuery {
         this.types = types;
     }
 
-    public EquipmentQuery( String searchString, En_SortField sortField, En_SortDir sortDir, Set< En_OrganizationCode > organizationCodes, Set< En_EquipmentStage > stages,
+    public EquipmentQuery( String searchString, En_SortField sortField, En_SortDir sortDir, Set< En_OrganizationCode > organizationCodes,
                            Set< En_EquipmentType > types, String classifierCode, String registerNumber, Long managerId, Long equipmentId  ) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;
-        this.stages = stages;
         this.types = types;
         this.classifierCode = classifierCode;
         this.registerNumber = registerNumber;

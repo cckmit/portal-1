@@ -57,9 +57,12 @@
   <include file="2018-06-01-issue_time_tracking.xml" relativeToChangelogFile="true" />
   <include file="2018-06-28-add-cimp_level-column.xml" relativeToChangelogFile="true" />
   <include file="2018-06-29-add-email_last_id-column.xml" relativeToChangelogFile="true" />
+  <include file="2018-07-04-add-platform-server-app.xml" relativeToChangelogFile="true" />
   <include file="2018-07-05-add-locale-column-to-person-table.xml" relativeToChangelogFile="true" />
   <include file="2018-07-05-add-gost-to-document_type.xml" relativeToChangelogFile="true" />
   <include file="2018-07-06-create-project_to_product-table.xml" relativeToChangelogFile="true" />
   <include file="2018-07-06-add-columns-to-document.xml" relativeToChangelogFile="true" />
   <include file="2018-07-11-project-link-in-equipment.xml" relativeToChangelogFile="true" />
+  <include file="2018-07-27-project-statuses-change.xml" relativeToChangelogFile="true" />
+  <include file="2018-07-27-equipment-remove-dev-stage-column.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
