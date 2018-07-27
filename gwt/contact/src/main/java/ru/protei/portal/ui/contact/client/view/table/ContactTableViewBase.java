@@ -4,6 +4,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
@@ -46,14 +47,19 @@ public abstract class ContactTableViewBase extends Composite {
                 }
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
-                root.appendChild(ContactColumnBuilder.make().add("ion-android-call", infoFacade.getWorkPhone())
-                        .add("ion-android-call", infoFacade.getMobilePhone())
-                        .add("ion-android-phone-portrait", infoFacade.getHomePhone())
-                        .toElement());
 
-                root.appendChild(ContactColumnBuilder.make().add("ion-android-mail", infoFacade.getEmail())
-                        .add("ion-android-mail", infoFacade.getEmail_own())
-                        .toElement());
+                String phones = infoFacade.allPhonesAsString();
+                if (StringUtils.isNotBlank(phones)) {
+                    root.appendChild(ContactColumnBuilder.make().add("ion-android-call", phones)
+                            .toElement());
+                }
+
+
+                String emails = infoFacade.allEmailsAsString();
+                if (StringUtils.isNotBlank(emails)) {
+                    root.appendChild(ContactColumnBuilder.make().add("ion-android-mail", emails)
+                            .toElement());
+                }
             }
         };
     }

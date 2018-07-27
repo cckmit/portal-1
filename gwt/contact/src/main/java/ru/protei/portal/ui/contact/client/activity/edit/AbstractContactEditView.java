@@ -31,7 +31,7 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText workEmail();
 
-//    HasText personalEmail ();
+    HasText personalEmail();
 
     HasText workFax();
 
