@@ -46,6 +46,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         downloadClickColumn.setDownloadHandler(activity);
 
+        project.setActionHandler(activity::onProjectColumnClicked);
+
         columns.forEach(col -> {
             col.setHandler(activity);
             col.setColumnProvider(columnProvider);
@@ -102,7 +104,6 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         columns.add(id);
         columns.add(decimalNumber);
-        columns.add(project);
 
         table.addColumn(id.header, id.values);
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
@@ -160,7 +161,11 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 html += "<div class=\"decimal-number\">" + value.getDecimalNumber() + "</div> ";
             }
 
-            html += "<div class=\"document-name\">\"" + value.getName() + "\"</div><br/>";
+            html += "<div class=\"document-name\">" + value.getName() + "</div>";
+            if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
+                html += "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>";
+            }
+            html += "<br/>";
             html += "<b>" + value.getType().getName() + " " + DateUtils.getYearFromDate(value.getCreated()) + "</b>";
             cell.setInnerHTML(html);
         }
@@ -175,8 +180,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         @Override
         public void fillColumnValue(Element cell, Document value) {
             ProjectInfo project = value.getProjectInfo();
-            if (project != null)
-                cell.setInnerText(project.getName());
+            if (project == null)
+                return;
+            cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
         }
     };
 

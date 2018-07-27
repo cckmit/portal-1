@@ -117,6 +117,14 @@ public abstract class DocumentTableActivity
     }
 
     @Override
+    public void onProjectColumnClicked(Document value) {
+        if (value == null || value.getProjectInfo() == null)
+            return;
+        fireEvent(new ProjectEvents.Show());
+        fireEvent(new ProjectEvents.Edit(value.getProjectInfo().getId()));
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Document>> callback) {
         query.setOffset(offset);
         query.setLimit(limit);

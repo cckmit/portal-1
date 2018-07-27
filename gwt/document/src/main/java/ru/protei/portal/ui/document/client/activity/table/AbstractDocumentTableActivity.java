@@ -11,4 +11,6 @@ public interface AbstractDocumentTableActivity
         extends ClickColumn.Handler<Document>, EditClickColumn.EditHandler<Document>,
         InfiniteLoadHandler<Document>, InfiniteTableWidget.PagerListener,
         DownloadClickColumn.DownloadHandler<Document> {
+
+    void onProjectColumnClicked(Document value);
 }
