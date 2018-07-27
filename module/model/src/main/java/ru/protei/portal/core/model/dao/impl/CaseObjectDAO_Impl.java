@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 19.05.16.
@@ -40,6 +41,12 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     public Long getCaseId(En_CaseType caseType, long number) {
         CaseObject obj = partialGetByCondition("case_type=? and caseno=?", Arrays.asList(caseType.getId(), number), getIdColumnName());
         return obj != null ? obj.getId() : null;
+    }
+
+    @Override
+    public Long getCaseNo(long caseId) {
+        CaseObject obj = partialGetByCondition("id=?", Collections.singletonList(caseId), "CASENO");
+        return obj != null ? obj.getCaseNumber() : null;
     }
 
     @Override
@@ -74,6 +81,14 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
         //
 
         return listByQuery(query);
+    }
+
+    @Override
+    public List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers) {
+        return partialGetListByCondition("case_object.CASENO in (" + caseNumbers.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", ")) + ")", Collections.emptyList(), "id", "CASENO"
+        );
     }
 
     @SqlConditionBuilder

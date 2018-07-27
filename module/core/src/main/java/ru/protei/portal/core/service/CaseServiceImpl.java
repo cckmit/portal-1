@@ -160,7 +160,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (CollectionUtils.isNotEmpty(caseObject.getLinks())) {
-            caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getLinks());
+            caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -234,7 +234,7 @@ public class CaseServiceImpl implements CaseService {
     public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
 
-        caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getLinks());
+        caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
 
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
@@ -490,6 +490,24 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<Boolean>().success(result);
     }
 
+    @Override
+    public CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber) {
+        CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
+
+        if(caseObject == null)
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+
+        CaseInfo info = new CaseInfo();
+        info.setId(caseObject.getId());
+        info.setCaseNumber(caseObject.getCaseNumber());
+        info.setPrivateCase(caseObject.isPrivateCase());
+        info.setName(caseObject.getName());
+        info.setImpLevel(caseObject.getImpLevel());
+        info.setStateId(caseObject.getStateId());
+        info.setInfo(caseObject.getInfo());
+
+        return new CoreResponse<CaseInfo>().success(info);
+    }
 
     @Override
     @Transactional

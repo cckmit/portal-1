@@ -15,8 +15,8 @@ public interface CaseLinkService {
     CoreResponse<Map<En_CaseLink, String>> getLinkMap();
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    CoreResponse<List<CaseLink>> getLinks(AuthToken token, long case_id);
+    CoreResponse<List<CaseLink>> getLinks(AuthToken token, Long caseId);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    CoreResponse mergeLinks(AuthToken token, long case_id, List<CaseLink> links);
+    CoreResponse mergeLinks(AuthToken token, Long caseId, Long caseNumber, List<CaseLink> links);
 }

@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -149,6 +150,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         Long timeElapsed = value.getTimeElapsed();
         view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
+        view.setLinks(value.getLinks() == null ? null : new HashSet<>(value.getLinks()));
 
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());

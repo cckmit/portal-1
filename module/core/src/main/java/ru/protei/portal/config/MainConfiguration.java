@@ -15,6 +15,7 @@ import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -34,6 +35,10 @@ import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
+import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 
 @Configuration
@@ -41,6 +46,14 @@ import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 @EnableTransactionManagement
 @EnableScheduling
 public class MainConfiguration {
+
+    @Inject
+    private JdbcObjectMapperRegistrator objectMapperRegistrator;
+
+    @PostConstruct
+    private void init() {
+        objectMapperRegistrator.registerMapper(CaseInfo.class);
+    }
 
     /**
      * Config

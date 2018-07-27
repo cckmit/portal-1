@@ -10,7 +10,7 @@
                 <div class="profile-section">
                     <div class="profile-left">
                         <div class="profile-image">
-                            <img src="./images/user-icon-m.png" ui:field="icon"/>
+                            <img src="./images/user-icon-m.svg" ui:field="icon"/>
                         </div>
                     </div>
                     <div class="profile-right">
