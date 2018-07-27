@@ -17,15 +17,20 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.utils.JXLSHelper;
+import ru.protei.portal.core.utils.WorkTimeFormatter;
 
+import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Collectors;
 
 public class ReportControlServiceImpl implements ReportControlService {
 
@@ -48,6 +53,11 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @Autowired
     ReportStorageService reportStorageService;
+
+    @PostConstruct
+    public void init() {
+        processOldReports();
+    }
 
     // -------------------
     // Process new reports
@@ -121,29 +131,31 @@ public class ReportControlServiceImpl implements ReportControlService {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             try {
 
-                writeIssuesReport(report, buffer);
+                if (writeIssuesReport(report, buffer)) {
 
-                ReportContent reportContent = new ReportContent(report.getId(), new ByteArrayInputStream(buffer.toByteArray()));
-                CoreResponse result = reportStorageService.saveContent(reportContent);
+                    ReportContent reportContent = new ReportContent(report.getId(), new ByteArrayInputStream(buffer.toByteArray()));
+                    CoreResponse storageResult = reportStorageService.saveContent(reportContent);
 
-                if (result.isOk()) {
-                    saved = true;
+                    if (storageResult.isOk()) {
+                        saved = true;
 
-                    report.setStatus(En_ReportStatus.READY);
-                    report.setModified(new Date());
+                        report.setStatus(En_ReportStatus.READY);
+                        report.setModified(new Date());
 
-                    reportDAO.merge(report);
+                        reportDAO.merge(report);
 
-                    log.debug("successful process report : reportId={}", report.getId());
-                } else {
+                        log.debug("successful process report : reportId={}", report.getId());
 
-                    report.setStatus(En_ReportStatus.ERROR);
-                    report.setModified(new Date());
-
-                    reportDAO.merge(report);
-
-                    log.debug("unsuccessful process report : reportId={}", report.getId());
+                        return;
+                    }
                 }
+
+                report.setStatus(En_ReportStatus.ERROR);
+                report.setModified(new Date());
+
+                reportDAO.merge(report);
+
+                log.debug("unsuccessful process report : reportId={}", report.getId());
 
             } catch (Throwable th) {
                 if (saved) {
@@ -159,13 +171,66 @@ public class ReportControlServiceImpl implements ReportControlService {
         }
     }
 
-    private void writeIssuesReport(final Report report, ByteArrayOutputStream buffer) throws IOException {
-        List<CaseObject> issues = caseObjectDAO.getCases(report.getCaseQuery());
-        List<List<CaseComment>> issuesComments = new ArrayList<>();
-        for (CaseObject issue : issues) {
-            issuesComments.add(caseCommentDAO.getCaseComments(issue.getId()));
+    private boolean writeIssuesReport(final Report report, ByteArrayOutputStream buffer) throws IOException {
+
+        Long count = caseObjectDAO.count(report.getCaseQuery());
+
+        if (count == null || count < 1) {
+            log.debug("report : reportId={} has no corresponding case objects", report.getId());
+            return true;
         }
-        JXLSHelper.writeIssuesReport(issues, issuesComments, buffer, getLang().getFor(Locale.forLanguageTag(report.getLocale())));
+
+        if (count > Integer.MAX_VALUE) {
+            log.debug("report : reportId={} has too many corresponding case objects: {}, aborting task", report.getId(), count);
+            return false;
+        }
+
+        log.debug("report : reportId={} has {} case objects to procees", report.getId(), count);
+
+        JXLSHelper.ReportBook book = new JXLSHelper.ReportBook(
+                new SimpleDateFormat("dd.MM.yyyy HH:mm"),
+                new WorkTimeFormatter(),
+                getLang().getFor(Locale.forLanguageTag(report.getLocale()))
+        );
+
+        if (writeIssuesReport(book, report, count)) {
+            book.collect(buffer);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean writeIssuesReport(JXLSHelper.ReportBook book, Report report, Long count) {
+
+        final int step = config.data().reportConfig().getStep();
+        final int limit = count.intValue();
+        int offset = 0;
+
+        while (offset < limit) {
+            int amount = offset + step < limit ? offset + step : limit;
+            try {
+                CaseQuery query = report.getCaseQuery();
+                query.setOffset(offset);
+                query.setLimit(amount);
+                writeIssuesReportChunk(book, query);
+                offset += step;
+            } catch (Throwable th) {
+                log.warn("fail to process chunk [{} - {}] : reportId={} {}", offset, amount, report.getId(), th);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void writeIssuesReportChunk(JXLSHelper.ReportBook book, CaseQuery query) {
+        List<CaseObject> issues = caseObjectDAO.getCases(query);
+        List<List<CaseComment>> comments = issues.stream()
+                .map(issue -> caseCommentDAO.getCaseComments(issue.getId()))
+                .collect(Collectors.toList());
+
+        book.write(issues, comments);
     }
 
     private Lang getLang() {
