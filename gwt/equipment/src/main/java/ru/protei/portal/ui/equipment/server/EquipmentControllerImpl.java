@@ -30,8 +30,8 @@ public class EquipmentControllerImpl implements EquipmentController {
     @Override
     public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
 
-        log.debug( "get equipments: name={} | types={} | stages={} | organizationCodes={} | classifierCode={} | regNum={}",
-                query.getSearchString(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
+        log.debug( "get equipments: name={} | types={} | organizationCodes={} | classifierCode={} | regNum={}",
+                query.getSearchString(), query.getTypes(), query.getOrganizationCodes(), query.getClassifierCode(),
                 query.getRegisterNumber() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -46,8 +46,8 @@ public class EquipmentControllerImpl implements EquipmentController {
 
     @Override
     public List< EquipmentShortView > equipmentOptionList( EquipmentQuery query ) throws RequestFailedException {
-        log.debug( "get equipments: name={} | types={} | stages={} | organizationCodes={} | classifierCode={} | regNum={}",
-                query.getSearchString(), query.getTypes(), query.getStages(), query.getOrganizationCodes(), query.getClassifierCode(),
+        log.debug( "get equipments: name={} | types={} | organizationCodes={} | classifierCode={} | regNum={}",
+                query.getSearchString(), query.getTypes(), query.getOrganizationCodes(), query.getClassifierCode(),
                 query.getRegisterNumber() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();

@@ -19,7 +19,6 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
-import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableActivity;
@@ -180,7 +179,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         };
         columns.add( attachment );
 
-
         ClickColumn< Equipment > type = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
@@ -196,12 +194,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 imageElement.setSrc( "./images/eq_" + value.getType().name().toLowerCase() + ".png" );
                 imageElement.setTitle( typeLang.getName( value.getType() ) );
                 root.appendChild( imageElement );
-
-                Element stageElement = DOM.createDiv();
-                stageElement.addClassName( "label label-" + value.getStage().name().toLowerCase() );
-                stageElement.setInnerText( stageLang.getName( value.getStage() ) );
-
-                root.appendChild( stageElement );
             }
         };
         columns.add( type );
@@ -267,8 +259,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     @Inject
     @UiField
     Lang lang;
-    @Inject
-    En_EquipmentStageLang stageLang;
     @Inject
     En_EquipmentTypeLang typeLang;
 

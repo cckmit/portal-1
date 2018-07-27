@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 
-import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -17,13 +16,6 @@ public class Equipment extends AuditableObject {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
-
-    /**
-     * Стадии разработки оборудования
-     */
-    @JdbcColumn( name = "dev_stage" )
-    @JdbcEnumerated(EnumType.STRING)
-    private En_EquipmentStage stage;
 
     /**
      * Тип оборудования
@@ -104,7 +96,6 @@ public class Equipment extends AuditableObject {
     public Equipment( Equipment equipment ) {
         this.name = equipment.getName();
         this.nameSldWrks = equipment.getNameSldWrks();
-        this.stage = equipment.getStage();
         this.type = equipment.getType();
         this.managerId = equipment.getManagerId();
         this.project = equipment.getProject();
@@ -117,14 +108,6 @@ public class Equipment extends AuditableObject {
 
     public void setId( Long id ) {
         this.id = id;
-    }
-
-    public En_EquipmentStage getStage() {
-        return stage;
-    }
-
-    public void setStage( En_EquipmentStage stage ) {
-        this.stage = stage;
     }
 
     public En_EquipmentType getType() {

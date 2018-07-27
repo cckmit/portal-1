@@ -165,7 +165,7 @@ public abstract class EquipmentTableActivity
         En_SortDir sortDir = filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC;
         Long equipmentId = filterView.equipment().getValue() == null ? null : filterView.equipment().getValue().getId();
         return new EquipmentQuery( filterView.name().getValue(), filterView.sortField().getValue(), sortDir,
-                filterView.organizationCodes().getValue(), filterView.stages().getValue(), filterView.types().getValue(),
+                filterView.organizationCodes().getValue(), filterView.types().getValue(),
                 filterView.classifierCode().getValue(), filterView.registerNumber().getValue(), managerId, equipmentId );
     }
 

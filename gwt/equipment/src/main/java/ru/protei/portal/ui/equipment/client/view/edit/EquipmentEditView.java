@@ -7,7 +7,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -18,7 +17,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
 import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
-import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageSelector;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroup;
 
 import java.util.List;
@@ -67,11 +65,6 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Override
     public HasValue<En_EquipmentType> type() {
         return type;
-    }
-
-    @Override
-    public HasValue<En_EquipmentStage> stage() {
-        return stage;
     }
 
     @Override
@@ -150,9 +143,6 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     @UiField(provided = true)
     EquipmentTypeBtnGroup type;
-    @Inject
-    @UiField(provided = true)
-    EquipmentStageSelector stage;
     @Inject
     @UiField(provided = true)
     EquipmentSelector linkedEquipment;

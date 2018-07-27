@@ -56,11 +56,6 @@
                 <label><ui:text from="{lang.equipmentType}"/></label>
                 <type:EquipmentTypeBtnGroupMulti ui:field="types" title="{lang.equipmentType}" styleName="form-group btn-group btn-group-justified"/>
             </div>
-
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.equipmentStage}"/></label>
-                <stage:EquipmentStageOptionList ui:field="stages" title="{lang.equipmentStage}"/>
-            </div>
         </div>
         <div class="footer">
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>

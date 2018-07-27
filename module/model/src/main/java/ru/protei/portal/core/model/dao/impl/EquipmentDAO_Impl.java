@@ -67,10 +67,6 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
                 args.add(likeArg);
             }
 
-            if ( !CollectionUtils.isEmpty( query.getStages() ) ) {
-                condition.append(" and equipment.dev_stage in (" + query.getStages().stream().map((s) -> "\'" + s + "\'").collect( Collectors.joining(",")) + ")");
-            }
-
             if ( !CollectionUtils.isEmpty( query.getTypes() ) ) {
                 condition.append(" and equipment.type in (" + query.getTypes().stream().map((s) -> "\'" + s + "\'").collect( Collectors.joining(",")) + ")");
             }

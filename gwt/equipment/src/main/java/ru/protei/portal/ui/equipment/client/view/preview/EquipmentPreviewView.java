@@ -76,12 +76,6 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
-    public void setStage( String value, String styleNamePrefix ) {
-        this.stage.setInnerText( value );
-        this.stage.addClassName( "label label-" + styleNamePrefix );
-    }
-
-    @Override
     public void setDecimalNumbers( String value ) {
         this.number.setInnerText( value );
     }
@@ -148,8 +142,6 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     SpanElement nameBySldWrks;
     @UiField
     SpanElement type;
-    @UiField
-    SpanElement stage;
     @UiField
     SpanElement primaryUse;
     @UiField

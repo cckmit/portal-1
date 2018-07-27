@@ -12,7 +12,6 @@ import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.lang.En_EquipmentStageLang;
 import ru.protei.portal.ui.common.client.lang.En_EquipmentTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
@@ -80,7 +79,6 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setNameBySldWrks( value.getNameSldWrks() );
         view.setComment( value.getComment() );
         view.setType( typeLang.getName( value.getType() ) );
-        view.setStage( stageLang.getName( value.getStage() ), value.getStage().name().toLowerCase() );
         view.setProject( value.getProject() == null ? "" : value.getProject() );
         view.setManager( value.getManagerShortName() == null ? "" : value.getManagerShortName() );
         view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
@@ -122,8 +120,6 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     AbstractEquipmentPreviewView view;
     @Inject
     En_EquipmentTypeLang typeLang;
-    @Inject
-    En_EquipmentStageLang stageLang;
     @Inject
     PolicyService policyService;
     @Inject

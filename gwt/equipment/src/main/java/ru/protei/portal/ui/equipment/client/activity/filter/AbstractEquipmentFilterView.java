@@ -21,8 +21,6 @@ public interface AbstractEquipmentFilterView extends IsWidget {
 
     HasValue< PersonShortView > manager();
 
-    HasValue<Set<En_EquipmentStage>> stages();
-
     HasValue<Set<En_EquipmentType>> types();
 
     HasValue<Set<En_OrganizationCode>> organizationCodes();

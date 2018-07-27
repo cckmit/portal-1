@@ -10,7 +10,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_EquipmentStage;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -25,7 +24,6 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.widget.selector.EquipmentSelector;
-import ru.protei.portal.ui.equipment.client.widget.stage.EquipmentStageOptionList;
 import ru.protei.portal.ui.equipment.client.widget.type.EquipmentTypeBtnGroupMulti;
 
 import java.util.Set;
@@ -50,7 +48,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         name.setValue( null );
         organizationCode.setValue( null );
         types.setValue( null );
-        stages.setValue( null );
         classifierCode.setValue( null );
         regNum.setValue( null );
         manager.setValue( null );
@@ -67,11 +64,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Override
     public HasValue< PersonShortView > manager() {
         return manager;
-    }
-
-    @Override
-    public HasValue<Set<En_EquipmentStage>> stages() {
-        return stages;
     }
 
     @Override
@@ -137,11 +129,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
         fireChangeTimer();
     }
 
-    @UiHandler( "stages" )
-    public void onStageSelected( ValueChangeEvent<Set<En_EquipmentStage>> event ) {
-        fireChangeTimer();
-    }
-
     @UiHandler( "manager" )
     public void onManagerSelected( ValueChangeEvent<PersonShortView> event ) {
         fireChangeTimer();
@@ -199,9 +186,6 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     @Inject
     @UiField(provided = true)
     OrganizationBtnGroupMulti organizationCode;
-    @Inject
-    @UiField(provided = true)
-    EquipmentStageOptionList stages;
     @Inject
     @UiField(provided = true)
     EquipmentTypeBtnGroupMulti types;
