@@ -415,9 +415,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regionStateUnknown();
 
-    String regionStateRival();
+    String regionStateMarketing();
 
-    String regionStateTalk();
+    String regionStatePresale();
 
     String regionStateProjecting();
 
@@ -427,7 +427,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String regionStateSupport();
 
-    String regionStateSupportFinished();
+    String regionStateFinished();
 
     String regionState();
 
@@ -1128,4 +1128,8 @@ public interface Lang extends Messages, ContactItemLang {
     String openTableView();
 
     String buttonClear();
+
+    String regionStateTesting();
+
+    String regionStateCanceled();
 }

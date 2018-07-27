@@ -51,6 +51,21 @@
     color: rgb(88, 5, 5);
   }
 
+  &.marketing {
+    &:before {
+      content: "\f59f";
+    }
+    color: rgb(88, 5, 5);
+  }
+
+  &.testing {
+    &:before {
+      content: "\f1ea";
+    }
+    color: rgb(88, 5, 5);
+  }
+
+
   &.talk {
     &:before {
       content: "\f0e6"
@@ -91,6 +106,13 @@
       content: "\f017"
     }
     color: #bf6400;
+  }
+
+  &.canceled {
+    &:before {
+      content: "\f05e";
+    }
+    color: #A0A0A0;
   }
 }
 
