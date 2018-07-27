@@ -80,7 +80,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
         // работаем только с пулом доступных линков по приватности
         List<CaseLink> oldCaseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivate));
-        List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseNumber.toString()));
+        List<CaseLink> oldCaseCrossLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(null, isShowOnlyPrivate, caseId.toString()));
         // линки не могут быть изменены, поэтому удаляем старые и создаем новые. Кросс ссылки добавляем только для новых
         DiffCollectionResult<CaseLink> caseLinksDiffResult = ru.protei.winter.core.utils.collections.CollectionUtils.diffCollection(oldCaseLinks, caseLinks);
         if ( CollectionUtils.isNotEmpty(caseLinksDiffResult.getRemovedEntries())) {
@@ -110,7 +110,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 if ( crossLinkAlreadyExist( oldCaseCrossLinks, cId )) {
                     return;
                 }
-                toAddLinks.add(createCrossCRMLink(cId, caseNumber));
+                toAddLinks.add(createCrossCRMLink(cId, caseId));
             });
             toAddLinks.addAll(caseLinksDiffResult.getAddedEntries());
             caseLinkDAO.persistBatch(toAddLinks);
@@ -140,12 +140,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return true;
     }
 
-    private CaseLink createCrossCRMLink(Long linkedCaseNumber, Long caseNumber) {
+    private CaseLink createCrossCRMLink(Long linkedCaseId, Long caseId) {
         CaseLink crossLink = new CaseLink();
         crossLink.setType(En_CaseLink.CRM);
-        crossLink.setRemoteId(String.valueOf(caseNumber));
-
-        Long linkedCaseId = caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT, linkedCaseNumber);
+        crossLink.setRemoteId(String.valueOf(caseId));
         crossLink.setCaseId(linkedCaseId);
 
         return crossLink;

@@ -775,7 +775,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String caseSubscription();
 
-    String errCreatedStateSelected();
+    String errSaveIssueNeedSelectManager();
 
     String document();
 
@@ -1128,4 +1128,8 @@ public interface Lang extends Messages, ContactItemLang {
     String openTableView();
 
     String buttonClear();
+
+    String issueLinkIncorrectCrmNumberFormat();
+
+    String issueLinkIncorrectCrmCaseNotFound(Long num);
 }

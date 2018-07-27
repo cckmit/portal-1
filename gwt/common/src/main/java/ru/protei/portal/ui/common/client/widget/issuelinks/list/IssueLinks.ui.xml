@@ -14,6 +14,7 @@
                     <i class="fa fa-chevron-down"/>
                 </g:Button>
             </div>
+            <small class="text-danger col-xs-12" ui:field="error"/>
         </div>
 
     </g:HTMLPanel>

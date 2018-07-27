@@ -126,12 +126,13 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
         return addHandler(handler, CloseEvent.getType());
     }
 
-    private void fillCaseInfo(CaseInfo caseInfo) {
-        header.setInnerText( caseInfo.getName() );
-        En_ImportanceLevel importanceLevel = En_ImportanceLevel.getById(caseInfo.getImpLevel());
+    private void fillCaseInfo(CaseInfo value) {
+        header.setInnerText( value.getName() );
+        En_ImportanceLevel importanceLevel = En_ImportanceLevel.getById(value.getImpLevel());
         importance.addClassName(ImportanceStyleProvider.getImportanceIcon( importanceLevel ));
-        state.setInnerText(caseStateLang.getStateName(En_CaseState.getById(caseInfo.getStateId())));
-        info.setInnerText(caseInfo.getInfo());
+        state.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() + " m-r-5");
+        state.setInnerText(caseStateLang.getStateName(En_CaseState.getById(value.getStateId())));
+        info.setInnerText(value.getInfo());
     }
 
     @Inject
