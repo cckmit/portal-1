@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
+             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -12,9 +13,9 @@
                 <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
 
                     <div ui:field="messageBlock">
-                        <a href="javascript:;" class="image">
-                            <img alt="" src="./images/user-icon-m.png" ui:field="icon"></img>
-                        </a>
+                        <div class="image">
+                            <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
+                        </div>
 
                         <div class="message">
                             <autoresizetextarea:AutoResizeTextArea
@@ -24,6 +25,13 @@
 
                             <div class="attachments">
                                 <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
+                                <g:Button styleName=" btn btn-white m-l-5 time-btn" ui:field="timeBtn" title="{lang.timeElapsed}">
+                                    <i class="fa fa-clock-o"></i>
+                                </g:Button>
+                                <g:HTMLPanel styleName="form-group col-xs-12 time-block" ui:field="timePanel" visible="false">
+                                    <label><ui:text from="{lang.timeElapsed}"/></label>
+                                    <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field" notNull="false"/>
+                                </g:HTMLPanel>
                                 <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
                                     <div class="btn btn-white attach-add-btn">
                                         <ui:text from='{lang.addAttachmentBtn}'/>

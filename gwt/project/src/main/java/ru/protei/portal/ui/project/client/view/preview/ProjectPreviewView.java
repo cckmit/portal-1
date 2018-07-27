@@ -1,7 +1,8 @@
 package ru.protei.portal.ui.project.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -11,14 +12,19 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
@@ -108,6 +114,21 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public HasValue<Set<ProductShortView>> products() {
+        return products;
+    }
+
+    @Override
+    public HasValue<EntityOption> company() {
+        return company;
+    }
+
+    @Override
+    public HasValue<En_CustomerType> customerType() {
+        return customerType;
+    }
+
+    @Override
     public void showFullScreen( boolean value ) {
         this.fullScreen.setVisible( !value );
         if ( value ) {
@@ -156,8 +177,18 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         fireProjectChanged();
     }
 
-    @UiHandler( "projectRegion" )
-    public void onRegionChanged( ValueChangeEvent<EntityOption> event ) {
+    @UiHandler( {"projectRegion", "company"} )
+    public void onRegionOrCompanyChanged( ValueChangeEvent<EntityOption> event ) {
+        fireProjectChanged();
+    }
+
+    @UiHandler( "products" )
+    public void onProductsChanged( ValueChangeEvent<Set<ProductShortView>> event ) {
+        fireProjectChanged();
+    }
+
+    @UiHandler( "customerType" )
+    public void onCustomerTypeChanged( ValueChangeEvent<En_CustomerType> event ) {
         fireProjectChanged();
     }
 
@@ -220,6 +251,18 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Inject
     FixedPositioner positioner;
+
+    @Inject
+    @UiField(provided = true)
+    CompanySelector company;
+
+    @Inject
+    @UiField(provided = true)
+    ProductMultiSelector products;
+
+    @Inject
+    @UiField(provided = true)
+    CustomerTypeSelector customerType;
 
     AbstractProjectPreviewActivity activity;
 

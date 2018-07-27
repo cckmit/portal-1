@@ -901,13 +901,23 @@ public interface Lang extends Messages, ContactItemLang {
 
     String download();
 
+    String timeDayLiteral();
+
+    String timeHourLiteral();
+
     String accountFilterCompany();
-    
+
     String documentTypeCode();
 
+    String timeMinuteLiteral();
+
+    String timeEstimated();
+
     String errNotAvailable();
-    
+
     String decimalNumberNotFound();
+
+    String timeElapsed();
 
     String from();
 
@@ -1018,7 +1028,7 @@ public interface Lang extends Messages, ContactItemLang {
     String locale();
 
     String documentIdColumnHeader();
-    
+
     String documentContractor();
 
     String documentRegistrar();
@@ -1030,4 +1040,24 @@ public interface Lang extends Messages, ContactItemLang {
     String documentOrganizationCode();
 
     String documentEquipment();
+
+    String projectCustomerCompany();
+
+    String projectDescription();
+
+    String projectProducts();
+
+    String projectCustomerType();
+
+    String customerTypeMinistryOfDefence();
+
+    String customerTypeStageBudget();
+
+    String customerTypeCommercialRf();
+
+    String customerTypeCommercialNearAbroad();
+
+    String customerTypeCommercialFarAbroad();
+
+    String customerTypeCommercialProtei();
 }

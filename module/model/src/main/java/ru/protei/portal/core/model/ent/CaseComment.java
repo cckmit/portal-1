@@ -3,10 +3,8 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by michael on 19.05.16.
@@ -49,6 +47,9 @@ public class CaseComment extends AuditableObject {
 
     @JdbcOneToMany(table = "case_attachment", remoteColumn = "ccomment_id", additionalConditions = @JdbcManyJoinData(remoteColumn="case_id", localColumn = "case_id"))
     private List<CaseAttachment> caseAttachments;
+
+    @JdbcColumn(name="time_elapsed")
+    private Long timeElapsed;
 
     public CaseComment() {}
 
@@ -163,6 +164,14 @@ public class CaseComment extends AuditableObject {
         this.caseAttachments = attachments;
     }
 
+    public Long getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    public void setTimeElapsed(Long timeElapsed) {
+        this.timeElapsed = timeElapsed;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -182,6 +191,7 @@ public class CaseComment extends AuditableObject {
                 ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
+                ", timeElapsed=" + timeElapsed +
                 '}';
     }
 }

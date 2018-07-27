@@ -4,6 +4,7 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
@@ -22,10 +23,13 @@ public class NumberColumn extends ClickColumn< ProjectInfo > {
         cell.addClassName( "number" );
 
         StringBuilder content = new StringBuilder();
-        content.append( "<b>" ).append( value.getId() ).append( "</b><br/>" );
+        content.append( "<b>" ).append( value.getId() ).append( "</b>" );
 
         if ( value.getProductDirection() != null ) {
-            content.append( value.getProductDirection().getDisplayText() );
+            content.append("<br/>").append( value.getProductDirection().getDisplayText() );
+        }
+        if (value.getCustomerType() != null) {
+            content.append("<br/><i>").append(customerTypeLang.getName(value.getCustomerType())).append("</i>");
         }
 
         cell.setInnerHTML( content.toString() );
@@ -33,4 +37,7 @@ public class NumberColumn extends ClickColumn< ProjectInfo > {
 
     @Inject
     Lang lang;
+
+    @Inject
+    En_CustomerTypeLang customerTypeLang;
 }

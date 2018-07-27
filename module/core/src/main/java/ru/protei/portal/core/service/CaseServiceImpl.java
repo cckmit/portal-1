@@ -24,6 +24,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+
 /**
  * Реализация сервиса управления обращениями
  */
@@ -288,6 +290,10 @@ public class CaseServiceImpl implements CaseService {
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
 
+        if (!updateTimeElapsed(token, comment.getCaseId())) {
+            throw new RuntimeException( "failed to update time elapsed on addCaseComment" );
+        }
+
         // re-read data from db to get full-filled object
         CaseComment result = caseCommentDAO.get( commentId );
 
@@ -356,6 +362,9 @@ public class CaseServiceImpl implements CaseService {
         if (!isCaseChanged)
             throw new RuntimeException( "failed to update case modifiedDate " );
 
+        if (!updateTimeElapsed(token, comment.getCaseId())) {
+            throw new RuntimeException( "failed to update time elapsed on updateCaseComment" );
+        }
 
         // below building event
 
@@ -545,7 +554,7 @@ public class CaseServiceImpl implements CaseService {
         return createAndPersistImportanceMessage(author, caseId, importance.getId());
     }
 
-    private Long createAndPersistImportanceMessage(Person author, Long caseId, int importance) {
+    private Long createAndPersistImportanceMessage(Person author, Long caseId, Integer importance) {//int -> Integer т.к. падает unit test с NPE, неясно почему
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
         stateChangeMessage.setCreated(new Date());
@@ -605,10 +614,30 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
                 && Objects.equals(co1.getState(), co2.getState())
                 && Objects.equals(co1.getImpLevel(), co2.getImpLevel())
+                && Objects.equals(co1.getTimeElapsed(), co2.getTimeElapsed())
                 && Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 && Objects.equals(co1.getProductId(), co2.getProductId())
                 && Objects.equals(co1.getManagerId(), co2.getManagerId());
+    }
+
+    private CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed) {
+        if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = new CaseObject(caseId);
+        caseObject.setTimeElapsed(timeElapsed);
+
+        boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "time_elapsed");
+
+        return new CoreResponse<Boolean>().success(isUpdated);
+    }
+
+    private boolean updateTimeElapsed(AuthToken token, Long caseId) {
+        List<CaseComment> allCaseComments = caseCommentDAO.partialGetListByCondition("CASE_ID=?", Collections.singletonList(caseId), "id", "time_elapsed");
+        long timeElapsed = stream(allCaseComments).filter(cmnt -> cmnt.getTimeElapsed() != null).mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
+
+        return updateCaseTimeElapsed ( token, caseId, timeElapsed ).getData();
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)

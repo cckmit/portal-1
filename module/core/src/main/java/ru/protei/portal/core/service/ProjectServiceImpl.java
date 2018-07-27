@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
+import ru.protei.portal.core.model.dict.En_LocationType;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
@@ -16,6 +19,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -51,6 +55,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    ProjectToProductDAO projectToProductDAO;
 
     @Override
     public CoreResponse< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -141,8 +148,10 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( caseObject );
 
         caseObject.setName( project.getName() );
-        caseObject.setInfo( project.getDetails() );
+        caseObject.setInfo( project.getDescription() );
         caseObject.setStateId( project.getState().getId() );
+        if (project.getCustomerType() != null)
+            caseObject.setLocal(project.getCustomerType().getId());
 
         if ( project.getProductDirection() == null ) {
             caseObject.setProductId( null );
@@ -150,8 +159,15 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setProductId( project.getProductDirection().getId() );
         }
 
+        if (project.getCustomer() == null) {
+            caseObject.setInitiatorCompany(null);
+        } else {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+
         updateManagers( caseObject, project.getHeadManager(), project.getManagers() );
         updateLocations( caseObject, project.getRegion() );
+        updateProducts( caseObject, project.getProducts() );
 
         caseObjectDAO.merge( caseObject );
 
@@ -242,6 +258,32 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseLocationDAO.persist( CaseLocation.makeLocationOf( caseObject, location ) );
 
+    }
+
+    private void updateProducts(CaseObject caseObject, Set<ProductShortView> products) {
+        if (products == null)
+            return;
+
+        Set<DevUnit> oldProducts = caseObject.getProducts();
+        Set<DevUnit> newProducts = products.stream().map(DevUnit::fromProductShortView).collect(Collectors.toSet());
+
+        Set<DevUnit> toDelete = new HashSet<>(oldProducts);
+        Set<DevUnit> toCreate = new HashSet<>(newProducts);
+        toCreate.removeAll(oldProducts);
+        toDelete.removeAll(newProducts);
+
+        ProjectToProduct projectToProduct = new ProjectToProduct(caseObject.getId(), null);
+
+        toDelete.forEach(du -> {
+            projectToProduct.setProductId(du.getId());
+            projectToProductDAO.removeByKey(projectToProduct);
+        });
+        toCreate.forEach(du -> {
+            projectToProduct.setProductId(du.getId());
+            projectToProductDAO.persist(projectToProduct);
+        });
+
+        caseObject.setProducts(newProducts);
     }
 
     private void iterateAllLocations( CaseObject project, Consumer< Location > handler ) {

@@ -20,7 +20,9 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
     public NumberColumn( Lang lang, En_CaseStateLang caseStateLang) {
         this.lang = lang;
         this.caseStateLang = caseStateLang;
+        setStopPropogationElementClassName("number-size");
     }
+
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
         columnHeader.addClassName( "number" );
@@ -41,7 +43,6 @@ public class NumberColumn extends ClickColumn<CaseShortView> {
             i.addClassName(ImportanceStyleProvider.getImportanceIcon(En_ImportanceLevel.getById(value.getImpLevel())) + " center");
             divElement.appendChild( i );
         }
-
 
         com.google.gwt.dom.client.Element numberElement = DOM.createElement( "p" );
         numberElement.addClassName( "number-size" );

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.company.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -33,4 +34,8 @@ public interface AbstractCompanyPreviewView extends IsWidget {
     void setGroupVisible( boolean value );
 
     Widget asWidget(boolean isForTableView);
+
+    HasWidgets getContactsContainer();
+
+    void setSubscriptionEmails(String value);
 }

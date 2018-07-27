@@ -1,16 +1,21 @@
 package ru.protei.portal.core.model.struct;
 
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Информация о проекте в регионе
@@ -28,14 +33,24 @@ public class ProjectInfo extends AuditableObject {
     private String name;
 
     /**
-     * Детальный статус
+     * Описание проекта
      */
-    private String details;
+    private String description;
 
     /**
      * Текущее состояние проекта
      */
     private Long stateId;
+
+    /**
+     * Тип заказчика
+     */
+    private En_CustomerType customerType;
+
+    /**
+     * Заказчик
+     */
+    private Company customer;
 
     /**
      * продуктовое направление
@@ -59,6 +74,8 @@ public class ProjectInfo extends AuditableObject {
 
     EntityOption region;
 
+    Set<ProductShortView> products;
+
     public Long getId() {
         return id;
     }
@@ -73,14 +90,6 @@ public class ProjectInfo extends AuditableObject {
 
     public void setName( String name ) {
         this.name = name;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails( String details ) {
-        this.details = details;
     }
 
     public En_RegionState getState() {
@@ -131,11 +140,43 @@ public class ProjectInfo extends AuditableObject {
         this.region = region;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public En_CustomerType getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType(En_CustomerType customerType) {
+        this.customerType = customerType;
+    }
+
+    public Company getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Company customer) {
+        this.customer = customer;
+    }
+
+    public Set<ProductShortView> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<ProductShortView> products) {
+        this.products = products;
+    }
+
     public static ProjectInfo fromCaseObject( CaseObject project ) {
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setId( project.getId() );
         projectInfo.setName( project.getName() );
-        projectInfo.setDetails( project.getInfo() );
+        projectInfo.setDescription(project.getInfo());
         projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
         if ( project.getProduct() != null ) {
             projectInfo.setProductDirection( new EntityOption(
@@ -145,6 +186,9 @@ public class ProjectInfo extends AuditableObject {
 
         List<PersonShortView> deployManagers = new ArrayList<>();
         projectInfo.setManagers( deployManagers );
+        projectInfo.setCustomerType(En_CustomerType.find(project.getLocal()));
+        projectInfo.setCustomer(project.getInitiatorCompany());
+
         if ( project.getMembers() != null ) {
             for ( CaseMember member : project.getMembers() ) {
                 if ( En_DevUnitPersonRoleType.HEAD_MANAGER.equals( member.getRole() ) ) {
@@ -160,6 +204,12 @@ public class ProjectInfo extends AuditableObject {
         List<CaseLocation> locations = project.getLocations();
         if ( locations != null && !locations.isEmpty() ) {
             projectInfo.setRegion( EntityOption.fromLocation( locations.get( 0 ).getLocation() ) );
+        }
+
+        if (project.getProducts() != null) {
+            projectInfo.setProducts( project.getProducts().stream()
+                                        .map(ProductShortView::fromProduct)
+                                        .collect(Collectors.toSet()) );
         }
         return projectInfo;
     }
@@ -189,14 +239,16 @@ public class ProjectInfo extends AuditableObject {
     @Override
     public String toString() {
         return "ProjectInfo{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", details='" + details + '\'' +
-            ", stateId=" + stateId +
-            ", productDirection=" + productDirection +
-            ", headManager=" + headManager +
-            ", managers=" + managers +
-            ", created=" + created +
-            '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", stateId=" + stateId +
+                ", customerType=" + customerType +
+                ", productDirection=" + productDirection +
+                ", headManager=" + headManager +
+                ", managers=" + managers +
+                ", created=" + created +
+                ", region=" + region +
+                '}';
     }
 }

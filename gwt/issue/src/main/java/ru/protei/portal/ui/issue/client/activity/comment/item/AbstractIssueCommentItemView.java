@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 
 /**
  * Представление одного комментария
@@ -33,4 +34,8 @@ public interface AbstractIssueCommentItemView extends IsWidget {
     void hideOptions();
 
     void setIcon( String iconSrc );
+
+    HasTime timeElapsed();
+
+    void clearElapsedTime();
 }
