@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseState;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -50,5 +51,5 @@ public interface IssueController extends RemoteService {
      */
     CaseComment editIssueComment( CaseComment comment ) throws RequestFailedException;
 
-    CaseShortView getIssueShortInfo(Long caseNumber) throws RequestFailedException;
+    CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 }

@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.activity.caselinkprovider;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseServiceImpl;
@@ -33,7 +34,7 @@ public class CaseLinkProvider {
         return linkMap.get(caseLink).replace("%id%", id);
     }
 
-    public void checkExistCrmLink(Long caseNumber, AsyncCallback<CaseShortView> async) {
+    public void checkExistCrmLink(Long caseNumber, AsyncCallback<CaseInfo> async) {
         caseService.getIssueShortInfo(caseNumber, async);
     }
 

@@ -491,13 +491,22 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseShortView> getCaseShortInfo(AuthToken token, Long caseNumber) {
+    public CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber) {
         CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
 
         if(caseObject == null)
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
 
-        return new CoreResponse<CaseShortView>().success(caseObject);
+        CaseInfo info = new CaseInfo();
+        info.setId(caseObject.getId());
+        info.setCaseNumber(caseObject.getCaseNumber());
+        info.setPrivateCase(caseObject.isPrivateCase());
+        info.setName(caseObject.getName());
+        info.setImpLevel(caseObject.getImpLevel());
+        info.setStateId(caseObject.getStateId());
+        info.setInfo(caseObject.getInfo());
+
+        return new CoreResponse<CaseInfo>().success(info);
     }
 
     @Override

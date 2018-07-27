@@ -2069,10 +2069,27 @@ a {
         text-align: center;
         height: 22px;
         line-height: 22px;
-        background-color: #ededed;
-        border: 1px solid #dadada;
-        border-radius: 4px;
         cursor: pointer;
+
+        .case-link-info {
+          position: absolute;
+          width: 500px;
+          top: 100%;
+          z-index: 1000;
+          background: white;
+          border: 1px solid #dadada;
+          border-radius: 4px;
+          padding: 10px;
+          cursor: auto;
+
+          h2 {
+            text-align: left;
+            line-height: 1px;
+            margin: 0;
+            font-size: 13px;
+            color: #445367;
+          }
+        }
 
         > * {
           float: left;

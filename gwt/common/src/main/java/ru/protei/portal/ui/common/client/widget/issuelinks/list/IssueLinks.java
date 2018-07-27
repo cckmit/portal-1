@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -23,7 +24,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 
-public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
+public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, HasEnabled {
+
 
     public IssueLinks() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -67,6 +69,18 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
         showPopup();
     }
 
+    @Override
+    public boolean isEnabled() {
+        return addLinkButton.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+
+        addLinkButton.setVisible(enabled);
+    }
+
     private void showPopup() {
         popup.showNear(addLinkButton);
         popup.addValueChangeHandler(event -> addValue(event.getValue()));
@@ -87,7 +101,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
             return;
         }
 
-        if (En_CaseLink.CRM.equals(item.getType())) {
+        if (isCrmLink(item)) {
             Long crmRemoteId;
             try {
                 crmRemoteId = Long.parseLong(item.getRemoteId());
@@ -96,12 +110,12 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
                 return;
             }
 
-            caseLinkProvider.checkExistCrmLink(crmRemoteId, new RequestCallback<CaseShortView>() {
+            caseLinkProvider.checkExistCrmLink(crmRemoteId, new RequestCallback<CaseInfo>() {
                 @Override
                 public void onError(Throwable throwable) {}
 
                 @Override
-                public void onSuccess(CaseShortView caseInfo) {
+                public void onSuccess(CaseInfo caseInfo) {
                     if ( caseInfo == null ) {
                         // показать ошибку
                         return;
@@ -129,10 +143,18 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
         }
     }
 
+    private boolean isCrmLink(CaseLink item) {
+        return En_CaseLink.CRM.equals(item.getType());
+    }
+
     private void makeItemAndAddToParent(CaseLink item) {
         IssueLink itemView = itemViewProvider.get();
+        itemView.setEnabled(enabled);
         itemView.setValue(item);
         itemView.addCloseHandler(event -> removeValue(event.getTarget()));
+
+        item.setLink(caseLinkProvider.getLink(item.getType(), isCrmLink(item) ? item.getCaseInfo().getCaseNumber().toString() : item.getRemoteId() ));
+
         itemToViewModel.put(item, itemView);
         linksContainer.add(itemView);
     }
@@ -165,6 +187,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>> {
     @UiField
     Button addLinkButton;
 
+    private boolean enabled = true;
     private Map<CaseLink, IssueLink> itemToViewModel = new HashMap<>();
     private Set<CaseLink> items = null;
 

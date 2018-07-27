@@ -3,9 +3,12 @@ package ru.protei.portal.ui.issue.client.activity.preview;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+
+import java.util.Set;
 
 /**
  * Абстракция вида превью обращения
@@ -23,7 +26,10 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setCriticality( int value );
     void setProduct( String value );
     void setCompany( String value );
-    void setContact( String value );
+
+    void setLinks(Set<CaseLink> value);
+
+    void setContact(String value );
     void setOurCompany( String value );
     void setManager( String value );
     void setName( String value );

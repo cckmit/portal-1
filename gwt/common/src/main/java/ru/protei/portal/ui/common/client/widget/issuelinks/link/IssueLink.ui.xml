@@ -8,14 +8,14 @@
             <g:Anchor ui:field="remove" href="#" styleName="case-link-close fa fa-close"/>
             <g:InlineLabel ui:field="text" styleName="case-link-text"/>
             <g:InlineLabel ui:field="icon" styleName="case-link-icon"/>
-        </g:HTMLPanel>
-        <g:HTMLPanel styleName="case-link-info" ui:field="caseInfoPanel">
-            <h2 ui:field="header"/>
-            <div class="properties">
-                <div ui:field="importance" class="attributes"/>
-                <div ui:field="state" class="attributes"/>
-                <div ui:field="initiatorInfo" class="attribute"/>
-            </div>
+            <g:HTMLPanel styleName="case-link-info" ui:field="caseInfoPanel" visible="false">
+                <h2 ui:field="header"/>
+                <div class="properties">
+                    <span ui:field="importance" class="attributes"/>
+                    <span ui:field="state" class="attributes"/>
+                    <div ui:field="info" class="attributes info"/>
+                </div>
+            </g:HTMLPanel>
         </g:HTMLPanel>
     </g:FocusPanel>
 </ui:UiBinder>

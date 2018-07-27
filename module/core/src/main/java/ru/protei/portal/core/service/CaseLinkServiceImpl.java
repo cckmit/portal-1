@@ -91,7 +91,8 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                     return;
                 }
                 oldCaseCrossLinks.forEach(cl -> {
-                    if ( Objects.equals(link.getRemoteCaseId(), cl.getCaseId())) {
+                    Long cId = parseRemoteIdAsLongValue(link.getRemoteId());
+                    if ( Objects.equals(cId, cl.getCaseId())) {
                         toRemoveIds.add(cl.getId());
                     }
                 });
@@ -105,10 +106,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
                 if ( isNotCrmLink(link) ) {
                     return;
                 }
-                if ( link.getRemoteCaseId() != null && crossLinkAlreadyExist( oldCaseCrossLinks, link.getRemoteCaseId() )) {
+                Long cId = parseRemoteIdAsLongValue(link.getRemoteId());
+                if ( crossLinkAlreadyExist( oldCaseCrossLinks, cId )) {
                     return;
                 }
-                Long cId = parseRemoteIdAsLongValue(link.getRemoteId());
                 toAddLinks.add(createCrossCRMLink(cId, caseNumber));
             });
             toAddLinks.addAll(caseLinksDiffResult.getAddedEntries());

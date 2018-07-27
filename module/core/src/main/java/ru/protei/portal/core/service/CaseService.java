@@ -72,5 +72,5 @@ public interface CaseService {
     CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    CoreResponse<CaseShortView> getCaseShortInfo(AuthToken token, Long caseNumber);
+    CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber);
 }

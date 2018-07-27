@@ -133,11 +133,11 @@ public class IssueControllerImpl implements IssueController {
     }
 
     @Override
-    public CaseShortView getIssueShortInfo(Long caseNumber) throws RequestFailedException {
+    public CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException {
         log.debug("getIssueShortInfo(): number: {}", caseNumber);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseShortView> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
+        CoreResponse<CaseInfo> response = caseService.getCaseShortInfo( descriptor.makeAuthToken(), caseNumber );
         log.debug("getIssueShortInfo(), number: {} -> {} ", caseNumber, response.isError() ? "error" : response.getData().getCaseNumber());
 
         if (response.isError()) {

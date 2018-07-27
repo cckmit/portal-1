@@ -1,7 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -22,19 +21,11 @@ public class CaseLink implements Serializable {
     @JdbcColumn(name="remote_id")
     private String remoteId;
 
-    @JdbcJoinedColumn(mappedColumn = "id", table = "case_object", joinData = {
+    @JdbcJoinedObject( sqlTableAlias = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
-            @JdbcJoinData(remoteColumn = "CASENO", value = "(SELECT CAST(remote_id AS UNSIGNED INTEGER))")
+            @JdbcJoinData(remoteColumn = "id", value = "(SELECT CAST(remote_id AS UNSIGNED INTEGER))")
     })
-    private Long remoteCaseId;
-
-    @JdbcJoinedColumn(mappedColumn = "private_flag", table = "case_object", joinData = {
-            @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
-            @JdbcJoinData(remoteColumn = "CASENO", value = "(SELECT CAST(remote_id AS UNSIGNED INTEGER))")
-    })
-    private Boolean privateCase;
-
-    private CaseShortView caseInfo;
+    private CaseInfo caseInfo;
 
     // not db column
     private String link = "";
@@ -85,27 +76,11 @@ public class CaseLink implements Serializable {
         this.link = link;
     }
 
-    public Boolean isPrivateCase() {
-        return privateCase;
-    }
-
-    public void setPrivateCase(Boolean privateCase) {
-        this.privateCase = privateCase;
-    }
-
-    public Long getRemoteCaseId() {
-        return remoteCaseId;
-    }
-
-    public void setRemoteCaseId(Long remoteCaseId) {
-        this.remoteCaseId = remoteCaseId;
-    }
-
-    public CaseShortView getCaseInfo() {
+    public CaseInfo getCaseInfo() {
         return caseInfo;
     }
 
-    public void setCaseInfo(CaseShortView caseInfo) {
+    public void setCaseInfo(CaseInfo caseInfo) {
         this.caseInfo = caseInfo;
     }
 
@@ -131,7 +106,7 @@ public class CaseLink implements Serializable {
     }
 
     public boolean isPrivate() {
-        return ( privateCase != null && privateCase ) || ( type != null && type.isForcePrivacy());
+        return type != null && type.isForcePrivacy() && ( caseInfo != null && caseInfo.isPrivateCase() );
     }
 
     @Override
