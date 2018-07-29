@@ -137,7 +137,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
                 Element root = DOM.createDiv();
                 cell.appendChild( root );
-                root.setClassName( "equipment-number" );
+                root.setClassName( "decimal-number" );
 
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
@@ -210,7 +210,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                cell.setClassName( "equipment-number" );
+                cell.setClassName( "decimal-number" );
 
                 if ( value != null && value.getLinkedEquipmentDecimalNumbers() != null ) {
                     cell.setInnerHTML( HTMLHelper.wrapDiv(

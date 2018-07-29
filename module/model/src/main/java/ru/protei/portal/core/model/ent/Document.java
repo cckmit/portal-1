@@ -13,7 +13,7 @@ import java.util.List;
  * элемент раздела "Банк документов"
  */
 @JdbcEntity(table = "document")
-public class Document implements Serializable {
+public class Document implements Serializable, Downloadable {
 
     @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -83,6 +83,11 @@ public class Document implements Serializable {
 
 
     public Document() {
+    }
+
+    @Override
+    public boolean isAllowedDownload() {
+        return true;
     }
 
     public Long getId() {

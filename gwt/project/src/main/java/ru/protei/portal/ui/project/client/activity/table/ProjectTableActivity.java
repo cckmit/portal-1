@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.project.client.activity.table;
 
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -21,6 +21,7 @@ import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterV
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +47,7 @@ public abstract class ProjectTableActivity
         filterView.resetFilter();
     }
 
-    @Event
+    @Event(value = Type.FILL_CONTENT)
     public void onShow( ProjectEvents.Show event ) {
 
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
@@ -58,6 +59,7 @@ public abstract class ProjectTableActivity
             new ActionBarEvents.Clear()
         );
 
+        selectedId = null;
         requestProjects();
     }
 
@@ -70,14 +72,19 @@ public abstract class ProjectTableActivity
         regionService.createNewProject( new RequestCallback<Long>(){
             @Override
             public void onError( Throwable throwable ) {
-
             }
 
             @Override
             public void onSuccess( Long aLong ) {
-                updateListAndSelect( aLong );
+                selectedId = aLong;
+                requestProjects();
             }
         });
+    }
+
+    @Event
+    public void onEditEvent(ProjectEvents.Edit event) {
+        selectedId = event.id;
     }
 
     @Event
@@ -92,17 +99,27 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onItemClicked( ProjectInfo value ) {
-        showPreview( value );
+        showPreview(value == null ? null : value.getId());
     }
 
     @Override
     public void onEditClicked( ProjectInfo value ) {
-        fireEvent(new ProjectEvents.Edit(value.getId()));
+        selectProject(value == null ? null : value.getId());
+        onItemClicked(value);
     }
 
     @Override
     public void onFilterChanged() {
         requestProjects();
+    }
+
+    private void selectProject(Long id) {
+        if (id == null || lastFetch == null)
+            return;
+        lastFetch.stream()
+                .filter(p -> Objects.equals(p.getId(), id))
+                .findAny()
+                .ifPresent(view::selectRow);
     }
 
     private void requestProjects() {
@@ -117,27 +134,17 @@ public abstract class ProjectTableActivity
 
                 @Override
                 public void onSuccess( Map<String, List<ProjectInfo>> result ) {
+                    lastFetch = result.values().stream()
+                            .flatMap(List::stream)
+                            .collect(Collectors.toList());
                     fillRows( result );
+
+                    if (selectedId != null) {
+                        selectProject(selectedId);
+                        showPreview(selectedId);
+                    }
                 }
             } );
-    }
-
-    private void updateListAndSelect( Long projectId ) {
-        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Map<String, List<ProjectInfo>> result ) {
-                view.clearRecords();
-                fillRows( result );
-                ProjectInfo info = new ProjectInfo();
-                info.setId( projectId );
-                onItemClicked( info );
-            }
-        } );
     }
 
     private void fillRows( Map<String, List<ProjectInfo>> result ) {
@@ -151,12 +158,14 @@ public abstract class ProjectTableActivity
         }
     }
 
-    private void showPreview ( ProjectInfo value ) {
-        if ( value == null ) {
+    private void showPreview ( Long id ) {
+        if ( id == null ) {
             animation.closeDetails();
+            selectedId = null;
         } else {
+            selectedId = id;
             animation.showDetails();
-            fireEvent( new ProjectEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
+            fireEvent( new ProjectEvents.ShowPreview( view.getPreviewContainer(), id ) );
         }
     }
 
@@ -193,8 +202,8 @@ public abstract class ProjectTableActivity
     @Inject
     PolicyService policyService;
 
+    private List<ProjectInfo> lastFetch;
+    private Long selectedId;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
-
-    private final RegExp caseNoPattern = RegExp.compile("\\d+");
 }

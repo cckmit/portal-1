@@ -60,6 +60,7 @@
   <include file="2018-07-04-add-platform-server-app.xml" relativeToChangelogFile="true" />
   <include file="2018-07-05-add-locale-column-to-person-table.xml" relativeToChangelogFile="true" />
   <include file="2018-07-05-add-gost-to-document_type.xml" relativeToChangelogFile="true" />
+  <include file="2018-07-06-add-columns-to-document.xml" relativeToChangelogFile="true" />
   <include file="2018-07-06-create-project_to_product-table.xml" relativeToChangelogFile="true" />
   <include file="2018-07-06-add-columns-to-document.xml" relativeToChangelogFile="true" />
   <include file="2018-07-11-project-link-in-equipment.xml" relativeToChangelogFile="true" />

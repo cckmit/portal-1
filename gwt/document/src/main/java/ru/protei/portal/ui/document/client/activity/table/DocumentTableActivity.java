@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.document.client.activity.table;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -73,6 +75,13 @@ public abstract class DocumentTableActivity
         view.scrollTo(view.getPageCount() - 1);
     }
 
+    @Override
+    public void onDownloadClicked(Document value) {
+        if (value.getId() == null || value.getProjectId() == null)
+            return;
+        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
+    }
+
     @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.init = initDetails;
@@ -105,6 +114,14 @@ public abstract class DocumentTableActivity
     @Override
     public void onItemClicked(Document value) {
         showPreview(value);
+    }
+
+    @Override
+    public void onProjectColumnClicked(Document value) {
+        if (value == null || value.getProjectInfo() == null)
+            return;
+        fireEvent(new ProjectEvents.Show());
+        fireEvent(new ProjectEvents.Edit(value.getProjectInfo().getId()));
     }
 
     @Override
@@ -194,4 +211,6 @@ public abstract class DocumentTableActivity
     private static String CREATE_ACTION;
     private AppEvents.InitDetails init;
     private DocumentQuery query;
+
+    private static final String DOWNLOAD_PATH = "springApi/document/";
 }

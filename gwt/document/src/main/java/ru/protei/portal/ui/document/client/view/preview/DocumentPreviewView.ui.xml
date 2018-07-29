@@ -60,7 +60,7 @@
             <fieldset class="header">
                 <legend><ui:text from="{lang.documentKeywords}"/></legend>
                 <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 equipment-number" ui:field="keyWords"></span>
+                    <span class="col-xs-12 col-md-12 decimal-number" ui:field="keyWords"></span>
                 </div>
             </fieldset>
             <g:Anchor href="javascript:void(0)" ui:field="downloadButton" styleName="btn btn-white" target="_blank">
