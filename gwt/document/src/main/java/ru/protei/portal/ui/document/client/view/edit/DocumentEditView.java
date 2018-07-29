@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.document.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -105,8 +106,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasValue<String> created() {
-        return created;
+    public void setCreated(String date) {
+        created.setInnerText(date);
     }
 
     @Override
@@ -160,11 +161,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public HasEnabled projectEnabled() {
-        return project;
-    }
-
-    @Override
     public HasVisibility uploaderVisible() {
         return new HasVisibility() {
             @Override
@@ -174,7 +170,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
             @Override
             public void setVisible(boolean visible) {
-                documentUploader.setVisible(visible);
+                selectFileContainer.setVisible(visible);
                 nameContainer.getElement().setClassName("form-group " + (visible ? "col-xs-6" : "col-xs-9"));
             }
         };
@@ -299,7 +295,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     EmployeeButtonSelector registrar;
 
     @UiField
-    TextBox created;
+    Element created;
 
     @UiField
     TextBox version;

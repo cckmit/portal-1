@@ -32,7 +32,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<EquipmentShortView> equipment();
 
-    HasValue<String> created();
+    void setCreated(String date);
 
     HasValue<Long> inventoryNumber();
 
@@ -49,8 +49,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
 
     HasEnabled decimalNumberEnabled();
-
-    HasEnabled projectEnabled();
 
     HasEnabled equipmentEnabled();
 

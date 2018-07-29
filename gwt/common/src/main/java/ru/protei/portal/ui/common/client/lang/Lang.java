@@ -1152,4 +1152,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueLinkIncorrectCrmNumberFormat();
 
     String issueLinkIncorrectCrmCaseNotFound(Long num);
+
+    String documentCreated(String dateTime);
 }

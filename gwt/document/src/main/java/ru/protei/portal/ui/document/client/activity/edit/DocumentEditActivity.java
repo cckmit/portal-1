@@ -82,7 +82,7 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onSaveClicked() {
-        Document newDocument = getDocument();
+        Document newDocument = fillDto();
         if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
             return;
         }
@@ -219,7 +219,7 @@ public abstract class DocumentEditActivity
     }
 
 
-    private Document getDocument() {
+    private Document fillDto() {
         Document d = new Document();
         d.setId(document.getId());
         d.setName(view.name().getValue());
@@ -246,7 +246,7 @@ public abstract class DocumentEditActivity
 
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
-        view.created().setValue(DateFormatter.formatDateTime(document.getCreated()));
+        view.setCreated( document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
         view.documentType().setValue(document.getType(), true);
@@ -267,7 +267,6 @@ public abstract class DocumentEditActivity
 
         boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
 
-        view.projectEnabled().setEnabled(isNew);
         view.uploaderVisible().setVisible(isNew);
         view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
         view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
@@ -282,19 +281,15 @@ public abstract class DocumentEditActivity
     }
 
     @Inject
-    AbstractDocumentEditView view;
-
-    @Inject
     Lang lang;
-
-    private Document document;
-
+    @Inject
+    AbstractDocumentEditView view;
     @Inject
     DocumentControllerAsync documentService;
-
     @Inject
     EquipmentControllerAsync equipmentService;
 
-    private AppEvents.InitDetails initDetails;
+    private Document document;
     private Profile authorizedProfile;
+    private AppEvents.InitDetails initDetails;
 }
