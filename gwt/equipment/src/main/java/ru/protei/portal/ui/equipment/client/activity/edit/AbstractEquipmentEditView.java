@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -35,7 +36,7 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     HasValue< PersonShortView > manager();
 
-    HasValue<String> project();
+    HasValue<ProjectInfo> project();
 
     HasValue<String> date();
 

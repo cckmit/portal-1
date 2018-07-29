@@ -1,10 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
-             xmlns:selector="urn:import:ru.protei.portal.ui.equipment.client.widget.selector"
-             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
+             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.multiple"
-             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person">
+             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
+             xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
+             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="main-content">
@@ -33,14 +34,14 @@
                         <label>
                             <ui:text from="{lang.equipmentPrimaryUse}"/>
                         </label>
-                        <selector:EquipmentSelector ui:field="linkedEquipment" hasNullValue="true"/>
+                        <equipment:EquipmentSelector ui:field="linkedEquipment" hasNullValue="true"/>
                     </div>
 
                     <g:HTMLPanel styleName="form-group" ui:field="projectBox">
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
-                        <g:TextBox ui:field="project" styleName="input-field"/>
+                        <project:ProjectButtonSelector ui:field="project"/>
                     </g:HTMLPanel>
 
                     <g:HTMLPanel styleName="form-group" ui:field="managerBox">

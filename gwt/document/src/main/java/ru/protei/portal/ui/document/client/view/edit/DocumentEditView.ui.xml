@@ -5,8 +5,9 @@
              xmlns:doccategory="urn:import:ru.protei.portal.ui.document.client.widget.doccategory"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
-             xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.single'
+             xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.selector.decimalnumber'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.document.client.widget.uploader'
+             xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -15,6 +16,7 @@
             <div class="body">
                 <legend class="header">
                     <ui:text from="{lang.documentCommonHeader}"/>
+                    <small ui:field="created" class="pull-right document-creator-info"/>
                 </legend>
                 <div class="grid grid-indent">
                     <g:HTMLPanel styleName="form-group col-xs-6" ui:field="nameContainer">
@@ -41,65 +43,70 @@
 
                     <div class="form-group col-xs-3">
                         <label>
-                            <ui:text from="{lang.documentManager}"/>
+                            <ui:text from="{lang.documentVersion}"/>
                         </label>
-                        <person:EmployeeButtonSelector ui:field="manager"
-                                                       hasNullValue="false"/>
+                        <g:TextBox ui:field="version" styleName="input-field"/>
                     </div>
-
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-xs-4">
                         <label>
                             <ui:text from="{lang.documentCategory}"/>
                         </label>
                         <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
                     </div>
 
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-xs-4">
                         <label>
                             <ui:text from="{lang.documentType}"/>
                         </label>
                         <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
-
-                    <div class="form-group col-xs-3">
-                        <label>
-                            <ui:text from="{lang.inventoryNumber}"/>
-                        </label>
-                        <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
-                    </div>
-
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-xs-4">
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
                         <project:ProjectButtonSelector ui:field="project"/>
                     </div>
 
-                    <div class="form-group col-xs-2">
+                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="equipmentSelectorContainer">
                         <label>
-                            <ui:text from="{lang.created}"/>
+                            <ui:text from="{lang.documentEquipment}"/>
                         </label>
-                        <g:TextBox ui:field="created" styleName="input-field" enabled="false"/>
+                        <equipment:EquipmentSelector ui:field="equipment"
+                                                     printDecimalNumbers="false"
+                                                     hasNullValue="false"/>
+                    </g:HTMLPanel>
+                    <div class="form-group col-xs-3">
+                        <label>
+                            <ui:text from="{lang.documentRegistrar}"/>
+                        </label>
+                        <person:EmployeeButtonSelector ui:field="registrar"/>
+                    </div>
+
+                    <div class="form-group col-xs-3">
+                        <label>
+                            <ui:text from="{lang.documentContractor}"/>
+                        </label>
+                        <person:EmployeeButtonSelector ui:field="contractor"/>
                     </div>
                 </div>
 
                 <legend class="header">
-                    <ui:text from="{lang.equipmentDecimalNumber}"/>
+                    <ui:text from="{lang.documentDecimalNumber}"/>
                 </legend>
+
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-11">
-                        <decnum:SingleDecimalNumberInput ui:field="decimalNumber"
-                                                         removeVisible="false"
-                                                         organizationCodeEnabled="true"
-                                                         reserveVisible="false"
-                                                         nextVisible="false"
-                                                         getNextModificationMessageVisible="false"/>
-                    </div>
-                    <div class="form-group col-xs-1 dn">
-                        <div class="dn-container">
-                            <g:TextBox ui:field="typeCode" styleName="input-field dn-type-code"/>
-                        </div>
-                    </div>
+
+                    <g:HTMLPanel styleName="form-group col-xs-4" ui:field="inventoryNumberContainer">
+                        <label>
+                            <ui:text from="{lang.inventoryNumber}"/>
+                        </label>
+                        <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
+                    </g:HTMLPanel>
+
+                    <g:HTMLPanel styleName="form-group col-xs-12" ui:field="decimalNumberContainer">
+                        <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="input-field"/>
+                    </g:HTMLPanel>
+
                 </div>
 
                 <legend class="header">

@@ -900,9 +900,11 @@ public interface Lang extends Messages, ContactItemLang {
     String mobilePhone();
 
     String download();
+
     String timeDayLiteral();
 
     String timeHourLiteral();
+
     String accountFilterCompany();
 
     String documentTypeCode();
@@ -910,11 +912,13 @@ public interface Lang extends Messages, ContactItemLang {
     String timeMinuteLiteral();
 
     String timeEstimated();
+
     String errNotAvailable();
 
     String decimalNumberNotFound();
 
     String timeElapsed();
+
     String from();
 
     String to();
@@ -1022,6 +1026,18 @@ public interface Lang extends Messages, ContactItemLang {
     String sendEmail();
 
     String locale();
+
+    String documentContractor();
+
+    String documentRegistrar();
+
+    String documentVersion();
+
+    String documentManagers();
+
+    String documentOrganizationCode();
+
+    String documentEquipment();
 
     String projectCustomerCompany();
 
@@ -1136,4 +1152,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueLinkIncorrectCrmNumberFormat();
 
     String issueLinkIncorrectCrmCaseNotFound(Long num);
+
+    String documentCreated(String dateTime);
 }

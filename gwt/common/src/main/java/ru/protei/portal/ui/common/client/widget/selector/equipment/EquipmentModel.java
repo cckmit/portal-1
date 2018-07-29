@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.equipment.client.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.equipment;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -14,10 +14,7 @@ import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Модель контактов домашней компании
@@ -47,21 +44,17 @@ public abstract class EquipmentModel implements Activity {
     }
 
     private void refreshOptions() {
-        // todo: needed check filter values
-        equipmentService.equipmentOptionList( new EquipmentQuery( new HashSet<>( Arrays.asList( En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT ) ) ),
-                new RequestCallback< List< EquipmentShortView > >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
+        equipmentService.equipmentOptionList(query, callback);
+    }
 
-            @Override
-            public void onSuccess( List< EquipmentShortView > options ) {
-                list.clear();
-                list.addAll( options );
-                notifySubscribers();
-            }
-        } );
+    public void setEquipmentTypes(Set<En_EquipmentType> equipmentTypes) {
+        query.setTypes(equipmentTypes);
+        refreshOptions();
+    }
+
+    public void setProjectId(Long projectId) {
+        query.setProjectId(projectId);
+        refreshOptions();
     }
 
     @Inject
@@ -69,6 +62,24 @@ public abstract class EquipmentModel implements Activity {
 
     @Inject
     Lang lang;
+
+    private EquipmentQuery query = new EquipmentQuery(new HashSet<>(
+            Arrays.asList( En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT)
+    ));
+
+    private final RequestCallback<List<EquipmentShortView>> callback = new RequestCallback<List<EquipmentShortView>>() {
+        @Override
+        public void onError( Throwable throwable ) {
+            fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+        }
+
+        @Override
+        public void onSuccess( List< EquipmentShortView > options ) {
+            list.clear();
+            list.addAll( options );
+            notifySubscribers();
+        }
+    };
 
     private List< EquipmentShortView > list = new ArrayList<>();
     List< ModelSelector< EquipmentShortView > > subscribers = new ArrayList<>();

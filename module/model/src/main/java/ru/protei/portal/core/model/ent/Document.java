@@ -24,11 +24,8 @@ public class Document implements Serializable {
     @JdbcColumn
     private String name;
 
-    /**
-     * Децимальный номер
-     */
-    @JdbcJoinedObject(localColumn = "decimal_number_id")
-    private DecimalNumber decimalNumber;
+    @JdbcColumn(name = "decimal_number")
+    private String decimalNumber;
 
 
     /**
@@ -50,19 +47,27 @@ public class Document implements Serializable {
     private String annotation;
 
     /**
-     * Менеджер
+     * Ответственный за регистрацию
      */
-    @JdbcColumn(name = "manager_id")
-    private Long managerId;
-    @JdbcJoinedColumn(localColumn = "manager_id", table = "Person", remoteColumn = "id", mappedColumn = "displayShortName")
-    private String managerShortName;
+    @JdbcJoinedObject(localColumn = "registrar_id")
+    private Person registrar;
+
+    /**
+     * Исполнитель
+     */
+    @JdbcJoinedObject(localColumn = "contractor_id")
+    private Person contractor;
 
     @JdbcColumn(name = "project_id")
     private Long projectId;
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "case_name")
-    private String projectName;
     @JdbcJoinedObject(localColumn = "project_id", table = "case_object", remoteColumn = "id")
-    private ProjectInfo projectInfo;
+    private CaseObject projectInfo;
+
+    @JdbcJoinedObject(localColumn = "equipment_id")
+    private Equipment equipment;
+
+    @JdbcColumn(name = "version")
+    private String version;
 
     /**
      * Дата создания
@@ -76,11 +81,6 @@ public class Document implements Serializable {
     @JdbcColumnCollection(name = "tags", separator = ",")
     private List<String> keywords;
 
-    /**
-     * Код вида документа
-     */
-    @JdbcColumn(name = "dn_type_code")
-    private String typeCode;
 
     public Document() {
     }
@@ -109,22 +109,6 @@ public class Document implements Serializable {
         this.annotation = annotation;
     }
 
-    public String getManagerShortName() {
-        return managerShortName;
-    }
-
-    public void setManagerShortName(String managerShortName) {
-        this.managerShortName = managerShortName;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
     public List<String> getKeywords() {
         return keywords;
     }
@@ -149,14 +133,6 @@ public class Document implements Serializable {
         this.inventoryNumber = inventoryNumber;
     }
 
-    public Long getManagerId() {
-        return managerId;
-    }
-
-    public void setManagerId(Long managerId) {
-        this.managerId = managerId;
-    }
-
     public DocumentType getType() {
         return type;
     }
@@ -165,21 +141,20 @@ public class Document implements Serializable {
         this.type = type;
     }
 
-    public DecimalNumber getDecimalNumber() {
+    public String getDecimalNumber() {
         return decimalNumber;
     }
 
-    public void setDecimalNumber(DecimalNumber decimalNumber) {
-        this.decimalNumber = decimalNumber;
+    public void setDecimalNumber(String decimalNumberStr) {
+        this.decimalNumber = decimalNumberStr;
     }
 
-    public boolean isValid() {
-        return  this.getType() != null &&
-                this.getManagerId() != null &&
-                this.getInventoryNumber() != null &&
-                this.getInventoryNumber() > 0 &&
-                this.getProjectId() != null &&
-                HelperFunc.isNotEmpty(this.getName());
+    public Equipment getEquipment() {
+        return equipment;
+    }
+
+    public void setEquipment(Equipment equipment) {
+        this.equipment = equipment;
     }
 
     public Long getProjectId() {
@@ -191,18 +166,41 @@ public class Document implements Serializable {
     }
 
     public ProjectInfo getProjectInfo() {
-        return projectInfo;
+        return ProjectInfo.fromCaseObject(projectInfo);
     }
 
-    public void setProjectInfo(ProjectInfo projectInfo) {
+    public void setProjectInfo(CaseObject projectInfo) {
         this.projectInfo = projectInfo;
     }
 
-    public String getTypeCode() {
-        return typeCode;
+    public String getVersion() {
+        return version;
     }
 
-    public void setTypeCode(String typeCode) {
-        this.typeCode = typeCode;
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public Person getRegistrar() {
+        return registrar;
+    }
+
+    public void setRegistrar(Person registrar) {
+        this.registrar = registrar;
+    }
+
+    public Person getContractor() {
+        return contractor;
+    }
+
+    public void setContractor(Person contractor) {
+        this.contractor = contractor;
+    }
+
+    public boolean isValid() {
+        return  this.getType() != null &&
+                (this.getInventoryNumber() == null || this.getInventoryNumber() > 0) &&
+                this.getProjectId() != null &&
+                HelperFunc.isNotEmpty(this.getName());
     }
 }

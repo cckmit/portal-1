@@ -8,25 +8,39 @@ public enum En_DocumentCategory {
     /**
      * Технический проект
      */
-    TP,
+    TP(En_DecimalNumberType.ESPD),
 
     /**
      * Конструкторская документация
      */
-    KD,
+    KD(En_DecimalNumberType.ESKD),
 
     /**
      * Программная документациё
      */
-    PD,
+    PD(En_DecimalNumberType.ESPD),
 
     /**
      * Эксплуатационная документация
      */
-    ED,
+    ED(En_DecimalNumberType.ED),
 
     /**
      * Технологическая документация
      */
-    TD
+    TD(En_DecimalNumberType.TD);
+
+    En_DocumentCategory(En_DecimalNumberType type) {
+        this.type = type;
+    }
+
+    public boolean isForEquipment() {
+        return En_DecimalNumberType.ESKD.equals(getType()) || En_DecimalNumberType.ED.equals(getType());
+    }
+
+    public En_DecimalNumberType getType() {
+        return type;
+    }
+
+    private final En_DecimalNumberType type;
 }

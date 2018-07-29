@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -94,7 +95,7 @@ public abstract class EquipmentEditActivity
         equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
         equipment.setDecimalNumbers( view.numbers().getValue() );
         equipment.setManagerId( view.manager().getValue() == null ? null : view.manager().getValue().getId() );
-        equipment.setProject( view.project().getValue() );
+        equipment.setProjectId( view.project().getValue() == null ? null : view.project().getValue().getId() );
         return equipment;
     }
 
@@ -126,7 +127,11 @@ public abstract class EquipmentEditActivity
         PersonShortView manager = new PersonShortView();
         manager.setId( equipment.getManagerId() );
         view.manager().setValue( manager );
-        view.project().setValue( equipment.getProject() );
+
+        ProjectInfo info = new ProjectInfo();
+        info.setId(equipment.getProjectId());
+        info.setName(equipment.getProjectName());
+        view.project().setValue( info );
     }
 
     @Inject

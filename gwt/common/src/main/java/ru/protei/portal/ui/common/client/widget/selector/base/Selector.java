@@ -74,6 +74,10 @@ public abstract class Selector<T>
         setValue(selectedOption);
     }
 
+    public void setAutoSelectFirst(boolean autoSelectFirst) {
+        this.autoSelectFirst = autoSelectFirst;
+    }
+
     public void setSearchEnabled(boolean isEnabled) {
         this.searchEnabled = isEnabled;
     }
@@ -261,13 +265,19 @@ public abstract class Selector<T>
         popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
 
-        if (!searchEnabled) {
+        if (!searchEnabled && autoSelectFirst) {
             selectFirstElement();
         }
     }
 
     protected void closePopup() {
         popup.hide();
+    }
+
+    protected void selectFirstElement() {
+        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
+        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
+        firstItem.setFocus(true);
     }
 
     private SelectorItem buildItemView(String name, String styleName, KeyUpHandler itemHandler) {
@@ -284,12 +294,6 @@ public abstract class Selector<T>
         itemView.setName(name);
         itemView.addStyleName("search-no-result");
         popup.getChildContainer().add(itemView.asWidget());
-    }
-
-    private void selectFirstElement() {
-        HTMLPanel panel = (HTMLPanel) popup.getChildContainer();
-        SelectorItem firstItem = (SelectorItem) panel.getWidget(0);
-        firstItem.setFocus(true);
     }
 
     private void onArrowUp(SelectorItem item) {
@@ -332,6 +336,7 @@ public abstract class Selector<T>
     };
 
     protected boolean hasNullValue = true;
+    private boolean autoSelectFirst = true;
     private boolean searchEnabled = false;
     private boolean searchAutoFocusEnabled = false;
     private boolean addButtonVisible = false;
@@ -339,7 +344,7 @@ public abstract class Selector<T>
     private IsWidget relative;
     private T selectedOption = null;
     private SelectorItem nullItemView;
-    private DisplayOptionCreator<T> displayOptionCreator;
+    protected DisplayOptionCreator<T> displayOptionCreator;
     private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private HandlerRegistration scrollRegistration;

@@ -14,17 +14,14 @@ import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.TemplateService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
-import ru.protei.portal.test.service.CaseCommentServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static ru.protei.portal.core.utils.WorkTimeFormatter.DAY;
-import static ru.protei.portal.core.utils.WorkTimeFormatter.HOUR;
-import static ru.protei.portal.core.utils.WorkTimeFormatter.MINUTE;
+import static org.junit.Assert.assertNotNull;
+import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})

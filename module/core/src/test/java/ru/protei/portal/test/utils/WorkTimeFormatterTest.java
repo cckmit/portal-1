@@ -3,10 +3,8 @@ package ru.protei.portal.test.utils;
 import org.junit.Test;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
-import static org.junit.Assert.*;
-import static ru.protei.portal.core.utils.WorkTimeFormatter.DAY;
-import static ru.protei.portal.core.utils.WorkTimeFormatter.HOUR;
-import static ru.protei.portal.core.utils.WorkTimeFormatter.MINUTE;
+import static org.junit.Assert.assertEquals;
+import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 public class WorkTimeFormatterTest {
 

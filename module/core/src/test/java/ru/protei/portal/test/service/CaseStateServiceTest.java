@@ -1,12 +1,12 @@
 package ru.protei.portal.test.service;
 
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.MainTestsConfiguration;
-import org.junit.Test;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -21,7 +21,6 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.inject.Inject;
-
 import java.util.Arrays;
 import java.util.List;
 

@@ -173,6 +173,9 @@ public class ProjectInfo extends AuditableObject {
     }
 
     public static ProjectInfo fromCaseObject( CaseObject project ) {
+        if (project == null)
+            return null;
+
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setId( project.getId() );
         projectInfo.setName( project.getName() );

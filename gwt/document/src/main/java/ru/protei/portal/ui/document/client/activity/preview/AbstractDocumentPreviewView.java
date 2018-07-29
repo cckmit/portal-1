@@ -10,6 +10,8 @@ public interface AbstractDocumentPreviewView extends IsWidget {
 
     void setName(String name);
 
+    void setVersion(String text);
+
     void setCreatedDate(String created);
 
     void setType(String type);
@@ -19,6 +21,10 @@ public interface AbstractDocumentPreviewView extends IsWidget {
     void setProject(String project);
 
     void setManager(String manager);
+
+    void setRegistrar(String text);
+
+    void setContractor(String text);
 
     void setNumberDecimal(String numberDecimal);
 

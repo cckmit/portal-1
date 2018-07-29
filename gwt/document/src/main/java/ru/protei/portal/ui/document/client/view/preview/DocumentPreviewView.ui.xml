@@ -12,6 +12,10 @@
                     <span class="col-xs-7" ui:field="name"></span>
                 </div>
                 <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentVersion}"/></label>
+                    <span class="col-xs-7" ui:field="version"></span>
+                </div>
+                <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.created}"/></label>
                     <span class="col-xs-7" ui:field="created"></span>
                 </div>
@@ -30,6 +34,14 @@
                 <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.documentManager}"/></label>
                     <span class="col-xs-7" ui:field="manager"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentRegistrar}"/></label>
+                    <span class="col-xs-7" ui:field="registrar"></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.documentContractor}"/></label>
+                    <span class="col-xs-7" ui:field="contractor"></span>
                 </div>
             </fieldset>
 

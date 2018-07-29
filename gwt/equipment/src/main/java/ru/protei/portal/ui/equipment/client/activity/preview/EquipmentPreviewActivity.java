@@ -79,7 +79,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setNameBySldWrks( value.getNameSldWrks() );
         view.setComment( value.getComment() );
         view.setType( typeLang.getName( value.getType() ) );
-        view.setProject( value.getProject() == null ? "" : value.getProject() );
+        view.setProject( value.getProjectName() );
         view.setManager( value.getManagerShortName() == null ? "" : value.getManagerShortName() );
         view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
         view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
