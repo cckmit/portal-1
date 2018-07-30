@@ -58,7 +58,7 @@ public abstract class ProjectTableActivity
             new ActionBarEvents.Clear()
         );
 
-        requestProjects();
+        requestProjects( null );
     }
 
     @Event
@@ -88,6 +88,23 @@ public abstract class ProjectTableActivity
     @Event
     public void onChanged( ProjectEvents.Changed event ) {
         view.updateRow( event.project );
+
+        if ( currentValue == null ) {
+            return;
+        }
+
+        // если выбрали регион в первый раз
+        if ( currentValue.getRegion() == null ) {
+            if ( event.project.getRegion() != null ) {
+                requestProjects( currentValue );
+                return;
+            }
+        }
+
+        // если выбрали регион взамен выбранному ранее
+        if ( !currentValue.getRegion().equals( event.project.getRegion() ) ) {
+            requestProjects( currentValue );
+        }
     }
 
     @Override
@@ -102,12 +119,14 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onFilterChanged() {
-        requestProjects();
+        requestProjects( null );
     }
 
-    private void requestProjects() {
-        view.clearRecords();
-        animation.closeDetails();
+    private void requestProjects( ProjectInfo rowToSelect ) {
+        if ( rowToSelect == null ) {
+            view.clearRecords();
+            animation.closeDetails();
+        }
 
         regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
                 @Override
@@ -118,6 +137,9 @@ public abstract class ProjectTableActivity
                 @Override
                 public void onSuccess( Map<String, List<ProjectInfo>> result ) {
                     fillRows( result );
+                    if ( rowToSelect != null ) {
+                        view.updateRow( rowToSelect );
+                    }
                 }
             } );
     }
@@ -152,6 +174,7 @@ public abstract class ProjectTableActivity
     }
 
     private void showPreview ( ProjectInfo value ) {
+        currentValue = value;
         if ( value == null ) {
             animation.closeDetails();
         } else {
@@ -192,6 +215,8 @@ public abstract class ProjectTableActivity
     TableAnimation animation;
     @Inject
     PolicyService policyService;
+
+    ProjectInfo currentValue = null;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
