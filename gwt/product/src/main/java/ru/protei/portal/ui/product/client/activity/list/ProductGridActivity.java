@@ -83,6 +83,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
         pq.setState(filterView.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
         pq.setSortField(filterView.sortField().getValue());
         pq.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        pq.setTypes(filterView.types().getValue());
 
         return pq;
     }

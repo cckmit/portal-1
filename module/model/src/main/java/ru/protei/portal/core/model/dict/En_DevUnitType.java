@@ -25,4 +25,8 @@ public enum En_DevUnitType {
 
         return null;
     }
+
+    public static En_DevUnitType[] getValues() {
+        return new En_DevUnitType[] {PRODUCT, COMPONENT};
+    }
 }

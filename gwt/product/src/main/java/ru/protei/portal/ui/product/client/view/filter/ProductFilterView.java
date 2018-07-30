@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -17,6 +18,9 @@ import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSear
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
 import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
+import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroupMulti;
+
+import java.util.Set;
 
 /**
  * Представление фильтра продуктов
@@ -63,10 +67,16 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
     }
 
     @Override
+    public HasValue<Set<En_DevUnitType>> types() {
+        return types;
+    }
+
+    @Override
     public void resetFilter() {
         showDeprecated.setValue( false );
         sortField.setValue( En_SortField.prod_name );
         sortDir.setValue( true );
+        types.setValue( null );
         search.setValue( "" );
     }
 
@@ -94,6 +104,13 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
 
     @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "types" )
+    public void onTypeSelected( ValueChangeEvent<Set<En_DevUnitType>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -129,6 +146,10 @@ public class ProductFilterView extends Composite implements AbstractProductFilte
 
     @UiField
     Button resetBtn;
+
+    @Inject
+    @UiField(provided = true)
+    ProductTypeBtnGroupMulti types;
 
     @Inject
     @UiField

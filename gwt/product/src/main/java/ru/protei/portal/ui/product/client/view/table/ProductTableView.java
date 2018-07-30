@@ -1,8 +1,11 @@
 package ru.protei.portal.ui.product.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -11,9 +14,11 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableView;
@@ -37,6 +42,8 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
         name.setHandler( activity );
         name.setColumnProvider( columnProvider );
+        type.setHandler( activity );
+        type.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
         table.setPagerListener( activity );
     }
@@ -91,7 +98,26 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         name = new DynamicColumn<>(lang.productName(), "product-name", DevUnit::getName);
+        type = new ClickColumn<DevUnit>() {
+            @Override
+            protected void fillColumnHeader(Element element) {
+                element.addClassName("dev-unit-type-column");
+            }
 
+            @Override
+            public void fillColumnValue(Element cell, DevUnit value) {
+                Element root = DOM.createDiv();
+                root.addClassName("dev-unit-type-column");
+                cell.appendChild(root);
+                ImageElement imageElement = DOM.createImg().cast();
+                imageElement.setSrc("./images/du_" + value.getType().name().toLowerCase() + ".png");
+                imageElement.setTitle(typeLang.getName(value.getType()));
+                imageElement.setAlt(typeLang.getName(value.getType()));
+                root.appendChild(imageElement);
+            }
+        };
+
+        table.addColumn( type.header, type.values );
         table.addColumn( name.header, name.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
@@ -108,11 +134,13 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
     @Inject
     Lang lang;
-
+    @Inject
+    En_DevUnitTypeLang typeLang;
 
     ClickColumnProvider< DevUnit > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< DevUnit > editClickColumn;
     DynamicColumn<DevUnit> name;
+    ClickColumn<DevUnit> type;
 
     AbstractProductTableActivity activity;
 

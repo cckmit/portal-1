@@ -8,9 +8,11 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 23.05.16.
@@ -38,8 +40,7 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     @SqlConditionBuilder
     public SqlCondition createProductSqlCondition(ProductQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("UTYPE_ID=?");
-            args.add(En_DevUnitType.PRODUCT.getId());
+            condition.append("1=1");
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and UNIT_NAME like ?");
@@ -49,6 +50,16 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
             if (query.getState() != null) {
                 condition.append(" and UNIT_STATE=?");
                 args.add(query.getState().getId());
+            }
+
+            if (!CollectionUtils.isEmpty(query.getTypes())) {
+                condition
+                        .append(" and UTYPE_ID in (")
+                        .append(query.getTypes().stream()
+                                .map((type) -> String.valueOf(type.getId()))
+                                .collect(Collectors.joining(","))
+                        )
+                        .append(")");
             }
         });
     }
