@@ -1,9 +1,9 @@
 package ru.protei.portal.ui.project.client.activity.table;
 
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
@@ -21,7 +21,6 @@ import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterV
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -47,7 +46,7 @@ public abstract class ProjectTableActivity
         filterView.resetFilter();
     }
 
-    @Event(value = Type.FILL_CONTENT)
+    @Event
     public void onShow( ProjectEvents.Show event ) {
 
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
@@ -59,8 +58,7 @@ public abstract class ProjectTableActivity
             new ActionBarEvents.Clear()
         );
 
-        selectedId = null;
-        requestProjects();
+        requestProjects( null );
     }
 
     @Event
@@ -72,19 +70,14 @@ public abstract class ProjectTableActivity
         regionService.createNewProject( new RequestCallback<Long>(){
             @Override
             public void onError( Throwable throwable ) {
+
             }
 
             @Override
             public void onSuccess( Long aLong ) {
-                selectedId = aLong;
-                requestProjects();
+                updateListAndSelect( aLong );
             }
         });
-    }
-
-    @Event
-    public void onEditEvent(ProjectEvents.Edit event) {
-        selectedId = event.id;
     }
 
     @Event
@@ -95,36 +88,45 @@ public abstract class ProjectTableActivity
     @Event
     public void onChanged( ProjectEvents.Changed event ) {
         view.updateRow( event.project );
+
+        if ( currentValue == null ) {
+            return;
+        }
+
+        // если выбрали регион в первый раз
+        if ( currentValue.getRegion() == null ) {
+            if ( event.project.getRegion() != null ) {
+                requestProjects( currentValue );
+                return;
+            }
+        }
+
+        // если выбрали регион взамен выбранному ранее
+        if ( !currentValue.getRegion().equals( event.project.getRegion() ) ) {
+            requestProjects( currentValue );
+        }
     }
 
     @Override
     public void onItemClicked( ProjectInfo value ) {
-        showPreview(value == null ? null : value.getId());
+        showPreview( value );
     }
 
     @Override
     public void onEditClicked( ProjectInfo value ) {
-        selectProject(value == null ? null : value.getId());
-        onItemClicked(value);
+        fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 
     @Override
     public void onFilterChanged() {
-        requestProjects();
+        requestProjects( null );
     }
 
-    private void selectProject(Long id) {
-        if (id == null || lastFetch == null)
-            return;
-        lastFetch.stream()
-                .filter(p -> Objects.equals(p.getId(), id))
-                .findAny()
-                .ifPresent(view::selectRow);
-    }
-
-    private void requestProjects() {
-        view.clearRecords();
-        animation.closeDetails();
+    private void requestProjects( ProjectInfo rowToSelect ) {
+        if ( rowToSelect == null ) {
+            view.clearRecords();
+            animation.closeDetails();
+        }
 
         regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
                 @Override
@@ -134,17 +136,30 @@ public abstract class ProjectTableActivity
 
                 @Override
                 public void onSuccess( Map<String, List<ProjectInfo>> result ) {
-                    lastFetch = result.values().stream()
-                            .flatMap(List::stream)
-                            .collect(Collectors.toList());
                     fillRows( result );
-
-                    if (selectedId != null) {
-                        selectProject(selectedId);
-                        showPreview(selectedId);
+                    if ( rowToSelect != null ) {
+                        view.updateRow( rowToSelect );
                     }
                 }
             } );
+    }
+
+    private void updateListAndSelect( Long projectId ) {
+        regionService.getProjectsByRegions( getQuery(), new RequestCallback<Map<String, List<ProjectInfo>>>() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( Map<String, List<ProjectInfo>> result ) {
+                view.clearRecords();
+                fillRows( result );
+                ProjectInfo info = new ProjectInfo();
+                info.setId( projectId );
+                onItemClicked( info );
+            }
+        } );
     }
 
     private void fillRows( Map<String, List<ProjectInfo>> result ) {
@@ -158,14 +173,13 @@ public abstract class ProjectTableActivity
         }
     }
 
-    private void showPreview ( Long id ) {
-        if ( id == null ) {
+    private void showPreview ( ProjectInfo value ) {
+        currentValue = value;
+        if ( value == null ) {
             animation.closeDetails();
-            selectedId = null;
         } else {
-            selectedId = id;
             animation.showDetails();
-            fireEvent( new ProjectEvents.ShowPreview( view.getPreviewContainer(), id ) );
+            fireEvent( new ProjectEvents.ShowPreview( view.getPreviewContainer(), value.getId() ) );
         }
     }
 
@@ -202,8 +216,8 @@ public abstract class ProjectTableActivity
     @Inject
     PolicyService policyService;
 
-    private List<ProjectInfo> lastFetch;
-    private Long selectedId;
+    ProjectInfo currentValue = null;
+
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
 }
