@@ -161,6 +161,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Ha
         }
         items.add(item);
         makeItemAndAddToParent(item);
+        toggleVisibility();
 
         ValueChangeEvent.fire(IssueLinks.this, items );
     }
