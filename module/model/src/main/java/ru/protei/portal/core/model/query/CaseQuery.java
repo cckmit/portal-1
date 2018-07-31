@@ -42,7 +42,7 @@ public class CaseQuery extends BaseQuery {
      */
     private boolean allowViewPrivate = true;
 
-    private boolean viewOnlyPrivate = false;
+    private Boolean viewPrivate = null;
 
     private Date from;
 
@@ -82,7 +82,7 @@ public class CaseQuery extends BaseQuery {
         setManagerIds(query.getManagerIds());
         setWithoutManager(query.isWithoutManager());
         setAllowViewPrivate(query.isAllowViewPrivate());
-        setViewOnlyPrivate(query.isViewOnlyPrivate());
+        setViewPrivate(query.isViewPrivate());
     }
 
     public Long getId() {
@@ -199,12 +199,12 @@ public class CaseQuery extends BaseQuery {
         this.searchCasenoString = searchCasenoString;
     }
 
-    public boolean isViewOnlyPrivate() {
-        return viewOnlyPrivate;
+    public Boolean isViewPrivate() {
+        return viewPrivate;
     }
 
-    public void setViewOnlyPrivate(boolean viewOnlyPrivate) {
-        this.viewOnlyPrivate = viewOnlyPrivate;
+    public void setViewPrivate(Boolean viewOnlyPrivate) {
+        this.viewPrivate = viewOnlyPrivate;
     }
 
     @Override
@@ -223,7 +223,7 @@ public class CaseQuery extends BaseQuery {
                 ", showPrivate=" + allowViewPrivate +
                 ", searchStringAtComments=" + searchStringAtComments +
                 ", searchCasenoString=" + searchCasenoString +
-                ", viewOnlyPrivate=" + viewOnlyPrivate +
+                ", viewPrivate=" + viewPrivate +
                 '}';
     }
 }

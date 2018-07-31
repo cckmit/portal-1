@@ -31,6 +31,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSel
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
@@ -112,8 +113,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasValue<Boolean> searchOnlyPrivate() {
-        return searchOnlyPrivate;
+    public HasValue<Boolean> searchPrivate() {
+        return searchPrivate;
     }
 
     @Override
@@ -132,7 +133,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         filterName.removeStyleName( "required" );
         filterName.setValue( "" );
         searchByComments.setValue( false );
-        searchOnlyPrivate.setValue( false );
+        searchPrivate.setValue( null );
         toggleMsgSearchThreshold();
     }
 
@@ -142,8 +143,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public HasVisibility searchOnlyPrivateVisibility() {
-        return searchOnlyPrivate;
+    public HasVisibility searchPrivateVisibility() {
+        return searchPrivateContainer;
     }
 
     @Override
@@ -416,7 +417,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @UiHandler( "searchOnlyPrivate" )
+    @UiHandler( "searchPrivate" )
     public void onSearchOnlyPrivateChanged( ValueChangeEvent<Boolean> event ) {
         if (activity != null) {
             activity.onFilterChanged();
@@ -499,7 +500,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Label searchByCommentsWarning;
 
     @UiField
-    OptionItem searchOnlyPrivate;
+    ThreeStateButton searchPrivate;
+
+    @UiField
+    HTMLPanel searchPrivateContainer;
 
     @UiField
     Button resetBtn;

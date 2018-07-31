@@ -1,0 +1,12 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="tree-state-btn">
+        <g:Label ui:field="yes" styleName="tree-state-btn-yes" text="{lang.buttonYes}"/>
+        <g:Label ui:field="notDefined" styleName="tree-state-btn-not-defined" text="{lang.buttonNotDefined}"/>
+        <g:Label ui:field="no" styleName="tree-state-btn-no" text="{lang.buttonNo}"/>
+        <div class="toggle"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

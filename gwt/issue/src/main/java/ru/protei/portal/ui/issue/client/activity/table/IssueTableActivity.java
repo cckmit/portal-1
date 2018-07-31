@@ -341,7 +341,7 @@ public abstract class IssueTableActivity
     private void fillFilterFields(CaseQuery params) {
         filterView.searchPattern().setValue( params.getSearchString() );
         filterView.searchByComments().setValue( params.isSearchStringAtComments() );
-        filterView.searchOnlyPrivate().setValue( params.isViewOnlyPrivate() );
+        filterView.searchPrivate().setValue( params.isViewPrivate() );
         filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
         filterView.sortField().setValue( params.getSortField() );
         filterView.dateRange().setValue( new DateInterval( params.getFrom(), params.getTo() ) );
@@ -421,7 +421,7 @@ public abstract class IssueTableActivity
 
     private void setQueryFields( CaseQuery query ) {
         query.setSearchStringAtComments( filterView.searchByComments().getValue() );
-        query.setViewOnlyPrivate( filterView.searchOnlyPrivate().getValue() );
+        query.setViewPrivate( filterView.searchPrivate().getValue() );
         query.setSortField( filterView.sortField().getValue() );
         query.setSortDir( filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC );
         query.setCompanyIds( IssueFilterUtils.getCompaniesIdList( filterView.companies().getValue() ) );
@@ -467,7 +467,7 @@ public abstract class IssueTableActivity
         filterView.companiesVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
         filterView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
-        filterView.searchOnlyPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        filterView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
     }
 
     private void showUserFilterName(){

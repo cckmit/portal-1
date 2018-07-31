@@ -523,6 +523,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonYes();
 
+    String buttonNotDefined();
+
     String buttonNo();
 
     String buttonCopy();
@@ -1165,5 +1167,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String productType();
 
-    String searchOnlyPrivate();
+    String searchPrivate();
 }
