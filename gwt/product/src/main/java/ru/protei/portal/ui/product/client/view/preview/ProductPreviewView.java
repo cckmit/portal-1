@@ -45,6 +45,11 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void setType(String type) {
+        productType.setInnerText(type);
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerText(value);
     }
@@ -69,6 +74,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     HTMLPanel rootWrapper;
     @UiField
     SpanElement productName;
+    @UiField
+    SpanElement productType;
     @UiField
     HTMLPanel productNameBlock;
 
