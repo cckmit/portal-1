@@ -23,6 +23,9 @@ public class CaseObjectSqlBuilder {
             if ( !query.isAllowViewPrivate() ) {
                 condition.append( " and private_flag=?" );
                 args.add( 0 );
+            } else if (query.isViewOnlyPrivate()) {
+                condition.append( " and private_flag=?" );
+                args.add( 1 );
             }
 
             if ( query.getType() != null ) {

@@ -38,9 +38,10 @@
             <div class="body">
 
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
-                <div class="form-group col-xs-12 local-search-using-comments">
+                <div class="form-group col-xs-12 local-search-options-container">
                     <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
                     <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
+                    <option:OptionItem ui:field="searchOnlyPrivate" styleName="toggle" name="{lang.searchOnlyPrivate}"/>
                 </div>
 
                 <div class="col-xs-12">

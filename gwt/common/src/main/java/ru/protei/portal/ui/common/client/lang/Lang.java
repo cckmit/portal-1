@@ -1164,4 +1164,6 @@ public interface Lang extends Messages, ContactItemLang {
     String devUnitComponent();
 
     String productType();
+
+    String searchOnlyPrivate();
 }

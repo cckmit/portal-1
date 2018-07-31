@@ -33,11 +33,13 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
     HasValue<Boolean> searchByComments();
+    HasValue<Boolean> searchOnlyPrivate();
     void resetFilter();
 
     HasVisibility companiesVisibility();
     HasVisibility productsVisibility();
     HasVisibility managersVisibility();
+    HasVisibility searchOnlyPrivateVisibility();
 
     HasValue<CaseFilterShortView > userFilter();
 

@@ -112,6 +112,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
+    public HasValue<Boolean> searchOnlyPrivate() {
+        return searchOnlyPrivate;
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue( null );
         products.setValue( null );
@@ -127,12 +132,18 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         filterName.removeStyleName( "required" );
         filterName.setValue( "" );
         searchByComments.setValue( false );
+        searchOnlyPrivate.setValue( false );
         toggleMsgSearchThreshold();
     }
 
     @Override
     public HasVisibility managersVisibility() {
         return managers;
+    }
+
+    @Override
+    public HasVisibility searchOnlyPrivateVisibility() {
+        return searchOnlyPrivate;
     }
 
     @Override
@@ -405,6 +416,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
+    @UiHandler( "searchOnlyPrivate" )
+    public void onSearchOnlyPrivateChanged( ValueChangeEvent<Boolean> event ) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
     @UiHandler("filterRestoreBtn")
     public void onFilterRestoreBtnClick(ClickEvent event) {
         if (activity != null) {
@@ -479,6 +497,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiField
     Label searchByCommentsWarning;
+
+    @UiField
+    OptionItem searchOnlyPrivate;
 
     @UiField
     Button resetBtn;
