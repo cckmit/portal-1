@@ -125,50 +125,42 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return;
             }
         }
+        CoreResponse storageResult = null;
         try {
             log.debug("start process report : reportId={}", report.getId());
-            boolean saved = false;
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-            try {
 
-                if (writeIssuesReport(report, buffer)) {
-
-                    ReportContent reportContent = new ReportContent(report.getId(), new ByteArrayInputStream(buffer.toByteArray()));
-                    CoreResponse storageResult = reportStorageService.saveContent(reportContent);
-
-                    if (storageResult.isOk()) {
-                        saved = true;
-
-                        report.setStatus(En_ReportStatus.READY);
-                        report.setModified(new Date());
-
-                        reportDAO.merge(report);
-
-                        log.debug("successful process report : reportId={}", report.getId());
-
-                        return;
-                    }
-                }
-
-                report.setStatus(En_ReportStatus.ERROR);
-                report.setModified(new Date());
-
-                reportDAO.merge(report);
-
-                log.debug("unsuccessful process report : reportId={}", report.getId());
-
-            } catch (Throwable th) {
-                if (saved) {
-                    reportStorageService.removeContent(report.getId());
-                }
-                log.warn("fail process report : reportId={} {}", report.getId(), th);
-                report.setStatus(En_ReportStatus.ERROR);
-                report.setModified(new Date());
-                reportDAO.merge(report);
+            if (!writeIssuesReport(report, buffer)) {
+                mergeReport(report, En_ReportStatus.ERROR);
+                return;
             }
+
+            ReportContent reportContent = new ReportContent(report.getId(), new ByteArrayInputStream(buffer.toByteArray()));
+            storageResult = reportStorageService.saveContent(reportContent);
+
+            if (!storageResult.isOk()) {
+                mergeReport(report, En_ReportStatus.ERROR);
+                return;
+            }
+
+            mergeReport(report, En_ReportStatus.READY);
+        } catch (Throwable th) {
+            log.debug("process report : reportId={}, throwable={}", report.getId(), th.getMessage());
+            th.printStackTrace();
+            if (storageResult != null) {
+                reportStorageService.removeContent(report.getId());
+            }
+            mergeReport(report, En_ReportStatus.ERROR);
         } finally {
             reportsInProcess.remove(report.getId());
         }
+    }
+
+    private void mergeReport(Report report, En_ReportStatus status) {
+        report.setStatus(status);
+        report.setModified(new Date());
+        reportDAO.merge(report);
+        log.debug("process report : reportId={}, status={}", report.getId(), status.name());
     }
 
     private boolean writeIssuesReport(final Report report, ByteArrayOutputStream buffer) throws IOException {
@@ -203,7 +195,7 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     private boolean writeIssuesReport(JXLSHelper.ReportBook book, Report report, Long count) {
 
-        final int step = config.data().reportConfig().getStep();
+        final int step = config.data().reportConfig().getChunkSize();
         final int limit = count.intValue();
         int offset = 0;
 

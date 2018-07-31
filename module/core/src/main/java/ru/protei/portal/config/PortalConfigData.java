@@ -317,7 +317,7 @@ public class PortalConfigData {
 
     public static class ReportConfig {
         private final int threadsNumber;
-        private final int step;
+        private final int chunkSize;
         private final long liveTime;
         private final long hangInterval;
         private final String storagePath;
@@ -325,7 +325,7 @@ public class PortalConfigData {
         public ReportConfig(PropertiesWrapper properties) throws ConfigException {
             try {
                 this.threadsNumber = properties.getProperty("report.threads", Integer.class, 6);
-                this.step = properties.getProperty("report.step", Integer.class, 20);
+                this.chunkSize = properties.getProperty("report.chunk.size", Integer.class, 20);
                 this.liveTime = DurationUtils.getDuration(properties.getProperty("report.live_time_duration", "3d"), TimeUnit.MILLISECONDS);
                 this.hangInterval = TimeUnit.SECONDS.toMillis(properties.getProperty("report.hang_interval_sec", Integer.class, 30 * 60));
                 this.storagePath = properties.getProperty("report.storage.path", "reports");
@@ -338,8 +338,8 @@ public class PortalConfigData {
             return threadsNumber;
         }
 
-        public int getStep() {
-            return step;
+        public int getChunkSize() {
+            return chunkSize;
         }
 
         public long getLiveTime() {
