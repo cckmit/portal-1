@@ -9,7 +9,8 @@
              xmlns:filter='urn:import:ru.protei.portal.ui.issue.client.widget.filter'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
+             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -38,7 +39,7 @@
             <div class="body">
 
                 <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
-                <div class="form-group col-xs-12 local-search-using-comments">
+                <div class="form-group col-xs-12 local-search-options-container">
                     <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
                     <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
                 </div>
@@ -67,6 +68,11 @@
                 <person:EmployeeMultiSelector ui:field="managers"
                                               header="{lang.issueManager}"
                                               addStyleNames="form-group col-xs-12"/>
+
+                <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12">
+                    <label><ui:text from="{lang.searchPrivate}"/></label>
+                    <threestate:ThreeStateButton ui:field="searchPrivate"/>
+                </g:HTMLPanel>
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.issueImportance}"/></label>

@@ -23,6 +23,9 @@ public class CaseObjectSqlBuilder {
             if ( !query.isAllowViewPrivate() ) {
                 condition.append( " and private_flag=?" );
                 args.add( 0 );
+            } else if (query.isViewPrivate() != null) {
+                condition.append( " and private_flag=?" );
+                args.add( query.isViewPrivate() ? 1 : 0 );
             }
 
             if ( query.getType() != null ) {
@@ -30,9 +33,13 @@ public class CaseObjectSqlBuilder {
                 args.add( query.getType().getId() );
             }
 
-            if ( query.getCaseNo() != null ) {
-                condition.append( " and caseno=?" );
-                args.add( query.getCaseNo() );
+            if ( query.getCaseNumbers() != null && !query.getCaseNumbers().isEmpty() ) {
+                condition.append(" and caseno in (")
+                        .append(query.getCaseNumbers().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(","))
+                        )
+                        .append(")");
             }
 
             if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
