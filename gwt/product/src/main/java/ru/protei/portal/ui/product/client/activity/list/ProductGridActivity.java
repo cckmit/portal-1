@@ -50,6 +50,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
                 UiConstants.ActionBarIdentity.PRODUCT_TYPE_VIEW
         ));
 
+        query = makeQuery();
         fireEvent(new ProductEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
