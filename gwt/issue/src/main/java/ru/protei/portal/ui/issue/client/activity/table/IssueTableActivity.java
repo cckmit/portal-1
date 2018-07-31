@@ -37,7 +37,9 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Активность таблицы обращений
@@ -382,15 +384,20 @@ public abstract class IssueTableActivity
         CaseQuery query = new CaseQuery();
         query.setType( En_CaseType.CRM_SUPPORT );
         String value = filterView.searchPattern().getValue();
+        boolean searchByComments = filterView.searchByComments().getValue();
 
         if (value == null || value.isEmpty()) {
             query.setSearchString( null );
-        }
-        else {
-            MatchResult result = caseNoPattern.exec( value );
+        } else if (searchByComments) {
+            query.setSearchString( value );
+        } else {
+            MatchResult result = caseNumbersPattern.exec( value );
 
             if (result != null && result.getGroup(0).equals( value )) {
-                query.setCaseNo( Long.parseLong( value ) );
+                query.setCaseNumbers(Arrays.stream(value.split(","))
+                        .map(cn -> Long.parseLong(cn.trim()))
+                        .collect(Collectors.toList())
+                );
             }
             else {
                 query.setSearchString( value );
@@ -528,5 +535,5 @@ public abstract class IssueTableActivity
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
 
-    private final RegExp caseNoPattern = RegExp.compile("\\d+");
+    private final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
 }

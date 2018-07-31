@@ -30,9 +30,13 @@ public class CaseObjectSqlBuilder {
                 args.add( query.getType().getId() );
             }
 
-            if ( query.getCaseNo() != null ) {
-                condition.append( " and caseno=?" );
-                args.add( query.getCaseNo() );
+            if ( query.getCaseNumbers() != null && !query.getCaseNumbers().isEmpty() ) {
+                condition.append(" and caseno in (")
+                        .append(query.getCaseNumbers().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(","))
+                        )
+                        .append(")");
             }
 
             if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {

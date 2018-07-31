@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +20,7 @@ public class CaseQuery extends BaseQuery {
     private Long id;
 
     @JsonIgnore
-    private Long caseNo;
+    private List<Long> caseNumbers;
 
     private List<Long> companyIds;
 
@@ -68,7 +69,7 @@ public class CaseQuery extends BaseQuery {
         setSortDir(query.getSortDir());
 
         setId(query.getId());
-        setCaseNo(query.getCaseNo());
+        setCaseNumbers(query.getCaseNumbers());
         setCompanyIds(query.getCompanyIds());
         setProductIds(query.getProductIds());
         setType(query.getType());
@@ -89,9 +90,18 @@ public class CaseQuery extends BaseQuery {
         this.id = id;
     }
 
-    public Long getCaseNo () { return caseNo; }
+    public List<Long> getCaseNumbers() {
+        return caseNumbers;
+    }
 
-    public void setCaseNo ( Long caseNo ) { this.caseNo = caseNo; }
+    public void setCaseNo( Long caseNo ) {
+        this.caseNumbers = new ArrayList<>();
+        this.caseNumbers.add(caseNo);
+    }
+
+    public void setCaseNumbers( List<Long> caseNumbers ) {
+        this.caseNumbers = caseNumbers;
+    }
 
     public List<Long> getCompanyIds() {
         return companyIds;

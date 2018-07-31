@@ -29,7 +29,7 @@ public class IssueControllerImpl implements IssueController {
     @Override
     public List<CaseShortView> getIssues( CaseQuery query ) throws RequestFailedException {
         log.debug( "getIssues(): caseNo={} | companyId={} | productId={} | managerId={} | searchPattern={} | state={} | importance={} | sortField={} | sortDir={} | caseService={}",
-                query.getCaseNo(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(), query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService );
+                query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(), query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
