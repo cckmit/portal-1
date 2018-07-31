@@ -171,9 +171,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.62.4 - CRM-226 Падение портала по OOM
  * 4.0.62.5 — CRM-219 В продуктах иметь возможность видеть компоненты
  * 4.0.62.6 — CRM-175 Новый CRM: Расширение функционала фильтра поиска обращений.
+ * 4.0.62.7 — CRM-244 Сбрасываются роли у пользователей
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.62.6";
+        return "4.0.62.7";
     }
 }

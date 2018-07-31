@@ -948,8 +948,10 @@ public class WorkerController {
         }
 
         public OperationData requireAccount(Supplier<UserLogin> optional) {
-            if (isValid())
+            if (isValid()) {
                 this.account = handle(userLoginDAO.findLDAPByPersonId(record.getPersonId()), optional, null, true);
+                jdbcManyRelationsHelper.fill(account, "roles");
+            }
 
             return this;
         }
