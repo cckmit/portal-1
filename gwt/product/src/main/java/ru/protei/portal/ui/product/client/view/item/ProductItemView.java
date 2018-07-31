@@ -59,7 +59,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
 
     @Override
     public void setType(En_DevUnitType type) {
-        typeImg.setUrl("./images/du_" + type.name().toLowerCase() + ".png");
+        typeImg.setUrl(type.getImgSrc());
         typeImg.setTitle(typeLang.getName(type));
         typeImg.setAltText(typeLang.getName(type));
     }

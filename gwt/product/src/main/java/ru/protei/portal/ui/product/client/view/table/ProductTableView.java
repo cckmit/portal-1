@@ -110,7 +110,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
                 root.addClassName("dev-unit-type-column");
                 cell.appendChild(root);
                 ImageElement imageElement = DOM.createImg().cast();
-                imageElement.setSrc("./images/du_" + value.getType().name().toLowerCase() + ".png");
+                imageElement.setSrc(value.getType().getImgSrc());
                 imageElement.setTitle(typeLang.getName(value.getType()));
                 imageElement.setAlt(typeLang.getName(value.getType()));
                 root.appendChild(imageElement);

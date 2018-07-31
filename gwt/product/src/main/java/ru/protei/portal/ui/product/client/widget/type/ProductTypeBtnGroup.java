@@ -14,9 +14,9 @@ public class ProductTypeBtnGroup extends ToggleBtnGroup<En_DevUnitType> {
 
     private void fillOptions() {
         clear();
-        for (En_DevUnitType type : En_DevUnitType.getValues()) {
+        for (En_DevUnitType type : En_DevUnitType.getValidValues()) {
             addBtnWithImage(
-                    "./images/du_" + type.name().toLowerCase() + ".png",
+                    type.getImgSrc(),
                     "btn btn-white btn-without-border du-type",
                     null,
                     type,
