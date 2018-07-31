@@ -1156,4 +1156,12 @@ public interface Lang extends Messages, ContactItemLang {
     String documentCreated(String dateTime);
 
     String documentIdColumnHeader();
+
+    String devUnitDirection();
+
+    String devUnitProduct();
+
+    String devUnitComponent();
+
+    String productType();
 }

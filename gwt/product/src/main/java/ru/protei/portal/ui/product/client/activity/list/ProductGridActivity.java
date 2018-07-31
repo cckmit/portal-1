@@ -50,6 +50,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
                 UiConstants.ActionBarIdentity.PRODUCT_TYPE_VIEW
         ));
 
+        query = makeQuery();
         fireEvent(new ProductEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
     }
 
@@ -83,6 +84,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
         pq.setState(filterView.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
         pq.setSortField(filterView.sortField().getValue());
         pq.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        pq.setTypes(filterView.types().getValue());
 
         return pq;
     }

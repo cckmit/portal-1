@@ -1,8 +1,11 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+
+import java.util.Set;
 
 /**
  * Created by michael on 12.10.16.
@@ -10,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 public class ProductQuery extends BaseQuery {
 
     En_DevUnitState state;
+    private Set<En_DevUnitType> types;
 
     public ProductQuery() {
         sortField = En_SortField.prod_name;
@@ -33,4 +37,11 @@ public class ProductQuery extends BaseQuery {
         this.state = state;
     }
 
+    public Set<En_DevUnitType> getTypes() {
+        return types;
+    }
+
+    public void setTypes(Set<En_DevUnitType> types) {
+        this.types = types;
+    }
 }

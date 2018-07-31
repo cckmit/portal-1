@@ -18,11 +18,19 @@ public enum En_DevUnitType {
         return id;
     }
 
+    public String getImgSrc() {
+        return "./images/du_" + this.name().toLowerCase() + ".png";
+    }
+
     public static En_DevUnitType forId (int id) {
         for (En_DevUnitType it : En_DevUnitType.values())
             if (it.getId() == id)
                 return it;
 
         return null;
+    }
+
+    public static En_DevUnitType[] getValidValues() {
+        return new En_DevUnitType[] {PRODUCT, COMPONENT};
     }
 }

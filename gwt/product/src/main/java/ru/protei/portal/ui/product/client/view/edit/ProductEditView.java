@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
+import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
 import java.util.List;
 
@@ -37,6 +39,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public HasValue<String> name() { return name; }
+
+    @Override
+    public HasValue<En_DevUnitType> type() {
+        return type;
+    }
 
     @Override
     public HasValidable nameValidator() { return name; }
@@ -125,6 +132,9 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @UiField
     ValidableTextBox name;
+    @Inject
+    @UiField(provided = true)
+    ProductTypeBtnGroup type;
     @UiField
     Element verifiableIcon;
     @UiField

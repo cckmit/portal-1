@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -87,7 +88,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     @Override
     public void onSaveClicked() {
 
-        if(!isNameValid())
+        if(!isValid())
             return;
 
         if (productId == null) {
@@ -95,6 +96,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         }
 
         product.setName(view.name().getValue().trim());
+        product.setTypeId(view.type().getValue().getId());
         product.setInfo(view.info().getValue().trim());
         product.setSubscriptions(view.productSubscriptions().getValue().stream()
                 .map( Subscription::toProductSubscription )
@@ -147,7 +149,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     private void fillView(DevUnit devUnit) {
+
+        boolean isCreate = devUnit.getId() == null;
+
         view.name().setValue(devUnit.getName());
+        view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible( true );
         view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
@@ -162,8 +168,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setNameStatus(NameStatus.NONE);
     }
 
-    private boolean isNameValid(){
-        return view.nameValidator().isValid();
+    private boolean isValid() {
+        return view.nameValidator().isValid() &&
+                view.type().getValue() != null;
     }
 
     @Inject

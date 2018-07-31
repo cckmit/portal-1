@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
@@ -29,6 +30,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     private void fillView( DevUnit product ) {
         view.setName(product.getName());
+        view.setType(typeLang.getName(product.getType()));
         view.setInfo( product.getInfo() );
     }
 
@@ -36,4 +38,6 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     Lang lang;
     @Inject
     AbstractProductPreviewView view;
+    @Inject
+    En_DevUnitTypeLang typeLang;
 }

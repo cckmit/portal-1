@@ -7,6 +7,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
 
@@ -55,6 +58,13 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     }
 
     @Override
+    public void setType(En_DevUnitType type) {
+        typeImg.setUrl(type.getImgSrc());
+        typeImg.setTitle(typeLang.getName(type));
+        typeImg.setAltText(typeLang.getName(type));
+    }
+
+    @Override
     public void setDeprecated(boolean value) {
         if (value) {
             addStyleName( "inactive" );
@@ -81,6 +91,8 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     @UiField
     HeadingElement name;
     @UiField
+    Image typeImg;
+    @UiField
     Anchor edit;
     @UiField
     Anchor favorite;
@@ -88,6 +100,9 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
     HTMLPanel previewContainer;
     @UiField
     Anchor preview;
+
+    @Inject
+    En_DevUnitTypeLang typeLang;
 
     AbstractProductItemActivity activity;
 
