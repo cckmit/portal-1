@@ -164,9 +164,10 @@ package ru.protei.portal.ui.common.client.common;
  *            CRM-207 При привязке crm - отображать статус привязанной заявки цветом
  *            CRM-208 Отображать привязанные задачи при предварительном просмотре
  * 4.0.60.1 - CRM-227 Невалидные значки контактной информации
+ * 4.0.60.2 - CRM-226 Падение портала по OOM
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.60.1";
+        return "4.0.60.2";
     }
 }
