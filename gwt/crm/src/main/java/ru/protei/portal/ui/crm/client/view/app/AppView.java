@@ -24,6 +24,7 @@ import ru.protei.portal.ui.crm.client.widget.navsearch.NavSearchBox;
 public class AppView extends Composite
         implements AbstractAppView,
         KeyUpHandler {
+
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );

@@ -31,8 +31,8 @@
                     <navsearch:NavSearchBox ui:field="search"/>
                     <locale:LocaleSelector ui:field="locale"/>
                     <li>
-                        <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" href="#">
-                            <i class="fa-lg ion-log-out"></i>
+                        <g:Anchor ui:field="logout" title="{lang.buttonLogout}" href="#">
+                            <i class="fa-lg ion-log-out"/>
                         </g:Anchor>
                     </li>
                 </ul>
