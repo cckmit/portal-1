@@ -96,7 +96,6 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
 
         columns.add(nameColumn);
-        columns.add(companyColumn);
         columns.add(serversColumn);
         columns.add(editClickColumn);
         columns.add(removeClickColumn);
@@ -129,17 +128,6 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         @Override
         public void fillColumnValue(Element cell, Platform value) {
             cell.setInnerText(value.getName());
-        }
-    };
-    private ClickColumn<Platform> companyColumn = new ClickColumn<Platform>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.company());
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText(value.getCompany() == null ? "?" : value.getCompany().getCname());
         }
     };
     private ClickColumn<Platform> serversColumn = new ClickColumn<Platform>() {

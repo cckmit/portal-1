@@ -31,4 +31,6 @@ public interface AbstractPlatformEditView extends IsWidget {
     HasVisibility openButtonVisibility();
 
     HasVisibility createButtonVisibility();
+
+    HasWidgets contactsContainer();
 }

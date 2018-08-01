@@ -33,8 +33,14 @@ public class ContactEvents {
             this.companyId = companyId;
         }
 
+        public ShowConciseTable readOnly() {
+            this.editable = false;
+            return this;
+        }
+
         public HasWidgets parent;
         public Long companyId;
+        public boolean editable = true;
     }
 
     /**

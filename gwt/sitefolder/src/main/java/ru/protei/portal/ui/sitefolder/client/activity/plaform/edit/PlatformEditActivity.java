@@ -106,6 +106,14 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         fireEvent(SiteFolderServerEvents.Edit.withPlatform(platform));
     }
 
+    @Override
+    public void onCompanySelected() {
+        EntityOption value = view.company().getValue();
+
+        view.name().setValue(value == null ? "" : value.getDisplayText());
+        fireShowCompanyContacts(value == null ? null : value.getId() );
+    }
+
     private void fillView(Platform platform) {
         this.platform = platform;
         view.name().setValue(platform.getName());
@@ -119,6 +127,17 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         if (platform.getId() != null) {
             fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
         }
+
+        fireShowCompanyContacts(platform.getCompanyId());
+    }
+
+    private void fireShowCompanyContacts(Long companyId) {
+        if ( companyId == null ) {
+            view.contactsContainer().clear();
+            return;
+        }
+
+        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), companyId).readOnly());
     }
 
     private void fillPlatform(Platform platform) {

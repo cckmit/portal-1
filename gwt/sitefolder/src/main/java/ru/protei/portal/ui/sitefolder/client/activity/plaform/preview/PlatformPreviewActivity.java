@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Platform;
+import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 
 public abstract class PlatformPreviewActivity implements Activity, AbstractPlatformPreviewActivity {
@@ -30,6 +31,9 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
         view.setParameters(value.getParams() == null ? "" : value.getParams());
         view.setComment(value.getComment() == null ? "" : value.getComment());
+
+        fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
+
     }
 
     @Inject

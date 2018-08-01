@@ -97,6 +97,7 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
 
             EntityOption option = optionMap.get( id );
             setValue( option, true );
+            checkValueIsValid();
             popup.hide();
         }, ClickEvent.getType() );
     }

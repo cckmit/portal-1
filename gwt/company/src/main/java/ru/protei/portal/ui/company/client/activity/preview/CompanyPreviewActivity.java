@@ -62,7 +62,7 @@ public abstract class CompanyPreviewActivity
 
         requestSubscriptionEmails(value.getId());
 
-        fireEvent( new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()));
+        fireEvent( new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()).readOnly() );
     }
 
     private void requestSubscriptionEmails(Long companyId) {

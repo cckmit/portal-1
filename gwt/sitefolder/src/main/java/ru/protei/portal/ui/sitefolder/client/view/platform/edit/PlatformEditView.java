@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.view.platform.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -86,6 +87,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         return createButton;
     }
 
+    @Override
+    public HasWidgets contactsContainer() {
+        return contactsContainer;
+    }
+
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -114,6 +120,13 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         }
     }
 
+    @UiHandler("company")
+    public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
+            activity.onCompanySelected();
+        }
+    }
+
     @UiField
     ValidableTextBox name;
     @Inject
@@ -135,6 +148,8 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     Button createButton;
     @UiField
     Button openButton;
+    @UiField
+    HTMLPanel contactsContainer;
 
     private AbstractPlatformEditActivity activity;
 
