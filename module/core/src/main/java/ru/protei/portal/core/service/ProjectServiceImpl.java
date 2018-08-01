@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_LocationType;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
@@ -201,6 +198,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType(En_CaseType.PROJECT);
+        caseQuery.setSortDir(En_SortDir.ASC);
+        caseQuery.setSortField(En_SortField.case_name);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
         List<ProjectInfo> result = projects.stream()

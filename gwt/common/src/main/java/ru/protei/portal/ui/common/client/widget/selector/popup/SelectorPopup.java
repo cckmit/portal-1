@@ -192,7 +192,7 @@ public class SelectorPopup
     ResizeHandler resizeHandler;
     HandlerRegistration resizeHandlerReg;
 
-    boolean searchAutoFocus = false;
+    boolean searchAutoFocus = true;
     boolean searchVisible = false;
     boolean addVisible = false;
 
