@@ -1168,4 +1168,6 @@ public interface Lang extends Messages, ContactItemLang {
     String productType();
 
     String searchPrivate();
+
+    String equipmentProjectNotDefined();
 }
