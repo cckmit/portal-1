@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.widget.importance.btngroup;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
@@ -26,6 +27,7 @@ public class ImportanceBtnGroupMulti extends ToggleBtnGroupMulti<En_ImportanceLe
                     null,
                     type
             );
+            setEnsureDebugId(type, DebugIdsHelper.IMPORTANCE_BUTTON.byId(type.getId()));
         }
     }
 

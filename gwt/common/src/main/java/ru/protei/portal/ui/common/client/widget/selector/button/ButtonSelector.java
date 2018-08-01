@@ -95,6 +95,10 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
         button.addStyleName(style);
     }
 
+    public void setEnsureDebugId(String debugId) {
+        button.ensureDebugId(debugId);
+    }
+
     @UiField
     HTMLPanel inputContainer;
     @UiField

@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
 import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
@@ -28,6 +29,7 @@ public class AppView extends Composite
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
         initHandlers();
         // todo temporary set invisible
         search.setVisible( false );
@@ -111,6 +113,13 @@ public class AppView extends Composite
             event.preventDefault();
             activity.onLogoutClicked();
         }
+    }
+
+    private void ensureDebugIds() {
+        logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
+        locale.setEnsureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
+        toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
+        userPanel.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
     }
 
     private void initHandlers() {

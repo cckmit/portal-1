@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -25,7 +26,7 @@ public abstract class OfficialPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.OFFICIAL_VIEW) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.OFFICIAL) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.OFFICIAL, DebugIds.SIDEBAR_MENU.OFFICIAL ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }

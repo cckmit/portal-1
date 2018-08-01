@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
-import ru.protei.winter.web.common.client.events.SectionEvents;
+import ru.protei.portal.test.client.DebugIds;
 
 /**
  * События для action bar'a
@@ -22,14 +22,19 @@ public class ActionBarEvents {
      */
     public static class Add {
         public Add( String header, String icon, String identity ) {
+            this(header, icon, identity, null);
+        }
+        public Add( String header, String icon, String identity, String debugId ) {
             this.header = header;
             this.icon = icon;
             this.identity = identity == null ? header : identity;
+            this.debugId = debugId == null ? DebugIds.ACTION_BAR.CREATE_BUTTON : debugId;
         }
 
         public String header;
         public String icon;
         public String identity;
+        public String debugId;
     }
 
     /**

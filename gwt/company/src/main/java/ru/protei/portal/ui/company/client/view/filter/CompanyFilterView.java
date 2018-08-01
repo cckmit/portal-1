@@ -2,7 +2,6 @@ package ru.protei.portal.ui.company.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -12,6 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -30,6 +30,7 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
         group.setDefaultValue( lang.selectCompanyGroup() );
     }
 
@@ -124,6 +125,15 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
         timer.schedule( 300 );
+    }
+
+    private void ensureDebugIds() {
+        search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
+        search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
+        sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
+        sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
+        group.setEnsureDebugId(DebugIds.FILTER.COMPANY_GROUP_SELECTOR);
+        resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
     }
 
     Timer timer = new Timer() {

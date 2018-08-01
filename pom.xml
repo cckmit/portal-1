@@ -35,6 +35,7 @@
                 <module>module/hpsm</module>
                 <module>module/ws-api</module>
                 <module>module/redmine</module>
+                <module>module/test</module>
                 
                 <module>skin/classic</module>
 

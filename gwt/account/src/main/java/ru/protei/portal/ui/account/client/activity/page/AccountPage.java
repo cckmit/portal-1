@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AccountEvents;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
@@ -26,7 +27,7 @@ public abstract class AccountPage implements Activity {
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.ACCOUNT_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ACCOUNT ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.ACCOUNT, DebugIds.SIDEBAR_MENU.ACCOUNT ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }

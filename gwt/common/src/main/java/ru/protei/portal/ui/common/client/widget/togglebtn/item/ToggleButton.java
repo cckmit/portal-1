@@ -122,6 +122,10 @@ public class ToggleButton
         }
     }
 
+    public void setEnsureDebugId(String debugId) {
+        button.ensureDebugId(debugId);
+    }
+
     @UiField
     CheckBox value;
     @UiField

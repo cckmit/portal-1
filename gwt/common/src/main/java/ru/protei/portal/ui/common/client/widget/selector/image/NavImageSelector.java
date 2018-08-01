@@ -56,6 +56,10 @@ public class NavImageSelector< T > extends Selector< T > implements HasEnabled {
         image.setSrc( selectedValue.getImageSrc() );
     }
 
+    public void setEnsureDebugId(String debugId) {
+        anchor.ensureDebugId(debugId);
+    }
+
     @UiField
     Anchor anchor;
     @UiField

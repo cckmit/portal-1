@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -28,7 +29,7 @@ public abstract class EquipmentPage
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         if ( event.profile.hasPrivilegeFor( En_Privilege.EQUIPMENT_VIEW ) ) {
-            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT ) );
+            fireEvent( new MenuEvents.Add( ТAB, UiConstants.TabIcons.EQUIPMENT, DebugIds.SIDEBAR_MENU.EQUIPMENT ) );
             fireEvent( new AppEvents.InitPage( show ) );
         }
     }

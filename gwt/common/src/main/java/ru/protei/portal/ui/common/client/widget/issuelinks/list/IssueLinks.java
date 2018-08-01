@@ -92,6 +92,10 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Ha
         addLinkButton.setVisible(enabled);
     }
 
+    public void setEnsureDebugId(String debugId) {
+        addLinkButton.ensureDebugId(debugId);
+    }
+
     private void showPopup() {
         popup.showNear(addLinkButton);
         popup.addValueChangeHandler(event -> addValue(event.getValue()));

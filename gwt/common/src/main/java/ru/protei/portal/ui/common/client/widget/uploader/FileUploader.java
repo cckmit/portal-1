@@ -60,6 +60,10 @@ public abstract class FileUploader extends Composite implements HasHTML, HasSafe
         visibleContent.getElement().setInnerText(text);
     }
 
+    public void setEnsureDebugId(String debugId) {
+        form.ensureDebugId(debugId);
+    }
+
     protected abstract void submitCompleteHandler(FormPanel.SubmitCompleteEvent event);
 
     protected abstract void changeHandler(ChangeEvent event);
