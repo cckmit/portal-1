@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -55,6 +56,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
         state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
         company.setDefaultValue(lang.selectIssueCompany());
@@ -348,6 +350,26 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
             comments.removeClassName(UiConstants.Styles.HIDE);
         else
             comments.addClassName(UiConstants.Styles.HIDE);
+    }
+
+    private void ensureDebugIds() {
+        local.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
+        number.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
+        name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
+        links.setEnsureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
+        state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
+        importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
+        company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
+        initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
+        product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
+        manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
+        timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_LABEL);
+        description.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
+        notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
+        notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
+        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
+        saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
     }
 
     @UiField

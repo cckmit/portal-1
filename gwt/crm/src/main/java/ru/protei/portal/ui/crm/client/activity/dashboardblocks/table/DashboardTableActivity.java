@@ -25,7 +25,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
     @Event
     public void onShow( DashboardEvents.ShowTableBlock event ) {
-        AbstractDashboardTableView view = createTableView();
+        AbstractDashboardTableView view = createTableView(event.debugId);
 
         event.parent.clear();
         event.parent.add(view.asWidget());
@@ -145,9 +145,12 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     }
 
 
-    private AbstractDashboardTableView createTableView(){
+    private AbstractDashboardTableView createTableView(String debugId){
         AbstractDashboardTableView table = tableProvider.get();
         table.setActivity(this);
+        if (debugId != null) {
+            table.setEnsureDebugId(debugId);
+        }
         return table;
     }
 

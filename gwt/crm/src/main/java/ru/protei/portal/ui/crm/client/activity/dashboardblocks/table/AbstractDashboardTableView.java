@@ -29,4 +29,6 @@ public interface AbstractDashboardTableView extends IsWidget {
 
     void toggleSearchIndicator(boolean show);
     void toggleInitiatorsIndicator(boolean show);
+
+    void setEnsureDebugId(String debugId);
 }

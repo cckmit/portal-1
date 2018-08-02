@@ -122,6 +122,14 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         }, ClickEvent.getType() );
     }
 
+    public void setAddEnsureDebugId(String debugId) {
+        caretButton.ensureDebugId(debugId);
+    }
+
+    public void setClearEnsureDebugId(String debugId) {
+        clearButton.ensureDebugId(debugId);
+    }
+
     @UiField
     Button caretButton;
     @UiField

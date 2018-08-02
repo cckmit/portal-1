@@ -125,6 +125,12 @@ public class OptionList<T>
         this.filter = filter;
     }
 
+    public void setEnsureDebugId(T value, String debugId) {
+        if (itemToViewModel.containsKey(value)) {
+            itemToViewModel.get(value).setEnsureDebugId(debugId);
+        }
+    }
+
     @UiField
     FlowPanel container;
     @UiField

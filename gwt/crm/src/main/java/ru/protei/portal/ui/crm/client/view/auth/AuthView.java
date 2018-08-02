@@ -2,7 +2,6 @@ package ru.protei.portal.ui.crm.client.view.auth;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -15,6 +14,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.crm.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.ui.crm.client.activity.auth.AbstractAuthView;
 
@@ -25,6 +25,7 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
 
     public AuthView() {
         initWidget (ourUiBinder.createAndBindUi (this));
+        ensureDebugIds();
         initHandlers();
     }
 
@@ -59,6 +60,12 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     public void onKeyPress (KeyPressEvent event) {
         if (event.getNativeEvent().getKeyCode() == KeyCodes.KEY_ENTER)
             activity.onLoginClicked();
+    }
+
+    private void ensureDebugIds() {
+        login.ensureDebugId(DebugIds.AUTH.INPUT_LOGIN);
+        password.ensureDebugId(DebugIds.AUTH.INPUT_PASSWORD);
+        loginButton.ensureDebugId(DebugIds.AUTH.LOGIN_BUTTON);
     }
 
     private void initHandlers() {
