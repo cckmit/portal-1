@@ -2,7 +2,7 @@ package ru.protei.portal.test.client;
 
 public class DebugIds {
 
-    // better to not change this prefix, some winter libraries (table for example) hardcoded its value
+    // better to not change this prefix, some libraries (winter.web table for example) hardcoded its value
     public static final String DEBUG_ID_PREFIX = "gwt-debug-";
 
     public interface AUTH {
