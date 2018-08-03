@@ -135,6 +135,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.name().setValue("");
         view.type().setValue(En_DevUnitType.PRODUCT, true);
         view.product().setValue(null);
+        view.components().setValue(null);
         view.info().setValue("");
         view.state().setVisible(false);
         view.productSubscriptions().setValue(Collections.emptyList());
@@ -145,8 +146,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         boolean isCreate = devUnit.getId() == null;
 
         view.name().setValue(devUnit.getName());
-        view.product().setValue(devUnit.isComponent() ? devUnit.getParent() : null);
-        view.setIsProduct(devUnit.isProduct());
         view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible( true );
@@ -156,6 +155,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                         .map( Subscription::fromProductSubscription )
                         .collect(Collectors.toList())
         );
+
+        view.setIsProduct(devUnit.isProduct());
+        view.product().setValue(devUnit.isComponent() ? devUnit.getParent() : null);
+        view.components().setValue(devUnit.isProduct() ? null/* get from devUnit */ : null);
+
     }
 
     private void fillDTO(DevUnit product) {
@@ -172,6 +176,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         );
         if (product.isComponent()) {
             product.setParent(view.product().getValue());
+        }
+        if (product.isProduct()) {
+            // set view.components().getValue() to product
         }
     }
 

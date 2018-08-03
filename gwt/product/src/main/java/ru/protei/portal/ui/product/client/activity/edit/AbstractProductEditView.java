@@ -11,6 +11,7 @@ import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Абстракция вида карточки создания/редактирования продукта
@@ -28,6 +29,8 @@ public interface AbstractProductEditView extends IsWidget {
     HasValidable nameValidator();
 
     HasValue<String> info();
+
+    HasValue<Set<ProductShortView>> components();
 
     void setNameStatus ( NameStatus status );
 

@@ -23,10 +23,12 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
+import ru.protei.portal.ui.product.client.widget.selector.ComponentMultiSelector;
 import ru.protei.portal.ui.product.client.widget.selector.ProductButtonSelector;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Вид карточки создания/редактирования продукта
@@ -74,16 +76,23 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             nameContainer.removeStyleName("col-xs-7");
             nameContainer.addStyleName("col-xs-10");
             productContainer.addStyleName("hide");
+            componentsContainer.removeStyleName("hide");
         } else {
             nameLabel.setInnerText(lang.componentName());
             nameContainer.removeStyleName("col-xs-10");
             nameContainer.addStyleName("col-xs-7");
             productContainer.removeStyleName("hide");
+            componentsContainer.addStyleName("hide");
         }
     }
 
     @Override
     public HasValue<String> info() { return info; }
+
+    @Override
+    public HasValue<Set<ProductShortView>> components() {
+        return components;
+    }
 
     @Override
     public HasVisibility state() { return stateBtn; }
@@ -173,6 +182,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField(provided = true)
     ProductTypeBtnGroup type;
+    @UiField
+    HTMLPanel componentsContainer;
+    @Inject
+    @UiField(provided = true)
+    ComponentMultiSelector components;
     @UiField
     Element verifiableIcon;
     @UiField

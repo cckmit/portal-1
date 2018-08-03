@@ -1176,4 +1176,6 @@ public interface Lang extends Messages, ContactItemLang {
     String selectProduct();
 
     String componentName();
+
+    String components();
 }

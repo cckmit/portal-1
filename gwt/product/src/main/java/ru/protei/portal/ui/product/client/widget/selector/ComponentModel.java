@@ -11,12 +11,12 @@ import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 
-public abstract class ProductModel extends DevUnitModel implements Activity {
+public abstract class ComponentModel extends DevUnitModel implements Activity {
 
     @Inject
     public void init() {
         query = new ProductQuery();
-        query.addType(En_DevUnitType.PRODUCT);
+        query.addType(En_DevUnitType.COMPONENT);
         query.setState(En_DevUnitState.ACTIVE);
         query.setSortField(En_SortField.prod_name);
         query.setSortDir(En_SortDir.ASC);
