@@ -71,6 +71,8 @@ public abstract class IssueCommentListActivity
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        comment = null;
+        lastCommentView = null;
         tempAttachments.clear();
 
         view.message().setValue(null);
