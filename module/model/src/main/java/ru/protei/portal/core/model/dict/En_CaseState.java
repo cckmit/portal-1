@@ -25,7 +25,8 @@ public enum En_CaseState {
     TEST_CUST(20, "customer test"),
     DESIGN(21, "design"),
     WORKAROUND(30, "workaround"),
-    INFO_REQUEST(31, "info request")
+    INFO_REQUEST(31, "info request"),
+    CUST_PENDING(32, "customer pending")
     ;
 
     public static En_CaseState getById(Long id) {
