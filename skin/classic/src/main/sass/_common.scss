@@ -1756,15 +1756,17 @@ td.info {
 
 
 .label-opened, .label-workaround, .label-info_request,
-.label-technical_project,
+.label-technical_project, .label-cust_pending,
 .option-technical_project .option-name,
 .option-opened .option-name,
 .option-workaround .option-name,
-.option-info_request .option-name {
+.option-info_request .option-name,
+.option-cust_pending .option-name {
   background-color: $info_color;
 }
 
-.case-opened,.case-workaround,.case-info_request {
+.case-opened,.case-workaround,.case-info_request,
+.case-cust_pending {
   color: $info_color;
   font-weight: bold;
 }
@@ -1795,16 +1797,13 @@ td.info {
 
 .label-test_local,
 .label-test_cust,
-.label-cust_pending,
 .option-test_local .option-name,
-.option-test_cust .option-name,
-.option-cust_pending .option-name {
+.option-test_cust .option-name {
   background-color: #906094;
 }
 
 .case-test_local,
-.case-test_cust,
-.case-cust_pending {
+.case-test_cust {
   color: #906094;
   font-weight: bold;
 }
