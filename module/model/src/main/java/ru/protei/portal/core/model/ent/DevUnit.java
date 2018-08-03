@@ -49,6 +49,11 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcOneToMany(table = "DevUnitSubscription", localColumn = "id", remoteColumn = "dev_unit_id" )
     private List<DevUnitSubscription> subscriptions;
 
+    @JdbcJoinedColumn(localColumn = "id", table = "dev_unit_children", remoteColumn = "CHILD_ID", mappedColumn = "DUNIT_ID")
+    private Long parentId;
+
+    private ProductShortView parent;
+
     public static DevUnit fromProductShortView(ProductShortView productShortView){
         if(productShortView == null)
             return null;
@@ -172,6 +177,22 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return En_DevUnitType.forId(this.typeId);
     }
 
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
+    }
+
+    public ProductShortView getParent() {
+        return parent;
+    }
+
+    public void setParent(ProductShortView parent) {
+        this.parent = parent;
+    }
+
     @Override
     public String getAuditType() {
         return "DevUnit";
@@ -194,6 +215,14 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         this.subscriptions = subscriptions;
     }
 
+    public boolean isProduct() {
+        return getType().equals(En_DevUnitType.PRODUCT);
+    }
+
+    public boolean isComponent() {
+        return getType().equals(En_DevUnitType.COMPONENT);
+    }
+
     @Override
     public String toString() {
         return "DevUnit{" +
@@ -207,6 +236,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
                 ", stateId=" + stateId +
                 ", oldId=" + oldId +
                 ", subscriptions=" + subscriptions +
+                ", parentId=" + parentId +
                 '}';
     }
 

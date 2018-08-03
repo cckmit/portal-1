@@ -5,13 +5,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.ent.DevUnitChildRef;
+import ru.protei.portal.core.model.ent.DevUnitSubscription;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -22,7 +25,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +42,9 @@ public class ProductServiceImpl implements ProductService {
     DevUnitDAO devUnitDAO;
 
     @Autowired
+    DevUnitChildRefDAO devUnitChildRefDAO;
+
+    @Autowired
     PolicyService policyService;
 
     @Autowired
@@ -53,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
         if (list == null)
-            new CoreResponse<List<ProductShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<ProductShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<ProductShortView> result = list.stream().map(DevUnit::toProductShortView).collect(Collectors.toList());
 
@@ -66,7 +72,7 @@ public class ProductServiceImpl implements ProductService {
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
         if (list == null)
-            new CoreResponse<List<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<DevUnit>>().success(list);
     }
@@ -77,7 +83,7 @@ public class ProductServiceImpl implements ProductService {
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
         if (list == null)
-            new CoreResponse<List<ProductDirectionInfo>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<ProductDirectionInfo>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<ProductDirectionInfo> result = list.stream().map(DevUnit::toProductDirectionInfo).collect(Collectors.toList());
 
@@ -93,10 +99,34 @@ public class ProductServiceImpl implements ProductService {
         DevUnit product = devUnitDAO.get(id);
 
         if (product == null)
-            new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
 
         product = helper.fillAll( product );
+
+        if (product.isComponent() && product.getParentId() != null) {
+            CoreResponse<ProductShortView> parent = getProductShortView(token, product.getParentId());
+            if (parent.isOk()) {
+                product.setParent(parent.getData());
+            }
+        }
+
         return new CoreResponse<DevUnit>().success(product);
+    }
+
+    @Override
+    public CoreResponse<ProductShortView> getProductShortView(AuthToken token, Long id) {
+
+        if (id == null) {
+            return new CoreResponse<ProductShortView>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        DevUnit product = devUnitDAO.get(id);
+
+        if (product == null) {
+            return new CoreResponse<ProductShortView>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        return new CoreResponse<ProductShortView>().success(product.toProductShortView());
     }
 
 
@@ -117,9 +147,13 @@ public class ProductServiceImpl implements ProductService {
         Long productId = devUnitDAO.persist(product);
 
         if (productId == null)
-            new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+
+        product.setId(productId);
 
         updateProductSubscriptions( product.getId(), product.getSubscriptions() );
+
+        updateProductParent(product);
 
         return new CoreResponse<Long>().success(productId);
 
@@ -135,11 +169,23 @@ public class ProductServiceImpl implements ProductService {
         if (!checkUniqueProduct(product.getName(), product.getId()))
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
+        DevUnit oldProduct = devUnitDAO.get(product.getId());
+
         Boolean result = devUnitDAO.merge(product);
         if ( !result )
-            new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         updateProductSubscriptions( product.getId(), product.getSubscriptions() );
+
+        if (!Objects.equals(oldProduct.getType(), product.getType())) {
+            if (product.isProduct()) {
+                devUnitChildRefDAO.removeByChildId(product.getId());
+            } else {
+                devUnitChildRefDAO.removeByParentId(product.getId());
+            }
+        }
+
+        updateProductParent(product);
 
         return new CoreResponse<Boolean>().success(result);
     }
@@ -211,6 +257,25 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return true;
+    }
+
+    private void updateProductParent(DevUnit product) {
+        if (product.isProduct()) {
+            return;
+        }
+
+        ProductShortView parent = product.getParent();
+
+        if (parent == null || !Objects.equals(parent.getId(), product.getParentId())) {
+            devUnitChildRefDAO.removeByChildId(product.getId());
+        }
+
+        if (parent != null && parent.getId() != null) {
+            DevUnitChildRef devUnitChildRef = new DevUnitChildRef();
+            devUnitChildRef.setUnitId(parent.getId());
+            devUnitChildRef.setChildId(product.getId());
+            devUnitChildRefDAO.persist(devUnitChildRef);
+        }
     }
 
     private final static Logger log = LoggerFactory.getLogger( ProductService.class );

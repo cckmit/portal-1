@@ -370,6 +370,11 @@ public class MainConfiguration {
         return new ApplicationDAO_Impl();
     }
 
+    @Bean
+    public DevUnitChildRefDAO getDevUnitChildRefDAO() {
+        return new DevUnitChildRefDAO_Impl();
+    }
+
 /**
  *
  *

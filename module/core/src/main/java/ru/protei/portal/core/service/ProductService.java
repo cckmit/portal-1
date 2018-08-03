@@ -30,6 +30,9 @@ public interface ProductService {
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<DevUnit> getProduct( AuthToken token, Long id );
 
+    @Privileged( En_Privilege.PRODUCT_VIEW )
+    CoreResponse<ProductShortView> getProductShortView( AuthToken token, Long id );
+
     @Privileged( En_Privilege.PRODUCT_CREATE )
     @Auditable( En_AuditType.PRODUCT_CREATE )
     CoreResponse<Long> createProduct( AuthToken token, DevUnit product);

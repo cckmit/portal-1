@@ -2,9 +2,11 @@ package ru.protei.portal.ui.product.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -12,6 +14,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
@@ -20,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
+import ru.protei.portal.ui.product.client.widget.selector.ProductButtonSelector;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
 import java.util.List;
@@ -41,6 +45,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public HasValue<String> name() { return name; }
 
     @Override
+    public HasValue<ProductShortView> product() {
+        return product;
+    }
+
+    @Override
     public HasValue<En_DevUnitType> type() {
         return type;
     }
@@ -56,6 +65,21 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public HasValidable productSubscriptionsValidator() {
         return subscriptions;
+    }
+
+    @Override
+    public void setIsProduct(boolean isProduct) {
+        if (isProduct) {
+            nameLabel.setInnerText(lang.productName());
+            nameContainer.removeStyleName("col-xs-7");
+            nameContainer.addStyleName("col-xs-10");
+            productContainer.addStyleName("hide");
+        } else {
+            nameLabel.setInnerText(lang.componentName());
+            nameContainer.removeStyleName("col-xs-10");
+            nameContainer.addStyleName("col-xs-7");
+            productContainer.removeStyleName("hide");
+        }
     }
 
     @Override
@@ -111,6 +135,11 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         checkName();
     }
 
+    @UiHandler( "type" )
+    public void onTypeChanged(ValueChangeEvent<En_DevUnitType> event) {
+        setIsProduct(event.getValue().equals(En_DevUnitType.PRODUCT));
+    }
+
     private void checkName ()
     {
         setNameStatus(NameStatus.UNDEFINED);
@@ -131,7 +160,16 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
 
     @UiField
+    HTMLPanel nameContainer;
+    @UiField
+    LabelElement nameLabel;
+    @UiField
     ValidableTextBox name;
+    @UiField
+    HTMLPanel productContainer;
+    @Inject
+    @UiField(provided = true)
+    ProductButtonSelector product;
     @Inject
     @UiField(provided = true)
     ProductTypeBtnGroup type;

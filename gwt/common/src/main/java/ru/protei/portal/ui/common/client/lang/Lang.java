@@ -1172,4 +1172,8 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentProjectNotDefined();
 
     String siteFolderCompanyContacts();
+
+    String selectProduct();
+
+    String componentName();
 }

@@ -91,17 +91,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         if(!isValid())
             return;
 
-        if (productId == null) {
-            product = new DevUnit();
-        }
-
-        product.setName(view.name().getValue().trim());
-        product.setTypeId(view.type().getValue().getId());
-        product.setInfo(view.info().getValue().trim());
-        product.setSubscriptions(view.productSubscriptions().getValue().stream()
-                .map( Subscription::toProductSubscription )
-                .collect(Collectors.toList())
-        );
+        fillDTO(product);
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
@@ -143,6 +133,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void resetView () {
         view.name().setValue("");
+        view.type().setValue(En_DevUnitType.PRODUCT, true);
+        view.product().setValue(null);
         view.info().setValue("");
         view.state().setVisible(false);
         view.productSubscriptions().setValue(Collections.emptyList());
@@ -153,6 +145,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         boolean isCreate = devUnit.getId() == null;
 
         view.name().setValue(devUnit.getName());
+        view.product().setValue(devUnit.isComponent() ? devUnit.getParent() : null);
+        view.setIsProduct(devUnit.isProduct());
         view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible( true );
@@ -162,6 +156,23 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                         .map( Subscription::fromProductSubscription )
                         .collect(Collectors.toList())
         );
+    }
+
+    private void fillDTO(DevUnit product) {
+        if (productId == null) {
+            product = new DevUnit();
+        }
+
+        product.setName(view.name().getValue().trim());
+        product.setTypeId(view.type().getValue().getId());
+        product.setInfo(view.info().getValue().trim());
+        product.setSubscriptions(view.productSubscriptions().getValue().stream()
+                .map( Subscription::toProductSubscription )
+                .collect(Collectors.toList())
+        );
+        if (product.isComponent()) {
+            product.setParent(view.product().getValue());
+        }
     }
 
     private void resetValidationStatus(){

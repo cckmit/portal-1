@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -20,6 +21,8 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasValue<String> name();
 
+    HasValue<ProductShortView> product();
+
     HasValue<En_DevUnitType> type();
 
     HasValidable nameValidator();
@@ -32,9 +35,10 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasVisibility state(  );
 
+    void setIsProduct(boolean isProduct);
+
     HasEnabled save();
 
     HasValue<List<Subscription>> productSubscriptions();
     HasValidable productSubscriptionsValidator();
-
 }
