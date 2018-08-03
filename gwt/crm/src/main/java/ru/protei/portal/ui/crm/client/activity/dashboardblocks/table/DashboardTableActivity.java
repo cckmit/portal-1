@@ -31,7 +31,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         event.parent.add(view.asWidget());
 
 
-        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow);
+        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow, event.daysLimit);
         viewToModel.put(view, model);
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
@@ -123,6 +123,13 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         if(model.isLoaderShow)
             model.view.showLoader(true);
 
+        if (model.daysLimit != null) {
+            Date to = new Date();
+            Date from = new Date(to.getTime() - (MILLISECONDS_PER_DAY * model.daysLimit));
+            model.query.setFrom(from);
+            model.query.setTo(to);
+        }
+
         issueService.getIssues( model.query, new RequestCallback<List<CaseShortView>>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -179,6 +186,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;
 
+    private final static Long MILLISECONDS_PER_DAY = 86400000L;
     private final Set<En_ImportanceLevel> IMPORTANCE_LEVELS = Arrays.stream(En_ImportanceLevel.values()).collect(Collectors.toSet());
     private Map<AbstractDashboardTableView, DashboardTableModel> viewToModel = new HashMap<>();
 

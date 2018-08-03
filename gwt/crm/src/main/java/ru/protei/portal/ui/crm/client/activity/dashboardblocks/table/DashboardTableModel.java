@@ -8,8 +8,14 @@ import ru.protei.portal.core.model.query.CaseQuery;
 public class DashboardTableModel {
 
     public boolean isLoaderShow;
+    public Integer daysLimit;
     public CaseQuery query;
     public AbstractDashboardTableView view;
+
+    public DashboardTableModel(AbstractDashboardTableView view, CaseQuery query, boolean isLoaderShow, Integer daysLimit) {
+        this(view, query, isLoaderShow);
+        this.daysLimit = daysLimit;
+    }
 
     public DashboardTableModel(AbstractDashboardTableView view, CaseQuery query, boolean isLoaderShow) {
         this.view = view;
