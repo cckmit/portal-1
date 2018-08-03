@@ -26,6 +26,7 @@ public class DashboardEvents {
         public HasWidgets parent;
         public boolean isLoaderShow;
         public String sectionName;
+        public Integer daysLimit;
         public String debugId;
         public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName) {
             if(query == null || parent == null)
@@ -51,6 +52,10 @@ public class DashboardEvents {
             this.isLoaderShow = showLoader;
         }
 
+        public ShowTableBlock withDaysLimit(Integer daysLimit) {
+            this.daysLimit = daysLimit;
+            return this;
+        }
     }
 
 }

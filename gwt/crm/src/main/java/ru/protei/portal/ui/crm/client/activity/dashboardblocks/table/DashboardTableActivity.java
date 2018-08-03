@@ -31,7 +31,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         event.parent.add(view.asWidget());
 
 
-        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow);
+        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow, event.daysLimit);
         viewToModel.put(view, model);
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
@@ -122,6 +122,13 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     private void requestRecords(DashboardTableModel model) {
         if(model.isLoaderShow)
             model.view.showLoader(true);
+
+        if (model.daysLimit != null) {
+            Date to = new Date();
+            Date from = new Date(to.getTime() - (86400000L * model.daysLimit));
+            model.query.setFrom(from);
+            model.query.setTo(to);
+        }
 
         issueService.getIssues( model.query, new RequestCallback<List<CaseShortView>>() {
             @Override
