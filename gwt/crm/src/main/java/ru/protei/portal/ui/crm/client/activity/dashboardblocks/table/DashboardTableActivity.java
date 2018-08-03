@@ -125,7 +125,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
         if (model.daysLimit != null) {
             Date to = new Date();
-            Date from = new Date(to.getTime() - (86400000L * model.daysLimit));
+            Date from = new Date(to.getTime() - (MILLISECONDS_PER_DAY * model.daysLimit));
             model.query.setFrom(from);
             model.query.setTo(to);
         }
@@ -186,6 +186,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;
 
+    private final static Long MILLISECONDS_PER_DAY = 86400000L;
     private final Set<En_ImportanceLevel> IMPORTANCE_LEVELS = Arrays.stream(En_ImportanceLevel.values()).collect(Collectors.toSet());
     private Map<AbstractDashboardTableView, DashboardTableModel> viewToModel = new HashMap<>();
 
