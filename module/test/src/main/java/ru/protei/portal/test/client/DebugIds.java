@@ -125,6 +125,7 @@ public class DebugIds {
         String DESIGN = "issue-state-design";
         String WORKAROUND = "issue-state-workaround";
         String INFO_REQUEST = "issue-state-info-request";
+        String CUST_PENDING = "issue-state-cust-pending";
     }
 
     public interface ISSUE {
