@@ -22,7 +22,7 @@
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="websiteContainer" styleName="contacts">
                 <i class="fa fa-globe"></i>
-                <a href="#" ui:field="website"></a>
+                <a href="#" target="_blank" ui:field="website"></a>
             </g:HTMLPanel>
         </div>
 

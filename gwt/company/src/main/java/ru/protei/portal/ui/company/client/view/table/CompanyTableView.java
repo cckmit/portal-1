@@ -160,10 +160,14 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         return wrapper;
     }
 
-    private Element buildAnchorElement(String link){
+    private Element buildAnchorElement(String href){
         Element anchor = DOM.createAnchor();
-        anchor.setPropertyString("href", link);
-        anchor.setInnerText(link);
+        anchor.setInnerText(href);
+        if ( !href.startsWith("http://") && !href.startsWith("htts://") ) {
+            href = "http://" + href;
+        }
+        anchor.setPropertyString("href", href);
+        anchor.setPropertyString("target", "_blank");
         return anchor;
     }
 
