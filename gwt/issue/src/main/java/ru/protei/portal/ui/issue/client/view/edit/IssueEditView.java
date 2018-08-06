@@ -275,6 +275,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
+    public HasEnabled saveEnabled() {
+        return saveButton;
+    }
+
+    @Override
     public void refreshFooterBtnPosition() {
         Scheduler.get().scheduleDeferred(() -> {
             int wHeight = Window.getClientHeight();

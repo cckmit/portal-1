@@ -121,14 +121,18 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         fillIssueObject(issue);
 
+        view.saveEnabled().setEnabled(false);
+
         issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
             @Override
             public void onError(Throwable throwable) {
+                view.saveEnabled().setEnabled(true);
                 fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
             public void onSuccess(CaseObject caseObject) {
+                view.saveEnabled().setEnabled(true);
                 if (!isNew(issue)) {
                     fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
                 } else {
@@ -283,6 +287,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
+
+        view.saveEnabled().setEnabled(true);
 
         view.refreshFooterBtnPosition();
     }
