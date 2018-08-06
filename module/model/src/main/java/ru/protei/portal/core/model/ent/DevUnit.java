@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +49,13 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     @JdbcOneToMany(table = "DevUnitSubscription", localColumn = "id", remoteColumn = "dev_unit_id" )
     private List<DevUnitSubscription> subscriptions;
+
+    @JdbcManyToMany(localLinkColumn = "CHILD_ID", linkTable = "dev_unit_children", remoteLinkColumn = "DUNIT_ID")
+    private List<DevUnit> parents;
+
+    @JdbcManyToMany(localLinkColumn = "DUNIT_ID", linkTable = "dev_unit_children", remoteLinkColumn = "CHILD_ID")
+    private List<DevUnit> children;
+
 
     public static DevUnit fromProductShortView(ProductShortView productShortView){
         if(productShortView == null)
@@ -172,6 +180,36 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return En_DevUnitType.forId(this.typeId);
     }
 
+    public DevUnit getParent() {
+        return parents == null || parents.size() == 0 ? null : parents.get(0);
+    }
+
+    public void setParent(DevUnit parent) {
+        if (parents == null) {
+            parents = new ArrayList<>();
+        } else {
+            parents.clear();
+        }
+        if (parent != null) {
+            parents.add(parent);
+        }
+    }
+
+    public List<DevUnit> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<DevUnit> children) {
+        if (this.children == null) {
+            this.children = new ArrayList<>();
+        }
+        if (children == null) {
+            this.children.clear();
+        } else {
+            this.children = children;
+        }
+    }
+
     @Override
     public String getAuditType() {
         return "DevUnit";
@@ -192,6 +230,14 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     public void setSubscriptions(List<DevUnitSubscription> subscriptions) {
         this.subscriptions = subscriptions;
+    }
+
+    public boolean isProduct() {
+        return En_DevUnitType.PRODUCT.equals(getType());
+    }
+
+    public boolean isComponent() {
+        return En_DevUnitType.COMPONENT.equals(getType());
     }
 
     @Override

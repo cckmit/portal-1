@@ -184,9 +184,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.1 - CRM-255 Замечания 1-го релиза по SiteFolder
  *            CRM-266 Ссылка с сайтом компании работает некорректно
  * 4.0.63.2 - CRM-247 Ноый CRM: не корректно сохраняется текст в описании
+ * 4.0.63.3 - CRM-220 Для продукта и компонента иметь возможность указывать дочерние компоненты
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.2";
+        return "4.0.63.3";
     }
 }

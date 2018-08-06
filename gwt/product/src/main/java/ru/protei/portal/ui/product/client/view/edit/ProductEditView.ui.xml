@@ -2,25 +2,31 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
-             xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'>
+             xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'
+             xmlns:product='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.product'
+             xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
         <div class="body">
-            <div class="grid">
-                <div class="form-group col-xs-10">
-                    <label><ui:text from="{lang.productName}"/></label>
+            <div class="grid grid-indent">
+                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-7">
+                    <label ui:field="nameLabel"><ui:text from="{lang.productName}"/></label>
                     <div class="panelField verifiable">
                         <i ui:field="verifiableIcon"></i>
                         <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </div>
-                </div>
+                </g:HTMLPanel>
+                <g:HTMLPanel ui:field="productContainer" styleName="form-group col-xs-3">
+                    <label>
+                        <ui:text from="{lang.product}"/>
+                    </label>
+                    <product:ProductButtonSelector ui:field="product" validation="false" defaultValue="{lang.selectProduct}"/>
+                </g:HTMLPanel>
                 <div class="form-group col-xs-2">
-                    <div class="form-group col-xs-12 p-l-10 m-b-0">
-                        <label><ui:text from="{lang.productType}"/></label>
-                    </div>
-                    <div class="form-group col-xs-12 p-l-10 m-b-0 du-selector-inline">
+                    <label><ui:text from="{lang.productType}"/></label>
+                    <div class="form-group col-xs-12 m-b-0 du-selector-inline">
                         <typebtn:ProductTypeBtnGroup ui:field="type"/>
                     </div>
                 </div>
@@ -30,17 +36,22 @@
                     <g:TextArea ui:field="info" styleName="input-field description" />
                 </div>
 
+                <g:HTMLPanel ui:field="componentsContainer" styleName="form-group col-xs-12">
+                    <label><ui:text from="{lang.components}"/></label>
+                    <component:ComponentMultiSelector styleName="components-selector" ui:field="components"/>
+                </g:HTMLPanel>
+
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.companySubscription}"/></label>
                 </div>
 
-                <list:SubscriptionList ui:field="subscriptions" />
+                <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-xs-12" />
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="stateBtn" styleName="btn" text="{lang.productToArchive}"></g:Button>
-            <g:Button ui:field="saveBtn" styleName="btn btn-success" text="{lang.buttonSave}"></g:Button>
-            <g:Button ui:field="cancelBtn" styleName="btn btn-white" text="{lang.buttonCancel}"></g:Button>
+            <g:Button ui:field="stateBtn" styleName="btn btn-danger" text="{lang.productToArchive}"/>
+            <g:Button ui:field="saveBtn" styleName="btn btn-success" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelBtn" styleName="btn btn-white" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 

@@ -34,6 +34,10 @@ import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentModel;
+import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductModel;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.activity.section.AbstractSectionItemView;
 import ru.protei.winter.web.common.client.view.section.SectionItemView;
@@ -57,9 +61,6 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractContactItemListView.class ).to( ContactItemListView.class );
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
 
-        bind( CompanyModel.class ).asEagerSingleton();
-        bind( EmployeeModel.class ).asEagerSingleton();
-
         bind( DateFormatter.class ).in( Singleton.class );
 
         bind( AbstractPagerView.class ).to( PagerView.class );
@@ -71,12 +72,20 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractConfirmDialogView.class ).to( ConfirmDialogView.class ).in( Singleton.class );
 
         bind( PolicyService.class ).asEagerSingleton();
-        bind( PrivilegeModel.class ).asEagerSingleton();
         bind( CaseLinkProvider.class ).asEagerSingleton();
 
         bind( PathItemActivity.class ).asEagerSingleton();
         bind( AbstractPathItemListView.class ).to( PathItemListView.class );
         bind( AbstractPathItemView.class ).to( PathItemView.class );
+
+        // Models
+        bind( CompanyModel.class ).asEagerSingleton();
+        bind( EmployeeModel.class ).asEagerSingleton();
+        bind( PrivilegeModel.class ).asEagerSingleton();
+        bind( DevUnitModel.class ).asEagerSingleton();
+        bind( ComponentModel.class ).asEagerSingleton();
+        bind( ProductModel.class ).asEagerSingleton();
+        bind( ProductDirectionModel.class ).asEagerSingleton();
 
         requestStaticInjection(RequestCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);

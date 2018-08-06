@@ -10,7 +10,8 @@
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'
-             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list">
+             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list"
+             xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
@@ -58,7 +59,7 @@
                     <label>
                         <ui:text from="{lang.issueProduct}"/>
                     </label>
-                    <product:ProductButtonSelector ui:field="product" validation="false"/>
+                    <devunit:DevUnitButtonSelector ui:field="product" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-3">

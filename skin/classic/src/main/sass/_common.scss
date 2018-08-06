@@ -3200,3 +3200,23 @@ div.select2-container {
   font-size: 0.7em;
   color: gray;
 }
+
+.components-selector {
+  div.select2-container {
+    border: 0 !important;
+    ul.select2-choices {
+      padding-left: 0;
+      margin-bottom: 5px;
+      li.select2-search-choice {
+        display: inline !important;
+        padding-right: 10px;
+      }
+    }
+    div.select2-button {
+      button {
+        background: teal;
+        color: white;
+      }
+    }
+  }
+}

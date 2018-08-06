@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.selector.product;
+package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * Мультиселектор продуктов
  */
-public class ProductMultiSelector extends MultipleInputSelector< ProductShortView > implements ModelSelector< ProductShortView > {
+public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements ModelSelector< ProductShortView > {
 
     @Inject
-    public void init( ProductModel model, Lang lang ) {
+    public void init(DevUnitModel model, Lang lang ) {
         model.subscribe( this );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
