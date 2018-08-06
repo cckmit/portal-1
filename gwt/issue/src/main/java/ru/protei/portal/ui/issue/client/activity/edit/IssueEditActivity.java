@@ -179,19 +179,29 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.initiatorState().setEnabled(companyOption != null);
         view.initiatorUpdateCompany(companyOption);
-        view.initiator().setValue(null);
 
         if ( companyOption == null ) {
             setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(null, lang.issueCompanySubscriptionNeedSelectCompany()));
+            view.initiator().setValue(null);
         } else {
-            companyService.getCompanySubscription(companyOption.getId(), new ShortRequestCallback<List<CompanySubscription>>()
+            Long selectedCompanyId = companyOption.getId();
+            companyService.getCompanySubscription(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
                     .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
 
-            companyService.getCompanyCaseStates(companyOption.getId(), new ShortRequestCallback<List<CaseState>>()
+            companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
                     .setOnSuccess(caseStates -> {
                         view.setStateFilter(caseStateFilter.makeFilter(caseStates));
                         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
                     }));
+
+            Profile profile = policyService.getProfile();
+            PersonShortView initiator = null;
+            if ( issue.getInitiator() != null && Objects.equals(issue.getInitiator().getCompanyId(), selectedCompanyId)) {
+                initiator = PersonShortView.fromPerson(issue.getInitiator());
+            } else if ( profile.getCompany() != null && Objects.equals(profile.getCompany().getId(), selectedCompanyId)) {
+                initiator = new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
+            }
+            view.initiator().setValue(initiator);
         }
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
@@ -286,7 +296,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
         onCompanyChanged();
 
-        view.initiator().setValue( decideInitiator(issue) );
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
@@ -314,12 +323,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
 
     private boolean validateView() {
-        boolean isFieldsValid = view.nameValidator().isValid() &&
-                view.stateValidator().isValid() &&
-                view.importanceValidator().isValid() &&
-                view.companyValidator().isValid();
-
-        if(!isFieldsValid) return false;
+        if(view.company().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
 
         if(!En_CaseState.CREATED.equals(view.state().getValue()) && view.manager().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
@@ -328,6 +335,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if(!En_CaseState.CREATED.equals(view.state().getValue()) && view.product().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
+        boolean isFieldsValid = view.nameValidator().isValid() &&
+                view.stateValidator().isValid() &&
+                view.importanceValidator().isValid() &&
+                view.companyValidator().isValid();
+
+        if(!isFieldsValid) {
+            fireEvent(new NotifyEvents.Show(lang.errSaveIssueFieldsInvalid(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
@@ -341,14 +358,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         issue.getAttachments().addAll(attachments);
         issue.setAttachmentExists(true);
-    }
-
-    private PersonShortView decideInitiator(CaseObject issue) {
-        if (isNew(issue)) {
-            Profile profile = policyService.getProfile();
-            return new PersonShortView(profile.getShortName(), profile.getId(), profile.isFired());
-        }
-        return PersonShortView.fromPerson(issue.getInitiator());
     }
 
     private boolean isNew(CaseObject issue) {

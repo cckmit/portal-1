@@ -1180,4 +1180,8 @@ public interface Lang extends Messages, ContactItemLang {
     String componentName();
 
     String components();
+
+    String errSaveIssueNeedSelectCompany();
+
+    String errSaveIssueFieldsInvalid();
 }
