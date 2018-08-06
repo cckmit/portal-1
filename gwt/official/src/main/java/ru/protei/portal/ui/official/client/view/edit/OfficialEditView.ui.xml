@@ -13,7 +13,7 @@
                         <regionselector:RegionButtonSelector ui:field="region" header="{lang.officialRegion}"/>
                     </div>
                     <div class="form-group col-xs-12 col-xs-6">
-                        <productselector:ProductButtonSelector ui:field="product" header="{lang.officialTableProduct}"/>
+                        <productselector:devunit.DevUnitButtonSelector ui:field="product" header="{lang.officialTableProduct}"/>
                     </div>
                     <div class="form-group col-xs-12">
                         <label>

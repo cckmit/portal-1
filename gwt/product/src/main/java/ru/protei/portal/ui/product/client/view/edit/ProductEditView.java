@@ -17,14 +17,14 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditActivity;
 import ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView;
-import ru.protei.portal.ui.product.client.widget.selector.ComponentMultiSelector;
-import ru.protei.portal.ui.product.client.widget.selector.ProductButtonSelector;
 import ru.protei.portal.ui.product.client.widget.type.ProductTypeBtnGroup;
 
 import java.util.List;
@@ -146,7 +146,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @UiHandler( "type" )
     public void onTypeChanged(ValueChangeEvent<En_DevUnitType> event) {
-        setIsProduct(event.getValue().equals(En_DevUnitType.PRODUCT));
+        setIsProduct(En_DevUnitType.PRODUCT.equals(event.getValue()));
     }
 
     private void checkName ()

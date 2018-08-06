@@ -1,9 +1,8 @@
-package ru.protei.portal.ui.product.client.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
@@ -12,7 +11,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class DevUnitModel {
+public abstract class BaseModel {
 
     protected abstract void failedToLoad();
 
@@ -47,7 +46,7 @@ public abstract class DevUnitModel {
     }
 
     @Inject
-    Lang lang;
+    public Lang lang;
     @Inject
     ProductControllerAsync productService;
 

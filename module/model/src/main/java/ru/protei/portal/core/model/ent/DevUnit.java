@@ -233,11 +233,11 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     }
 
     public boolean isProduct() {
-        return getType().equals(En_DevUnitType.PRODUCT);
+        return En_DevUnitType.PRODUCT.equals(getType());
     }
 
     public boolean isComponent() {
-        return getType().equals(En_DevUnitType.COMPONENT);
+        return En_DevUnitType.COMPONENT.equals(getType());
     }
 
     @Override

@@ -22,7 +22,7 @@
             </div>
 
             <div class="form-group col-xs-12">
-                <productselector:ProductButtonSelector ui:field="product" header="{lang.issueProduct}"/>
+                <productselector:devunit.DevUnitButtonSelector ui:field="product" header="{lang.issueProduct}"/>
             </div>
 
             <div class="form-group col-xs-12">

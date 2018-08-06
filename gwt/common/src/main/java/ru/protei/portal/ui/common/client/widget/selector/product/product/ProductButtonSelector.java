@@ -1,7 +1,6 @@
-package ru.protei.portal.ui.product.client.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.product.product;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
@@ -35,3 +34,4 @@ public class ProductButtonSelector extends ButtonSelector<ProductShortView> impl
 
     private String defaultValue = null;
 }
+

@@ -75,8 +75,8 @@
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.projectProducts}"/></legend>
-                <productselector:ProductMultiSelector ui:field="products"
-                                                      addStyleNames="form-group col-xs-12"/>
+                <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                                          addStyleNames="form-group col-xs-12"/>
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.projectState}"/></legend>

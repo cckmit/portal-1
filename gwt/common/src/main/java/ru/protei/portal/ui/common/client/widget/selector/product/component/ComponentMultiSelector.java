@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.product.client.widget.selector;
+package ru.protei.portal.ui.common.client.widget.selector.product.component;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.ProductShortView;
