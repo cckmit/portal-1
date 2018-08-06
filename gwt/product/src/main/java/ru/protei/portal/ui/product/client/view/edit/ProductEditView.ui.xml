@@ -37,7 +37,7 @@
 
                 <g:HTMLPanel ui:field="componentsContainer" styleName="form-group col-xs-12">
                     <label><ui:text from="{lang.components}"/></label>
-                    <selector:ComponentMultiSelector styleName="" ui:field="components"/>
+                    <selector:ComponentMultiSelector styleName="components-selector" ui:field="components"/>
                 </g:HTMLPanel>
 
                 <div class="form-group col-xs-12">

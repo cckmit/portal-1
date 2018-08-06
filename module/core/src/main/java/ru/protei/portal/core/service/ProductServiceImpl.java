@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.DevUnitChildRef;
 import ru.protei.portal.core.model.ent.DevUnitSubscription;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -103,32 +102,8 @@ public class ProductServiceImpl implements ProductService {
 
         product = helper.fillAll( product );
 
-        if (product.isComponent() && product.getParentId() != null) {
-            CoreResponse<ProductShortView> parent = getProductShortView(token, product.getParentId());
-            if (parent.isOk()) {
-                product.setParent(parent.getData());
-            }
-        }
-
         return new CoreResponse<DevUnit>().success(product);
     }
-
-    @Override
-    public CoreResponse<ProductShortView> getProductShortView(AuthToken token, Long id) {
-
-        if (id == null) {
-            return new CoreResponse<ProductShortView>().error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        DevUnit product = devUnitDAO.get(id);
-
-        if (product == null) {
-            return new CoreResponse<ProductShortView>().error(En_ResultStatus.NOT_FOUND);
-        }
-
-        return new CoreResponse<ProductShortView>().success(product.toProductShortView());
-    }
-
 
     @Override
     @Transactional
@@ -153,7 +128,8 @@ public class ProductServiceImpl implements ProductService {
 
         updateProductSubscriptions( product.getId(), product.getSubscriptions() );
 
-        updateProductParent(product);
+        helper.persist(product, "parents");
+        helper.persist(product, "children");
 
         return new CoreResponse<Long>().success(productId);
 
@@ -180,12 +156,14 @@ public class ProductServiceImpl implements ProductService {
         if (!Objects.equals(oldProduct.getType(), product.getType())) {
             if (product.isProduct()) {
                 devUnitChildRefDAO.removeByChildId(product.getId());
+                product.setParent(null);
             } else {
                 devUnitChildRefDAO.removeByParentId(product.getId());
+                product.setChildren(null);
             }
         }
-
-        updateProductParent(product);
+        helper.persist(product, "parents");
+        helper.persist(product, "children");
 
         return new CoreResponse<Boolean>().success(result);
     }
@@ -257,25 +235,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return true;
-    }
-
-    private void updateProductParent(DevUnit product) {
-        if (product.isProduct()) {
-            return;
-        }
-
-        ProductShortView parent = product.getParent();
-
-        if (parent == null || !Objects.equals(parent.getId(), product.getParentId())) {
-            devUnitChildRefDAO.removeByChildId(product.getId());
-        }
-
-        if (parent != null && parent.getId() != null) {
-            DevUnitChildRef devUnitChildRef = new DevUnitChildRef();
-            devUnitChildRef.setUnitId(parent.getId());
-            devUnitChildRef.setChildId(product.getId());
-            devUnitChildRefDAO.persist(devUnitChildRef);
-        }
     }
 
     private final static Logger log = LoggerFactory.getLogger( ProductService.class );
