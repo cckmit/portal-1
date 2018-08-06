@@ -298,6 +298,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         initiator.setAddButtonVisible(isVisible);
     }
 
+    @Override
+    public void applyCompanyValueIfOneOption() {
+        company.applyValueIfOneOption();
+    }
+
     private void setFooterFixed(boolean isFixed) {
         if (isFixed) {
             root.addStyleName(UiConstants.Styles.FOOTER);
