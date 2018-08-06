@@ -271,13 +271,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
         }
 
-        Company initiatorCompany = issue.getInitiatorCompany();
-        if ( initiatorCompany == null ) {
-            initiatorCompany = policyService.getUserCompany();
+        if (isNew(issue)) {
+            view.applyCompanyValueIfOneOption();
+        } else {
+            Company initiatorCompany = issue.getInitiatorCompany();
+            if ( initiatorCompany == null ) {
+                initiatorCompany = policyService.getUserCompany();
+            }
+            view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         }
-
-        view.company().setValue(EntityOption.fromCompany(initiatorCompany));
         onCompanyChanged();
+
         view.initiator().setValue( decideInitiator(issue) );
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );

@@ -82,4 +82,5 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void initiatorSelectorAllowAddNew(boolean b);
 
+    void applyCompanyValueIfOneOption();
 }
