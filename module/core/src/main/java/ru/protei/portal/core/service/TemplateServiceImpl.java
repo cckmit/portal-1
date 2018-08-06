@@ -52,13 +52,6 @@ public class TemplateServiceImpl implements TemplateService {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
 
-        if (newState != null) {
-            newState.setInfo(escapeText(newState.getInfo()));
-        }
-        if (oldState != null) {
-            oldState.setInfo(escapeText(oldState.getInfo()));
-        }
-
         Map<String, Object> templateModel = new HashMap<>();
 
         templateModel.put( "TextUtils", new TextUtils() );
@@ -72,6 +65,9 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "manager", newState.getManager() );
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
         templateModel.put( "recipients", recipients );
+
+        templateModel.put( "caseInfo", newState == null ? null : escapeText(newState.getInfo()) );
+        templateModel.put( "oldCaseInfo", oldState == null ? null : escapeText(oldState.getInfo()) );
 
         templateModel.put( "productChanged", event.isProductChanged() );
         templateModel.put( "importanceChanged", event.isCaseImportanceChanged() );
