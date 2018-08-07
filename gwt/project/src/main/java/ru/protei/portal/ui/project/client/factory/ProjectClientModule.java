@@ -10,6 +10,10 @@ import ru.protei.portal.ui.project.client.activity.table.ProjectTableActivity;
 import ru.protei.portal.ui.project.client.view.filter.ProjectFilterView;
 import ru.protei.portal.ui.project.client.view.preview.ProjectPreviewView;
 import ru.protei.portal.ui.project.client.view.table.ProjectTableView;
+import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
+import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
+import ru.protei.portal.ui.project.client.view.widget.team.item.AbstractTeamSelectorItem;
+import ru.protei.portal.ui.project.client.view.widget.team.item.TeamSelectorItem;
 
 
 /**
@@ -26,6 +30,9 @@ public class ProjectClientModule extends AbstractGinModule {
 
         bind( ProjectPreviewActivity.class).asEagerSingleton();
         bind( AbstractProjectPreviewView.class ).to( ProjectPreviewView.class );
+
+        bind( AbstractTeamSelector.class ).to( TeamSelector.class );
+        bind( AbstractTeamSelectorItem.class ).to( TeamSelectorItem.class );
 
 //        bind( IssueEditActivity.class ).asEagerSingleton();
 //        bind(AbstractIssueEditView.class).to(IssueEditView.class);
