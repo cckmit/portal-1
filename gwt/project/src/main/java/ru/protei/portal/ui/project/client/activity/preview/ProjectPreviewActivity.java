@@ -19,8 +19,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.stream.Collectors;
 
 /**
  * Активность превью проекта
@@ -112,8 +112,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.state().setValue( value.getState() );
         view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );
-        view.headManager().setValue( value.getHeadManager() );
-        view.deployManagers().setValue( new HashSet<>( value.getManagers() ) );
+        view.team().setValue( new HashSet<>( value.getTeam() ) );
         view.details().setText( value.getDescription() == null ? "" : value.getDescription() );
         view.region().setValue( value.getRegion() );
         Company customer = value.getCustomer();
@@ -128,8 +127,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     private void readView() {
         project.setName( view.getName() );
         project.setProductDirection( EntityOption.fromProductDirectionInfo( view.direction().getValue() ) );
-        project.setHeadManager( view.headManager().getValue() );
-        project.setManagers( view.deployManagers().getValue().stream().collect( Collectors.toList() ) );
+        project.setTeam( new ArrayList<>(view.team().getValue()) );
         project.setState( view.state().getValue() );
         project.setDescription( view.details().getText() );
         project.setRegion( view.region().getValue() );

@@ -5,10 +5,11 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
-             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
 >
+
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview project">
             <div class="col-xs-12">
@@ -57,35 +58,30 @@
                     </div>
                 </div>
             </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.projectManagers}"/></legend>
-                <div class="col-xs-6">
-                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectDeployManagers}"/></label>
-                    <div class="col-xs-12">
-                        <person:EmployeeMultiSelector ui:field="deployManager" />
-                    </div>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectHeadManager}"/></label>
 
-                    <div class="col-xs-12">
-                        <person:EmployeeButtonSelector ui:field="headManager" />
-                    </div>
-                </div>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.projectTeam}"/></legend>
+
             </fieldset>
+
             <fieldset class="header">
                 <legend><ui:text from="{lang.projectProducts}"/></legend>
                 <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                           addStyleNames="form-group col-xs-12"/>
             </fieldset>
+
             <fieldset class="header">
                 <legend><ui:text from="{lang.projectState}"/></legend>
                 <div class="col-xs-2 fa-3x">
                     <state:RegionStateIconSelector ui:field="projectState" />
                 </div>
             </fieldset>
-            <legend><ui:text from="{lang.comments}"/></legend>
-            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.comments}"/></legend>
+                <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+            </fieldset>
+
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

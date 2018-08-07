@@ -6,6 +6,9 @@ import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -16,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -31,6 +35,7 @@ import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSe
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -41,7 +46,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        headManager.setDefaultValue( "Выберите менеджера" );
     }
 
     @Override
@@ -94,13 +98,29 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public HasValue< PersonShortView > headManager() {
-        return headManager;
-    }
+    public HasValue<Set<PersonProjectMemberView>> team() {
+        return new HasValue<Set<PersonProjectMemberView>>() {
+            @Override
+            public Set<PersonProjectMemberView> getValue() {
+                return new HashSet<>();
+            }
+            @Override
+            public void setValue(Set<PersonProjectMemberView> value) {
 
-    @Override
-    public HasValue< Set< PersonShortView > > deployManagers() {
-        return deployManager;
+            }
+            @Override
+            public void setValue(Set<PersonProjectMemberView> value, boolean fireEvents) {
+
+            }
+            @Override
+            public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<PersonProjectMemberView>> handler) {
+                return null;
+            }
+            @Override
+            public void fireEvent(GwtEvent<?> event) {
+
+            }
+        };
     }
 
     @Override
@@ -162,15 +182,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         fireProjectChanged();
     }
 
-    @UiHandler( "headManager" )
-    public void onHedaManagerChanged( ValueChangeEvent<PersonShortView> value ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( "deployManager" )
+    /*@UiHandler( "deployManager" )
     public void onDeployManagersChanged( ValueChangeEvent<Set<PersonShortView>> value ) {
         fireProjectChanged();
-    }
+    }*/
 
     @UiHandler( "projectState" )
     public void onStateChanged( ValueChangeEvent<En_RegionState> event ) {
@@ -216,13 +231,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement creationDate;
 
-    @Inject
+    /*@Inject
     @UiField( provided = true )
-    EmployeeButtonSelector headManager;
-
-    @Inject
-    @UiField( provided = true )
-    EmployeeMultiSelector deployManager;
+    EmployeeMultiSelector deployManager;*/
 
     @UiField
     TextArea details;

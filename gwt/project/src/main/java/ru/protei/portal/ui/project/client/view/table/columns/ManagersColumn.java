@@ -3,9 +3,9 @@ package ru.protei.portal.ui.project.client.view.table.columns;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.List;
@@ -26,18 +26,17 @@ public class ManagersColumn extends ClickColumn< ProjectInfo > {
         cell.addClassName( "managers" );
 
         StringBuilder content = new StringBuilder();
-        List<PersonShortView> managers = value.getManagers();
-        if ( managers != null ) {
-            content.append( "<b>" );
-            for ( PersonShortView manager : managers ) {
-                content.append( manager.getDisplayShortName() ).append( "<br/>" );
-            }
-            content.append( "</b>" );
-        }
 
-        PersonShortView headManager = value.getHeadManager();
-        if ( headManager != null ) {
-            content.append( headManager.getDisplayShortName() );
+        List<PersonProjectMemberView> team = value.getTeam();
+        if (team != null) {
+            content.append("<b>");
+            team.stream()
+                    .map(ppm -> roleTypeLang.getName(ppm.getRole()) + ": " + ppm.getDisplayShortName())
+                    .forEach(s -> content
+                            .append(s)
+                            .append("<br/>")
+                    );
+            content.append("</b>");
         }
 
         cell.setInnerHTML( content.toString() );
@@ -45,4 +44,6 @@ public class ManagersColumn extends ClickColumn< ProjectInfo > {
 
     @Inject
     Lang lang;
+    @Inject
+    En_PersonRoleTypeLang roleTypeLang;
 }

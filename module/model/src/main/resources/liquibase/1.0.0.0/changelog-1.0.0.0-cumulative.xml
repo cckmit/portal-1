@@ -68,4 +68,5 @@
   <include file="2018-07-27-equipment-remove-dev-stage-column.xml" relativeToChangelogFile="true"/>
   <include file="2018-08-01-decimal-number-remove-entity-type-column.xml" relativeToChangelogFile="true"/>
   <include file="2018-08-03-add-customer-pending-state.xml" relativeToChangelogFile="true"/>
+  <include file="2018-08-07-change-project-roles.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
