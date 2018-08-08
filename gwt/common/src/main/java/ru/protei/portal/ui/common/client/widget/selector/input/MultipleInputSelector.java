@@ -66,6 +66,18 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         clearValues(true );
     }
 
+    @Override
+    protected void updateAvailableOptionsCount(int available) {
+        if (addBtnText == null) {
+            return;
+        }
+        if (available < 0) {
+            add.setInnerText( addBtnText );
+            return;
+        }
+        add.setInnerText( addBtnText + " (" + available + ")" );
+    }
+
     public void fillSelectorView( List<String> selectedValues ) {
         itemContainer.clear();
         itemViews.clear();
@@ -77,6 +89,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     }
 
     public void setAddName( String string ) {
+        addBtnText = string;
         add.setInnerText( string );
         add.removeClassName( "caret" );
     }
@@ -148,6 +161,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
     List< SelectItemView > itemViews = new ArrayList<SelectItemView >();
 
+    private String addBtnText = null;
     private boolean isEnabled = true;
 
     interface SelectorUiBinder extends UiBinder< HTMLPanel, MultipleInputSelector > {}

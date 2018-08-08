@@ -23,6 +23,9 @@ public abstract class MultipleSelector<T>
         extends Composite
         implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>
 {
+
+    protected abstract void updateAvailableOptionsCount(int available);
+
     public void setValue( Set<T> values ) {
         setValue( values, false );
     }
@@ -82,9 +85,30 @@ public abstract class MultipleSelector<T>
         popup.hide();
     }
 
+    public void setSelectedLimit(int selectedLimit) {
+        this.selectedLimit = selectedLimit;
+        updateAvailableOptionsCount();
+    }
+
+    public void updateAvailableOptionsCount() {
+        if (selectedLimit > 0) {
+            updateAvailableOptionsCount(selectedLimit - selected.size());
+        } else {
+            updateAvailableOptionsCount(-1);
+        }
+    }
+
     @Override
     public void onValueChange( ValueChangeEvent< Boolean > event ) {
         T value = itemViewToModel.get( event.getSource() );
+
+        if (selectedLimit > 0 && event.getValue() && selected.size() >= selectedLimit) {
+            SelectableItem item = itemToViewModel.get(value);
+            if (item != null) {
+                item.setValue(false, true);
+            }
+            return;
+        }
 
         if ( hasAnyValue ) {
             selectAnyValue( value == null );
@@ -94,6 +118,12 @@ public abstract class MultipleSelector<T>
             changeSelected(event.getValue(), value);
         }
         getSelectedItemNamesAndFillSelectorView();
+
+        if (selectedLimit > 0) {
+            updateAvailableOptionsCount(selectedLimit - selected.size());
+        }
+
+        updateAvailableOptionsCount();
 
         ValueChangeEvent.fire( this, selected );
     }
@@ -240,6 +270,7 @@ public abstract class MultipleSelector<T>
     @Inject
     Provider<SelectableItem> itemFactory;
 
+    private int selectedLimit = 0;
     protected boolean hasAnyValue = false;
     private IsWidget relative;
     private Set<T> selected = new HashSet<>();

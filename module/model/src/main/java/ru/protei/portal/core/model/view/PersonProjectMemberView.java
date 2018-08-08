@@ -32,4 +32,13 @@ public class PersonProjectMemberView extends PersonShortView {
         }
         return new PersonProjectMemberView(person.getDisplayShortName(), person.getId(), person.isFired(), role);
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof PersonProjectMemberView) {
+            PersonProjectMemberView ppm = (PersonProjectMemberView) obj;
+            return this.role == null ? ppm.getRole() == null : ppm.getRole() != null && this.role.equals(ppm.getRole()) && super.equals(ppm);
+        }
+        return super.equals(obj);
+    }
 }

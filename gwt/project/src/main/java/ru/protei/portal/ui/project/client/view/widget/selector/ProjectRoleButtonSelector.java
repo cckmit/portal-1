@@ -13,7 +13,15 @@ public class ProjectRoleButtonSelector extends ButtonSelector<En_DevUnitPersonRo
 
     @Inject
     public void init(Lang lang, En_PersonRoleTypeLang roleTypeLang) {
-        setDisplayOptionCreator(value -> new DisplayOption(value == null ? lang.projectSelectRole() : roleTypeLang.getName(value)));
+        setDisplayOptionCreator(value -> {
+            if (value == null) {
+                return new DisplayOption(lang.projectSelectRole());
+            }
+            if (En_DevUnitPersonRoleType.HEAD_MANAGER.equals(value)) {
+                return new DisplayOption("<b>" + roleTypeLang.getName(value) + "</b>");
+            }
+            return new DisplayOption(roleTypeLang.getName(value));
+        });
     }
 
     public void fillOptions(List<En_DevUnitPersonRoleType> availableRoles) {

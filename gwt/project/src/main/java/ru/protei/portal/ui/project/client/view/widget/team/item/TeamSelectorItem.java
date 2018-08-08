@@ -73,14 +73,15 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     @UiHandler("role")
     public void onRoleChanged(ValueChangeEvent<En_DevUnitPersonRoleType> event) {
         En_DevUnitPersonRoleType roleValue = event.getValue();
+        En_DevUnitPersonRoleType previousRoleValue = model.role;
         if (roleValue == null) {
             return;
         }
-        if (roleValue.equals(model.role)) {
+        if (roleValue.equals(previousRoleValue)) {
             return;
         }
-        fireRoleChanged(model.role, roleValue);
         model.role = roleValue;
+        fireRoleChanged(previousRoleValue, roleValue);
         fireModelChanged();
         applySingleMember();
     }
@@ -91,20 +92,21 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
         if (model.members.size() == 0) {
             members.hidePopup();
         }
-        if (!applySingleMember()) {
-            fireModelChanged();
-        }
+        fireModelChanged();
     }
 
-    private boolean applySingleMember() {
-        model.singleMember = En_DevUnitPersonRoleType.HEAD_MANAGER.equals(model.role);
-        if (model.singleMember && model.members.size() > 1) {
-            Set<PersonShortView> value = new HashSet<>();
-            value.add(model.members.stream().findFirst().get());
-            members.setValue(value, true);
-            return true;
+    private void applySingleMember() {
+        if (En_DevUnitPersonRoleType.HEAD_MANAGER == model.role) {
+            members.setSelectedLimit(1);
+            if (model.members.size() > 1) {
+                Set<PersonShortView> value = new HashSet<>();
+                value.add(model.members.stream().findFirst().get());
+                members.setValue(value, true);
+                members.updateAvailableOptionsCount();
+            }
+        } else {
+            members.setSelectedLimit(0);
         }
-        return false;
     }
 
     private void fireModelChanged() {
