@@ -73,7 +73,7 @@
 
             <fieldset class="header grid grid-indent">
                 <legend><ui:text from="{lang.projectState}"/></legend>
-                <div class="col-xs-2 fa-3x">
+                <div class="col-xs-2 w-i fa-3x">
                     <state:RegionStateIconSelector ui:field="projectState" />
                 </div>
             </fieldset>
