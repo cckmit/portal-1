@@ -67,7 +67,7 @@
 
             <fieldset class="header grid grid-indent">
                 <legend><ui:text from="{lang.projectProducts}"/></legend>
-                <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"
                                           addStyleNames="form-group col-xs-12"/>
             </fieldset>
 
