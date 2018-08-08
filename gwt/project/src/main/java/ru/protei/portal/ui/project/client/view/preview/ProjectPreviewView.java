@@ -2,6 +2,7 @@ package ru.protei.portal.ui.project.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -209,7 +210,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     Element header;
 
     @UiField
-    SpanElement creationDate;
+    LabelElement creationDate;
 
     @Inject
     @UiField(provided = true)

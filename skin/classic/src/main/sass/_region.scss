@@ -131,6 +131,17 @@
 }
 
 .preview.project {
+
+  .header {
+    padding: 0;
+    width: 100%;
+  }
+
+  .h30 {
+    height: 30px;
+    line-height: 30px;
+  }
+
   input {
     font-size: 1em;
     padding: 2px;
@@ -147,7 +158,8 @@
     }
 
     &.project-name {
-      font-size: 1.5em;
+      font-size: 1.3em;
+      margin-left: -3px;
     }
   }
 
@@ -174,7 +186,7 @@
 
   .btn-selector > button.btn-white {
     border: 1px solid white;
-    margin-top: -3px;
+    box-sizing: border-box;
 
     span.caret {
       display: none;
