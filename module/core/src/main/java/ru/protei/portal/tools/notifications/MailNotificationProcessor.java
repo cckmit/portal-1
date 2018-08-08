@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
@@ -87,7 +88,12 @@ public class MailNotificationProcessor {
 
         List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
 
-        CoreResponse<List<CaseComment>> comments = caseService.getCaseCommentList(null, caseObject.getId());
+        CoreResponse<List<CaseComment>> comments = caseService.getCaseCommentList(
+                null,
+                event.getCaseComment() == null ?
+                        new CaseCommentQuery(caseObject.getId()) :
+                        new CaseCommentQuery(caseObject.getId(), event.getCaseComment().getCreated())
+        );
         if (comments.isError()) {
             log.error("Failed to retrieve comments for caseId={}", caseObject.getId());
             return;

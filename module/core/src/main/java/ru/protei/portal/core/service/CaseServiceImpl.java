@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
@@ -253,6 +254,18 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId ) {
         List<CaseComment> list = caseCommentDAO.getCaseComments( caseId );
+
+        if ( list == null )
+            return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        jdbcManyRelationsHelper.fill(list, "caseAttachments");
+
+        return new CoreResponse<List<CaseComment>>().success(list);
+    }
+
+    @Override
+    public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, CaseCommentQuery query ) {
+        List<CaseComment> list = caseCommentDAO.getCaseComments( query );
 
         if ( list == null )
             return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
