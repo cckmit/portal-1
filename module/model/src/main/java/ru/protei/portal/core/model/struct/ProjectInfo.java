@@ -192,7 +192,7 @@ public class ProjectInfo extends AuditableObject {
 
         projectInfo.setTeam(new ArrayList<>());
         if (project.getMembers() != null) {
-            List<En_DevUnitPersonRoleType> projectRoles = Arrays.asList(En_DevUnitPersonRoleType.getProjectRoles());
+            List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
             project.getMembers().stream()
                     .filter(member -> projectRoles.contains(member.getRole()))
                     .map(member -> PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()))

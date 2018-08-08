@@ -2682,6 +2682,32 @@ a {
   }
 }
 
+/**** PROJECTS ****/
+
+.autoadd-ts-group {
+
+  ul.select2-choices {
+    padding-left: 8px !important;
+  }
+
+  .btn-selector {
+    border: 1px solid #fff;
+
+    button.btn-white {
+      margin-top: initial !important;
+    }
+  }
+
+  .btn.btn-flat:hover {
+    border: 1px solid #c5cad0;
+    background-color: white;
+  }
+
+  .select2-search-choice {
+    margin: 3px 5px 3px 0 !important;
+  }
+}
+
 /****************/
 
 .text-danger {

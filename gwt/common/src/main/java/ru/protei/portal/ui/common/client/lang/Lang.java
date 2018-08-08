@@ -1214,4 +1214,8 @@ public interface Lang extends Messages, ContactItemLang {
     String personCustomerIntegration();
 
     String projectTeam();
+
+    String projectSelectRole();
+
+    String membersCount();
 }

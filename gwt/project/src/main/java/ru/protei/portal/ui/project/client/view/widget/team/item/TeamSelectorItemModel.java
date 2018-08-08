@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.project.client.view.widget.team.item;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.PersonShortView;
 
@@ -9,17 +8,27 @@ import java.util.Set;
 
 public class TeamSelectorItemModel {
 
-    public HasWidgets parent;
     public En_DevUnitPersonRoleType role;
     public Set<PersonShortView> members;
+    public boolean allowEmptyMembers;
+    public boolean singleMember;
 
-    public TeamSelectorItemModel(HasWidgets parent, En_DevUnitPersonRoleType role) {
-        this(parent, role, new HashSet<>());
+    public TeamSelectorItemModel(En_DevUnitPersonRoleType role) {
+        this(role, new HashSet<>());
     }
 
-    public TeamSelectorItemModel(HasWidgets parent, En_DevUnitPersonRoleType role, Set<PersonShortView> members) {
-        this.parent = parent;
+    public TeamSelectorItemModel(En_DevUnitPersonRoleType role, boolean allowEmptyMembers) {
+        this(role, new HashSet<>(), allowEmptyMembers);
+    }
+
+    public TeamSelectorItemModel(En_DevUnitPersonRoleType role, Set<PersonShortView> members) {
+        this(role, members, false);
+    }
+
+    public TeamSelectorItemModel(En_DevUnitPersonRoleType role, Set<PersonShortView> members, boolean allowEmptyMembers) {
         this.role = role;
         this.members = members;
+        this.allowEmptyMembers = allowEmptyMembers;
+        this.singleMember = false;
     }
 }

@@ -212,7 +212,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<PersonProjectMemberView> toAdd = new ArrayList<>(team);
         List<Long> toRemove = new ArrayList<>();
-        List<En_DevUnitPersonRoleType> projectRoles = Arrays.asList(En_DevUnitPersonRoleType.getProjectRoles());
+        List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
 
         for (CaseMember member : caseObject.getMembers()) {
             if (!projectRoles.contains(member.getRole())) {

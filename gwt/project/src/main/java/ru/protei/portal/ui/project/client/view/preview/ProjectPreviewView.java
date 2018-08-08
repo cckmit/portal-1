@@ -34,6 +34,7 @@ import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSele
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
+import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -99,28 +100,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Override
     public HasValue<Set<PersonProjectMemberView>> team() {
-        return new HasValue<Set<PersonProjectMemberView>>() {
-            @Override
-            public Set<PersonProjectMemberView> getValue() {
-                return new HashSet<>();
-            }
-            @Override
-            public void setValue(Set<PersonProjectMemberView> value) {
-
-            }
-            @Override
-            public void setValue(Set<PersonProjectMemberView> value, boolean fireEvents) {
-
-            }
-            @Override
-            public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<PersonProjectMemberView>> handler) {
-                return null;
-            }
-            @Override
-            public void fireEvent(GwtEvent<?> event) {
-
-            }
-        };
+        return team;
     }
 
     @Override
@@ -182,10 +162,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         fireProjectChanged();
     }
 
-    /*@UiHandler( "deployManager" )
-    public void onDeployManagersChanged( ValueChangeEvent<Set<PersonShortView>> value ) {
+    @UiHandler( "team" )
+    public void onDeployManagersChanged( ValueChangeEvent<Set<PersonProjectMemberView>> value ) {
         fireProjectChanged();
-    }*/
+    }
 
     @UiHandler( "projectState" )
     public void onStateChanged( ValueChangeEvent<En_RegionState> event ) {
@@ -231,9 +211,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement creationDate;
 
-    /*@Inject
-    @UiField( provided = true )
-    EmployeeMultiSelector deployManager;*/
+    @Inject
+    @UiField(provided = true)
+    TeamSelector team;
 
     @UiField
     TextArea details;

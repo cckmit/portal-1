@@ -14,18 +14,15 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.project.client.view.widget.team.item.AbstractTeamSelectorItem;
 import ru.protei.portal.ui.project.client.view.widget.team.item.TeamSelectorItemModel;
 
 import java.util.*;
 
-public class TeamSelector extends Composite implements
-        AbstractTeamSelector,
-        HasValue<Set<PersonProjectMemberView>>, HasEnabled,
-        ValueChangeHandler<Set<PersonProjectMemberView>> {
+public class TeamSelector extends Composite implements AbstractTeamSelector, HasEnabled, HasValue<Set<PersonProjectMemberView>> {
 
-    public TeamSelector() {
+    @Inject
+    public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -36,11 +33,24 @@ public class TeamSelector extends Composite implements
 
     @Override
     public void setValue(Set<PersonProjectMemberView> value, boolean fireEvents) {
+        root.clear();
         model.clear();
-        if (value != null) {
-            value.forEach(ppm -> addItemToModel(ppm.getRole(), ppm));
+        modelToView.clear();
+        if (value != null && value.size() > 0) {
+            Set<TeamSelectorItemModel> model = new HashSet<>();
+            value.forEach(ppm -> {
+                TeamSelectorItemModel itemModel = getModelItemWithRole(model, ppm.getRole());
+                if (itemModel == null) {
+                    itemModel = new TeamSelectorItemModel(ppm.getRole());
+                    itemModel.members.add(ppm);
+                    model.add(itemModel);
+                } else {
+                    itemModel.members.add(ppm);
+                }
+            });
+            model.forEach(this::addNewItem);
         }
-        drawItems();
+        addNewEmptyItemIfNeeded();
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
@@ -54,9 +64,6 @@ public class TeamSelector extends Composite implements
         }));
         return values;
     }
-
-    @Override
-    public void onValueChange(ValueChangeEvent<Set<PersonProjectMemberView>> event) {}
 
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<PersonProjectMemberView>> handler) {
@@ -76,52 +83,88 @@ public class TeamSelector extends Composite implements
         } else {
             root.addStyleName("disabled");
         }
-
+        modelToView.values().forEach(itemView -> itemView.setEnabled(enabled));
     }
 
     @Override
-    public void onMemberAdded(En_DevUnitPersonRoleType role, PersonShortView member) {
-        addItemToModel(role, member);
-        drawItems();
-    }
-
-    @Override
-    public void onMemberRemoved(En_DevUnitPersonRoleType role, PersonShortView member) {
-        removeItemFromModel(role, member);
-        drawItems();
-    }
-
-    private void drawItems() {
-        root.clear();
-        modelToView.clear();
-        model.forEach(itemModel -> {
-            AbstractTeamSelectorItem itemView = createItemView();
-            itemView.setModel(itemModel);
-            root.add(itemView.asWidget());
-            modelToView.put(itemModel, itemView);
-        });
-    }
-
-    private void addItemToModel(En_DevUnitPersonRoleType role, PersonShortView member) {
-        TeamSelectorItemModel itemModel = getModelItemWithRole(role);
-        if (itemModel == null) {
-            itemModel = new TeamSelectorItemModel(root, role);
-            itemModel.members.add(member);
-            model.add(itemModel);
-        } else {
-            itemModel.members.add(member);
-        }
-    }
-
-    private void removeItemFromModel(En_DevUnitPersonRoleType role, PersonShortView member) {
-        TeamSelectorItemModel itemModel = getModelItemWithRole(role);
+    public void onModelChanged(TeamSelectorItemModel itemModel) {
         if (itemModel == null) {
             return;
         }
-        itemModel.members.remove(member);
-        if (itemModel.members.size() == 0) {
-            model.remove(itemModel);
+        if (!itemModel.allowEmptyMembers && itemModel.members.size() == 0) {
+            removeItem(itemModel);
+            onRoleChanged(itemModel, itemModel.role, null);
         }
+        if (itemModel.members.size() > 0) {
+            model.add(itemModel);
+            if (itemModel.allowEmptyMembers) {
+                itemModel.allowEmptyMembers = false;
+            }
+        }
+        addNewEmptyItemIfNeeded();
+        fireValueChanged();
+    }
+
+    @Override
+    public void onRoleChanged(TeamSelectorItemModel target, En_DevUnitPersonRoleType previous, En_DevUnitPersonRoleType actual) {
+        for (Map.Entry<TeamSelectorItemModel, AbstractTeamSelectorItem> entry : modelToView.entrySet()) {
+            TeamSelectorItemModel itemModel = entry.getKey();
+            AbstractTeamSelectorItem itemView = entry.getValue();
+            if (itemModel.equals(target)) {
+                continue;
+            }
+            List<En_DevUnitPersonRoleType> availableRoles = itemView.getAvailableRoles();
+            if (actual != null) {
+                availableRoles.remove(actual);
+            }
+            if (previous != null && !availableRoles.contains(previous)) {
+                availableRoles.add(previous);
+            }
+            itemView.setAvailableRoles(availableRoles);
+        }
+    }
+
+    private void fireValueChanged() {
+        ValueChangeEvent.fire(this, getValue());
+    }
+
+    private void addNewItem(TeamSelectorItemModel itemModel) {
+        List<En_DevUnitPersonRoleType> availableRoles = getAvailableRoles();
+        if (availableRoles.size() == 0) {
+            return;
+        }
+        if (itemModel.role == null || !availableRoles.contains(itemModel.role)) {
+            itemModel.role = availableRoles.get(0);
+        }
+        if (itemModel.members == null) {
+            itemModel.members = new HashSet<>();
+        }
+        AbstractTeamSelectorItem itemView = createItemView();
+        itemView.setAvailableRoles(availableRoles);
+        itemView.setModel(itemModel);
+        itemView.setEnabled(isEnabled);
+        model.add(itemModel);
+        modelToView.put(itemModel, itemView);
+        root.add(itemView.asWidget());
+    }
+
+    private void addNewEmptyItemIfNeeded() {
+        if (!isEmptyItemExists()) {
+            addNewItem(new TeamSelectorItemModel(null, true));
+        }
+    }
+
+    private void removeItem(TeamSelectorItemModel itemModel) {
+        AbstractTeamSelectorItem itemView = modelToView.get(itemModel);
+        root.remove(itemView);
+        model.remove(itemModel);
+        modelToView.remove(itemModel);
+    }
+
+    private List<En_DevUnitPersonRoleType> getAvailableRoles() {
+        List<En_DevUnitPersonRoleType> roles = En_DevUnitPersonRoleType.getProjectRoles();
+        model.forEach(itemModel -> roles.remove(itemModel.role));
+        return roles;
     }
 
     private AbstractTeamSelectorItem createItemView() {
@@ -130,13 +173,22 @@ public class TeamSelector extends Composite implements
         return itemView;
     }
 
-    private TeamSelectorItemModel getModelItemWithRole(En_DevUnitPersonRoleType role) {
+    private TeamSelectorItemModel getModelItemWithRole(Set<TeamSelectorItemModel> model, En_DevUnitPersonRoleType role) {
         for (TeamSelectorItemModel item : model) {
             if (Objects.equals(item.role, role)) {
                 return item;
             }
         }
         return null;
+    }
+
+    private boolean isEmptyItemExists() {
+        for (TeamSelectorItemModel item : model) {
+            if (item.allowEmptyMembers) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @UiField

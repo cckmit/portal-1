@@ -46,7 +46,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
             itemContainer.addStyleName( "inactive" );
         }
         caretButton.setEnabled( isEnabled );
-        clearButton.setVisible( isEnabled );
+        clearButton.setEnabled( isEnabled );
         itemViews.forEach((v) -> v.setEnabled(isEnabled));
     }
 

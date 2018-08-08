@@ -54,24 +54,24 @@ public enum En_DevUnitPersonRoleType {
         return null;
     }
 
-    public static En_DevUnitPersonRoleType[] getAmpluaRoles() {
+    public static List<En_DevUnitPersonRoleType> getAmpluaRoles() {
         List<En_DevUnitPersonRoleType> roles = new ArrayList<>();
         for (En_DevUnitPersonRoleType role : values()) {
             if (role.types.contains(Type.AMPLUA)) {
                 roles.add(role);
             }
         }
-        return (En_DevUnitPersonRoleType[]) roles.toArray();
+        return roles;
     }
 
-    public static En_DevUnitPersonRoleType[] getProjectRoles() {
+    public static List<En_DevUnitPersonRoleType> getProjectRoles() {
         List<En_DevUnitPersonRoleType> roles = new ArrayList<>();
         for (En_DevUnitPersonRoleType role : values()) {
             if (role.types.contains(Type.PROJECT_TEAM)) {
                 roles.add(role);
             }
         }
-        return (En_DevUnitPersonRoleType[]) roles.toArray();
+        return roles;
     }
 
     private enum Type {

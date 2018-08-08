@@ -6,6 +6,7 @@
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
+             xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -61,7 +62,7 @@
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.projectTeam}"/></legend>
-
+                <team:TeamSelector ui:field="team" addStyleNames="form-group col-xs-12"/>
             </fieldset>
 
             <fieldset class="header">

@@ -1,11 +1,11 @@
 package ru.protei.portal.ui.project.client.view.widget.team;
 
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.project.client.view.widget.team.item.TeamSelectorItemModel;
 
 public interface AbstractTeamSelector {
 
-    void onMemberAdded(En_DevUnitPersonRoleType role, PersonShortView member);
+    void onModelChanged(TeamSelectorItemModel model);
 
-    void onMemberRemoved(En_DevUnitPersonRoleType role, PersonShortView member);
+    void onRoleChanged(TeamSelectorItemModel model, En_DevUnitPersonRoleType previous, En_DevUnitPersonRoleType actual);
 }

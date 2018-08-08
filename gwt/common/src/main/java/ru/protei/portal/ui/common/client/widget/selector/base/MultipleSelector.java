@@ -78,6 +78,10 @@ public abstract class MultipleSelector<T>
         itemToDisplayOptionModel.clear();
     }
 
+    public void hidePopup() {
+        popup.hide();
+    }
+
     @Override
     public void onValueChange( ValueChangeEvent< Boolean > event ) {
         T value = itemViewToModel.get( event.getSource() );
