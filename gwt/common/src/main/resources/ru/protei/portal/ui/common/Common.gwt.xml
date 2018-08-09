@@ -2,7 +2,7 @@
 <module rename-to='common'>
     <inherits name='com.google.gwt.user.User'/>
     <inherits name="com.google.gwt.inject.Inject" />
-    <!--<inherits name='com.google.gwt.user.Debug' />-->
+    <inherits name='com.google.gwt.user.Debug' />
 
     <inherits name="ru.protei.portal.core.model.Model"/>
     <inherits name="ru.protei.portal.test.Test"/>
