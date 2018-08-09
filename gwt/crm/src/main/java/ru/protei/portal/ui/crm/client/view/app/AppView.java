@@ -109,7 +109,7 @@ public class AppView extends Composite
 
     @Override
     public void onKeyUp( KeyUpEvent event ) {
-        if ( event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown() ) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
             event.preventDefault();
             activity.onLogoutClicked();
         }
