@@ -194,9 +194,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.9 - PORTAL-214 Новый CRM: не удаётся прикрепить файл без расширения к обращению
  * 4.0.63.10 - PORTAL-232 Новый CRM: не корректно сформировались комментарии в e-mail нотификации
  * 4.0.63.11 - PORTAL-224 Не работает хоткей для разлогинивания
+ * 4.0.63.12 - PORTAL-289 В отчете по обращениям дублируются записи
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.11";
+        return "4.0.63.12";
     }
 }
