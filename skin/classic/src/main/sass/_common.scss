@@ -3137,6 +3137,45 @@ div.select2-container {
   }
 }
 
+.select2-float-buttons {
+
+  div.select2-container {
+
+    .select2-choices {
+      position: relative;
+      display: inline-block;
+      box-sizing: border-box;
+      float: right;
+      width: calc(100% - 70px);
+      min-height: 1px;
+    }
+
+    .select2-button {
+      position: relative;
+      display: inline-block;
+      box-sizing: border-box;
+      float: right;
+      max-width: 70px;
+
+      button {
+        float: right;
+      }
+
+      &:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+    }
+
+    &:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  }
+}
+
 .case-subscribers{
   div.select2-container{
     border: 0 !important;

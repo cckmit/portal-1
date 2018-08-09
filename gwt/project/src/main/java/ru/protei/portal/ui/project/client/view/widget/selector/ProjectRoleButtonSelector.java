@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -13,14 +14,15 @@ public class ProjectRoleButtonSelector extends ButtonSelector<En_DevUnitPersonRo
 
     @Inject
     public void init(Lang lang, En_PersonRoleTypeLang roleTypeLang) {
-        setDisplayOptionCreator(value -> {
-            if (value == null) {
-                return new DisplayOption(lang.projectSelectRole());
+        setDisplayOptionCreator(new DisplayOptionCreator<En_DevUnitPersonRoleType>() {
+            @Override
+            public DisplayOption makeDisplayOption(En_DevUnitPersonRoleType value) {
+                return new DisplayOption(value == null ? lang.projectSelectRole() : roleTypeLang.getName(value));
             }
-            if (En_DevUnitPersonRoleType.HEAD_MANAGER.equals(value)) {
-                return new DisplayOption("<b>" + roleTypeLang.getName(value) + "</b>");
+            @Override
+            public DisplayOption makeDisplaySelectedOption(En_DevUnitPersonRoleType value) {
+                return new DisplayOption(value == null ? lang.projectSelectRole() : "<b>" + roleTypeLang.getName(value) + "</b>");
             }
-            return new DisplayOption(roleTypeLang.getName(value));
         });
     }
 

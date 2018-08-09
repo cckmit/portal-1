@@ -24,6 +24,8 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        members.setAddName("fa-plus", "");
+        members.setClearName("fa-trash", "");
     }
 
     @Override
@@ -89,7 +91,7 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     @UiHandler("members")
     public void onMembersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
         model.members = event.getValue() == null ? new HashSet<>() : event.getValue();
-        if (model.members.size() == 0) {
+        if (model.members.size() == 0 || (En_DevUnitPersonRoleType.HEAD_MANAGER.equals(model.role) && model.members.size() == 1)) {
             members.hidePopup();
         }
         fireModelChanged();
@@ -102,7 +104,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
                 Set<PersonShortView> value = new HashSet<>();
                 value.add(model.members.stream().findFirst().get());
                 members.setValue(value, true);
-                members.updateAvailableOptionsCount();
             }
         } else {
             members.setSelectedLimit(0);

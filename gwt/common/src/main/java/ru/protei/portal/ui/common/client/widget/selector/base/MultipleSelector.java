@@ -24,7 +24,7 @@ public abstract class MultipleSelector<T>
         implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>
 {
 
-    protected abstract void updateAvailableOptionsCount(int available);
+    protected abstract void setAddActionAvailable(boolean isAvailable);
 
     public void setValue( Set<T> values ) {
         setValue( values, false );
@@ -87,15 +87,11 @@ public abstract class MultipleSelector<T>
 
     public void setSelectedLimit(int selectedLimit) {
         this.selectedLimit = selectedLimit;
-        updateAvailableOptionsCount();
+        updateAddActionAvailable();
     }
 
-    public void updateAvailableOptionsCount() {
-        if (selectedLimit > 0) {
-            updateAvailableOptionsCount(selectedLimit - selected.size());
-        } else {
-            updateAvailableOptionsCount(-1);
-        }
+    public void updateAddActionAvailable() {
+        setAddActionAvailable(selectedLimit == 0 || selected.size() < selectedLimit);
     }
 
     @Override
@@ -120,10 +116,8 @@ public abstract class MultipleSelector<T>
         getSelectedItemNamesAndFillSelectorView();
 
         if (selectedLimit > 0) {
-            updateAvailableOptionsCount(selectedLimit - selected.size());
+            updateAddActionAvailable();
         }
-
-        updateAvailableOptionsCount();
 
         ValueChangeEvent.fire( this, selected );
     }

@@ -67,18 +67,11 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     }
 
     @Override
-    protected void updateAvailableOptionsCount(int available) {
-        if (addBtnText == null) {
-            return;
-        }
-        if (available < 0) {
-            add.setInnerText( addBtnText );
-            return;
-        }
-        add.setInnerText( addBtnText + " (" + available + ")" );
+    protected void setAddActionAvailable(boolean isAvailable) {
+        caretButton.setVisible(isAvailable);
     }
 
-    public void fillSelectorView( List<String> selectedValues ) {
+    public void fillSelectorView(List<String> selectedValues ) {
         itemContainer.clear();
         itemViews.clear();
 
@@ -88,15 +81,32 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         clearButton.setVisible(!selectedValues.isEmpty());
     }
 
-    public void setAddName( String string ) {
-        addBtnText = string;
-        add.setInnerText( string );
-        add.removeClassName( "caret" );
+    public void setAddName( String text ) {
+        setAddName(null, text);
     }
 
-    public void setClearName( String string ) {
-        clear.setInnerText( string );
-        clear.setClassName( "" );
+    public void setAddName( String icon, String text ) {
+        if (icon != null) {
+            addIcon.setClassName("fa " + icon);
+        } else {
+            addIcon.setClassName("hide");
+        }
+        add.setInnerText(text);
+        add.removeClassName("caret");
+    }
+
+    public void setClearName( String text ) {
+        setClearName(null, text);
+    }
+
+    public void setClearName( String icon, String text ) {
+        if (icon != null) {
+            clearIcon.setClassName("fa " + icon);
+        } else {
+            clearIcon.setClassName("hide");
+        }
+        clear.setInnerText(text);
+        clear.setClassName("");
     }
 
     private void clearValues(boolean fireEvents) {
@@ -150,7 +160,11 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     @UiField
     HTMLPanel itemContainer;
     @UiField
+    SpanElement addIcon;
+    @UiField
     SpanElement add;
+    @UiField
+    SpanElement clearIcon;
     @UiField
     SpanElement clear;
     @UiField
@@ -161,7 +175,6 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
 
     List< SelectItemView > itemViews = new ArrayList<SelectItemView >();
 
-    private String addBtnText = null;
     private boolean isEnabled = true;
 
     interface SelectorUiBinder extends UiBinder< HTMLPanel, MultipleInputSelector > {}

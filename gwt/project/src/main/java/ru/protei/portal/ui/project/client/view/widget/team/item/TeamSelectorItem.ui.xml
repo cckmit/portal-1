@@ -5,12 +5,12 @@
 
     <g:HTMLPanel ui:field="container" styleName="form-group col-xs-12">
 
-        <div class="col-xs-3">
+        <div class="col-xs-4">
             <role:ProjectRoleButtonSelector ui:field="role"/>
         </div>
 
-        <div class="col-xs-9">
-            <person:EmployeeMultiSelector ui:field="members"/>
+        <div class="col-xs-8">
+            <person:EmployeeMultiSelector ui:field="members" styleName="select2-float-buttons"/>
         </div>
     </g:HTMLPanel>
 

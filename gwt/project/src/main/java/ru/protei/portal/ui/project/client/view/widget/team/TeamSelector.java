@@ -37,7 +37,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         model.clear();
         modelToView.clear();
         if (value != null && value.size() > 0) {
-            Set<TeamSelectorItemModel> model = new HashSet<>();
+            List<TeamSelectorItemModel> model = new ArrayList<>();
             value.forEach(ppm -> {
                 TeamSelectorItemModel itemModel = getModelItemWithRole(model, ppm.getRole());
                 if (itemModel == null) {
@@ -48,6 +48,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
                     itemModel.members.add(ppm);
                 }
             });
+            model.sort(Comparator.comparingInt(m -> m.role.getId()));
             model.forEach(this::addNewItem);
         }
         addNewEmptyItemIfNeeded();
@@ -173,7 +174,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         return itemView;
     }
 
-    private TeamSelectorItemModel getModelItemWithRole(Set<TeamSelectorItemModel> model, En_DevUnitPersonRoleType role) {
+    private TeamSelectorItemModel getModelItemWithRole(Collection<TeamSelectorItemModel> model, En_DevUnitPersonRoleType role) {
         for (TeamSelectorItemModel item : model) {
             if (Objects.equals(item.role, role)) {
                 return item;
