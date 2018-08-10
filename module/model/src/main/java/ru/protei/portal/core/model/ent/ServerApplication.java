@@ -3,11 +3,9 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 @JdbcEntity(table = "server")
-public class Server implements Serializable, Removable {
+public class ServerApplication implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -30,9 +28,26 @@ public class Server implements Serializable, Removable {
     @JdbcJoinedObject(localColumn = "platform_id", remoteColumn = "id")
     private Platform platform;
 
-    private Long applicationsCount;
+    @JdbcJoinedColumn(localColumn = "id", table = "application", remoteColumn = "server_id", mappedColumn = "name")
+    private String appName;
 
-    private List<String> appNames;
+    //@JdbcJoinedColumn(localColumn = "id", table = "application", remoteColumn = "server_id", mappedColumn = "comment")
+    //private String appComment;
+
+    //@JdbcJoinedColumn(localColumn = "id", table = "application", remoteColumn = "server_id", mappedColumn = "paths", converterType = ConverterType.JSON)
+    //private PathInfo appPaths;
+
+    public Server toServer() {
+        Server server = new Server();
+        server.setId(id);
+        server.setPlatformId(platformId);
+        server.setName(name);
+        server.setIp(ip);
+        server.setParams(params);
+        server.setComment(comment);
+        server.setPlatform(platform);
+        return server;
+    }
 
     public Long getId() {
         return id;
@@ -58,20 +73,20 @@ public class Server implements Serializable, Removable {
         this.name = name;
     }
 
-    public String getParams() {
-        return params;
-    }
-
-    public void setParams(String params) {
-        this.params = params;
-    }
-
     public String getIp() {
         return ip;
     }
 
     public void setIp(String ip) {
         this.ip = ip;
+    }
+
+    public String getParams() {
+        return params;
+    }
+
+    public void setParams(String params) {
+        this.params = params;
     }
 
     public String getComment() {
@@ -82,40 +97,12 @@ public class Server implements Serializable, Removable {
         this.comment = comment;
     }
 
-    public Platform getPlatform() {
-        return platform;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setPlatform(Platform platform) {
-        this.platform = platform;
-    }
-
-    public Long getApplicationsCount() {
-        return applicationsCount;
-    }
-
-    public void setApplicationsCount(Long applicationsCount) {
-        this.applicationsCount = applicationsCount;
-    }
-
-    public List<String> getAppNames() {
-        return appNames;
-    }
-
-    public void setAppNames(List<String> appNames) {
-        this.appNames = appNames;
-    }
-
-    public void addAppName(String appName) {
-        if (appNames == null) {
-            appNames = new ArrayList<>();
-        }
-        appNames.add(appName);
-    }
-
-    @Override
-    public boolean isAllowedRemove() {
-        return id != null;
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     @Override
@@ -127,6 +114,7 @@ public class Server implements Serializable, Removable {
                 ", ip=" + ip +
                 ", params=" + params +
                 ", comment=" + comment +
+                ", appName=" + appName +
                 '}';
     }
 }

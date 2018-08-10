@@ -34,7 +34,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         view.setComment(value.getComment() == null ? "" : value.getComment());
 
         fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
-        fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getServers()));
+        fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
     }
 
     @Inject

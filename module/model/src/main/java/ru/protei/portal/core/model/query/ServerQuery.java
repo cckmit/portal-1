@@ -29,6 +29,12 @@ public class ServerQuery extends BaseQuery {
         return query;
     }
 
+    public static ServerQuery forPlatformId(Long platformId) {
+        ServerQuery query = new ServerQuery();
+        query.setPlatformId(platformId);
+        return query;
+    }
+
     public Long getServerId() {
         return serverId;
     }

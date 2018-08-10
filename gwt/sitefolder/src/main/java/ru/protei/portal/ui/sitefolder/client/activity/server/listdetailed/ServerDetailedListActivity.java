@@ -9,17 +9,19 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.ApplicationQuery;
+import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -34,7 +36,7 @@ public abstract class ServerDetailedListActivity implements Activity, AbstractSe
 
     @Event
     public void onShow(SiteFolderServerEvents.ShowDetailedList event) {
-        if (event.servers == null) {
+        if (event.platformId == null) {
             return;
         }
 
@@ -47,7 +49,7 @@ public abstract class ServerDetailedListActivity implements Activity, AbstractSe
         view.getChildContainer().clear();
         itemViewToModel.clear();
 
-        fillViewHandler = taskService.startPeriodicTask(new ArrayList<>(event.servers), fillViewer, 50, 50);
+        requestServers(event.platformId);
     }
 
     @Override
@@ -66,14 +68,29 @@ public abstract class ServerDetailedListActivity implements Activity, AbstractSe
         fireEvent(new SiteFolderServerEvents.Edit(value.getId()));
     }
 
+    private void requestServers(Long platformId) {
+        siteFolderController.getServersWithAppsNames(ServerQuery.forPlatformId(platformId), new RequestCallback<List<Server>>() {
+            @Override
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+            }
+            @Override
+            public void onSuccess(List<Server> servers) {
+                if (servers == null) {
+                    servers = new ArrayList<>();
+                }
+                fillViewHandler = taskService.startPeriodicTask(servers, fillViewer, 50, 50);
+            }
+        });
+    }
+
     private AbstractServerDetailedListItemView makeItemView(Server server) {
         AbstractServerDetailedListItemView itemView = itemFactory.get();
         itemView.setActivity(this);
         itemView.setName(server.getName());
         itemView.setParameters(server.getParams());
-        itemView.setApps(stream(server.getApplications())
-                .filter(app -> HelperFunc.isNotEmpty(app.getName()))
-                .map(Application::getName)
+        itemView.setApps(stream(server.getAppNames())
+                .filter(Objects::nonNull)
                 .collect(Collectors.joining(", "))
         );
         itemView.setComment(server.getComment());
@@ -86,9 +103,13 @@ public abstract class ServerDetailedListActivity implements Activity, AbstractSe
     @Inject
     Provider<AbstractServerDetailedListItemView> itemFactory;
     @Inject
+    SiteFolderControllerAsync siteFolderController;
+    @Inject
     PeriodicTaskService taskService;
     @Inject
     PolicyService policyService;
+    @Inject
+    Lang lang;
 
     private Consumer<Server> fillViewer = new Consumer<Server>() {
         @Override

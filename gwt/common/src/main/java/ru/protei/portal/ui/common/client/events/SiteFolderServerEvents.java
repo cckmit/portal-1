@@ -64,10 +64,10 @@ public class SiteFolderServerEvents {
 
     public static class ShowDetailedList {
         public HasWidgets parent;
-        public List<ru.protei.portal.core.model.ent.Server> servers;
-        public ShowDetailedList(HasWidgets parent, List<ru.protei.portal.core.model.ent.Server> servers) {
+        public Long platformId;
+        public ShowDetailedList(HasWidgets parent, Long platformId) {
             this.parent = parent;
-            this.servers = servers;
+            this.platformId = platformId;
         }
     }
 

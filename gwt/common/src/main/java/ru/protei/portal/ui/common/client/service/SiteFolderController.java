@@ -28,6 +28,8 @@ public interface SiteFolderController extends RemoteService {
 
     List<Application> getApplications(ApplicationQuery query) throws RequestFailedException;
 
+    List<Server> getServersWithAppsNames(ServerQuery query) throws RequestFailedException;
+
     List<EntityOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException;
 
     List<EntityOption> getServersOptionList(ServerQuery query) throws RequestFailedException;

@@ -23,11 +23,10 @@ public class Platform implements Serializable, Removable {
     @JdbcColumn(name="comment")
     private String comment;
 
-    @JdbcOneToMany(localColumn = "id", table = "server", remoteColumn = "platform_id")
-    private List<Server> servers;
-
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
+
+    private Long serversCount;
 
     public Long getId() {
         return id;
@@ -69,20 +68,20 @@ public class Platform implements Serializable, Removable {
         this.comment = comment;
     }
 
-    public List<Server> getServers() {
-        return servers;
-    }
-
-    public void setServers(List<Server> servers) {
-        this.servers = servers;
-    }
-
     public Company getCompany() {
         return company;
     }
 
     public void setCompany(Company company) {
         this.company = company;
+    }
+
+    public Long getServersCount() {
+        return serversCount;
+    }
+
+    public void setServersCount(Long serversCount) {
+        this.serversCount = serversCount;
     }
 
     @Override
