@@ -1,11 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Информация о человеке с ролью
@@ -79,13 +77,5 @@ public class CaseMember implements Serializable{
                 ", caseId=" + caseId +
                 ", roleId=" + roleId +
                 '}';
-    }
-
-    public static CaseMember makeDeployManagerOf( CaseObject caseObject, PersonShortView person ) {
-        CaseMember caseMember = new CaseMember();
-        caseMember.setMemberId( person.getId() );
-        caseMember.setRole( En_DevUnitPersonRoleType.DEPLOY_MANAGER );
-        caseMember.setCaseId( caseObject.getId() );
-        return caseMember;
     }
 }

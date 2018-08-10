@@ -5,87 +5,84 @@
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
-             xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
+             xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
 >
+
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
     <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
         <g:HTMLPanel ui:field="preview" styleName="preview project">
             <div class="col-xs-12">
                 <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right hide" href="#"/>
             </div>
 
-            <fieldset class="header">
+            <fieldset class="header grid grid-indent">
                 <legend><lable ui:field="header"/></legend>
-                <div class="col-xs-8">
-                    <g:TextBox ui:field="projectName" styleName="col-xs-12 project-name" />
+                <div class="col-xs-7">
+                    <g:TextBox ui:field="projectName" styleName="col-xs-12 m-b-0 project-name" />
                 </div>
-                <div class="col-xs-4">
+                <div class="col-xs-5">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
+                    <label class="col-xs-7 col-md-7" ui:field="creationDate"/>
                 </div>
 
-                <div class="col-xs-12">
+                <div class="col-xs-12 m-b-5">
                     <label class="col-xs-12"><ui:text from="{lang.projectDescription}"/></label>
                     <g:TextArea styleName="col-xs-12 col-md-12 pre-formatted-info project-details" ui:field="details"/>
                 </div>
 
                 <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectRegion}"/></label>
+                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectRegion}"/></label>
                     <div class="col-xs-7">
                         <region:RegionButtonSelector ui:field="projectRegion" />
                     </div>
                 </div>
                 <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectDirection}"/></label>
+                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectDirection}"/></label>
                     <div class="col-xs-7">
                         <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" />
                     </div>
                 </div>
 
                 <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerCompany}"/></label>
+                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectCustomerCompany}"/></label>
                     <div class="col-xs-7">
                         <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}"/>
                     </div>
                 </div>
 
                 <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCustomerType}"/></label>
+                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectCustomerType}"/></label>
                     <div class="col-xs-7">
                         <cutomertype:CustomerTypeSelector ui:field="customerType"/>
                     </div>
                 </div>
             </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.projectManagers}"/></legend>
-                <div class="col-xs-6">
-                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectDeployManagers}"/></label>
-                    <div class="col-xs-12">
-                        <person:EmployeeMultiSelector ui:field="deployManager" />
-                    </div>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.projectHeadManager}"/></label>
 
-                    <div class="col-xs-12">
-                        <person:EmployeeButtonSelector ui:field="headManager" />
-                    </div>
-                </div>
+            <fieldset class="header grid grid-indent">
+                <legend><ui:text from="{lang.projectTeam}"/></legend>
+                <team:TeamSelector ui:field="team" addStyleNames="form-group col-xs-12"/>
             </fieldset>
-            <fieldset class="header">
+
+            <fieldset class="header grid grid-indent">
                 <legend><ui:text from="{lang.projectProducts}"/></legend>
-                <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"
                                           addStyleNames="form-group col-xs-12"/>
             </fieldset>
-            <fieldset class="header">
+
+            <fieldset class="header grid grid-indent">
                 <legend><ui:text from="{lang.projectState}"/></legend>
-                <div class="col-xs-2 fa-3x">
+                <div class="col-xs-2 w-i fa-3x">
                     <state:RegionStateIconSelector ui:field="projectState" />
                 </div>
             </fieldset>
-            <legend><ui:text from="{lang.comments}"/></legend>
-            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+
+            <fieldset class="header grid grid-indent">
+                <legend><ui:text from="{lang.comments}"/></legend>
+                <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+            </fieldset>
+
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

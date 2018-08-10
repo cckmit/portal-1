@@ -9,9 +9,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
-import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.*;
@@ -23,6 +21,9 @@ public abstract class MultipleSelector<T>
         extends Composite
         implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>
 {
+
+    protected abstract void onUserCanAddMoreItems(boolean isCanAdd);
+
     public void setValue( Set<T> values ) {
         setValue( values, false );
     }
@@ -78,9 +79,26 @@ public abstract class MultipleSelector<T>
         itemToDisplayOptionModel.clear();
     }
 
+    public void hidePopup() {
+        popup.hide();
+    }
+
+    public void setSelectedLimit(int selectedLimit) {
+        this.selectedLimit = selectedLimit;
+        onUserCanAddMoreItems(!isLimitSet() || isLimitNotReached());
+    }
+
     @Override
     public void onValueChange( ValueChangeEvent< Boolean > event ) {
         T value = itemViewToModel.get( event.getSource() );
+
+        if (selectedLimit > 0 && event.getValue() && selected.size() >= selectedLimit) {
+            SelectableItem item = itemToViewModel.get(value);
+            if (item != null) {
+                item.setValue(false, true);
+            }
+            return;
+        }
 
         if ( hasAnyValue ) {
             selectAnyValue( value == null );
@@ -90,6 +108,10 @@ public abstract class MultipleSelector<T>
             changeSelected(event.getValue(), value);
         }
         getSelectedItemNamesAndFillSelectorView();
+
+        if (isLimitSet()) {
+            onUserCanAddMoreItems(isLimitNotReached());
+        }
 
         ValueChangeEvent.fire( this, selected );
     }
@@ -231,11 +253,20 @@ public abstract class MultipleSelector<T>
         return anyItemView;
     }
 
+    private boolean isLimitSet() {
+        return selectedLimit > 0;
+    }
+
+    private boolean isLimitNotReached() {
+        return selected.size() < selectedLimit;
+    }
+
     @Inject
     SelectorPopup popup;
     @Inject
     Provider<SelectableItem> itemFactory;
 
+    private int selectedLimit = 0;
     protected boolean hasAnyValue = false;
     private IsWidget relative;
     private Set<T> selected = new HashSet<>();

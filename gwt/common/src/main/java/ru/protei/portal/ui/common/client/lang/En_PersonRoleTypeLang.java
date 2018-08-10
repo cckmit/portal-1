@@ -31,6 +31,34 @@ public class En_PersonRoleTypeLang {
                 return lang.personWellWisher();
             case RECEPTIVITY_CENTER:
                 return lang.personReceptivityCenter();
+            case HARDWARE_CURATOR:
+                return lang.personHardwareCurator();
+            case SOFTWARE_CURATOR:
+                return lang.personSoftwareCurator();
+            case INTRO_NEW_TECH_SOLUTIONS:
+                return lang.personIntroNewTechSolutions();
+            case LIABLE_FOR_AUTO_TESTING:
+                return lang.personLiableForAutoTesting();
+            case TECH_SUPPORT_CURATOR:
+                return lang.personTechSupportCurator();
+            case PRODUCT_ASSEMBLER:
+                return lang.personProductAssembler();
+            case SUPPLY_PREPARATION:
+                return lang.personSupplyPreparation();
+            case ENGINEER_DOC_DEV:
+                return lang.personEngineerDocDev();
+            case TECH_DOC_DEV:
+                return lang.personTechDocDev();
+            case SOFTWARE_DOC_DEV:
+                return lang.personSoftwareDocDev();
+            case LIABLE_FOR_CERTIFICATION:
+                return lang.personLiableForCertification();
+            case OKR_ESCORT:
+                return lang.personOkrEscort();
+            case QUALITY_CONTROL_SMK:
+                return lang.personQualityControlSmk();
+            case CUSTOMER_INTEGRATION:
+                return lang.personCustomerIntegration();
         }
         return null;
     }

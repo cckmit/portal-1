@@ -23,17 +23,23 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
 
     public void fillOptions( List< ProductShortView > options ) {
         clearOptions();
-        addOption(lang.productWithout(), new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
+        if (hasNullValue) {
+            addOption(lang.productWithout(), new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
+        }
         for ( ProductShortView option : options ) {
             addOption( option.getName(), option );
         }
     }
 
     @Override
-    public void refreshValue() {
+    public void refreshValue() {}
 
+    public void setHasNullValue(boolean hasNullValue) {
+        this.hasNullValue = hasNullValue;
     }
 
     @Inject
     private Lang lang;
+
+    private boolean hasNullValue = true;
 }

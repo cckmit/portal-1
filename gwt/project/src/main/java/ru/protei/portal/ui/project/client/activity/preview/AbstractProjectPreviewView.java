@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
@@ -25,8 +26,7 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setCreationDate( String value );
     HasValue<En_RegionState> state();
     HasValue<ProductDirectionInfo> direction();
-    HasValue<PersonShortView> headManager();
-    HasValue<Set<PersonShortView> > deployManagers();
+    HasValue<Set<PersonProjectMemberView>> team();
     HasText details();
     HasValue<EntityOption> region();
     HasValue<Set<ProductShortView>> products();

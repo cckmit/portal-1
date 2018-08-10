@@ -705,8 +705,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectOfficialAmplua();
 
-    String personHeadManager();
-
     String personDeployManager();
 
     String officialInRelationsWith();
@@ -1184,4 +1182,40 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveIssueNeedSelectCompany();
 
     String errSaveIssueFieldsInvalid();
+
+    String personHeadManager();
+
+    String personHardwareCurator();
+
+    String personSoftwareCurator();
+
+    String personIntroNewTechSolutions();
+
+    String personLiableForAutoTesting();
+
+    String personTechSupportCurator();
+
+    String personProductAssembler();
+
+    String personSupplyPreparation();
+
+    String personEngineerDocDev();
+
+    String personTechDocDev();
+
+    String personSoftwareDocDev();
+
+    String personLiableForCertification();
+
+    String personOkrEscort();
+
+    String personQualityControlSmk();
+
+    String personCustomerIntegration();
+
+    String projectTeam();
+
+    String projectSelectRole();
+
+    String membersCount();
 }
