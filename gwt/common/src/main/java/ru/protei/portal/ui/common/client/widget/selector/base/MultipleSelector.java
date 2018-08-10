@@ -9,9 +9,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeValEvent;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
-import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.*;
@@ -24,7 +22,7 @@ public abstract class MultipleSelector<T>
         implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>
 {
 
-    protected abstract void setAddActionAvailable(boolean isAvailable);
+    protected abstract void onUserCanAddMoreItems(boolean isCanAdd);
 
     public void setValue( Set<T> values ) {
         setValue( values, false );
@@ -87,11 +85,7 @@ public abstract class MultipleSelector<T>
 
     public void setSelectedLimit(int selectedLimit) {
         this.selectedLimit = selectedLimit;
-        updateAddActionAvailable();
-    }
-
-    public void updateAddActionAvailable() {
-        setAddActionAvailable(selectedLimit == 0 || selected.size() < selectedLimit);
+        onUserCanAddMoreItems(!isLimitSet() || isLimitNotReached());
     }
 
     @Override
@@ -115,8 +109,8 @@ public abstract class MultipleSelector<T>
         }
         getSelectedItemNamesAndFillSelectorView();
 
-        if (selectedLimit > 0) {
-            updateAddActionAvailable();
+        if (isLimitSet()) {
+            onUserCanAddMoreItems(isLimitNotReached());
         }
 
         ValueChangeEvent.fire( this, selected );
@@ -257,6 +251,14 @@ public abstract class MultipleSelector<T>
         itemToNameModel.put( null, name );
 
         return anyItemView;
+    }
+
+    private boolean isLimitSet() {
+        return selectedLimit > 0;
+    }
+
+    private boolean isLimitNotReached() {
+        return selected.size() < selectedLimit;
     }
 
     @Inject

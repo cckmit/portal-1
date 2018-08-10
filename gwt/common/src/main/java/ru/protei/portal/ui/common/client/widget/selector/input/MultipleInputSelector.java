@@ -67,8 +67,8 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     }
 
     @Override
-    protected void setAddActionAvailable(boolean isAvailable) {
-        caretButton.setVisible(isAvailable);
+    protected void onUserCanAddMoreItems(boolean isCanAdd) {
+        caretButton.setVisible(isCanAdd);
     }
 
     public void fillSelectorView(List<String> selectedValues ) {

@@ -36,21 +36,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         root.clear();
         model.clear();
         modelToView.clear();
-        if (value != null && value.size() > 0) {
-            List<TeamSelectorItemModel> model = new ArrayList<>();
-            value.forEach(ppm -> {
-                TeamSelectorItemModel itemModel = getModelItemWithRole(model, ppm.getRole());
-                if (itemModel == null) {
-                    itemModel = new TeamSelectorItemModel(ppm.getRole());
-                    itemModel.members.add(ppm);
-                    model.add(itemModel);
-                } else {
-                    itemModel.members.add(ppm);
-                }
-            });
-            model.sort(Comparator.comparingInt(m -> m.role.getId()));
-            model.forEach(this::addNewItem);
-        }
+        TeamSelectorItemModel.toModel(value).forEach(this::addNewItem);
         addNewEmptyItemIfNeeded();
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -59,11 +45,7 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
 
     @Override
     public Set<PersonProjectMemberView> getValue() {
-        Set<PersonProjectMemberView> values = new HashSet<>();
-        model.forEach(tsim -> tsim.members.forEach(psv -> {
-            values.add(PersonProjectMemberView.fromPersonShortView(psv, tsim.role));
-        }));
-        return values;
+        return TeamSelectorItemModel.fromModel(model);
     }
 
     @Override
@@ -172,15 +154,6 @@ public class TeamSelector extends Composite implements AbstractTeamSelector, Has
         AbstractTeamSelectorItem itemView = itemFactory.get();
         itemView.setActivity(this);
         return itemView;
-    }
-
-    private TeamSelectorItemModel getModelItemWithRole(Collection<TeamSelectorItemModel> model, En_DevUnitPersonRoleType role) {
-        for (TeamSelectorItemModel item : model) {
-            if (Objects.equals(item.role, role)) {
-                return item;
-            }
-        }
-        return null;
     }
 
     private boolean isEmptyItemExists() {
