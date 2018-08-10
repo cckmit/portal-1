@@ -77,6 +77,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         }
 
         jdbcManyRelationsHelper.fill(result, "servers");
+        for (Platform platform : result) {
+            List<Server> servers = platform.getServers();
+            if (servers == null) {
+                continue;
+            }
+            jdbcManyRelationsHelper.fill(servers, "applications");
+        }
 
         return new CoreResponse<List<Platform>>().success(result);
     }

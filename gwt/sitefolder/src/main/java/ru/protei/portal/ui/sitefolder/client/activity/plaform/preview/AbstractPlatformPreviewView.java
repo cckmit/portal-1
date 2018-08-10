@@ -16,4 +16,6 @@ public interface AbstractPlatformPreviewView extends IsWidget {
     void setComment(String value);
 
     HasWidgets contactsContainer();
+
+    HasWidgets serversContainer();
 }

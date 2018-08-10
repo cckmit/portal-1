@@ -2682,6 +2682,87 @@ a {
   }
 }
 
+.preview.site-folder {
+
+  fieldset {
+    min-width: 0;
+  }
+
+  .main-content {
+    padding: 0;
+  }
+
+  .table-container > table.table {
+    margin-bottom: 0;
+
+    label {
+      font-size: 0.9em;
+      color: #797979;
+    }
+  }
+}
+
+.sf-detailed-list {
+  margin: -5px !important;
+
+  .sf-detailed-list-item {
+    position: relative;
+    width: 100% !important;
+    height: initial !important;
+    min-height: 22px;
+    margin: 2px 0 !important;
+    padding: 5px !important;
+    overflow: hidden;
+    border: none;
+    box-sizing: border-box;
+
+    .sf-detailed-list-item-content {
+      position: relative;
+      line-height: 1.2em;
+      width: calc(100% - 28px);
+
+      > span {
+        display: inline-block;
+        width: 100%;
+        word-wrap: break-word;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .sf-detailed-list-item-controls {
+      position: absolute;
+      display: block;
+      top: 0;
+      right: 0;
+      width: 28px;
+      height: 100%;
+      vertical-align: middle;
+      text-align: center;
+
+      > * {
+        display: block;
+        float: left;
+        width: 14px;
+        padding: 8px 7px;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      &:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+    }
+
+    &:hover, &:active {
+      background-color: #f6f7f8;
+    }
+  }
+}
+
 /****************/
 
 .text-danger {

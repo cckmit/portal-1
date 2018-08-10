@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="root" tag="li" styleName="sf-detailed-list-item">
+        <div class="sf-detailed-list-item-content">
+            <span class="name" ui:field="name"/>
+            <span class="name" ui:field="apps"/>
+            <span class="comment" ui:field="comment"/>
+        </div>
+        <div class="sf-detailed-list-item-controls">
+            <g:Anchor ui:field="edit" styleName="fa fa-pencil" href="#"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
