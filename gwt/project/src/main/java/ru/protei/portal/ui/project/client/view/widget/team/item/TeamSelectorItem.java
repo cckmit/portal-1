@@ -24,8 +24,6 @@ public class TeamSelectorItem extends Composite implements AbstractTeamSelectorI
     @Inject
     public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        members.setAddName("fa-plus", "");
-        members.setClearName("fa-trash", "");
     }
 
     @Override

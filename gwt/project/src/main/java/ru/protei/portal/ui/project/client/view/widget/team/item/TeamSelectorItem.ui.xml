@@ -10,7 +10,7 @@
         </div>
 
         <div class="col-xs-8">
-            <person:EmployeeMultiSelector ui:field="members" styleName="select2-float-buttons"/>
+            <person:EmployeeMultiSelector ui:field="members"/>
         </div>
     </g:HTMLPanel>
 
