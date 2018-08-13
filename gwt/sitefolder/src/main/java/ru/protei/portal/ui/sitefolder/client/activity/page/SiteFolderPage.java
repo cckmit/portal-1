@@ -38,37 +38,48 @@ public abstract class SiteFolderPage implements Activity {
 
     @Event
     public void onShowTable(SiteFolderPlatformEvents.Show event) {
-        fireSelectTab(SUB_TAB_PLATFORMS);
+        fireSelectTab();
+        // fireSelectTab(SUB_TAB_PLATFORMS);
     }
 
     @Event
     public void onShowTable(SiteFolderServerEvents.Show event) {
-        fireSelectTab(SUB_TAB_SERVERS);
+        fireSelectTab();
+        //fireSelectTab(SUB_TAB_SERVERS);
     }
 
     @Event
     public void onShowTable(SiteFolderAppEvents.Show event) {
-        fireSelectTab(SUB_TAB_APPS);
+        fireSelectTab();
+        //fireSelectTab(SUB_TAB_APPS);
     }
 
     @Event
     public void onClickSection(SectionEvents.Clicked event) {
-        if (TAB.equals(event.identity)) {
-            //fireSelectTab(null);
-            fireEvent(new SiteFolderPlatformEvents.Show());
-        } else if (SUB_TAB_PLATFORMS.equals(event.identity)) {
-            fireEvent(new SiteFolderPlatformEvents.Show());
-        } else if (SUB_TAB_SERVERS.equals(event.identity)) {
-            fireEvent(new SiteFolderServerEvents.Show());
-        } else if (SUB_TAB_APPS.equals(event.identity)) {
-            fireEvent(new SiteFolderAppEvents.Show());
+        if (!TAB.equals(event.identity)) {
+            return;
         }
+        fireEvent(new SiteFolderPlatformEvents.Show());
+        //if (TAB.equals(event.identity)) {
+        //    //fireSelectTab(null);
+        //} else if (SUB_TAB_PLATFORMS.equals(event.identity)) {
+        //    fireEvent(new SiteFolderPlatformEvents.Show());
+        //} else if (SUB_TAB_SERVERS.equals(event.identity)) {
+        //    fireEvent(new SiteFolderServerEvents.Show());
+        //} else if (SUB_TAB_APPS.equals(event.identity)) {
+        //    fireEvent(new SiteFolderAppEvents.Show());
+        //}
     }
 
-    private void fireSelectTab(String sub) {
+    private void fireSelectTab() {
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(sub == null ? new MenuEvents.Select(TAB) : new MenuEvents.Select(sub, TAB));
+        fireEvent(new MenuEvents.Select(TAB));
     }
+
+    //private void fireSelectTab(String sub) {
+    //    fireEvent(new ActionBarEvents.Clear());
+    //    fireEvent(sub == null ? new MenuEvents.Select(TAB) : new MenuEvents.Select(sub, TAB));
+    //}
 
     @Inject
     Lang lang;

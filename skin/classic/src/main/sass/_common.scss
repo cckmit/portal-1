@@ -2529,6 +2529,8 @@ a {
     margin: 5px !important;
     overflow: hidden;
     animation: animation-sf-shadow-fade-out 0.3s;
+    display: flex;
+    flex-direction: column;
 
     .sf-list-item-header {
       position: relative;
@@ -2574,18 +2576,20 @@ a {
     .sf-list-item-separator {
       position: relative;
       border-top: 1px solid #d3d3d3;
-      margin: 10px 46px 10px 10px;
+      margin: 0 46px 0 10px;
     }
 
     .sf-list-item-footer {
       position: relative;
       margin: 10px 40px 10px 10px;
       line-height: 1.2em;
+      overflow: hidden;
 
       > span {
         display: inline-block;
         width: 100%;
         word-wrap: break-word;
+        white-space: pre-wrap;
       }
     }
   }
@@ -2724,10 +2728,15 @@ a {
       > span {
         display: inline-block;
         width: 100%;
+        height: 1.2em;
         word-wrap: break-word;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+
+      > .comment {
+        white-space: pre-wrap !important;
       }
     }
 
