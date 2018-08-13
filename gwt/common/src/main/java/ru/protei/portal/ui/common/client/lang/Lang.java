@@ -1218,4 +1218,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectSelectRole();
 
     String membersCount();
+
+    String version();
 }

@@ -14,6 +14,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
+import ru.protei.portal.ui.common.client.common.Version;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
@@ -49,6 +50,9 @@ public abstract class AppActivity
         init.parent.add( view.asWidget() );
 
         view.setUser( event.profile.getName(), event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(), UserIconUtils.getGenderIcon(event.profile.getGender()));
+
+        view.setAppVersion(lang.version() + " " + Version.getVersion());
+
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
         view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
 
