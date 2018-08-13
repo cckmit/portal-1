@@ -4,4 +4,5 @@ public interface AbstractApplicationEditActivity {
 
     void onSaveClicked();
     void onCancelClicked();
+    void onCloneClicked();
 }

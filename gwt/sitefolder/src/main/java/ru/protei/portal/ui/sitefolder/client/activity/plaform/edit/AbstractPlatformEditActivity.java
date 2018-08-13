@@ -6,5 +6,6 @@ public interface AbstractPlatformEditActivity {
     void onCancelClicked();
     void onOpenClicked();
     void onCreateClicked();
+    void onCloneClicked();
     void onCompanySelected();
 }

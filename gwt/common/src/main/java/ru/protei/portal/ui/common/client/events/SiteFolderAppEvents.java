@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.ent.Server;
 
 /**
@@ -29,6 +30,8 @@ public class SiteFolderAppEvents {
         public Long appId;
         @Omit
         public Server server;
+        @Omit
+        public Application app;
         public Edit() {
             this(null);
         }
@@ -38,6 +41,11 @@ public class SiteFolderAppEvents {
         public static Edit withServer(Server server) {
             Edit edit = new Edit();
             edit.server = server;
+            return edit;
+        }
+        public static Edit withApp(Application app) {
+            Edit edit = new Edit();
+            edit.app = app;
             return edit;
         }
     }

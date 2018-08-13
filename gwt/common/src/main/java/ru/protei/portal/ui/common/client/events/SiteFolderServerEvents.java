@@ -5,8 +5,7 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Platform;
-
-import java.util.List;
+import ru.protei.portal.core.model.ent.Server;
 
 /**
  * События серверов
@@ -31,6 +30,8 @@ public class SiteFolderServerEvents {
         public Long serverId;
         @Omit
         public Platform platform;
+        @Omit
+        public Server server;
         public Edit() {
             this(null);
         }
@@ -40,6 +41,11 @@ public class SiteFolderServerEvents {
         public static Edit withPlatform(Platform platform) {
             Edit edit = new Edit();
             edit.platform = platform;
+            return edit;
+        }
+        public static Edit withServer(Server server) {
+            Edit edit = new Edit();
+            edit.server = server;
             return edit;
         }
     }

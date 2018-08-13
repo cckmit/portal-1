@@ -5,6 +5,7 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.Platform;
 
 /**
  * События платформ
@@ -22,6 +23,8 @@ public class SiteFolderPlatformEvents {
         public Long platformId;
         @Omit
         public Company company;
+        @Omit
+        public Platform platform;
         public Edit() {
             this(null);
         }
@@ -31,6 +34,11 @@ public class SiteFolderPlatformEvents {
         public static Edit withCompany(Company company) {
             Edit edit = new Edit();
             edit.company = company;
+            return edit;
+        }
+        public static Edit withPlatform(Platform platform) {
+            Edit edit = new Edit();
+            edit.platform = platform;
             return edit;
         }
     }

@@ -1220,4 +1220,6 @@ public interface Lang extends Messages, ContactItemLang {
     String membersCount();
 
     String version();
+
+    String siteFolderClone();
 }

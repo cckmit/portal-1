@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
@@ -27,7 +28,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Edit event) {
 
         initDetails.parent.clear();
@@ -36,8 +37,10 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformNew()));
-            Platform platform = new Platform();
-            platform.setCompany(event.company);
+            Platform platform = event.platform != null ? event.platform : new Platform();
+            if (event.company != null) {
+                platform.setCompany(event.company);
+            }
             fillView(platform);
             return;
         }
@@ -107,6 +110,21 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     }
 
     @Override
+    public void onCloneClicked() {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return;
+        }
+
+        Platform platform = new Platform();
+        fillPlatform(platform);
+        platform.setId(null);
+        platform.setCompany(Company.fromEntityOption(view.company().getValue()));
+
+        fireEvent(SiteFolderPlatformEvents.Edit.withPlatform(platform));
+    }
+
+    @Override
     public void onCompanySelected() {
         EntityOption value = view.company().getValue();
 
@@ -116,15 +134,18 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private void fillView(Platform platform) {
         this.platform = platform;
+        boolean isNotNew = platform.getId() != null;
+        boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         view.name().setValue(platform.getName());
         view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
-        view.createButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
-        view.openButtonVisibility().setVisible(platform.getId() != null);
-        view.listContainerVisibility().setVisible(platform.getId() != null);
-        view.listContainerHeaderVisibility().setVisible(platform.getId() != null);
-        if (platform.getId() != null) {
+        view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
+        view.cloneButtonVisibility().setVisible(isNotNew && isCreatePrivilegeGranted);
+        view.openButtonVisibility().setVisible(isNotNew);
+        view.listContainerVisibility().setVisible(isNotNew);
+        view.listContainerHeaderVisibility().setVisible(isNotNew);
+        if (isNotNew) {
             fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
         }
 

@@ -4,12 +4,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.struct.PathInfo;
 import ru.protei.portal.core.model.struct.PathItem;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
@@ -30,7 +33,7 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderAppEvents.Edit event) {
 
         initDetails.parent.clear();
@@ -39,8 +42,10 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         fireEvent(new ActionBarEvents.Clear());
         if (event.appId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppNew()));
-            Application application = new Application();
-            application.setServer(event.server);
+            Application application = event.app != null ? event.app : new Application();
+            if (event.server != null) {
+                application.setServer(event.server);
+            }
             fillView(application);
             return;
         }
@@ -88,12 +93,30 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         fireEvent(new Back());
     }
 
+    @Override
+    public void onCloneClicked() {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return;
+        }
+
+        Application application = new Application();
+        fillApplication(application);
+        application.setId(null);
+        application.setServer(Server.fromEntityOption(view.server().getValue()));
+
+        fireEvent(SiteFolderAppEvents.Edit.withApp(application));
+    }
+
     private void fillView(Application application) {
         this.application = application;
+        boolean isNotNew = application.getId() != null;
+        boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         view.setPlatformId(application.getServer() == null ? null : application.getServer().getPlatformId());
         view.name().setValue(application.getName());
-        view.server().setValue(application.getServer() == null ? null : new EntityOption(application.getServer().getName(), application.getServer().getId()));
+        view.server().setValue(application.getServer() == null ? null : application.getServer().toEntityOption());
         view.comment().setValue(application.getComment());
+        view.cloneButtonVisibility().setVisible(isNotNew && isCreatePrivilegeGranted);
         List<PathItem> paths = application.getPaths() == null ? null : application.getPaths().getPaths();
         if (paths == null) {
             paths = new ArrayList<>();
@@ -118,6 +141,8 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
     AbstractApplicationEditView view;
     @Inject
     SiteFolderControllerAsync siteFolderController;
+    @Inject
+    PolicyService policyService;
 
     private Application application;
     private AppEvents.InitDetails initDetails;
