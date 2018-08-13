@@ -8,16 +8,14 @@ import ru.protei.portal.core.model.dao.ServerApplicationDAO;
 import ru.protei.portal.core.model.dao.ServerDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
@@ -127,26 +125,24 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     @Override
     public CoreResponse<List<Server>> listServersWithAppsNames(AuthToken token, ServerQuery query) {
 
-        List<ServerApplication> result = serverApplicationDAO.listByQuery(query);
+        List<ServerApplication> serverApplications = serverApplicationDAO.listByQuery(query);
 
-        if (result == null) {
+        if (serverApplications == null) {
             return new CoreResponse<List<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
-        List<Server> servers = new ArrayList<>();
+        Map<Long, Server> servers = new HashMap<>();
 
-        result.forEach(sa -> {
-            Optional<Server> oServer = servers.stream()
-                    .filter(s -> Objects.equals(s.getId(), sa.getId()))
-                    .findFirst();
-            Server server = oServer.orElse(sa.toServer());
-            server.addAppName(sa.getAppName());
-            if (!oServer.isPresent()) {
-                servers.add(server);
+        serverApplications.forEach(sa -> {
+            Long serverId = sa.getServer().getId();
+            Server server = servers.getOrDefault(serverId, sa.getServer());
+            if (sa.getApplication() != null && HelperFunc.isNotEmpty(sa.getApplication().getName())) {
+                server.addAppName(sa.getApplication().getName());
             }
+            servers.put(serverId, server);
         });
 
-        return new CoreResponse<List<Server>>().success(servers);
+        return new CoreResponse<List<Server>>().success(new ArrayList<>(servers.values()));
     }
 
 
@@ -192,8 +188,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<Platform>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
-        jdbcManyRelationsHelper.fill(result, "servers");
-
         return new CoreResponse<Platform>().success(result);
     }
 
@@ -205,8 +199,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         if (result == null) {
             return new CoreResponse<Server>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
-
-        jdbcManyRelationsHelper.fill(result, "applications");
 
         return new CoreResponse<Server>().success(result);
     }
