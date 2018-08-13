@@ -1075,6 +1075,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderParams();
 
+    String siteFolderParamsLocal();
+
     String siteFolderComment();
 
     String siteFolderIP();
