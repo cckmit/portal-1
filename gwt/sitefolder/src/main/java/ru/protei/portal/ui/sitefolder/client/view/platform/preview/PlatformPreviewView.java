@@ -60,6 +60,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         return contactsContainer;
     }
 
+    @Override
+    public HasWidgets serversContainer() {
+        return serversContainer;
+    }
+
     @UiField
     SpanElement name;
     @UiField
@@ -70,6 +75,8 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     SpanElement comment;
     @UiField
     HTMLPanel contactsContainer;
+    @UiField
+    HTMLPanel serversContainer;
 
     @Inject
     FixedPositioner positioner;

@@ -6,6 +6,8 @@ import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Platform;
 
+import java.util.List;
+
 /**
  * События серверов
  */
@@ -55,6 +57,15 @@ public class SiteFolderServerEvents {
         public HasWidgets parent;
         public Long platformId;
         public ShowList(HasWidgets parent, Long platformId) {
+            this.parent = parent;
+            this.platformId = platformId;
+        }
+    }
+
+    public static class ShowDetailedList {
+        public HasWidgets parent;
+        public Long platformId;
+        public ShowDetailedList(HasWidgets parent, Long platformId) {
             this.parent = parent;
             this.platformId = platformId;
         }

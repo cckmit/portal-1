@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Application;
-import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.ent.Server;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
@@ -87,6 +84,19 @@ public class SiteFolderControllerImpl implements SiteFolderController {
         }
         return response.getData();
     }
+
+    @Override
+    public List<Server> getServersWithAppsNames(ServerQuery query) throws RequestFailedException {
+
+        log.debug("getServersWithAppsNames(): query={}", query);
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse<List<Server>> response = siteFolderService.listServersWithAppsNames(descriptor.makeAuthToken(), query);
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
 
     @Override
     public List<EntityOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException {

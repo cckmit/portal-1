@@ -138,7 +138,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
 
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText((value.getServers() == null ? "0" : String.valueOf(value.getServers().size())) + " " +lang.amountShort());
+            cell.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " +lang.amountShort());
         }
     };
     private Collection<ClickColumn<Platform>> columns = new LinkedList<>();

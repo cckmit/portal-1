@@ -196,9 +196,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.11 - PORTAL-224 Не работает хоткей для разлогинивания
  * 4.0.63.12 - PORTAL-289 В отчете по обращениям дублируются записи
  * 4.0.63.13 - PORTAL-250 Переработать секцию "Менеджеры" в проектах
+ * 4.0.63.14 - PORTAL-256 Добавить в preview карточку площадки информацию о серверах и приложениях
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.13";
+        return "4.0.63.14";
     }
 }

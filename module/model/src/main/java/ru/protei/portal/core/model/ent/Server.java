@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @JdbcEntity(table = "server")
@@ -26,11 +27,12 @@ public class Server implements Serializable, Removable {
     @JdbcColumn(name="comment")
     private String comment;
 
-    @JdbcOneToMany(localColumn = "id", table = "application", remoteColumn = "server_id")
-    private List<Application> applications;
-
     @JdbcJoinedObject(localColumn = "platform_id", remoteColumn = "id")
     private Platform platform;
+
+    private Long applicationsCount;
+
+    private List<String> appNames;
 
     public Long getId() {
         return id;
@@ -80,20 +82,35 @@ public class Server implements Serializable, Removable {
         this.comment = comment;
     }
 
-    public List<Application> getApplications() {
-        return applications;
-    }
-
-    public void setApplications(List<Application> applications) {
-        this.applications = applications;
-    }
-
     public Platform getPlatform() {
         return platform;
     }
 
     public void setPlatform(Platform platform) {
         this.platform = platform;
+    }
+
+    public Long getApplicationsCount() {
+        return applicationsCount;
+    }
+
+    public void setApplicationsCount(Long applicationsCount) {
+        this.applicationsCount = applicationsCount;
+    }
+
+    public List<String> getAppNames() {
+        return appNames;
+    }
+
+    public void setAppNames(List<String> appNames) {
+        this.appNames = appNames;
+    }
+
+    public void addAppName(String appName) {
+        if (appNames == null) {
+            appNames = new ArrayList<>();
+        }
+        appNames.add(appName);
     }
 
     @Override

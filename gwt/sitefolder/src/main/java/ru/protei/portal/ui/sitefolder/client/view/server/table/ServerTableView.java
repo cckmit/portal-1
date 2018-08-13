@@ -150,7 +150,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
         @Override
         public void fillColumnValue(Element cell, Server value) {
-            cell.setInnerText((value.getApplications() == null ? "0" : String.valueOf(value.getApplications().size())) + " " +lang.amountShort());
+            cell.setInnerText((value.getApplicationsCount() == null ? "0" : String.valueOf(value.getApplicationsCount())) + " " +lang.amountShort());
         }
     };
     private Collection<ClickColumn<Server>> columns = new LinkedList<>();
