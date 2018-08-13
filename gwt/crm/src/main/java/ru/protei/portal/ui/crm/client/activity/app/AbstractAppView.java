@@ -14,6 +14,8 @@ public interface AbstractAppView extends IsWidget {
 
     void setUser( String username, String company, String iconSrc );
 
+    void setAppVersion(String appVersion);
+
     HasWidgets getDetailsContainer();
 
     HasWidgets getMenuContainer();

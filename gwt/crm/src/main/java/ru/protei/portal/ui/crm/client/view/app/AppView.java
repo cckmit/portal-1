@@ -48,6 +48,11 @@ public class AppView extends Composite
     }
 
     @Override
+    public void setAppVersion(String appVersion) {
+        this.appVersion.setText(appVersion);
+    }
+
+    @Override
     public HasValue< LocaleImage > locale() {
         return locale;
     }
@@ -165,6 +170,8 @@ public class AppView extends Composite
     ImageElement icon;
     @UiField
     Anchor logo;
+    @UiField
+    Label appVersion;
 
     AbstractAppActivity activity;
 

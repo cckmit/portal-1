@@ -61,6 +61,8 @@
             </section>
         </g:HTMLPanel>
 
+        <g:Label styleName="app-version" ui:field="appVersion"/>
+
         <g:HTMLPanel ui:field="container" styleName="right-side"/>
 
         <g:HTMLPanel ui:field="notifyContainer" styleName="notifyPanel"/>

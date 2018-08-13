@@ -29,9 +29,9 @@ public abstract class SiteFolderPage implements Activity {
     public void onAuthSuccess(AuthEvents.Success event) {
         if (event.profile.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new MenuEvents.Add(TAB, UiConstants.TabIcons.SITE_FOLDER, DebugIds.SIDEBAR_MENU.SITE_FOLDER));
-            fireEvent(new MenuEvents.Add(SUB_TAB_PLATFORMS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_PLATFORMS).withParent(TAB));
-            fireEvent(new MenuEvents.Add(SUB_TAB_SERVERS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_SERVERS).withParent(TAB));
-            fireEvent(new MenuEvents.Add(SUB_TAB_APPS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_APPS).withParent(TAB));
+            //fireEvent(new MenuEvents.Add(SUB_TAB_PLATFORMS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_PLATFORMS).withParent(TAB));
+            //fireEvent(new MenuEvents.Add(SUB_TAB_SERVERS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_SERVERS).withParent(TAB));
+            //fireEvent(new MenuEvents.Add(SUB_TAB_APPS, null, DebugIds.SIDEBAR_MENU.SITE_FOLDER_APPS).withParent(TAB));
             fireEvent(new AppEvents.InitPage(new SiteFolderPlatformEvents.Show()));
         }
     }
@@ -54,7 +54,8 @@ public abstract class SiteFolderPage implements Activity {
     @Event
     public void onClickSection(SectionEvents.Clicked event) {
         if (TAB.equals(event.identity)) {
-            fireSelectTab(null);
+            //fireSelectTab(null);
+            fireEvent(new SiteFolderPlatformEvents.Show());
         } else if (SUB_TAB_PLATFORMS.equals(event.identity)) {
             fireEvent(new SiteFolderPlatformEvents.Show());
         } else if (SUB_TAB_SERVERS.equals(event.identity)) {
