@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -97,6 +98,9 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
     @JdbcColumn(name = "locale")
     private String locale;
+
+    @JdbcOneToMany( table = "worker_entry", localColumn = "id", remoteColumn = "personId" )
+    private List< WorkerEntry > workers;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -358,6 +362,14 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.oldId = oldId;
     }
 
+    public List< WorkerEntry > getWorkers() {
+        return workers;
+    }
+
+    public void setWorkers( List<WorkerEntry> workers ) {
+        this.workers = workers;
+    }
+
     @Override
     public boolean isAllowedRemove() {
         return !isDeleted;
@@ -368,26 +380,28 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         return "Person{" +
                 "id=" + id +
                 ", created=" + created +
-                ", creator='" + creator + '\"' +
+                ", creator='" + creator + '\'' +
                 ", companyId=" + companyId +
                 ", company=" + company +
-                ", position='" + position + '\"' +
-                ", department='" + department + '\"' +
-                ", firstName='" + firstName + '\"' +
-                ", lastName='" + lastName + '\"' +
-                ", secondName='" + secondName + '\"' +
-                ", displayName='" + displayName + '\"' +
-                ", displayShortName='" + displayShortName + '\"' +
-                ", genderCode='" + genderCode + '\"' +
+                ", position='" + position + '\'' +
+                ", department='" + department + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", displayShortName='" + displayShortName + '\'' +
+                ", genderCode='" + genderCode + '\'' +
                 ", birthday=" + birthday +
-                ", ipAddress='" + ipAddress + '\"' +
-                ", passportInfo='" + passportInfo + '\"' +
-                ", info='" + info + '\"' +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", passportInfo='" + passportInfo + '\'' +
+                ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
                 ", contactInfo=" + contactInfo +
-                ", relations='" + relations + '\"' +
-                ", oldId=" + String.valueOf(oldId) +
+                ", oldId=" + oldId +
+                ", relations='" + relations + '\'' +
+                ", locale='" + locale + '\'' +
+                ", workers=" + workers +
                 '}';
     }
 }

@@ -56,6 +56,7 @@
                 <!--<module>app/crm</module>-->
                 <module>gwt/casestate</module>
                 <module>gwt/sitefolder</module>
+                <module>gwt/employee</module>
             </modules>
         </profile>
 

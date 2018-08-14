@@ -80,6 +80,8 @@ public enum En_Privilege {
     SITE_FOLDER_CREATE (SITE_FOLDER, CREATE),
     SITE_FOLDER_REMOVE (SITE_FOLDER, REMOVE),
 
+    EMPLOYEE_VIEW (EMPLOYEE, VIEW),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
