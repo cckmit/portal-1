@@ -125,6 +125,40 @@ public abstract class IssueTableActivity
         this.initDetails = initDetails;
     }
 
+    @Event
+    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
+
+        if (!event.identity.equals(getClass().getName()) || filterIdToRemove == null) {
+            return;
+        }
+
+        filterService.removeIssueFilter(filterIdToRemove, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                filterIdToRemove = null;
+                fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                filterIdToRemove = null;
+                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueEvents.ChangeUserFilterModel());
+                filterView.resetFilter();
+            }
+        });
+    }
+
+    @Event
+    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
+
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        filterIdToRemove = null;
+    }
+
     @Override
     public void onItemClicked( CaseShortView value ) {
         showPreview( value );
@@ -163,21 +197,8 @@ public abstract class IssueTableActivity
 
     @Override
     public void onFilterRemoveClicked( Long id ) {
-
-        filterService.removeIssueFilter( id, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-
-                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent( new IssueEvents.ChangeUserFilterModel() );
-                filterView.resetFilter();
-            }
-        } );
+        filterIdToRemove = id;
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
     }
 
     @Override
@@ -536,6 +557,7 @@ public abstract class IssueTableActivity
     IssueFilterService issueFilterService;
 
     private static String CREATE_ACTION;
+    private Long filterIdToRemove;
     private AppEvents.InitDetails initDetails;
 
     private final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
