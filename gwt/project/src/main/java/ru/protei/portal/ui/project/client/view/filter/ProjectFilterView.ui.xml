@@ -4,7 +4,9 @@
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:district="urn:import:ru.protei.portal.ui.common.client.widget.selector.district"
-             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
+
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
@@ -33,6 +35,12 @@
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="PRODUCT"/>
                     <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.accessory}"/></label>
+                <div class="control-group single-option-container">
+                    <option:OptionItem ui:field="onlyMineProjects" styleName="toggle" name="{lang.projectOnlyMine}"/>
                 </div>
             </div>
         </div>

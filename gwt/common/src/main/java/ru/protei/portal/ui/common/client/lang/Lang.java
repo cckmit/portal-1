@@ -1224,4 +1224,8 @@ public interface Lang extends Messages, ContactItemLang {
     String version();
 
     String siteFolderClone();
+
+    String accessory();
+
+    String projectOnlyMine();
 }
