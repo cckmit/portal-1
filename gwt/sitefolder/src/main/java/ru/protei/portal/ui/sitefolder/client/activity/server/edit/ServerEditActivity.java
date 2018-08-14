@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.function.Consumer;
@@ -113,17 +114,10 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     }
 
     private void requestServer(Long serverId, Consumer<Server> successConsumer) {
-        siteFolderController.getServer(serverId, new RequestCallback<Server>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetObject(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Server result) {
-                successConsumer.accept(result);
-            }
-        });
+        siteFolderController.getServer(serverId, new FluentCallback<Server>()
+                .withErrorMessage(lang.errGetObject())
+                .withSuccess(successConsumer)
+        );
     }
 
     private void fillView(Server server) {
