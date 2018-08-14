@@ -198,9 +198,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.13 - PORTAL-250 Переработать секцию "Менеджеры" в проектах
  * 4.0.63.14 - PORTAL-256 Добавить в preview карточку площадки информацию о серверах и приложениях
  * 4.0.63.15 - PORTAL-288 Добавить вывод текущей версии в новом CRM.
+ * 4.0.63.17 - PORTAL-279 Возможность копирования объектов в разделе "Площадки Заказчиков"
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.15";
+        return "4.0.63.17";
     }
 }
