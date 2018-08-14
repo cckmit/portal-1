@@ -13,7 +13,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.function.Consumer;
 
@@ -35,7 +34,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
-        serverIdToBeCloned = null;
+        serverIdOfAppsToBeCloned = null;
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.serverId == null) {
@@ -43,7 +42,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
             if (event.serverIdToBeCloned != null) {
                 requestServer(event.serverIdToBeCloned, server -> {
-                    serverIdToBeCloned = server.getId();
+                    serverIdOfAppsToBeCloned = server.getId();
                     server.setId(null);
                     fillView(server);
                 });
@@ -71,20 +70,15 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
         fillServer(server);
 
-        siteFolderController.saveServer(server, serverIdToBeCloned, new RequestCallback<Server>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Server result) {
-                serverIdToBeCloned = null;
-                fireEvent(new SiteFolderServerEvents.ChangeModel());
-                fireEvent(new SiteFolderServerEvents.Changed(result));
-                fireEvent(new Back());
-            }
-        });
+        siteFolderController.saveServer(server, serverIdOfAppsToBeCloned, new FluentCallback<Server>()
+                .withErrorMessage(lang.siteFolderPlatformNotSaved())
+                .withSuccess(result -> {
+                    serverIdOfAppsToBeCloned = null;
+                    fireEvent(new SiteFolderServerEvents.ChangeModel());
+                    fireEvent(new SiteFolderServerEvents.Changed(result));
+                    fireEvent(new Back());
+                })
+        );
     }
 
     @Override
@@ -161,6 +155,6 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     PolicyService policyService;
 
     private Server server;
-    private Long serverIdToBeCloned;
+    private Long serverIdOfAppsToBeCloned;
     private AppEvents.InitDetails initDetails;
 }

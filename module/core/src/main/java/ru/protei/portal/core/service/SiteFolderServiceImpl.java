@@ -235,15 +235,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Server> createServer(AuthToken token, Server server, Long serverIdToBeCloned) {
+    public CoreResponse<Server> createServer(AuthToken token, Server server) {
 
         Long id = serverDAO.persist(server);
 
         if (id == null) {
             return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
         }
-
-        cloneApplicationsForServer(id, serverIdToBeCloned);
 
         Server result = serverDAO.get(id);
 
@@ -252,6 +250,18 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         }
 
         return new CoreResponse<Server>().success(result);
+    }
+
+    @Override
+    public CoreResponse<Server> createServerAndCloneApps(AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
+
+        CoreResponse<Server> response = createServer(token, server);
+
+        if (response.isOk() && response.getData() != null) {
+            cloneApplicationsForServer(response.getData().getId(), serverIdOfAppsToBeCloned);
+        }
+
+        return response;
     }
 
     @Override
@@ -353,12 +363,12 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
 
-    private void cloneApplicationsForServer(Long serverId, Long serverIdToBeCloned) {
-        if (serverIdToBeCloned == null || serverId == null) {
+    private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {
+        if (serverIdOfAppsToBeCloned == null || serverId == null) {
             return;
         }
 
-        List<Application> applications = applicationDAO.listByQuery(ApplicationQuery.forServerId(serverIdToBeCloned));
+        List<Application> applications = applicationDAO.listByQuery(ApplicationQuery.forServerId(serverIdOfAppsToBeCloned));
 
         if (applications == null || applications.size() == 0) {
             return;

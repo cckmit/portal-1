@@ -39,7 +39,7 @@ public interface SiteFolderControllerAsync {
 
     void savePlatform(Platform platform, AsyncCallback<Platform> async);
 
-    void saveServer(Server server, Long serverIdToBeCloned, AsyncCallback<Server> async);
+    void saveServer(Server server, Long serverIdOfAppsToBeCloned, AsyncCallback<Server> async);
 
     void saveApplication(Application application, AsyncCallback<Application> async);
 
