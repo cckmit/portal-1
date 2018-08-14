@@ -2,7 +2,7 @@ package ru.protei.portal.test.client;
 
 public class DebugIds {
 
-    // better to not change this prefix, some libraries (winter.web table for example) hardcoded its value
+    // better to not change this prefix, some libraries (brainworm table for example) hardcoded its value
     public static final String DEBUG_ID_PREFIX = "gwt-debug-";
 
     public interface AUTH {
@@ -39,9 +39,16 @@ public class DebugIds {
         String REGION = "sidebar-menu-region";
         String ROLE = "sidebar-menu-role";
         String SITE_FOLDER = "sidebar-menu-site-folder";
-        String SITE_FOLDER_PLATFORMS = "sidebar-menu-site-folder-platforms";
-        String SITE_FOLDER_SERVERS = "sidebar-menu-site-folder-servers";
-        String SITE_FOLDER_APPS = "sidebar-menu-site-folder-apps";
+        @Deprecated String SITE_FOLDER_PLATFORMS = "sidebar-menu-site-folder-platforms";
+        @Deprecated String SITE_FOLDER_SERVERS = "sidebar-menu-site-folder-servers";
+        @Deprecated String SITE_FOLDER_APPS = "sidebar-menu-site-folder-apps";
+    }
+
+    public interface SELECTOR_POPUP {
+        String ADD_NEW_ENTRY_BUTTON = "selector-popup-add-new-entry-button";
+        String SEARCH_INPUT = "selector-popup-search-input";
+        String SEARCH_ACTION = "selector-popup-search-action";
+        String ENTRY_LIST_CONTAINER = "selector-popup-entry-list-container";
     }
 
     public interface DASHBOARD {
@@ -133,6 +140,11 @@ public class DebugIds {
         String NUMBER_INPUT = "issue-number-input";
         String NAME_INPUT = "issue-name-input";
         String LINKS_BUTTON = "issue-links-button";
+        String LINKS_CONTAINER = "issue-links-container";
+        String LINKS_TYPE_SELECTOR = "issue-links-type-selector";
+        String LINKS_INPUT = "issue-links-input";
+        String LINKS_APPLY_BUTTON = "issue-links-apply-button";
+        String LINKS_ERROR_LABEL = "issue-links-error-label";
         String STATE_SELECTOR = "issue-state-selector";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
         String COMPANY_SELECTOR = "issue-company-selector";
@@ -144,7 +156,45 @@ public class DebugIds {
         String NOTIFIERS_SELECTOR_ADD_BUTTON = "issue-notifiers-selector-add-button";
         String NOTIFIERS_SELECTOR_CLEAR_BUTTON = "issue-notifiers-selector-clear-button";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-attachment-upload-button";
+        String ATTACHMENT_LIST_CONTAINER = "issue-attachment-list-container";
         String SAVE_BUTTON = "issue-save-button";
         String CANCEL_BUTTON = "issue-cancel-button";
+
+        interface LABEL {
+            String NAME = "issue-label-name";
+            String LINKS = "issue-label-links";
+            String STATE = "issue-label-state";
+            String IMPORTANCE = "issue-label-importance";
+            String COMPANY = "issue-label-company";
+            String CONTACT = "issue-label-contact";
+            String PRODUCT = "issue-label-product";
+            String MANAGER = "issue-label-manager";
+            String TIME_ELAPSED = "issue-label-time-elapsed";
+            String INFO = "issue-label-info";
+            String SUBSCRIPTIONS = "issue-label-subscriptions";
+            String NOTIFIERS = "issue-label-notifiers";
+            String ATTACHMENTS = "issue-label-attachments";
+        }
+    }
+
+    public interface ISSUE_PREVIEW {
+        String PRIVACY_ICON = "issue-preview-privacy-icon";
+        String FULL_SCREEN_BUTTON = "issue-preview-full-screen-button";
+        String TITLE_LABEL = "issue-preview-title-label";
+        String LINKS_CONTAINER = "issue-preview-links-container";
+        String DATE_CREATED_LABEL = "issue-preview-date-created-label";
+        String IMPORTANCE_LABEL = "issue-preview-importance-label";
+        String PRODUCT_LABEL = "issue-preview-product-label";
+        String STATE_LABEL = "issue-preview-state-label";
+        String TIME_ELAPSED_LABEL = "issue-preview-time-elapsed-label";
+        String COMPANY_LABEL = "issue-preview-company-label";
+        String CONTACT_LABEL = "issue-preview-contact-label";
+        String OUR_COMPANY_LABEL = "issue-preview-our-company-label";
+        String MANAGER_LABEL = "issue-preview-manager-label";
+        String SUBSCRIPTION_LABEL = "issue-preview-subscription-label";
+        String NAME_LABEL = "issue-preview-name-label";
+        String INFO_LABEL = "issue-preview-info-label";
+        String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
+        String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";
     }
 }

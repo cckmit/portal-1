@@ -149,6 +149,10 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
         this.isHiddenControls = hideControls;
     }
 
+    public void setEnsureDebugId(String debugId) {
+        attachmentList.ensureDebugId(debugId);
+    }
+
     private AbstractAttachmentView createView(Attachment attachment){
         AbstractAttachmentView view = attachmentViewFactory.get();
         view.setActivity(this);

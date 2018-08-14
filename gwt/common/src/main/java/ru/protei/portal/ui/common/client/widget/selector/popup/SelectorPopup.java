@@ -15,6 +15,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -34,6 +35,7 @@ public class SelectorPopup
         setWidget( ourUiBinder.createAndBindUi( this ) );
         setAutoHideEnabled( true );
         setAutoHideOnHistoryEventsEnabled( true );
+        ensureDefaultDebugIds();
 
         resizeHandler = new ResizeHandler() {
             @Override
@@ -179,6 +181,29 @@ public class SelectorPopup
 
     public void setSearchAutoFocus(boolean val){
         searchAutoFocus = val;
+    }
+
+    private void ensureDefaultDebugIds() {
+        setEnsureDebugIdAddEntryAction(DebugIds.SELECTOR_POPUP.ADD_NEW_ENTRY_BUTTON);
+        setEnsureDebugIdSearch(DebugIds.SELECTOR_POPUP.SEARCH_INPUT);
+        setEnsureDebugIdSearchAction(DebugIds.SELECTOR_POPUP.SEARCH_ACTION);
+        setEnsureDebugIdListContainer(DebugIds.SELECTOR_POPUP.ENTRY_LIST_CONTAINER);
+    }
+
+    public void setEnsureDebugIdAddEntryAction(String debugId) {
+        addButton.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdSearch(String debugId) {
+        search.setEnsureDebugIdTextBox(debugId);
+    }
+
+    public void setEnsureDebugIdSearchAction(String debugId) {
+        search.setEnsureDebugIdAction(debugId);
+    }
+
+    public void setEnsureDebugIdListContainer(String debugId) {
+        childContainer.ensureDebugId(debugId);
     }
 
     Timer searchValueChangeTimer = new Timer() {
