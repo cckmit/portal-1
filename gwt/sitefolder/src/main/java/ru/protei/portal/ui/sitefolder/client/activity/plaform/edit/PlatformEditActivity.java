@@ -4,9 +4,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -27,7 +27,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderPlatformEvents.Edit event) {
 
         initDetails.parent.clear();
@@ -37,7 +37,9 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         if (event.platformId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformNew()));
             Platform platform = new Platform();
-            platform.setCompany(event.company);
+            if (event.company != null) {
+                platform.setCompany(event.company);
+            }
             fillView(platform);
             return;
         }
@@ -116,15 +118,17 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
     private void fillView(Platform platform) {
         this.platform = platform;
+        boolean isNotNew = platform.getId() != null;
+        boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         view.name().setValue(platform.getName());
         view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
-        view.createButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
-        view.openButtonVisibility().setVisible(platform.getId() != null);
-        view.listContainerVisibility().setVisible(platform.getId() != null);
-        view.listContainerHeaderVisibility().setVisible(platform.getId() != null);
-        if (platform.getId() != null) {
+        view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
+        view.openButtonVisibility().setVisible(isNotNew);
+        view.listContainerVisibility().setVisible(isNotNew);
+        view.listContainerHeaderVisibility().setVisible(isNotNew);
+        if (isNotNew) {
             fireEvent(new SiteFolderServerEvents.ShowList(view.listContainer(), platform.getId()));
         }
 

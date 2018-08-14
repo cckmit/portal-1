@@ -45,11 +45,24 @@ public class ServerListItemView extends Composite implements AbstractServerListI
         edit.setVisible(visible);
     }
 
+    @Override
+    public void setCopyVisible(boolean visible) {
+        copy.setVisible(visible);
+    }
+
     @UiHandler("edit")
     public void editClick(ClickEvent event) {
         event.preventDefault();
         if (activity != null) {
             activity.onEditClicked(this);
+        }
+    }
+
+    @UiHandler("copy")
+    public void copyClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onCopyClicked(this);
         }
     }
 
@@ -69,6 +82,8 @@ public class ServerListItemView extends Composite implements AbstractServerListI
     SpanElement comment;
     @UiField
     Anchor edit;
+    @UiField
+    Anchor copy;
     @UiField
     Anchor remove;
 

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -83,6 +84,26 @@ public class Platform implements Serializable, Removable {
     public void setServersCount(Long serversCount) {
         this.serversCount = serversCount;
     }
+
+
+    public static Platform fromEntityOption(EntityOption entityOption) {
+        if (entityOption == null) {
+            return null;
+        }
+
+        Platform platform = new Platform();
+        platform.setId(entityOption.getId());
+        platform.setName(entityOption.getDisplayText());
+        return platform;
+    }
+
+    public EntityOption toEntityOption() {
+        EntityOption entityOption = new EntityOption();
+        entityOption.setId(getId());
+        entityOption.setDisplayText(getName());
+        return entityOption;
+    }
+
 
     @Override
     public boolean isAllowedRemove() {

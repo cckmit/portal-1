@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -112,6 +113,26 @@ public class Server implements Serializable, Removable {
         }
         appNames.add(appName);
     }
+
+
+    public static Server fromEntityOption(EntityOption entityOption) {
+        if (entityOption == null) {
+            return null;
+        }
+
+        Server server = new Server();
+        server.setId(entityOption.getId());
+        server.setName(entityOption.getDisplayText());
+        return server;
+    }
+
+    public EntityOption toEntityOption() {
+        EntityOption entityOption = new EntityOption();
+        entityOption.setId(getId());
+        entityOption.setDisplayText(getName());
+        return entityOption;
+    }
+
 
     @Override
     public boolean isAllowedRemove() {

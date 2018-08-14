@@ -180,13 +180,17 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
-    public Server saveServer(Server server) throws RequestFailedException {
+    public Server saveServer(Server server, Long serverIdOfAppsToBeCloned) throws RequestFailedException {
 
         log.debug("saveServer(): server={}", server);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         CoreResponse<Server> response;
         if (server.getId() == null) {
-            response = siteFolderService.createServer(descriptor.makeAuthToken(), server);
+            if (serverIdOfAppsToBeCloned == null) {
+                response = siteFolderService.createServer(descriptor.makeAuthToken(), server);
+            } else {
+                response = siteFolderService.createServerAndCloneApps(descriptor.makeAuthToken(), server, serverIdOfAppsToBeCloned);
+            }
         } else {
             response = siteFolderService.updateServer(descriptor.makeAuthToken(), server);
         }
