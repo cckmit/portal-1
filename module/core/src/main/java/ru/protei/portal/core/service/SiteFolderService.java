@@ -55,7 +55,7 @@ public interface SiteFolderService {
     CoreResponse<Platform> createPlatform(AuthToken token, Platform platform);
 
     @Privileged(En_Privilege.SITE_FOLDER_CREATE)
-    CoreResponse<Server> createServer(AuthToken token, Server server);
+    CoreResponse<Server> createServer(AuthToken token, Server server, Long serverIdToBeCloned);
 
     @Privileged(En_Privilege.SITE_FOLDER_CREATE)
     CoreResponse<Application> createApplication(AuthToken token, Application application);

@@ -36,26 +36,32 @@ public abstract class SiteFolderPage implements Activity {
         }
     }
 
-    //@Event
-    //public void onShowTable(SiteFolderPlatformEvents.Show event) {
-    //    fireSelectTab(SUB_TAB_PLATFORMS);
-    //}
+    @Event
+    public void onShowTable(SiteFolderPlatformEvents.Show event) {
+        fireSelectTab();
+        // fireSelectTab(SUB_TAB_PLATFORMS);
+    }
 
-    //@Event
-    //public void onShowTable(SiteFolderServerEvents.Show event) {
-    //    fireSelectTab(SUB_TAB_SERVERS);
-    //}
+    @Event
+    public void onShowTable(SiteFolderServerEvents.Show event) {
+        fireSelectTab();
+        //fireSelectTab(SUB_TAB_SERVERS);
+    }
 
-    //@Event
-    //public void onShowTable(SiteFolderAppEvents.Show event) {
-    //    fireSelectTab(SUB_TAB_APPS);
-    //}
+    @Event
+    public void onShowTable(SiteFolderAppEvents.Show event) {
+        fireSelectTab();
+        //fireSelectTab(SUB_TAB_APPS);
+    }
 
     @Event
     public void onClickSection(SectionEvents.Clicked event) {
+        if (!TAB.equals(event.identity)) {
+            return;
+        }
         fireEvent(new SiteFolderPlatformEvents.Show());
         //if (TAB.equals(event.identity)) {
-        //    fireSelectTab(null);
+        //    //fireSelectTab(null);
         //} else if (SUB_TAB_PLATFORMS.equals(event.identity)) {
         //    fireEvent(new SiteFolderPlatformEvents.Show());
         //} else if (SUB_TAB_SERVERS.equals(event.identity)) {
@@ -63,6 +69,11 @@ public abstract class SiteFolderPage implements Activity {
         //} else if (SUB_TAB_APPS.equals(event.identity)) {
         //    fireEvent(new SiteFolderAppEvents.Show());
         //}
+    }
+
+    private void fireSelectTab() {
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new MenuEvents.Select(TAB));
     }
 
     //private void fireSelectTab(String sub) {

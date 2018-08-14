@@ -5,7 +5,6 @@ import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.ent.Server;
 
 /**
  * События серверов
@@ -28,10 +27,10 @@ public class SiteFolderServerEvents {
     public static class Edit {
         @Name("server")
         public Long serverId;
+        @Name("clone")
+        public Long serverIdToBeCloned;
         @Omit
         public Platform platform;
-        @Omit
-        public Server server;
         public Edit() {
             this(null);
         }
@@ -43,9 +42,9 @@ public class SiteFolderServerEvents {
             edit.platform = platform;
             return edit;
         }
-        public static Edit withServer(Server server) {
+        public static Edit withClone(Long serverIdToBeCloned) {
             Edit edit = new Edit();
-            edit.server = server;
+            edit.serverIdToBeCloned = serverIdToBeCloned;
             return edit;
         }
     }

@@ -180,13 +180,13 @@ public class SiteFolderControllerImpl implements SiteFolderController {
     }
 
     @Override
-    public Server saveServer(Server server) throws RequestFailedException {
+    public Server saveServer(Server server, Long serverIdToBeCloned) throws RequestFailedException {
 
         log.debug("saveServer(): server={}", server);
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         CoreResponse<Server> response;
         if (server.getId() == null) {
-            response = siteFolderService.createServer(descriptor.makeAuthToken(), server);
+            response = siteFolderService.createServer(descriptor.makeAuthToken(), server, serverIdToBeCloned);
         } else {
             response = siteFolderService.updateServer(descriptor.makeAuthToken(), server);
         }

@@ -88,11 +88,6 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     }
 
     @Override
-    public HasVisibility cloneButtonVisibility() {
-        return cloneButton;
-    }
-
-    @Override
     public HasWidgets contactsContainer() {
         return contactsContainer;
     }
@@ -125,13 +120,6 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         }
     }
 
-    @UiHandler("cloneButton")
-    public void cloneButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onCloneClicked();
-        }
-    }
-
     @UiHandler("company")
     public void onCompanySelected(ValueChangeEvent<EntityOption> event) {
         if (activity != null) {
@@ -160,8 +148,6 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     Button createButton;
     @UiField
     Button openButton;
-    @UiField
-    Button cloneButton;
     @UiField
     HTMLPanel contactsContainer;
 

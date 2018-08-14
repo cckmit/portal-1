@@ -35,6 +35,4 @@ public interface AbstractServerEditView extends IsWidget {
     HasVisibility createButtonVisibility();
 
     HasVisibility openButtonVisibility();
-
-    HasVisibility cloneButtonVisibility();
 }

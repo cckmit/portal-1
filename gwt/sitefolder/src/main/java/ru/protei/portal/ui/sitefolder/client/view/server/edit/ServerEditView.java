@@ -94,11 +94,6 @@ public class ServerEditView extends Composite implements AbstractServerEditView 
         return openButton;
     }
 
-    @Override
-    public HasVisibility cloneButtonVisibility() {
-        return cloneButton;
-    }
-
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -127,13 +122,6 @@ public class ServerEditView extends Composite implements AbstractServerEditView 
         }
     }
 
-    @UiHandler("cloneButton")
-    public void cloneButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onCloneClicked();
-        }
-    }
-
     @UiField
     ValidableTextBox name;
     @Inject
@@ -157,8 +145,6 @@ public class ServerEditView extends Composite implements AbstractServerEditView 
     Button createButton;
     @UiField
     Button openButton;
-    @UiField
-    Button cloneButton;
 
     private AbstractServerEditActivity activity;
 

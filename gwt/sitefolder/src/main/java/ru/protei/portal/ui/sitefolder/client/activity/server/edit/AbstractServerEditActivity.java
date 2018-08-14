@@ -6,5 +6,4 @@ public interface AbstractServerEditActivity {
     void onCancelClicked();
     void onOpenClicked();
     void onCreateClicked();
-    void onCloneClicked();
 }

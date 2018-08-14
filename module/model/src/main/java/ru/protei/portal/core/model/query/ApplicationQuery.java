@@ -27,6 +27,12 @@ public class ApplicationQuery extends BaseQuery {
         return query;
     }
 
+    public static ApplicationQuery forServerId(Long serverId) {
+        ApplicationQuery query = new ApplicationQuery();
+        query.setServerId(serverId);
+        return query;
+    }
+
     public Long getApplicationId() {
         return applicationId;
     }

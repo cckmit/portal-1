@@ -23,6 +23,4 @@ public interface AbstractApplicationEditView extends IsWidget {
     HasEnabled serverEnabled();
 
     HasValidable serverValidator();
-
-    HasVisibility cloneButtonVisibility();
 }

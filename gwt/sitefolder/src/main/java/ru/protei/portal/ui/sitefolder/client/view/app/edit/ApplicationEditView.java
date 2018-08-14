@@ -64,11 +64,6 @@ public class ApplicationEditView extends Composite implements AbstractApplicatio
         return server;
     }
 
-    @Override
-    public HasVisibility cloneButtonVisibility() {
-        return cloneButton;
-    }
-
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -80,13 +75,6 @@ public class ApplicationEditView extends Composite implements AbstractApplicatio
     public void cancelButtonClick(ClickEvent event) {
         if (activity != null) {
             activity.onCancelClicked();
-        }
-    }
-
-    @UiHandler("cloneButton")
-    public void cloneButtonClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onCloneClicked();
         }
     }
 
@@ -103,8 +91,6 @@ public class ApplicationEditView extends Composite implements AbstractApplicatio
     Button saveButton;
     @UiField
     Button cancelButton;
-    @UiField
-    Button cloneButton;
 
     private AbstractApplicationEditActivity activity;
 
