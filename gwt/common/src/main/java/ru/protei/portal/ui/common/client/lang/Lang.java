@@ -1230,4 +1230,6 @@ public interface Lang extends Messages, ContactItemLang {
     String accessory();
 
     String projectOnlyMine();
+
+    String selectComponent();
 }

@@ -26,6 +26,11 @@ public class ApplicationDAO_Impl extends PortalBaseJdbcDAO<Application> implemen
                         .append(JdbcHelper.makeSqlStringCollection(query.getServerIds(), args, null));
             }
 
+            if (query.getComponentIds() != null && !query.getComponentIds().isEmpty()) {
+                condition.append(" and application.dev_unit_id in ")
+                        .append(JdbcHelper.makeSqlStringCollection(query.getComponentIds(), args, null));
+            }
+
             if (query.getSearchString() != null && !query.getSearchString().isEmpty()) {
                 condition.append(" and application.name like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));

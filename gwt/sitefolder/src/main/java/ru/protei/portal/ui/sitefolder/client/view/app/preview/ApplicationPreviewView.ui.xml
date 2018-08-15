@@ -15,6 +15,11 @@
                 </div>
 
                 <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.devUnitComponent}"/></label>
+                    <span class="col-xs-8" ui:field="component"/>
+                </div>
+
+                <div class="col-xs-12">
                     <label class="col-xs-4"><ui:text from="{lang.siteFolderServer}"/></label>
                     <span class="col-xs-8" ui:field="server"/>
                 </div>

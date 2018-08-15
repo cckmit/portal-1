@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.struct.PathInfo;
 import ru.protei.portal.core.model.struct.PathItem;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
@@ -61,6 +62,12 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
     }
 
     @Override
+    public void onComponentSelected() {
+        ProductShortView value = view.component().getValue();
+        view.name().setValue(value == null ? "" : value.getName());
+    }
+
+    @Override
     public void onSaveClicked() {
 
         if (!isValid()) {
@@ -92,6 +99,7 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
     private void fillView(Application application) {
         this.application = application;
         view.setPlatformId(application.getServer() == null ? null : application.getServer().getPlatformId());
+        view.component().setValue(application.getComponent() == null ? null : application.getComponent().toProductShortView());
         view.name().setValue(application.getName());
         view.server().setValue(application.getServer() == null ? null : application.getServer().toEntityOption());
         view.comment().setValue(application.getComment());
@@ -107,6 +115,9 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
         application.setName(view.name().getValue());
         application.setServerId(view.server().getValue().getId());
         application.setComment(view.comment().getValue());
+        if (view.component().getValue() != null) {
+            application.setComponentId(view.component().getValue().getId());
+        }
     }
 
     private boolean isValid() {

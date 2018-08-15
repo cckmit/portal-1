@@ -44,6 +44,11 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     }
 
     @Override
+    public void setComponent(String value) {
+        component.setInnerText(value);
+    }
+
+    @Override
     public void setServer(String value) {
         server.setInnerText(value);
     }
@@ -69,6 +74,8 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     SpanElement paths;
     @UiField
     SpanElement server;
+    @UiField
+    SpanElement component;
 
     @Inject
     FixedPositioner positioner;

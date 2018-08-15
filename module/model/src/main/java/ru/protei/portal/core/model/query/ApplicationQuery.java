@@ -10,6 +10,7 @@ public class ApplicationQuery extends BaseQuery {
 
     private Long applicationId;
     private List<Long> serverIds;
+    private List<Long> componentIds;
     private String comment;
 
     public ApplicationQuery() {
@@ -60,6 +61,14 @@ public class ApplicationQuery extends BaseQuery {
 
     public void addServerId(Long serverId) {
         this.serverIds.add(serverId);
+    }
+
+    public List<Long> getComponentIds() {
+        return componentIds;
+    }
+
+    public void setComponentIds(List<Long> componentIds) {
+        this.componentIds = componentIds;
     }
 
     public String getComment() {

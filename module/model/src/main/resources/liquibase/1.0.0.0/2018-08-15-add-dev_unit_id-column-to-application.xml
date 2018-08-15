@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2018-08-15-add-dev_unit_id-column-to-application" author="buchmastov">
+        <addColumn tableName="application">
+            <column name="dev_unit_id" type="BIGINT"/>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="application_dev_unit_fk"
+                                 baseTableName="application" baseColumnNames="dev_unit_id"
+                                 referencedTableName="dev_unit" referencedColumnNames="id"
+                                 onDelete="SET NULL" onUpdate="CASCADE"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -25,8 +25,14 @@ public class Application implements Serializable, Removable {
     @JdbcColumn(name="paths", converterType = ConverterType.JSON)
     private PathInfo paths;
 
+    @JdbcColumn(name="dev_unit_id")
+    private Long componentId;
+
     @JdbcJoinedObject(localColumn = "server_id", remoteColumn = "id")
     private Server server;
+
+    @JdbcJoinedObject(localColumn = "dev_unit_id", remoteColumn = "id")
+    private DevUnit component;
 
     public Long getId() {
         return id;
@@ -76,6 +82,22 @@ public class Application implements Serializable, Removable {
         this.server = server;
     }
 
+    public Long getComponentId() {
+        return componentId;
+    }
+
+    public void setComponentId(Long componentId) {
+        this.componentId = componentId;
+    }
+
+    public DevUnit getComponent() {
+        return component;
+    }
+
+    public void setComponent(DevUnit component) {
+        this.component = component;
+    }
+
 
     public static Application fromEntityOption(EntityOption entityOption) {
         if (entityOption == null) {
@@ -106,6 +128,7 @@ public class Application implements Serializable, Removable {
         return "Application{" +
                 "id=" + id +
                 ", serverId=" + serverId +
+                ", componentId=" + componentId +
                 ", name=" + name +
                 ", comment=" + comment +
                 ", paths=" + paths +
