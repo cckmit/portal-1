@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Application;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -236,6 +237,12 @@ public abstract class ApplicationTableActivity implements
                 ? null
                 : filterView.servers().getValue().stream()
                 .map(EntityOption::getId)
+                .collect(Collectors.toList())
+        );
+        query.setComponentIds(filterView.components().getValue() == null
+                ? null
+                : filterView.components().getValue().stream()
+                .map(ProductShortView::getId)
                 .collect(Collectors.toList())
         );
         query.setComment(filterView.comment().getValue());

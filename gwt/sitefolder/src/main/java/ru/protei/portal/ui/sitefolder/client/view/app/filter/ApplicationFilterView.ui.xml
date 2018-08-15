@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:server='urn:import:ru.protei.portal.ui.sitefolder.client.view.server.widget.selector'>
+             xmlns:server='urn:import:ru.protei.portal.ui.sitefolder.client.view.server.widget.selector'
+             xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -20,6 +21,8 @@
             </div>
 
             <server:ServerMultiSelector ui:field="servers" header="{lang.siteFolderServer}" addStyleNames="form-group col-xs-12"/>
+
+            <component:ComponentMultiSelector ui:field="components" header="{lang.devUnitComponent}" addStyleNames="form-group col-xs-12"/>
 
             <div class="form-group col-xs-12">
                 <label>
