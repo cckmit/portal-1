@@ -1,14 +1,20 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -23,11 +29,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Активность таблицы сотрудников
  */
-public abstract class EmployeeListActivity implements AbstractEmployeeListActivity, AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, Activity {
+public abstract class EmployeeListActivity implements AbstractEmployeeListActivity,
+        AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, Activity {
 
     @PostConstruct
     public void init() {
@@ -47,16 +55,16 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onShow( CompanyEvents.Show event ) {
-        fireEvent(new AppEvents.InitPanelName(lang.companies()));
+    public void onShow( EmployeeEvents.Show event ) {
+
+        fireEvent( new AppEvents.InitPanelName( lang.employees() ) );
         init.parent.clear();
-        init.parent.add(view.asWidget());
+        init.parent.add( view.asWidget() );
 
         requestEmployees();
     }
 
-    @Event
-    public void onFilterChange( CompanyEvents.UpdateData event ) {
+    public void onFilterChanged() {
         requestEmployees();
     }
 
@@ -76,7 +84,21 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setActivity( this );
 
         itemView.setName( employee.getDisplayName() );
-        itemView.setPhoto( "/home/turik/programs/portal-api/avatars/" + employee.getId() + ".jpg" );
+        itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
+
+        PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
+        itemView.setPhone( infoFacade.publicPhonesAsString() );
+        itemView.setEmail( infoFacade.publicEmailsAsString() );
+
+        WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
+        WorkerEntry mainEntry = entryFacade.getMainEntry();
+        if ( mainEntry != null ) {
+            itemView.setCompany( mainEntry.getCompanyName() );
+            itemView.setDepartment( mainEntry.getDepartment().getName() );
+            itemView.setPosition( mainEntry.getPosition().getName() );
+        }
+
+        itemView.setPhoto( "./images/avatars/" + employee.getId() + ".jpg" );
 
         return itemView;
     }
@@ -89,7 +111,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getChildContainer().clear();
         itemViewToModel.clear();
 
-        employeeService.getEmployees(makeQuery(), new RequestCallback< List< Person > >() {
+        employeeService.getEmployees( makeQuery(), new RequestCallback< List< Person > >() {
 
             @Override
             public void onError( Throwable throwable ) {}
@@ -102,7 +124,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     private EmployeeQuery makeQuery() {
-        return new EmployeeQuery();
+        return new EmployeeQuery( false, false, true,
+                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
     }
 
     Consumer< Person > fillViewer = new Consumer< Person >() {

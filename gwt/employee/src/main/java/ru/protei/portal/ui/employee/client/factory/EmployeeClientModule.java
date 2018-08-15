@@ -22,7 +22,7 @@ public class EmployeeClientModule extends AbstractGinModule {
 
         bind( EmployeeListActivity.class ).asEagerSingleton();
         bind( AbstractEmployeeListView.class ).to( EmployeeListView.class ).in( Singleton.class );
-        bind( AbstractEmployeeItemView.class ).to( EmployeeItemView.class ).in( Singleton.class );
+        bind( AbstractEmployeeItemView.class ).to( EmployeeItemView.class );
 
         bind( AbstractEmployeeFilterView.class ).to( EmployeeFilterView.class ).in( Singleton.class );
     }

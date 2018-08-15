@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel tag="li">
+    <g:HTMLPanel tag="li" styleName="employee">
         <div class="header-block">
             <h2 ui:field="name"></h2>
             <p>
@@ -10,7 +10,35 @@
                 <g:Anchor ui:field="edit" styleName="fa fa-fw fa-pencil" href="#"/>
                 <g:Anchor ui:field="favorite" styleName="fa fa-fw fa-heart" href="#"/>
             </p>
-            <g:Image ui:field="photo" styleName="dev-unit-type-list-image"/>
+
+            <div>
+                <g:Image ui:field="photo" styleName="employee-list-image"/>
+            </div>
+
+            <g:HTMLPanel ui:field="birthdayContainer" styleName="contacts">
+                <i class="fa fa-birthday-cake"></i>
+                <span ui:field="birthday"></span>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="phoneContainer" styleName="contacts">
+                <i class="fa fa-phone"></i>
+                <span ui:field="phone"></span>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="emailContainer" styleName="contacts">
+                <i class="fa fa-envelope"></i>
+                <a href="#" ui:field="email"></a>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="companyContainer" styleName="contacts">
+                <i class="icon icon-organization margin-right-0"></i>
+                <span ui:field="company"></span>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="departmentContainer" styleName="contacts">
+                <i class="fa fa-sitemap"></i>
+                <span ui:field="department"></span>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="positionContainer" styleName="contacts">
+                <i class="fa fa-street-view"></i>
+                <span ui:field="position"></span>
+            </g:HTMLPanel>
         </div>
         <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>
     </g:HTMLPanel>

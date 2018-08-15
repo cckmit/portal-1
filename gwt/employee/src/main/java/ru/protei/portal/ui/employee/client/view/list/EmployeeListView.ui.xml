@@ -8,9 +8,7 @@
         <div class="block low col-xs-9">
             <platelist:PlateList ui:field="childContainer"
                                  styleName="plate-list"
-                                 createButtonCaption="{lang.buttonCreate}"
-                                 createButtonStyleName="plate-list-create"
-            />
+                                 createButtonVisible="false"/>
         </div>
         <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
     </g:HTMLPanel>

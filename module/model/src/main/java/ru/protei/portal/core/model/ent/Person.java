@@ -100,7 +100,7 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     private String locale;
 
     @JdbcOneToMany( table = "worker_entry", localColumn = "id", remoteColumn = "personId" )
-    private List< WorkerEntry > workers;
+    private List< WorkerEntry > workerEntries;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -362,12 +362,13 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.oldId = oldId;
     }
 
-    public List< WorkerEntry > getWorkers() {
-        return workers;
+
+    public List< WorkerEntry > getWorkerEntries() {
+        return workerEntries;
     }
 
-    public void setWorkers( List<WorkerEntry> workers ) {
-        this.workers = workers;
+    public void setWorkerEntries( List< WorkerEntry > workerEntries ) {
+        this.workerEntries = workerEntries;
     }
 
     @Override
@@ -401,7 +402,7 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +
                 ", locale='" + locale + '\'' +
-                ", workers=" + workers +
+                ", workerEntries=" + workerEntries +
                 '}';
     }
 }

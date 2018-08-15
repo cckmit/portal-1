@@ -14,6 +14,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
+import java.util.logging.Logger;
+
 /**
  * Активность по работе с вкладкой "Сотрудники"
  */
@@ -21,7 +23,7 @@ public abstract class EmployeePage implements Activity {
 
     @PostConstruct
     public void onInit() {
-        ТAB = lang.contacts();
+        ТAB = lang.employees();
     }
 
     @Event
@@ -57,4 +59,6 @@ public abstract class EmployeePage implements Activity {
 
     private String ТAB;
     private EmployeeEvents.Show show = new EmployeeEvents.Show();
+    Logger logger = Logger.getLogger( this.getClass().getName() );
+
 }

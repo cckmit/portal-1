@@ -85,6 +85,13 @@ ul.plate-list {
       }
     }
 
+    &.employee {
+      height: 250px;
+      .header-block {
+        height: calc(240px - 3em);
+      }
+    }
+
     &.partner .header-block:after {
       font-family: FontAwesome, serif;
       content: "\f2b5";

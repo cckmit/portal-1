@@ -89,7 +89,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (list == null)
             new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
         return new CoreResponse<List<PersonShortView>>().success(result,result.size());
     }
@@ -101,7 +101,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (list == null)
             new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        jdbcManyRelationsHelper.fill(list, "workers");
+        jdbcManyRelationsHelper.fill(list, "workerEntries");
 
         return new CoreResponse<List<Person>>().success(list);
     }

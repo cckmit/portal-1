@@ -35,6 +35,9 @@ public class WorkerEntry extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "companyId", table = "company_group_home", remoteColumn = "companyId", mappedColumn = "external_code")
     private String externalCode;
 
+    @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "cname")
+    private String companyName;
+
     @JdbcColumn(name="positionId")
     private Long positionId;
 
@@ -172,5 +175,9 @@ public class WorkerEntry extends AuditableObject {
     @Override
     public String getAuditType() {
         return "Worker";
+    }
+
+    public String getCompanyName() {
+        return companyName;
     }
 }
