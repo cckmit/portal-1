@@ -180,19 +180,12 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
         return En_DevUnitType.forId(this.typeId);
     }
 
-    public DevUnit getParent() {
-        return parents == null || parents.size() == 0 ? null : parents.get(0);
+    public List<DevUnit> getParents() {
+        return parents;
     }
 
-    public void setParent(DevUnit parent) {
-        if (parents == null) {
-            parents = new ArrayList<>();
-        } else {
-            parents.clear();
-        }
-        if (parent != null) {
-            parents.add(parent);
-        }
+    public void setParents(List<DevUnit> parents) {
+        this.parents = parents;
     }
 
     public List<DevUnit> getChildren() {
@@ -200,14 +193,7 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     }
 
     public void setChildren(List<DevUnit> children) {
-        if (this.children == null) {
-            this.children = new ArrayList<>();
-        }
-        if (children == null) {
-            this.children.clear();
-        } else {
-            this.children = children;
-        }
+        this.children = children;
     }
 
     @Override

@@ -1232,4 +1232,6 @@ public interface Lang extends Messages, ContactItemLang {
     String projectOnlyMine();
 
     String selectComponent();
+
+    String belongsTo();
 }

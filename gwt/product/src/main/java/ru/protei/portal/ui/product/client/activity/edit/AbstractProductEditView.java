@@ -20,15 +20,17 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setActivity( AbstractProductEditActivity activity );
 
-    HasValue<String> name();
+    void setCurrentProduct(ProductShortView product);
 
-    HasValue<ProductShortView> product();
+    HasValue<String> name();
 
     HasValue<En_DevUnitType> type();
 
     HasValidable nameValidator();
 
     HasValue<String> info();
+
+    HasValue<Set<ProductShortView>> parents();
 
     HasValue<Set<ProductShortView>> components();
 

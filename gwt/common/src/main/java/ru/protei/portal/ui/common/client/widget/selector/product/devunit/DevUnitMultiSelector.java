@@ -7,7 +7,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Мультиселектор продуктов
@@ -21,14 +23,10 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         setClearName( lang.buttonClear() );
     }
 
-    public void fillOptions( List< ProductShortView > options ) {
-        clearOptions();
-        if (hasNullValue) {
-            addOption(lang.productWithout(), new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
-        }
-        for ( ProductShortView option : options ) {
-            addOption( option.getName(), option );
-        }
+    public void fillOptions(List<ProductShortView> o) {
+        options.clear();
+        options.addAll(o);
+        fillOptions();
     }
 
     @Override
@@ -38,8 +36,25 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         this.hasNullValue = hasNullValue;
     }
 
+    public void exclude(ProductShortView exclude) {
+        this.exclude = exclude;
+        fillOptions();
+    }
+
+    private void fillOptions() {
+        clearOptions();
+        if (hasNullValue) {
+            addOption(lang.productWithout(), new ProductShortView(CrmConstants.Product.UNDEFINED, lang.productWithout(), 0));
+        }
+        options.stream()
+                .filter(option -> !Objects.equals(option, exclude))
+                .forEach(option -> addOption(option.getName(), option));
+    }
+
     @Inject
     private Lang lang;
 
+    private List<ProductShortView> options = new ArrayList<>();
+    private ProductShortView exclude = null;
     private boolean hasNullValue = true;
 }
