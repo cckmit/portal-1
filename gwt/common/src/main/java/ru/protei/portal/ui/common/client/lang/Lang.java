@@ -1226,4 +1226,8 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderClone();
 
     String issueFilterRemoveConfirmMessage();
+
+    String accessory();
+
+    String projectOnlyMine();
 }

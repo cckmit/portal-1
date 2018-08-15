@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -56,6 +57,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     ProjectToProductDAO projectToProductDAO;
+
+    @Autowired
+    AuthService authService;
 
     @Override
     public CoreResponse< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -118,6 +122,12 @@ public class ProjectServiceImpl implements ProjectService {
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );
+        if (query.isOnlyMineProjects()) {
+            UserSessionDescriptor descriptor = authService.findSession(token);
+            if (descriptor != null && descriptor.getPerson() != null) {
+                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
+            }
+        }
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {

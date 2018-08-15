@@ -558,7 +558,7 @@ i.ban {
   content: "\e904";
 }
 
-.local-search-options-container {
+.local-search-options-container, .single-option-container {
   .warning {
     display: inline-block;
     padding: .3em 0 0 0;
@@ -568,6 +568,7 @@ i.ban {
     font-weight: bold;
   }
   .toggle {
+    cursor: pointer;
     .checkbox {
       label {
         padding-left: 0;

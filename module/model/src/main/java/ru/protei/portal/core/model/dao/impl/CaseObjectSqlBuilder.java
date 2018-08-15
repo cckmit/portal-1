@@ -104,6 +104,14 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and caseno like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchCasenoString(), true));
             }
+
+            if (query.getMemberIds() != null && !query.getMemberIds().isEmpty()) {
+                condition.append(" and case_object.id in (select case_id from case_member where member_id in (")
+                        .append(query.getMemberIds().stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(",")))
+                        .append("))");
+            }
         });
     }
 }
