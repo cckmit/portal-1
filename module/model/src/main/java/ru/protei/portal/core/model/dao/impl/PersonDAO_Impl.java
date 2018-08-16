@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
+import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -34,11 +35,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     EntityCache<CompanyHomeGroupItem> homeGroupCache;
 
-
-    @PostConstruct
-    protected void postConstruct () {
-        homeGroupCache = new EntityCache<CompanyHomeGroupItem>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
-    }
+    private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id LEFT JOIN company C ON WE.companyId = C.id";
 
     @Override
     public boolean existsByLegacyId(Long legacyId) {
@@ -68,17 +65,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return findFirst(sql);
     }
 
-    private Person findFirst(SqlCondition sql) {
-        JdbcQueryParameters parameters = new JdbcQueryParameters();
-        parameters.withCondition(sql.condition, sql.args);
-        parameters.withOffset(0);
-        parameters.withLimit(1);
-
-        List<Person> rlist = getList (parameters);
-
-        return rlist != null && !rlist.isEmpty() ? rlist.get(0) : null;
-    }
-
     @Override
     public Person findContactByEmail(long companyId, String email) {
         SqlCondition sql = new SqlCondition().build((condition, args) -> {
@@ -104,10 +90,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return ifPersonIsEmployee(p);
     }
 
-    private boolean ifPersonIsEmployee(final Person employee) {
-        return homeGroupCache.exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );
-    }
-
     @Override
     public List<Person> getEmployeesAll() {
 
@@ -124,33 +106,8 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public List<Person> getEmployees(EmployeeQuery query) {
-
-        return listByQuery( query );
+        return employeeListByQuery( query );
     }
-
-    private StringBuilder buildHomeCompanyFilter() {
-        return buildHomeCompanyFilter(false);
-    }
-
-    private StringBuilder buildHomeCompanyFilter(boolean inverse) {
-        final StringBuilder expr = new StringBuilder();
-
-        homeGroupCache.walkThrough( ( idx, item ) -> {
-            if (idx == 0) {
-                expr.append("company_id ").append(inverse ? "not in" : "in").append (" (");
-            }
-            else
-                expr.append(",");
-
-            expr.append(item.getCompanyId());
-        } );
-
-        if (expr.length() > 0)
-            expr.append(")");
-
-        return expr;
-    }
-
 
     @Override
     public List<Person> getContacts(ContactQuery query) {
@@ -225,9 +182,10 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
+                condition.append(" and (Person.displayName like ? or Person.contactInfo like ? or C.cname like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
 
+                args.add(likeArg);
                 args.add(likeArg);
                 args.add(likeArg);
             }
@@ -273,5 +231,61 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add( En_Gender.UNDEFINED.getCode() );
             }
         });
+    }
+
+    @PostConstruct
+    protected void postConstruct () {
+        homeGroupCache = new EntityCache<>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
+    }
+
+    private boolean ifPersonIsEmployee(final Person employee) {
+        return homeGroupCache.exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );
+    }
+
+    private Person findFirst(SqlCondition sql) {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        parameters.withCondition(sql.condition, sql.args);
+        parameters.withOffset(0);
+        parameters.withLimit(1);
+
+        List<Person> rlist = getList (parameters);
+
+        return rlist != null && !rlist.isEmpty() ? rlist.get(0) : null;
+    }
+
+    private List<Person> employeeListByQuery(EmployeeQuery query) {
+        SqlCondition where = createSqlCondition(query);
+        return getList(
+                new JdbcQueryParameters().
+                        withJoins(WORKER_ENTRY_JOIN).
+                        withCondition(where.condition, where.args).
+                        withDistinct(true).
+                        withOffset(query.getOffset()).
+                        withLimit(query.getLimit()).
+                        withSort( TypeConverters.createSort( query ) )
+        );
+    }
+
+    private StringBuilder buildHomeCompanyFilter() {
+        return buildHomeCompanyFilter(false);
+    }
+
+    private StringBuilder buildHomeCompanyFilter(boolean inverse) {
+        final StringBuilder expr = new StringBuilder();
+
+        homeGroupCache.walkThrough( ( idx, item ) -> {
+            if (idx == 0) {
+                expr.append("company_id ").append(inverse ? "not in" : "in").append (" (");
+            }
+            else
+                expr.append(",");
+
+            expr.append(item.getCompanyId());
+        } );
+
+        if (expr.length() > 0)
+            expr.append(")");
+
+        return expr;
     }
 }

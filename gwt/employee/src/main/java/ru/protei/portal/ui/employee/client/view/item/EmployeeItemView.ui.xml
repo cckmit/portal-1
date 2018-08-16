@@ -27,15 +27,15 @@
                 <i class="fa fa-envelope"></i>
                 <a href="#" ui:field="email"></a>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="companyContainer" styleName="contacts">
+            <g:HTMLPanel ui:field="companyContainer" styleName="contacts" visible="false">
                 <i class="icon icon-organization margin-right-0"></i>
                 <span ui:field="company"></span>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="departmentContainer" styleName="contacts">
+            <g:HTMLPanel ui:field="departmentContainer" styleName="contacts" visible="false">
                 <i class="fa fa-sitemap"></i>
                 <span ui:field="department"></span>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="positionContainer" styleName="contacts">
+            <g:HTMLPanel ui:field="positionContainer" styleName="contacts" visible="false">
                 <i class="fa fa-street-view"></i>
                 <span ui:field="position"></span>
             </g:HTMLPanel>

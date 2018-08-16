@@ -88,7 +88,12 @@ public enum En_SortField {
     /**
      * equipment primary use
      */
-    primary_use("primary_use");
+    primary_use("primary_use"),
+
+    /**
+     * person birthday
+     */
+    birthday("date_format(birthday, '%m%d')");
 
     private String fieldName;
     private String bundleKey;

@@ -12,8 +12,6 @@ import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
-import java.util.logging.Logger;
-
 /**
  * Представление сотрудника
  */
@@ -145,6 +143,4 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     private static EmployeeItemViewUiBinder ourUiBinder = GWT.create( EmployeeItemViewUiBinder.class );
     interface EmployeeItemViewUiBinder extends UiBinder< HTMLPanel, EmployeeItemView > {}
-
-    Logger logger = Logger.getLogger( this.getClass().getName() );
 }

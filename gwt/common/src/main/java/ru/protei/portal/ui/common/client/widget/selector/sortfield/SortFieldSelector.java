@@ -70,6 +70,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 break;
             case EMPLOYEE:
                 addOption( En_SortField.person_full_name );
+                addOption( En_SortField.birthday );
                 break;
         }
     }

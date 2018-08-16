@@ -11,7 +11,7 @@
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="PRODUCT"/>
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="EMPLOYEE"/>
                     <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
                 </div>
             </div>

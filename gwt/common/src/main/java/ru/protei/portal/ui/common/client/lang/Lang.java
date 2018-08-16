@@ -1172,4 +1172,18 @@ public interface Lang extends Messages, ContactItemLang {
     String employees();
 
     String privilegeCategoryEmployee();
+
+    String employeeAdditionalInfoHeader();
+
+    String employeeID();
+
+    String employeeIPAddress();
+
+    String employeePositionsHeader();
+
+    String employeeCompany();
+
+    String employeeDepartment();
+
+    String employeePosition();
 }
