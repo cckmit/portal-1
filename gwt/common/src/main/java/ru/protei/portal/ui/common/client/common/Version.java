@@ -209,9 +209,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.22 - PORTAL-287 Доработки карточки компоненты
  * 4.0.63.23 - PORTAL-296 Не работает поиск (в оборудовании прим. ред.)
  * 4.0.63.24 - PORTAL-276 Добавление поля выбора "Менеджера проекта"
+ * 4.0.63.25 - PORTAL-282 Ошибка при сортировке в базе децимальных номеров
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.24";
+        return "4.0.63.25";
     }
 }
