@@ -8,8 +8,11 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
+
+import java.util.Comparator;
 
 /**
  * Активность превью сотрудника
@@ -35,6 +38,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         view.setIP( employee.getIpAddress() );
 
         view.getPositionsContainer().clear();
+        employee.getWorkerEntries().sort( Comparator.comparing( WorkerEntry::isNotMain ) );
         employee.getWorkerEntries().forEach( workerEntry -> {
             AbstractPositionItemView itemView = makeView( workerEntry );
             view.getPositionsContainer().add( itemView.asWidget() );
@@ -48,7 +52,9 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         itemView.setCompany( workerEntry.getCompanyName() );
         itemView.setDepartment( workerEntry.getDepartment().getName() );
         itemView.setPosition( workerEntry.getPosition().getName() );
-        //itemView.setMainPosition( workerEntry.getActiveFlag() > 0 );
+        itemView.showMainInfo( workerEntry.isMain() );
+
+        itemView.hideElements( true );
 
         return itemView;
     }
@@ -58,4 +64,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
 
     @Inject
     Provider< AbstractPositionItemView > factory;
+
+    @Inject
+    Lang lang;
 }

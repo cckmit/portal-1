@@ -180,4 +180,12 @@ public class WorkerEntry extends AuditableObject {
     public String getCompanyName() {
         return companyName;
     }
+
+    public boolean isMain() {
+        return activeFlag > 0;
+    }
+
+    public boolean isNotMain() {
+        return !isMain();
+    }
 }

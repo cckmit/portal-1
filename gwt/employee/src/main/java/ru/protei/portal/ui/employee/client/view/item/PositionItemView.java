@@ -38,6 +38,46 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
         this.position.setInnerText( value );
     }
 
+   @Override
+    public void hideElements( boolean isPreview ) {
+        if ( isPreview ) {
+            this.setStyleName( "col-xs-12 p-t-10 p-b-10" );
+            this.companyContainer.setStyleName( "col-xs-12" );
+            this.departmentContainer.setStyleName( "col-xs-12" );
+            this.positionContainer.setStyleName( "col-xs-12" );
+            this.companyIcon.setVisible( false );
+            this.departmentIcon.setVisible( false );
+            this.positionIcon.setVisible( false );
+        } else {
+            this.companyContainer.setStyleName( "contacts" );
+            this.departmentContainer.setStyleName( "contacts" );
+            this.positionContainer.setStyleName( "contacts" );
+        }
+    }
+
+    @Override
+    public void showMainInfo( boolean isMain ) {
+        mainInfoContainer.setVisible( isMain );
+    }
+
+    @UiField
+    HTMLPanel companyContainer;
+
+    @UiField
+    HTMLPanel departmentContainer;
+
+    @UiField
+    HTMLPanel positionContainer;
+
+    @UiField
+    HTMLPanel companyIcon;
+
+    @UiField
+    HTMLPanel departmentIcon;
+
+    @UiField
+    HTMLPanel positionIcon;
+
     @UiField
     SpanElement company;
 
@@ -46,6 +86,9 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
 
     @UiField
     SpanElement position;
+
+    @UiField
+    HTMLPanel mainInfoContainer;
 
     AbstractPositionItemActivity activity;
 

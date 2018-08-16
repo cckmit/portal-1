@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -24,18 +23,19 @@ import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilte
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
+import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 /**
  * Активность таблицы сотрудников
  */
 public abstract class EmployeeListActivity implements AbstractEmployeeListActivity,
-        AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, Activity {
+        AbstractEmployeeItemActivity, AbstractPositionItemActivity, AbstractEmployeeFilterActivity, Activity {
 
     @PostConstruct
     public void init() {
@@ -80,7 +80,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     private AbstractEmployeeItemView makeView( Person employee ) {
-        AbstractEmployeeItemView itemView = factory.get();
+        AbstractEmployeeItemView itemView = employeeFactory.get();
         itemView.setActivity( this );
 
         itemView.setName( employee.getDisplayName() );
@@ -93,9 +93,16 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntry mainEntry = entryFacade.getMainEntry();
         if ( mainEntry != null ) {
-            itemView.setCompany( mainEntry.getCompanyName() );
-            itemView.setDepartment( mainEntry.getDepartment().getName() );
-            itemView.setPosition( mainEntry.getPosition().getName() );
+
+            AbstractPositionItemView positionItemView = positionFactory.get();
+            positionItemView.setActivity( this );
+
+            positionItemView.setCompany( mainEntry.getCompanyName() );
+            positionItemView.setDepartment( mainEntry.getDepartment().getName() );
+            positionItemView.setPosition( mainEntry.getPosition().getName() );
+
+            positionItemView.hideElements( false );
+            itemView.getPositionContainer().add( positionItemView.asWidget() );
         }
 
         itemView.setPhoto( "./images/avatars/" + employee.getId() + ".jpg" );
@@ -149,7 +156,10 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     AbstractEmployeeFilterView filterView;
 
     @Inject
-    Provider< AbstractEmployeeItemView > factory;
+    Provider< AbstractEmployeeItemView > employeeFactory;
+
+    @Inject
+    Provider< AbstractPositionItemView > positionFactory;
 
     @Inject
     PeriodicTaskService taskService;

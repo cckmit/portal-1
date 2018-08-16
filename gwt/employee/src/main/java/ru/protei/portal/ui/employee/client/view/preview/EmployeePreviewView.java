@@ -7,11 +7,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
-import ru.protei.portal.core.model.ent.WorkerEntry;
+import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewActivity;
 import ru.protei.portal.ui.employee.client.activity.preview.AbstractEmployeePreviewView;
-
-import java.util.List;
 
 /**
  * Представление превью сотрудника
@@ -50,6 +49,10 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     HTMLPanel positionsContainer;
+
+    @Inject
+    @UiField
+    Lang lang;
 
     AbstractEmployeePreviewActivity activity;
 

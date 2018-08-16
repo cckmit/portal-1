@@ -19,7 +19,7 @@ public class WorkerEntryFacade {
     }
 
     public WorkerEntry getMainEntry() {
-        Optional< WorkerEntry > entryOptional = entryStream().filter( workerEntry -> workerEntry.getActiveFlag() > 0 ).findFirst();
+        Optional< WorkerEntry > entryOptional = entryStream().filter( WorkerEntry::isMain ).findFirst();
         if ( entryOptional.isPresent() )
             return entryOptional.get();
         return getFirstEntry();

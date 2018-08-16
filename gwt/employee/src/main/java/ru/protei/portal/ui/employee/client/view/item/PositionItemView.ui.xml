@@ -3,18 +3,18 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="col-xs-12 p-t-10 p-b-10">
-        <div class="col-xs-12">
-            <label class="col-xs-5"><ui:text from="{lang.employeeCompany}"/></label>
-            <span class="col-xs-7" ui:field="company"></span>
-        </div>
-        <div class="col-xs-12">
-            <label class="col-xs-5"><ui:text from="{lang.employeeDepartment}"/></label>
-            <span class="col-xs-7" ui:field="department"></span>
-        </div>
-        <div class="col-xs-12">
-            <label class="col-xs-5"><ui:text from="{lang.employeePosition}"/></label>
-            <span class="col-xs-7" ui:field="position"></span>
-        </div>
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="companyContainer">
+            <g:HTMLPanel ui:field="companyIcon" tag="i" styleName="icon icon-organization margin-right-0"/>
+            <span ui:field="company"></span>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="departmentContainer">
+            <g:HTMLPanel ui:field="departmentIcon" tag="i" styleName="fa fa-sitemap"/>
+            <span ui:field="department"></span>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="positionContainer">
+            <g:HTMLPanel ui:field="positionIcon" tag="i" styleName="fa fa-street-view"/>
+            <span ui:field="position"></span> <g:HTMLPanel ui:field="mainInfoContainer" tag="span" visible="false">(<ui:text from="{lang.employeeMainPosition}"/>)</g:HTMLPanel>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>
