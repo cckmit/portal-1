@@ -95,6 +95,7 @@ public class UserLoginDAO_Impl extends PortalBaseJdbcDAO<UserLogin> implements U
         }
         if ( query.getRoleIds() != null ) {
             join += " LEFT JOIN login_role_item LR ON user_login.id = LR.login_id";
+            distinct = true;
         }
 
         SqlCondition where = createSqlCondition( query );
