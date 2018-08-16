@@ -61,7 +61,7 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
             condition.append("1=1");
 
             if ( !StringUtils.isEmpty( query.getSearchString() ) ) {
-                condition.append( " and ( equipment.name like ? or equipment.project like ? )" );
+                condition.append( " and ( equipment.name like ? or case_object.case_name like ? )" );
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);
