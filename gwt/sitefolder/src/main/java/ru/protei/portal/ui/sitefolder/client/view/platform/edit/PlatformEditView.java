@@ -9,7 +9,9 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.edit.AbstractPlatformEditActivity;
@@ -35,6 +37,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Override
     public HasValue<EntityOption> company() {
         return company;
+    }
+
+    @Override
+    public HasValue<PersonShortView> manager() {
+        return manager;
     }
 
     @Override
@@ -132,6 +139,9 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Inject
     @UiField(provided = true)
     CompanySelector company;
+    @Inject
+    @UiField(provided = true)
+    EmployeeButtonSelector manager;
     @UiField
     TextArea parameters;
     @UiField

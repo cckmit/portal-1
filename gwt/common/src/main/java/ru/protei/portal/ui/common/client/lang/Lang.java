@@ -1234,4 +1234,8 @@ public interface Lang extends Messages, ContactItemLang {
     String selectComponent();
 
     String belongsTo();
+
+    String siteFolderManager();
+
+    String selectManager();
 }

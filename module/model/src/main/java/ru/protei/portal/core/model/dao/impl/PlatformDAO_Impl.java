@@ -26,6 +26,11 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
                          .append(JdbcHelper.makeSqlStringCollection(query.getCompanyIds(), args, null));
             }
 
+            if (query.getManagerIds() != null && !query.getManagerIds().isEmpty()) {
+                condition.append(" and platform.manager_id in ")
+                         .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null));
+            }
+
             if (query.getSearchString() != null && !query.getSearchString().isEmpty()) {
                 condition.append(" and platform.name like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));

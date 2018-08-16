@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -223,6 +224,12 @@ public abstract class PlatformTableActivity implements
                 ? null
                 : filterView.companies().getValue().stream()
                         .map(EntityOption::getId)
+                        .collect(Collectors.toList())
+        );
+        query.setManagerIds(filterView.managers().getValue() == null
+                ? null
+                : filterView.managers().getValue().stream()
+                        .map(PersonShortView::getId)
                         .collect(Collectors.toList())
         );
         query.setParams(filterView.parameters().getValue());

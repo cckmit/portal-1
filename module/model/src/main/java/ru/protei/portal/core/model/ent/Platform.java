@@ -24,6 +24,9 @@ public class Platform implements Serializable, Removable {
     @JdbcColumn(name="comment")
     private String comment;
 
+    @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id", updateLocalColumn = true)
+    private Person manager;
+
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
 
@@ -85,6 +88,14 @@ public class Platform implements Serializable, Removable {
         this.serversCount = serversCount;
     }
 
+    public Person getManager() {
+        return manager;
+    }
+
+    public void setManager(Person manager) {
+        this.manager = manager;
+    }
+
 
     public static Platform fromEntityOption(EntityOption entityOption) {
         if (entityOption == null) {
@@ -117,6 +128,7 @@ public class Platform implements Serializable, Removable {
                 ", companyId=" + companyId +
                 ", name=" + name +
                 ", params=" + params +
+                ", manager=" + manager +
                 ", comment=" + comment +
                 '}';
     }
