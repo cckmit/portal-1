@@ -12,10 +12,12 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterView;
@@ -52,6 +54,7 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
         sortField.setValue(En_SortField.name);
         sortDir.setValue(false);
         companies.setValue(null);
+        managers.setValue(null);
         parameters.setValue(null);
         comment.setValue(null);
     }
@@ -74,6 +77,11 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
     @Override
     public HasValue<Set<EntityOption>> companies() {
         return companies;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> managers() {
+        return managers;
     }
 
     @Override
@@ -111,6 +119,11 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
 
     @UiHandler("companies")
     public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("managers")
+    public void onManagersSelected(ValueChangeEvent<Set<PersonShortView>> event) {
         fireChangeTimer();
     }
 
@@ -153,6 +166,9 @@ public class PlatformFilterView extends Composite implements AbstractPlatformFil
     @Inject
     @UiField(provided = true)
     CompanyMultiSelector companies;
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector managers;
     @UiField
     CleanableSearchBox parameters;
     @UiField

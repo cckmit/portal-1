@@ -20,6 +20,11 @@
                 </div>
 
                 <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.siteFolderManager}"/></label>
+                    <span class="col-xs-8" ui:field="manager"/>
+                </div>
+
+                <div class="col-xs-12">
                     <label class="col-xs-4"><ui:text from="{lang.siteFolderParams}"/></label>
                     <span class="col-xs-8 pre-formatted-info" ui:field="parameters"/>
                 </div>

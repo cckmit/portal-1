@@ -30,6 +30,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         }
         view.setName(value.getName() == null ? "" : value.getName());
         view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
+        view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
         view.setParameters(value.getParams() == null ? "" : value.getParams());
         view.setComment(value.getComment() == null ? "" : value.getComment());
 

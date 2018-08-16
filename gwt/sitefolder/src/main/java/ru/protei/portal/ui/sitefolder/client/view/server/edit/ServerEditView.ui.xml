@@ -8,29 +8,19 @@
     <g:HTMLPanel ui:field="root" styleName="panel">
         <div class="body">
             <div class="grid grid-indent">
-                <div class="form-group col-xs-12">
-                    <div class="form-group col-xs-12 m-b-0">
-                        <div class="form-group col-xs-5 m-b-0 p-r-10 border-box">
-                            <label><ui:text from="{lang.siteFolderServerName}"/></label>
-                        </div>
-                        <div class="form-group col-xs-3 m-b-0 p-r-10 border-box">
-                            <label><ui:text from="{lang.siteFolderIP}"/></label>
-                        </div>
-                        <div class="form-group col-xs-4 m-b-0">
-                            <label><ui:text from="{lang.siteFolderPlatform}"/></label>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12 m-b-0">
-                        <div class="form-group col-xs-5 m-b-0 p-r-10 border-box">
-                            <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
-                        </div>
-                        <div class="form-group col-xs-3 m-b-0 p-r-10 border-box">
-                            <g:TextBox ui:field="ip" styleName="input-field"/>
-                        </div>
-                        <div class="form-group col-xs-4 m-b-0">
-                            <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="btn-selector"/>
-                        </div>
-                    </div>
+                <div class="form-group col-xs-4">
+                    <label><ui:text from="{lang.siteFolderServerName}"/></label>
+                    <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                </div>
+
+                <div class="form-group col-xs-4">
+                    <label><ui:text from="{lang.siteFolderIP}"/></label>
+                    <g:TextBox ui:field="ip" styleName="input-field"/>
+                </div>
+
+                <div class="form-group col-xs-4">
+                    <label><ui:text from="{lang.siteFolderPlatform}"/></label>
+                    <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="btn-selector"/>
                 </div>
 
                 <div class="form-group col-xs-12">
