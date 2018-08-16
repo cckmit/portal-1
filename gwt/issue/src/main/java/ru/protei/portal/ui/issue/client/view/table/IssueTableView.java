@@ -86,6 +86,12 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     @Override
+    public void setColumnProvider(ClickColumnProvider<CaseShortView> columnProvider) {
+        this.columnProvider = columnProvider;
+
+    }
+
+    @Override
     public void clearRecords() {
         table.clearCache();
         table.clearRows();

@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -48,11 +49,14 @@ public abstract class IssueTableActivity
         implements AbstractIssueTableActivity, AbstractIssueFilterActivity,
         AbstractPagerActivity, Activity
 {
+    ClickColumnProvider<CaseShortView> columnProvider = new ClickColumnProvider<>();
+    private CaseShortView selectedValue;
 
     @PostConstruct
     public void onInit() {
         CREATE_ACTION = lang.buttonCreate();
 
+        view.setColumnProvider( columnProvider );
         view.setActivity( this );
         view.setAnimation( animation );
 
@@ -161,11 +165,13 @@ public abstract class IssueTableActivity
 
     @Override
     public void onItemClicked( CaseShortView value ) {
+        selectedValue = value;
         showPreview( value );
     }
 
     @Override
     public void onEditClicked( CaseShortView value ) {
+        selectedValue = value;
         fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
     }
 
@@ -312,6 +318,8 @@ public abstract class IssueTableActivity
             @Override
             public void onSuccess( List<CaseShortView> caseObjects ) {
                 asyncCallback.onSuccess( caseObjects );
+                columnProvider.setSelectedValue(selectedValue);
+                int stop = 0;
             }
         } );
     }
