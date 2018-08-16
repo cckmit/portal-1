@@ -100,6 +100,7 @@ public class PortalConfigData {
         private final String defaultCharset;
         private final int port;
         private final String fromAddress;
+        private final String fromAddressAlias;
         private final boolean blockExternalRecipients;
         private final String messageIdPattern;
 
@@ -107,6 +108,7 @@ public class PortalConfigData {
             host = properties.getProperty("smtp.host", "smtp.protei.ru");
             port = properties.getProperty("smtp.port", Integer.class, 2525);
             fromAddress = properties.getProperty("smtp.from", "PORTAL");
+            fromAddressAlias = properties.getProperty("smtp.from.alias", "DO_NOT_REPLY");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
             messageIdPattern = properties.getProperty("smtp.message_id_pattern", "%id%@smtp.protei.ru");
@@ -134,6 +136,10 @@ public class PortalConfigData {
 
         public String getMessageIdPattern() {
             return messageIdPattern;
+        }
+
+        public String getFromAddressAlias() {
+            return fromAddressAlias;
         }
     }
 
