@@ -34,6 +34,7 @@ public class En_SortFieldLang {
             case ulogin:
                 return lang.accountLogin();
             case project:
+            case equipment_project:
                 return lang.equipmentProject();
             case equipment_name_sldwrks:
                 return lang.equipmentNameBySldWrks();
