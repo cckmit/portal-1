@@ -156,7 +156,7 @@ public class MailNotificationProcessor {
     private MimeMessageHelper prepareCaseObjectMessage(String messageId, String inReplyTo, List<String> references, String subj, String body) throws MessagingException {
         MimeMessageHelper helper = new MimeMessageHelper( messageFactory.createMailMessage( messageId, inReplyTo, references ), true, config.data().smtp().getDefaultCharset() );
         helper.setSubject( subj );
-        helper.setFrom( config.data().smtp().getFromAddress() );
+        helper.setFrom( "DO_NOT_REPLY <" + config.data().smtp().getFromAddress() + ">" );
         helper.setText( HelperFunc.nvlt(body, ""), true );
         return helper;
     }
