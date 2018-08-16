@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
@@ -44,12 +45,13 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasValue<String> name() { return name; }
+    public void setCurrentProduct(ProductShortView product) {
+        devUnits.exclude(product);
+        components.exclude(product);
+    }
 
     @Override
-    public HasValue<ProductShortView> product() {
-        return product;
-    }
+    public HasValue<String> name() { return name; }
 
     @Override
     public HasValue<En_DevUnitType> type() {
@@ -73,21 +75,20 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public void setIsProduct(boolean isProduct) {
         if (isProduct) {
             nameLabel.setInnerText(lang.productName());
-            nameContainer.removeStyleName("col-xs-7");
-            nameContainer.addStyleName("col-xs-10");
-            productContainer.addStyleName("hide");
-            componentsContainer.removeStyleName("hide");
+            devUnitContainer.addStyleName("hide");
         } else {
             nameLabel.setInnerText(lang.componentName());
-            nameContainer.removeStyleName("col-xs-10");
-            nameContainer.addStyleName("col-xs-7");
-            productContainer.removeStyleName("hide");
-            componentsContainer.addStyleName("hide");
+            devUnitContainer.removeStyleName("hide");
         }
     }
 
     @Override
     public HasValue<String> info() { return info; }
+
+    @Override
+    public HasValue<Set<ProductShortView>> parents() {
+        return devUnits;
+    }
 
     @Override
     public HasValue<Set<ProductShortView>> components() {
@@ -174,16 +175,14 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     LabelElement nameLabel;
     @UiField
     ValidableTextBox name;
-    @UiField
-    HTMLPanel productContainer;
-    @Inject
-    @UiField(provided = true)
-    ProductButtonSelector product;
     @Inject
     @UiField(provided = true)
     ProductTypeBtnGroup type;
     @UiField
-    HTMLPanel componentsContainer;
+    HTMLPanel devUnitContainer;
+    @Inject
+    @UiField(provided = true)
+    DevUnitMultiSelector devUnits;
     @Inject
     @UiField(provided = true)
     ComponentMultiSelector components;
