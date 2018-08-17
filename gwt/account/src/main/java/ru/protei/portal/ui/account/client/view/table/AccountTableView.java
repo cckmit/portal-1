@@ -76,6 +76,11 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
@@ -199,6 +204,9 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
 
     @UiField
     HTMLPanel filterContainer;
+
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField

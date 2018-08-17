@@ -70,6 +70,11 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public void setProductsCount(Long issuesCount) {
         table.setTotalRecords( issuesCount.intValue() );
     }
@@ -131,6 +136,8 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     Lang lang;

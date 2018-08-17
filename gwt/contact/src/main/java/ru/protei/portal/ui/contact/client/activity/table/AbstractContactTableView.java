@@ -4,6 +4,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
+import java.util.List;
+
 /**
  * Представление таблицы контактов
  */
@@ -25,4 +27,6 @@ public interface AbstractContactTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    HasWidgets getPagerContainer();
 }

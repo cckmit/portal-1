@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
+    <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
 
             <fieldset class="header">

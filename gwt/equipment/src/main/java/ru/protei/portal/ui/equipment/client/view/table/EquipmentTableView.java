@@ -68,6 +68,11 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public void hideElements() {
         hideOnShowPreviewCommentColumn.setVisibility( false );
         hideOnShowPreviewProjectColumn.setVisibility( false );
@@ -258,6 +263,8 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField

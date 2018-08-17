@@ -76,7 +76,7 @@ public abstract class IssueTableActivity
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-        initDetails.parent.add( pagerView.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?

@@ -4,6 +4,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
+import java.util.List;
+
 /**
  * Представление создания и редактирования учетной записи
  */
@@ -22,4 +24,6 @@ public interface AbstractAccountTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    HasWidgets getPagerContainer();
 }

@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
+import java.util.List;
+
 /**
  * Created by bondarenko on 30.10.17.
  */
@@ -26,4 +28,5 @@ public interface AbstractCompanyTableView extends IsWidget {
 
     void updateRow(Company item);
 
+    HasWidgets getPagerContainer();
 }

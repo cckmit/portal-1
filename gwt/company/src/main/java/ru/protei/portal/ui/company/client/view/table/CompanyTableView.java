@@ -72,6 +72,11 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public void setCompaniesCount(Long issuesCount) {
         table.setTotalRecords( issuesCount.intValue() );
     }
@@ -180,6 +185,8 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     Lang lang;
