@@ -211,9 +211,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.24 - PORTAL-276 Добавление поля выбора "Менеджера проекта"
  * 4.0.63.25 - PORTAL-282 Ошибка при сортировке в базе децимальных номеров
  * 4.0.63.26 - PORTAL-286 Наименование DO_NOT_REPLY для crm@protei.ru
+ * 4.0.63.27 - PORTAL-295 некорректное создание Пользователя с двумя ролями
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.26";
+        return "4.0.63.27";
     }
 }
