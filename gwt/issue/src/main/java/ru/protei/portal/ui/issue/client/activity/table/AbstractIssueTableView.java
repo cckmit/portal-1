@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 
 /**
  * Представление таблицы контактов
@@ -30,5 +29,4 @@ public interface AbstractIssueTableView extends IsWidget {
     void hideElements();
     void showElements();
 
-    void setColumnProvider(ClickColumnProvider<CaseShortView> columnProvider);
 }

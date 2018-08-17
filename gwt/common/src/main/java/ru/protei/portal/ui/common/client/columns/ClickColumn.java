@@ -55,6 +55,7 @@ public abstract class ClickColumn<T> {
             if ( "a".equalsIgnoreCase( target.getNodeName() ) ) {
                 if (actionClickHandler != null) {
                     event.preventDefault();
+                    columnProvider.setSelectedValue( value );
                     actionClickHandler.onItemClicked(value);
                 }
                 return;
@@ -75,6 +76,11 @@ public abstract class ClickColumn<T> {
         public void fillValue( Element cell, T value ) {
             cell.getStyle().setCursor( Style.Cursor.POINTER );
             fillColumnValue( cell, value );
+            if(columnProvider!=null){
+                if(columnProvider.getSelected()!= null && columnProvider.getSelected().equals(value)){
+                    columnProvider.setSelectedValue(value);
+                }
+            }
         }
 
         public SelectRowHandler< T > getSelectRowHandler() {
