@@ -215,9 +215,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.28 - PORTAL-305 Некорректный расчёт кол-ва завершённых задач.
  * 4.0.63.29 - PORTAL-304 404 по fontawesome.
  * 4.0.63.30 - PORTAL-236 Добавление гиперссылки (http[s]://) в почтовые уведомления.
+ * 4.0.63.31 - PORTAL-300 Просьба в списке Компаний "НТЦ Протей" поставить на 1е место.
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.30";
+        return "4.0.63.31";
     }
 }
