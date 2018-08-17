@@ -214,9 +214,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.27 - PORTAL-295 некорректное создание Пользователя с двумя ролями
  * 4.0.63.28 - PORTAL-305 Некорректный расчёт кол-ва завершённых задач.
  * 4.0.63.29 - PORTAL-304 404 по fontawesome.
+ * 4.0.63.30 - PORTAL-236 Добавление гиперссылки (http[s]://) в почтовые уведомления.
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.63.29";
+        return "4.0.63.30";
     }
 }
