@@ -114,6 +114,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();
+        applyDaysLimitIfNeeded(model);
         updateRecordsCount(model);
         requestRecords(model);
     }
@@ -122,13 +123,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     private void requestRecords(DashboardTableModel model) {
         if(model.isLoaderShow)
             model.view.showLoader(true);
-
-        if (model.daysLimit != null) {
-            Date to = new Date();
-            Date from = new Date(to.getTime() - (MILLISECONDS_PER_DAY * model.daysLimit));
-            model.query.setFrom(from);
-            model.query.setTo(to);
-        }
 
         issueService.getIssues( model.query, new RequestCallback<List<CaseShortView>>() {
             @Override
@@ -175,6 +169,15 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         });
     }
 
+    private void applyDaysLimitIfNeeded(DashboardTableModel model) {
+        if (model.daysLimit == null) {
+            return;
+        }
+        Date to = new Date();
+        Date from = new Date(to.getTime() - (MILLISECONDS_PER_DAY * model.daysLimit));
+        model.query.setFrom(from);
+        model.query.setTo(to);
+    }
 
 
     @Inject
