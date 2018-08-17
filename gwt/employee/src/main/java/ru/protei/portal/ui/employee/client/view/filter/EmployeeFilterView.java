@@ -10,9 +10,11 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
@@ -63,10 +65,16 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue< Set< EntityOption > > homeCompanies() {
+        return homeCompanies;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setValue( "" );
+        homeCompanies.setValue( null );
     }
 
     @UiHandler( "resetBtn" )
@@ -79,20 +87,25 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiHandler( "sortField" )
     public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
+        fireChangeTimer();
     }
 
     @UiHandler( "sortDir" )
     public void onSortDirClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
+        fireChangeTimer();
     }
 
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "homeCompanies" )
+    public void onSelectHomeCompany( ValueChangeEvent< Set< EntityOption > > event ) {
+        fireChangeTimer();
+    }
+
+    private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
     }
@@ -115,6 +128,10 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     CleanableSearchBox search;
+
+    @Inject
+    @UiField(provided = true)
+    HomeCompanyBtnGroupMulti homeCompanies;
 
     @UiField
     Button resetBtn;

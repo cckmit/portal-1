@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
 /**
- * Активность таблицы сотрудников
+ * Активность списка сотрудников
  */
 public interface AbstractEmployeeListActivity {
 }

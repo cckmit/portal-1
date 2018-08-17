@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
- * Представление таблицы сотрудников
+ * Представление списка сотрудников
  */
 public interface AbstractEmployeeListView extends IsWidget {
 

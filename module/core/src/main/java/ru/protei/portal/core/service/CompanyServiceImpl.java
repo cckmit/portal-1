@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.CompanyGroupDAO;
-import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -239,7 +236,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         return new CoreResponse<Boolean>().success(checkGroupExists(name, excludeId));
     }
-
 
     private boolean updateCompanySubscription( Long companyId, List<CompanySubscription> companySubscriptions ) {
         log.info( "binding update to linked company subscription for companyId = {}", companyId );

@@ -1183,9 +1183,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeCompany();
 
-    String employeeDepartment();
-
-    String employeePosition();
-
     String employeeMainPosition();
 }

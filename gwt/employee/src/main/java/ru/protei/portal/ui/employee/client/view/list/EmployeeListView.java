@@ -3,19 +3,17 @@ package ru.protei.portal.ui.employee.client.view.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.platelist.PlateList;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeListActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeListView;
 
 /**
- * Представление таблицы сотрудников
+ * Представление списка сотрудников
  */
 public class EmployeeListView extends Composite implements AbstractEmployeeListView {
 

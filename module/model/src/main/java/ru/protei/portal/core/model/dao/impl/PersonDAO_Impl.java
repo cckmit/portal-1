@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 04.04.16.
@@ -35,7 +37,12 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     EntityCache<CompanyHomeGroupItem> homeGroupCache;
 
-    private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id LEFT JOIN company C ON WE.companyId = C.id";
+    private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
+
+    @PostConstruct
+    protected void postConstruct () {
+        homeGroupCache = new EntityCache<>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
+    }
 
     @Override
     public boolean existsByLegacyId(Long legacyId) {
@@ -141,7 +148,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             condition.append("Person.company_id not in (select companyId from company_group_home)");
 
             if (query.getCompanyId() != null) {
-                condition.append(" and Person.company_id = ?");
+                condition.append(" and Person.company_id=?");
                 args.add(query.getCompanyId());
             }
 
@@ -181,18 +188,23 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                 args.add(query.getDeleted() ? 1 : 0);
             }
 
+            if (query.getOnlyPeople() != null) {
+                condition.append(" and Person.sex != ?");
+                args.add( En_Gender.UNDEFINED.getCode() );
+            }
+
+            if (!CollectionUtils.isEmpty(query.getHomeCompanies())) {
+                condition.append(" and WE.companyId in (")
+                        .append(query.getHomeCompanies().stream().map(option -> option.getId().toString()).collect(Collectors.joining(",")))
+                        .append(")");
+            }
+
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (Person.displayName like ? or Person.contactInfo like ? or C.cname like ?)");
+                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
 
                 args.add(likeArg);
                 args.add(likeArg);
-                args.add(likeArg);
-            }
-
-            if (query.getOnlyPeople() != null) {
-                condition.append(" and Person.sex != ?");
-                args.add( En_Gender.UNDEFINED.getCode() );
             }
         });
     }
@@ -233,11 +245,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         });
     }
 
-    @PostConstruct
-    protected void postConstruct () {
-        homeGroupCache = new EntityCache<>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
-    }
-
     private boolean ifPersonIsEmployee(final Person employee) {
         return homeGroupCache.exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );
     }
@@ -262,7 +269,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
                         withDistinct(true).
                         withOffset(query.getOffset()).
                         withLimit(query.getLimit()).
-                        withSort( TypeConverters.createSort( query ) )
+                        withSort(TypeConverters.createSort(query))
         );
     }
 

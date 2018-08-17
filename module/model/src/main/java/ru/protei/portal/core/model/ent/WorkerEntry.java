@@ -184,8 +184,4 @@ public class WorkerEntry extends AuditableObject {
     public boolean isMain() {
         return activeFlag > 0;
     }
-
-    public boolean isNotMain() {
-        return !isMain();
-    }
 }

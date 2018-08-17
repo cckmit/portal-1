@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Активность таблицы сотрудников
+ * Активность списка сотрудников
  */
 public abstract class EmployeeListActivity implements AbstractEmployeeListActivity,
         AbstractEmployeeItemActivity, AbstractPositionItemActivity, AbstractEmployeeFilterActivity, Activity {
@@ -64,6 +64,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         requestEmployees();
     }
 
+    @Override
     public void onFilterChanged() {
         requestEmployees();
     }
@@ -77,6 +78,35 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         fireEvent( new EmployeeEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
         animation.showPreview( itemView, ( IsWidget ) itemView.getPreviewContainer() );
+    }
+
+    private void requestEmployees() {
+        if ( fillViewHandler != null ) {
+            fillViewHandler.cancel();
+        }
+
+        view.getChildContainer().clear();
+        itemViewToModel.clear();
+
+        employeeService.getEmployees( makeQuery(), new RequestCallback< List< Person > >() {
+
+            @Override
+            public void onError( Throwable throwable ) {}
+
+            @Override
+            public void onSuccess( List< Person > employees ) {
+                employees.forEach( employee -> fillViewer.accept( employee ) );
+                //fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
+            }
+        });
+    }
+
+    private EmployeeQuery makeQuery() {
+        return new EmployeeQuery( false, false, true,
+                filterView.homeCompanies().getValue(),
+                filterView.searchPattern().getValue(),
+                filterView.sortField().getValue(),
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
     }
 
     private AbstractEmployeeItemView makeView( Person employee ) {
@@ -108,32 +138,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setPhoto( "./images/avatars/" + employee.getId() + ".jpg" );
 
         return itemView;
-    }
-
-    private void requestEmployees() {
-        if ( fillViewHandler != null ) {
-            fillViewHandler.cancel();
-        }
-
-        view.getChildContainer().clear();
-        itemViewToModel.clear();
-
-        employeeService.getEmployees( makeQuery(), new RequestCallback< List< Person > >() {
-
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( List< Person > employees ) {
-                fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
-            }
-        });
-    }
-
-    private EmployeeQuery makeQuery() {
-        return new EmployeeQuery( false, false, true,
-                filterView.searchPattern().getValue(), filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
     }
 
     Consumer< Person > fillViewer = new Consumer< Person >() {

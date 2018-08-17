@@ -76,9 +76,6 @@ public class AuthControllerImpl implements AuthController {
     }
 
     private Set< En_Privilege > collectPrivileges( Set< UserRole > roles ) {
-
-        log.debug( "collectPrivileges(): roles={}", roles );
-
         if ( roles == null ) {
             return Collections.emptySet();
         }
@@ -91,7 +88,6 @@ public class AuthControllerImpl implements AuthController {
             }
 
             userPrivileges.addAll( role.getPrivileges() );
-            log.debug( "collectPrivileges(): role={}, privileges={}", role.getCode(), role.getPrivileges() );
             for ( En_Privilege privilege : role.getPrivileges() ) {
                 Set<En_Scope> scopes = privilegeEntityToScope.computeIfAbsent(privilege.getEntity(), k -> new HashSet<>());
                 scopes.add( role.getScope() );

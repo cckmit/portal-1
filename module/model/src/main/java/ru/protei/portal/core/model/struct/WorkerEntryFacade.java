@@ -2,10 +2,14 @@ package ru.protei.portal.core.model.struct;
 
 import ru.protei.portal.core.model.ent.WorkerEntry;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+/**
+ * Helper-класс для работы с WorkerEntry
+ */
 public class WorkerEntryFacade {
 
     List< WorkerEntry > workerEntries;
@@ -31,5 +35,10 @@ public class WorkerEntryFacade {
             return entryOptional.get();
 
         return null;
+    }
+
+    public List< WorkerEntry > getSortedEntries() {
+        workerEntries.sort( Comparator.comparing( WorkerEntry::isMain ).reversed() );
+        return workerEntries;
     }
 }
