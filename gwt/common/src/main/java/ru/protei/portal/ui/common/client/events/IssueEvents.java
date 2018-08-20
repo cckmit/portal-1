@@ -23,6 +23,9 @@ public class IssueEvents {
 
         @Omit
         public CaseQuery query;
+
+        @Omit
+        public boolean preservData;
     }
 
     /**

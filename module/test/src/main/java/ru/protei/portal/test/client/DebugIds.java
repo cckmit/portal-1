@@ -12,6 +12,7 @@ public class DebugIds {
     }
 
     public interface APP_VIEW {
+        String GLOBAL_CONTAINER = "global-container";
         String LOGOUT_BUTTON = "app-logout-button";
         String LOCALE_SELECTOR = "app-locale-selector";
         String TOGGLE_SIDEBAR_BUTTON = "app-toggle-sidebar-button";
