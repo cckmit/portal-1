@@ -14,7 +14,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="filter-collapsable issue-filter panel with-table-pager">
+    <g:HTMLPanel styleName="filter-collapsable issue-filter panel">
 
         <div class="collapsed">
             <div class="header">

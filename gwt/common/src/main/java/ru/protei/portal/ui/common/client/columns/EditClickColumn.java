@@ -30,6 +30,7 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
+        cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
         a.addClassName( "fa-2x ion-compose" );

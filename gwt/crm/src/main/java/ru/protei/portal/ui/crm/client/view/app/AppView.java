@@ -121,6 +121,7 @@ public class AppView extends Composite
     }
 
     private void ensureDebugIds() {
+        globalContainer.ensureDebugId(DebugIds.APP_VIEW.GLOBAL_CONTAINER);
         logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
         locale.setEnsureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
         toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
@@ -172,6 +173,8 @@ public class AppView extends Composite
     Anchor logo;
     @UiField
     Label appVersion;
+    @UiField
+    HTMLPanel globalContainer;
 
     AbstractAppActivity activity;
 

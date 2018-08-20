@@ -2,9 +2,8 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
-import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -138,7 +137,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeModel());
-                    fireEvent(new Back());
+                    fireEvent(new IssueEvents.Show().preserveData(true));
                 }
             }
         });
@@ -146,7 +145,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new Back());
+        fireEvent(new IssueEvents.Show().preserveData(true));
     }
 
     @Override
