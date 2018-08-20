@@ -88,9 +88,9 @@ public abstract class IssueCommentListActivity
     @Event
     public  void onSaveComment( IssueEvents.SaveComment event ) {
         if(!HelperFunc.isEmpty(view.message().getValue()))
-            send( event.id, true );
+            send( event.id, event.handler );
         else{
-            issueSavedAlso(true);
+            event.handler.onSuccess();
         }
     }
 
@@ -119,7 +119,6 @@ public abstract class IssueCommentListActivity
                 @Override
                 public void onSuccess(CaseComment caseComment) {
                     itemView.setMessage(null);
-                    fireEvent(new IssueEvents.ChangeCommentsView());
                 }
             });
             return;
@@ -140,7 +139,6 @@ public abstract class IssueCommentListActivity
                 view.removeComment( itemView );
                 itemViewToModel.remove(itemView);
                 fireEvent( new IssueEvents.ChangeModel() );
-                fireEvent( new IssueEvents.ChangeCommentsView() );
                 updateTimeElapsedInIssue(itemViewToModel.values());
             }
         });
@@ -190,7 +188,7 @@ public abstract class IssueCommentListActivity
 
     @Override
     public void onSendClicked() {
-        send( null, false );
+        send( null, null );
     }
 
     @Override
@@ -294,8 +292,6 @@ public abstract class IssueCommentListActivity
             AbstractIssueCommentItemView itemView = makeCommentView( value );
             view.addCommentToFront( itemView.asWidget() );
         }
-
-        fireEvent( new IssueEvents.ChangeCommentsView() );
     }
 
     private AbstractIssueCommentItemView makeCommentView( CaseComment value ) {
@@ -388,7 +384,7 @@ public abstract class IssueCommentListActivity
                 list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList());
     }
 
-    private void send( Long id, boolean isIssueSavedAlso ) {
+    private void send(Long id, IssueEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
         if ( comment == null ) {
             comment = new CaseComment();
             comment.setAuthorId( profile.getId() );
@@ -416,16 +412,19 @@ public abstract class IssueCommentListActivity
         issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
             @Override
             public void onError( Throwable throwable ) {
-                if(isIssueSavedAlso)
-                    issueSavedAlso(false);
+                if(saveCommentCompleteHandler!=null){
+                    saveCommentCompleteHandler.onError(throwable);
+                    return;
+                }
+
                 fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
             public void onSuccess( CaseComment result ) {
 
-                if(isIssueSavedAlso){
-                    issueSavedAlso(true);
+                if(saveCommentCompleteHandler!=null){
+                    saveCommentCompleteHandler.onSuccess();
                     return;
                 }
                 result.setCaseAttachments(comment.getCaseAttachments());
@@ -454,7 +453,6 @@ public abstract class IssueCommentListActivity
                 view.clearTimeElapsed();
                 tempAttachments.clear();
                 fireEvent( new IssueEvents.ChangeModel() );
-                fireEvent( new IssueEvents.ChangeCommentsView() );
                 updateTimeElapsedInIssue(itemViewToModel.values());
             }
         } );
@@ -466,15 +464,6 @@ public abstract class IssueCommentListActivity
         fireEvent( new IssueEvents.ChangeTimeElapsed(timeElapsed) );
     }
 
-    private void issueSavedAlso(boolean withComeback){
-        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-        fireEvent(new IssueEvents.ChangeModel());
-        if (withComeback) {
-            fireEvent(new Back());
-        } else {
-            fireEvent(new IssueEvents.ChangeCommentsView());
-        }
-    }
 
     @Inject
     Lang lang;

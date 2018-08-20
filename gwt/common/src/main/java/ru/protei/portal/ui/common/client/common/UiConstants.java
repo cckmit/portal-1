@@ -61,7 +61,6 @@ public class UiConstants {
     }
 
     public interface Styles {
-        String FOOTER = "footer-fixed";
         String HIDE = "hide";
     }
 

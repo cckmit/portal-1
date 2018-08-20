@@ -125,16 +125,18 @@ public class IssueEvents {
     }
 
     public static class SaveComment {
-        public SaveComment( Long id ) {
+        public interface SaveCommentCompleteHandler {
+            void onSuccess();
+            void onError(Throwable throwable);
+        }
+
+        public SaveComment( Long id, SaveCommentCompleteHandler handler ) {
             this.id = id;
+            this.handler = handler;
         }
         public Long id;
+        public SaveCommentCompleteHandler handler;
     }
-
-    /**
-     * Обновилось отображение комментариев
-     */
-    public static class ChangeCommentsView{}
 
     /**
      * Изменилась модель фильтров пользователя

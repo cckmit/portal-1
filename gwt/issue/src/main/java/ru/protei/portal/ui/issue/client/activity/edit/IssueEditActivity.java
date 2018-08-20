@@ -107,11 +107,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
-    @Event
-    public void onChangeCommentsView(IssueEvents.ChangeCommentsView event) {
-        view.refreshFooterBtnPosition();
-    }
-
     @Override
     public void onSaveClicked() {
         if(!validateView()){
@@ -133,11 +128,24 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             public void onSuccess(CaseObject caseObject) {
                 view.saveEnabled().setEnabled(true);
                 if (!isNew(issue)) {
-                    fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
+                    fireEvent(new IssueEvents.SaveComment(caseObject.getId(), new IssueEvents.SaveComment.SaveCommentCompleteHandler() {
+                        @Override
+                        public void onSuccess() {
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new IssueEvents.ChangeModel());
+                            fireEvent(new IssueEvents.Show().preserveData(true));
+                        }
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
+                        }
+                    }));
+
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeModel());
-                    fireEvent(new IssueEvents.Show().preserveData(true));
+                    fireEvent(new IssueEvents.Show());
                 }
             }
         });
@@ -301,8 +309,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
 
         view.saveEnabled().setEnabled(true);
-
-        view.refreshFooterBtnPosition();
     }
 
     private void fillIssueObject(CaseObject issue){

@@ -53,7 +53,7 @@ import java.util.Set;
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditView, ResizeHandler {
+public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     public void onInit() {
@@ -66,28 +66,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
-        Window.addResizeHandler(this);
     }
 
     @Override
     protected void onAttach() {
         super.onAttach();
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        if (resizeFinishedTimer.isRunning()) {
-            resizeFinishedTimer.cancel();
-        }
-    }
-
-    @Override
-    public void onResize(ResizeEvent event) {
-        if (resizeFinishedTimer.isRunning()) {
-            resizeFinishedTimer.cancel();
-        }
-        resizeFinishedTimer.schedule(200);
     }
 
     @Override
@@ -282,15 +265,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
-    public void refreshFooterBtnPosition() {
-        Scheduler.get().scheduleDeferred(() -> {
-            int wHeight = Window.getClientHeight();
-            int pHeight = root.getOffsetHeight();
-            setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
-        });
-    }
-
-    @Override
     public void setStateFilter(Selector.SelectorFilter<En_CaseState> filter) {
         state.setFilter(filter);
     }
@@ -308,14 +282,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @Override
     public void applyCompanyValueIfOneOption() {
         company.applyValueIfOneOption();
-    }
-
-    private void setFooterFixed(boolean isFixed) {
-        if (isFixed) {
-            root.addStyleName(UiConstants.Styles.FOOTER);
-        } else {
-            root.removeStyleName(UiConstants.Styles.FOOTER);
-        }
     }
 
     @UiHandler( "company" )
@@ -509,15 +475,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     LabelElement notifiersLabel;
     @UiField
     LabelElement attachmentsLabel;
-
-    private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
-
-    private Timer resizeFinishedTimer = new Timer() {
-        @Override
-        public void run() {
-            refreshFooterBtnPosition();
-        }
-    };
 
     private AbstractIssueEditActivity activity;
 
