@@ -220,9 +220,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.63.33 - PORTAL-273 Потеря фокуса в таблице обращений
  * 4.0.64.33 - PORTAL-274 Сократить нижнюю полосу
  * 4.0.65.33 - PORTAL-209 Сохранять курсор после выхода из режима редактирования
+ * 4.0.65.34 - PORTAL-310 Непонятное поведение интерфейса при поиске по комментариям
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.65.33";
+        return "4.0.65.34";
     }
 }
