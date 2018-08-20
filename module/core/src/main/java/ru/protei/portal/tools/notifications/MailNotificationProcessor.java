@@ -101,6 +101,8 @@ public class MailNotificationProcessor {
             return;
         }
 
+        List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
+
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
@@ -123,6 +125,7 @@ public class MailNotificationProcessor {
                     event,
                     comments.getData(),
                     headersFacade,
+                    recipients,
                     true,
                     config.data().getMailNotificationConfig().getCrmCaseUrlInternal(),
                     notifiers.stream()
@@ -130,16 +133,11 @@ public class MailNotificationProcessor {
                             .collect(toList())
             );
 
-            if (config.data().smtp().isBlockExternalRecipients()) {
-                log.debug("block send mail for caseId={} to external recipients", caseObject.getId());
-                persistCaseObjectLastMessageId(caseObject, lastMessageId);
-                return;
-            }
-
             performCaseObjectNotification(
                     event,
                     comments.getData(),
                     headersFacade,
+                    recipients,
                     false,
                     config.data().getMailNotificationConfig().getCrmCaseUrlExternal(),
                     notifiers.stream()
@@ -147,7 +145,8 @@ public class MailNotificationProcessor {
                             .collect(toList())
             );
 
-            persistCaseObjectLastMessageId(caseObject, lastMessageId);
+            caseObject.setEmailLastId(lastMessageId + 1);
+            caseService.updateEmailLastId(caseObject);
 
         } finally {
             semaphore.release();
@@ -155,7 +154,7 @@ public class MailNotificationProcessor {
     }
 
     private void performCaseObjectNotification(
-            AssembledCaseEvent event, List<CaseComment> comments, MimeMessageHeadersFacade headers,
+            AssembledCaseEvent event, List<CaseComment> comments, MimeMessageHeadersFacade headers, List<String> recipients,
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
@@ -164,8 +163,6 @@ public class MailNotificationProcessor {
         }
 
         CaseObject caseObject = event.getCaseObject();
-
-        List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
 
         PreparedTemplate bodyTemplate = templateService.getCrmEmailNotificationBody(event, comments, crmCaseUrl, recipients);
         if (bodyTemplate == null) {
@@ -222,14 +219,9 @@ public class MailNotificationProcessor {
             );
         }
 
-        return isPrivateCase?
+        return isPrivateCase || config.data().smtp().isBlockExternalRecipients() ?
                 allNotifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList()):
                 allNotifiers;
-    }
-
-    private void persistCaseObjectLastMessageId(CaseObject caseObject, Long lastMessageId) {
-        caseObject.setEmailLastId(lastMessageId + 1);
-        caseService.updateEmailLastId(caseObject);
     }
 
     private String makeCaseObjectMessageId(CaseObject caseObject, Long id) {
