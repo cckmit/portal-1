@@ -1157,7 +1157,7 @@ label.bordered:after{
       width: 15%;
     }
     .info {
-      max-width: 20px;
+      max-width: 20px; // заставить Firefox пересчиать ширину данной колонки (иначе растягивает по содержимому за пределы видимой области. 20px - условная величина.)
     }
     .attachment{
       width: 20px;

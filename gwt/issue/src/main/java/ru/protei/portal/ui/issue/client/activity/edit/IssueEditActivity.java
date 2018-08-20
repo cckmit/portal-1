@@ -137,9 +137,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 } else {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeModel());
-                    IssueEvents.Show show = new IssueEvents.Show();
-                    show.preservData = true;
-                    fireEvent(show);
+                    fireEvent(new IssueEvents.Show().preserveData(true));
                 }
             }
         });
@@ -147,9 +145,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
-        IssueEvents.Show show = new IssueEvents.Show();
-        show.preservData = true;
-        fireEvent(show);
+        fireEvent(new IssueEvents.Show().preserveData(true));
     }
 
     @Override

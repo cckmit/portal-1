@@ -21,11 +21,16 @@ public class IssueEvents {
             this.query = query;
         }
 
+        public Show preserveData(boolean isPreserveData){
+            preserveData = isPreserveData;
+            return this;
+        }
+
         @Omit
         public CaseQuery query;
 
         @Omit
-        public boolean preservData;
+        public boolean preserveData;
     }
 
     /**

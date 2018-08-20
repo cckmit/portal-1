@@ -98,13 +98,15 @@ public abstract class IssueTableActivity
 
         filterView.toggleMsgSearchThreshold();
 
-        if (event.preservData) {
+        animation.closeDetails();
+
+        if (event.preserveData) {
             scrollToPreviousPosition();
         } else {
             view.clearRecords();
-            animation.closeDetails();
-            requestIssuesCount();
         }
+
+        requestIssuesCount();
     }
 
     private void scrollToPreviousPosition() {

@@ -94,6 +94,7 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
+        columnProvider.setSelectedValue(null);
     }
 
     @Override
