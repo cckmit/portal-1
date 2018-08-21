@@ -94,14 +94,12 @@ public class PortalConfigData {
     public static class MailNotificationConfig {
         private final String crmUrlInternal;
         private final String crmUrlExternal;
-        private final String crmCaseUrlInternal;
-        private final String crmCaseUrlExternal;
+        private final String crmCaseUrl;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
-            crmCaseUrlInternal = properties.getProperty( "crm.case.url.internal", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
-            crmCaseUrlExternal = properties.getProperty( "crm.case.url.external", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
+            crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
         }
 
         public String getCrmUrlInternal() {
@@ -112,12 +110,8 @@ public class PortalConfigData {
             return crmUrlExternal;
         }
 
-        public String getCrmCaseUrlInternal() {
-            return crmCaseUrlInternal;
-        }
-
-        public String getCrmCaseUrlExternal() {
-            return crmCaseUrlExternal;
+        public String getCrmCaseUrl() {
+            return crmCaseUrl;
         }
     }
 

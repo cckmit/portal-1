@@ -127,7 +127,7 @@ public class MailNotificationProcessor {
                     headersFacade,
                     recipients,
                     true,
-                    config.data().getMailNotificationConfig().getCrmCaseUrlInternal(),
+                    config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
                     notifiers.stream()
                             .filter(this::isProteiRecipient)
                             .collect(toList())
@@ -139,7 +139,7 @@ public class MailNotificationProcessor {
                     headersFacade,
                     recipients,
                     false,
-                    config.data().getMailNotificationConfig().getCrmCaseUrlExternal(),
+                    config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
                     notifiers.stream()
                             .filter(this::isNotProteiRecipient)
                             .collect(toList())
@@ -252,8 +252,8 @@ public class MailNotificationProcessor {
         }
 
         String crmUrl = isProteiRecipient(notificationEntry) ?
-                config.data().getMailNotificationConfig().getCrmCaseUrlInternal() :
-                config.data().getMailNotificationConfig().getCrmCaseUrlExternal();
+                config.data().getMailNotificationConfig().getCrmUrlInternal() :
+                config.data().getMailNotificationConfig().getCrmUrlExternal();
 
         PreparedTemplate bodyTemplate = templateService.getUserLoginNotificationBody(event, crmUrl);
         if (bodyTemplate == null) {
