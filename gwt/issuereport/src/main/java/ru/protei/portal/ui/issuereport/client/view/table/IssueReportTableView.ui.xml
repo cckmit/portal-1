@@ -8,6 +8,7 @@
         <div class="grid">
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-12">
                 <table:InfiniteTableWidget ui:field="table" styleName="table-hover issue-reports"/>
+                <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
             </g:HTMLPanel>
         </div>
     </g:HTMLPanel>
