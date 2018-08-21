@@ -16,7 +16,8 @@ import java.util.Collections;
  */
 public class CaseCommentEvent extends ApplicationEvent {
 
-    private CaseObject caseObject;
+    private CaseObject newState;
+    private CaseObject oldState;
     private CaseComment caseComment;
     private CaseComment oldCaseComment;
     private Person person;
@@ -29,13 +30,18 @@ public class CaseCommentEvent extends ApplicationEvent {
         this(ServiceModule.GENERAL, source, caseObject, null, null, comment, attachments, currentPerson);
     }
 
+    public CaseCommentEvent(CaseService source, CaseObject newState, CaseObject oldState, CaseComment comment, Collection<Attachment> attachments, Person currentPerson) {
+        this(ServiceModule.GENERAL, source, newState, null, null, comment, attachments, currentPerson);
+        this.oldState = oldState;
+    }
+
     public CaseCommentEvent(
             CaseService source,
-            CaseObject caseObject,
+            CaseObject newState, CaseObject oldState,
             CaseComment oldComment, Collection<Attachment> removedAttachments,
             CaseComment comment, Collection<Attachment> addedAttachments,
             Person currentPerson) {
-        this(ServiceModule.GENERAL, source, caseObject, oldComment, removedAttachments, comment, addedAttachments, currentPerson);
+        this(ServiceModule.GENERAL, source, newState, oldState, oldComment, removedAttachments, comment, addedAttachments, currentPerson);
     }
 
     public CaseCommentEvent(
@@ -45,9 +51,20 @@ public class CaseCommentEvent extends ApplicationEvent {
             CaseComment oldComment, Collection<Attachment> removedAttachments,
             CaseComment comment, Collection<Attachment> addedAttachments,
             Person currentPerson) {
+        this(serviceModule, source, caseObject, caseObject, oldComment, removedAttachments, comment, addedAttachments, currentPerson);
+    }
+
+    public CaseCommentEvent(
+            ServiceModule serviceModule,
+            CaseService source,
+            CaseObject newState, CaseObject oldState,
+            CaseComment oldComment, Collection<Attachment> removedAttachments,
+            CaseComment comment, Collection<Attachment> addedAttachments,
+            Person currentPerson) {
         super(source);
         this.caseService = source;
-        this.caseObject = caseObject;
+        this.newState = newState;
+        this.oldState = oldState;
         this.caseComment = comment;
         this.oldCaseComment = oldComment;
         this.person = currentPerson;
@@ -61,7 +78,15 @@ public class CaseCommentEvent extends ApplicationEvent {
     }
 
     public CaseObject getCaseObject() {
-        return caseObject;
+        return newState != null ? newState : oldState;
+    }
+
+    public CaseObject getNewState() {
+        return newState;
+    }
+
+    public CaseObject getOldState() {
+        return oldState;
     }
 
     public CaseComment getCaseComment() {

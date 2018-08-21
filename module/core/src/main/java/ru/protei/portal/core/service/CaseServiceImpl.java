@@ -282,6 +282,8 @@ public class CaseServiceImpl implements CaseService {
         if ( comment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
+        long oldTimeElapsed = getTimeElapsed(comment.getCaseId());
+
         Date now = new Date();
         comment.setCreated(now);
 
@@ -314,21 +316,24 @@ public class CaseServiceImpl implements CaseService {
 
         //below building event
 
-        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
-        jdbcManyRelationsHelper.fill(caseObject, "attachments");
-        jdbcManyRelationsHelper.fill(caseObject, "notifiers");
+        CaseObject newState = caseObjectDAO.get(comment.getCaseId());
+        jdbcManyRelationsHelper.fill(newState, "attachments");
+        jdbcManyRelationsHelper.fill(newState, "notifiers");
 
         Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
                 .stream()
                 .map(CaseAttachment::getAttachmentId)
                 .collect(Collectors.toList());
 
-        Collection<Attachment> addedAttachments = caseObject.getAttachments()
+        Collection<Attachment> addedAttachments = newState.getAttachments()
                 .stream()
                 .filter(a -> addedAttachmentsIds.contains(a.getId()))
                 .collect(Collectors.toList());
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObject, result, addedAttachments, currentPerson));
+        CaseObject oldState = newState.copy();
+        oldState.setTimeElapsed(oldTimeElapsed);
+
+        publisherService.publishEvent(new CaseCommentEvent(this, newState, oldState, result, addedAttachments, currentPerson));
 
         return new CoreResponse<CaseComment>().success( result );
     }
@@ -346,6 +351,8 @@ public class CaseServiceImpl implements CaseService {
 
         if (!person.getId().equals(comment.getAuthorId()) || !isChangeAvailable ( comment.getCreated() ))
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
+
+        long oldTimeElapsed = getTimeElapsed(comment.getCaseId());
 
         CaseComment prevComment = caseCommentDAO.get( comment.getId() );
         jdbcManyRelationsHelper.fill(prevComment, "caseAttachments");
@@ -379,16 +386,19 @@ public class CaseServiceImpl implements CaseService {
 
         // below building event
 
-        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+        CaseObject newState = caseObjectDAO.get(comment.getCaseId());
+        jdbcManyRelationsHelper.fill( newState, "attachments");
 
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, removedCaseAttachments).getData();
         Collection<Attachment> addedAttachments = attachmentService.getAttachments(token,
                 HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
         ).getData();
 
+        CaseObject oldState = newState.copy();
+        oldState.setTimeElapsed(oldTimeElapsed);
+
         publisherService.publishEvent(
-                new CaseCommentEvent(this, caseObject, prevComment, removedAttachments, comment, addedAttachments, person)
+                new CaseCommentEvent(this, newState, oldState, prevComment, removedAttachments, comment, addedAttachments, person)
         );
 
         return new CoreResponse<CaseComment>().success( comment );
