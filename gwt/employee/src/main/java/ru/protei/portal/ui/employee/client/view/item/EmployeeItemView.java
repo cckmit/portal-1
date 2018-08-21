@@ -58,13 +58,26 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
-    public void setPhoto( String url ) {
-        photo.setUrl( url );
+    public void setCompany( String value ) {
+        companyContainer.setVisible( value != null && !value.isEmpty() );
+        company.setInnerText( value == null ? "" : value );
     }
 
     @Override
-    public HasWidgets getPositionContainer() {
-        return positionContainer;
+    public void setDepartment( String value ) {
+        departmentContainer.setVisible( value != null && !value.isEmpty() );
+        department.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
+    public void setPosition( String value ) {
+        positionContainer.setVisible( value != null && !value.isEmpty() );
+        position.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
+    public void setPhoto( String url ) {
+        photo.setUrl( url );
     }
 
     @Override
@@ -85,6 +98,15 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     HTMLPanel emailContainer;
 
     @UiField
+    HTMLPanel companyContainer;
+
+    @UiField
+    HTMLPanel departmentContainer;
+
+    @UiField
+    HTMLPanel positionContainer;
+
+    @UiField
     SpanElement birthday;
 
     @UiField
@@ -103,7 +125,13 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     Anchor favorite;
 
     @UiField
-    HTMLPanel positionContainer;
+    SpanElement company;
+
+    @UiField
+    SpanElement department;
+
+    @UiField
+    SpanElement position;
 
     @UiField
     HTMLPanel previewContainer;

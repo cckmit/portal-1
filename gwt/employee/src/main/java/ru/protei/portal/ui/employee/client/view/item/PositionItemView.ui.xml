@@ -3,18 +3,11 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-        <g:HTMLPanel ui:field="companyContainer">
-            <g:HTMLPanel ui:field="companyIcon" tag="i" styleName="icon icon-organization margin-right-0"/>
-            <span ui:field="company"></span>
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="departmentContainer">
-            <g:HTMLPanel ui:field="departmentIcon" tag="i" styleName="fa fa-sitemap"/>
-            <span ui:field="department"></span>
-        </g:HTMLPanel>
-        <g:HTMLPanel ui:field="positionContainer">
-            <g:HTMLPanel ui:field="positionIcon" tag="i" styleName="fa fa-street-view"/>
+    <g:HTMLPanel styleName="p-t-10 p-b-10">
+        <div ui:field="company"/>
+        <div ui:field="department"/>
+        <div>
             <span ui:field="position"></span> <g:HTMLPanel ui:field="mainInfoContainer" tag="span" visible="false">(<ui:text from="{lang.employeeMainPosition}"/>)</g:HTMLPanel>
-        </g:HTMLPanel>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

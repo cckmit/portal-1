@@ -176,7 +176,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @SqlConditionBuilder
     public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("Person.company_id in (select companyId from company_group_home)");
+            condition.append( buildHomeCompanyFilter() );
 
             if (query.getFired() != null) {
                 condition.append(" and Person.isfired=?");
@@ -282,7 +282,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         homeGroupCache.walkThrough( ( idx, item ) -> {
             if (idx == 0) {
-                expr.append("company_id ").append(inverse ? "not in" : "in").append (" (");
+                expr.append("Person.company_id ").append(inverse ? "not in" : "in").append (" (");
             }
             else
                 expr.append(",");

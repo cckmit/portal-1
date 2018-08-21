@@ -23,8 +23,6 @@ import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilte
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
-import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
-import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemView;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +33,7 @@ import java.util.function.Consumer;
  * Активность списка сотрудников
  */
 public abstract class EmployeeListActivity implements AbstractEmployeeListActivity,
-        AbstractEmployeeItemActivity, AbstractPositionItemActivity, AbstractEmployeeFilterActivity, Activity {
+        AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, Activity {
 
     @PostConstruct
     public void init() {
@@ -110,7 +108,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     private AbstractEmployeeItemView makeView( Person employee ) {
-        AbstractEmployeeItemView itemView = employeeFactory.get();
+        AbstractEmployeeItemView itemView = factory.get();
         itemView.setActivity( this );
 
         itemView.setName( employee.getDisplayName() );
@@ -123,19 +121,12 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntry mainEntry = entryFacade.getMainEntry();
         if ( mainEntry != null ) {
-
-            AbstractPositionItemView positionItemView = positionFactory.get();
-            positionItemView.setActivity( this );
-
-            positionItemView.setCompany( mainEntry.getCompanyName() );
-            positionItemView.setDepartment( mainEntry.getDepartment().getName() );
-            positionItemView.setPosition( mainEntry.getPosition().getName() );
-
-            positionItemView.hideElements( false );
-            itemView.getPositionContainer().add( positionItemView.asWidget() );
+            itemView.setCompany( mainEntry.getCompanyName() );
+            itemView.setDepartment( mainEntry.getDepartment().getName() );
+            itemView.setPosition( mainEntry.getPosition().getName() );
         }
 
-        itemView.setPhoto( "./images/avatars/" + employee.getId() + ".jpg" );
+        itemView.setPhoto( "/avatars/" + employee.getId() + ".jpg" );
 
         return itemView;
     }
@@ -160,10 +151,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     AbstractEmployeeFilterView filterView;
 
     @Inject
-    Provider< AbstractEmployeeItemView > employeeFactory;
-
-    @Inject
-    Provider< AbstractPositionItemView > positionFactory;
+    Provider< AbstractEmployeeItemView > factory;
 
     @Inject
     PeriodicTaskService taskService;

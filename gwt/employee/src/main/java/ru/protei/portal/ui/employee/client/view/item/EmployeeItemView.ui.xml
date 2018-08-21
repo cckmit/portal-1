@@ -16,19 +16,29 @@
             </div>
 
             <g:HTMLPanel ui:field="birthdayContainer" styleName="contacts">
-                <i class="fa fa-birthday-cake"></i>
-                <span ui:field="birthday"></span>
+                <i class="fa fa-birthday-cake"/>
+                <span ui:field="birthday"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="phoneContainer" styleName="contacts">
-                <i class="fa fa-phone"></i>
-                <span ui:field="phone"></span>
+                <i class="fa fa-phone"/>
+                <span ui:field="phone"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="emailContainer" styleName="contacts">
-                <i class="fa fa-envelope"></i>
-                <a href="#" ui:field="email"></a>
+                <i class="fa fa-envelope"/>
+                <a href="#" ui:field="email"/>
             </g:HTMLPanel>
-
-            <g:HTMLPanel ui:field="positionContainer"/>
+            <g:HTMLPanel ui:field="companyContainer" styleName="contacts" visible="false">
+                <i class="icon icon-organization margin-right-0"/>
+                <span ui:field="company"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="departmentContainer" styleName="contacts" visible="false">
+                <i class="fa fa-sitemap"/>
+                <span ui:field="department"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="positionContainer" styleName="contacts" visible="false">
+                <i class="fa fa-street-view"></i>
+                <span ui:field="position"/>
+            </g:HTMLPanel>
         </div>
 
         <g:HTMLPanel ui:field="previewContainer" styleName="plate-list-expander"/>

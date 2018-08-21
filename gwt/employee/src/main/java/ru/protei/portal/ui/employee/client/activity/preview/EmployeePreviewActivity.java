@@ -53,8 +53,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         itemView.setPosition( workerEntry.getPosition().getName() );
         //itemView.showMainInfo( workerEntry.isMain() );
 
-        itemView.hideElements( true );
-
         return itemView;
     }
 
