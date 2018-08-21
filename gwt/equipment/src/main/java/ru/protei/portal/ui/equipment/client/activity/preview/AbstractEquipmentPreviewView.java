@@ -32,4 +32,6 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
     void setRemoveBtnEnabledStyle( boolean isEnabled );
 
     void setCreatedDate(String created);
+
+    void showFullScreen( boolean value );
 }

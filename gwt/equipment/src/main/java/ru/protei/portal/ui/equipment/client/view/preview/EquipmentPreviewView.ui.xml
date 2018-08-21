@@ -12,6 +12,9 @@
                 <g:Button styleName="btn btn-danger" ui:field="remove" title="{lang.buttonRemove}">
                     <i class="fa fa-trash-o"></i>
                 </g:Button>
+                <g:Button styleName="btn btn-white" ui:field="fullScreen" title="{lang.fullScreen}">
+                    <i class="fa fa-external-link"></i>
+                </g:Button>
             </div>
 
             <fieldset class="header">

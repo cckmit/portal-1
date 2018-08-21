@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
+import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -30,6 +31,19 @@ public class EquipmentEvents {
         public Equipment equipment;
         public HasWidgets parent;
 
+    }
+
+    @Url( value = "equipment_preview", primary = true )
+    public static class ShowFullScreen {
+
+        public ShowFullScreen() {}
+
+        public ShowFullScreen(Long id) {
+            this.equipmentId = id;
+        }
+
+        @Name("id")
+        public Long equipmentId;
     }
 
     @Url( value = "equipment", primary = false )
