@@ -21,8 +21,8 @@ public class IssueEvents {
             this.query = query;
         }
 
-        public Show preserveData(boolean isPreserveData){
-            preserveData = isPreserveData;
+        public Show returnFromIssueEdit(){
+            this.isReturnFromIssueEdit = true;
             return this;
         }
 
@@ -30,7 +30,7 @@ public class IssueEvents {
         public CaseQuery query;
 
         @Omit
-        public boolean preserveData;
+        public boolean isReturnFromIssueEdit;
     }
 
     /**

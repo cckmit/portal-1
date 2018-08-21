@@ -127,25 +127,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             @Override
             public void onSuccess(CaseObject caseObject) {
                 view.saveEnabled().setEnabled(true);
-                if (!isNew(issue)) {
+                if (isNew(issue)) {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new IssueEvents.ChangeModel());
+                    fireEvent(new IssueEvents.Show());
+                } else {
                     fireEvent(new IssueEvents.SaveComment(caseObject.getId(), new IssueEvents.SaveComment.SaveCommentCompleteHandler() {
-                        @Override
-                        public void onSuccess() {
-                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                            fireEvent(new IssueEvents.ChangeModel());
-                            fireEvent(new IssueEvents.Show().preserveData(true));
-                        }
-
                         @Override
                         public void onError(Throwable throwable) {
                             fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
                         }
+
+                        @Override
+                        public void onSuccess() {
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new IssueEvents.ChangeModel());
+                            fireEvent(new IssueEvents.Show().returnFromIssueEdit());
+                        }
                     }));
 
-                } else {
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeModel());
-                    fireEvent(new IssueEvents.Show());
                 }
             }
         });
@@ -153,7 +153,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new IssueEvents.Show().preserveData(true));
+        fireEvent(new IssueEvents.Show().returnFromIssueEdit());
     }
 
     @Override

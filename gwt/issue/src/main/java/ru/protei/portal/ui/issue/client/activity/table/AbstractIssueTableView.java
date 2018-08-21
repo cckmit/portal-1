@@ -30,4 +30,6 @@ public interface AbstractIssueTableView extends IsWidget {
     void showElements();
 
     HasWidgets getPagerContainer();
+
+    void clearSelection();
 }

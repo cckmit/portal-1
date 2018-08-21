@@ -99,11 +99,10 @@ public abstract class IssueTableActivity
         filterView.toggleMsgSearchThreshold();
 
         animation.closeDetails();
-
-        if (event.preserveData) {
-            scrollToPreviousPosition();
-        } else {
-            view.clearRecords();
+        view.clearRecords();
+        if(!event.isReturnFromIssueEdit){
+            view.clearSelection();
+            scrollTop = null;
         }
 
         requestIssuesCount();
@@ -412,6 +411,7 @@ public abstract class IssueTableActivity
                     view.setIssuesCount( issuesCount );
                     pagerView.setTotalPages( view.getPageCount() );
                     pagerView.setTotalCount( issuesCount );
+                    scrollToPreviousPosition();
                 }
             } );
     }
