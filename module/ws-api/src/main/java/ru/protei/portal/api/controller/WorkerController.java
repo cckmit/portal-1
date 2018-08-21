@@ -925,7 +925,7 @@ public class WorkerController {
 
         public OperationData requireParentDepartment(Supplier<CompanyDepartment> optional) {
             requireHomeItem();
-            if (isValid() && record.getParentDepartmentId() != null)
+            if (isValid() && HelperFunc.isNotEmpty(record.getParentDepartmentId()))
                 this.parentDepartment = handle(companyDepartmentDAO.getByExternalId(record.getParentDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_PAR_DEP);
 
             return this;
@@ -933,7 +933,7 @@ public class WorkerController {
 
         public OperationData requireHeadDepartment(Supplier<WorkerEntry> optional) {
             requireHomeItem();
-            if (isValid() && record.getHeadDepartmentId() != null)
+            if (isValid() && HelperFunc.isNotEmpty(record.getHeadDepartmentId()))
                 this.headDepartment = handle(workerEntryDAO.getByExternalId(record.getHeadDepartmentId().trim(), homeGroupItem.getCompanyId()), optional, En_ErrorCode.UNKNOWN_WOR);
 
             return this;
