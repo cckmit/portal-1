@@ -24,6 +24,15 @@ public class DateFormatter {
         return dateTimeFormat.format( date );
     }
 
+    public static String formatDateMonth( Date date ) {
+        if ( date == null ) {
+            return "";
+        }
+
+        return dateMonthFormat.format( date );
+    }
+
     private static DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
     private static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy HH:mm" );
+    private static DateTimeFormat dateMonthFormat = DateTimeFormat.getFormat( "dd MMMM" );
 }

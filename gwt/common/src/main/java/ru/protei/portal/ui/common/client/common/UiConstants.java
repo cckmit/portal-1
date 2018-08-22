@@ -25,6 +25,7 @@ public class UiConstants {
         String ISSUE_REPORTS = "fa fa-tasks";
         String CASE_STATE = "fa fa-bookmark ";
         String SITE_FOLDER = "fa fa-folder";
+        String EMPLOYEE = "fa fa-user-circle";
     }
 
     public interface ActionBarIcons {

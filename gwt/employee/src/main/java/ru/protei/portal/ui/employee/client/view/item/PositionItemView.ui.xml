@@ -1,0 +1,13 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="p-t-10 p-b-10">
+        <div ui:field="company"/>
+        <div ui:field="department"/>
+        <div>
+            <span ui:field="position"></span> <g:HTMLPanel ui:field="mainInfoContainer" tag="span" visible="false">(<ui:text from="{lang.employeeMainPosition}"/>)</g:HTMLPanel>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
