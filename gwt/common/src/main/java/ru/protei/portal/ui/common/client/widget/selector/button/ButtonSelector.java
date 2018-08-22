@@ -34,15 +34,13 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     @Override
     public void onClick( ClickEvent event ) {
         super.onClick(event);
-        if(isValidable)
-            setValid( isValid() );
+        checkValueIsValid();
     }
 
     @Override
     public void setValue(T value) {
         super.setValue(value);
-        if(isValidable)
-            setValid( isValid() );
+        checkValueIsValid();
     }
 
     @Override
@@ -93,6 +91,15 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
             return;
         }
         button.addStyleName(style);
+    }
+
+    public void checkValueIsValid() {
+        if(isValidable)
+            setValid( isValid() );
+    }
+
+    public void setEnsureDebugId(String debugId) {
+        button.ensureDebugId(debugId);
     }
 
     @UiField

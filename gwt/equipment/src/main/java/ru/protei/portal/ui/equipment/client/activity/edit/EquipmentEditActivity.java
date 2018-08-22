@@ -124,13 +124,21 @@ public abstract class EquipmentEditActivity
         }
         view.linkedEquipment().setValue( linkedEquipment );
         view.numbers().setValue( equipment.getDecimalNumbers() );
-        PersonShortView manager = new PersonShortView();
-        manager.setId( equipment.getManagerId() );
+
+        PersonShortView manager = null;
+        if ( equipment.getManagerId() != null ) {
+            manager = new PersonShortView();
+            manager.setId( equipment.getManagerId() );
+            manager.setDisplayShortName( equipment.getManagerShortName() );
+        }
         view.manager().setValue( manager );
 
-        ProjectInfo info = new ProjectInfo();
-        info.setId(equipment.getProjectId());
-        info.setName(equipment.getProjectName());
+        ProjectInfo info = null;
+        if ( equipment.getProjectId() == null ) {
+            info = new ProjectInfo();
+            info.setId(equipment.getProjectId());
+            info.setName(equipment.getProjectName());
+        }
         view.project().setValue( info );
     }
 

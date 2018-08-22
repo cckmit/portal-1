@@ -8,9 +8,11 @@
             <g:HTMLPanel ui:field="itemContainer" tag="ul" styleName="select2-choices"/>
             <div class="select2-button">
                 <g:Button ui:field="caretButton" styleName="btn btn-flat btn-default">
+                    <span ui:field="addIcon" class="hide"/>
                     <span ui:field="add" class="caret"/>
                 </g:Button>
                 <g:Button ui:field="clearButton" styleName="btn btn-flat btn-default">
+                    <span ui:field="clearIcon" class="hide"/>
                     <span ui:field="clear" class="fa fa-times"/>
                 </g:Button>
             </div>

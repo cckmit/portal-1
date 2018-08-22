@@ -83,12 +83,22 @@ public enum En_SortField {
     /**
      * equipment project
      */
+    equipment_project("case_object.case_name"),
+
+    /**
+     * project
+     */
     project("project"),
 
     /**
      * equipment primary use
      */
     primary_use("primary_use"),
+
+    /**
+     * issue case_name
+     */
+    case_name("CASE_NAME"),
 
     /**
      * person birthday

@@ -1,30 +1,27 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:server='urn:import:ru.protei.portal.ui.sitefolder.client.view.server.widget.selector'>
+             xmlns:server='urn:import:ru.protei.portal.ui.sitefolder.client.view.server.widget.selector'
+             xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root" styleName="panel">
         <div class="body">
             <div class="grid grid-indent">
-                <div class="form-group col-xs-12">
-                    <div class="form-group col-xs-12 m-b-0">
-                        <div class="form-group col-xs-8 m-b-0 p-r-10 border-box">
-                            <label><ui:text from="{lang.siteFolderAppName}"/></label>
-                        </div>
-                        <div class="form-group col-xs-4 m-b-0">
-                            <label><ui:text from="{lang.siteFolderServer}"/></label>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12 m-b-0">
-                        <div class="form-group col-xs-8 m-b-0 p-r-10 border-box">
-                            <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
-                        </div>
-                        <div class="form-group col-xs-4 m-b-0">
-                            <server:ServerButtonSelector ui:field="server" validation="true" styleName="btn-selector"/>
-                        </div>
-                    </div>
+                <div class="form-group col-xs-4">
+                    <label><ui:text from="{lang.devUnitComponent}"/></label>
+                    <component:ComponentButtonSelector ui:field="component" validation="false" defaultValue="{lang.selectComponent}"/>
+                </div>
+
+                <div class="form-group col-xs-4">
+                    <label><ui:text from="{lang.siteFolderAppName}"/></label>
+                    <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                </div>
+
+                <div class="form-group col-xs-4">
+                    <label><ui:text from="{lang.siteFolderServer}"/></label>
+                    <server:ServerButtonSelector ui:field="server" validation="true" styleName="btn-selector"/>
                 </div>
 
                 <div class="form-group col-xs-12">

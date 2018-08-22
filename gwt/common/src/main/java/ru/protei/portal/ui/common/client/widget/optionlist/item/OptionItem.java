@@ -67,6 +67,10 @@ public class OptionItem
         }
     }
 
+    public void setEnsureDebugId(String debugId) {
+        checkbox.ensureDebugId(debugId);
+    }
+
     @UiField
     CheckBox checkbox;
     @UiField

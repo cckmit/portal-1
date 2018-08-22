@@ -5,11 +5,13 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
+import java.io.Serializable;
+
 /**
  * Created by michael on 24.05.16.
  */
 @JdbcEntity(table = "dev_unit_children")
-public class DevUnitChildRef {
+public class DevUnitChildRef implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -45,5 +47,14 @@ public class DevUnitChildRef {
 
     public void setChildId(Long childId) {
         this.childId = childId;
+    }
+
+    @Override
+    public String toString() {
+        return "DevUnitChildRef{" +
+                "id=" + id +
+                ", unitId=" + unitId +
+                ", childId=" + childId +
+                '}';
     }
 }

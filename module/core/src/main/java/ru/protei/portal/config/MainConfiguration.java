@@ -108,6 +108,11 @@ public class MainConfiguration {
         return new CaseObjectSqlBuilder();
     }
 
+    @Bean
+    public ServerSqlBuilder serverSqlBuilder() {
+        return new ServerSqlBuilder();
+    }
+
 
     /* DAO */
 
@@ -368,6 +373,16 @@ public class MainConfiguration {
     @Bean
     public ApplicationDAO getApplicationDAO() {
         return new ApplicationDAO_Impl();
+    }
+
+    @Bean
+    public ServerApplicationDAO getServerApplicationDAO() {
+        return new ServerApplicationDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitChildRefDAO getDevUnitChildRefDAO() {
+        return new DevUnitChildRefDAO_Impl();
     }
 
 /**

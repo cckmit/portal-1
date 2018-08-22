@@ -4,16 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.ApplicationDAO;
 import ru.protei.portal.core.model.dao.PlatformDAO;
+import ru.protei.portal.core.model.dao.ServerApplicationDAO;
 import ru.protei.portal.core.model.dao.ServerDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
@@ -29,6 +31,9 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Autowired
     ApplicationDAO applicationDAO;
+
+    @Autowired
+    ServerApplicationDAO serverApplicationDAO;
 
     @Override
     public CoreResponse<Long> countPlatforms(AuthToken token, PlatformQuery query) {
@@ -76,7 +81,12 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<List<Platform>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
-        jdbcManyRelationsHelper.fill(result, "servers");
+        result.forEach(platform -> {
+            ServerQuery serverQuery = new ServerQuery();
+            serverQuery.setPlatformId(platform.getId());
+            Long count = serverDAO.count(serverQuery);
+            platform.setServersCount(count == null ? 0L : count);
+        });
 
         return new CoreResponse<List<Platform>>().success(result);
     }
@@ -90,7 +100,12 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<List<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
-        jdbcManyRelationsHelper.fill(result, "applications");
+        result.forEach(server -> {
+            ApplicationQuery applicationQuery = new ApplicationQuery();
+            applicationQuery.setServerId(server.getId());
+            Long count = applicationDAO.count(applicationQuery);
+            server.setApplicationsCount(count == null ? 0L : count);
+        });
 
         return new CoreResponse<List<Server>>().success(result);
     }
@@ -105,6 +120,29 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         }
 
         return new CoreResponse<List<Application>>().success(result);
+    }
+
+    @Override
+    public CoreResponse<List<Server>> listServersWithAppsNames(AuthToken token, ServerQuery query) {
+
+        List<ServerApplication> serverApplications = serverApplicationDAO.listByQuery(query);
+
+        if (serverApplications == null) {
+            return new CoreResponse<List<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+        }
+
+        Map<Long, Server> servers = new HashMap<>();
+
+        serverApplications.forEach(sa -> {
+            Long serverId = sa.getServer().getId();
+            Server server = servers.getOrDefault(serverId, sa.getServer());
+            if (sa.getApplication() != null && HelperFunc.isNotEmpty(sa.getApplication().getName())) {
+                server.addAppName(sa.getApplication().getName());
+            }
+            servers.put(serverId, server);
+        });
+
+        return new CoreResponse<List<Server>>().success(new ArrayList<>(servers.values()));
     }
 
 
@@ -150,8 +188,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<Platform>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
-        jdbcManyRelationsHelper.fill(result, "servers");
-
         return new CoreResponse<Platform>().success(result);
     }
 
@@ -163,8 +199,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         if (result == null) {
             return new CoreResponse<Server>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
-
-        jdbcManyRelationsHelper.fill(result, "applications");
 
         return new CoreResponse<Server>().success(result);
     }
@@ -216,6 +250,18 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         }
 
         return new CoreResponse<Server>().success(result);
+    }
+
+    @Override
+    public CoreResponse<Server> createServerAndCloneApps(AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
+
+        CoreResponse<Server> response = createServer(token, server);
+
+        if (response.isOk() && response.getData() != null) {
+            cloneApplicationsForServer(response.getData().getId(), serverIdOfAppsToBeCloned);
+        }
+
+        return response;
     }
 
     @Override
@@ -314,5 +360,25 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean result = applicationDAO.removeByKey(id);
 
         return new CoreResponse<Boolean>().success(result);
+    }
+
+
+    private void cloneApplicationsForServer(Long serverId, Long serverIdOfAppsToBeCloned) {
+        if (serverIdOfAppsToBeCloned == null || serverId == null) {
+            return;
+        }
+
+        List<Application> applications = applicationDAO.listByQuery(ApplicationQuery.forServerId(serverIdOfAppsToBeCloned));
+
+        if (applications == null || applications.size() == 0) {
+            return;
+        }
+
+        applications.forEach(app -> {
+            app.setId(null);
+            app.setServerId(serverId);
+        });
+
+        applicationDAO.persistBatch(applications);
     }
 }

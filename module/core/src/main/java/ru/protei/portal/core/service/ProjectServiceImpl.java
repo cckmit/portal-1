@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
-import ru.protei.portal.core.model.dict.En_LocationType;
-import ru.protei.portal.core.model.dict.En_RegionState;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
@@ -18,8 +15,10 @@ import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -58,6 +57,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     ProjectToProductDAO projectToProductDAO;
+
+    @Autowired
+    AuthService authService;
 
     @Override
     public CoreResponse< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
@@ -120,6 +122,12 @@ public class ProjectServiceImpl implements ProjectService {
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );
+        if (query.isOnlyMineProjects()) {
+            UserSessionDescriptor descriptor = authService.findSession(token);
+            if (descriptor != null && descriptor.getPerson() != null) {
+                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
+            }
+        }
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {
@@ -165,7 +173,7 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
 
-        updateManagers( caseObject, project.getHeadManager(), project.getManagers() );
+        updateTeam( caseObject, project.getTeam() );
         updateLocations( caseObject, project.getRegion() );
         updateProducts( caseObject, project.getProducts() );
 
@@ -201,6 +209,8 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType(En_CaseType.PROJECT);
+        caseQuery.setSortDir(En_SortDir.ASC);
+        caseQuery.setSortField(En_SortField.case_name);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
         List<ProjectInfo> result = projects.stream()
@@ -208,29 +218,39 @@ public class ProjectServiceImpl implements ProjectService {
         return new CoreResponse<List<ProjectInfo>>().success( result );
     }
 
-    private void updateManagers( CaseObject caseObject, PersonShortView headManager, List< PersonShortView > deployManagers ) {
-        for ( CaseMember member : caseObject.getMembers() ) {
-            if ( member.getRole().equals( En_DevUnitPersonRoleType.HEAD_MANAGER ) ) {
-                if ( headManager == null ) {
-                    caseMemberDAO.removeByKey( member.getId() );
-                    continue;
-                } else {
-                    member.setMemberId( headManager.getId() );
-                    caseMemberDAO.merge( member );
-                    continue;
-                }
-            } else if ( member.getRole().equals( En_DevUnitPersonRoleType.DEPLOY_MANAGER ) ) {
-                int nPos = deployManagers.indexOf( PersonShortView.fromPerson( member.getMember() ) );
-                if ( nPos == -1 ) {
-                    caseMemberDAO.removeByKey( member.getId() );
-                } else {
-                    deployManagers.remove( nPos );
-                }
+    private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
+
+        List<PersonProjectMemberView> toAdd = new ArrayList<>(team);
+        List<Long> toRemove = new ArrayList<>();
+        List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
+
+        for (CaseMember member : caseObject.getMembers()) {
+            if (!projectRoles.contains(member.getRole())) {
+                continue;
+            }
+            int nPos = toAdd.indexOf(PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()));
+            if (nPos == -1) {
+                toRemove.add(member.getId());
+            } else {
+                toAdd.remove(nPos);
             }
         }
 
-        for ( PersonShortView deployManager : deployManagers ) {
-            caseMemberDAO.persist( CaseMember.makeDeployManagerOf( caseObject, deployManager ) );
+        if (toRemove.size() > 0) {
+            caseMemberDAO.removeByKeys(toRemove);
+        }
+
+        if (toAdd.size() > 0) {
+            caseMemberDAO.persistBatch(toAdd.stream()
+                    .map(ppm -> {
+                        CaseMember caseMember = new CaseMember();
+                        caseMember.setMemberId(ppm.getId());
+                        caseMember.setRole(ppm.getRole());
+                        caseMember.setCaseId(caseObject.getId());
+                        return caseMember;
+                    })
+                    .collect(Collectors.toList())
+            );
         }
     }
 

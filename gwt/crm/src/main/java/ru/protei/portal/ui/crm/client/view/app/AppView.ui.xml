@@ -6,7 +6,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
 
-    <g:HTMLPanel styleName="global">
+    <g:HTMLPanel ui:field="globalContainer" styleName="global">
         <g:HTMLPanel tag="header" styleName="main-header">
             <g:Anchor ui:field="logo" href="#" styleName="logo">
                 <span class="logo-lg">
@@ -31,8 +31,8 @@
                     <navsearch:NavSearchBox ui:field="search"/>
                     <locale:LocaleSelector ui:field="locale"/>
                     <li>
-                        <g:Anchor ui:field="logout" title="{lang.buttonLogout} (you can use Ctrl+F4)" href="#">
-                            <i class="fa-lg ion-log-out"></i>
+                        <g:Anchor ui:field="logout" title="{lang.buttonLogout}" href="#">
+                            <i class="fa-lg ion-log-out"/>
                         </g:Anchor>
                     </li>
                 </ul>
@@ -60,6 +60,8 @@
                 <g:HTMLPanel styleName="sidebar-menu" ui:field="menuContainer"/>
             </section>
         </g:HTMLPanel>
+
+        <g:Label styleName="app-version" ui:field="appVersion"/>
 
         <g:HTMLPanel ui:field="container" styleName="right-side"/>
 

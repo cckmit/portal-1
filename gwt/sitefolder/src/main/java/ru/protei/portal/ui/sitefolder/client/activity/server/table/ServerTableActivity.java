@@ -144,6 +144,19 @@ public abstract class ServerTableActivity implements
     }
 
     @Override
+    public void onCopyClicked(Server value) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return;
+        }
+
+        if (value == null) {
+            return;
+        }
+
+        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()));
+    }
+
+    @Override
     public void onEditClicked(Server value) {
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT)) {
             return;

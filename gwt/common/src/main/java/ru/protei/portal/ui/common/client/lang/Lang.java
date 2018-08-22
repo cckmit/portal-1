@@ -329,6 +329,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String requestInfoCaseState();
 
+    String custPendingCaseState();
+
     String criticalImportance();
 
     String importantImportance();
@@ -703,8 +705,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectOfficialAmplua();
 
-    String personHeadManager();
-
     String personDeployManager();
 
     String officialInRelationsWith();
@@ -1075,6 +1075,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String siteFolderParams();
 
+    String siteFolderParamsLocal();
+
     String siteFolderComment();
 
     String siteFolderIP();
@@ -1168,6 +1170,74 @@ public interface Lang extends Messages, ContactItemLang {
     String productType();
 
     String searchPrivate();
+
+    String equipmentProjectNotDefined();
+
+    String siteFolderCompanyContacts();
+
+    String selectProduct();
+
+    String componentName();
+
+    String components();
+
+    String errSaveIssueNeedSelectCompany();
+
+    String errSaveIssueFieldsInvalid();
+
+    String personHeadManager();
+
+    String personHardwareCurator();
+
+    String personSoftwareCurator();
+
+    String personIntroNewTechSolutions();
+
+    String personLiableForAutoTesting();
+
+    String personTechSupportCurator();
+
+    String personProductAssembler();
+
+    String personSupplyPreparation();
+
+    String personEngineerDocDev();
+
+    String personTechDocDev();
+
+    String personSoftwareDocDev();
+
+    String personLiableForCertification();
+
+    String personOkrEscort();
+
+    String personQualityControlSmk();
+
+    String personCustomerIntegration();
+
+    String projectTeam();
+
+    String projectSelectRole();
+
+    String membersCount();
+
+    String version();
+
+    String siteFolderClone();
+
+    String issueFilterRemoveConfirmMessage();
+
+    String accessory();
+
+    String projectOnlyMine();
+
+    String selectComponent();
+
+    String belongsTo();
+
+    String siteFolderManager();
+
+    String selectManager();
 
     String employees();
 

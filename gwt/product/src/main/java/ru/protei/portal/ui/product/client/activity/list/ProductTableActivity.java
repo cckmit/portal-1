@@ -46,7 +46,7 @@ public abstract class ProductTableActivity implements
         this.query = event.query;
         init.parent.clear();
         init.parent.add( view.asWidget() );
-        init.parent.add( pagerView.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         view.getFilterContainer().add(event.filter);
         requestProductsCount();

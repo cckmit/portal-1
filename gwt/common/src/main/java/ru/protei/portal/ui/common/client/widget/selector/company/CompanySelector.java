@@ -97,6 +97,7 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
 
             EntityOption option = optionMap.get( id );
             setValue( option, true );
+            checkValueIsValid();
             popup.hide();
         }, ClickEvent.getType() );
     }
@@ -114,6 +115,14 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
         this.categories = categories;
         if ( model != null ) {
             model.updateQuery( this, this.categories );
+        }
+    }
+
+    public void applyValueIfOneOption() {
+        if (options != null && options.size() == 1) {
+            setValue(options.get(0));
+        } else {
+            setValue(null);
         }
     }
 

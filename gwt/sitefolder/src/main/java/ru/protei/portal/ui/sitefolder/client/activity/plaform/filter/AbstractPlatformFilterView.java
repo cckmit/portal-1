@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Set;
 
@@ -20,6 +21,8 @@ public interface AbstractPlatformFilterView extends IsWidget {
     HasValue<Boolean> sortDir();
 
     HasValue<Set<EntityOption>> companies();
+
+    HasValue<Set<PersonShortView>> managers();
 
     HasValue<String> parameters();
 

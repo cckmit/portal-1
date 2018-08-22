@@ -25,4 +25,6 @@ public interface AbstractContactTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    HasWidgets getPagerContainer();
 }

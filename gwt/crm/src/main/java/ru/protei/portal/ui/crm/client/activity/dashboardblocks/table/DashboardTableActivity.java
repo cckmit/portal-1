@@ -25,13 +25,13 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
     @Event
     public void onShow( DashboardEvents.ShowTableBlock event ) {
-        AbstractDashboardTableView view = createTableView();
+        AbstractDashboardTableView view = createTableView(event.debugId);
 
         event.parent.clear();
         event.parent.add(view.asWidget());
 
 
-        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow);
+        DashboardTableModel model = new DashboardTableModel(view, event.query, event.isLoaderShow, event.daysLimit);
         viewToModel.put(view, model);
 
         view.getImportance().setValue(IMPORTANCE_LEVELS);
@@ -114,6 +114,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();
+        applyDaysLimitIfNeeded(model);
         updateRecordsCount(model);
         requestRecords(model);
     }
@@ -145,9 +146,12 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     }
 
 
-    private AbstractDashboardTableView createTableView(){
+    private AbstractDashboardTableView createTableView(String debugId){
         AbstractDashboardTableView table = tableProvider.get();
         table.setActivity(this);
+        if (debugId != null) {
+            table.setEnsureDebugId(debugId);
+        }
         return table;
     }
 
@@ -165,6 +169,15 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         });
     }
 
+    private void applyDaysLimitIfNeeded(DashboardTableModel model) {
+        if (model.daysLimit == null) {
+            return;
+        }
+        Date to = new Date();
+        Date from = new Date(to.getTime() - (MILLISECONDS_PER_DAY * model.daysLimit));
+        model.query.setFrom(from);
+        model.query.setTo(to);
+    }
 
 
     @Inject
@@ -176,6 +189,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     @Inject
     Provider<AbstractDashboardTableView> tableProvider;
 
+    private final static Long MILLISECONDS_PER_DAY = 86400000L;
     private final Set<En_ImportanceLevel> IMPORTANCE_LEVELS = Arrays.stream(En_ImportanceLevel.values()).collect(Collectors.toSet());
     private Map<AbstractDashboardTableView, DashboardTableModel> viewToModel = new HashMap<>();
 

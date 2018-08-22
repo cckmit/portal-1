@@ -15,4 +15,6 @@ public interface AbstractContactConciseTableView extends IsWidget {
     void clearRecords();
 
     void setData(List<Person> persons);
+
+    void showEditableColumns(boolean isVisible);
 }

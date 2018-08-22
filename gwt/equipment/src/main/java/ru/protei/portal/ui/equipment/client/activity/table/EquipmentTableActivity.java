@@ -58,7 +58,7 @@ public abstract class EquipmentTableActivity
     public void onShow( EquipmentEvents.Show event ) {
         init.parent.clear();
         init.parent.add( view.asWidget() );
-        init.parent.add( pagerView.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.EQUIPMENT ) :

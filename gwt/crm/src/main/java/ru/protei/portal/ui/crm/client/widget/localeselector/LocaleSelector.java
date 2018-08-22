@@ -12,7 +12,7 @@ public class LocaleSelector extends NavImageSelector<LocaleImage> {
 
     @Inject
     public void onInit() {
-        setDisplayOptionCreator( value -> new DisplayOption( LocaleInfo.getLocaleNativeDisplayName( value.getLocale() ), value.getImageUrl() ) );
+        setDisplayOptionCreator( value -> new DisplayOption( LocaleInfo.getLocaleNativeDisplayName( value.getLocale() ).toLowerCase(), value.getImageUrl() ) );
         fillOptions();
         addStyleName( "locale-selector" );
     }

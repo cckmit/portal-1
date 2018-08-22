@@ -68,7 +68,7 @@ public class IconSelector<T> extends Selector<T> implements HasEnabled {
     @Override
     public void fillSelectorView( DisplayOption selectedValue ) {
         anchorIcon.setStyleName( selectedValue.getIcon() );
-        anchorIcon.setTitle( selectedValue.getIcon() );
+        anchorIcon.setTitle( selectedValue.getName() );
     }
 
     @UiField

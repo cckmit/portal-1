@@ -41,7 +41,8 @@
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
-                        <project:ProjectButtonSelector ui:field="project"/>
+                        <project:ProjectButtonSelector ui:field="project"
+                                                       defaultValue="{lang.equipmentProjectNotDefined}"/>
                     </g:HTMLPanel>
 
                     <g:HTMLPanel styleName="form-group" ui:field="managerBox">

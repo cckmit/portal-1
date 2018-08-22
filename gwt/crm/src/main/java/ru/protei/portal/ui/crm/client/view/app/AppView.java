@@ -12,6 +12,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.ui.crm.client.activity.app.AbstractAppView;
 import ru.protei.portal.ui.crm.client.widget.localeselector.LocaleImage;
@@ -24,9 +25,11 @@ import ru.protei.portal.ui.crm.client.widget.navsearch.NavSearchBox;
 public class AppView extends Composite
         implements AbstractAppView,
         KeyUpHandler {
+
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
         initHandlers();
         // todo temporary set invisible
         search.setVisible( false );
@@ -42,6 +45,11 @@ public class AppView extends Composite
         this.username.setInnerText( username );
         this.company.setInnerText( company );
         this.icon.setSrc( iconSrc );
+    }
+
+    @Override
+    public void setAppVersion(String appVersion) {
+        this.appVersion.setText(appVersion);
     }
 
     @Override
@@ -106,10 +114,18 @@ public class AppView extends Composite
 
     @Override
     public void onKeyUp( KeyUpEvent event ) {
-        if ( event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown() ) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
             event.preventDefault();
             activity.onLogoutClicked();
         }
+    }
+
+    private void ensureDebugIds() {
+        globalContainer.ensureDebugId(DebugIds.APP_VIEW.GLOBAL_CONTAINER);
+        logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
+        locale.setEnsureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
+        toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
+        userPanel.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
     }
 
     private void initHandlers() {
@@ -155,6 +171,10 @@ public class AppView extends Composite
     ImageElement icon;
     @UiField
     Anchor logo;
+    @UiField
+    Label appVersion;
+    @UiField
+    HTMLPanel globalContainer;
 
     AbstractAppActivity activity;
 

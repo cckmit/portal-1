@@ -59,7 +59,11 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     public void setWebsite( String value ) {
         websiteContainer.setVisible( value != null && !value.isEmpty() );
         website.setInnerText( value == null ? "" : value );
-        website.setHref( value == null ? "#" : value  );
+        String href = value == null ? "#" : value;
+        if ( !href.startsWith("http://") && !href.startsWith("htts://") ) {
+            href = "http://" + href;
+        }
+        website.setHref( href );
     }
 
     @Override

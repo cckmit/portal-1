@@ -58,7 +58,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         this.fireEvent( new AppEvents.InitPanelName( lang.accounts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
-        init.parent.add( pagerView.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ACCOUNT ) :

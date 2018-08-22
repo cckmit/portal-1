@@ -3,8 +3,11 @@ package ru.protei.portal.ui.issue.client.activity.table;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -21,6 +24,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -48,6 +52,7 @@ public abstract class IssueTableActivity
         implements AbstractIssueTableActivity, AbstractIssueFilterActivity,
         AbstractPagerActivity, Activity
 {
+
 
     @PostConstruct
     public void onInit() {
@@ -77,7 +82,7 @@ public abstract class IssueTableActivity
         this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
-        initDetails.parent.add( pagerView.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
         showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
@@ -93,7 +98,23 @@ public abstract class IssueTableActivity
 
         filterView.toggleMsgSearchThreshold();
 
+        animation.closeDetails();
+        view.clearRecords();
+        if(!event.isReturnFromIssueEdit){
+            view.clearSelection();
+            scrollTop = null;
+        }
+
         requestIssuesCount();
+    }
+
+    private void scrollToPreviousPosition() {
+        // Scroll to previous position
+        if ( scrollTop != null
+                && scrollTop.intValue() <= RootPanel.get(UIObject.DEBUG_ID_PREFIX+DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight() ) {
+            Window.scrollTo( 0, scrollTop );
+            scrollTop = null;
+        }
     }
 
     @Event
@@ -125,6 +146,40 @@ public abstract class IssueTableActivity
         this.initDetails = initDetails;
     }
 
+    @Event
+    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
+
+        if (!event.identity.equals(getClass().getName()) || filterIdToRemove == null) {
+            return;
+        }
+
+        filterService.removeIssueFilter(filterIdToRemove, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                filterIdToRemove = null;
+                fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                filterIdToRemove = null;
+                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueEvents.ChangeUserFilterModel());
+                filterView.resetFilter();
+            }
+        });
+    }
+
+    @Event
+    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
+
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        filterIdToRemove = null;
+    }
+
     @Override
     public void onItemClicked( CaseShortView value ) {
         showPreview( value );
@@ -132,6 +187,7 @@ public abstract class IssueTableActivity
 
     @Override
     public void onEditClicked( CaseShortView value ) {
+        scrollTop = Window.getScrollTop();
         fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
     }
 
@@ -152,6 +208,10 @@ public abstract class IssueTableActivity
         if ( !validateMultiSelectorsTotalCount() ){
             return;
         }
+
+        view.clearRecords();
+        animation.closeDetails();
+
         requestIssuesCount();
         filterView.toggleMsgSearchThreshold();
     }
@@ -163,21 +223,8 @@ public abstract class IssueTableActivity
 
     @Override
     public void onFilterRemoveClicked( Long id ) {
-
-        filterService.removeIssueFilter( id, new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Boolean aBoolean ) {
-
-                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent( new IssueEvents.ChangeUserFilterModel() );
-                filterView.resetFilter();
-            }
-        } );
+        filterIdToRemove = id;
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
     }
 
     @Override
@@ -353,9 +400,6 @@ public abstract class IssueTableActivity
     }
 
     private void requestIssuesCount() {
-        view.clearRecords();
-        animation.closeDetails();
-
         issueService.getIssuesCount( getQuery(), new RequestCallback< Long >() {
                 @Override
                 public void onError( Throwable throwable ) {
@@ -367,6 +411,7 @@ public abstract class IssueTableActivity
                     view.setIssuesCount( issuesCount );
                     pagerView.setTotalPages( view.getPageCount() );
                     pagerView.setTotalCount( issuesCount );
+                    scrollToPreviousPosition();
                 }
             } );
     }
@@ -536,7 +581,9 @@ public abstract class IssueTableActivity
     IssueFilterService issueFilterService;
 
     private static String CREATE_ACTION;
+    private Long filterIdToRemove;
     private AppEvents.InitDetails initDetails;
+    private Integer scrollTop;
 
     private final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
 }

@@ -70,6 +70,11 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public void hideElements() {
         filterContainer.setVisible( false );
         //hideColumn.setVisibility( false );
@@ -137,6 +142,8 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField

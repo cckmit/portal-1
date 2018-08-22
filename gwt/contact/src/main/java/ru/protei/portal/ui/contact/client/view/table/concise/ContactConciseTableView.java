@@ -5,6 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.AbstractColumn;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
@@ -61,6 +62,12 @@ public class ContactConciseTableView extends ContactTableViewBase implements Abs
         }
     }
 
+    @Override
+    public void showEditableColumns(boolean isVisible) {
+        editColumn.setVisibility(isVisible);
+        removeColumn.setVisibility(isVisible);
+    }
+
     private void initTable() {
 
         editClickColumn.setPrivilege(En_Privilege.CONTACT_EDIT);
@@ -73,8 +80,8 @@ public class ContactConciseTableView extends ContactTableViewBase implements Abs
 
         table.addColumn(company.header, company.values);
         table.addColumn(displayName.header, displayName.values);
-        table.addColumn(editClickColumn.header, editClickColumn.values);
-        table.addColumn(removeClickColumn.header, removeClickColumn.values);
+        editColumn = table.addColumn(editClickColumn.header, editClickColumn.values);
+        removeColumn = table.addColumn(removeClickColumn.header, removeClickColumn.values);
     }
 
     @UiField
@@ -92,6 +99,8 @@ public class ContactConciseTableView extends ContactTableViewBase implements Abs
     RemoveClickColumn<Person> removeClickColumn;
     List<ClickColumn> columns = new ArrayList<>();
 
+    AbstractColumn editColumn;
+    AbstractColumn removeColumn;
     AbstractContactConciseTableActivity activity;
 
     private static ContactConciseTableViewUiBinder ourUiBinder = GWT.create(ContactConciseTableViewUiBinder.class);

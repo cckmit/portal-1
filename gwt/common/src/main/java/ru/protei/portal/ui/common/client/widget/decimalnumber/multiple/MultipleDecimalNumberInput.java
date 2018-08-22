@@ -212,7 +212,7 @@ public class MultipleDecimalNumberInput
         Set<Integer> modifications = new HashSet<>();
 
         values.forEach( value -> {
-            if ( value == null || ( value.isEmpty() && value.getModification() == null) ) {
+            if ( value == null || ( value.isEmpty() || value.getModification() == null) ) {
                 return;
             }
             if ( value.getOrganizationCode() == number.getOrganizationCode()

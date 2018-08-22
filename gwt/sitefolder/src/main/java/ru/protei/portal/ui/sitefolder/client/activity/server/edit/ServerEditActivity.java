@@ -4,16 +4,17 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.ent.Server;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
+
+import java.util.function.Consumer;
 
 public abstract class ServerEditActivity implements Activity, AbstractServerEditActivity {
 
@@ -27,33 +28,37 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(SiteFolderServerEvents.Edit event) {
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
+        serverIdOfAppsToBeCloned = null;
+
         fireEvent(new ActionBarEvents.Clear());
         if (event.serverId == null) {
             fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerNew()));
+
+            if (event.serverIdToBeCloned != null) {
+                requestServer(event.serverIdToBeCloned, server -> {
+                    serverIdOfAppsToBeCloned = server.getId();
+                    server.setId(null);
+                    fillView(server);
+                });
+                return;
+            }
+
             Server server = new Server();
-            server.setPlatform(event.platform);
+            if (event.platform != null) {
+                server.setPlatform(event.platform);
+            }
             fillView(server);
             return;
         }
         fireEvent(new AppEvents.InitPanelName(lang.siteFolderServerEdit()));
 
-        siteFolderController.getServer(event.serverId, new RequestCallback<Server>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetObject(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Server result) {
-                fillView(result);
-            }
-        });
+        requestServer(event.serverId, this::fillView);
     }
 
     @Override
@@ -65,19 +70,15 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
         fillServer(server);
 
-        siteFolderController.saveServer(server, new RequestCallback<Server>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.siteFolderPlatformNotSaved(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Server result) {
-                fireEvent(new SiteFolderServerEvents.ChangeModel());
-                fireEvent(new SiteFolderServerEvents.Changed(result));
-                fireEvent(new Back());
-            }
-        });
+        siteFolderController.saveServer(server, serverIdOfAppsToBeCloned, new FluentCallback<Server>()
+                .withErrorMessage(lang.siteFolderPlatformNotSaved())
+                .withSuccess(result -> {
+                    serverIdOfAppsToBeCloned = null;
+                    fireEvent(new SiteFolderServerEvents.ChangeModel());
+                    fireEvent(new SiteFolderServerEvents.Changed(result));
+                    fireEvent(new Back());
+                })
+        );
     }
 
     @Override
@@ -106,19 +107,28 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
         fireEvent(SiteFolderAppEvents.Edit.withServer(server));
     }
 
+    private void requestServer(Long serverId, Consumer<Server> successConsumer) {
+        siteFolderController.getServer(serverId, new FluentCallback<Server>()
+                .withErrorMessage(lang.errGetObject())
+                .withSuccess(successConsumer)
+        );
+    }
+
     private void fillView(Server server) {
         this.server = server;
+        boolean isNotNew = server.getId() != null;
+        boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         view.setCompanyId(server.getPlatform() == null ? null : server.getPlatform().getCompanyId());
         view.name().setValue(server.getName());
-        view.platform().setValue(server.getPlatform() == null ? null : new EntityOption(server.getPlatform().getName(), server.getPlatform().getId()));
+        view.platform().setValue(server.getPlatform() == null ? null : server.getPlatform().toEntityOption());
         view.ip().setValue(server.getIp());
         view.parameters().setValue(server.getParams());
         view.comment().setValue(server.getComment());
-        view.createButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
-        view.openButtonVisibility().setVisible(server.getId() != null);
-        view.listContainerVisibility().setVisible(server.getId() != null);
-        view.listContainerHeaderVisibility().setVisible(server.getId() != null);
-        if (server.getId() != null) {
+        view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
+        view.openButtonVisibility().setVisible(isNotNew);
+        view.listContainerVisibility().setVisible(isNotNew);
+        view.listContainerHeaderVisibility().setVisible(isNotNew);
+        if (isNotNew) {
             fireEvent(new SiteFolderAppEvents.ShowList(view.listContainer(), server.getId()));
         }
     }
@@ -145,5 +155,6 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     PolicyService policyService;
 
     private Server server;
+    private Long serverIdOfAppsToBeCloned;
     private AppEvents.InitDetails initDetails;
 }

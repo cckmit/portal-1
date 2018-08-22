@@ -74,7 +74,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
 
-    void refreshFooterBtnPosition();
+    HasEnabled saveEnabled();
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 
@@ -82,4 +82,5 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void initiatorSelectorAllowAddNew(boolean b);
 
+    void applyCompanyValueIfOneOption();
 }

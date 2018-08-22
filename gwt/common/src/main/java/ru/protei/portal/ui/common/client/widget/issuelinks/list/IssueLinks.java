@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.issuelinks.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,6 +19,7 @@ import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuelinks.link.IssueLink;
@@ -90,6 +92,40 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Ha
         this.enabled = enabled;
 
         addLinkButton.setVisible(enabled);
+    }
+
+    public void setEnsureDebugId(String debugId) {
+        addLinkButton.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdLabel(String debugId) {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        linksLabel.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
+    }
+
+    public void setEnsureDebugIdContainer(String debugId) {
+        linksContainer.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdSelector(String debugId) {
+        popup.setEnsureDebugIdSelector(debugId);
+    }
+
+    public void setEnsureDebugIdTextBox(String debugId) {
+        popup.setEnsureDebugIdTextBox(debugId);
+    }
+
+    public void setEnsureDebugIdApply(String debugId) {
+        popup.setEnsureDebugIdApply(debugId);
+    }
+
+    public void setEnsureDebugIdErrorLabel(String debugId) {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+        error.setId(DebugIds.DEBUG_ID_PREFIX + debugId);
     }
 
     private void showPopup() {

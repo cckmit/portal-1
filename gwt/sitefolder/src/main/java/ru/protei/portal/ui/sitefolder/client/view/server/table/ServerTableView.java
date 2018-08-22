@@ -12,10 +12,7 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableView;
@@ -33,6 +30,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
     @Override
     public void setActivity(AbstractServerTableActivity activity) {
+        copyClickColumn.setCopyHandler(activity);
         editClickColumn.setEditHandler(activity);
         removeClickColumn.setRemoveHandler(activity);
         table.setLoadHandler(activity);
@@ -92,12 +90,14 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     }
 
     private void initTable() {
+        copyClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_CREATE);
         editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
         removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
 
         columns.add(nameColumn);
         columns.add(platformColumn);
         columns.add(appsColumn);
+        columns.add(copyClickColumn);
         columns.add(editClickColumn);
         columns.add(removeClickColumn);
 
@@ -117,6 +117,8 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     @UiField
     Lang lang;
 
+    @Inject
+    private CopyClickColumn<Server> copyClickColumn;
     @Inject
     private EditClickColumn<Server> editClickColumn;
     @Inject
@@ -150,7 +152,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
         @Override
         public void fillColumnValue(Element cell, Server value) {
-            cell.setInnerText((value.getApplications() == null ? "0" : String.valueOf(value.getApplications().size())) + " " +lang.amountShort());
+            cell.setInnerText((value.getApplicationsCount() == null ? "0" : String.valueOf(value.getApplicationsCount())) + " " +lang.amountShort());
         }
     };
     private Collection<ClickColumn<Server>> columns = new LinkedList<>();

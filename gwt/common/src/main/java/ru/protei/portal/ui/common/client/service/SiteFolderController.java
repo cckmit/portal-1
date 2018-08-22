@@ -28,6 +28,8 @@ public interface SiteFolderController extends RemoteService {
 
     List<Application> getApplications(ApplicationQuery query) throws RequestFailedException;
 
+    List<Server> getServersWithAppsNames(ServerQuery query) throws RequestFailedException;
+
     List<EntityOption> getPlatformsOptionList(PlatformQuery query) throws RequestFailedException;
 
     List<EntityOption> getServersOptionList(ServerQuery query) throws RequestFailedException;
@@ -40,7 +42,7 @@ public interface SiteFolderController extends RemoteService {
 
     Platform savePlatform(Platform platform) throws RequestFailedException;
 
-    Server saveServer(Server server) throws RequestFailedException;
+    Server saveServer(Server server, Long serverIdOfAppsToBeCloned) throws RequestFailedException;
 
     Application saveApplication(Application application) throws RequestFailedException;
 

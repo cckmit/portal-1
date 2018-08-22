@@ -26,9 +26,8 @@ public class PortalConfigData {
     private final LuceneConfig luceneConfig;
     private final ReportConfig reportConfig;
     private final CaseLinkConfig caseLinkConfig;
+    private final MailNotificationConfig mailNotificationConfig;
 
-    private final String crmUrl;
-    private final String crmCaseUrl;
     private final String loginSuffixConfig;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
@@ -41,11 +40,11 @@ public class PortalConfigData {
         luceneConfig = new LuceneConfig(wrapper);
         reportConfig = new ReportConfig(wrapper);
         caseLinkConfig = new CaseLinkConfig(wrapper);
+        mailNotificationConfig = new MailNotificationConfig(wrapper);
 
-        crmUrl = wrapper.getProperty( "crm.url", "http://newportal/crm/" );
-        crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
+
 
     public IntegrationConfig integrationConfig() {
         return integrationConfig;
@@ -57,14 +56,6 @@ public class PortalConfigData {
 
     public SmtpConfig smtp () {
         return this.smtpConfig;
-    }
-
-    public String getCrmUrl() {
-        return crmUrl;
-    }
-
-    public String getCrmCaseUrl() {
-        return crmCaseUrl;
     }
 
     public String getLoginSuffix() {
@@ -95,11 +86,41 @@ public class PortalConfigData {
         return caseLinkConfig;
     }
 
+    public MailNotificationConfig getMailNotificationConfig() {
+        return mailNotificationConfig;
+    }
+
+
+    public static class MailNotificationConfig {
+        private final String crmUrlInternal;
+        private final String crmUrlExternal;
+        private final String crmCaseUrl;
+
+        public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
+            crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
+            crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
+            crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+        }
+
+        public String getCrmUrlInternal() {
+            return crmUrlInternal;
+        }
+
+        public String getCrmUrlExternal() {
+            return crmUrlExternal;
+        }
+
+        public String getCrmCaseUrl() {
+            return crmCaseUrl;
+        }
+    }
+
     public static class SmtpConfig {
         private final String host;
         private final String defaultCharset;
         private final int port;
         private final String fromAddress;
+        private final String fromAddressAlias;
         private final boolean blockExternalRecipients;
         private final String messageIdPattern;
 
@@ -107,6 +128,7 @@ public class PortalConfigData {
             host = properties.getProperty("smtp.host", "smtp.protei.ru");
             port = properties.getProperty("smtp.port", Integer.class, 2525);
             fromAddress = properties.getProperty("smtp.from", "PORTAL");
+            fromAddressAlias = properties.getProperty("smtp.from.alias", "DO_NOT_REPLY");
             defaultCharset = properties.getProperty("smtp.charset", "utf-8");
             blockExternalRecipients = properties.getProperty("smtp.block_external_recipients", Boolean.class, false);
             messageIdPattern = properties.getProperty("smtp.message_id_pattern", "%id%@smtp.protei.ru");
@@ -134,6 +156,10 @@ public class PortalConfigData {
 
         public String getMessageIdPattern() {
             return messageIdPattern;
+        }
+
+        public String getFromAddressAlias() {
+            return fromAddressAlias;
         }
     }
 
@@ -186,7 +212,6 @@ public class PortalConfigData {
             return getWaitingPeriod() * 1000;
         }
     }
-
 
     public static class LegacySystemConfig {
         private final String jdbcDriver;
@@ -255,7 +280,6 @@ public class PortalConfigData {
             return exportEnabled;
         }
     }
-
 
     public static class IntegrationConfig {
         private final boolean hpsmEnabled;

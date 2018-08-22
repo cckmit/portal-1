@@ -88,6 +88,12 @@ public class ToggleBtnGroupBase<T>
         root.clear();
     }
 
+    public void setEnsureDebugId(T value, String debugId) {
+        if (modelToItemView.containsKey(value)) {
+            modelToItemView.get(value).setEnsureDebugId(debugId);
+        }
+    }
+
     @UiField
     HTMLPanel root;
 

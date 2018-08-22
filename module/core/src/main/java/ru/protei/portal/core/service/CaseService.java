@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 
@@ -43,6 +44,9 @@ public interface CaseService {
 
     @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })
     CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId );
+
+    @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })
+    CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, CaseCommentQuery query );
 
     @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
     @Auditable( En_AuditType.ISSUE_COMMENT_CREATE )

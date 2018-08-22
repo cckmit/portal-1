@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.activity.plaform.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 public interface AbstractPlatformEditView extends IsWidget {
@@ -11,6 +12,8 @@ public interface AbstractPlatformEditView extends IsWidget {
     HasValue<String> name();
 
     HasValue<EntityOption> company();
+
+    HasValue<PersonShortView> manager();
 
     HasValue<String> parameters();
 
@@ -31,4 +34,6 @@ public interface AbstractPlatformEditView extends IsWidget {
     HasVisibility openButtonVisibility();
 
     HasVisibility createButtonVisibility();
+
+    HasWidgets contactsContainer();
 }

@@ -26,6 +26,8 @@ public class DashboardEvents {
         public HasWidgets parent;
         public boolean isLoaderShow;
         public String sectionName;
+        public Integer daysLimit;
+        public String debugId;
         public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName) {
             if(query == null || parent == null)
                 throw new NullPointerException("query or parent is nullable");
@@ -35,11 +37,25 @@ public class DashboardEvents {
             this.sectionName = sectionName;
         }
 
+        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, String debugId) {
+            this(query, parent, sectionName);
+            this.debugId = debugId;
+        }
+
         public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, boolean showLoader) {
             this(query, parent, sectionName);
             this.isLoaderShow = showLoader;
         }
 
+        public ShowTableBlock (CaseQuery query, HasWidgets parent, String sectionName, boolean showLoader, String debugId) {
+            this(query, parent, sectionName, debugId);
+            this.isLoaderShow = showLoader;
+        }
+
+        public ShowTableBlock withDaysLimit(Integer daysLimit) {
+            this.daysLimit = daysLimit;
+            return this;
+        }
     }
 
 }

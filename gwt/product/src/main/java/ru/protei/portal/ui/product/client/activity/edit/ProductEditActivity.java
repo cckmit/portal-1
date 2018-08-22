@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -19,6 +20,8 @@ import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -91,17 +94,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         if(!isValid())
             return;
 
-        if (productId == null) {
-            product = new DevUnit();
-        }
-
-        product.setName(view.name().getValue().trim());
-        product.setTypeId(view.type().getValue().getId());
-        product.setInfo(view.info().getValue().trim());
-        product.setSubscriptions(view.productSubscriptions().getValue().stream()
-                .map( Subscription::toProductSubscription )
-                .collect(Collectors.toList())
-        );
+        fillDTO(product);
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
@@ -143,6 +136,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void resetView () {
         view.name().setValue("");
+        view.type().setValue(En_DevUnitType.PRODUCT, true);
+        view.parents().setValue(null);
+        view.components().setValue(null);
         view.info().setValue("");
         view.state().setVisible(false);
         view.productSubscriptions().setValue(Collections.emptyList());
@@ -152,6 +148,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         boolean isCreate = devUnit.getId() == null;
 
+        view.setCurrentProduct(devUnit.toProductShortView());
         view.name().setValue(devUnit.getName());
         view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
         view.info().setValue(devUnit.getInfo());
@@ -162,6 +159,49 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                         .map( Subscription::fromProductSubscription )
                         .collect(Collectors.toList())
         );
+
+        view.setIsProduct(devUnit.isProduct());
+        view.parents().setValue(devUnit.isComponent() && devUnit.getParents() != null ? devUnit.getParents().stream()
+                .map(DevUnit::toProductShortView)
+                .collect(Collectors.toSet())
+                : null
+        );
+        view.components().setValue(devUnit.getChildren() != null ? devUnit.getChildren().stream()
+                .map(DevUnit::toProductShortView)
+                .collect(Collectors.toSet())
+                : null
+        );
+
+    }
+
+    private void fillDTO(DevUnit product) {
+        if (productId == null) {
+            product = new DevUnit();
+        }
+
+        product.setName(view.name().getValue().trim());
+        product.setTypeId(view.type().getValue().getId());
+        product.setInfo(view.info().getValue().trim());
+        product.setSubscriptions(view.productSubscriptions().getValue().stream()
+                .map( Subscription::toProductSubscription )
+                .collect(Collectors.toList())
+        );
+        if (product.isComponent()) {
+            Set<ProductShortView> productShortViews = view.parents().getValue();
+            if (productShortViews != null) {
+                product.setParents(productShortViews.stream()
+                        .map(DevUnit::fromProductShortView)
+                        .collect(Collectors.toList())
+                );
+            }
+        }
+        Set<ProductShortView> productShortViews = view.components().getValue();
+        if (productShortViews != null) {
+            product.setChildren(productShortViews.stream()
+                    .map(DevUnit::fromProductShortView)
+                    .collect(Collectors.toList())
+            );
+        }
     }
 
     private void resetValidationStatus(){

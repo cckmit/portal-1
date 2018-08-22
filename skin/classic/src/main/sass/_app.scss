@@ -302,6 +302,12 @@ body {
       display: none;
     }
   }
+
+  .app-version {
+    color: transparent !important;
+    width: 50px !important;
+    z-index: 860 !important;
+  }
 }
 
 .main-sidebar {
@@ -354,6 +360,31 @@ body {
       }
     }
   }
+
+  .sidebar {
+    margin-bottom: 30px;
+  }
+}
+
+.app-version {
+  display: block;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 30px;
+  line-height: 30px;
+  width: 240px;
+  overflow: hidden;
+  text-align: center;
+  font-size: 1em;
+  color: #7d8488;
+  background-color: #293545;
+  z-index: 820;
+
+  -webkit-transition: -webkit-transform .3s ease-in-out, width .3s ease-in-out;
+  -moz-transition: -moz-transform .3s ease-in-out, width .3s ease-in-out;
+  -o-transition: -o-transform .3s ease-in-out, width .3s ease-in-out;
+  transition: transform .3s ease-in-out, width .3s ease-in-out
 }
 
 .sidebar-menu, .main-sidebar .user-panel,
@@ -595,6 +626,12 @@ body {
     .navbar {
       margin-left: 50px !important;
     }
+  }
+
+  .app-version {
+    color: transparent !important;
+    width: 50px !important;
+    z-index: 860 !important;
   }
 }
 

@@ -1,0 +1,99 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2018-08-07-insert-roles-into-dev_unit_mrole" author="buchmastov">
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="12"/>
+            <column name="UROLE_CODE" value="hardware_curator"/>
+            <column name="UROLE_INFO" value="АО - Курирование вопросов разработки аппаратного обеспечения"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="13"/>
+            <column name="UROLE_CODE" value="software_curator"/>
+            <column name="UROLE_INFO" value="ПО - Курирование вопросов разработки программного обеспечения"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="14"/>
+            <column name="UROLE_CODE" value="intro_new_tech_solutions"/>
+            <column name="UROLE_INFO" value="В - Внедрение новых технологических решений"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="15"/>
+            <column name="UROLE_CODE" value="liable_for_auto_testing"/>
+            <column name="UROLE_INFO" value="ОТК - Ответственный за автоматизированное тестирование компонентов комплекса"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="16"/>
+            <column name="UROLE_CODE" value="tech_support_curator"/>
+            <column name="UROLE_INFO" value="ТП - Курирует все вопросы технической поддержки комплекса"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="17"/>
+            <column name="UROLE_CODE" value="product_assembler"/>
+            <column name="UROLE_INFO" value="СБ - Сборка изделия из комплектующих изделий"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="18"/>
+            <column name="UROLE_CODE" value="supply_preparation"/>
+            <column name="UROLE_INFO" value="ПП - Подготовка поставки. Производство комплектующих изделий"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="19"/>
+            <column name="UROLE_CODE" value="engineer_doc_dev"/>
+            <column name="UROLE_INFO" value="КД - Разработка конструкторской документации"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="20"/>
+            <column name="UROLE_CODE" value="tech_doc_dev"/>
+            <column name="UROLE_INFO" value="ТД - Разработка технологической документации"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="21"/>
+            <column name="UROLE_CODE" value="software_doc_dev"/>
+            <column name="UROLE_INFO" value="ПД - Разработка программной документации"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="22"/>
+            <column name="UROLE_CODE" value="liable_for_certification"/>
+            <column name="UROLE_INFO" value="С - Сертификационная деятельность"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="23"/>
+            <column name="UROLE_CODE" value="okr_escort"/>
+            <column name="UROLE_INFO" value="ОКР - Сопровождение ОКР"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="24"/>
+            <column name="UROLE_CODE" value="quality_control_smk"/>
+            <column name="UROLE_INFO" value="КК - Контроль качества в рамках СМК, учет движения комплектующих изделий на всех этапах производства"/>
+        </insert>
+
+        <insert tableName="dev_unit_mrole">
+            <column name="ID" value="25"/>
+            <column name="UROLE_CODE" value="customer_integration"/>
+            <column name="UROLE_INFO" value="РП - Проектная деятельность. Взаимодействие с заказчиком"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="2018-08-07-delete-old-project-roles-from-case_member" author="buchmastov">
+        <delete tableName="case_member">
+            <where>MEMBER_ROLE_ID = 2</where>
+        </delete>
+    </changeSet>
+</databaseChangeLog>

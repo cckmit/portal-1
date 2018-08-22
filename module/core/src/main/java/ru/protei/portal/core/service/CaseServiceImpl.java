@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
@@ -191,6 +192,7 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseObject>().success( caseObject ); //ignore
 
         caseObject.setModified(new Date());
+        caseObject.setTimeElapsed(getTimeElapsed(caseObject.getId()));
 
         if (CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
             // update partially filled objects
@@ -252,6 +254,18 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId ) {
         List<CaseComment> list = caseCommentDAO.getCaseComments( caseId );
+
+        if ( list == null )
+            return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        jdbcManyRelationsHelper.fill(list, "caseAttachments");
+
+        return new CoreResponse<List<CaseComment>>().success(list);
+    }
+
+    @Override
+    public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, CaseCommentQuery query ) {
+        List<CaseComment> list = caseCommentDAO.getCaseComments( query );
 
         if ( list == null )
             return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
@@ -613,7 +627,6 @@ public class CaseServiceImpl implements CaseService {
                 && Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
                 && Objects.equals(co1.getState(), co2.getState())
                 && Objects.equals(co1.getImpLevel(), co2.getImpLevel())
-                && Objects.equals(co1.getTimeElapsed(), co2.getTimeElapsed())
                 && Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
                 && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
                 && Objects.equals(co1.getProductId(), co2.getProductId())
@@ -633,10 +646,13 @@ public class CaseServiceImpl implements CaseService {
     }
 
     private boolean updateTimeElapsed(AuthToken token, Long caseId) {
-        List<CaseComment> allCaseComments = caseCommentDAO.partialGetListByCondition("CASE_ID=?", Collections.singletonList(caseId), "id", "time_elapsed");
-        long timeElapsed = stream(allCaseComments).filter(cmnt -> cmnt.getTimeElapsed() != null).mapToLong(cmnt -> cmnt.getTimeElapsed()).sum();
-
+        long timeElapsed = getTimeElapsed(caseId);
         return updateCaseTimeElapsed ( token, caseId, timeElapsed ).getData();
+    }
+
+    private long getTimeElapsed(Long caseId) {
+        List<CaseComment> allCaseComments = caseCommentDAO.partialGetListByCondition("CASE_ID=?", Collections.singletonList(caseId), "id", "time_elapsed");
+        return stream(allCaseComments).filter(cmnt -> cmnt.getTimeElapsed() != null).mapToLong(CaseComment::getTimeElapsed).sum();
     }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)

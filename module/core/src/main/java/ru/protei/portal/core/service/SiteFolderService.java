@@ -3,10 +3,7 @@ package ru.protei.portal.core.service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Application;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
@@ -35,6 +32,9 @@ public interface SiteFolderService {
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
     CoreResponse<List<Application>> listApplications(AuthToken token, ApplicationQuery query);
 
+    @Privileged(En_Privilege.SITE_FOLDER_VIEW)
+    CoreResponse<List<Server>> listServersWithAppsNames(AuthToken token, ServerQuery query);
+
 
     CoreResponse<List<EntityOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query);
 
@@ -56,6 +56,9 @@ public interface SiteFolderService {
 
     @Privileged(En_Privilege.SITE_FOLDER_CREATE)
     CoreResponse<Server> createServer(AuthToken token, Server server);
+
+    @Privileged(En_Privilege.SITE_FOLDER_CREATE)
+    CoreResponse<Server> createServerAndCloneApps(AuthToken token, Server server, Long serverIdOfAppsToBeCloned);
 
     @Privileged(En_Privilege.SITE_FOLDER_CREATE)
     CoreResponse<Application> createApplication(AuthToken token, Application application);

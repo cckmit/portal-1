@@ -134,6 +134,11 @@ public class DashboardTableView extends Composite implements AbstractDashboardTa
         }
     }
 
+    @Override
+    public void setEnsureDebugId(String debugId) {
+        table.setEnsureDebugId(debugId);
+    }
+
     @UiHandler( "importance" )
     public void onInactiveRecordsImportanceSelected( ValueChangeEvent<Set<En_ImportanceLevel>> event ) {
         activity.updateImportance(this, event.getValue());

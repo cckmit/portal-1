@@ -56,7 +56,7 @@ public abstract class ContactTableActivity
         this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
-        init.parent.add( pagerView.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTACT ) :

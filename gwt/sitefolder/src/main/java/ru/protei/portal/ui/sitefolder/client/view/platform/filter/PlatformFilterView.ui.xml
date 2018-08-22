@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'>
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -20,6 +21,8 @@
             </div>
 
             <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-xs-12"/>
+
+            <person:EmployeeMultiSelector ui:field="managers" header="{lang.siteFolderManager}" addStyleNames="form-group col-xs-12"/>
 
             <div class="form-group col-xs-12">
                 <label>

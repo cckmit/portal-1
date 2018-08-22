@@ -33,6 +33,7 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
         contactId = null;
 
         query = makeQuery(event.companyId);
+        view.showEditableColumns(event.editable);
 
         requestContacts();
     }

@@ -21,6 +21,7 @@ import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterV
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -102,7 +103,7 @@ public abstract class ProjectTableActivity
         }
 
         // если выбрали регион взамен выбранному ранее
-        if ( !currentValue.getRegion().equals( event.project.getRegion() ) ) {
+        if ( !Objects.equals(currentValue.getRegion(), event.project.getRegion() ) ) {
             requestProjects( currentValue );
         }
     }
@@ -114,7 +115,8 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onEditClicked( ProjectInfo value ) {
-        fireEvent(new ProjectEvents.Edit(value.getId()));
+        //fireEvent(new ProjectEvents.Edit(value.getId()));
+        showPreview( value );
     }
 
     @Override
@@ -199,7 +201,7 @@ public abstract class ProjectTableActivity
         );
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-
+        query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());
         return query;
     }
 

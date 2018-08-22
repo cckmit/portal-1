@@ -79,6 +79,18 @@ public class ThreeStateButton extends Composite implements HasValue<Boolean> {
         }
     }
 
+    public void setYesEnsureDebugId(String debugId) {
+        yes.ensureDebugId(debugId);
+    }
+
+    public void setNotDefinedEnsureDebugId(String debugId) {
+        notDefined.ensureDebugId(debugId);
+    }
+
+    public void setNoEnsureDebugId(String debugId) {
+        no.ensureDebugId(debugId);
+    }
+
     @UiField
     Label yes;
     @UiField

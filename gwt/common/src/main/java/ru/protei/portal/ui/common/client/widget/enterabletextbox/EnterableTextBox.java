@@ -85,6 +85,14 @@ public class EnterableTextBox extends Composite implements HasValue<String>, Has
         textBox.setFocus(focused);
     }
 
+    public void setEnsureDebugIdTextBox(String debugId) {
+        textBox.ensureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdAction(String debugId) {
+        textBoxAction.ensureDebugId(debugId);
+    }
+
     private void onEnter() {
         if (!enabled) {
             return;

@@ -44,6 +44,11 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                 condition.append(" and comment_text like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
+
+            if (query.getCreatedBefore() != null) {
+                condition.append(" and case_comment.created <= ?");
+                args.add(query.getCreatedBefore());
+            }
         });
     }
 }

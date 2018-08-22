@@ -21,6 +21,7 @@ public class AttachmentUploader extends FileUploader{
     @Override
     public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
         form.removeStyleName("attachment-uploading");
+        form.reset();
         fileUpload.setEnabled(true);
         if(uploadHandler == null)
             return;

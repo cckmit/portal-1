@@ -46,7 +46,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
             itemContainer.addStyleName( "inactive" );
         }
         caretButton.setEnabled( isEnabled );
-        clearButton.setVisible( isEnabled );
+        clearButton.setEnabled( isEnabled );
         itemViews.forEach((v) -> v.setEnabled(isEnabled));
     }
 
@@ -66,7 +66,12 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         clearValues(true );
     }
 
-    public void fillSelectorView( List<String> selectedValues ) {
+    @Override
+    protected void onUserCanAddMoreItems(boolean isCanAdd) {
+        caretButton.setVisible(isCanAdd);
+    }
+
+    public void fillSelectorView(List<String> selectedValues ) {
         itemContainer.clear();
         itemViews.clear();
 
@@ -76,14 +81,32 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         clearButton.setVisible(!selectedValues.isEmpty());
     }
 
-    public void setAddName( String string ) {
-        add.setInnerText( string );
-        add.removeClassName( "caret" );
+    public void setAddName( String text ) {
+        setAddName(null, text);
     }
 
-    public void setClearName( String string ) {
-        clear.setInnerText( string );
-        clear.setClassName( "" );
+    public void setAddName( String icon, String text ) {
+        if (icon != null) {
+            addIcon.setClassName("fa " + icon);
+        } else {
+            addIcon.setClassName("hide");
+        }
+        add.setInnerText(text);
+        add.removeClassName("caret");
+    }
+
+    public void setClearName( String text ) {
+        setClearName(null, text);
+    }
+
+    public void setClearName( String icon, String text ) {
+        if (icon != null) {
+            clearIcon.setClassName("fa " + icon);
+        } else {
+            clearIcon.setClassName("hide");
+        }
+        clear.setInnerText(text);
+        clear.setClassName("");
     }
 
     private void clearValues(boolean fireEvents) {
@@ -122,6 +145,14 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         }, ClickEvent.getType() );
     }
 
+    public void setAddEnsureDebugId(String debugId) {
+        caretButton.ensureDebugId(debugId);
+    }
+
+    public void setClearEnsureDebugId(String debugId) {
+        clearButton.ensureDebugId(debugId);
+    }
+
     @UiField
     Button caretButton;
     @UiField
@@ -129,7 +160,11 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     @UiField
     HTMLPanel itemContainer;
     @UiField
+    SpanElement addIcon;
+    @UiField
     SpanElement add;
+    @UiField
+    SpanElement clearIcon;
     @UiField
     SpanElement clear;
     @UiField

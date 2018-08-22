@@ -17,7 +17,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     @Override
     public boolean checkExists(DecimalNumber number ) {
         SqlCondition condition = createSqlCondition(number);
-        return checkExistsByCondition(condition.condition, condition.args);
+        return checkExistsByCondition(condition.condition, condition.args.toArray());
     }
 
     @Override

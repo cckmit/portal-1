@@ -9,6 +9,8 @@ public interface AbstractApplicationPreviewView extends IsWidget {
 
     void setName(String value);
 
+    void setComponent(String value);
+
     void setServer(String value);
 
     void setComment(String value);

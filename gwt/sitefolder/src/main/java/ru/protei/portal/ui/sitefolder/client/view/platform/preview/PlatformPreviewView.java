@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
@@ -45,6 +46,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
+    public void setManager(String value) {
+        manager.setInnerText(value);
+    }
+
+    @Override
     public void setParameters(String value) {
         parameters.setInnerText(value);
     }
@@ -54,14 +60,30 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         comment.setInnerText(value);
     }
 
+    @Override
+    public HasWidgets contactsContainer() {
+        return contactsContainer;
+    }
+
+    @Override
+    public HasWidgets serversContainer() {
+        return serversContainer;
+    }
+
     @UiField
     SpanElement name;
     @UiField
     SpanElement company;
     @UiField
+    SpanElement manager;
+    @UiField
     SpanElement parameters;
     @UiField
     SpanElement comment;
+    @UiField
+    HTMLPanel contactsContainer;
+    @UiField
+    HTMLPanel serversContainer;
 
     @Inject
     FixedPositioner positioner;

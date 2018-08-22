@@ -58,6 +58,22 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
     }
 
     @Override
+    public void onCopyClicked(AbstractServerListItemView itemView) {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return;
+        }
+
+        Server value = itemViewToModel.get(itemView);
+
+        if (value == null) {
+            return;
+        }
+
+        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()));
+    }
+
+    @Override
     public void onRemoveClicked(AbstractServerListItemView itemView) {
 
         if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE)) {
@@ -135,6 +151,7 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         itemView.setIp(server.getIp());
         itemView.setComment(server.getComment());
         itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT));
+        itemView.setCopyVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
         return itemView;
     }
 

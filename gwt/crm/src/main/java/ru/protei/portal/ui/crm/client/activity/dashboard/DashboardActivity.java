@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -12,7 +13,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -64,13 +64,13 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private void initWidgets(){
         fireEvent(
                 new DashboardEvents.ShowTableBlock(
-                        activeRecordsQuery, view.getActiveRecordsContainer(), lang.activeRecords()));
+                        activeRecordsQuery, view.getActiveRecordsContainer(), lang.activeRecords(), DebugIds.DASHBOARD.TABLE_ACTIVE));
         fireEvent(
                 new DashboardEvents.ShowTableBlock(
-                        newRecordsQuery, view.getNewRecordsContainer(), lang.newRecords()));
+                        newRecordsQuery, view.getNewRecordsContainer(), lang.newRecords(), DebugIds.DASHBOARD.TABLE_NEW));
         fireEvent(
                 new DashboardEvents.ShowTableBlock(
-                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true));
+                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, DebugIds.DASHBOARD.TABLE_INACTIVE).withDaysLimit(30));
     }
 
 
@@ -105,11 +105,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             productIds.add( policyService.getProfile().getId() );
         }
         query.setManagerIds( productIds );
-
-        Date to = new Date();
-        Date from = new Date(to.getTime() - (86400000L * 30L));
-        query.setFrom(from);
-        query.setTo(to);
 
         return query;
     }
