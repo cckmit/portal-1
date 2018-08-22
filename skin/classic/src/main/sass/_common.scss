@@ -1327,6 +1327,9 @@ label.bordered:after{
   -moz-transition: all 0.5s;
   -o-transition: all 0.5s;
   transition: all 0.5s;
+}
+
+.global-table-container.dashboard-table {
   // временное решение, отображение таблиц обращений в дашборде
   height: calc(100% - 95px);
   overflow-x: auto;
