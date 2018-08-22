@@ -21,16 +21,8 @@ public class IssueEvents {
             this.query = query;
         }
 
-        public Show returnFromIssueEdit(){
-            this.isReturnFromIssueEdit = true;
-            return this;
-        }
-
         @Omit
         public CaseQuery query;
-
-        @Omit
-        public boolean isReturnFromIssueEdit;
     }
 
     /**

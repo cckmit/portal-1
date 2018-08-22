@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
+import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
@@ -142,7 +143,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         public void onSuccess() {
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new IssueEvents.ChangeModel());
-                            fireEvent(new IssueEvents.Show().returnFromIssueEdit());
+                            fireEvent(new Back());
                         }
                     }));
 
@@ -153,7 +154,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new IssueEvents.Show().returnFromIssueEdit());
+        fireEvent(new Back());
     }
 
     @Override
