@@ -466,47 +466,6 @@ public class CaseObject extends AuditableObject {
         return "CaseObject";
     }
 
-    public CaseObject copy() {
-        CaseObject instance = new CaseObject();
-        instance.setId(id);
-        instance.setTypeId(typeId);
-        instance.setCaseNumber(caseNumber);
-        instance.setCreated(created);
-        instance.setModified(modified);
-        instance.setName(name);
-        instance.setExtId(extId);
-        instance.setInfo(info);
-        instance.setStateId(stateId);
-        instance.setImpLevel(impLevel);
-        instance.setCreatorId(creatorId);
-        instance.setCreatorIp(creatorIp);
-        instance.setInitiatorId(initiatorId);
-        instance.setInitiator(initiator);
-        instance.setInitiatorCompanyId(initiatorCompanyId);
-        instance.setInitiatorCompany(initiatorCompany);
-        instance.setProductId(productId);
-        instance.setProduct(product);
-        instance.setManagerId(managerId);
-        instance.setManager(manager);
-        instance.setKeywords(keywords);
-        instance.setLocal(local);
-        instance.setEmails(emails);
-        instance.setCreatorInfo(creatorInfo);
-        instance.setDeleted(deleted);
-        instance.setPrivateCase(privateCase);
-        instance.setAttachmentExists(isAttachmentExists);
-        instance.setAttachments(attachments);
-        instance.setLocations(locations);
-        instance.setMembers(members);
-        instance.setExtAppType(extAppType);
-        instance.setNotifiers(notifiers);
-        instance.setEmailLastId(emailLastId);
-        instance.setProducts(products);
-        instance.setTimeElapsed(timeElapsed);
-        instance.setLinks(links);
-        return instance;
-    }
-
     @Override
     public String toString() {
         return "CaseObject{" +

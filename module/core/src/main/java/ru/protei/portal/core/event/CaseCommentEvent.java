@@ -31,8 +31,7 @@ public class CaseCommentEvent extends ApplicationEvent {
     }
 
     public CaseCommentEvent(CaseService source, CaseObject newState, CaseObject oldState, CaseComment comment, Collection<Attachment> attachments, Person currentPerson) {
-        this(ServiceModule.GENERAL, source, newState, null, null, comment, attachments, currentPerson);
-        this.oldState = oldState;
+        this(ServiceModule.GENERAL, source, newState, oldState, null, null, comment, attachments, currentPerson);
     }
 
     public CaseCommentEvent(

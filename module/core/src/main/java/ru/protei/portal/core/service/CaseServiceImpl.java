@@ -282,7 +282,7 @@ public class CaseServiceImpl implements CaseService {
         if ( comment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        long oldTimeElapsed = getTimeElapsed(comment.getCaseId());
+        CaseObject oldState = caseObjectDAO.get(comment.getCaseId());
 
         Date now = new Date();
         comment.setCreated(now);
@@ -319,6 +319,8 @@ public class CaseServiceImpl implements CaseService {
         CaseObject newState = caseObjectDAO.get(comment.getCaseId());
         jdbcManyRelationsHelper.fill(newState, "attachments");
         jdbcManyRelationsHelper.fill(newState, "notifiers");
+        oldState.setAttachments(newState.getAttachments());
+        oldState.setNotifiers(newState.getNotifiers());
 
         Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
                 .stream()
@@ -329,9 +331,6 @@ public class CaseServiceImpl implements CaseService {
                 .stream()
                 .filter(a -> addedAttachmentsIds.contains(a.getId()))
                 .collect(Collectors.toList());
-
-        CaseObject oldState = newState.copy();
-        oldState.setTimeElapsed(oldTimeElapsed);
 
         publisherService.publishEvent(new CaseCommentEvent(this, newState, oldState, result, addedAttachments, currentPerson));
 
@@ -352,7 +351,7 @@ public class CaseServiceImpl implements CaseService {
         if (!person.getId().equals(comment.getAuthorId()) || !isChangeAvailable ( comment.getCreated() ))
             return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
 
-        long oldTimeElapsed = getTimeElapsed(comment.getCaseId());
+        CaseObject oldState = caseObjectDAO.get(comment.getCaseId());
 
         CaseComment prevComment = caseCommentDAO.get( comment.getId() );
         jdbcManyRelationsHelper.fill(prevComment, "caseAttachments");
@@ -388,14 +387,14 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject newState = caseObjectDAO.get(comment.getCaseId());
         jdbcManyRelationsHelper.fill( newState, "attachments");
+        jdbcManyRelationsHelper.fill(newState, "notifiers");
+        oldState.setAttachments(newState.getAttachments());
+        oldState.setNotifiers(newState.getNotifiers());
 
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, removedCaseAttachments).getData();
         Collection<Attachment> addedAttachments = attachmentService.getAttachments(token,
                 HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
         ).getData();
-
-        CaseObject oldState = newState.copy();
-        oldState.setTimeElapsed(oldTimeElapsed);
 
         publisherService.publishEvent(
                 new CaseCommentEvent(this, newState, oldState, prevComment, removedAttachments, comment, addedAttachments, person)
