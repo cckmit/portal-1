@@ -1,6 +1,7 @@
 package ru.protei.portal.api.config;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -10,7 +11,7 @@ import java.util.Properties;
  */
 public class WSConfig {
 
-    private static Logger logger = Logger.getLogger(WSConfig.class);
+    private static Logger logger = LoggerFactory.getLogger(WSConfig.class);
 
     private String dirPhotos;
 

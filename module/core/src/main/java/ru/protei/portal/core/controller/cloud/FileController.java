@@ -10,7 +10,8 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.http.HttpStatus;
@@ -54,7 +55,7 @@ public class FileController {
     EventAssemblerService publisherService;
 
 
-    private static final Logger logger = Logger.getLogger(FileStorage.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
     private ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 
@@ -101,7 +102,7 @@ public class FileController {
                 logger.debug("uploadFileToCase: caseNumber=" + getCaseNumberOrNull(caseNumber) + " | file to be uploaded not found");
 
             } catch (FileUploadException | SQLException | IOException e) {
-                logger.error(e);
+                logger.error("uploadFileToCase", e);
             }
         }
         return "error";

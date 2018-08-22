@@ -1,6 +1,7 @@
 package ru.protei.portal.core.aspect;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -37,7 +38,7 @@ import java.util.Optional;
 @Aspect
 public class ServiceLayerInterceptor {
 
-    private static Logger logger = Logger.getLogger(ServiceLayerInterceptor.class);
+    private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);
 
     @Pointcut("execution(public ru.protei.portal.api.struct.CoreResponse *(..))")
 //    @Pointcut("call(public ru.protei.portal.api.struct.CoreResponse *(..))")
