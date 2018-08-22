@@ -74,11 +74,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     }
 
     @Override
-    public Integer getScrollTop() {
-        return mainContainer.getAbsoluteTop() + mainContainer.getOffsetHeight() - Window.getClientHeight();
-    }
-
-    @Override
     public void clearSelection() {
         columnProvider.setSelectedValue(null);
     }
@@ -268,8 +263,6 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     @UiField
     InfiniteTableWidget<Equipment> table;
 
-    @UiField
-    HTMLPanel mainContainer;
     @UiField
     HTMLPanel tableContainer;
     @UiField
