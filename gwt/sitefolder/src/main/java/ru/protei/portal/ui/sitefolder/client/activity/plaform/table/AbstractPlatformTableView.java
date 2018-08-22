@@ -26,4 +26,6 @@ public interface AbstractPlatformTableView extends IsWidget {
     HasWidgets getPreviewContainer();
 
     HasWidgets getFilterContainer();
+
+    HasWidgets getPagerContainer();
 }
