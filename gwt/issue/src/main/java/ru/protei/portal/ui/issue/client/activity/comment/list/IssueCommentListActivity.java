@@ -431,6 +431,10 @@ public abstract class IssueCommentListActivity
 
                 if ( isEdit ) {
                     lastCommentView.setMessage( result.getText() );
+                    lastCommentView.clearElapsedTime();
+                    if (comment.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) {
+                        lastCommentView.timeElapsed().setTime(comment.getTimeElapsed());
+                    }
 
                     Collection<Attachment> prevAttachments = lastCommentView.attachmentContainer().getAll();
 

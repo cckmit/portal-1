@@ -44,7 +44,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public AssembledCaseEvent(CaseCommentEvent commentEvent) {
-        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getCaseObject(), commentEvent.getCaseObject(),
+        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getOldState(), commentEvent.getNewState(),
                 commentEvent.getPerson());
         oldComment = commentEvent.getOldCaseComment();
         comment = commentEvent.getCaseComment();
