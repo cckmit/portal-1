@@ -79,6 +79,10 @@
             width: calc(100% - 470px);
         }
     }
+
+    &.full-screen {
+        box-sizing: border-box;
+    }
 }
 
 .preview-container {
