@@ -89,6 +89,12 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         return filterContainer;
     }
 
+    @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+
     private void initTable() {
         copyClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_CREATE);
         editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
@@ -112,6 +118,8 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField
