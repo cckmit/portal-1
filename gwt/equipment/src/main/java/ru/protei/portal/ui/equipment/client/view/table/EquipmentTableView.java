@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -70,6 +71,11 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     @Override
     public HasWidgets getPagerContainer() {
         return pagerContainer;
+    }
+
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
     }
 
     @Override

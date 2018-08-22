@@ -7,7 +7,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -98,23 +97,7 @@ public abstract class IssueTableActivity
 
         filterView.toggleMsgSearchThreshold();
 
-        animation.closeDetails();
-        view.clearRecords();
-        if(!event.isReturnFromIssueEdit){
-            view.clearSelection();
-            scrollTop = null;
-        }
-
         requestIssuesCount();
-    }
-
-    private void scrollToPreviousPosition() {
-        // Scroll to previous position
-        if ( scrollTop != null
-                && scrollTop.intValue() <= RootPanel.get(UIObject.DEBUG_ID_PREFIX+DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight() ) {
-            Window.scrollTo( 0, scrollTop );
-            scrollTop = null;
-        }
     }
 
     @Event
@@ -187,7 +170,7 @@ public abstract class IssueTableActivity
 
     @Override
     public void onEditClicked( CaseShortView value ) {
-        scrollTop = Window.getScrollTop();
+        persistScrollTopPosition();
         fireEvent(new IssueEvents.Edit(value.getCaseNumber(), null));
     }
 
@@ -208,9 +191,6 @@ public abstract class IssueTableActivity
         if ( !validateMultiSelectorsTotalCount() ){
             return;
         }
-
-        view.clearRecords();
-        animation.closeDetails();
 
         requestIssuesCount();
         filterView.toggleMsgSearchThreshold();
@@ -375,6 +355,20 @@ public abstract class IssueTableActivity
         });
     }
 
+    private void persistScrollTopPosition() {
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPositionOrClearSelection() {
+        if (scrollTop == null) {
+            view.clearSelection();
+            return;
+        }
+        if (scrollTop <= RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight()) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
 
     private void fillFilterFields( CaseFilter filter ) {
 
@@ -400,6 +394,9 @@ public abstract class IssueTableActivity
     }
 
     private void requestIssuesCount() {
+        animation.closeDetails();
+        view.clearRecords();
+
         issueService.getIssuesCount( getQuery(), new RequestCallback< Long >() {
                 @Override
                 public void onError( Throwable throwable ) {
@@ -411,7 +408,7 @@ public abstract class IssueTableActivity
                     view.setIssuesCount( issuesCount );
                     pagerView.setTotalPages( view.getPageCount() );
                     pagerView.setTotalCount( issuesCount );
-                    scrollToPreviousPosition();
+                    restoreScrollTopPositionOrClearSelection();
                 }
             } );
     }

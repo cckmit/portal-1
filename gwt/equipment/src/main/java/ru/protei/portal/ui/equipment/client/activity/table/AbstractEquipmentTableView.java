@@ -19,6 +19,8 @@ public interface AbstractEquipmentTableView extends IsWidget {
 
     void clearRecords();
 
+    void clearSelection();
+
     HasWidgets getPreviewContainer ();
 
     HasWidgets getFilterContainer ();
