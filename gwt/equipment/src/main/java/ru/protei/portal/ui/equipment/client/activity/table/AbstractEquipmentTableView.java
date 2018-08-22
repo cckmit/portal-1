@@ -32,4 +32,8 @@ public interface AbstractEquipmentTableView extends IsWidget {
     void scrollTo( int page );
 
     HasWidgets getPagerContainer();
+
+    Integer getScrollTop();
+
+    void clearSelection();
 }

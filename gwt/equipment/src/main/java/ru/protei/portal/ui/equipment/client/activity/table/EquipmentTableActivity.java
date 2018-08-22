@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.equipment.client.activity.table;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -68,6 +69,8 @@ public abstract class EquipmentTableActivity
         view.showElements();
 
         query = makeQuery();
+
+        clearSelectionAndScrollPositionIfNeeded();
         requestTotalCount();
     }
 
@@ -87,6 +90,7 @@ public abstract class EquipmentTableActivity
 
     @Override
     public void onEditClicked(Equipment value ) {
+        persistScrollTopPosition();
         fireEvent(EquipmentEvents.Edit.byId(value.getId()));
     }
 
@@ -130,6 +134,27 @@ public abstract class EquipmentTableActivity
         view.scrollTo( view.getPageCount()-1 );
     }
 
+    private void clearSelectionAndScrollPositionIfNeeded() {
+        if (!keepSelectionAndScrollPosition) {
+            view.clearSelection();
+            scrollTop = null;
+        } else {
+            keepSelectionAndScrollPosition = false;
+        }
+    }
+
+    private void persistScrollTopPosition() {
+        keepSelectionAndScrollPosition = true;
+        scrollTop = Window.getScrollTop();
+    }
+
+    private void restoreScrollTopPosition() {
+        if (scrollTop != null && scrollTop <= view.getScrollTop()) {
+            Window.scrollTo(0, scrollTop);
+            scrollTop = null;
+        }
+    }
+
     private void requestTotalCount() {
         view.clearRecords();
         animation.closeDetails();
@@ -145,6 +170,7 @@ public abstract class EquipmentTableActivity
                 view.setRecordCount( count );
                 pagerView.setTotalPages( view.getPageCount() );
                 pagerView.setTotalCount( count );
+                restoreScrollTopPosition();
             }
         });
     }
@@ -188,5 +214,7 @@ public abstract class EquipmentTableActivity
 
     private AppEvents.InitDetails init;
     private EquipmentQuery query;
+    private Integer scrollTop;
+    private boolean keepSelectionAndScrollPosition = false;
     private static String CREATE_ACTION;
 }

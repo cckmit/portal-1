@@ -7,7 +7,6 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -111,7 +110,7 @@ public abstract class IssueTableActivity
     private void scrollToPreviousPosition() {
         // Scroll to previous position
         if ( scrollTop != null
-                && scrollTop.intValue() <= RootPanel.get(UIObject.DEBUG_ID_PREFIX+DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight() ) {
+                && scrollTop.intValue() <= RootPanel.get(DebugIds.DEBUG_ID_PREFIX+DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight() ) {
             Window.scrollTo( 0, scrollTop );
             scrollTop = null;
         }
