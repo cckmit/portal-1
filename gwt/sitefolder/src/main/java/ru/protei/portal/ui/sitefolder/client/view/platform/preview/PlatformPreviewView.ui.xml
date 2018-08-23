@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
+    <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
 
             <fieldset class="header">
@@ -17,6 +17,11 @@
                 <div class="col-xs-12">
                     <label class="col-xs-4"><ui:text from="{lang.siteFolderCompany}"/></label>
                     <span class="col-xs-8" ui:field="company"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.siteFolderManager}"/></label>
+                    <span class="col-xs-8" ui:field="manager"/>
                 </div>
 
                 <div class="col-xs-12">

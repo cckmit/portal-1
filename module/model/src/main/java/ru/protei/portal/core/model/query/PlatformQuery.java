@@ -10,6 +10,7 @@ public class PlatformQuery extends BaseQuery {
 
     private Long platformId;
     private List<Long> companyIds;
+    private List<Long> managerIds;
     private String params;
     private String comment;
 
@@ -55,6 +56,14 @@ public class PlatformQuery extends BaseQuery {
 
     public void addCompanyId(Long companyId) {
         this.companyIds.add(companyId);
+    }
+
+    public List<Long> getManagerIds() {
+        return managerIds;
+    }
+
+    public void setManagerIds(List<Long> managerIds) {
+        this.managerIds = managerIds;
     }
 
     public String getParams() {

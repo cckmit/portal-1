@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -122,6 +123,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
         boolean isCreatePrivilegeGranted = policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE);
         view.name().setValue(platform.getName());
         view.company().setValue(EntityOption.fromCompany(platform.getCompany()));
+        view.manager().setValue(platform.getManager() == null ? null : platform.getManager().toShortNameShortView());
         view.parameters().setValue(platform.getParams());
         view.comment().setValue(platform.getComment());
         view.createButtonVisibility().setVisible(isCreatePrivilegeGranted);
@@ -147,6 +149,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     private void fillPlatform(Platform platform) {
         platform.setName(view.name().getValue());
         platform.setCompanyId(view.company().getValue().getId());
+        platform.setManager(Person.fromPersonShortView(view.manager().getValue()));
         platform.setParams(view.parameters().getValue());
         platform.setComment(view.comment().getValue());
     }

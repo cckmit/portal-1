@@ -69,7 +69,7 @@ public class Equipment extends AuditableObject {
     @JdbcColumn(name = "project_id")
     private Long projectId;
 
-    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME")
+    @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "case_object")
     private String projectName;
 
     /**

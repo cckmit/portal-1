@@ -70,4 +70,6 @@
   <include file="2018-08-03-add-customer-pending-state.xml" relativeToChangelogFile="true"/>
   <include file="2018-08-07-change-project-roles.xml" relativeToChangelogFile="true"/>
   <include file="2018-08-13-change-sitefolder-comments-length.xml" relativeToChangelogFile="true"/>
+  <include file="2018-08-15-add-dev_unit_id-column-to-application.xml" relativeToChangelogFile="true"/>
+  <include file="2018-08-16-add-manager_id-column-to-platform.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

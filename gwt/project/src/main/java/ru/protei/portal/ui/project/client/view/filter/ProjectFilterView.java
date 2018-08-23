@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -84,12 +85,18 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     }
 
     @Override
+    public HasValue<Boolean> onlyMineProjects() {
+        return onlyMineProjects;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.prod_name );
         sortDir.setValue( true );
         search.setValue( "" );
         districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
+        onlyMineProjects.setValue( true );
     }
 
     @UiHandler( "resetBtn" )
@@ -141,6 +148,13 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
         timer.schedule( 300 );
     }
 
+    @UiHandler( "onlyMineProjects" )
+    public void onOnlyMineProjectsChanged( ValueChangeEvent<Boolean> event ) {
+        if (activity != null) {
+            activity.onFilterChanged();
+        }
+    }
+
     Timer timer = new Timer() {
         @Override
         public void run() {
@@ -178,6 +192,9 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     @Inject
     @UiField( provided = true )
     ProductDirectionButtonSelector direction;
+
+    @UiField
+    OptionItem onlyMineProjects;
 
     @Inject
     FixedPositioner positioner;

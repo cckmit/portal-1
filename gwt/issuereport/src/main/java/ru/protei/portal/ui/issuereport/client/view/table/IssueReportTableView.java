@@ -5,6 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Report;
@@ -69,6 +70,11 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
         }
     }
 
+    @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
     private void initTable() {
         numberColumn = new NumberColumn(lang, reportStatusLang);
         infoColumn = new InfoColumn(lang);
@@ -90,6 +96,8 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     InfiniteTableWidget<Report> table;
     @UiField
     HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     private RemoveClickColumn<Report> removeClickColumn;

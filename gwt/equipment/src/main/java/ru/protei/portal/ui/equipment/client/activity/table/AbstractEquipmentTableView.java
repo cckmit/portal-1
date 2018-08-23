@@ -19,6 +19,8 @@ public interface AbstractEquipmentTableView extends IsWidget {
 
     void clearRecords();
 
+    void clearSelection();
+
     HasWidgets getPreviewContainer ();
 
     HasWidgets getFilterContainer ();
@@ -30,4 +32,6 @@ public interface AbstractEquipmentTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    HasWidgets getPagerContainer();
 }

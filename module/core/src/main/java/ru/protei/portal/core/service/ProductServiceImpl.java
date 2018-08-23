@@ -156,10 +156,9 @@ public class ProductServiceImpl implements ProductService {
         if (!Objects.equals(oldProduct.getType(), product.getType())) {
             if (product.isProduct()) {
                 devUnitChildRefDAO.removeByChildId(product.getId());
-                product.setParent(null);
+                product.setParents(null);
             } else {
                 devUnitChildRefDAO.removeByParentId(product.getId());
-                product.setChildren(null);
             }
         }
         helper.persist(product, "parents");

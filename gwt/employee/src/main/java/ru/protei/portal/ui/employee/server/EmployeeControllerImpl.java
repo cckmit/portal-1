@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.contact.server;
+package ru.protei.portal.ui.employee.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +21,11 @@ import java.util.List;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
-    public List<Person> getEmployees() throws RequestFailedException {
-        CoreResponse<List<Person>> response = employeeService.employeeList();
+    public List<Person> getEmployees( EmployeeQuery query ) throws RequestFailedException {
+        log.debug( "getEmployees(): query={}", query );
+        CoreResponse< List< Person > > response = employeeService.employeeList( query );
 
-        if (response.isError()) {
+        if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
 
@@ -33,12 +34,12 @@ public class EmployeeControllerImpl implements EmployeeController {
         return response.getData();
     }
 
-    public List<PersonShortView> getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
+    public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {
 
         log.debug( "getEmployeeViewList(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse< List<PersonShortView> > result = employeeService.shortViewList( query );
+        CoreResponse< List< PersonShortView > > result = employeeService.shortViewList( query );
 
         log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
 
@@ -51,6 +52,6 @@ public class EmployeeControllerImpl implements EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    private static final Logger log = LoggerFactory.getLogger(EmployeeControllerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger( EmployeeControllerImpl.class );
 
 }

@@ -26,4 +26,5 @@ public interface AbstractCompanyTableView extends IsWidget {
 
     void updateRow(Company item);
 
+    HasWidgets getPagerContainer();
 }

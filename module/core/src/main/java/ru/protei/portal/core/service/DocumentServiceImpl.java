@@ -63,6 +63,19 @@ public class DocumentServiceImpl implements DocumentService {
         if (list == null) {
             return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
+
+        list.forEach( document -> {
+                    // RESET PRIVACY INFO
+                    if (document.getContractor() != null) {
+                        document.getContractor().resetPrivacyInfo();
+                    }
+                    if (document.getRegistrar() != null) {
+                        document.getRegistrar().resetPrivacyInfo();
+                    }
+                }
+        );
+
+
         return new CoreResponse<List<Document>>().success(list);
     }
 
@@ -77,6 +90,15 @@ public class DocumentServiceImpl implements DocumentService {
         Document document = documentDAO.get(id);
         if (document == null)
             return new CoreResponse<Document>().error(En_ResultStatus.NOT_FOUND);
+
+        // RESET PRIVACY INFO
+        if (document.getContractor() != null) {
+            document.getContractor().resetPrivacyInfo();
+        }
+        if (document.getRegistrar() != null) {
+            document.getRegistrar().resetPrivacyInfo();
+        }
+
         return new CoreResponse<Document>().success(document);
     }
 

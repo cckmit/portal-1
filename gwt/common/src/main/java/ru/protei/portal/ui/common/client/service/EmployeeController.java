@@ -19,12 +19,12 @@ public interface EmployeeController extends RemoteService {
      * Получение списка сотрудников
      * @return список контактов
      */
-    List< Person > getEmployees () throws RequestFailedException;
+    List< Person > getEmployees ( EmployeeQuery query ) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления сотрудника
      * @param query запрос
      * @return
      */
-    List<PersonShortView> getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException;
+    List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException;
 }

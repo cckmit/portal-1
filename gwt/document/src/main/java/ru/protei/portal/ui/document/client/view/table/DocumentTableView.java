@@ -68,6 +68,11 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
     public HTMLPanel getFilterContainer() {
         return filterContainer;
     }
@@ -121,6 +126,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField

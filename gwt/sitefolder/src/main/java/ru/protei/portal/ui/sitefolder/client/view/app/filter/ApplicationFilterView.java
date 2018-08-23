@@ -12,9 +12,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractApplicationFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.filter.AbstractApplicationFilterView;
@@ -50,6 +52,7 @@ public class ApplicationFilterView extends Composite implements AbstractApplicat
     public void resetFilter() {
         name.setValue(null);
         servers.setValue(null);
+        components.setValue(null);
         sortField.setValue(En_SortField.name);
         sortDir.setValue(false);
         comment.setValue(null);
@@ -63,6 +66,11 @@ public class ApplicationFilterView extends Composite implements AbstractApplicat
     @Override
     public HasValue<Set<EntityOption>> servers() {
         return servers;
+    }
+
+    @Override
+    public HasValue<Set<ProductShortView>> components() {
+        return components;
     }
 
     @Override
@@ -95,6 +103,11 @@ public class ApplicationFilterView extends Composite implements AbstractApplicat
 
     @UiHandler("servers")
     public void onServersSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("components")
+    public void onComponentsSelected(ValueChangeEvent<Set<ProductShortView>> event) {
         fireChangeTimer();
     }
 
@@ -137,6 +150,9 @@ public class ApplicationFilterView extends Composite implements AbstractApplicat
     @Inject
     @UiField(provided = true)
     ServerMultiSelector servers;
+    @Inject
+    @UiField(provided = true)
+    ComponentMultiSelector components;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;

@@ -3,8 +3,8 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -108,11 +108,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
-    @Event
-    public void onChangeCommentsView(IssueEvents.ChangeCommentsView event) {
-        view.refreshFooterBtnPosition();
-    }
-
     @Override
     public void onSaveClicked() {
         if(!validateView()){
@@ -133,12 +128,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             @Override
             public void onSuccess(CaseObject caseObject) {
                 view.saveEnabled().setEnabled(true);
-                if (!isNew(issue)) {
-                    fireEvent(new IssueEvents.SaveComment(caseObject.getId()));
-                } else {
+                if (isNew(issue)) {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeModel());
-                    fireEvent(new Back());
+                    fireEvent(new IssueEvents.Show());
+                } else {
+                    fireEvent(new IssueEvents.SaveComment(caseObject.getId(), new IssueEvents.SaveComment.SaveCommentCompleteHandler() {
+                        @Override
+                        public void onError(Throwable throwable) {
+                            fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
+                        }
+
+                        @Override
+                        public void onSuccess() {
+                            fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new IssueEvents.ChangeModel());
+                            fireEvent(new Back());
+                        }
+                    }));
+
                 }
             }
         });
@@ -302,8 +310,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
 
         view.saveEnabled().setEnabled(true);
-
-        view.refreshFooterBtnPosition();
     }
 
     private void fillIssueObject(CaseObject issue){

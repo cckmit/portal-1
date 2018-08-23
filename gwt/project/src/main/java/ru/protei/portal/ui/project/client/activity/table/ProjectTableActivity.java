@@ -201,7 +201,7 @@ public abstract class ProjectTableActivity
         );
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-
+        query.setOnlyMineProjects(filterView.onlyMineProjects().getValue());
         return query;
     }
 

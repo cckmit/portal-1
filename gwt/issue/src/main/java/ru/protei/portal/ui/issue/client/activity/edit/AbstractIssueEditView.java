@@ -76,8 +76,6 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    void refreshFooterBtnPosition();
-
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
 
     void initiatorUpdateCompany(Company company);

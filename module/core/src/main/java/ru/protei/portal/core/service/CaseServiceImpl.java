@@ -89,6 +89,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<CaseObject> getCaseObject( AuthToken token, long number ) {
+
         CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
 
         if ( !hasAccessFor( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
@@ -105,6 +106,21 @@ public class CaseServiceImpl implements CaseService {
         CoreResponse<List<CaseLink>> caseLinks = caseLinkService.getLinks(token, caseObject.getId());
         if (caseLinks.isOk()) {
             caseObject.setLinks(caseLinks.getData());
+        }
+
+
+        // RESET PRIVACY INFO
+        if ( caseObject.getInitiator() != null ) {
+            caseObject.getInitiator().resetPrivacyInfo();
+        }
+        if ( caseObject.getCreator() != null ) {
+            caseObject.getCreator().resetPrivacyInfo();
+        }
+        if ( caseObject.getManager() != null ) {
+            caseObject.getManager().resetPrivacyInfo();
+        }
+        if ( CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+            caseObject.getNotifiers().forEach(Person::resetPrivacyInfo);
         }
 
         return new CoreResponse<CaseObject>().success(caseObject);
@@ -275,6 +291,13 @@ public class CaseServiceImpl implements CaseService {
 
         jdbcManyRelationsHelper.fill(list, "caseAttachments");
 
+        // RESET PRIVACY INFO
+        list.forEach(comment -> {
+            if ( comment.getAuthor() != null ) {
+                comment.getAuthor().resetPrivacyInfo();
+            }
+        });
+
         return new CoreResponse<List<CaseComment>>().success(list);
     }
 
@@ -293,8 +316,8 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment comment, Person currentPerson ) {
-        CaseObject caseObject = caseObjectDAO.get( comment.getCaseId() );
-        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+        CaseObject oldState = caseObjectDAO.get( comment.getCaseId() );
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, oldState ) ) {
             return new CoreResponse<CaseComment>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
@@ -332,20 +355,24 @@ public class CaseServiceImpl implements CaseService {
 
 
         //below building event
-        jdbcManyRelationsHelper.fill(caseObject, "attachments");
-        jdbcManyRelationsHelper.fill(caseObject, "notifiers");
+
+        CaseObject newState = caseObjectDAO.get(comment.getCaseId());
+        jdbcManyRelationsHelper.fill(newState, "attachments");
+        jdbcManyRelationsHelper.fill(newState, "notifiers");
+        oldState.setAttachments(newState.getAttachments());
+        oldState.setNotifiers(newState.getNotifiers());
 
         Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
                 .stream()
                 .map(CaseAttachment::getAttachmentId)
                 .collect(Collectors.toList());
 
-        Collection<Attachment> addedAttachments = caseObject.getAttachments()
+        Collection<Attachment> addedAttachments = newState.getAttachments()
                 .stream()
                 .filter(a -> addedAttachmentsIds.contains(a.getId()))
                 .collect(Collectors.toList());
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObject, result, addedAttachments, currentPerson));
+        publisherService.publishEvent(new CaseCommentEvent(this, newState, oldState, result, addedAttachments, currentPerson));
 
         return new CoreResponse<CaseComment>().success( result );
     }
@@ -353,8 +380,8 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment comment, Person person ) {
-        CaseObject caseObject = caseObjectDAO.get( comment.getCaseId() );
-        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+        CaseObject oldState = caseObjectDAO.get( comment.getCaseId() );
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, oldState ) ) {
             return new CoreResponse<CaseComment>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
@@ -400,7 +427,11 @@ public class CaseServiceImpl implements CaseService {
 
         // below building event
 
-        jdbcManyRelationsHelper.fill( caseObject, "attachments");
+        CaseObject newState = caseObjectDAO.get(comment.getCaseId());
+        jdbcManyRelationsHelper.fill( newState, "attachments");
+        jdbcManyRelationsHelper.fill(newState, "notifiers");
+        oldState.setAttachments(newState.getAttachments());
+        oldState.setNotifiers(newState.getNotifiers());
 
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, removedCaseAttachments).getData();
         Collection<Attachment> addedAttachments = attachmentService.getAttachments(token,
@@ -408,7 +439,7 @@ public class CaseServiceImpl implements CaseService {
         ).getData();
 
         publisherService.publishEvent(
-                new CaseCommentEvent(this, caseObject, prevComment, removedAttachments, comment, addedAttachments, person)
+                new CaseCommentEvent(this, newState, oldState, prevComment, removedAttachments, comment, addedAttachments, person)
         );
 
         return new CoreResponse<CaseComment>().success( comment );

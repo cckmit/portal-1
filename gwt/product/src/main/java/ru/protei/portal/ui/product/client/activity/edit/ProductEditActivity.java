@@ -137,7 +137,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     private void resetView () {
         view.name().setValue("");
         view.type().setValue(En_DevUnitType.PRODUCT, true);
-        view.product().setValue(null);
+        view.parents().setValue(null);
         view.components().setValue(null);
         view.info().setValue("");
         view.state().setVisible(false);
@@ -148,6 +148,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         boolean isCreate = devUnit.getId() == null;
 
+        view.setCurrentProduct(devUnit.toProductShortView());
         view.name().setValue(devUnit.getName());
         view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
         view.info().setValue(devUnit.getInfo());
@@ -160,11 +161,16 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         );
 
         view.setIsProduct(devUnit.isProduct());
-        view.product().setValue(devUnit.isComponent() && devUnit.getParent() != null ? devUnit.getParent().toProductShortView() : null);
-        view.components().setValue(devUnit.isProduct() && devUnit.getChildren() != null ? devUnit.getChildren().stream()
+        view.parents().setValue(devUnit.isComponent() && devUnit.getParents() != null ? devUnit.getParents().stream()
                 .map(DevUnit::toProductShortView)
                 .collect(Collectors.toSet())
-                : null);
+                : null
+        );
+        view.components().setValue(devUnit.getChildren() != null ? devUnit.getChildren().stream()
+                .map(DevUnit::toProductShortView)
+                .collect(Collectors.toSet())
+                : null
+        );
 
     }
 
@@ -181,19 +187,20 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .collect(Collectors.toList())
         );
         if (product.isComponent()) {
-            ProductShortView productShortView = view.product().getValue();
-            if (productShortView != null && product.getParent() != null && !Objects.equals(productShortView.getId(), product.getParent().getId())) {
-                product.setParent(DevUnit.fromProductShortView(productShortView));
-            }
-        }
-        if (product.isProduct()) {
-            Set<ProductShortView> productShortViews = view.components().getValue();
+            Set<ProductShortView> productShortViews = view.parents().getValue();
             if (productShortViews != null) {
-                product.setChildren(productShortViews.stream()
+                product.setParents(productShortViews.stream()
                         .map(DevUnit::fromProductShortView)
                         .collect(Collectors.toList())
                 );
             }
+        }
+        Set<ProductShortView> productShortViews = view.components().getValue();
+        if (productShortViews != null) {
+            product.setChildren(productShortViews.stream()
+                    .map(DevUnit::fromProductShortView)
+                    .collect(Collectors.toList())
+            );
         }
     }
 

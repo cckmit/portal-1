@@ -28,6 +28,7 @@
 
     <inherits name='com.google.gwt.user.Debug' />
     <set-property name="gwt.enableDebugId" value="true"/>
+    <!-- Turning off debug ids will break "scroll to prev position" at *TableActivity -->
 
     <source path='client'/>
     <source path='shared'/>

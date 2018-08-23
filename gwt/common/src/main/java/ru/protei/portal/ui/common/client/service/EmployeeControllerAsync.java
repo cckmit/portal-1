@@ -15,12 +15,12 @@ public interface EmployeeControllerAsync {
      * Получение списка сотрудников
      * @return список контактов
      */
-    void getEmployees( AsyncCallback<List<Person>> async );
+    void getEmployees( EmployeeQuery query, AsyncCallback< List< Person > > async );
 
     /**
      * Получение списка сокращенного представления сотрудника
      * @param query запрос
      * @param callback
      */
-    void getEmployeeViewList( EmployeeQuery query, AsyncCallback< List<PersonShortView> > callback );
+    void getEmployeeViewList( EmployeeQuery query, AsyncCallback< List< PersonShortView > > callback );
 }

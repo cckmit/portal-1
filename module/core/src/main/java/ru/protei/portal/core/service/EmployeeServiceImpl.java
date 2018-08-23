@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Date;
@@ -40,6 +41,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     PersonAbsenceDAO absenceDAO;
 
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
     @Override
     public EmployeeDetailView getEmployeeAbsences(Long id, Long tFrom, Long tTill, Boolean isFull) {
 
@@ -64,29 +68,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
     }
 
-    private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
-        if(personAbsences.size()==0)
-            return;
-
-        List<Long> ids = personAbsences.stream()
-                .map(p -> p.getCreatorId())
-                .distinct()
-                .collect(Collectors.toList());
-
-        HashMap<Long,String> creators = new HashMap<>();
-
-        for (Person p : personDAO.partialGetListByKeys(ids, "displayShortName")){
-            creators.put(p.getId(), p.getDisplayShortName());
-        }
-
-        for(PersonAbsence p:personAbsences)
-            p.setCreator(creators.get(p.getCreatorId()));
-
-    }
-
-
-
-
     public EmployeeDetailView getEmployeeProfile(Long id){
 
         Person p = personDAO.getEmployee( id );
@@ -108,17 +89,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (list == null)
             new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
+        List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
         return new CoreResponse<List<PersonShortView>>().success(result,result.size());
     }
 
     @Override
-    public CoreResponse<List<Person>> employeeList() {
-        List<Person> list = personDAO.getEmployeesAll();
+    public CoreResponse<List<Person>> employeeList(EmployeeQuery query) {
+        List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
             new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+
+        jdbcManyRelationsHelper.fill(list, "workerEntries");
 
         return new CoreResponse<List<Person>>().success(list);
     }
@@ -140,4 +123,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new CoreResponse<List<WorkerView>>().success(result, result.size());
     }
 
+    private void fillAbsencesOfCreators(List<PersonAbsence> personAbsences){
+        if(personAbsences.size()==0)
+            return;
+
+        List<Long> ids = personAbsences.stream()
+                .map(p -> p.getCreatorId())
+                .distinct()
+                .collect(Collectors.toList());
+
+        HashMap<Long,String> creators = new HashMap<>();
+
+        for (Person p : personDAO.partialGetListByKeys(ids, "displayShortName")){
+            creators.put(p.getId(), p.getDisplayShortName());
+        }
+
+        for(PersonAbsence p:personAbsences)
+            p.setCreator(creators.get(p.getCreatorId()));
+
+    }
 }

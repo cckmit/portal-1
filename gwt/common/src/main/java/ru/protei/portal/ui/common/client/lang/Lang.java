@@ -1226,4 +1226,32 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderClone();
 
     String issueFilterRemoveConfirmMessage();
+
+    String accessory();
+
+    String projectOnlyMine();
+
+    String selectComponent();
+
+    String belongsTo();
+
+    String siteFolderManager();
+
+    String selectManager();
+
+    String employees();
+
+    String privilegeCategoryEmployee();
+
+    String employeeAdditionalInfoHeader();
+
+    String employeeID();
+
+    String employeeIPAddress();
+
+    String employeePositionsHeader();
+
+    String employeeCompany();
+
+    String employeeMainPosition();
 }
