@@ -227,9 +227,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.66.1 - PORTAL-312 "Затраченное время" считается с задержкой в 1 комментарий.
  * 4.0.66.2 - PORTAL-248 Корректировка интерфейса базы децимальных номеров
  * 4.0.66.3 - PORTAL-330 Личные данные (паспортные) в открытом доступе
+ * 4.0.66.4 - PORTAL-333 Не скачиваются отчеты по обращениям
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.66.3";
+        return "4.0.66.4";
     }
 }
