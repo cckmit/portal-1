@@ -41,6 +41,8 @@ import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionLis
 
 import java.util.Set;
 
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.*;
+
 /**
  * Представление фильтра обращений
  */
@@ -131,7 +133,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.setValue( "" );
         userFilter.setValue( null );
         removeBtn.setVisible( false );
-        filterName.removeStyleName( "required" );
+        filterName.removeStyleName( REQUIRED );
         filterName.setValue( "" );
         searchByComments.setValue( false );
         searchPrivate.setValue( null );
@@ -191,45 +193,45 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setFilterNameContainerErrorStyle( boolean hasError ) {
         if ( hasError ) {
-            filterName.addStyleName( "required" );
+            filterName.addStyleName(REQUIRED);
         } else {
-            filterName.removeStyleName( "required" );
+            filterName.removeStyleName( REQUIRED );
         }
     }
 
     @Override
     public void setUserFilterNameVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
-            filterNameContainer.removeClassName( "hide" );
+            filterNameContainer.removeClassName( HIDE );
         } else {
-            filterNameContainer.addClassName( "hide" );
+            filterNameContainer.addClassName( HIDE );
         }
     }
 
     @Override
     public void setCompaniesErrorStyle( boolean hasError ) {
         if (hasError){
-            companies.addStyleName( "required" );
+            companies.addStyleName( REQUIRED );
         } else {
-            companies.removeStyleName( "required" );
+            companies.removeStyleName( REQUIRED );
         }
     }
 
     @Override
     public void setProductsErrorStyle( boolean hasError ) {
         if (hasError){
-            products.addStyleName( "required" );
+            products.addStyleName( REQUIRED );
         } else {
-            products.removeStyleName( "required" );
+            products.removeStyleName( REQUIRED );
         }
     }
 
     @Override
     public void setManagersErrorStyle( boolean hasError ) {
         if (hasError){
-            managers.addStyleName( "required" );
+            managers.addStyleName( REQUIRED );
         } else {
-            managers.removeStyleName( "required" );
+            managers.removeStyleName( REQUIRED );
         }
     }
 
@@ -237,18 +239,18 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
             if (reportBtnVisible) {
-                reportBtn.removeStyleName( "hide" );
+                reportBtn.removeStyleName( HIDE );
             }
-            saveBtn.removeStyleName( "hide" );
-            resetBtn.removeStyleName( "hide" );
-            removeBtn.removeStyleName( "hide" );
+            saveBtn.removeStyleName( HIDE );
+            resetBtn.removeStyleName( HIDE );
+            removeBtn.removeStyleName( HIDE );
         } else {
             if (reportBtnVisible) {
-                reportBtn.addStyleName( "hide" );
+                reportBtn.addStyleName( HIDE );
             }
-            saveBtn.addStyleName( "hide" );
-            resetBtn.addStyleName( "hide" );
-            removeBtn.addStyleName( "hide" );
+            saveBtn.addStyleName( HIDE );
+            resetBtn.addStyleName( HIDE );
+            removeBtn.addStyleName( HIDE );
         }
     }
 
@@ -256,9 +258,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void setReportButtonVisibility(boolean hasVisible) {
         reportBtnVisible = hasVisible;
         if (reportBtnVisible) {
-            reportBtn.removeStyleName( "hide" );
+            reportBtn.removeStyleName( HIDE );
         } else {
-            reportBtn.addStyleName( "hide" );
+            reportBtn.addStyleName( HIDE );
         }
     }
 
