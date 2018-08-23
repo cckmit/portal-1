@@ -89,8 +89,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<CaseObject> getCaseObject( AuthToken token, long number ) {
-
         CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
+
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.PERMISSION_DENIED);
+        }
 
         if(caseObject == null)
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
@@ -113,6 +116,10 @@ public class CaseServiceImpl implements CaseService {
 
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+            return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         Date now = new Date();
         caseObject.setCreated(now);
@@ -234,6 +241,9 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+            return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
         UserSessionDescriptor descriptor = authService.findSession( token );
 
         caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
@@ -253,6 +263,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId ) {
+        CaseObject caseObject = caseObjectDAO.get( caseId );
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_VIEW, caseObject ) ) {
+            return new CoreResponse<List<CaseComment>>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         List<CaseComment> list = caseCommentDAO.getCaseComments( caseId );
 
         if ( list == null )
@@ -278,6 +293,10 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment comment, Person currentPerson ) {
+        CaseObject caseObject = caseObjectDAO.get( comment.getCaseId() );
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+            return new CoreResponse<CaseComment>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         if ( comment == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -313,8 +332,6 @@ public class CaseServiceImpl implements CaseService {
 
 
         //below building event
-
-        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
         jdbcManyRelationsHelper.fill(caseObject, "attachments");
         jdbcManyRelationsHelper.fill(caseObject, "notifiers");
 
@@ -336,6 +353,10 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment comment, Person person ) {
+        CaseObject caseObject = caseObjectDAO.get( comment.getCaseId() );
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+            return new CoreResponse<CaseComment>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         if (comment == null || comment.getId() == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -379,7 +400,6 @@ public class CaseServiceImpl implements CaseService {
 
         // below building event
 
-        CaseObject caseObject = caseObjectDAO.get(comment.getCaseId());
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
 
         Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, removedCaseAttachments).getData();
@@ -400,6 +420,11 @@ public class CaseServiceImpl implements CaseService {
 
         if (caseComment == null || caseComment.getId() == null || personId == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = caseObjectDAO.get( caseComment.getCaseId() );
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+            return new CoreResponse<CaseComment>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
 
         if (!personId.equals(caseComment.getAuthorId()) || !isChangeAvailable ( caseComment.getCreated() ))
             return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
@@ -506,6 +531,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber) {
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
+            return new CoreResponse<CaseInfo>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+
         CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
 
         if(caseObject == null)
@@ -526,7 +555,11 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, Attachment attachment, long caseNumber) {
-        return attachToCaseId(attachment, caseObjectDAO.getCaseId(En_CaseType.CRM_SUPPORT, caseNumber));
+        CaseObject caseObject = caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber);
+        if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
+            return new CoreResponse<Long>().error( En_ResultStatus.PERMISSION_DENIED );
+        }
+        return attachToCaseId( attachment, caseObject.getId() );
     }
 
     @Override
@@ -654,6 +687,27 @@ public class CaseServiceImpl implements CaseService {
         List<CaseComment> allCaseComments = caseCommentDAO.partialGetListByCondition("CASE_ID=?", Collections.singletonList(caseId), "id", "time_elapsed");
         return stream(allCaseComments).filter(cmnt -> cmnt.getTimeElapsed() != null).mapToLong(CaseComment::getTimeElapsed).sum();
     }
+
+    private boolean hasAccessFor(AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.hasGrantAccessFor( roles, privilege ) && policyService.hasScopeForPrivilege( roles, privilege, En_Scope.COMPANY ) ) {
+            if ( caseObject == null ) {
+                return false;
+            }
+
+            List<Long> companyIds = getDescriptorCompany( descriptor );
+            if ( !companyIds.contains( caseObject.getInitiatorCompanyId() ) ) {
+                return false;
+            }
+
+            if ( caseObject.isPrivateCase() ) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
 }
