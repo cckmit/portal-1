@@ -5,6 +5,7 @@
         <Property name="extension" value=".log"/>
         <Property name="appFileName" value="portal.app"/>
         <Property name="hpsmFileName" value="portal.hpsm.service"/>
+        <Property name="redmineFileName" value="portal.redmine.service"/>
         <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
         <Property name="maxFileSize" value="512MB"/>
     </Properties>
@@ -38,6 +39,9 @@
         <Logger name="ru.protei.portal.hpsm" level="DEBUG" additivity="false">
             <AppenderRef ref="PortalHPSMRollingFile"/>
         </Logger>
+        <Logger name="ru.protei.portal.redmine" level="DEBUG" additivity="false">
+            <AppenderRef ref="PortalRedmineRollingFile"/>
+        </Logger>
 
         <Logger name="org.springframework" level="OFF"/>
         <Logger name="config" level="OFF"/>
@@ -65,6 +69,16 @@
         <RollingFile name="PortalHPSMRollingFile"
                      fileName="${basePath}/${hpsmFileName}${extension}"
                      filePattern="${basePath}/${hpsmFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="PortalRedmineRollingFile"
+                     fileName="${basePath}/${redmineFileName}${extension}"
+                     filePattern="${basePath}/${redmineFileName}.%d{yyyyMMdd}.%i${extension}.gz">
             <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
