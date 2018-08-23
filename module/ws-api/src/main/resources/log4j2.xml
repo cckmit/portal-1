@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="basePath" value="/usr/protei/portal-api/logs"/>
+        <Property name="extension" value=".log"/>
+        <Property name="appFileName" value="portal.app"/>
+        <Property name="apiFileName" value="portal.api"/>
+        <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
+        <Property name="maxFileSize" value="512MB"/>
+    </Properties>
+
+    <Loggers>
+        <Root level="DEBUG">
+            <!--<AppenderRef ref="Console"/>-->
+        </Root>
+        <Logger name="protei" level="DEBUG">
+            <AppenderRef ref="PortalAppRollingFile"/>
+        </Logger>
+        <Logger name="ru.protei.portal.api" level="DEBUG">
+            <AppenderRef ref="PortalApiRollingFile"/>
+        </Logger>
+    </Loggers>
+
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+
+        <RollingFile name="PortalAppRollingFile"
+                     fileName="${basePath}/${appFileName}${extension}"
+                     filePattern="${basePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="PortalApiRollingFile"
+                     fileName="${basePath}/${apiFileName}${extension}"
+                     filePattern="${basePath}/${apiFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+</Configuration>
