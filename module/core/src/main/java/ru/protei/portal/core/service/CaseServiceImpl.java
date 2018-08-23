@@ -104,6 +104,21 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setLinks(caseLinks.getData());
         }
 
+
+        // RESET PRIVACY INFO
+        if ( caseObject.getInitiator() != null ) {
+            caseObject.getInitiator().resetPrivacyInfo();
+        }
+        if ( caseObject.getCreator() != null ) {
+            caseObject.getCreator().resetPrivacyInfo();
+        }
+        if ( caseObject.getManager() != null ) {
+            caseObject.getManager().resetPrivacyInfo();
+        }
+        if ( CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+            caseObject.getNotifiers().forEach(Person::resetPrivacyInfo);
+        }
+
         return new CoreResponse<CaseObject>().success(caseObject);
     }
 
@@ -259,6 +274,13 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         jdbcManyRelationsHelper.fill(list, "caseAttachments");
+
+        // RESET PRIVACY INFO
+        list.forEach(comment -> {
+            if ( comment.getAuthor() != null ) {
+                comment.getAuthor().resetPrivacyInfo();
+            }
+        });
 
         return new CoreResponse<List<CaseComment>>().success(list);
     }

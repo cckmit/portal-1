@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
@@ -362,6 +363,12 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.oldId = oldId;
     }
 
+    public void resetPrivacyInfo() {
+        passportInfo = null;
+        department = null;
+        position = null;
+        info = null;
+    }
 
     public List< WorkerEntry > getWorkerEntries() {
         return workerEntries;
@@ -394,7 +401,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
                 ", genderCode='" + genderCode + '\'' +
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
-                ", passportInfo='" + passportInfo + '\'' +
                 ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
