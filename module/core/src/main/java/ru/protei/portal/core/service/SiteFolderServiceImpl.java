@@ -86,6 +86,10 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             serverQuery.setPlatformId(platform.getId());
             Long count = serverDAO.count(serverQuery);
             platform.setServersCount(count == null ? 0L : count);
+            // RESET PRIVACY INFO
+            if (platform.getManager() != null) {
+                platform.getManager().resetPrivacyInfo();
+            }
         });
 
         return new CoreResponse<List<Platform>>().success(result);

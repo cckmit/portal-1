@@ -226,9 +226,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.66.0 - PORTAL-272 Отображение списка сотрудников Протей
  * 4.0.66.1 - PORTAL-312 "Затраченное время" считается с задержкой в 1 комментарий.
  * 4.0.66.2 - PORTAL-248 Корректировка интерфейса базы децимальных номеров
+ * 4.0.66.3 - PORTAL-330 Личные данные (паспортные) в открытом доступе
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.66.2";
+        return "4.0.66.3";
     }
 }

@@ -1,8 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
@@ -10,6 +12,8 @@ import ru.protei.winter.jdbc.annotations.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import static ru.protei.portal.core.model.dict.En_ContactDataAccess.PRIVATE;
 
 /**
  * Created by michael on 30.03.16.
@@ -362,6 +366,17 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.oldId = oldId;
     }
 
+    public void resetPrivacyInfo() {
+        passportInfo = null;
+        department = null;
+        position = null;
+        info = null;
+        ipAddress = null;
+
+        if (contactInfo != null) {
+            contactInfo.getItems().removeIf( (info)-> !info.isItemOf(En_ContactItemType.EMAIL) );
+        };
+    }
 
     public List< WorkerEntry > getWorkerEntries() {
         return workerEntries;
@@ -394,7 +409,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
                 ", genderCode='" + genderCode + '\'' +
                 ", birthday=" + birthday +
                 ", ipAddress='" + ipAddress + '\'' +
-                ", passportInfo='" + passportInfo + '\'' +
                 ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
