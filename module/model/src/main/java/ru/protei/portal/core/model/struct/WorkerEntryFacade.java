@@ -23,18 +23,11 @@ public class WorkerEntryFacade {
     }
 
     public WorkerEntry getMainEntry() {
-        Optional< WorkerEntry > entryOptional = entryStream().filter( WorkerEntry::isMain ).findFirst();
-        if ( entryOptional.isPresent() )
-            return entryOptional.get();
-        return getFirstEntry();
+        return entryStream().filter( WorkerEntry::isMain ).findFirst().orElse( getFirstEntry() );
     }
 
     public WorkerEntry getFirstEntry() {
-        Optional< WorkerEntry > entryOptional = entryStream().findFirst();
-        if ( entryOptional.isPresent() )
-            return entryOptional.get();
-
-        return null;
+        return entryStream().findFirst().orElse( null );
     }
 
     public List< WorkerEntry > getSortedEntries() {
