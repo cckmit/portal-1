@@ -18,8 +18,10 @@ public final class RedmineIssuesCheckRunner {
 
     @Scheduled(fixedRate = SCHEDULE_TIME)
     public void queryIssues() {
-        if (!portalConfig.data().integrationConfig().isRedmineEnabled())
+        if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
+            logger.debug("Redmine integration is disabled in config, therefore nothing happens");
             return;
+        }
 
         logger.debug("Check for new issues stared");
         redmineEndpointDAO.getAll().forEach(redmineService::checkForNewIssues);

@@ -19,7 +19,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     public void handle(User user, Issue issue, RedmineEndpoint endpoint) {
         final long companyId = endpoint.getCompanyId();
         logger.debug("Starting creating case object for issue id {}, user id {}, company id {}",
-                user.getId(), issue.getId(), companyId);
+                 issue.getId(), user.getId(), companyId);
         final CaseObject object = createCaseObject(user, issue, endpoint);
         if (object == null)
             logger.debug("Object was not created");
@@ -28,6 +28,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     }
 
     private CaseObject createCaseObject(User user, Issue issue, RedmineEndpoint endpoint) {
+        logger.debug("Creating case object ...");
         final long companyId = endpoint.getCompanyId();
         final CaseObject testExists = caseObjectDAO.getByExternalAppCaseId(issue.getId().toString()
                 + "_" + companyId );
@@ -101,6 +102,8 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
     }
 
     private void handleComments(Issue issue, Person person, CaseObject obj, long caseObjId, long companyId) {
+        logger.debug("Processing comments ...");
+
         issue.getJournals()
                 .stream()
                 .filter(Objects::nonNull)

@@ -17,10 +17,15 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
     @Override
     public void handle(AssembledCaseEvent event) {
-        if (!portalConfig.data().integrationConfig().isRedmineEnabled())
+        logger.debug("Handling action on redmine-related issue in Portal-CRM");
+        if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
+            logger.debug("Redmine integration disabled in config, nothing happens");
             return;
+        }
 
         final long caseId = event.getCaseObject().getId();
+
+        logger.debug("Modified object has id: {}", caseId);
 
         final CaseObject caseObject = event.getCaseObject();
         caseObjectDAO.saveOrUpdate(caseObject);
@@ -52,13 +57,19 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
             return;
         }
 
+        logger.debug("Using endpoint for server: {}", endpoint.getServerAddress());
+
         final Issue issue = service.getIssueById(issueId, endpoint);
         if (issue == null) {
             logger.debug("Issue with id {} was not found", issueId);
             return;
         }
 
+        logger.debug("Updating comments");
         updateComments(issue, event.getCaseComment(), endpoint);
+        logger.debug("Finished updating of comments");
+
+        logger.debug("Copying case object changes to redmine issue");
         updateIssueProps(issue, event, endpoint);
 
         try {
