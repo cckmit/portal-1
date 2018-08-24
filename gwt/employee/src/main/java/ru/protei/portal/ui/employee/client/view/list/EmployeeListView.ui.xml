@@ -5,6 +5,14 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="main-content grid">
+        <div class="col-xs-12 list-btns">
+            <g:Anchor styleName="btn btn-default btn-sm" ui:field="tableMode">
+                <span class="fa fa-list"/>
+            </g:Anchor>
+            <g:Anchor styleName="btn btn-default btn-sm" ui:field="plateMode" visible="false">
+                <span class="fa fa fa-vcard-o"/>
+            </g:Anchor>
+        </div>
         <div class="block low col-xs-9">
             <platelist:PlateList ui:field="childContainer"
                                  styleName="plate-list"
