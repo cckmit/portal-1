@@ -43,12 +43,17 @@
             <AppenderRef ref="PortalRedmineRollingFile"/>
         </Logger>
 
+        <Logger name="DefaultListableBeanFactory" level="INFO"/>
+        <Logger name="wire" level="INFO"/>
+        <Logger name="headers" level="INFO"/>
+
         <Logger name="org.springframework" level="OFF"/>
         <Logger name="config" level="OFF"/>
         <Logger name="ru.protei.winter" level="OFF"/>
         <Logger name="liquibase" level="OFF"/>
         <Logger name="LiquibaseSchemaResolver" level="OFF"/>
         <Logger name="jdbc" level="OFF"/>
+        <Logger name="SpringGwtRemoteServiceServlet" level="OFF"/>
     </Loggers>
 
     <Appenders>
