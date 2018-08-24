@@ -29,7 +29,6 @@ import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.PersonMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -90,6 +89,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public HasValue<Set<PersonShortView>> managers() { return managers; }
 
     @Override
+    public HasValue<Set<PersonShortView>> initiators() { return initiators; }
+
+    @Override
     public HasValue< Set <En_CaseState > > states() { return state; }
 
     @Override
@@ -126,6 +128,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         companies.setValue( null );
         products.setValue( null );
         managers.setValue( null );
+        initiators.setValue( null );
         importance.setValue(null);
         state.setValue( null );
         dateRange.setValue( null );
@@ -233,6 +236,15 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             managers.addStyleName( REQUIRED );
         } else {
             managers.removeStyleName( REQUIRED );
+        }
+    }
+
+    @Override
+    public void setInitiatorsErrorStyle( boolean hasError ) {
+        if (hasError){
+            initiators.addStyleName( REQUIRED );
+        } else {
+            initiators.removeStyleName( REQUIRED );
         }
     }
 
@@ -352,6 +364,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler( "managers" )
     public void onManagersSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "initiators" )
+    public void onInitiatorsSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -503,7 +522,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField ( provided = true )
-    PersonMultiSelector initiators;
+    EmployeeMultiSelector initiators;
 
     @Inject
     @UiField ( provided = true )
