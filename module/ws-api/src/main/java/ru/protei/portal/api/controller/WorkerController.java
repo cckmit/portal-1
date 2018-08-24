@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
@@ -166,7 +165,8 @@ public class WorkerController {
             OperationData operationData = new OperationData(rec)
                     .requireHomeItem()
                     .requireDepartment(null)
-                    .requireNotExistsWorker();
+                    .requireNotExistsWorker()
+                    .requireAccount(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
@@ -199,7 +199,7 @@ public class WorkerController {
                         mergePerson(person);
                     }
 
-                    UserLogin userLogin = userLoginDAO.findLDAPByPersonId(person.getId());
+                    UserLogin userLogin = operationData.account();
                     if (userLogin == null) userLogin = createLDAPAccount(person);
                     if (userLogin != null) {
                         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
@@ -948,7 +948,7 @@ public class WorkerController {
         }
 
         public OperationData requireAccount(Supplier<UserLogin> optional) {
-            if (isValid()) {
+            if (isValid() && record.getPersonId() != null) {
                 this.account = handle(userLoginDAO.findLDAPByPersonId(record.getPersonId()), optional, null, true);
                 jdbcManyRelationsHelper.fill(account, "roles");
             }
