@@ -229,9 +229,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.66.3 - PORTAL-330 Личные данные (паспортные) в открытом доступе
  * 4.0.66.4 - PORTAL-333 Не скачиваются отчеты по обращениям
  * 4.0.66.5 - PORTAL-330 Личные данные (паспортные) в открытом доступе
+ * 4.0.66.6 - PORTAL-248 (доработка) Корректировка интерфейса базы децимальных номеров
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.66.5";
+        return "4.0.66.6";
     }
 }

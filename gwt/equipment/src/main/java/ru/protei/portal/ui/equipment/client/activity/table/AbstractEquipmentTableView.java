@@ -13,10 +13,6 @@ public interface AbstractEquipmentTableView extends IsWidget {
 
     void setAnimation ( TableAnimation animation );
 
-    void hideElements();
-
-    void showElements();
-
     void clearRecords();
 
     void clearSelection();
