@@ -133,6 +133,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseObject == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
+        applyCaseByScope( token, caseObject );
         if ( !hasAccessFor( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
         }
@@ -140,7 +141,6 @@ public class CaseServiceImpl implements CaseService {
         Date now = new Date();
         caseObject.setCreated(now);
         caseObject.setModified(now);
-        applyCaseByScope( token, caseObject );
 
         Long caseId = caseObjectDAO.insertCase(caseObject);
 

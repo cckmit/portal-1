@@ -66,7 +66,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 initialView(issue);
             } else {
                 CaseObject caseObject = new CaseObject();
-                caseObject.setPrivateCase(true);
+                initNewIssue(caseObject);
                 initialView(caseObject);
             }
         } else {
@@ -245,11 +245,16 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         });
     }
 
+    private void initNewIssue(CaseObject caseObject) {
+        boolean isPrivacyVisible = policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW);
+        caseObject.setPrivateCase(isPrivacyVisible ? true : false);
+    }
+
     private void fillView(CaseObject issue) {
         view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
-        view.privacyVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        view.privacyVisibility().setVisible( policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW) );
 
         view.attachmentsContainer().clear();
         view.setCaseNumber(issue.getCaseNumber());
@@ -267,7 +272,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.notifiers().setValue(issue.getNotifiers() == null ? new HashSet<>() :
                     issue.getNotifiers().stream().map(PersonShortView::fromPerson).collect(Collectors.toSet()));
             view.caseSubscriptionContainer().setVisible(true);
-        }else{
+        } else {
             view.caseSubscriptionContainer().setVisible(false);
         }
 
