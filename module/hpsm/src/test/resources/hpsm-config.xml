@@ -10,7 +10,7 @@
             <!-- FROM-field -->
             <sender-address>crm_test@protei.ru</sender-address>
             <!-- TO-field -->
-            <send-to>zavedeev@protei.ru</send-to>
+            <send-to>svitkov@protei.ru</send-to>
             <!--
             <send-to>FSMPP-vendor@megafon.ru</send-to>
             -->

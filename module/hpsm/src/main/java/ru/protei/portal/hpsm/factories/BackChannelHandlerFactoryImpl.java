@@ -41,6 +41,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         stateHandlerMap.put(new Tuple<>(OPENED, INFO_REQUEST), new InfoRequestStateHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, WORKAROUND), new WorkAroundStateHandler());
         stateHandlerMap.put(new Tuple<>(OPENED, WORKAROUND), new WorkAroundStateHandler());
+        stateHandlerMap.put(new Tuple<>(TEST_CUST, WORKAROUND), new WorkaroundNoChangesHandler());
         stateHandlerMap.put(new Tuple<>(ACTIVE, DONE), new DoneStateHandler());
         stateHandlerMap.put(new Tuple<>(OPENED, DONE), new DoneStateHandler());
         stateHandlerMap.put(new Tuple<>(DONE, VERIFIED), new VerifiedStateHandler());
@@ -56,6 +57,7 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         if (event.isCreateEvent()) {
             return new NoActionHandler();
         }
+
         return stateHandlerMap.getOrDefault(new Tuple<>(currentState.status().getCaseState(),
                 event.getLastState().getState()), new MakeMessageAction());
     }
@@ -129,6 +131,15 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
             logger.debug("Applying back-channel handler for {} -> {} status", INFO_REQUEST.getName(), CREATED.getName());
             message.status(HpsmStatus.INFO_REQUEST);
+            updateAppDataAndSend(message, instance, event.getLastState());
+        }
+    }
+
+    public class WorkaroundNoChangesHandler implements BackChannelEventHandler {
+        @Override
+        public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
+            logger.debug("Keeping workaround status");
+            message.status(HpsmStatus.WORKAROUND);
             updateAppDataAndSend(message, instance, event.getLastState());
         }
     }
@@ -215,6 +226,8 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
                 appData.getExtAppCaseId(), appData.getExtAppData());
 
         externalCaseAppDAO.saveExtAppData(appData);
+
+        object.getState();
 
         HpsmMessageHeader header = new HpsmMessageHeader(appData.getExtAppCaseId(), object.getExtId(),
                 message.status());
