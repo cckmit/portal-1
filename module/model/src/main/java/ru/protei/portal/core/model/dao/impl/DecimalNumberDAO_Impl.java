@@ -103,7 +103,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class,
                 filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber(),
                 filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber());
-   }
+    }
 
     @Override
     public DecimalNumber find(DecimalNumber decimalNumber) {

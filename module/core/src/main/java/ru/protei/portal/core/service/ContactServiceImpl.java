@@ -40,7 +40,7 @@ public class ContactServiceImpl implements ContactService {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
-            new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<PersonShortView> result = list.stream().map(Person::toShortNameShortView ).collect(Collectors.toList());
 
@@ -52,7 +52,7 @@ public class ContactServiceImpl implements ContactService {
         List<Person> list = personDAO.getContacts(query);
 
         if (list == null)
-            new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<Person>>().success(list);
     }
