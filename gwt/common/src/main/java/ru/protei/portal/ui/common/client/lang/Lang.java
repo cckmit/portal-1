@@ -859,6 +859,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errTooMuchManagers();
 
+    String errTooMuchInitiators();
+
     String errTooMuchProducts();
 
     String issueFilterNotDefined();

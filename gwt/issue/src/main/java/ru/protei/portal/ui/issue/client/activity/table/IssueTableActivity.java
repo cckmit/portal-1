@@ -390,6 +390,7 @@ public abstract class IssueTableActivity
         filterView.states().setValue( IssueFilterUtils.getStates( params.getStateIds() ) );
         filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
         filterView.managers().setValue( IssueFilterUtils.getManagers(params.getManagerIds()) );
+        filterView.initiators().setValue( IssueFilterUtils.getInitiators(params.getInitiatorIds()) );
         filterView.products().setValue( IssueFilterUtils.getProducts(params.getProductIds()) );
     }
 
@@ -469,6 +470,7 @@ public abstract class IssueTableActivity
         query.setCompanyIds( IssueFilterUtils.getCompaniesIdList( filterView.companies().getValue() ) );
         query.setProductIds( IssueFilterUtils.getProductsIdList( filterView.products().getValue() ) );
         query.setManagerIds( IssueFilterUtils.getManagersIdList( filterView.managers().getValue() ) );
+        query.setInitiatorIds( IssueFilterUtils.getManagersIdList( filterView.initiators().getValue() ) );
         query.setImportanceIds( IssueFilterUtils.getImportancesIdList( filterView.importances().getValue() ) );
         query.setStates( IssueFilterUtils.getStateList( filterView.states().getValue() ) );
 
@@ -498,6 +500,11 @@ public abstract class IssueTableActivity
         if (filterView.managers().getValue().size() > 50){
             fireEvent( new NotifyEvents.Show( lang.errTooMuchManagers(), NotifyEvents.NotifyType.ERROR ) );
             filterView.setManagersErrorStyle(true);
+            isValid = false;
+        }
+        if (filterView.initiators().getValue().size() > 50){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchInitiators(), NotifyEvents.NotifyType.ERROR ) );
+            filterView.setInitiatorsErrorStyle(true);
             isValid = false;
         } else {
             filterView.setManagersErrorStyle(false);
