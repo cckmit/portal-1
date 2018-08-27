@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.table.concise.AbstractContactConciseTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.concise.AbstractContactConciseTableView;
+import ru.protei.portal.ui.contact.client.view.table.ContactTableViewBase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,20 +119,8 @@ public class ContactConciseTableView extends Composite implements AbstractContac
             cell.appendChild(posElement);
 
             if (value.isFired() || value.isDeleted()) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("<i class='fa fa-info-circle'></i> <b>");
-                if (value.isFired()) {
-                    sb.append(lang.contactFiredShort());
-                    if (value.isDeleted()) {
-                        sb.append(", ");
-                    }
-                }
-                if (value.isDeleted()) {
-                    sb.append(value.isFired() ? lang.contactDeletedShort().toLowerCase() : lang.contactDeletedShort());
-                }
-                sb.append("</b>");
                 Element stateElement = DOM.createDiv();
-                stateElement.setInnerHTML(sb.toString());
+                stateElement.setInnerHTML(ContactTableViewBase.makeFiredOrDeleted(value, lang));
                 cell.appendChild(stateElement);
             }
 
