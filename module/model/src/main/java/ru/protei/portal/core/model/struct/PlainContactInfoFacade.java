@@ -37,13 +37,26 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         return allPhonesStream().map (
                     p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
                 )
-                .collect( Collectors.joining( "," ) );
+                .collect( Collectors.joining( ", " ) );
+    }
+
+    public String publicPhonesAsString () {
+        return allPhonesStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map (
+                p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
+        )
+                .collect( Collectors.joining( ", " ) );
     }
 
     public String allEmailsAsString () {
         return emailsStream().map(
                 e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")
-        ).collect( Collectors.joining( "," ) );
+        ).collect( Collectors.joining( ", " ) );
+    }
+
+    public String publicEmailsAsString () {
+        return emailsStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map(
+                e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")
+        ).collect( Collectors.joining( ", " ) );
     }
 
     public String getWorkPhone() {

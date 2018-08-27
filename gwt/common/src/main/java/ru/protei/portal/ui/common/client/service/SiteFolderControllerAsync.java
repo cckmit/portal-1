@@ -25,6 +25,8 @@ public interface SiteFolderControllerAsync {
 
     void getApplications(ApplicationQuery query, AsyncCallback<List<Application>> async);
 
+    void getServersWithAppsNames(ServerQuery query, AsyncCallback<List<Server>> async);
+
     void getServersOptionList(ServerQuery query, AsyncCallback<List<EntityOption>> async);
 
     void getPlatformsOptionList(PlatformQuery query, AsyncCallback<List<EntityOption>> async);
@@ -37,7 +39,7 @@ public interface SiteFolderControllerAsync {
 
     void savePlatform(Platform platform, AsyncCallback<Platform> async);
 
-    void saveServer(Server server, AsyncCallback<Server> async);
+    void saveServer(Server server, Long serverIdOfAppsToBeCloned, AsyncCallback<Server> async);
 
     void saveApplication(Application application, AsyncCallback<Application> async);
 

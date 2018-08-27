@@ -13,7 +13,6 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -71,7 +70,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                         newRecordsQuery, view.getNewRecordsContainer(), lang.newRecords(), DebugIds.DASHBOARD.TABLE_NEW));
         fireEvent(
                 new DashboardEvents.ShowTableBlock(
-                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, DebugIds.DASHBOARD.TABLE_INACTIVE));
+                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, DebugIds.DASHBOARD.TABLE_INACTIVE).withDaysLimit(30));
     }
 
 
@@ -106,11 +105,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             productIds.add( policyService.getProfile().getId() );
         }
         query.setManagerIds( productIds );
-
-        Date to = new Date();
-        Date from = new Date(to.getTime() - (86400000L * 30L));
-        query.setFrom(from);
-        query.setTo(to);
 
         return query;
     }

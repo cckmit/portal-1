@@ -6,9 +6,8 @@ import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     }
 
     @Override
-    public Company getCompanyByName( String name ) {
+    public Company getCompanyByName(String name) {
         return getByCondition(" cname=? ", name);
     }
 
@@ -45,21 +44,23 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append( "company.id not in ( select companyId from company_group_home where mainId is not null )" );
-            condition.append(" and cname like ?");
-            args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+
+            condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null )");
 
             if (query.getGroupId() != null && query.getGroupId()> 0) {
                 condition.append(" and groupId = ?");
                 args.add(query.getGroupId());
             }
 
-            if (query.getCategoryIds() != null && !query.getCategoryIds().isEmpty()) {
+            if (!CollectionUtils.isEmpty(query.getCategoryIds())) {
                 condition.append(" and category_id in (")
-                        .append(
-                                query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(","))
-                        )
+                        .append(query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")))
                         .append(")");
+            }
+
+            if (HelperFunc.isLikeRequired(query.getSearchString())) {
+                condition.append(" and cname like ?");
+                args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
         });
     }

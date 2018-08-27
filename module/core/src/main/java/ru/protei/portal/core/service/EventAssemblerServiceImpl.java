@@ -75,6 +75,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                 logger.debug("attach comment event to existing case {}", event.getCaseObject().defGUID());
                 AssembledCaseEvent assembledCaseEvent = assembledEventsMap.get(key);
                 assembledCaseEvent.attachCaseComment(event.getCaseComment());
+                assembledCaseEvent.attachCaseObject(event.getCaseObject());
                 assembledCaseEvent.synchronizeAttachments(
                         event.getAddedAttachments(),
                         event.getRemovedAttachments()

@@ -2,10 +2,14 @@ package ru.protei.portal.ui.project.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -16,6 +20,7 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -24,13 +29,15 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
+import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -41,7 +48,6 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        headManager.setDefaultValue( "Выберите менеджера" );
     }
 
     @Override
@@ -94,13 +100,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public HasValue< PersonShortView > headManager() {
-        return headManager;
-    }
-
-    @Override
-    public HasValue< Set< PersonShortView > > deployManagers() {
-        return deployManager;
+    public HasValue<Set<PersonProjectMemberView>> team() {
+        return team;
     }
 
     @Override
@@ -162,13 +163,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         fireProjectChanged();
     }
 
-    @UiHandler( "headManager" )
-    public void onHedaManagerChanged( ValueChangeEvent<PersonShortView> value ) {
-        fireProjectChanged();
-    }
-
-    @UiHandler( "deployManager" )
-    public void onDeployManagersChanged( ValueChangeEvent<Set<PersonShortView>> value ) {
+    @UiHandler( "team" )
+    public void onDeployManagersChanged( ValueChangeEvent<Set<PersonProjectMemberView>> value ) {
         fireProjectChanged();
     }
 
@@ -214,15 +210,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     Element header;
 
     @UiField
-    SpanElement creationDate;
+    LabelElement creationDate;
 
     @Inject
-    @UiField( provided = true )
-    EmployeeButtonSelector headManager;
-
-    @Inject
-    @UiField( provided = true )
-    EmployeeMultiSelector deployManager;
+    @UiField(provided = true)
+    TeamSelector team;
 
     @UiField
     TextArea details;
@@ -258,7 +250,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Inject
     @UiField(provided = true)
-    ProductMultiSelector products;
+    DevUnitMultiSelector products;
 
     @Inject
     @UiField(provided = true)

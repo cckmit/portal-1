@@ -37,6 +37,7 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         parameters.withLimit(query.getLimit());
         parameters.withSort(TypeConverters.createSort( query ));
         if (isSearchAtComments(query)) {
+            parameters.withDistinct(true);
             parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
         }
 
@@ -53,7 +54,7 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         if (!isSearchAtComments(query)) {
             return super.count(query);
         }
-        StringBuilder sql = new StringBuilder("select count(*) from ").append(getTableName())
+        StringBuilder sql = new StringBuilder("select count(distinct case_object.id) from ").append(getTableName())
                 .append(LEFT_JOIN_CASE_COMMENT);
 
         SqlCondition whereCondition = createSqlCondition(query);

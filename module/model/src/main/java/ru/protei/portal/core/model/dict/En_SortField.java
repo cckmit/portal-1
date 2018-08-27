@@ -83,6 +83,11 @@ public enum En_SortField {
     /**
      * equipment project
      */
+    equipment_project("case_object.case_name"),
+
+    /**
+     * project
+     */
     project("project"),
 
     /**
@@ -93,7 +98,12 @@ public enum En_SortField {
     /**
      * issue case_name
      */
-    case_name("CASE_NAME");
+    case_name("CASE_NAME"),
+
+    /**
+     * person birthday
+     */
+    birthday("date_format(birthday, '%m%d')");
 
     private String fieldName;
     private String bundleKey;

@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 
 public abstract class PlatformPreviewActivity implements Activity, AbstractPlatformPreviewActivity {
 
@@ -29,11 +30,12 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         }
         view.setName(value.getName() == null ? "" : value.getName());
         view.setCompany(value.getCompany() == null ? "" : (value.getCompany().getCname() == null ? "" : value.getCompany().getCname()));
+        view.setManager(value.getManager() == null ? "" : (value.getManager().getDisplayShortName() == null ? "" : value.getManager().getDisplayShortName()));
         view.setParameters(value.getParams() == null ? "" : value.getParams());
         view.setComment(value.getComment() == null ? "" : value.getComment());
 
         fireEvent(new ContactEvents.ShowConciseTable(view.contactsContainer(), value.getCompanyId()).readOnly());
-
+        fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
     }
 
     @Inject

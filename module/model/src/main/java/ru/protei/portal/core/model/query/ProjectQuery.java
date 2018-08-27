@@ -17,6 +17,8 @@ public class ProjectQuery extends BaseQuery {
 
     Long directionId;
 
+    Boolean onlyMineProjects;
+
     public ProjectQuery() {
         sortField = En_SortField.prod_name;
         sortDir = En_SortDir.ASC;
@@ -53,5 +55,13 @@ public class ProjectQuery extends BaseQuery {
 
     public void setDirectionId( Long directionId ) {
         this.directionId = directionId;
+    }
+
+    public Boolean isOnlyMineProjects() {
+        return onlyMineProjects;
+    }
+
+    public void setOnlyMineProjects(Boolean onlyMineProjects) {
+        this.onlyMineProjects = onlyMineProjects;
     }
 }

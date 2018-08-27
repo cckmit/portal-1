@@ -27,6 +27,8 @@ public class SiteFolderServerEvents {
     public static class Edit {
         @Name("server")
         public Long serverId;
+        @Name("clone")
+        public Long serverIdToBeCloned;
         @Omit
         public Platform platform;
         public Edit() {
@@ -38,6 +40,11 @@ public class SiteFolderServerEvents {
         public static Edit withPlatform(Platform platform) {
             Edit edit = new Edit();
             edit.platform = platform;
+            return edit;
+        }
+        public static Edit withClone(Long serverIdToBeCloned) {
+            Edit edit = new Edit();
+            edit.serverIdToBeCloned = serverIdToBeCloned;
             return edit;
         }
     }
@@ -55,6 +62,15 @@ public class SiteFolderServerEvents {
         public HasWidgets parent;
         public Long platformId;
         public ShowList(HasWidgets parent, Long platformId) {
+            this.parent = parent;
+            this.platformId = platformId;
+        }
+    }
+
+    public static class ShowDetailedList {
+        public HasWidgets parent;
+        public Long platformId;
+        public ShowDetailedList(HasWidgets parent, Long platformId) {
             this.parent = parent;
             this.platformId = platformId;
         }

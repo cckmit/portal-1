@@ -117,7 +117,8 @@ public class UserRoleDAO_impl extends PortalBaseJdbcDAO<UserRole> implements Use
             En_Privilege.CONTACT_VIEW,
             En_Privilege.COMMON_PROFILE_VIEW,
             En_Privilege.COMPANY_VIEW,
-            En_Privilege.DASHBOARD_VIEW
+            En_Privilege.DASHBOARD_VIEW,
+            En_Privilege.EMPLOYEE_VIEW
     );
 
     static final DefRoleSetup ROLE_SETUP_EMPL_MANAGER = new DefRoleSetup("ТПиМ : Менеджер", En_Scope.SYSTEM,

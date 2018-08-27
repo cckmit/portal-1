@@ -5,11 +5,13 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Абстракция вида карточки создания/редактирования продукта
@@ -17,6 +19,8 @@ import java.util.List;
 public interface AbstractProductEditView extends IsWidget {
 
     void setActivity( AbstractProductEditActivity activity );
+
+    void setCurrentProduct(ProductShortView product);
 
     HasValue<String> name();
 
@@ -26,15 +30,20 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasValue<String> info();
 
+    HasValue<Set<ProductShortView>> parents();
+
+    HasValue<Set<ProductShortView>> components();
+
     void setNameStatus ( NameStatus status );
 
     void setStateBtnText(String caption);
 
     HasVisibility state(  );
 
+    void setIsProduct(boolean isProduct);
+
     HasEnabled save();
 
     HasValue<List<Subscription>> productSubscriptions();
     HasValidable productSubscriptionsValidator();
-
 }

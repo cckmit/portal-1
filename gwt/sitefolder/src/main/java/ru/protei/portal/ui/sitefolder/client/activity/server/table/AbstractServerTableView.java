@@ -26,4 +26,6 @@ public interface AbstractServerTableView extends IsWidget {
     HasWidgets getPreviewContainer();
 
     HasWidgets getFilterContainer();
+
+    HasWidgets getPagerContainer();
 }

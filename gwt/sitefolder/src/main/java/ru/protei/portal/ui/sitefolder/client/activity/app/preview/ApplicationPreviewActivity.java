@@ -27,6 +27,7 @@ public abstract class ApplicationPreviewActivity implements Activity, AbstractAp
             return;
         }
         view.setName(value.getName() == null ? "" : value.getName());
+        view.setComponent(value.getComponent() == null ? "" : (value.getComponent().getName() == null ? "" : value.getComponent().getName()));
         view.setServer(value.getServer() == null ? "" : (value.getServer().getName() == null ? "" : value.getServer().getName()));
         view.setComment(value.getComment() == null ? "" : value.getComment());
         view.setPaths(value.getPaths());

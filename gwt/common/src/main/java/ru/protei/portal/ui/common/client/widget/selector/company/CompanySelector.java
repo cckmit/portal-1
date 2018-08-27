@@ -118,6 +118,14 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
         }
     }
 
+    public void applyValueIfOneOption() {
+        if (options != null && options.size() == 1) {
+            setValue(options.get(0));
+        } else {
+            setValue(null);
+        }
+    }
+
     @Inject
     private Provider<SelectorPopup> popupProvider;
 

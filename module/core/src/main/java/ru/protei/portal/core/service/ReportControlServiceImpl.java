@@ -200,7 +200,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         int offset = 0;
 
         while (offset < limit) {
-            int amount = offset + step < limit ? offset + step : limit;
+            int amount = offset + step < limit ? step : limit - offset;
             try {
                 CaseQuery query = report.getCaseQuery();
                 query.setOffset(offset);

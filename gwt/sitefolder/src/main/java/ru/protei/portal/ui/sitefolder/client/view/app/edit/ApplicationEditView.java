@@ -2,12 +2,15 @@ package ru.protei.portal.ui.sitefolder.client.view.app.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.sitefolder.client.activity.app.edit.AbstractApplicationEditActivity;
@@ -28,6 +31,11 @@ public class ApplicationEditView extends Composite implements AbstractApplicatio
 
     @Override
     public void setPlatformId(Long platformId) {}
+
+    @Override
+    public HasValue<ProductShortView> component() {
+        return component;
+    }
 
     @Override
     public HasValue<String> name() {
@@ -64,6 +72,13 @@ public class ApplicationEditView extends Composite implements AbstractApplicatio
         return server;
     }
 
+    @UiHandler("component")
+    public void onComponentSelected(ValueChangeEvent<ProductShortView> event) {
+        if (activity != null) {
+            activity.onComponentSelected();
+        }
+    }
+
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -78,6 +93,9 @@ public class ApplicationEditView extends Composite implements AbstractApplicatio
         }
     }
 
+    @Inject
+    @UiField(provided = true)
+    ComponentButtonSelector component;
     @UiField
     ValidableTextBox name;
     @Inject

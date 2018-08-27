@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -23,11 +24,13 @@ public class Platform implements Serializable, Removable {
     @JdbcColumn(name="comment")
     private String comment;
 
-    @JdbcOneToMany(localColumn = "id", table = "server", remoteColumn = "platform_id")
-    private List<Server> servers;
+    @JdbcJoinedObject(localColumn = "manager_id", remoteColumn = "id", updateLocalColumn = true)
+    private Person manager;
 
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
+
+    private Long serversCount;
 
     public Long getId() {
         return id;
@@ -69,14 +72,6 @@ public class Platform implements Serializable, Removable {
         this.comment = comment;
     }
 
-    public List<Server> getServers() {
-        return servers;
-    }
-
-    public void setServers(List<Server> servers) {
-        this.servers = servers;
-    }
-
     public Company getCompany() {
         return company;
     }
@@ -84,6 +79,42 @@ public class Platform implements Serializable, Removable {
     public void setCompany(Company company) {
         this.company = company;
     }
+
+    public Long getServersCount() {
+        return serversCount;
+    }
+
+    public void setServersCount(Long serversCount) {
+        this.serversCount = serversCount;
+    }
+
+    public Person getManager() {
+        return manager;
+    }
+
+    public void setManager(Person manager) {
+        this.manager = manager;
+    }
+
+
+    public static Platform fromEntityOption(EntityOption entityOption) {
+        if (entityOption == null) {
+            return null;
+        }
+
+        Platform platform = new Platform();
+        platform.setId(entityOption.getId());
+        platform.setName(entityOption.getDisplayText());
+        return platform;
+    }
+
+    public EntityOption toEntityOption() {
+        EntityOption entityOption = new EntityOption();
+        entityOption.setId(getId());
+        entityOption.setDisplayText(getName());
+        return entityOption;
+    }
+
 
     @Override
     public boolean isAllowedRemove() {
@@ -97,6 +128,7 @@ public class Platform implements Serializable, Removable {
                 ", companyId=" + companyId +
                 ", name=" + name +
                 ", params=" + params +
+                ", manager=" + manager +
                 ", comment=" + comment +
                 '}';
     }

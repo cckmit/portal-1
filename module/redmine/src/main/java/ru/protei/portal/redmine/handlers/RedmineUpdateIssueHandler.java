@@ -43,12 +43,14 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
      * @return list of changes since last check
      */
     private List<RedmineChangeType> parseJournals(List<Journal> journals) {
-        List<JournalDetail> details = journals.stream()
+        logger.debug("Trying to parse redmine journals ...");
+
+        final List<JournalDetail> details = journals.stream()
                 .filter(x -> x.getNotes() == null || x.getNotes().isEmpty())
                 .flatMap(x -> x.getDetails().stream())
                 .collect(Collectors.toList());
 
-        List<Optional<RedmineChangeType>> changes =  details.stream()
+        final List<Optional<RedmineChangeType>> changes =  details.stream()
                 .map(JournalDetail::getName)
                 .map(RedmineChangeType::findByName)
                 .collect(Collectors.toList());

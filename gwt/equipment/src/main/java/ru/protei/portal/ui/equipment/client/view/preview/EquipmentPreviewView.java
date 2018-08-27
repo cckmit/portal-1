@@ -96,6 +96,16 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
+    public void showFullScreen(boolean value) {
+        fullScreen.setVisible( !value );
+        if (value) {
+            preview.addStyleName("full-screen col-xs-12");
+        } else {
+            preview.setStyleName("preview");
+        }
+    }
+
+    @Override
     public void setCopyBtnEnabledStyle( boolean isEnabled ){
         if (isEnabled) {
             copy.removeStyleName( "link-disabled" );
@@ -127,9 +137,18 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
         }
     }
 
+    @UiHandler( "fullScreen" )
+    public void onFullScreenClicked( ClickEvent event ) {
+        if( activity != null ) {
+            activity.onFullScreenClicked();
+        }
+    }
+
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel preview;
     @UiField
     SpanElement comment;
     @UiField
@@ -152,6 +171,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     Button remove;
     @UiField
     Button copy;
+    @UiField
+    Button fullScreen;
     @UiField
     SpanElement created;
 

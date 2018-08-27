@@ -48,6 +48,11 @@ public class AppView extends Composite
     }
 
     @Override
+    public void setAppVersion(String appVersion) {
+        this.appVersion.setText(appVersion);
+    }
+
+    @Override
     public HasValue< LocaleImage > locale() {
         return locale;
     }
@@ -109,13 +114,14 @@ public class AppView extends Composite
 
     @Override
     public void onKeyUp( KeyUpEvent event ) {
-        if ( event.getNativeKeyCode() == KeyCodes.KEY_F4 && event.isAnyModifierKeyDown() && event.isControlKeyDown() ) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
             event.preventDefault();
             activity.onLogoutClicked();
         }
     }
 
     private void ensureDebugIds() {
+        globalContainer.ensureDebugId(DebugIds.APP_VIEW.GLOBAL_CONTAINER);
         logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
         locale.setEnsureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
         toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
@@ -165,6 +171,10 @@ public class AppView extends Composite
     ImageElement icon;
     @UiField
     Anchor logo;
+    @UiField
+    Label appVersion;
+    @UiField
+    HTMLPanel globalContainer;
 
     AbstractAppActivity activity;
 

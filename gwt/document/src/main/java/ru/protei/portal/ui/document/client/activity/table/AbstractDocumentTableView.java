@@ -4,6 +4,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 
+import java.util.List;
+
 public interface AbstractDocumentTableView extends IsWidget {
     void setActivity(AbstractDocumentTableActivity documentTableActivity);
 
@@ -22,4 +24,6 @@ public interface AbstractDocumentTableView extends IsWidget {
     HasWidgets getFilterContainer();
 
     HasWidgets getPreviewContainer();
+
+    HasWidgets getPagerContainer();
 }

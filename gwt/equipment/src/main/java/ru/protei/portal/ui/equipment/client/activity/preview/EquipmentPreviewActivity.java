@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
+import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -30,6 +31,11 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     }
 
     @Event
+    public void onInit( AppEvents.InitDetails event ) {
+        this.initDetails = event;
+    }
+
+    @Event
     public void onShow( EquipmentEvents.ShowPreview event ) {
         event.parent.clear();
         event.parent.add( view.asWidget() );
@@ -41,6 +47,18 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         }
 
         fillView( event.equipment );
+
+        view.showFullScreen(false);
+    }
+
+    @Event
+    public void onShowFullScreen( EquipmentEvents.ShowFullScreen event ) {
+        initDetails.parent.clear();
+        initDetails.parent.add( view.asWidget() );
+
+        fillView( event.equipmentId );
+
+        view.showFullScreen(true);
     }
 
     @Event
@@ -68,6 +86,14 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     @Override
     public void onRemoveClicked() {
         fireEvent( new ConfirmDialogEvents.Show( getClass().getName(), lang.equipmentRemoveConfirmMessage() ) );
+    }
+
+    @Override
+    public void onFullScreenClicked() {
+        if (equipment == null) {
+            return;
+        }
+        fireEvent(new EquipmentEvents.ShowFullScreen(equipment.getId()));
     }
 
     private void fillView( Equipment value ) {
@@ -126,4 +152,5 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     EquipmentControllerAsync equipmentService;
 
     private Equipment equipment;
+    private AppEvents.InitDetails initDetails;
 }

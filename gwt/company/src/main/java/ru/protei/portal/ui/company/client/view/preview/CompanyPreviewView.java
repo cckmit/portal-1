@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.FieldSetElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -55,7 +56,12 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
 
     @Override
     public void setSite( String value ) {
-        this.site.setInnerText( value );
+        String href = value == null ? "#" : value;
+        site.setInnerText(value);
+        if ( !href.startsWith("http://") && !href.startsWith("htts://") ) {
+            href = "http://" + href;
+        }
+        site.setHref( href );
     }
 
     @Override
@@ -120,7 +126,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     SpanElement phone;
     @UiField
-    SpanElement site;
+    AnchorElement site;
     @UiField
     SpanElement email;
     @UiField

@@ -131,6 +131,21 @@
 }
 
 .preview.project {
+
+  .header {
+    padding: 0;
+    width: 100%;
+  }
+
+  .h30 {
+    height: 30px;
+    line-height: 30px;
+  }
+
+  .w-i {
+    width: initial;
+  }
+
   input {
     font-size: 1em;
     padding: 2px;
@@ -147,7 +162,8 @@
     }
 
     &.project-name {
-      font-size: 1.5em;
+      font-size: 1.3em;
+      margin-left: -3px;
     }
   }
 
@@ -174,7 +190,7 @@
 
   .btn-selector > button.btn-white {
     border: 1px solid white;
-    margin-top: -3px;
+    box-sizing: border-box;
 
     span.caret {
       display: none;
@@ -200,6 +216,9 @@
   }
 
   .icon-selector.status-group {
+    width: 1.5em;
+    padding-right: 0.5em;
+    text-align: center;
 
     a.status {
       border: 1px solid white;
@@ -209,8 +228,8 @@
 
     a.caret-anchor {
       position: absolute;
-      top: -18px;
-      right: 54px;
+      top: -0.3em;
+      right: 0.32em;
       display: none;
     }
 

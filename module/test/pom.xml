@@ -48,4 +48,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>protei-central</id>
+            <name>ext-snaphot-local</name>
+            <url>http://192.168.110.20:8081/artifactory/ext-snapshot-local</url>
+        </repository>
+    </distributionManagement>
 </project>

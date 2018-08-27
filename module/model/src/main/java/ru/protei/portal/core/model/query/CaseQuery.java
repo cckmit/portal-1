@@ -52,6 +52,8 @@ public class CaseQuery extends BaseQuery {
 
     private String searchCasenoString;
 
+    private List<Long> memberIds;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -207,6 +209,14 @@ public class CaseQuery extends BaseQuery {
         this.viewPrivate = viewOnlyPrivate;
     }
 
+    public List<Long> getMemberIds() {
+        return memberIds;
+    }
+
+    public void setMemberIds(List<Long> memberIds) {
+        this.memberIds = memberIds;
+    }
+
     @Override
     public String toString () {
         return "CaseQuery{" +
@@ -224,6 +234,7 @@ public class CaseQuery extends BaseQuery {
                 ", searchStringAtComments=" + searchStringAtComments +
                 ", searchCasenoString=" + searchCasenoString +
                 ", viewPrivate=" + viewPrivate +
+                ", memberIds=" + memberIds +
                 '}';
     }
 }

@@ -57,7 +57,7 @@ public abstract class ServerTableActivity implements
     public void onShow(SiteFolderServerEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        initDetails.parent.add(pagerView.asWidget());
+        view.getPagerContainer().add(pagerView.asWidget());
 
         platformId = event.platformId;
 
@@ -141,6 +141,19 @@ public abstract class ServerTableActivity implements
             animation.showDetails();
             fireEvent(new SiteFolderServerEvents.ShowPreview(view.getPreviewContainer(), value));
         }
+    }
+
+    @Override
+    public void onCopyClicked(Server value) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
+            return;
+        }
+
+        if (value == null) {
+            return;
+        }
+
+        fireEvent(SiteFolderServerEvents.Edit.withClone(value.getId()));
     }
 
     @Override

@@ -57,7 +57,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
             view.setManager("");
         } else {
             view.setProject(project.getName());
-            view.setManager(project.getHeadManager() == null ? "" : project.getHeadManager().getDisplayShortName());
+            view.setManager(project.getLeader() == null ? "" : project.getLeader().getDisplayShortName());
         }
 
         view.setContractor(document.getContractor() == null ? "" : document.getContractor().getDisplayShortName());

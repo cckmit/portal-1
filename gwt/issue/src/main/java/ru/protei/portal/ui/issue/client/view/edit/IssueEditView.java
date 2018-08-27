@@ -2,7 +2,9 @@ package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -35,7 +37,7 @@ import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -51,7 +53,7 @@ import java.util.Set;
 /**
  * Вид создания и редактирования обращения
  */
-public class IssueEditView extends Composite implements AbstractIssueEditView, ResizeHandler {
+public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     public void onInit() {
@@ -64,28 +66,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
-        Window.addResizeHandler(this);
     }
 
     @Override
     protected void onAttach() {
         super.onAttach();
-    }
-
-    @Override
-    protected void onDetach() {
-        super.onDetach();
-        if (resizeFinishedTimer.isRunning()) {
-            resizeFinishedTimer.cancel();
-        }
-    }
-
-    @Override
-    public void onResize(ResizeEvent event) {
-        if (resizeFinishedTimer.isRunning()) {
-            resizeFinishedTimer.cancel();
-        }
-        resizeFinishedTimer.schedule(200);
     }
 
     @Override
@@ -275,12 +260,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     @Override
-    public void refreshFooterBtnPosition() {
-        Scheduler.get().scheduleDeferred(() -> {
-            int wHeight = Window.getClientHeight();
-            int pHeight = root.getOffsetHeight();
-            setFooterFixed(pHeight - DIFF_BEFORE_FOOTER_FIXED > wHeight);
-        });
+    public HasEnabled saveEnabled() {
+        return saveButton;
     }
 
     @Override
@@ -298,12 +279,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         initiator.setAddButtonVisible(isVisible);
     }
 
-    private void setFooterFixed(boolean isFixed) {
-        if (isFixed) {
-            root.addStyleName(UiConstants.Styles.FOOTER);
-        } else {
-            root.removeStyleName(UiConstants.Styles.FOOTER);
-        }
+    @Override
+    public void applyCompanyValueIfOneOption() {
+        company.applyValueIfOneOption();
     }
 
     @UiHandler( "company" )
@@ -353,10 +331,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     }
 
     private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
         local.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
         number.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
         links.setEnsureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
+        links.setEnsureDebugIdContainer(DebugIds.ISSUE.LINKS_CONTAINER);
+        links.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
+        links.setEnsureDebugIdTextBox(DebugIds.ISSUE.LINKS_INPUT);
+        links.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
+        links.setEnsureDebugIdErrorLabel(DebugIds.ISSUE.LINKS_ERROR_LABEL);
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
@@ -368,8 +354,23 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
         notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
         notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
+        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
+
+        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
+        links.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
+        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.STATE);
+        importanceLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.IMPORTANCE);
+        companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.COMPANY);
+        initiatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.CONTACT);
+        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PRODUCT);
+        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.MANAGER);
+        timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.TIME_ELAPSED);
+        descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
+        subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.SUBSCRIPTIONS);
+        notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
+        attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);
     }
 
     @UiField
@@ -409,7 +410,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
 
     @Inject
     @UiField(provided = true)
-    ProductButtonSelector product;
+    DevUnitButtonSelector product;
 
     @Inject
     @UiField(provided = true)
@@ -450,14 +451,30 @@ public class IssueEditView extends Composite implements AbstractIssueEditView, R
     @UiField
     HTMLPanel timeElapsedContainer;
 
-    private static final int DIFF_BEFORE_FOOTER_FIXED = 200;
-
-    private Timer resizeFinishedTimer = new Timer() {
-        @Override
-        public void run() {
-            refreshFooterBtnPosition();
-        }
-    };
+    @UiField
+    LabelElement nameLabel;
+    @UiField
+    LabelElement stateLabel;
+    @UiField
+    LabelElement importanceLabel;
+    @UiField
+    LabelElement companyLabel;
+    @UiField
+    LabelElement initiatorLabel;
+    @UiField
+    LabelElement productLabel;
+    @UiField
+    LabelElement managerLabel;
+    @UiField
+    LabelElement timeElapsedLabel;
+    @UiField
+    LabelElement descriptionLabel;
+    @UiField
+    LabelElement subscriptionsLabel;
+    @UiField
+    LabelElement notifiersLabel;
+    @UiField
+    LabelElement attachmentsLabel;
 
     private AbstractIssueEditActivity activity;
 

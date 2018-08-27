@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -55,7 +56,7 @@ public abstract class PlatformTableActivity implements
     public void onShow(SiteFolderPlatformEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        initDetails.parent.add(pagerView.asWidget());
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
@@ -223,6 +224,12 @@ public abstract class PlatformTableActivity implements
                 ? null
                 : filterView.companies().getValue().stream()
                         .map(EntityOption::getId)
+                        .collect(Collectors.toList())
+        );
+        query.setManagerIds(filterView.managers().getValue() == null
+                ? null
+                : filterView.managers().getValue().stream()
+                        .map(PersonShortView::getId)
                         .collect(Collectors.toList())
         );
         query.setParams(filterView.parameters().getValue());

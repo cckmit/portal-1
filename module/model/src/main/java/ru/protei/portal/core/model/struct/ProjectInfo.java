@@ -4,17 +4,13 @@ import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseLocation;
-import ru.protei.portal.core.model.ent.CaseMember;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -58,19 +54,14 @@ public class ProjectInfo extends AuditableObject {
     EntityOption productDirection;
 
     /**
-     * Руководитель
-     */
-    PersonShortView headManager;
-
-    /**
-     * Менеджеры внедрения
-     */
-    List<PersonShortView> managers;
-
-    /**
      * Дата создания
      */
     Date created;
+
+    /**
+     * Команда проекта
+     */
+    private List<PersonProjectMemberView> team;
 
     EntityOption region;
 
@@ -106,22 +97,6 @@ public class ProjectInfo extends AuditableObject {
 
     public void setProductDirection( EntityOption productDirection ) {
         this.productDirection = productDirection;
-    }
-
-    public PersonShortView getHeadManager() {
-        return headManager;
-    }
-
-    public void setHeadManager( PersonShortView headManager ) {
-        this.headManager = headManager;
-    }
-
-    public List<PersonShortView> getManagers() {
-        return managers;
-    }
-
-    public void setManagers( List<PersonShortView> managers ) {
-        this.managers = managers;
     }
 
     public Date getCreated() {
@@ -172,6 +147,31 @@ public class ProjectInfo extends AuditableObject {
         this.products = products;
     }
 
+    public List<PersonProjectMemberView> getTeam() {
+        return team;
+    }
+
+    public PersonProjectMemberView getLeader() {
+        if (team == null) {
+            return null;
+        }
+        return team.stream()
+                .filter(member -> En_DevUnitPersonRoleType.HEAD_MANAGER.equals(member.getRole()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public void setTeam(List<PersonProjectMemberView> team) {
+        this.team = team;
+    }
+
+    public void addTeamMember(PersonProjectMemberView person) {
+        if (team == null) {
+            team = new ArrayList<>();
+        }
+        team.add(person);
+    }
+
     public static ProjectInfo fromCaseObject( CaseObject project ) {
         if (project == null)
             return null;
@@ -187,19 +187,16 @@ public class ProjectInfo extends AuditableObject {
             ) );
         }
 
-        List<PersonShortView> deployManagers = new ArrayList<>();
-        projectInfo.setManagers( deployManagers );
         projectInfo.setCustomerType(En_CustomerType.find(project.getLocal()));
         projectInfo.setCustomer(project.getInitiatorCompany());
 
-        if ( project.getMembers() != null ) {
-            for ( CaseMember member : project.getMembers() ) {
-                if ( En_DevUnitPersonRoleType.HEAD_MANAGER.equals( member.getRole() ) ) {
-                    projectInfo.setHeadManager( PersonShortView.fromPerson( member.getMember() ) );
-                } else if ( En_DevUnitPersonRoleType.DEPLOY_MANAGER.equals( member.getRole() ) ) {
-                    deployManagers.add( PersonShortView.fromPerson( member.getMember() ) );
-                }
-            }
+        projectInfo.setTeam(new ArrayList<>());
+        if (project.getMembers() != null) {
+            List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
+            project.getMembers().stream()
+                    .filter(member -> projectRoles.contains(member.getRole()))
+                    .map(member -> PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()))
+                    .forEach(projectInfo::addTeamMember);
         }
 
         projectInfo.setCreated( project.getCreated() );
@@ -248,10 +245,9 @@ public class ProjectInfo extends AuditableObject {
                 ", stateId=" + stateId +
                 ", customerType=" + customerType +
                 ", productDirection=" + productDirection +
-                ", headManager=" + headManager +
-                ", managers=" + managers +
                 ", created=" + created +
                 ", region=" + region +
+                ", team=" + team +
                 '}';
     }
 }

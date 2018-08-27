@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.product.ProductButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialEditActivity;
 import ru.protei.portal.ui.official.client.activity.edit.AbstractOfficialEditView;
@@ -70,7 +70,7 @@ public class OfficialEditView extends Composite implements AbstractOfficialEditV
 
     @Inject
     @UiField(provided = true)
-    ProductButtonSelector product;
+    DevUnitButtonSelector product;
 
     @UiField
     TextArea info;

@@ -109,6 +109,18 @@ public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandler
         remoteIdInput.setFocus(true);
     }
 
+    public void setEnsureDebugIdSelector(String debugId) {
+        typeSelector.setEnsureDebugId(debugId);
+    }
+
+    public void setEnsureDebugIdTextBox(String debugId) {
+        remoteIdInput.setEnsureDebugIdTextBox(debugId);
+    }
+
+    public void setEnsureDebugIdApply(String debugId) {
+        remoteIdInput.setEnsureDebugIdAction(debugId);
+    }
+
     @UiField
     HTMLPanel root;
     @Inject

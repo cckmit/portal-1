@@ -1,7 +1,10 @@
 package ru.protei.portal.ui.issuereport.client.activity.table;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Report;
+
+import java.util.List;
 
 public interface AbstractIssueReportTableView extends IsWidget {
 
@@ -18,4 +21,6 @@ public interface AbstractIssueReportTableView extends IsWidget {
     void scrollTo(int page);
 
     void updateRow(Report item);
+
+    HasWidgets getPagerContainer();
 }

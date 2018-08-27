@@ -208,7 +208,10 @@ public class FileController {
     private String extractRealFileName(String fileName){
         final Base64.Decoder decoder = Base64.getUrlDecoder();
         final int underscorePos = fileName.indexOf('_');
-        final int dotLastPos = fileName.lastIndexOf('.');
+        int dotLastPos = fileName.lastIndexOf('.');
+        if (dotLastPos == -1) {
+            dotLastPos = fileName.length();
+        }
         final String encodedPart = fileName.substring(underscorePos + 1, dotLastPos);
         final String fileExt = fileName.substring(dotLastPos);
         final String val = new String(decoder.decode(encodedPart));

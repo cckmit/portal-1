@@ -26,6 +26,9 @@ import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServ
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.AbstractServerListView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.ServerListActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemView;
+import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.AbstractServerDetailedListView;
+import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.ServerDetailedListActivity;
+import ru.protei.portal.ui.sitefolder.client.activity.server.listdetailed.item.AbstractServerDetailedListItemView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.AbstractServerPreviewView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.preview.ServerPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableView;
@@ -44,6 +47,8 @@ import ru.protei.portal.ui.sitefolder.client.view.server.edit.ServerEditView;
 import ru.protei.portal.ui.sitefolder.client.view.server.filter.ServerFilterView;
 import ru.protei.portal.ui.sitefolder.client.view.server.list.ServerListView;
 import ru.protei.portal.ui.sitefolder.client.view.server.list.item.ServerListItemView;
+import ru.protei.portal.ui.sitefolder.client.view.server.listdetailed.ServerDetailedListView;
+import ru.protei.portal.ui.sitefolder.client.view.server.listdetailed.item.ServerDetailedListItemView;
 import ru.protei.portal.ui.sitefolder.client.view.server.preview.ServerPreviewView;
 import ru.protei.portal.ui.sitefolder.client.view.server.table.ServerTableView;
 
@@ -75,6 +80,9 @@ public class SiteFolderClientModule extends AbstractGinModule {
         bind(ServerListActivity.class).asEagerSingleton();
         bind(AbstractServerListView.class).to(ServerListView.class);
         bind(AbstractServerListItemView.class).to(ServerListItemView.class);
+        bind(ServerDetailedListActivity.class).asEagerSingleton();
+        bind(AbstractServerDetailedListView.class).to(ServerDetailedListView.class);
+        bind(AbstractServerDetailedListItemView.class).to(ServerDetailedListItemView.class);
 
         // App
         bind(ApplicationTableActivity.class).asEagerSingleton();

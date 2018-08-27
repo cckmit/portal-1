@@ -165,8 +165,11 @@ public class FileStorage {
 
     private String encodePath(String path) throws UnsupportedEncodingException{
         final Base64.Encoder enc = Base64.getUrlEncoder();
-        final int lastDotPos = path.lastIndexOf('.');
-        final int firstUnderscorePos = path.indexOf('_');
+        int lastDotPos = path.lastIndexOf('.');
+        int firstUnderscorePos = path.indexOf('_');
+        if (lastDotPos == -1) {
+            lastDotPos = path.length();
+        }
         return path.substring(0, firstUnderscorePos + 1)
                 + enc.encodeToString(path.substring(firstUnderscorePos + 1, lastDotPos).getBytes())
                 + path.substring(lastDotPos);

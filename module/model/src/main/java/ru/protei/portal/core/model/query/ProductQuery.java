@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -43,5 +44,12 @@ public class ProductQuery extends BaseQuery {
 
     public void setTypes(Set<En_DevUnitType> types) {
         this.types = types;
+    }
+
+    public void addType(En_DevUnitType type) {
+        if (this.types == null) {
+            this.types = new HashSet<>();
+        }
+        this.types.add(type);
     }
 }

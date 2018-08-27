@@ -26,4 +26,6 @@ public interface AbstractProjectFilterView extends IsWidget {
     HasValue< Set<DistrictInfo>> districts();
 
     HasValue<ProductDirectionInfo> direction();
+
+    HasValue<Boolean> onlyMineProjects();
 }

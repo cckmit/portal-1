@@ -91,11 +91,17 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         return filterContainer;
     }
 
+    @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
         removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
 
         columns.add(nameColumn);
+        columns.add(managerColumn);
         columns.add(serversColumn);
         columns.add(editClickColumn);
         columns.add(removeClickColumn);
@@ -111,6 +117,8 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField
@@ -130,6 +138,16 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
             cell.setInnerText(value.getName());
         }
     };
+    private ClickColumn<Platform> managerColumn = new ClickColumn<Platform>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.siteFolderManager());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Platform value) {
+            cell.setInnerText(value.getManager() == null ? "" : value.getManager().getDisplayShortName());
+        }
+    };
     private ClickColumn<Platform> serversColumn = new ClickColumn<Platform>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
@@ -138,7 +156,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
 
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText((value.getServers() == null ? "0" : String.valueOf(value.getServers().size())) + " " +lang.amountShort());
+            cell.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " +lang.amountShort());
         }
     };
     private Collection<ClickColumn<Platform>> columns = new LinkedList<>();

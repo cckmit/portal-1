@@ -22,11 +22,7 @@ public class AmpluaButtonSelector extends ButtonSelector< En_DevUnitPersonRoleTy
         clearOptions();
 
         addOption( null );
-        for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.values()) {
-            if (roleType.equals(En_DevUnitPersonRoleType.HEAD_MANAGER) ||
-                    roleType.equals(En_DevUnitPersonRoleType.DEPLOY_MANAGER)) {
-                continue;
-            }
+        for (En_DevUnitPersonRoleType roleType: En_DevUnitPersonRoleType.getAmpluaRoles()) {
             addOption( roleType );
         }
     }

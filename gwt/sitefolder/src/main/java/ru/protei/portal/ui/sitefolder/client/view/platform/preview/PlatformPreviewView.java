@@ -46,6 +46,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @Override
+    public void setManager(String value) {
+        manager.setInnerText(value);
+    }
+
+    @Override
     public void setParameters(String value) {
         parameters.setInnerText(value);
     }
@@ -60,16 +65,25 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         return contactsContainer;
     }
 
+    @Override
+    public HasWidgets serversContainer() {
+        return serversContainer;
+    }
+
     @UiField
     SpanElement name;
     @UiField
     SpanElement company;
+    @UiField
+    SpanElement manager;
     @UiField
     SpanElement parameters;
     @UiField
     SpanElement comment;
     @UiField
     HTMLPanel contactsContainer;
+    @UiField
+    HTMLPanel serversContainer;
 
     @Inject
     FixedPositioner positioner;

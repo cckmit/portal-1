@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid with-table-pager">
+    <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
 
             <fieldset class="header">
@@ -15,13 +15,18 @@
                 </div>
 
                 <div class="col-xs-12">
+                    <label class="col-xs-4"><ui:text from="{lang.devUnitComponent}"/></label>
+                    <span class="col-xs-8" ui:field="component"/>
+                </div>
+
+                <div class="col-xs-12">
                     <label class="col-xs-4"><ui:text from="{lang.siteFolderServer}"/></label>
                     <span class="col-xs-8" ui:field="server"/>
                 </div>
 
                 <div class="col-xs-12">
                     <label class="col-xs-4"><ui:text from="{lang.siteFolderComment}"/></label>
-                    <span class="col-xs-8" ui:field="comment"/>
+                    <span class="col-xs-8 pre-formatted-info" ui:field="comment"/>
                 </div>
 
                 <div class="col-xs-12">

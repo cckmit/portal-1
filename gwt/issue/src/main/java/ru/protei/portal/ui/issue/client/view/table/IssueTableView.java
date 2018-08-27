@@ -86,6 +86,16 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
+    @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
+    @Override
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
@@ -150,6 +160,8 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     En_CaseStateLang caseStateLang;

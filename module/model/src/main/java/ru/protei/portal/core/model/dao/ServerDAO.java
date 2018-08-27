@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.ent.Server;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.List;
+
 public interface ServerDAO extends PortalBaseDAO<Server> {
 
     @SqlConditionBuilder
