@@ -3402,3 +3402,30 @@ div.select2-container {
 .nowrap {
   white-space: nowrap;
 }
+
+
+/**
+   Схлопыватие раздела в превью
+ */
+.header {
+
+  .fieldset-legend:after {
+    content: "\f0d7";
+    margin-left: 10px;
+    font: normal normal normal 18px/1 FontAwesome;
+
+    cursor: pointer;
+  }
+
+  &.collapsed {
+    border-bottom: solid 1px lightgray;
+
+    .fieldset-legend:after {
+      content: "\f0d9";
+    }
+
+    .container {
+      display: none;
+    }
+  }
+}

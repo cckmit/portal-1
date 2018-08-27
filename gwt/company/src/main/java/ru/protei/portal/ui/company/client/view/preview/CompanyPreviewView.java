@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.ui.common.client.widget.collapse.CollapsableFieldset;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
 
@@ -152,7 +153,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     FieldSetElement comments;
     @UiField
-    HTMLPanel contactsContainer;
+    CollapsableFieldset contactsContainer;
     @UiField
     SpanElement subscription;
 
