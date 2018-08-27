@@ -26,7 +26,7 @@ public class HpsmTestUtils {
 
     public static final String SENDER_ADDRESS = "crm_test@protei.ru";
     public static final String SEND_TO_ADDRESS = "crm_test@protei.ru";
-    public static final String HPSM_MAIL_ADDRESS = "zavedeev@protei.ru";
+    public static final String HPSM_MAIL_ADDRESS = "svitkov@protei.ru";
 
     @Autowired
     MailMessageFactory messageFactory;
