@@ -37,13 +37,13 @@
             </fieldset>
 
             <fieldset class="header">
-                <legend><ui:text from="{lang.siteFolderCompanyContacts}"/></legend>
-                <g:HTMLPanel styleName="col-xs-12" ui:field="contactsContainer"/>
+                <legend><ui:text from="{lang.siteFolderServers}"/></legend>
+                <g:HTMLPanel styleName="col-xs-12" ui:field="serversContainer"/>
             </fieldset>
 
             <fieldset class="header">
-                <legend><ui:text from="{lang.siteFolderServers}"/></legend>
-                <g:HTMLPanel styleName="col-xs-12" ui:field="serversContainer"/>
+                <legend><ui:text from="{lang.siteFolderCompanyContacts}"/></legend>
+                <g:HTMLPanel styleName="col-xs-12" ui:field="contactsContainer"/>
             </fieldset>
 
         </g:HTMLPanel>

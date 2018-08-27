@@ -32,6 +32,7 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
 
+
     @UiField
     PlateList childContainer;
 

@@ -34,11 +34,6 @@
                     <g:TextArea ui:field="comment" styleName="input-field sf-comment"/>
                 </div>
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.siteFolderCompanyContacts}"/></label>
-                </div>
-                <g:HTMLPanel styleName="form-group col-xs-12 main-content-padding-0" ui:field="contactsContainer"/>
-
                 <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-xs-12">
                     <label><ui:text from="{lang.siteFolderServers}"/></label>
                     <g:Button ui:field="openButton" styleName="btn btn-white pull-right m-l-10" text="{lang.openTableView}"/>
@@ -46,6 +41,11 @@
                 </g:HTMLPanel>
 
                 <g:HTMLPanel styleName="form-group col-xs-12" ui:field="listContainer"/>
+
+                <div class="form-group col-xs-12">
+                    <label><ui:text from="{lang.siteFolderCompanyContacts}"/></label>
+                </div>
+                <g:HTMLPanel styleName="form-group col-xs-12 main-content-padding-0" ui:field="contactsContainer"/>
 
             </div>
         </div>

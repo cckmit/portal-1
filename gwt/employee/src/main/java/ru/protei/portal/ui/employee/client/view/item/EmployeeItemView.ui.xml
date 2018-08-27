@@ -4,38 +4,38 @@
 
     <g:HTMLPanel tag="li" styleName="employee">
         <div class="header-block">
-            <h2 ui:field="name"></h2>
-            <p>
+            <h2 class="name" ui:field="name"></h2>
+            <p class="controls">
                 <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>
                 <g:Anchor ui:field="edit" styleName="fa fa-fw fa-pencil" href="#"/>
                 <g:Anchor ui:field="favorite" styleName="fa fa-fw fa-heart" href="#"/>
             </p>
 
-            <div>
+            <div class="photo">
                 <g:Image ui:field="photo" styleName="employee-list-image"/>
             </div>
 
-            <g:HTMLPanel ui:field="birthdayContainer" styleName="contacts">
+            <g:HTMLPanel ui:field="birthdayContainer" styleName="contacts birthday">
                 <i class="fa fa-birthday-cake"/>
                 <span ui:field="birthday"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="phoneContainer" styleName="contacts">
+            <g:HTMLPanel ui:field="phoneContainer" styleName="contacts phone">
                 <i class="fa fa-phone"/>
                 <span ui:field="phone"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="emailContainer" styleName="contacts">
+            <g:HTMLPanel ui:field="emailContainer" styleName="contacts email">
                 <i class="fa fa-envelope"/>
                 <a href="#" ui:field="email"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="companyContainer" styleName="contacts" visible="false">
+            <g:HTMLPanel ui:field="companyContainer" styleName="contacts company" visible="false">
                 <i class="icon icon-organization margin-right-0"/>
                 <span ui:field="company"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="departmentContainer" styleName="contacts" visible="false">
+            <g:HTMLPanel ui:field="departmentContainer" styleName="contacts department" visible="false">
                 <i class="fa fa-sitemap"/>
                 <span ui:field="department"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="positionContainer" styleName="contacts" visible="false">
+            <g:HTMLPanel ui:field="positionContainer" styleName="contacts position" visible="false">
                 <i class="fa fa-street-view"></i>
                 <span ui:field="position"/>
             </g:HTMLPanel>
