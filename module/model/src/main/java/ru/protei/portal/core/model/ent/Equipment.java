@@ -1,10 +1,10 @@
 package ru.protei.portal.core.model.ent;
 
-
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -143,6 +143,13 @@ public class Equipment extends AuditableObject {
         this.decimalNumbers = decimalNumbers;
     }
 
+    public void addDecimalNumber( DecimalNumber decimalNumber ) {
+        if (this.decimalNumbers == null) {
+            this.decimalNumbers = new ArrayList<>();
+        }
+        this.decimalNumbers.add(decimalNumber);
+    }
+
     public String getComment() {
         return comment;
     }
@@ -165,6 +172,13 @@ public class Equipment extends AuditableObject {
 
     public void setLinkedEquipmentDecimalNumbers( List< DecimalNumber > linkedEquipmentDecimalNumbers ) {
         this.linkedEquipmentDecimalNumbers = linkedEquipmentDecimalNumbers;
+    }
+
+    public void addLinkedEquipmentDecimalNumber( DecimalNumber decimalNumber ) {
+        if (this.linkedEquipmentDecimalNumbers == null) {
+            this.linkedEquipmentDecimalNumbers = new ArrayList<>();
+        }
+        this.linkedEquipmentDecimalNumbers.add(decimalNumber);
     }
 
     public Date getCreated() {
