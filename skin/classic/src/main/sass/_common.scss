@@ -1043,8 +1043,10 @@ label.bordered:after{
     tbody {
       tr {
         td {
+          height: 70px;
 
           > div {
+            height: 70px;
             max-height: 70px;
             white-space: pre-line;
             overflow: hidden;
