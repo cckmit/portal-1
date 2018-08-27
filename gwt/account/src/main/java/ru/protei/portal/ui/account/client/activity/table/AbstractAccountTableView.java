@@ -22,4 +22,6 @@ public interface AbstractAccountTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    HasWidgets getPagerContainer();
 }

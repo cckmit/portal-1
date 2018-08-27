@@ -56,7 +56,7 @@ public abstract class PlatformTableActivity implements
     public void onShow(SiteFolderPlatformEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        initDetails.parent.add(pagerView.asWidget());
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {

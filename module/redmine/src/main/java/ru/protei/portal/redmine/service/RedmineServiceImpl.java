@@ -66,6 +66,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
         try {
             Date lastCreatedOn = endpoint.getLastCreatedOnDate();
+            logger.debug("Last new issue date from DB: {}", lastCreatedOn);
             final List<Issue> issues = getIssuesCreatedAfterDate(created, projectId, endpoint);
             if (!issues.isEmpty()) {
 

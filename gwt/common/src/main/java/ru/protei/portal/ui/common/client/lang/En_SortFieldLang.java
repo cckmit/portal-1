@@ -38,6 +38,8 @@ public class En_SortFieldLang {
                 return lang.equipmentProject();
             case equipment_name_sldwrks:
                 return lang.equipmentNameBySldWrks();
+            case birthday:
+                return lang.birthday();
 
             default:
                 return lang.unknownField();

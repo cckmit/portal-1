@@ -85,6 +85,13 @@ ul.plate-list {
       }
     }
 
+    &.employee {
+      height: 250px;
+      .header-block {
+        height: calc(240px - 3em);
+      }
+    }
+
     &.partner .header-block:after {
       font-family: FontAwesome, serif;
       content: "\f2b5";
@@ -140,8 +147,8 @@ ul.plate-list {
       &:before {
         position: absolute;
         top: 0;
-        right: 2em;
-        left: 2em;
+        right: 1.5em;
+        left: 1.5em;
         z-index: -1;
         height: 3em;
         background: gray;

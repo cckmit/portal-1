@@ -40,6 +40,11 @@ public abstract class EquipmentPage
     }
 
     @Event
+    public void onShowPreviewFullScreen( EquipmentEvents.ShowFullScreen event ) {
+        fireSelectTab();
+    }
+
+    @Event
     public void onShowDetail( EquipmentEvents.Edit event ) {
         fireSelectTab();
     }

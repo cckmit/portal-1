@@ -6,6 +6,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
@@ -68,15 +69,13 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
-    public void hideElements() {
-        hideOnShowPreviewCommentColumn.setVisibility( false );
-        hideOnShowPreviewProjectColumn.setVisibility( false );
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
     }
 
     @Override
-    public void showElements() {
-        hideOnShowPreviewCommentColumn.setVisibility( true );
-        hideOnShowPreviewProjectColumn.setVisibility( true );
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
     }
 
     @Override
@@ -156,15 +155,16 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         ClickColumn< Equipment > comment = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
+                element.addClassName( "column-hidable" );
                 element.setInnerText( lang.equipmentComment() );
             }
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
+                cell.addClassName( "column-hidable" );
                 if ( value.getComment() == null ) {
                     return;
                 }
-
                 cell.setInnerHTML( "<div><i><small>" + value.getComment() + "</small></i></div>" );
             }
         };
@@ -224,11 +224,14 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         ClickColumn< Equipment > project = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
+                element.addClassName( "column-hidable" );
                 element.setInnerText( lang.equipmentProject() );
             }
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
+                cell.addClassName( "column-hidable" );
+
                 String managerHtml = "";
                 if ( value.getManagerShortName() != null ) {
                     managerHtml = "<div><i><small><i class='fa fa-user-o m-r-5'></i>" + value.getManagerShortName() + "</small></i></div>";
@@ -258,6 +261,8 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField

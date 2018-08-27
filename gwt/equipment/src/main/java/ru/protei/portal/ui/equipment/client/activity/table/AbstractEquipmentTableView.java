@@ -13,11 +13,9 @@ public interface AbstractEquipmentTableView extends IsWidget {
 
     void setAnimation ( TableAnimation animation );
 
-    void hideElements();
-
-    void showElements();
-
     void clearRecords();
+
+    void clearSelection();
 
     HasWidgets getPreviewContainer ();
 
@@ -30,4 +28,6 @@ public interface AbstractEquipmentTableView extends IsWidget {
     int getPageCount();
 
     void scrollTo( int page );
+
+    HasWidgets getPagerContainer();
 }

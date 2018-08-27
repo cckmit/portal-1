@@ -1019,26 +1019,16 @@ label.bordered:after{
 }
 
 .table-pager {
-  position: fixed;
-  bottom: 0px;
   height: 30px;
   background-color: gray;
-  left: 0px;
-  width: 100%;
-  z-index: 100;
 
   a {
     color : #fff;
   }
 }
 
-.sidebar-collapse .table-pager > div:first-child {
-  margin-left: 65px;
-  margin-right: 0px;
-}
-
 .table-pager > div:first-child {
-  margin-left: 255px;
+  margin-left: 20px;
   margin-right: 0px;
 }
 .table-pager > div {
@@ -1109,6 +1099,13 @@ label.bordered:after{
   }
 }
 
+.short-table-view {
+  table {
+    .column-hidable {
+      display: none;
+    }
+  }
+}
 
 .short-table-view {
   .issues {
@@ -1167,6 +1164,13 @@ label.bordered:after{
       width: 15%;
     }
     .info {
+      max-width: 20px; // заставить Firefox пересчиать ширину данной колонки PORTAL-205 (иначе растягивает по содержимому за пределы видимой области. 20px - условная величина.)
+    }
+    .attachment{
+      width: 20px;
+    }
+    .edit{
+      width: 30px;
     }
   }
 }
@@ -1330,9 +1334,18 @@ label.bordered:after{
   -moz-transition: all 0.5s;
   -o-transition: all 0.5s;
   transition: all 0.5s;
-  // временное решение
+}
+
+.global-table-container.dashboard-table {
+  // временное решение, отображение таблиц обращений в дашборде
   height: calc(100% - 95px);
   overflow-x: auto;
+}
+
+.pager-container{
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: 1px;
 }
 
 .preview-container {
@@ -1396,12 +1409,6 @@ label.bordered:after{
 }
 .filter-container .panel.fixed{
   position: fixed !important;
-}
-
-// временное решение
-.preview-wrapper.with-table-pager,
-.filter-container .panel.with-table-pager{
-  max-height: calc(100vh - 60px);
 }
 
 /**** Collapsable filter ****/
@@ -3385,4 +3392,16 @@ div.select2-container {
   .main-content {
     padding: 0 !important;
   }
+}
+
+.employee-list-image {
+  display: block;
+  font-size: 6em;
+  height: 135px;
+  float: right;
+  margin: 0 0 5px 5px;
+}
+
+.margin-right-0 {
+  margin-right: 0 !important;
 }

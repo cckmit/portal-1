@@ -134,4 +134,18 @@ public class IssueFilterUtils {
         }
         return managers;
     }
+
+    public static Set< PersonShortView > getInitiators( List< Long > initiatorsIds ) {
+
+        if ( initiatorsIds == null || initiatorsIds.isEmpty() ) {
+            return null;
+        }
+        Set< PersonShortView > initiators = new HashSet<>();
+        for ( Long id : initiatorsIds ) {
+            PersonShortView person = new PersonShortView();
+            person.setId( id );
+            initiators.add( person );
+        }
+        return initiators;
+    }
 }

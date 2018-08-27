@@ -26,6 +26,7 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue<Set<EntityOption>> companies();
     HasValue<Set<ProductShortView>> products();
     HasValue<Set<PersonShortView>> managers();
+    HasValue<Set<PersonShortView>> initiators();
     HasValue<Set<En_CaseState>> states();
     HasValue<Set<En_ImportanceLevel>> importances();
     HasValue<DateInterval> dateRange ();
@@ -62,6 +63,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     void setProductsErrorStyle( boolean hasError );
 
     void setManagersErrorStyle( boolean hasError );
+
+    void setInitiatorsErrorStyle( boolean hasError );
 
     void setUserFilterControlsVisibility( boolean hasVisible );
 

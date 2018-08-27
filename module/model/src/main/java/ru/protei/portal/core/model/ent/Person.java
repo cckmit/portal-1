@@ -1,14 +1,19 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
+
+import static ru.protei.portal.core.model.dict.En_ContactDataAccess.PRIVATE;
 
 /**
  * Created by michael on 30.03.16.
@@ -97,6 +102,9 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
     @JdbcColumn(name = "locale")
     private String locale;
+
+    @JdbcOneToMany( table = "worker_entry", localColumn = "id", remoteColumn = "personId" )
+    private List< WorkerEntry > workerEntries;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -358,6 +366,26 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.oldId = oldId;
     }
 
+    public void resetPrivacyInfo() {
+        passportInfo = null;
+        department = null;
+        position = null;
+        info = null;
+        ipAddress = null;
+
+        if (contactInfo != null) {
+            contactInfo.getItems().removeIf( (info)-> !info.isItemOf(En_ContactItemType.EMAIL) );
+        };
+    }
+
+    public List< WorkerEntry > getWorkerEntries() {
+        return workerEntries;
+    }
+
+    public void setWorkerEntries( List< WorkerEntry > workerEntries ) {
+        this.workerEntries = workerEntries;
+    }
+
     @Override
     public boolean isAllowedRemove() {
         return !isDeleted;
@@ -368,26 +396,27 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         return "Person{" +
                 "id=" + id +
                 ", created=" + created +
-                ", creator='" + creator + '\"' +
+                ", creator='" + creator + '\'' +
                 ", companyId=" + companyId +
                 ", company=" + company +
-                ", position='" + position + '\"' +
-                ", department='" + department + '\"' +
-                ", firstName='" + firstName + '\"' +
-                ", lastName='" + lastName + '\"' +
-                ", secondName='" + secondName + '\"' +
-                ", displayName='" + displayName + '\"' +
-                ", displayShortName='" + displayShortName + '\"' +
-                ", genderCode='" + genderCode + '\"' +
+                ", position='" + position + '\'' +
+                ", department='" + department + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", secondName='" + secondName + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", displayShortName='" + displayShortName + '\'' +
+                ", genderCode='" + genderCode + '\'' +
                 ", birthday=" + birthday +
-                ", ipAddress='" + ipAddress + '\"' +
-                ", passportInfo='" + passportInfo + '\"' +
-                ", info='" + info + '\"' +
+                ", ipAddress='" + ipAddress + '\'' +
+                ", info='" + info + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
                 ", contactInfo=" + contactInfo +
-                ", relations='" + relations + '\"' +
-                ", oldId=" + String.valueOf(oldId) +
+                ", oldId=" + oldId +
+                ", relations='" + relations + '\'' +
+                ", locale='" + locale + '\'' +
+                ", workerEntries=" + workerEntries +
                 '}';
     }
 }

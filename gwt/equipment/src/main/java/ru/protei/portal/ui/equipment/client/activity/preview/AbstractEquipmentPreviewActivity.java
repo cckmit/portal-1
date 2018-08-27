@@ -8,4 +8,6 @@ public interface AbstractEquipmentPreviewActivity {
     void onCopyClicked();
 
     void onRemoveClicked();
+
+    void onFullScreenClicked();
 }

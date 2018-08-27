@@ -58,7 +58,7 @@ public abstract class ApplicationTableActivity implements
     public void onShow(SiteFolderAppEvents.Show event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
-        initDetails.parent.add(pagerView.asWidget());
+        view.getPagerContainer().add(pagerView.asWidget());
 
         serverId = event.serverId;
 

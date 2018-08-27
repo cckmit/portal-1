@@ -26,9 +26,8 @@ public class PortalConfigData {
     private final LuceneConfig luceneConfig;
     private final ReportConfig reportConfig;
     private final CaseLinkConfig caseLinkConfig;
+    private final MailNotificationConfig mailNotificationConfig;
 
-    private final String crmUrl;
-    private final String crmCaseUrl;
     private final String loginSuffixConfig;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
@@ -41,11 +40,11 @@ public class PortalConfigData {
         luceneConfig = new LuceneConfig(wrapper);
         reportConfig = new ReportConfig(wrapper);
         caseLinkConfig = new CaseLinkConfig(wrapper);
+        mailNotificationConfig = new MailNotificationConfig(wrapper);
 
-        crmUrl = wrapper.getProperty( "crm.url", "http://newportal/crm/" );
-        crmCaseUrl = wrapper.getProperty( "crm.case.url", "http://127.0.0.1:8888/crm.html#issues/issue:id=%d;" );
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
+
 
     public IntegrationConfig integrationConfig() {
         return integrationConfig;
@@ -57,14 +56,6 @@ public class PortalConfigData {
 
     public SmtpConfig smtp () {
         return this.smtpConfig;
-    }
-
-    public String getCrmUrl() {
-        return crmUrl;
-    }
-
-    public String getCrmCaseUrl() {
-        return crmCaseUrl;
     }
 
     public String getLoginSuffix() {
@@ -93,6 +84,35 @@ public class PortalConfigData {
 
     public CaseLinkConfig getCaseLinkConfig() {
         return caseLinkConfig;
+    }
+
+    public MailNotificationConfig getMailNotificationConfig() {
+        return mailNotificationConfig;
+    }
+
+
+    public static class MailNotificationConfig {
+        private final String crmUrlInternal;
+        private final String crmUrlExternal;
+        private final String crmCaseUrl;
+
+        public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
+            crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
+            crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
+            crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+        }
+
+        public String getCrmUrlInternal() {
+            return crmUrlInternal;
+        }
+
+        public String getCrmUrlExternal() {
+            return crmUrlExternal;
+        }
+
+        public String getCrmCaseUrl() {
+            return crmCaseUrl;
+        }
     }
 
     public static class SmtpConfig {
@@ -193,7 +213,6 @@ public class PortalConfigData {
         }
     }
 
-
     public static class LegacySystemConfig {
         private final String jdbcDriver;
         private final String jdbcURL;
@@ -261,7 +280,6 @@ public class PortalConfigData {
             return exportEnabled;
         }
     }
-
 
     public static class IntegrationConfig {
         private final boolean hpsmEnabled;

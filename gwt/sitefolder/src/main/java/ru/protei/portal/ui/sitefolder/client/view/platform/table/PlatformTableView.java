@@ -91,6 +91,11 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
         return filterContainer;
     }
 
+    @Override
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
+    }
+
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_EDIT);
         removeClickColumn.setPrivilege(En_Privilege.SITE_FOLDER_REMOVE);
@@ -112,6 +117,8 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
 
     @Inject
     @UiField

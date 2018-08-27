@@ -55,6 +55,10 @@ public abstract class ClickColumn<T> {
             if ( "a".equalsIgnoreCase( target.getNodeName() ) ) {
                 if (actionClickHandler != null) {
                     event.preventDefault();
+                    if ( columnProvider != null ) {
+                        columnProvider.changeSelection(value);//сбросить предыдущее выделение
+                        columnProvider.setSelectedValue(value);//всегда выделять выбранный. PORTAL-209
+                    }
                     actionClickHandler.onItemClicked(value);
                 }
                 return;
@@ -75,6 +79,7 @@ public abstract class ClickColumn<T> {
         public void fillValue( Element cell, T value ) {
             cell.getStyle().setCursor( Style.Cursor.POINTER );
             fillColumnValue( cell, value );
+            decideRowSelection(value);
         }
 
         public SelectRowHandler< T > getSelectRowHandler() {
@@ -103,6 +108,14 @@ public abstract class ClickColumn<T> {
 
     public void setStopPropogationElementClassName( String className ) {
         this.stopPropogationElementClassName = className;
+    }
+
+    private void decideRowSelection(T value) {
+        if(columnProvider!=null){
+            if(columnProvider.getSelected()!= null && columnProvider.getSelected().equals(value)){
+                columnProvider.setSelectedValue(value);
+            }
+        }
     }
 
     Handler<T> columnClickHandler;
