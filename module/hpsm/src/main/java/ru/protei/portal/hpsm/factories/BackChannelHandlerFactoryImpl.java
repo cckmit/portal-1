@@ -220,6 +220,11 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
 
         ExternalCaseAppData appData = externalCaseAppDAO.get(object.getId());
 
+        if (appData == null) {
+            logger.debug("Appdata somewhy null for object with id {}", object.getId());
+            appData = new ExternalCaseAppData(object);
+        }
+
         appData.setExtAppData(xstream.toXML(message));
 
         logger.debug("update and send hpsm data, case-id={}, ext={}, data={}", object.getId(),

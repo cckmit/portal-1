@@ -75,20 +75,15 @@ public class LiveSampleTest {
 
     @Test
     public void rejectNoProductTest() throws Exception {
-        TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
-        InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
-        CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
-        ExternalCaseAppDAO externalCaseAppDAO = ctx.getBean(ExternalCaseAppDAO.class);
-        PersonDAO personDAO = ctx.getBean(PersonDAO.class);
-        CaseService caseService = ctx.getBean(CaseService.class);
-        HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
-        CaseCommentDAO commentDAO = ctx.getBean(CaseCommentDAO.class);
-        XStream xStream = ctx.getBean(XStream.class);
+        final TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
+        final InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
+        final HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
+        final XStream xStream = ctx.getBean(XStream.class);
 
 /*
   prepare new request
  */
-        String newReqXml = testUtils.loadTestRequest("reject-test-no-product.xml");
+        final String newReqXml = testUtils.loadTestRequest("reject-test-no-product.xml");
         Assert.assertNotNull(newReqXml);
         Assert.assertFalse(newReqXml.isEmpty());
 
@@ -99,18 +94,18 @@ public class LiveSampleTest {
 
         System.out.println("---- req end ----");
 
-        HpsmMessageHeader subject = new HpsmMessageHeader(HPSM_TEST_REJECT_NO_PRODUCT, null, HpsmStatus.NEW);
+        final HpsmMessageHeader subject = new HpsmMessageHeader(HPSM_TEST_REJECT_NO_PRODUCT, null, HpsmStatus.NEW);
 
         /* execute create request and validate results */
         boolean result = handler.handle(testUtils.createRequest(subject, newReqXml), testServiceInstance);
 
         Assert.assertTrue(result);
 
-        MimeMessage responseMail = testServiceInstance.getSentMessage();
+        final MimeMessage responseMail = testServiceInstance.getSentMessage();
 
         Assert.assertNotNull(responseMail);
 
-        HpsmEvent responseEvent = testUtils.parseEvent(responseMail);
+        final HpsmEvent responseEvent = testUtils.parseEvent(responseMail);
 
         Assert.assertNotNull(responseEvent);
 
@@ -123,20 +118,40 @@ public class LiveSampleTest {
     @Test
     public void workaroundTest() throws Exception {
         final BackChannelHandlerFactory backChannelFactory = ctx.getBean(BackChannelHandlerFactory.class);
+        final TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
+        final HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
+        final XStream xStream = ctx.getBean(XStream.class);
 
         final HpsmMessage msg = new HpsmMessage();
         msg.status(HpsmStatus.CONFIRM_WA);
+        msg.setMessage("123");
 
         final CaseObject object = new CaseObject();
         object.setState(WORKAROUND);
+        object.setId(100005000L);
+        object.setExtAppType("qwerty");
 
         final CaseComment comment = new CaseComment("qwe");
         final CaseService caseService = ctx.getBean(CaseService.class);
         final AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseService, object, new Person());
         assembledCaseEvent.attachCaseComment(comment);
 
-        BackChannelEventHandler handler = backChannelFactory.createHandler(msg, assembledCaseEvent);
-        handler.handle(assembledCaseEvent, msg, null);
+        final BackChannelEventHandler handler = backChannelFactory.createHandler(msg, assembledCaseEvent);
+        handler.handle(assembledCaseEvent, msg, testServiceInstance);
+
+        final MimeMessage response = testServiceInstance.getSentMessage();
+
+        Assert.assertNotNull(response);
+
+        final HpsmEvent event = testUtils.parseEvent(response);
+
+        Assert.assertNotNull(event);
+
+        Assert.assertEquals(HpsmStatus.WORKAROUND, event.getSubject().getStatus());
+
+        System.out.println("---- response ----");
+
+        System.out.println(xStream.toXML(event.getHpsmMessage()));
     }
 
     @Test
