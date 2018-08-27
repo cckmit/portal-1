@@ -11,6 +11,8 @@
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
 
+    <!-- Servlets -->
+
     <!-- Сервлет для проброса запросов из GWT в спринговые сервисы-->
     <servlet>
         <servlet-name>springGwtRemoteServiceServlet</servlet-name>
@@ -42,10 +44,30 @@
         <url-pattern>/Crm/download/report</url-pattern>
     </servlet-mapping>
 
+    <!-- Filters -->
+
+    <filter>
+        <filter-name>encoding-filter</filter-name>
+        <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>FALSE</param-value>
+        </init-param>
+    </filter>
+
     <filter>
         <filter-name>gwtCacheControlFilter</filter-name>
         <filter-class>ru.protei.portal.ui.common.server.GWTCacheControlFilter</filter-class>
     </filter>
+
+    <filter-mapping>
+        <filter-name>encoding-filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
         <filter-name>gwtCacheControlFilter</filter-name>
