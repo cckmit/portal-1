@@ -61,6 +61,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         if (list == null)
             new CoreResponse<List<PersonShortView >>().error(En_ResultStatus.GET_DATA_ERROR);
+        jdbcManyRelationsHelper.fillAll( list );
 
         List<EquipmentShortView> result = list.stream().map(EquipmentShortView::fromEquipment).collect(Collectors.toList());
 
@@ -85,11 +86,7 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        if ( equipment.getId() == null ) {
-            equipment.setCreated( new Date() );
-        }
-        String decimalNumbersStr = formatDecimalNumbers(equipment.getDecimalNumbers());
-        equipment.setDecimalNumbersStr(decimalNumbersStr);
+        equipment.setCreated( new Date() );
         if ( !equipmentDAO.saveOrUpdate(equipment) ) {
             return new CoreResponse<Equipment>().error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -97,15 +94,6 @@ public class EquipmentServiceImpl implements EquipmentService {
         updateDecimalNumbers(equipment);
 
         return new CoreResponse<Equipment>().success(equipment);
-    }
-
-    private String formatDecimalNumbers(List<DecimalNumber> decimalNumbers) {
-        if ( CollectionUtils.isEmpty(decimalNumbers) ) {
-            return null;
-        }
-
-        return "";
-//        return decimalNumbers.stream().forEach(number -> DecimalNumberFormatter.formatNumber( number ));
     }
 
     @Override

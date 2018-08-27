@@ -72,9 +72,6 @@ public class Equipment extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "project_id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME")
     private String projectName;
 
-    @JdbcColumn(name = "decimal_numbers")
-    private String decimalNumbersStr;
-
     /**
      * Привязанные децимальные номера
      */
@@ -216,14 +213,6 @@ public class Equipment extends AuditableObject {
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
-    }
-
-    public String getDecimalNumbersStr() {
-        return decimalNumbersStr;
-    }
-
-    public void setDecimalNumbersStr(String decimalNumbersStr) {
-        this.decimalNumbersStr = decimalNumbersStr;
     }
 
     @Override
