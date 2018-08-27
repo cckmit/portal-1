@@ -1254,4 +1254,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeCompany();
 
     String employeeMainPosition();
+
+    String contactPhone();
 }

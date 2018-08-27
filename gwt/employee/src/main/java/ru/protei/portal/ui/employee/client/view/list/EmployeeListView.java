@@ -35,19 +35,6 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
 
-    @UiHandler("tableMode")
-    public void tableModeClick(ClickEvent event) {
-        plateMode.setVisible(true);tableMode.setVisible(false);
-        childContainer.getElement().removeClassName("plate-list");
-        childContainer.getElement().addClassName("table-list");
-    }
-
-    @UiHandler("plateMode")
-    public void plateModeClick(ClickEvent event) {
-        plateMode.setVisible(false);tableMode.setVisible(true);
-        childContainer.getElement().removeClassName("table-list");
-        childContainer.getElement().addClassName("plate-list");
-    }
 
     @UiField
     PlateList childContainer;
@@ -58,10 +45,6 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    Anchor plateMode;
-    @UiField
-    Anchor tableMode;
 
     AbstractEmployeeListActivity activity;
 
