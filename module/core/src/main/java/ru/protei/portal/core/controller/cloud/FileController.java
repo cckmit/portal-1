@@ -26,10 +26,10 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.core.service.user.AuthService;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Collections;
@@ -57,7 +57,13 @@ public class FileController {
 
     private static final Logger logger = Logger.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
-    private ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
+    private ServletFileUpload upload = new ServletFileUpload();
+
+    @PostConstruct
+    public void onInit() {
+        upload.setFileItemFactory(new DiskFileItemFactory());
+        upload.setHeaderEncoding("UTF-8");
+    }
 
     @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
     @ResponseBody
@@ -71,11 +77,6 @@ public class FileController {
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
         response.setContentType(MediaType.TEXT_HTML_VALUE + "; charset=utf-8");
-        try {
-            request.setCharacterEncoding("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
 
         if(ud != null) {
             try {
