@@ -244,11 +244,14 @@ public class EquipmentServiceImpl implements EquipmentService {
                     equipmentIds.add(equipment.getId());
                 })
                 .filter(equipment -> fillAlsoLinkedEquipmentDN && equipment.getLinkedEquipmentId() != null)
-                .peek(equipment -> {
+                .forEach(equipment -> {
                     equipment.setLinkedEquipmentDecimalNumbers(new ArrayList<>());
                     equipmentIds.add(equipment.getLinkedEquipmentId());
-                })
-                .close();
+                });
+
+        if (equipmentIds.isEmpty()) {
+            return;
+        }
 
         List<DecimalNumber> decimalNumbers = decimalNumberDAO.getDecimalNumbersByEquipmentIds(equipmentIds);
         if (decimalNumbers == null || decimalNumbers.isEmpty()) {
