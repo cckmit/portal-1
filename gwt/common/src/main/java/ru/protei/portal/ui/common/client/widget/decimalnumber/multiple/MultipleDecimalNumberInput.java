@@ -116,8 +116,8 @@ public class MultipleDecimalNumberInput
                 box.showMessage( lang.errFieldsRequired(), DisplayStyle.DANGER);
                 return false;
             }
-            if ( numberExists( box.getValue() ) ) {
-                box.showMessage( lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER );
+
+            if ( !validateNumber(box) ) {
                 return false;
             }
         }
@@ -128,6 +128,7 @@ public class MultipleDecimalNumberInput
         pdraList.clear();
         pamrList.clear();
         numberBoxes.clear();
+        occupedNunbers.clear();
     }
 
     private void createBoxAndFillValue( DecimalNumber number) {
@@ -140,10 +141,12 @@ public class MultipleDecimalNumberInput
             values.remove( number );
             box.removeFromParent();
             numberBoxes.remove( box );
+            checkIfCorrect();
+
         } );
         box.addValueChangeHandler( event -> {
             if ( !event.getValue().isEmpty() ) {
-                checkExistNumber( box );
+                validateNumber( box );
             }
         } );
 
@@ -225,10 +228,23 @@ public class MultipleDecimalNumberInput
         return modifications;
     }
 
-    private void checkExistNumber( DecimalNumberBox box ) {
-        if ( numberExists( box.getValue() ) ) {
+    private boolean validateNumber( final DecimalNumberBox box ) {
+        box.clearBoxState();
+        if ( isNumberInList( box.getValue() ) ) {
             box.showMessage( lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER );
-            return;
+            return false;
+        }
+        if ( checkExistNumber( box )  ){
+            box.showGetNextNumberMessage();
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkExistNumber( final DecimalNumberBox box ) {
+        if(occupedNunbers.contains( box.getValue() )){
+            return true;
         }
 
         dataProvider.checkIfExistDecimalNumber( box.getValue(), new RequestCallback< Boolean >() {
@@ -239,15 +255,22 @@ public class MultipleDecimalNumberInput
 
             @Override
             public void onSuccess( Boolean result ) {
-                box.clearBoxState();
+                occupedNunbers.remove(box.getValue());
                 if ( result ) {
-                    box.showGetNextNumberMessage();
+                    occupedNunbers.add(box.getValue());
                 }
+                checkIfCorrect();
             }
         } );
+
+        return false;
     }
 
     private boolean numberExists(DecimalNumber number) {
+        return occupedNunbers.contains(number) || isNumberInList(number);
+    }
+
+    private boolean isNumberInList(DecimalNumber number) {
         return values.stream().anyMatch( value -> !number.equals( value ) && number.isSameNumber( value ) );
     }
 
@@ -266,6 +289,13 @@ public class MultipleDecimalNumberInput
     DecimalNumberDataProvider dataProvider;
     @Inject
     Provider<DecimalNumberBox> boxProvider;
+
+    Collection<DecimalNumber> occupedNunbers = new TreeSet<>(new Comparator<DecimalNumber>() {
+        @Override
+        public int compare(DecimalNumber o1, DecimalNumber o2) {
+            return o1.equals(o2) || o1.isSameNumber(o2)?0:1;
+        }
+    });
 
     private List<DecimalNumber> values = new ArrayList<>();
 

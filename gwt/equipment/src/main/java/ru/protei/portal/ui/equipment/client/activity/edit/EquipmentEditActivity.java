@@ -65,6 +65,7 @@ public abstract class EquipmentEditActivity
             fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }else if(!view.isDecimalNumbersCorrect()){
+            fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotCorrect(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
