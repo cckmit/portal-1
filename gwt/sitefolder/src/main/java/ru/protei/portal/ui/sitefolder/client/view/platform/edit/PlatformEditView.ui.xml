@@ -47,11 +47,6 @@
 
                 <g:HTMLPanel styleName="form-group col-xs-12" ui:field="listContainer"/>
 
-                <!--<div class="form-group col-xs-12">-->
-                    <!--<label><ui:text from="{lang.siteFolderCompanyContacts}"/></label>-->
-                <!--</div>-->
-                <!--<g:HTMLPanel styleName="form-group col-xs-12 main-content-padding-0" ui:field="contactsContainer"/>-->
-
             </div>
         </div>
         <div class="footer">
