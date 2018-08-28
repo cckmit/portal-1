@@ -49,22 +49,15 @@ public class MultipleDecimalNumberInput
 
     @Override
     public void setValue( List< DecimalNumber > value, boolean fireEvents ) {
-        this.values = value;
-        if ( values == null ) {
-            values = new ArrayList<>();
-        }
-
-        clearBoxes();
-        if ( values == null || values.isEmpty() ) {
-            createEmptyBox(En_OrganizationCode.PAMR);
-            return;
-        } else {
-            values.forEach( this :: createBoxAndFillValue );
-        }
+        setNewValues(value, true);
 
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, value );
         }
+    }
+
+    public void setNotEditableValue(List<DecimalNumber> decimalNumbers) {
+        setNewValues(decimalNumbers, false);
     }
 
     @Override
@@ -124,6 +117,20 @@ public class MultipleDecimalNumberInput
         return true;
     }
 
+    private void setNewValues(List<DecimalNumber> value, boolean isEditable) {
+        this.values = value;
+        if ( values == null ) {
+            values = new ArrayList<>();
+        }
+
+        clearBoxes();
+        if ( values == null || values.isEmpty() ) {
+            createEmptyBox(En_OrganizationCode.PAMR);
+        } else {
+            values.forEach(number -> createBoxAndFillValue(number, isEditable) );
+        }
+    }
+
     private void clearBoxes() {
         pdraList.clear();
         pamrList.clear();
@@ -132,6 +139,10 @@ public class MultipleDecimalNumberInput
     }
 
     private void createBoxAndFillValue( DecimalNumber number) {
+        createBoxAndFillValue(number, true);
+    }
+
+    private void createBoxAndFillValue( DecimalNumber number, boolean isEditable) {
         DecimalNumberBox box = boxProvider.get();
 
         box.setValue( number );
@@ -149,6 +160,7 @@ public class MultipleDecimalNumberInput
                 validateNumber( box );
             }
         } );
+        box.setEnabled(isEditable);
 
         numberBoxes.add(box);
         placeBox(number, box);

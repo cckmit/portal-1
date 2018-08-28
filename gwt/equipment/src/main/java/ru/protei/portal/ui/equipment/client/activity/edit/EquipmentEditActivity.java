@@ -94,7 +94,7 @@ public abstract class EquipmentEditActivity
         equipment.setComment( view.comment().getValue() );
         equipment.setType( view.type().getValue() );
         equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
-        equipment.setDecimalNumbers( view.numbers().getValue() );
+        equipment.setDecimalNumbers( view.getNumbers() );
         equipment.setManagerId( view.manager().getValue() == null ? null : view.manager().getValue().getId() );
         equipment.setProjectId( view.project().getValue() == null ? null : view.project().getValue().getId() );
         return equipment;
@@ -124,7 +124,7 @@ public abstract class EquipmentEditActivity
             linkedEquipment = new EquipmentShortView( null, equipment.getLinkedEquipmentId(), equipment.getLinkedEquipmentDecimalNumbers() );
         }
         view.linkedEquipment().setValue( linkedEquipment );
-        view.numbers().setValue( equipment.getDecimalNumbers() );
+        view.setNumbers(equipment.getDecimalNumbers(), isCreate);
 
         PersonShortView manager = null;
         if ( equipment.getManagerId() != null ) {
