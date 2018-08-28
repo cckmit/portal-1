@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.uploader;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.FormElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.safehtml.client.HasSafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtml;
@@ -30,6 +31,7 @@ public abstract class FileUploader extends Composite implements HasHTML, HasSafe
 
         form.setEncoding(FormPanel.ENCODING_MULTIPART);
         form.setMethod(FormPanel.METHOD_POST);
+        FormElement.as(form.getElement()).setAcceptCharset("UTF-8");
 
         form.addSubmitCompleteHandler(this::submitCompleteHandler);
         fileUpload.addChangeHandler(this::changeHandler);

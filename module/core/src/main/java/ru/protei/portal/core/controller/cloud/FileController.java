@@ -21,11 +21,13 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
 import ru.protei.portal.core.service.user.AuthService;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -56,20 +58,33 @@ public class FileController {
 
     private static final Logger logger = Logger.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
-    private ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
+    private ServletFileUpload upload = new ServletFileUpload();
 
-    @RequestMapping(value = "/uploadFile", method = RequestMethod.POST)
+    @PostConstruct
+    public void onInit() {
+        upload.setFileItemFactory(new DiskFileItemFactory());
+        upload.setHeaderEncoding("UTF-8");
+    }
+
+    @RequestMapping(
+            value = "/uploadFile",
+            method = RequestMethod.POST,
+            produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8"
+    )
     @ResponseBody
     public String uploadFile(HttpServletRequest request, HttpServletResponse response){
         return uploadFileToCase(request, null, response);
     }
 
-    @RequestMapping(value = "/uploadFileToCase{caseNumber:[0-9]+}", method = RequestMethod.POST)
+    @RequestMapping(
+            value = "/uploadFileToCase{caseNumber:[0-9]+}",
+            method = RequestMethod.POST,
+            produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8"
+    )
     @ResponseBody
     public String uploadFileToCase (HttpServletRequest request, @PathVariable("caseNumber") Long caseNumber, HttpServletResponse response){
-        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
-        response.setContentType(MediaType.TEXT_HTML_VALUE + "; charset=utf-8");
+        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
         if(ud != null) {
             try {
@@ -174,21 +189,22 @@ public class FileController {
         ));
     }
 
-    private String saveFile(FileItem file) throws IOException{
-        return fileStorage.save(generateUniqueFileName(file.getName()), file.getInputStream());
+    private String saveFile(FileItem file, String fileName) throws IOException{
+        return fileStorage.save(generateUniqueFileName(fileName), file.getInputStream());
     }
 
     private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{
 
         logger.debug("saveAttachment: creatorId=" + creatorId);
 
-        String filePath = saveFile(item);
+        String fileName = getFileNameFromFileItem(item);
+        String filePath = saveFile(item, fileName);
 
         logger.debug("saveAttachment: creatorId=" + creatorId + ", filePath=" + filePath);
 
         Attachment attachment = new Attachment();
         attachment.setCreatorId(creatorId);
-        attachment.setFileName(item.getName());
+        attachment.setFileName(fileName);
         attachment.setDataSize(item.getSize());
         attachment.setExtLink(filePath);
         attachment.setMimeType(item.getContentType());
@@ -201,8 +217,23 @@ public class FileController {
         return attachment;
     }
 
+    private String getFileNameFromFileItem(FileItem fileItem) {
+
+        String fileName = fileItem.getName();
+
+        if (StringUtils.isBlank(fileName)) {
+            fileName = generateUniqueName();
+        }
+
+        return fileName;
+    }
+
     private String generateUniqueFileName(String filename){
-        return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX) +"_"+ filename;
+        return generateUniqueName() + "_" + filename;
+    }
+
+    private String generateUniqueName() {
+        return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
     }
 
     private String extractRealFileName(String fileName){
