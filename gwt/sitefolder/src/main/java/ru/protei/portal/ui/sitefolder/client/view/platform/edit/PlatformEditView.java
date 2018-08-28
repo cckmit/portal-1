@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -159,7 +160,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @UiField
     Button openButton;
     @UiField
-    HTMLPanel contactsContainer;
+    CollapsablePanel contactsContainer;
 
     private AbstractPlatformEditActivity activity;
 
