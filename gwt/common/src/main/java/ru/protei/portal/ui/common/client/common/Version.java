@@ -231,9 +231,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.66.5 - PORTAL-330 Личные данные (паспортные) в открытом доступе
  * 4.0.66.6 - PORTAL-248 (доработка) Корректировка интерфейса базы децимальных номеров
  * 4.0.67.6 - PORTAL-314 Доработка фильтра заказчика.
+ * 4.0.67.7 - PORTAL-263 В логах очень много запросов децимальных номеров
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.67.6";
+        return "4.0.67.7";
     }
 }
