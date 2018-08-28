@@ -3405,26 +3405,28 @@ div.select2-container {
 
 
 /**
-   Схлопыватие раздела в превью
+   Схлопыватие раздела
  */
-.header {
+.collapsable {
 
-  .fieldset-legend:after {
-    content: "\f0d7";
-    margin-left: 10px;
-    font: normal normal normal 18px/1 FontAwesome;
-
+  .collapsable-legend{
     cursor: pointer;
   }
 
-  &.collapsed {
-    border-bottom: solid 1px lightgray;
+  .collapsable-legend:before {
+    content: "\f0d7";
+    margin-right: 10px;
+    font: normal normal normal 18px/1 FontAwesome;
 
-    .fieldset-legend:after {
-      content: "\f0d9";
+  }
+
+  &.collapsed {
+
+    .collapsable-legend:before {
+      content: "\f0da";
     }
 
-    .container {
+    .collapsable-container {
       display: none;
     }
   }

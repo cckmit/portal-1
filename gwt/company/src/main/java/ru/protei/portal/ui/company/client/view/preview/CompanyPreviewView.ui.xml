@@ -57,15 +57,11 @@
                 <span ui:field="info" class="pre-formatted-info"></span>
             </fieldset>
 
-            <w:collapse.CollapsableFieldset ui:field="contactsContainer" styleName="header"
-                                            legend="{lang.contacts}"/>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.contacts}"/></legend>
 
-
-            <!--<fieldset class="header">-->
-                <!--<legend><ui:text from="{lang.contacts}"/></legend>-->
-<!---->
-                <!--<g:HTMLPanel ui:field="contactsContainer" styleName="col-xs-12"/>-->
-            <!--</fieldset>-->
+                <g:HTMLPanel ui:field="contactsContainer" styleName="col-xs-12"/>
+            </fieldset>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

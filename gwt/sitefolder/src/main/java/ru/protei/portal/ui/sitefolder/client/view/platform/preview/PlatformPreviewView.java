@@ -9,7 +9,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
-import ru.protei.portal.ui.common.client.widget.collapse.CollapsableFieldset;
+import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewView;
 
@@ -82,7 +82,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     SpanElement comment;
     @UiField
-    CollapsableFieldset contactsContainer;
+    CollapsablePanel contactsContainer;
     @UiField
     HTMLPanel serversContainer;
 

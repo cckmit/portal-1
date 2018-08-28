@@ -38,13 +38,14 @@
 
             </fieldset>
 
+            <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
+                                         legend="{lang.siteFolderCompanyContacts}"/>
+
+
             <fieldset class="header">
                 <legend><ui:text from="{lang.siteFolderServers}"/></legend>
                 <g:HTMLPanel styleName="col-xs-12" ui:field="serversContainer"/>
             </fieldset>
-
-            <w:collapse.CollapsableFieldset ui:field="contactsContainer" styleName="header"
-                                            legend="{lang.siteFolderCompanyContacts}"/>
 
         </g:HTMLPanel>
     </g:HTMLPanel>
