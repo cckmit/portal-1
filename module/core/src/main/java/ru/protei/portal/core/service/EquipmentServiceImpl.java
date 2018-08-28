@@ -88,7 +88,9 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        equipment.setCreated( new Date() );
+        if ( equipment.getId() == null ) {
+            equipment.setCreated( new Date() );
+        }
         if ( !equipmentDAO.saveOrUpdate(equipment) ) {
             return new CoreResponse<Equipment>().error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -239,15 +241,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         equipments.stream()
                 .filter(Objects::nonNull)
-                .peek(equipment -> {
-                    equipment.setDecimalNumbers(new ArrayList<>());
-                    equipmentIds.add(equipment.getId());
-                })
+                .peek(equipment -> equipmentIds.add(equipment.getId()))
                 .filter(equipment -> fillAlsoLinkedEquipmentDN && equipment.getLinkedEquipmentId() != null)
-                .forEach(equipment -> {
-                    equipment.setLinkedEquipmentDecimalNumbers(new ArrayList<>());
-                    equipmentIds.add(equipment.getLinkedEquipmentId());
-                });
+                .forEach(equipment -> equipmentIds.add(equipment.getLinkedEquipmentId()));
 
         if (equipmentIds.isEmpty()) {
             return;
@@ -260,10 +256,10 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         decimalNumbers.stream()
                 .filter(Objects::nonNull)
-                .forEach(decimalNumber -> fillDecimalNumbersImpl(equipments, decimalNumber, fillAlsoLinkedEquipmentDN));
+                .forEach(decimalNumber -> fillDecimalNumberIntoEquipments(equipments, decimalNumber, fillAlsoLinkedEquipmentDN));
     }
 
-    private void fillDecimalNumbersImpl(List<Equipment> equipments, DecimalNumber decimalNumber, boolean fillAlsoLinkedEquipmentDN) {
+    private void fillDecimalNumberIntoEquipments(List<Equipment> equipments, DecimalNumber decimalNumber, boolean fillAlsoLinkedEquipmentDN) {
         equipments.stream()
                 .filter(Objects::nonNull)
                 .forEach(equipment -> {
