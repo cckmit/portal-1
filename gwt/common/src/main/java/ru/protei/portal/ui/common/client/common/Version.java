@@ -236,9 +236,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.68.8 - PORTAL-263 В логах очень много запросов децимальных номеров
  * 4.0.69.0 - PORTAL-264 Новый CRM: проблема с кодировкой в имени прикреплённых файлов
  * 4.0.69.1 - PORTAL-291 Подсказка при наведении
+ * 4.0.69.2 - PORTAL-218 Cкачивать файлы не только при нажатии на название, но и на саму иконку
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.69.1";
+        return "4.0.69.2";
     }
 }
