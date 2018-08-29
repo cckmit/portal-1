@@ -142,20 +142,16 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setCreated(now);
         caseObject.setModified(now);
 
-        Long timeElapsed = null;
-        En_CaseState state = En_CaseState.CREATED;
         if (personBelongsToHomeCompany(token)) {
-            state = caseObject.getState();
-            if (state == En_CaseState.CREATED && caseObject.getManager() != null) {
-                state = En_CaseState.OPENED;
-                caseObject.setState(state);
-            }
-            if (hasAccessFor(token, En_Privilege.ISSUE_WORK_TIME_VIEW, caseObject)) {
-                timeElapsed = caseObject.getTimeElapsed();
-            } else {
+            if (!hasAccessFor(token, En_Privilege.ISSUE_WORK_TIME_VIEW, caseObject)) {
                 caseObject.setTimeElapsed(null);
             }
+        } else {
+            caseObject.setState(En_CaseState.CREATED);
+            caseObject.setTimeElapsed(null);
         }
+
+        applyStateBasedOnManager(caseObject);
 
         Long caseId = caseObjectDAO.insertCase(caseObject);
 
@@ -164,7 +160,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, state, timeElapsed);
+        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, caseObject.getState(), caseObject.getTimeElapsed());
         if(stateMessageId == null)
             log.error("State message for the issue %d not saved!", caseId);
 
@@ -222,9 +218,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
-            caseObject.setState(En_CaseState.OPENED);
-        }
+        applyStateBasedOnManager(caseObject);
 
         if(isCaseHasNoChanges(caseObject, oldState))
             return new CoreResponse<CaseObject>().success( caseObject ); //ignore
@@ -761,13 +755,18 @@ public class CaseServiceImpl implements CaseService {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
 
-        if (descriptor.getCompany() == null || descriptor.getCompany().getCategory() == null) {
+        if (descriptor == null || descriptor.getCompany() == null || descriptor.getCompany().getCategory() == null) {
             return false;
         }
 
         return Objects.equals(En_CompanyCategory.HOME.getId(), descriptor.getCompany().getCategory().getId());
     }
 
+    private void applyStateBasedOnManager(CaseObject caseObject) {
+        if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
+            caseObject.setState(En_CaseState.OPENED);
+        }
+    }
 
     static final long CHANGE_LIMIT_TIME = 300000;  // 5 минут  (в мсек)
 }
