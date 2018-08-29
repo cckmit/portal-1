@@ -6,7 +6,7 @@
 
     <changeSet id="2018-08-29-add-approved-column-to-document" author="buchmastov">
         <addColumn tableName="document">
-            <column name="is_approved" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="is_approved" type="BOOLEAN" defaultValueBoolean="true"/>
         </addColumn>
     </changeSet>
 
