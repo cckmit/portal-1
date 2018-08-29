@@ -155,6 +155,7 @@ public class DebugIds {
         String PRODUCT_SELECTOR = "issue-product-selector";
         String MANAGER_SELECTOR = "issue-manager-selector";
         String TIME_ELAPSED_LABEL = "issue-time-elapsed-label";
+        String TIME_ELAPSED_INPUT = "issue-time-elapsed-input";
         String DESCRIPTION_INPUT = "issue-description-input";
         String NOTIFIERS_SELECTOR_ADD_BUTTON = "issue-notifiers-selector-add-button";
         String NOTIFIERS_SELECTOR_CLEAR_BUTTON = "issue-notifiers-selector-clear-button";
