@@ -85,7 +85,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Event
     public void onChangeTimeElapsed( IssueEvents.ChangeTimeElapsed event ) {
-        view.timeElapsed().setTime(event.timeElapsed);
+        view.timeElapsedLabel().setTime(event.timeElapsed);
+        view.timeElapsedInput().setTime(event.timeElapsed);
     }
 
     @Event
@@ -287,15 +288,25 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.description().setText(issue.getInfo());
 
         view.state().setValue(isNew(issue) ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
-        view.stateEnabled().setEnabled(!isNew(issue));
+        view.stateEnabled().setEnabled(!isNew(issue) || policyService.personBelongsToHomeCompany());
         view.importance().setValue(isNew(issue) ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
-        view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
-        if (isNew(issue)) {
-            view.timeElapsed().setTime(null);
-        } else {
-            Long timeElapsed = issue.getTimeElapsed();
-            view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
+        boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
+        view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
+        if (hasPrivilegeForTimeElapsed) {
+            if (isNew(issue)) {
+                boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
+                view.timeElapsedLabel().setTime(null);
+                view.timeElapsedInput().setTime(0L);
+                view.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
+                view.timeElapsedInputVisibility().setVisible(timeElapsedEditAllowed);
+            } else {
+                Long timeElapsed = issue.getTimeElapsed();
+                view.timeElapsedLabel().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
+                view.timeElapsedInput().setTime(timeElapsed);
+                view.timeElapsedLabelVisibility().setVisible(true);
+                view.timeElapsedInputVisibility().setVisible(false);
+            }
         }
 
         if (isNew(issue)) {
@@ -331,6 +342,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
         issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
+
+        if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
+            issue.setTimeElapsed(view.timeElapsedInput().getTime());
+        }
     }
 
     private boolean validateView() {

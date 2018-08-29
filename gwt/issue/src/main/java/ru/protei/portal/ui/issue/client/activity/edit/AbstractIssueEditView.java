@@ -27,7 +27,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasText description();
     HasValue<En_CaseState> state();
     HasValue<En_ImportanceLevel> importance();
-    HasTime timeElapsed();
+    HasTime timeElapsedLabel();
+    HasTime timeElapsedInput();
     HasValue<EntityOption> company();
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
@@ -73,6 +74,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
+    HasVisibility timeElapsedLabelVisibility();
+    HasVisibility timeElapsedInputVisibility();
 
     HasEnabled saveEnabled();
 

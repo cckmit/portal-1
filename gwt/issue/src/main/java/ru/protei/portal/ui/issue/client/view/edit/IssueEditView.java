@@ -40,6 +40,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSele
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
+import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -99,8 +100,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasTime timeElapsed() {
+    public HasTime timeElapsedLabel() {
         return timeElapsed;
+    }
+
+    @Override
+    public HasTime timeElapsedInput() {
+        return timeElapsedInput;
     }
 
     @Override
@@ -260,6 +266,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public HasVisibility timeElapsedLabelVisibility() {
+        return timeElapsed;
+    }
+
+    @Override
+    public HasVisibility timeElapsedInputVisibility() {
+        return timeElapsedInput;
+    }
+
+    @Override
     public HasEnabled saveEnabled() {
         return saveButton;
     }
@@ -350,6 +366,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
         manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
         timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_LABEL);
+        timeElapsedInput.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_INPUT);
         description.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
         notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
         notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
@@ -399,6 +416,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     TimeLabel timeElapsed;
+
+    @Inject
+    @UiField(provided = true)
+    TimeTextBox timeElapsedInput;
 
     @Inject
     @UiField(provided = true)

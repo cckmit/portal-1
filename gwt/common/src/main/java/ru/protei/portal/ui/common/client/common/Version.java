@@ -237,9 +237,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.69.0 - PORTAL-264 Новый CRM: проблема с кодировкой в имени прикреплённых файлов
  * 4.0.69.1 - PORTAL-291 Подсказка при наведении
  * 4.0.69.2 - PORTAL-218 Cкачивать файлы не только при нажатии на название, но и на саму иконку
+ * 4.0.69.3 - PORTAL-299 Для внутреннего CRM иметь возможность создавать/закрывать заявку CRM в 1 действие
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.69.2";
+        return "4.0.69.3";
     }
 }
