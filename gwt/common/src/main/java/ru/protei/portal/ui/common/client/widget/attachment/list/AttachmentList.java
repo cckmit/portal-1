@@ -166,7 +166,7 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
                 view.setPicture(DOWNLOAD_PATH + attachment.getExtLink());
             }else {
                 view.setPicture(category.picture);
-                view.asWidget().addStyleName("attach-hide-preview-btn");
+                view.asWidget().addStyleName("attach-preview-disabled");
             }
         }else
             view.asWidget().addStyleName("attach-minimize");

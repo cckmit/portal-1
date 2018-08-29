@@ -34,6 +34,7 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     @Override
     public void setDownloadUrl(String url){
         downloadButton.setHref(url);
+        downloadFullButton.setHref(url);
     }
 
     @Override
@@ -82,6 +83,8 @@ public class AttachmentView extends Composite implements AbstractAttachmentView 
     Anchor deleteButton;
     @UiField
     Anchor showPreviewButton;
+    @UiField
+    Anchor downloadFullButton;
     @UiField
     SpanElement fileName;
     @UiField
