@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
+import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
@@ -40,6 +41,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         dateRange.setPlaceholder(lang.selectDate());
         sortField.setType(ModuleType.DOCUMENT);
         documentType.setDefaultValue(lang.documentTypeNotDefined());
+        approveType.setYesText(lang.documentApproved());
+        approveType.setNotDefinedText(lang.buttonNotDefined());
+        approveType.setNoText(lang.documentNotApproved());
     }
 
     @Override
@@ -57,6 +61,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         documentType.setValue(null);
         keywords.setValue(new LinkedList<>());
         sortDir.setValue(false);
+        approveType.setValue(true);
     }
 
     @Override
@@ -102,6 +107,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
+    }
+
+    @Override
+    public HasValue<Boolean> approveType() {
+        return approveType;
     }
 
     @UiHandler("resetBtn")
@@ -156,6 +166,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiHandler("dateRange")
     public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("approveType")
+    public void onApproveTypeChanged(ValueChangeEvent<Boolean> event) {
         fireChangeTimer();
     }
 
@@ -224,6 +239,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Inject
     @UiField(provided = true)
     StringSelectInput keywords;
+
+    @UiField
+    ThreeStateButton approveType;
 
     @Inject
     FixedPositioner positioner;

@@ -34,4 +34,6 @@ public interface AbstractDocumentFilterView extends IsWidget {
     HasValue<List<String>> keywords();
 
     HasValue<Boolean> sortDir();
+
+    HasValue<Boolean> approveType();
 }

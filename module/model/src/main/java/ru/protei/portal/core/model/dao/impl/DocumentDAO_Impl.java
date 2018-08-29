@@ -104,6 +104,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                 String ids = HelperFunc.makeInArg(query.getOnlyIds(), false);
                 condition.append(" and document.id in " + ids);
             }
+
+            if (query.getApproved() != null) {
+                condition.append(" and document.is_approved=?");
+                args.add(query.getApproved());
+            }
         }));
     }
 }
