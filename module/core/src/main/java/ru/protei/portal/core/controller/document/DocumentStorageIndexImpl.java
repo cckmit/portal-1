@@ -75,20 +75,27 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
 
     @Override
     public void addDocument(String body, Long documentId, Long projectId) throws IOException {
-        Document document = new Document();
-        document.add(new StringField(ID_FIELD_NAME, Long.toString(documentId), Field.Store.YES));
-        document.add(new StringField(PROJECT_ID_FIELD_NAME, Long.toString(projectId), Field.Store.YES));
-        document.add(new TextField(CONTENT_FIELD_NAME, body, Field.Store.NO));
-        indexWriter.addDocument(document);
+        indexWriter.addDocument(makeDocument(body, documentId, projectId));
         indexWriter.commit();
     }
 
     @Override
     public void addPdfDocument(byte[] fileData, Long documentId, Long projectId) throws IOException {
-        try (PDDocument doc = PDDocument.load(fileData)) {
-            String content = new PDFTextStripper().getText(doc);
-            addDocument(content, documentId, projectId);
-        }
+        addDocument(convertPdfDocumentToString(fileData), documentId, projectId);
+    }
+
+    @Override
+    public void updateDocument(String body, Long documentId, Long projectId) throws IOException {
+        indexWriter.updateDocument(
+                new Term(ID_FIELD_NAME, String.valueOf(documentId)),
+                makeDocument(body, documentId, projectId)
+        );
+        indexWriter.commit();
+    }
+
+    @Override
+    public void updatePdfDocument(byte[] fileData, Long documentId, Long projectId) throws IOException {
+        updateDocument(convertPdfDocumentToString(fileData), documentId, projectId);
     }
 
     @Override
@@ -120,5 +127,19 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
                 });
         reader.close();
         return idList;
+    }
+
+    private String convertPdfDocumentToString(byte[] pdfDocument) throws IOException {
+        try (PDDocument document = PDDocument.load(pdfDocument)) {
+            return new PDFTextStripper().getText(document);
+        }
+    }
+
+    private Document makeDocument(String body, Long documentId, Long projectId) {
+        Document document = new Document();
+        document.add(new StringField(ID_FIELD_NAME, Long.toString(documentId), Field.Store.YES));
+        document.add(new StringField(PROJECT_ID_FIELD_NAME, Long.toString(projectId), Field.Store.YES));
+        document.add(new TextField(CONTENT_FIELD_NAME, body, Field.Store.NO));
+        return document;
     }
 }
