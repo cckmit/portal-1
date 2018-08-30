@@ -1260,8 +1260,10 @@ public interface Lang extends Messages, ContactItemLang {
     String contactPhone();
 
     String documentApproveType();
+    String equipmentDecimalNumberNotCorrect();
 
     String documentApproved();
+    String equipmentDecimalNumbeOccupied();
 
     String documentNotApproved();
 }

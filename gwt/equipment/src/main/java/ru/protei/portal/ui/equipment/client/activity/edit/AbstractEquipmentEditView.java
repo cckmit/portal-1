@@ -32,8 +32,6 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     HasValue<EquipmentShortView> linkedEquipment();
 
-    HasValue<List<DecimalNumber> > numbers();
-
     HasValue< PersonShortView > manager();
 
     HasValue<ProjectInfo> project();
@@ -43,4 +41,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
     void setVisibilitySettingsForCreated(boolean isVisible);
 
     boolean isDecimalNumbersCorrect();
+
+    void setNumbers(List<DecimalNumber> decimalNumbers, boolean isEditable);
+
+    List<DecimalNumber> getNumbers();
 }

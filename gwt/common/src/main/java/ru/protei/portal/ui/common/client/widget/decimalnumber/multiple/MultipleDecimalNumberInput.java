@@ -49,22 +49,15 @@ public class MultipleDecimalNumberInput
 
     @Override
     public void setValue( List< DecimalNumber > value, boolean fireEvents ) {
-        this.values = value;
-        if ( values == null ) {
-            values = new ArrayList<>();
-        }
-
-        clearBoxes();
-        if ( values == null || values.isEmpty() ) {
-            createEmptyBox(En_OrganizationCode.PAMR);
-            return;
-        } else {
-            values.forEach( this :: createBoxAndFillValue );
-        }
+        setNewValues(value, true);
 
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, value );
         }
+    }
+
+    public void setNotEditableValue(List<DecimalNumber> decimalNumbers) {
+        setNewValues(decimalNumbers, false);
     }
 
     @Override
@@ -110,27 +103,48 @@ public class MultipleDecimalNumberInput
     }
 
     public boolean checkIfCorrect(){
+        boolean isValid = true;
         for(DecimalNumberBox box: numberBoxes){
             DecimalNumber number = box.getValue();
             if(number.getClassifierCode() == null || number.getRegisterNumber() == null){ // number.getModification() is nullable judging by DB
                 box.showMessage( lang.errFieldsRequired(), DisplayStyle.DANGER);
-                return false;
+                isValid = false;
+                continue;
             }
-            if ( numberExists( box.getValue() ) ) {
-                box.showMessage( lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER );
-                return false;
+
+            if ( !validateNumber(box) ) {
+                isValid = false;
             }
         }
-        return true;
+        return isValid;
+    }
+
+    private void setNewValues(List<DecimalNumber> value, boolean isEabled) {
+        this.values = value;
+        if ( values == null ) {
+            values = new ArrayList<>();
+        }
+
+        clearBoxes();
+        if ( values == null || values.isEmpty() ) {
+            createEmptyBox(En_OrganizationCode.PAMR);
+        } else {
+            values.forEach(number -> createBoxAndFillValue(number, isEabled) );
+        }
     }
 
     private void clearBoxes() {
         pdraList.clear();
         pamrList.clear();
         numberBoxes.clear();
+        occupiedNumbers.clear();
     }
 
     private void createBoxAndFillValue( DecimalNumber number) {
+        createBoxAndFillValue(number, true);
+    }
+
+    private void createBoxAndFillValue( DecimalNumber number, boolean isEnabled) {
         DecimalNumberBox box = boxProvider.get();
 
         box.setValue( number );
@@ -140,12 +154,17 @@ public class MultipleDecimalNumberInput
             values.remove( number );
             box.removeFromParent();
             numberBoxes.remove( box );
+            checkIfCorrect();
+
         } );
         box.addValueChangeHandler( event -> {
             if ( !event.getValue().isEmpty() ) {
-                checkExistNumber( box );
+                if(validateNumber( box )) {
+                    checkExistNumber(box);
+                }
             }
         } );
+        box.setEnabled(isEnabled);
 
         numberBoxes.add(box);
         placeBox(number, box);
@@ -225,31 +244,44 @@ public class MultipleDecimalNumberInput
         return modifications;
     }
 
-    private void checkExistNumber( DecimalNumberBox box ) {
-        if ( numberExists( box.getValue() ) ) {
-            box.showMessage( lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER );
-            return;
+    private boolean validateNumber( final DecimalNumberBox box ) {
+        box.clearBoxState();
+        if ( isSameNumberInList(values, box.getValue() ) ) {
+            box.showMessage(lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER);
+            return false;
+        }
+        if (occupiedNumbers.contains( box.getValue()) ){
+                box.showGetNextNumberMessage();
+            return false;
         }
 
-        dataProvider.checkIfExistDecimalNumber( box.getValue(), new RequestCallback< Boolean >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                box.showMessage( lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER );
-            }
-
-            @Override
-            public void onSuccess( Boolean result ) {
-                box.clearBoxState();
-                if ( result ) {
-                    box.showGetNextNumberMessage();
-                }
-            }
-        } );
+        return true;
     }
 
-    private boolean numberExists(DecimalNumber number) {
+    private void checkExistNumber(final DecimalNumberBox box) {
+
+        dataProvider.checkIfExistDecimalNumber(box.getValue(), new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                box.showMessage(lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER);
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                if (result) {
+                    occupiedNumbers.add(new DecimalNumber(box.getValue()));
+                } else {
+                    occupiedNumbers.remove(box.getValue());
+                }
+                checkIfCorrect();
+            }
+        });
+    }
+
+    private boolean isSameNumberInList(Collection<DecimalNumber> values, DecimalNumber number) {
         return values.stream().anyMatch( value -> !number.equals( value ) && number.isSameNumber( value ) );
     }
+
 
     @UiField
     HTMLPanel pamrList;
@@ -266,6 +298,13 @@ public class MultipleDecimalNumberInput
     DecimalNumberDataProvider dataProvider;
     @Inject
     Provider<DecimalNumberBox> boxProvider;
+
+    Collection<DecimalNumber> occupiedNumbers = new TreeSet<>(new Comparator<DecimalNumber>() {
+        @Override
+        public int compare(DecimalNumber o1, DecimalNumber o2) {
+            return o1.isSameNumber(o2)?0:1;
+        }
+    });
 
     private List<DecimalNumber> values = new ArrayList<>();
 

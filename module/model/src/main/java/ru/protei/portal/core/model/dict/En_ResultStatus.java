@@ -71,6 +71,11 @@ public enum En_ResultStatus {
     ALREADY_EXIST,
 
     /**
+     * Уже существует связанный объект
+     */
+    ALREADY_EXIST_RELATED,
+
+    /**
      * ошибка валидации объекта
      */
     VALIDATION_ERROR,
