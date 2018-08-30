@@ -189,7 +189,7 @@ public abstract class DocumentTableActivity
                 filterView.keywords().getValue(),
                 managerId,
                 filterView.content().getValue(),
-                filterView.approveType().getValue()
+                true
         );
     }
 
