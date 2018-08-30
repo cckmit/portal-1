@@ -16,8 +16,7 @@ import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -105,7 +104,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     @Transactional
     public CoreResponse<Document> updateDocument(AuthToken token, Document document) {
-        if(!document.isValid()) {
+        if (document == null || !document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
         if (!documentDAO.saveOrUpdate(document)) {
@@ -115,8 +114,60 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public CoreResponse<Document> updateDocument(AuthToken token, Document document, FileItem fileItem) {
+
+        if (document == null || !document.isValid() || document.getId() == null || fileItem == null) {
+            return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (document.getApproved()) {
+            return new CoreResponse<Document>().error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        final byte[] fileData = fileItem.get();
+        final InputStream fileInputStream;
+        try {
+            fileInputStream = fileItem.getInputStream();
+        } catch (IOException e) {
+            logger.error("updateDocument(" + document.getId() + "): Failed to get input stream from file item", e);
+            return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+
+            final Long projectId = document.getProjectId(), documentId = document.getId();
+
+            final Document oldDocument = documentDAO.get(document.getId());
+            if (oldDocument == null) {
+                return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
+            }
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            documentSvnService.getDocument(projectId, documentId, out);
+            final byte[] oldFileData = out.toByteArray();
+            out.close();
+
+            try {
+                documentDAO.merge(document);
+                documentStorageIndex.updatePdfDocument(fileData, projectId, documentId);
+                documentSvnService.updateDocument(projectId, documentId, fileInputStream);
+                return new CoreResponse<Document>().success(document);
+            } catch (SVNException | IOException e) {
+                logger.error("updateDocument(" + document.getId() + "): Failed to update, rolling back", e);
+                documentDAO.merge(oldDocument);
+                try {
+                    documentStorageIndex.updatePdfDocument(oldFileData, documentId, projectId);
+                } catch (IOException e1) {
+                    logger.error("updateDocument(" + document.getId() + "): Failed to update, rolling back | failed to update document at the index", e1);
+                }
+            }
+            return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+        });
+    }
+
+    @Override
     public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
-        if(!document.isValid()) {
+
+        if (document == null || !document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -126,7 +177,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             fileInputStream = fileItem.getInputStream();
         } catch (IOException e) {
-            logger.error("failed to get input stream from file item: document -> " + document, e);
+            logger.error("createDocument(" + document.getId() + "): failed to get input stream from file item", e);
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -140,7 +191,7 @@ public class DocumentServiceImpl implements DocumentService {
             try {
                 documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
             } catch (IOException e) {
-                logger.error("failed to add file to the index", e);
+                logger.error("createDocument(" + document.getId() + "): failed to add file to the index", e);
                 documentDAO.removeByKey(documentId);
                 return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
             }
@@ -148,11 +199,11 @@ public class DocumentServiceImpl implements DocumentService {
                 documentSvnService.saveDocument(projectId, documentId, fileInputStream);
                 return new CoreResponse<Document>().success(document);
             } catch (SVNException e) {
-                logger.error("failed to save in the repository", e);
+                logger.error("createDocument(" + document.getId() + "): failed to save in the repository", e);
                 try {
                     documentStorageIndex.removeDocument(documentId);
                 } catch (IOException e1) {
-                    logger.error("failed to delete document from the index");
+                    logger.error("createDocument(" + document.getId() + "): failed to delete document from the index");
                 }
                 documentDAO.removeByKey(documentId);
                 return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
