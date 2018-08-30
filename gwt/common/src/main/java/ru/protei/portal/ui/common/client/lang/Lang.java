@@ -1258,4 +1258,10 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeMainPosition();
 
     String contactPhone();
+
+    String documentApproveType();
+
+    String documentApproved();
+
+    String documentNotApproved();
 }

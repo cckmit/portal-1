@@ -188,7 +188,8 @@ public abstract class DocumentTableActivity
                 (interval == null ? null : interval.to),
                 filterView.keywords().getValue(),
                 managerId,
-                filterView.content().getValue()
+                filterView.content().getValue(),
+                true
         );
     }
 

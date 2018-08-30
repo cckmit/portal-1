@@ -81,6 +81,8 @@ public class Document implements Serializable, Downloadable {
     @JdbcColumnCollection(name = "tags", separator = ",")
     private List<String> keywords;
 
+    @JdbcColumn(name = "is_approved")
+    private Boolean isApproved;
 
     public Document() {
     }
@@ -202,10 +204,53 @@ public class Document implements Serializable, Downloadable {
         this.contractor = contractor;
     }
 
+    public Boolean getApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(Boolean approved) {
+        isApproved = approved;
+    }
+
     public boolean isValid() {
         return  this.getType() != null &&
                 (this.getInventoryNumber() == null || this.getInventoryNumber() > 0) &&
                 this.getProjectId() != null &&
                 HelperFunc.isNotEmpty(this.getName());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Document) {
+            Long oid = ((Document) obj).getId();
+            return id == null ? oid == null : id.equals(oid);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
+
+    @Override
+    public String toString () {
+        return "Document{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", decimalNumber='" + decimalNumber + '\'' +
+                ", inventoryNumber=" + inventoryNumber +
+                ", type=" + type +
+                ", annotation='" + annotation + '\'' +
+                ", registrar=" + registrar +
+                ", contractor=" + contractor +
+                ", projectId=" + projectId +
+                ", projectInfo=" + projectInfo +
+                ", equipment=" + equipment +
+                ", version='" + version + '\'' +
+                ", created=" + created +
+                ", keywords=" + keywords +
+                ", isApproved=" + isApproved +
+                '}';
     }
 }
