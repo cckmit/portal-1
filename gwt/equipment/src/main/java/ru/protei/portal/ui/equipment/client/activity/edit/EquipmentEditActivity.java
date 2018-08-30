@@ -66,7 +66,7 @@ public abstract class EquipmentEditActivity
             return;
         }else if(!view.isDecimalNumbersCorrect()){
             fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotCorrect(), NotifyEvents.NotifyType.ERROR ) );
-            return;
+//            return;//TODO DEBUG
         }
 
         equipmentService.saveEquipment(equipment, new RequestCallback<Equipment>() {

@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Список децимальных номеров
@@ -103,14 +104,17 @@ public class MultipleDecimalNumberInput
     }
 
     public boolean checkIfCorrect(){
+        log("checkIfCorrect():");
         for(DecimalNumberBox box: numberBoxes){
             DecimalNumber number = box.getValue();
             if(number.getClassifierCode() == null || number.getRegisterNumber() == null){ // number.getModification() is nullable judging by DB
                 box.showMessage( lang.errFieldsRequired(), DisplayStyle.DANGER);
+                log("checkIfCorrect(): bad number format");
                 return false;
             }
 
             if ( !validateNumber(box) ) {
+                log("checkIfCorrect(): Error number not valid, see previous message for details");
                 return false;
             }
         }
@@ -135,7 +139,7 @@ public class MultipleDecimalNumberInput
         pdraList.clear();
         pamrList.clear();
         numberBoxes.clear();
-        occupedNunbers.clear();
+        occupedNumbers.clear();
     }
 
     private void createBoxAndFillValue( DecimalNumber number) {
@@ -157,7 +161,9 @@ public class MultipleDecimalNumberInput
         } );
         box.addValueChangeHandler( event -> {
             if ( !event.getValue().isEmpty() ) {
-                validateNumber( box );
+                if(validateNumber( box )) {
+                    checkExistNumber(box);
+                }
             }
         } );
         box.setEnabled(isEditable);
@@ -242,22 +248,23 @@ public class MultipleDecimalNumberInput
 
     private boolean validateNumber( final DecimalNumberBox box ) {
         box.clearBoxState();
-        if ( isNumberInList( box.getValue() ) ) {
-            box.showMessage( lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER );
+        if ( isNumberInList(values, box.getValue() ) ) {
+            box.showMessage(lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER);
+            log("validateNumber(): Error Already in list ");
             return false;
         }
-        if ( checkExistNumber( box )  ){
-            box.showGetNextNumberMessage();
+        if (occupedNumbers.contains( box.getValue()) ){
+                box.showGetNextNumberMessage();
+            log("validateNumber(): Error Already occupied ");
             return false;
         }
 
+        log("validateNumber(): OK free number");
         return true;
     }
 
     private boolean checkExistNumber( final DecimalNumberBox box ) {
-        if(occupedNunbers.contains( box.getValue() )){
-            return true;
-        }
+        log("checkExistNumber(): Ask the server ");
 
         dataProvider.checkIfExistDecimalNumber( box.getValue(), new RequestCallback< Boolean >() {
             @Override
@@ -267,23 +274,26 @@ public class MultipleDecimalNumberInput
 
             @Override
             public void onSuccess( Boolean result ) {
-                occupedNunbers.remove(box.getValue());
                 if ( result ) {
-                    occupedNunbers.add(box.getValue());
+                    log("checkExistNumber(): Number occupied. ");
+                    occupedNumbers.add(box.getValue());
+                }else{
+                    log("checkExistNumber(): Number is free. ");
+                occupedNumbers.remove(box.getValue());
                 }
                 checkIfCorrect();
             }
         } );
 
-        return false;
-    }
+            return false;
+        }
 
-    private boolean numberExists(DecimalNumber number) {
-        return occupedNunbers.contains(number) || isNumberInList(number);
-    }
-
-    private boolean isNumberInList(DecimalNumber number) {
+    private boolean isNumberInList(Collection<DecimalNumber> values, DecimalNumber number) {
         return values.stream().anyMatch( value -> !number.equals( value ) && number.isSameNumber( value ) );
+    }
+
+    private void log(String message){
+        GWT.log(message);
     }
 
     @UiField
@@ -302,7 +312,7 @@ public class MultipleDecimalNumberInput
     @Inject
     Provider<DecimalNumberBox> boxProvider;
 
-    Collection<DecimalNumber> occupedNunbers = new TreeSet<>(new Comparator<DecimalNumber>() {
+    Collection<DecimalNumber> occupedNumbers = new TreeSet<>(new Comparator<DecimalNumber>() {
         @Override
         public int compare(DecimalNumber o1, DecimalNumber o2) {
             return o1.equals(o2) || o1.isSameNumber(o2)?0:1;
