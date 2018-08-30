@@ -86,10 +86,12 @@ public abstract class EquipmentEditActivity
                     defaultErrorHandler.accept(t);
                     fireErrorMessage(t.getMessage());
 
-                }).withSuccess(result -> {
+                })
+                .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
                     fireEvent(new Back());
-                }));
+                })
+        );
     }
 
     private boolean fireErrorMessage( String msg) {

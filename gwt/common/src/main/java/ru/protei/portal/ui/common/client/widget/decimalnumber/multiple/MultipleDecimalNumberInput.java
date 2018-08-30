@@ -108,13 +108,11 @@ public class MultipleDecimalNumberInput
             DecimalNumber number = box.getValue();
             if(number.getClassifierCode() == null || number.getRegisterNumber() == null){ // number.getModification() is nullable judging by DB
                 box.showMessage( lang.errFieldsRequired(), DisplayStyle.DANGER);
-                log("checkIfCorrect(): bad number format: " + number);
                 isValid = false;
                 continue;
             }
 
             if ( !validateNumber(box) ) {
-                log("checkIfCorrect(): Error number not valid, see previous message for details.");
                 isValid = false;
             }
         }
@@ -139,7 +137,7 @@ public class MultipleDecimalNumberInput
         pdraList.clear();
         pamrList.clear();
         numberBoxes.clear();
-        occupedNumbers.clear();
+        occupiedNumbers.clear();
     }
 
     private void createBoxAndFillValue( DecimalNumber number) {
@@ -248,23 +246,19 @@ public class MultipleDecimalNumberInput
 
     private boolean validateNumber( final DecimalNumberBox box ) {
         box.clearBoxState();
-        if ( isNumberInList(values, box.getValue() ) ) {
+        if ( isSameNumberInList(values, box.getValue() ) ) {
             box.showMessage(lang.equipmentNumberAlreadyInList(), DisplayStyle.DANGER);
-            log("validateNumber(): Bad. Already in list: " + box.getValue());
             return false;
         }
-        if (occupedNumbers.contains( box.getValue()) ){
+        if (occupiedNumbers.contains( box.getValue()) ){
                 box.showGetNextNumberMessage();
-            log("validateNumber(): Bad. Already occupied: " + box.getValue());
             return false;
         }
 
-        log("validateNumber(): OK free number.");
         return true;
     }
 
     private void checkExistNumber(final DecimalNumberBox box) {
-        log("checkExistNumber(): Ask a server... ");
 
         dataProvider.checkIfExistDecimalNumber(box.getValue(), new RequestCallback<Boolean>() {
             @Override
@@ -275,11 +269,9 @@ public class MultipleDecimalNumberInput
             @Override
             public void onSuccess(Boolean result) {
                 if (result) {
-                    log("checkExistNumber(): Number occupied: " + box.getValue());
-                    occupedNumbers.add(box.getValue());
+                    occupiedNumbers.add(box.getValue());
                 } else {
-                    log("checkExistNumber(): Number is free. ");
-                    occupedNumbers.remove(box.getValue());
+                    occupiedNumbers.remove(box.getValue());
                 }
                 checkIfCorrect();
             }
@@ -287,13 +279,10 @@ public class MultipleDecimalNumberInput
 
     }
 
-    private boolean isNumberInList(Collection<DecimalNumber> values, DecimalNumber number) {
+    private boolean isSameNumberInList(Collection<DecimalNumber> values, DecimalNumber number) {
         return values.stream().anyMatch( value -> !number.equals( value ) && number.isSameNumber( value ) );
     }
 
-    private void log(String message){
-        GWT.log(message);
-    }
 
     @UiField
     HTMLPanel pamrList;
@@ -311,7 +300,7 @@ public class MultipleDecimalNumberInput
     @Inject
     Provider<DecimalNumberBox> boxProvider;
 
-    Collection<DecimalNumber> occupedNumbers = new TreeSet<>(new Comparator<DecimalNumber>() {
+    Collection<DecimalNumber> occupiedNumbers = new TreeSet<>(new Comparator<DecimalNumber>() {
         @Override
         public int compare(DecimalNumber o1, DecimalNumber o2) {
             return o1.isSameNumber(o2)?0:1;
