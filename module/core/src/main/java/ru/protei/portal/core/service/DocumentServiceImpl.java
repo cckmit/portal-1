@@ -114,7 +114,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<Document> updateDocument(AuthToken token, Document document, FileItem fileItem) {
+    public CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem) {
 
         if (document == null || !document.isValid() || document.getId() == null || fileItem == null) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
@@ -129,7 +129,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             fileInputStream = fileItem.getInputStream();
         } catch (IOException e) {
-            logger.error("updateDocument(" + document.getId() + "): Failed to get input stream from file item", e);
+            logger.error("updateDocumentAndContent(" + document.getId() + "): Failed to get input stream from file item", e);
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
 
@@ -152,12 +152,12 @@ public class DocumentServiceImpl implements DocumentService {
                 documentSvnService.updateDocument(projectId, documentId, fileInputStream);
                 return new CoreResponse<Document>().success(document);
             } catch (SVNException | IOException e) {
-                logger.error("updateDocument(" + document.getId() + "): Failed to update, rolling back", e);
+                logger.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back", e);
                 documentDAO.merge(oldDocument);
                 try {
                     documentStorageIndex.updatePdfDocument(oldFileData, documentId, projectId);
                 } catch (IOException e1) {
-                    logger.error("updateDocument(" + document.getId() + "): Failed to update, rolling back | failed to update document at the index", e1);
+                    logger.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back | failed to update document at the index", e1);
                 }
             }
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
