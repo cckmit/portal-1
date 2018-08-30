@@ -28,7 +28,6 @@ import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
-import java.util.logging.Logger;
 
 /**
  * Вид виджета децимального номера
@@ -204,7 +203,6 @@ public class DecimalNumberBox extends Composite
         getNextModificationMessage.getStyle().setVisibility(isVisible ? Style.Visibility.VISIBLE : Style.Visibility.HIDDEN);
     }
 
-    private static final Logger log = Logger.getLogger(DecimalNumberBox.class.getName());
     protected void resetTimer() {
         changeNumberTimer.cancel();
         changeNumberTimer.schedule(300);
