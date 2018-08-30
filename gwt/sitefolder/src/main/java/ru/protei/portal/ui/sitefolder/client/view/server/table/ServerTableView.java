@@ -103,6 +103,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         columns.add(nameColumn);
         columns.add(platformColumn);
         columns.add(appsColumn);
+        columns.add(accessParams);
         columns.add(copyClickColumn);
         columns.add(editClickColumn);
         columns.add(removeClickColumn);
@@ -139,6 +140,16 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         @Override
         public void fillColumnValue(Element cell, Server value) {
             cell.setInnerText(value.getName());
+        }
+    };
+    private ClickColumn<Server> accessParams = new ClickColumn<Server>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.serverAccessParamsColumn());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Server value) {
+            cell.setInnerText(value.getParams());
         }
     };
     private ClickColumn<Server> platformColumn = new ClickColumn<Server>() {

@@ -5,6 +5,7 @@
         <div class="sf-list-item-header">
             <span ui:field="name" class="name"/>
             <span ui:field="ip" class="ip"/>
+            <span ui:field="params" class="params"/>
         </div>
         <div class="sf-list-item-controls">
             <g:Anchor ui:field="edit" styleName="fa fa-lg fa-pencil" href="#"/>
