@@ -32,7 +32,7 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     }
 
     @Override
-    public HandleOnError<T> withErrorHandler(Consumer<Throwable> errorHandler) {
+    public HandleOnError<T> withError(Consumer<Throwable> errorHandler) {
         this.errorHandler = errorHandler;
         return this;
     }

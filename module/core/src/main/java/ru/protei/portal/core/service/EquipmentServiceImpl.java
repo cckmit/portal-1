@@ -24,6 +24,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+
 /**
  * Реализация сервиса управления оборудованием
  */
@@ -84,6 +86,12 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         if ( CollectionUtils.isEmpty( equipment.getDecimalNumbers() ) ) {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
+        }
+
+        for (DecimalNumber newNumber : selectNewNumbers(equipment.getDecimalNumbers())) {
+            if (decimalNumberDAO.checkExists(newNumber)) {
+                return new CoreResponse<Equipment>().error(En_ResultStatus.ALREADY_EXIST_RELATED);
+            }
         }
 
         equipment.setCreated( new Date() );
@@ -217,5 +225,19 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
 
         return true;
+    }
+
+    private List<DecimalNumber> selectNewNumbers(List<DecimalNumber> decimalNumbers) {
+        ArrayList<DecimalNumber> newNumbers = new ArrayList<>();
+        for (DecimalNumber decimalNumber : emptyIfNull(decimalNumbers)) {
+            if(isNew(decimalNumber)){
+                newNumbers.add(decimalNumber);
+            }
+        }
+        return newNumbers;
+    }
+
+    private boolean isNew(DecimalNumber decimalNumber) {
+        return (decimalNumber!=null&& decimalNumber.getId()==null);
     }
 }
