@@ -67,7 +67,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return new CoreResponse<Person>().success(person);
         }
 
-        person.setPassportInfo(null);
+        // RESET PRIVACY INFO
+        person.resetPrivacyInfo();
         return new CoreResponse<Person>().success(person);
     }
 
@@ -90,7 +91,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
@@ -102,9 +103,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        list.forEach( person -> person.setPassportInfo(null));
+        // RESET PRIVACY INFO
+        list.forEach(Person::resetPrivacyInfo);
         jdbcManyRelationsHelper.fill(list, "workerEntries");
 
         return new CoreResponse<List<Person>>().success(list);
