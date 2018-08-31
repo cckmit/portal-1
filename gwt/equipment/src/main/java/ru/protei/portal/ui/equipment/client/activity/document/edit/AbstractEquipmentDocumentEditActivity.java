@@ -5,4 +5,6 @@ public interface AbstractEquipmentDocumentEditActivity {
     void onSaveClicked();
 
     void onCancelClicked();
+
+    void onApproveChanged(boolean isApproved);
 }

@@ -18,11 +18,11 @@
                     <small ui:field="created" class="pull-right document-creator-info"/>
                 </legend>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-6">
+                    <g:HTMLPanel styleName="form-group col-xs-6" ui:field="nameContainer">
                         <label><ui:text from="{lang.documentName}"/></label>
                         <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
-                    </div>
-                    <div class="form-group col-xs-3">
+                    </g:HTMLPanel>
+                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="documentUploaderContainer">
                         <label><ui:text from="{lang.uploadDocuments}"/></label>
                         <div class="input-group">
                             <g:TextBox ui:field="fileName" styleName="input-field" enabled="false"/>
@@ -33,10 +33,10 @@
                             </div>
                             <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
                         </div>
-                    </div>
+                    </g:HTMLPanel>
                     <div class="form-group col-xs-3">
                         <label><ui:text from="{lang.documentApproveType}"/></label>
-                        <option:OptionItem ui:field="approved" styleName="checkbox single" name="{lang.documentApproved}"/>
+                        <option:OptionItem ui:field="approved" styleName="form-group col-xs-12 checkbox single document-approval" name="{lang.documentApproved}"/>
                     </div>
 
                     <div class="form-group col-xs-4">

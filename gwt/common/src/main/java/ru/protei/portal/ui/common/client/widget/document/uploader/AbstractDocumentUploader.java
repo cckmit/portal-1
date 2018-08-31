@@ -6,6 +6,8 @@ import ru.protei.portal.core.model.ent.Document;
 public interface AbstractDocumentUploader extends HasChangeHandlers {
     String getFilename();
 
+    void resetForm();
+
     void resetAction();
 
     void uploadBindToDocument(Document document);

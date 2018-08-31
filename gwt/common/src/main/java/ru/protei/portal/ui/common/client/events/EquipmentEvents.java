@@ -60,6 +60,26 @@ public class EquipmentEvents {
         }
     }
 
+    @Url(value = "eq_document")
+    public static class DocumentEdit {
+
+        public DocumentEdit() {}
+        public DocumentEdit(Long documentId) {
+            this.documentId = documentId;
+        }
+        public DocumentEdit(Long projectId, String decimalNumber) {
+            this.projectId = projectId;
+            this.decimalNumber = decimalNumber;
+        }
+
+        @Name("id")
+        public Long documentId;
+        @Name("project")
+        public Long projectId;
+        @Name("dn")
+        public String decimalNumber;
+    }
+
     public static class ChangeModel {}
 
     public static class ShowCopyDialog {

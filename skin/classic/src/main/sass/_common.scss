@@ -3438,3 +3438,9 @@ div.select2-container {
     }
   }
 }
+
+.checkbox.document-approval {
+  label::after {
+    padding-left: 2px !important;
+  }
+}

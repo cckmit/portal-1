@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.equipment.client.activity.document.edit;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DocumentType;
@@ -21,7 +23,7 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
 
     HasValue<Boolean> approved();
 
-    HasValue<En_DocumentCategory> documentCategory();
+    void setDocumentCategory(En_DocumentCategory documentCategory);
 
     HasValue<DocumentType> documentType();
 
@@ -39,4 +41,15 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
 
     HasValue<List<String>> keywords();
 
+    void setApprovedMode(boolean off);
+
+    HasEnabled decimalNumberEnabled();
+
+    HasEnabled documentCategoryEnabled();
+
+    HasEnabled approvedEnabled();
+
+    HasEnabled saveButtonEnabled();
+
+    HasEnabled cancelButtonEnabled();
 }

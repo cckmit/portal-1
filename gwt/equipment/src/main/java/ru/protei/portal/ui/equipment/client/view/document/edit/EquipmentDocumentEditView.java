@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -60,8 +61,9 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     }
 
     @Override
-    public HasValue<En_DocumentCategory> documentCategory() {
-        return documentCategory;
+    public void setDocumentCategory(En_DocumentCategory documentCategory) {
+        this.documentCategory.setValue(documentCategory);
+        this.documentType.setCategoryFilter(documentCategory);
     }
 
     @Override
@@ -104,6 +106,42 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
         return keywords;
     }
 
+    @Override
+    public void setApprovedMode(boolean off) {
+        if (off) {
+            nameContainer.setStyleName("form-group col-xs-6");
+            documentUploaderContainer.setVisible(true);
+        } else {
+            nameContainer.setStyleName("form-group col-xs-9");
+            documentUploaderContainer.setVisible(false);
+        }
+    }
+
+    @Override
+    public HasEnabled decimalNumberEnabled() {
+        return decimalNumber;
+    }
+
+    @Override
+    public HasEnabled documentCategoryEnabled() {
+        return documentCategory;
+    }
+
+    @Override
+    public HasEnabled approvedEnabled() {
+        return approved;
+    }
+
+    @Override
+    public HasEnabled saveButtonEnabled() {
+        return saveButton;
+    }
+
+    @Override
+    public HasEnabled cancelButtonEnabled() {
+        return cancelButton;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -128,6 +166,13 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
         fileName.setValue(documentUploader.getFilename());
     }
 
+    @UiHandler("approved")
+    public void onApprovedChanged(ValueChangeEvent<Boolean> event) {
+        if (activity != null) {
+            activity.onApproveChanged(event.getValue());
+        }
+    }
+
     private AbstractEquipmentDocumentEditActivity activity;
 
     @Inject
@@ -137,11 +182,15 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     @UiField
     Element created;
     @UiField
+    HTMLPanel nameContainer;
+    @UiField
     ValidableTextBox name;
     @UiField
     TextBox fileName;
     @UiField
     Button selectFileButton;
+    @UiField
+    HTMLPanel documentUploaderContainer;
     @Inject
     @UiField(provided = true)
     DocumentUploader documentUploader;
