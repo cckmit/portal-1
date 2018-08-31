@@ -27,6 +27,8 @@ import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.List;
+
 /**
  * Активность карточки редактирования единицы оборудования
  */
@@ -120,15 +122,15 @@ public abstract class EquipmentEditActivity
     }
 
     @Override
+    public void onDecimalNumbersChanged() {
+        decimalNumber = getDecimalNumber(view.getNumbers());
+        updateViewBasedOnDecimalNumber();
+    }
+
+    @Override
     public void onCreateDocumentClicked() {
 
-        if (equipment == null || equipment.getProjectId() == null) {
-            return;
-        }
-
-        String decimalNumber = getDecimalNumber(equipment);
-
-        if (decimalNumber == null) {
+        if (equipment == null || equipment.getProjectId() == null || decimalNumber == null) {
             return;
         }
 
@@ -137,6 +139,7 @@ public abstract class EquipmentEditActivity
 
     private void fillView(Equipment equipment) {
         this.equipment = equipment;
+        this.decimalNumber = getDecimalNumber(equipment.getDecimalNumbers());
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -171,11 +174,14 @@ public abstract class EquipmentEditActivity
         }
         view.project().setValue( info );
 
-        if (isCreate) {
+        updateViewBasedOnDecimalNumber();
+    }
+
+    private void updateViewBasedOnDecimalNumber() {
+        if (equipment.getId() == null) {
             view.createDocumentButtonEnabled().setEnabled(false);
             view.documentsVisibility().setVisible(false);
         } else {
-            String decimalNumber = getDecimalNumber(equipment);
             view.decimalNumber().setValue(decimalNumber);
             if (decimalNumber == null) {
                 view.createDocumentButtonEnabled().setEnabled(false);
@@ -188,13 +194,13 @@ public abstract class EquipmentEditActivity
         }
     }
 
-    private String getDecimalNumber(Equipment equipment) {
+    private String getDecimalNumber(List<DecimalNumber> decimalNumbers) {
 
-        if (equipment == null || CollectionUtils.isEmpty(equipment.getDecimalNumbers())) {
+        if (decimalNumbers == null) {
             return null;
         }
 
-        DecimalNumber decimalNumber = equipment.getDecimalNumbers().stream()
+        DecimalNumber decimalNumber = decimalNumbers.stream()
                 .filter(dn -> !dn.isReserve())
                 .findFirst()
                 .orElse(null);
@@ -221,6 +227,6 @@ public abstract class EquipmentEditActivity
     @Inject
     DefaultNotificationHandler notification;
 
-
+    private String decimalNumber;
     private AppEvents.InitDetails initDetails;
 }

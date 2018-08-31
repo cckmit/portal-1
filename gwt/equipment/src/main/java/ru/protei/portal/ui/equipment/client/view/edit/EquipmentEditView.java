@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -148,6 +149,13 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     public void onCreateDocumentClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onCreateDocumentClicked();
+        }
+    }
+
+    @UiHandler( "numbers" )
+    public void onDecimalNumbersChanged(ValueChangeEvent<List<DecimalNumber>> event) {
+        if ( activity != null ) {
+            activity.onDecimalNumbersChanged();
         }
     }
 

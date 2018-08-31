@@ -46,6 +46,8 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     @Event(Type.FILL_CONTENT)
     public void onShow(EquipmentEvents.DocumentEdit event) {
 
+        decimalNumber = null;
+
         if (event.documentId == null) {
             if (event.projectId == null || StringUtils.isBlank(event.decimalNumber)) {
                 notificationHandler.accept(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR);
@@ -54,6 +56,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
             }
             drawView();
             fireEvent(new AppEvents.InitPanelName(lang.documentCreate()));
+            decimalNumber = event.decimalNumber;
             Document document = new Document();
             document.setApproved(false);
             document.setProjectId(event.projectId);
@@ -161,6 +164,9 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         document.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         document.setAnnotation(view.annotation().getValue());
         document.setKeywords(view.keywords().getValue());
+        if (document.getId() == null && decimalNumber != null) {
+            document.setDecimalNumber(decimalNumber + "-" + view.documentType().getValue().getShortName());
+        }
     }
 
     private void saveDocument() {
@@ -229,6 +235,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     DefaultNotificationHandler notificationHandler;
 
     private Document document;
+    private String decimalNumber;
     private Profile authorizedProfile;
     private AppEvents.InitDetails initDetails;
 }
