@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
@@ -68,7 +69,8 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         // RESET PRIVACY INFO
-        person.resetPrivacyInfo();
+        person.setPassportInfo(null);
+
         return new CoreResponse<Person>().success(person);
     }
 
@@ -105,9 +107,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (list == null)
             return new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        // RESET PRIVACY INFO
-        list.forEach(Person::resetPrivacyInfo);
         jdbcManyRelationsHelper.fill(list, "workerEntries");
+
+        // RESET PRIVACY INFO
+        list.forEach(person -> {
+            person.setPassportInfo(null);
+            CollectionUtils.emptyIfNull(person.getWorkerEntries()).forEach(workerEntry -> {
+                if (workerEntry.getPerson() != null) {
+                    workerEntry.getPerson().setPassportInfo(null);
+                }
+            });
+        });
 
         return new CoreResponse<List<Person>>().success(list);
     }
