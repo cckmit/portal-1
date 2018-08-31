@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.Document;
@@ -42,7 +43,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow(EquipmentEvents.DocumentEdit event) {
 
         if (event.documentId == null) {
@@ -101,6 +102,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     @Override
     public void onApproveChanged(boolean isApproved) {
         boolean isNew = document.getId() == null;
+        view.inventoryNumberEnabled().setEnabled(isApproved);
         if (!isNew) {
             view.setApprovedMode(!isApproved);
         }
@@ -130,7 +132,8 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.version().setValue(document.getVersion());
         view.decimalNumber().setValue(document.getDecimalNumber());
         view.decimalNumberEnabled().setEnabled(false);
-        view.inventoryNumber().setValue(document.getInventoryNumber());
+        view.inventoryNumber().setValue(document.getApproved() ? document.getInventoryNumber() : null);
+        view.inventoryNumberEnabled().setEnabled(document.getApproved());
 
         PersonShortView registrar;
         PersonShortView contractor;
@@ -153,7 +156,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         document.setApproved(view.approved().getValue());
         document.setType(view.documentType().getValue());
         document.setVersion(view.version().getValue());
-        document.setInventoryNumber(view.inventoryNumber().getValue());
+        document.setInventoryNumber(view.approved().getValue() ? view.inventoryNumber().getValue() : null);
         document.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
         document.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         document.setAnnotation(view.annotation().getValue());

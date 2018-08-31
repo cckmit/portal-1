@@ -133,6 +133,11 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     }
 
     @Override
+    public HasEnabled inventoryNumberEnabled() {
+        return inventoryNumber;
+    }
+
+    @Override
     public HasEnabled saveButtonEnabled() {
         return saveButton;
     }

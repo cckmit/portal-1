@@ -49,6 +49,8 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
 
     HasEnabled approvedEnabled();
 
+    HasEnabled inventoryNumberEnabled();
+
     HasEnabled saveButtonEnabled();
 
     HasEnabled cancelButtonEnabled();
