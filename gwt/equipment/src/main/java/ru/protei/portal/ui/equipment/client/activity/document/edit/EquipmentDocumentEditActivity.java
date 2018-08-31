@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
@@ -62,7 +62,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         } else {
             drawView();
             fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
-            documentController.getDocument(event.documentId, new FluentCallback<Document>()
+            equipmentController.getDocument(event.documentId, new FluentCallback<Document>()
                     .withError(throwable -> {
                         errorHandler.accept(throwable);
                         fireEvent(new Back());
@@ -175,7 +175,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     }
 
     private void saveUploadedDocument() {
-        documentController.saveDocument(document, new FluentCallback<Document>()
+        equipmentController.saveDocument(document, new FluentCallback<Document>()
                 .withResult(() -> {
                     view.saveButtonEnabled().setEnabled(true);
                     view.cancelButtonEnabled().setEnabled(true);
@@ -222,7 +222,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     @Inject
     AbstractEquipmentDocumentEditView view;
     @Inject
-    DocumentControllerAsync documentController;
+    EquipmentControllerAsync equipmentController;
     @Inject
     DefaultErrorHandler errorHandler;
     @Inject
