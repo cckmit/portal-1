@@ -19,6 +19,7 @@
     <inherits name="ru.protei.portal.ui.casestate.CaseState"/>
     <inherits name="ru.protei.portal.ui.sitefolder.SiteFolder"/>
     <inherits name="ru.protei.portal.ui.employee.Employee"/>
+    <inherits name="ru.protei.portal.ui.questionnaire.Questionnaire"/>
 
     <entry-point class='ru.protei.portal.ui.crm.client.Main'/>
 
