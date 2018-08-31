@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.widget.doccategory;
+package ru.protei.portal.ui.common.client.widget.document.doccategory;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;

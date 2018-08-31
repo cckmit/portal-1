@@ -26,7 +26,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSele
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
-import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 
 import java.util.LinkedList;
 import java.util.List;

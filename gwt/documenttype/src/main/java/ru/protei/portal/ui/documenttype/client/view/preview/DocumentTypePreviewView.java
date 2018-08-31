@@ -15,7 +15,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.document.client.widget.doccategory.DocumentCategorySelector;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.documenttype.client.activity.preview.AbstractDocumentTypePreviewActivity;
 import ru.protei.portal.ui.documenttype.client.activity.preview.AbstractDocumentTypePreviewView;
 
