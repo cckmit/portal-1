@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.equipment.server;
 
+import org.apache.commons.fileupload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +8,11 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -205,6 +208,78 @@ public class EquipmentControllerImpl implements EquipmentController {
         CoreResponse<Integer> response = equipmentService.getNextAvailableDecimalNumberModification( getDescriptorAndCheckSession().makeAuthToken(), filter );
         if (response.isOk()) {
             log.debug("get next available decimal number, result: {}", response.getData());
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
+    public List<Document> getDocuments(String decimalNumber) throws RequestFailedException {
+
+        log.debug("getDocuments: decimalNumber={}", decimalNumber);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<Document>> response = equipmentService.documentList(descriptor.makeAuthToken(), decimalNumber);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
+    public Document getDocument(Long id) throws RequestFailedException {
+
+        log.debug("getDocument: id={}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Document> response = equipmentService.getDocument(descriptor.makeAuthToken(), id);
+        log.debug("getDocument: id={} -> {} ", id, response.isError() ? "error" : response.getData());
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
+    public Document saveDocument(Document document) throws RequestFailedException {
+
+        if (document == null) {
+            log.warn("saveDocument | null document in request");
+            throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        String id = HelperFunc.nvlt(String.valueOf(document.getId()), "new");
+
+        log.debug("saveDocument: id={}", id);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse<Document> response;
+        if (document.getId() == null) {
+            FileItem fileItem = sessionService.getFileItem(httpRequest);
+            if (fileItem == null) {
+                log.error("saveDocument: id={} | file item in session was null", id);
+                throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
+            }
+            sessionService.setFileItem(httpRequest, null);
+            response = equipmentService.createDocument(descriptor.makeAuthToken(), document, fileItem);
+        } else {
+            FileItem fileItem = sessionService.getFileItem(httpRequest);
+            if (fileItem == null) {
+                response = equipmentService.updateDocument(descriptor.makeAuthToken(), document);
+            } else {
+                sessionService.setFileItem(httpRequest, null);
+                response = equipmentService.updateDocumentAndContent(descriptor.makeAuthToken(), document, fileItem);
+            }
+        }
+
+        log.debug("saveDocument: id={} | result: {}", id, response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
             return response.getData();
         }
 

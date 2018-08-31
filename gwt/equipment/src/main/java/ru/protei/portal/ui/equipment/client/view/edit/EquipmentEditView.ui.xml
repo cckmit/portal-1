@@ -68,6 +68,17 @@
                     </div>
                 </div>
 
+                <legend class="header"><ui:text from="{lang.equipmentDocuments}"/></legend>
+                <div class="grid grid-indent">
+                    <div class="form-group col-xs-3">
+                        <g:TextBox ui:field="decimalNumber" styleName="input-field" enabled="false"/>
+                    </div>
+                    <div class="form-group col-xs-3">
+                        <g:Button ui:field="createDocumentButton" styleName="btn btn-white" text="{lang.equipmentDocumentCreate}"/>
+                    </div>
+                    <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12"/>
+                </div>
+
                 <legend class="header"><ui:text from="{lang.equipmentComment}"/></legend>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">

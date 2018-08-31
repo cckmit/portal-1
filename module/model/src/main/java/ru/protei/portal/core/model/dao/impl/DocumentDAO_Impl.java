@@ -109,6 +109,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                 condition.append(" and document.is_approved=?");
                 args.add(query.getApproved());
             }
+
+            if (query.getDecimalNumber() != null) {
+                condition.append(" and document.decimal_number like ?");
+                args.add(HelperFunc.makeLikeArg(query.getDecimalNumber(), false));
+            }
         }));
     }
 }

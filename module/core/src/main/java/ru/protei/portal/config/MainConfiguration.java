@@ -567,6 +567,11 @@ public class MainConfiguration {
         return new SiteFolderServiceImpl();
     }
 
+    @Bean
+    public DocumentControlService getDocumentControlService() {
+        return new DocumentControlServiceImpl();
+    }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

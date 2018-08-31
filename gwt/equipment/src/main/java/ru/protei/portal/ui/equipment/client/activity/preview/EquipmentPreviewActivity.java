@@ -5,7 +5,9 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -110,6 +112,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
         view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
 
+
         if( value.getDecimalNumbers() != null ) {
             view.setDecimalNumbers( value.getDecimalNumbers().stream().map( DecimalNumberFormatter::formatNumber ).collect( Collectors.joining(", ")) );
         }
@@ -118,6 +121,11 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
             view.setLinkedEquipment( value.getLinkedEquipmentDecimalNumbers().stream().map( DecimalNumberFormatter::formatNumber ).collect( Collectors.joining(", ")) );
         } else {
             view.setLinkedEquipment( lang.equipmentPrimaryUseNotDefinied() );
+        }
+
+        String decimalNumber = getDecimalNumber(value);
+        if (decimalNumber != null) {
+            fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumber));
         }
     }
 
@@ -138,6 +146,24 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
                 fillView( value );
             }
         } );
+    }
+
+    private String getDecimalNumber(Equipment equipment) {
+
+        if (equipment == null || CollectionUtils.isEmpty(equipment.getDecimalNumbers())) {
+            return null;
+        }
+
+        DecimalNumber decimalNumber = equipment.getDecimalNumbers().stream()
+                .filter(dn -> !dn.isReserve())
+                .findFirst()
+                .orElse(null);
+
+        if (decimalNumber == null) {
+            return null;
+        }
+
+        return DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
     }
 
     @Inject

@@ -3438,3 +3438,84 @@ div.select2-container {
     }
   }
 }
+
+.eqdoc-list-item {
+
+}
+.eqdoc-list {
+
+  .eqdoc-list-item {
+    position: relative;
+    max-width: 300px !important;
+    height: 40px !important;
+    overflow: hidden;
+    animation: animation-sf-shadow-fade-out 0.3s;
+    display: flex;
+    flex-direction: row;
+
+    .approve {
+      position: relative;
+      height: 40px;
+      line-height: 40px;
+      width: 50px;
+      text-align: center;
+      vertical-align: middle;
+
+      > * {
+        display: inline-block;
+      }
+    }
+
+    .content {
+      position: relative;
+      height: 40px;
+      line-height: 40px;
+      vertical-align: middle;
+
+      > * {
+        display: block;
+        height: 20px;
+        white-space: pre-line;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1em;
+        font-family: inherit;
+      }
+      > .decimal-number {
+        line-height: 25px;
+      }
+      > .information {
+        line-height: 20px;
+      }
+    }
+
+    .controls {
+      position: relative;
+      height: 40px;
+      line-height: 40px;
+      vertical-align: middle;
+      display: flex;
+      flex-direction: row;
+
+      > * {
+        display: block;
+        height: 40px;
+        width: 30px;
+        line-height: 40px;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      &:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+    }
+  }
+
+  .eqdoc-list-item:hover, .eqdoc-list-item:active {
+    animation: animation-sf-shadow-fade-in 0.3s;
+    box-shadow: 1px 1px 2px 0 #cfd2d7;
+  }
+}

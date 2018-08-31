@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
@@ -59,4 +60,11 @@ public interface EquipmentControllerAsync {
     void removeEquipment( Long equipmentId, AsyncCallback<Boolean> async );
 
     void equipmentOptionList( EquipmentQuery query, AsyncCallback< List< EquipmentShortView > > async );
+
+
+    void getDocuments(String decimalNumber, AsyncCallback<List<Document>> async);
+
+    void getDocument(Long id, AsyncCallback<Document> async);
+
+    void saveDocument(Document document, AsyncCallback<Document> async);
 }

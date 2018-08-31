@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
@@ -55,4 +56,10 @@ public interface EquipmentController extends RemoteService {
 
     Integer getNextAvailableRegisterNumberModification( DecimalNumberQuery filter ) throws RequestFailedException;
 
+
+    List<Document> getDocuments(String decimalNumber) throws RequestFailedException;
+
+    Document getDocument(Long id) throws RequestFailedException;
+
+    Document saveDocument(Document document) throws RequestFailedException;
 }

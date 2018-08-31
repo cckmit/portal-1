@@ -1,18 +1,21 @@
 package ru.protei.portal.ui.equipment.client.activity.edit;
 
-
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -41,7 +44,7 @@ public abstract class EquipmentEditActivity
         this.initDetails = initDetails;
     }
 
-    @Event
+    @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Edit event ) {
         view.setVisibilitySettingsForCreated(! (event.id == null));
         if( event.id == null ) {
@@ -116,8 +119,23 @@ public abstract class EquipmentEditActivity
         fireEvent(new Back());
     }
 
+    @Override
+    public void onCreateDocumentClicked() {
 
-    private void fillView(Equipment equipment){
+        if (equipment == null || equipment.getProjectId() == null) {
+            return;
+        }
+
+        String decimalNumber = getDecimalNumber(equipment);
+
+        if (decimalNumber == null) {
+            return;
+        }
+
+        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getProjectId(), decimalNumber));
+    }
+
+    private void fillView(Equipment equipment) {
         this.equipment = equipment;
 
         initDetails.parent.clear();
@@ -152,6 +170,40 @@ public abstract class EquipmentEditActivity
             info.setName(equipment.getProjectName());
         }
         view.project().setValue( info );
+
+        if (isCreate) {
+            view.createDocumentButtonEnabled().setEnabled(false);
+            view.documentsVisibility().setVisible(false);
+        } else {
+            String decimalNumber = getDecimalNumber(equipment);
+            view.decimalNumber().setValue(decimalNumber);
+            if (decimalNumber == null) {
+                view.createDocumentButtonEnabled().setEnabled(false);
+                view.documentsVisibility().setVisible(false);
+            } else {
+                view.createDocumentButtonEnabled().setEnabled(true);
+                view.documentsVisibility().setVisible(true);
+                fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumber));
+            }
+        }
+    }
+
+    private String getDecimalNumber(Equipment equipment) {
+
+        if (equipment == null || CollectionUtils.isEmpty(equipment.getDecimalNumbers())) {
+            return null;
+        }
+
+        DecimalNumber decimalNumber = equipment.getDecimalNumbers().stream()
+                .filter(dn -> !dn.isReserve())
+                .findFirst()
+                .orElse(null);
+
+        if (decimalNumber == null) {
+            return null;
+        }
+
+        return DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
     }
 
     @Inject
