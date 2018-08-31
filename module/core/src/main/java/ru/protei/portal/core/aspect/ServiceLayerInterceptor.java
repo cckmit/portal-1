@@ -141,7 +141,7 @@ public class ServiceLayerInterceptor {
 
         AuthToken token = findAuthToken( pjp );
         if ( token == null ) {
-            return;
+            throw new InsufficientPrivilegesException();
         }
 
         UserSessionDescriptor descriptor = authService.findSession( token );
@@ -160,7 +160,7 @@ public class ServiceLayerInterceptor {
 
         AuthToken token = findAuthToken( pjp );
         if ( token == null ) {
-            return;
+            throw new InsufficientPrivilegesException();
         }
 
         UserSessionDescriptor descriptor = authService.findSession( token );
@@ -193,7 +193,6 @@ public class ServiceLayerInterceptor {
             }
 
             throw new InvalidAuthTokenException();
-
         }
 
         return null;

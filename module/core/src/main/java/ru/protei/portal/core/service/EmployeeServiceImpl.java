@@ -7,9 +7,11 @@ import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
@@ -67,7 +69,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             return new CoreResponse<Person>().success(person);
         }
 
+        // RESET PRIVACY INFO
         person.setPassportInfo(null);
+
         return new CoreResponse<Person>().success(person);
     }
 
@@ -90,7 +94,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
@@ -98,14 +102,23 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<Person>> employeeList(EmployeeQuery query) {
+    public CoreResponse<List<Person>> employeeList(AuthToken token, EmployeeQuery query) {
         List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        list.forEach( person -> person.setPassportInfo(null));
         jdbcManyRelationsHelper.fill(list, "workerEntries");
+
+        // RESET PRIVACY INFO
+        list.forEach(person -> {
+            person.setPassportInfo(null);
+            CollectionUtils.emptyIfNull(person.getWorkerEntries()).forEach(workerEntry -> {
+                if (workerEntry.getPerson() != null) {
+                    workerEntry.getPerson().setPassportInfo(null);
+                }
+            });
+        });
 
         return new CoreResponse<List<Person>>().success(list);
     }
