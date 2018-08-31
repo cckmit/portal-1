@@ -1274,4 +1274,12 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentDocuments();
 
     String equipmentDocumentCreate();
+
+    String documentEdit();
+
+    String documentCreate();
+
+    String documentSaving();
+
+    String documentSaved();
 }

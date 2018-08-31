@@ -4,7 +4,7 @@
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:doctype='urn:import:ru.protei.portal.ui.document.client.widget.doctype'
+             xmlns:doctype='urn:import:ru.protei.portal.ui.common.client.widget.document.doctype'
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
 >

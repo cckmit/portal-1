@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.widget.uploader;
+package ru.protei.portal.ui.common.client.widget.document.uploader;
 
 public interface UploadHandler {
     void onError();

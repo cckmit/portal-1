@@ -3439,9 +3439,12 @@ div.select2-container {
   }
 }
 
-.eqdoc-list-item {
-
+.checkbox.document-approval {
+  label::after {
+    padding-left: 2px !important;
+  }
 }
+
 .eqdoc-list {
 
   .eqdoc-list-item {

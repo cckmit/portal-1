@@ -14,7 +14,7 @@ import ru.protei.portal.ui.document.client.view.edit.DocumentEditView;
 import ru.protei.portal.ui.document.client.view.filter.DocumentFilterView;
 import ru.protei.portal.ui.document.client.view.preview.DocumentPreviewView;
 import ru.protei.portal.ui.document.client.view.table.DocumentTableView;
-import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeModel;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeModel;
 
 public class DocumentClientModule extends AbstractGinModule {
     @Override

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.widget.uploader;
+package ru.protei.portal.ui.common.client.widget.document.uploader;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -29,6 +29,11 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
+    public void resetForm() {
+        form.reset();
+    }
+
+    @Override
     public void resetAction() {
         form.setAction("javascript:void(0);");
     }
@@ -36,6 +41,7 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     @Override
     public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
         form.removeStyleName("attachment-uploading");
+        form.reset();
         fileUpload.setEnabled(true);
         if (uploadHandler == null)
             return;
