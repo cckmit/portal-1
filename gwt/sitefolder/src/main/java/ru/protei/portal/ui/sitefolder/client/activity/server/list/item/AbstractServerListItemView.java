@@ -15,4 +15,6 @@ public interface AbstractServerListItemView extends IsWidget {
     void setEditVisible(boolean visible);
 
     void setCopyVisible(boolean visible);
+
+    void setParams(String params);
 }

@@ -2,30 +2,43 @@ package ru.protei.portal.ui.common.shared.model;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.lang.En_ResultStatusLang;
-import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.function.Consumer;
 
-public class FluentCallback<T> implements AsyncCallback<T> {
+/**
+ * Либо сообщение о ошибке, либо обработчик ошибки.
+ * Если и сообщение и обработик не заданы ошибка обрабатывается обработчиком ошибки по умолчанию.
+ */
+public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
+{
 
     private String errorMessage = null;
+    private NotifyEvents.NotifyType notifyType = NotifyEvents.NotifyType.ERROR;
     private Consumer<Throwable> errorHandler = null;
     private Consumer<T> successHandler = null;
 
-    public FluentCallback<T> withErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+    @Override
+    public MessageOnError<T> withErrorMessage(String errorMessage) {
+        withErrorMessage(errorMessage, NotifyEvents.NotifyType.ERROR);
         return this;
     }
 
-    public FluentCallback<T> withError(Consumer<Throwable> errorHandler) {
+    @Override
+    public MessageOnError<T> withErrorMessage(String errorMessage, NotifyEvents.NotifyType type) {
+        this.errorMessage = errorMessage;
+        this.notifyType = type;
+        return this;
+    }
+
+    @Override
+    public HandleOnError<T> withError(Consumer<Throwable> errorHandler) {
         this.errorHandler = errorHandler;
         return this;
     }
 
-    public FluentCallback<T> withSuccess(Consumer<T> successHandler) {
+    @Override
+    public AsyncCallback<T> withSuccess(Consumer<T> successHandler) {
         this.successHandler = successHandler;
         return this;
     }
@@ -33,18 +46,17 @@ public class FluentCallback<T> implements AsyncCallback<T> {
     @Override
     public final void onFailure(Throwable throwable) {
 
-        if (throwable instanceof RequestFailedException) {
-            RequestFailedException rf = (RequestFailedException) throwable;
-            activity.fireEvent(new NotifyEvents.Show(lang.getMessage(rf.status), NotifyEvents.NotifyType.ERROR));
+        if (errorHandler != null) {
+            errorHandler.accept(throwable);
+            return;
         }
 
         if (errorMessage != null) {
-            activity.fireEvent(new NotifyEvents.Show(errorMessage, NotifyEvents.NotifyType.ERROR));
+            notificationHandler.accept(errorMessage, notifyType);
+        } else {
+            defaultErrorHandler.accept(throwable);
         }
 
-        if (errorHandler != null) {
-            errorHandler.accept(throwable);
-        }
     }
 
     @Override
@@ -55,7 +67,7 @@ public class FluentCallback<T> implements AsyncCallback<T> {
     }
 
     @Inject
-    static En_ResultStatusLang lang;
+    static DefaultErrorHandler defaultErrorHandler;
     @Inject
-    static NotifyActivity activity;
+    static DefaultNotificationHandler notificationHandler;
 }

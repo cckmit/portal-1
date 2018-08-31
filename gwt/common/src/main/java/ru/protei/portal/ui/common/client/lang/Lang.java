@@ -1257,11 +1257,14 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeMainPosition();
 
+    String serverAccessParamsColumn();
     String contactPhone();
 
     String documentApproveType();
+    String equipmentDecimalNumberNotCorrect();
 
     String documentApproved();
+    String equipmentDecimalNumbeOccupied();
 
     String documentNotApproved();
 }

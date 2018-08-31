@@ -63,9 +63,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public CoreResponse< Person > getEmployee( Long id ) {
         Person person = personDAO.getEmployee(id);
+        if ( person == null ) {
+            return new CoreResponse<Person>().success(person);
+        }
 
-        return person != null ? new CoreResponse<Person>().success(person)
-            : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
+        person.setPassportInfo(null);
+        return new CoreResponse<Person>().success(person);
     }
 
     public EmployeeDetailView getEmployeeProfile(Long id){
@@ -101,6 +104,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         if (list == null)
             new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
 
+        list.forEach( person -> person.setPassportInfo(null));
         jdbcManyRelationsHelper.fill(list, "workerEntries");
 
         return new CoreResponse<List<Person>>().success(list);
