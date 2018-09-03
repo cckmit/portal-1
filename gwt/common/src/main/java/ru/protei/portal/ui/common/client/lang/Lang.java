@@ -1267,4 +1267,14 @@ public interface Lang extends Messages, ContactItemLang {
     String equipmentDecimalNumbeOccupied();
 
     String documentNotApproved();
+
+    String questionnaires();
+
+    String questionnaireEmployeeFullNameColumnHeader();
+
+    String questionnaireHeadOfDepartmentColumnHeader();
+
+    String questionnaireEmploymentDateColumnHeader();
+
+    String privilegeCategoryQuestionnaire();
 }

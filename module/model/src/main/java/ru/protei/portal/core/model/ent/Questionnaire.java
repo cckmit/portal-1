@@ -12,9 +12,10 @@ import java.util.Set;
 /**
  * Анкета нового сотрудника
  */
+@JdbcEntity(table = "questionnaire")
 public class Questionnaire implements Serializable {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
 
     /**

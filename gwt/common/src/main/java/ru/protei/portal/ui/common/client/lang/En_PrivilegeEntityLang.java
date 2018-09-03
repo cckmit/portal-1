@@ -42,6 +42,8 @@ public class En_PrivilegeEntityLang {
                 return lang.privilegeSiteFolder();
             case EMPLOYEE:
                 return lang.privilegeCategoryEmployee();
+            case QUESTIONNAIRE:
+                return lang.privilegeCategoryQuestionnaire();
             default:
                 return lang.unknownField();
         }

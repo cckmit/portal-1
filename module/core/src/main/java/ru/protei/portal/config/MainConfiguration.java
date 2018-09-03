@@ -385,6 +385,11 @@ public class MainConfiguration {
         return new DevUnitChildRefDAO_Impl();
     }
 
+    @Bean
+    public QuestionnaireDAO getQuestionnaireDAO() {
+        return new QuestionnaireDAO_Impl();
+    }
+
 /**
  *
  *
@@ -565,6 +570,11 @@ public class MainConfiguration {
     @Bean
     public SiteFolderService getSiteFolderService() {
         return new SiteFolderServiceImpl();
+    }
+
+    @Bean
+    public QuestionnaireService getQuestionnaireService() {
+        return new QuestionnaireServiceImpl();
     }
 
     /** ASPECT/INTERCEPTORS **/

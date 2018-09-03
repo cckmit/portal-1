@@ -40,6 +40,7 @@ public class DebugIds {
         String REGION = "sidebar-menu-region";
         String ROLE = "sidebar-menu-role";
         String SITE_FOLDER = "sidebar-menu-site-folder";
+        String QUESTIONNAIRE = "sidebar-menu-questionnaire";
         @Deprecated String SITE_FOLDER_PLATFORMS = "sidebar-menu-site-folder-platforms";
         @Deprecated String SITE_FOLDER_SERVERS = "sidebar-menu-site-folder-servers";
         @Deprecated String SITE_FOLDER_APPS = "sidebar-menu-site-folder-apps";
