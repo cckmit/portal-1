@@ -1,0 +1,24 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    
+    <changeSet id="create-table-questionnaire" author="efremov">
+        <createTable tableName="questionnaire">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints primaryKey="true" referencedTableName="case_object" referencedColumnNames="id" foreignKeyName="questionnaire-case_object-id-fk"/>
+            </column>
+            <column name="employment_date" type="DATE" />
+            <column name="employment_type" type="INT" />
+            <column name="with_registration" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="post" type="VARCHAR(128)"/>
+            <column name="workplace_info" type="TEXT"/>
+            <column name="equipment_list" type="VARCHAR(64)"/>
+            <column name="resource_list" type="VARCHAR(128)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
