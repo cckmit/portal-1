@@ -67,6 +67,8 @@ public class QuestionnaireControllerImpl implements QuestionnaireController {
         log.debug("create questionnaire, id: {}", HelperFunc.nvlt(questionnaire.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        questionnaire.setCreator(descriptor.getPerson());
         CoreResponse<Long> response = questionnaireService.createQuestionnaire(descriptor.makeAuthToken(), questionnaire);
 
         log.debug("create questionnaire, result: {}", response.isOk() ? "ok" : response.getStatus());

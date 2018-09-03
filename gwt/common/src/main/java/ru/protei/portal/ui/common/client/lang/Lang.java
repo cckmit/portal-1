@@ -1277,4 +1277,56 @@ public interface Lang extends Messages, ContactItemLang {
     String questionnaireEmploymentDateColumnHeader();
 
     String privilegeCategoryQuestionnaire();
+
+    String employmentTypeFullTime();
+
+    String employmentTypePartTime();
+
+    String employmentTypeRemote();
+
+    String employmentTypeContract();
+
+    String employeeEquipmentTable();
+
+    String employeeEquipmentChair();
+
+    String employeeEquipmentComputer();
+
+    String employeeEquipmentMonitor();
+
+    String internalResourceYoutrack();
+
+    String internalResourceCvs();
+
+    String internalResourceStoreDelivery();
+
+    String internalResourceSvn();
+
+    String internalResourceMercurial();
+
+    String internalResourceGit();
+
+    String internalResourceCrm();
+
+    String questionnaireCommonHeader();
+
+    String questionnaireEmployeeFullName();
+
+    String questionnaireHeadOfDepartment();
+
+    String questionnaireEmploymentDate();
+
+    String questionnaireEmploymentType();
+
+    String questionnaireWithRegistration();
+
+    String questionnairePost();
+
+    String questionnaireWorkplaceInfo();
+
+    String questionnaireComment();
+
+    String questionnaireEquipmentList();
+
+    String questionnaireResourceList();
 }
