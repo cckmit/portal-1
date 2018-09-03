@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.QuestionnaireDAO;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -12,6 +15,7 @@ import ru.protei.portal.core.model.ent.Questionnaire;
 import ru.protei.portal.core.model.query.QuestionnaireQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import java.util.Date;
 import java.util.List;
 
 public class QuestionnaireServiceImpl implements QuestionnaireService {
@@ -20,6 +24,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     QuestionnaireDAO questionnaireDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseTypeDAO caseTypeDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
@@ -52,7 +58,9 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     public CoreResponse<Long> createQuestionnaire(AuthToken token, Questionnaire questionnaire) {
         if (questionnaire == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
-        Long id = caseObjectDAO.persist(new CaseObject());
+
+        CaseObject caseObject = createCaseObjectByQuestionnaire(questionnaire);
+        Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
@@ -62,4 +70,16 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         return new CoreResponse<Long>().success(id);
     }
 
+    private CaseObject createCaseObjectByQuestionnaire(Questionnaire questionnaire) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseType(En_CaseType.QUESTIONNAIRE);
+        caseObject.setState(En_CaseState.ACTIVE);
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.QUESTIONNAIRE));
+        caseObject.setCreated(new Date());
+
+        caseObject.setInfo(questionnaire.getComment());
+        caseObject.setInitiator(questionnaire.getHeadOfDepartment());
+        caseObject.setName(questionnaire.getEmployeeFullName());
+        return caseObject;
+    }
 }

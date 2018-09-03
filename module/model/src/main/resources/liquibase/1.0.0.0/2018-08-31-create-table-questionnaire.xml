@@ -21,4 +21,13 @@
         </createTable>
     </changeSet>
 
+    <changeSet id="add-questionnaire-into-case_type" author="efremov">
+        <insert tableName="case_type">
+            <column name="ID" valueNumeric="11"/>
+            <column name="CT_CODE" value="questionnaire"/>
+            <column name="CT_INFO" value="Анкета нового сотрудника"/>
+            <column name="NEXT_ID" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
