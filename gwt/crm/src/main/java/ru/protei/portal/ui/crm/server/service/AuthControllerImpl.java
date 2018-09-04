@@ -34,7 +34,7 @@ public class AuthControllerImpl implements AuthController {
     @Override
     public Profile authentificate( String login, String password ) throws RequestFailedException {
 
-        __debug();
+//        __debug();
 
         if ( login == null && password == null ) {
             log.debug( "authentificate: empty auth params" );
