@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -67,21 +68,20 @@ public class Questionnaire implements Serializable {
     /**
      * Создатель анкеты
      */
-    @JdbcJoinedObject(joinPath = {
-            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "CREATOR", remoteColumn = "id", table = "Person")
-    })
-    private Person creator;
-
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CREATOR", table = "case_object", sqlTableAlias = "CO")
+    private Long creatorId;
 
     /**
      * Руководитель
      */
-    @JdbcJoinedObject(joinPath = {
+    @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "INITIATOR", table = "case_object", sqlTableAlias = "CO")
+    private Long headOfDepartmentId;
+
+    @JdbcJoinedColumn(joinPath = {
             @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
-            @JdbcJoinPath(localColumn = "INITIATOR", remoteColumn = "id", sqlTableAlias = "PersonInitiator", table = "Person")
-    })
-    private Person headOfDepartment;
+            @JdbcJoinPath(localColumn = "INITIATOR", remoteColumn = "id", table = "Person")
+    }, mappedColumn = "displayShortName")
+    private String headOfDepartmentShortName;
 
     /**
      * Комментарий
@@ -172,20 +172,10 @@ public class Questionnaire implements Serializable {
         this.resourceList = resourceList;
     }
 
-    public Person getCreator() {
-        return creator;
-    }
-
-    public void setCreator(Person creator) {
-        this.creator = creator;
-    }
-
-    public Person getHeadOfDepartment() {
-        return headOfDepartment;
-    }
-
-    public void setHeadOfDepartment(Person headOfDepartment) {
-        this.headOfDepartment = headOfDepartment;
+    public PersonShortView getHeadOfDepartment() {
+        if (headOfDepartmentId == null)
+            return null;
+        return new PersonShortView(headOfDepartmentShortName, headOfDepartmentId);
     }
 
     public String getComment() {
@@ -220,6 +210,30 @@ public class Questionnaire implements Serializable {
         this.state = state;
     }
 
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public Long getHeadOfDepartmentId() {
+        return headOfDepartmentId;
+    }
+
+    public void setHeadOfDepartmentId(Long headOfDepartmentId) {
+        this.headOfDepartmentId = headOfDepartmentId;
+    }
+
+    public String getHeadOfDepartmentShortName() {
+        return headOfDepartmentShortName;
+    }
+
+    public void setHeadOfDepartmentShortName(String headOfDepartmentShortName) {
+        this.headOfDepartmentShortName = headOfDepartmentShortName;
+    }
+
     @Override
     public String toString() {
         return "Questionnaire{" +
@@ -231,8 +245,9 @@ public class Questionnaire implements Serializable {
                 ", workplaceInfo='" + workplaceInfo + '\'' +
                 ", equipmentList=" + equipmentList +
                 ", resourceList=" + resourceList +
-                ", creator=" + creator +
-                ", headOfDepartment=" + headOfDepartment +
+                ", creatorId=" + creatorId +
+                ", headOfDepartmentId=" + headOfDepartmentId +
+                ", headOfDepartmentShortName='" + headOfDepartmentShortName + '\'' +
                 ", comment='" + comment + '\'' +
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +

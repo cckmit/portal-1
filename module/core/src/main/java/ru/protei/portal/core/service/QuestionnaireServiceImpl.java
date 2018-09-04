@@ -59,7 +59,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         if (questionnaire == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        CaseObject caseObject = createCaseObjectByQuestionnaire(questionnaire);
+        CaseObject caseObject = createCaseObjectFromQuestionnaire(questionnaire);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
@@ -70,7 +70,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         return new CoreResponse<Long>().success(id);
     }
 
-    private CaseObject createCaseObjectByQuestionnaire(Questionnaire questionnaire) {
+    private CaseObject createCaseObjectFromQuestionnaire(Questionnaire questionnaire) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseType(En_CaseType.QUESTIONNAIRE);
         caseObject.setState(En_CaseState.ACTIVE);
@@ -78,7 +78,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         caseObject.setCreated(new Date());
 
         caseObject.setInfo(questionnaire.getComment());
-        caseObject.setInitiator(questionnaire.getHeadOfDepartment());
+        caseObject.setInitiatorId(questionnaire.getHeadOfDepartmentId());
+        caseObject.setCreatorId(questionnaire.getCreatorId());
         caseObject.setName(questionnaire.getEmployeeFullName());
         return caseObject;
     }

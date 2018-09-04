@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.Questionnaire;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -87,7 +86,10 @@ public abstract class QuestionnaireEditActivity implements Activity, AbstractQue
         q.setWorkplaceInfo(view.workplaceInfo().getValue());
         q.setPost(view.post().getValue());
         q.setEmploymentDate(view.employmentDate().getValue());
-        q.setHeadOfDepartment(Person.fromPersonShortView(view.headOfDepartment().getValue()));
+        if (view.headOfDepartment().getValue() == null)
+            q.setHeadOfDepartmentId(null);
+        else
+            q.setHeadOfDepartmentId(view.headOfDepartment().getValue().getId());
         q.setEquipmentList(view.equipmentList().getValue());
         q.setResourceList(view.resourcesList().getValue());
         q.setWithRegistration(view.withRegistration().getValue());

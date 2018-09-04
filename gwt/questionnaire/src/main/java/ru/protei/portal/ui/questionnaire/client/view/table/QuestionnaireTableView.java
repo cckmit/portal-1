@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Questionnaire;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -91,7 +90,7 @@ public class QuestionnaireTableView extends Composite implements AbstractQuestio
                     cell.setInnerText("");
                     return;
                 }
-                cell.setInnerText(PersonShortView.fromPerson(value.getHeadOfDepartment()).getDisplayShortName());
+                cell.setInnerText(value.getHeadOfDepartment().getDisplayShortName());
             }
         };
 

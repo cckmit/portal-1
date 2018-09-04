@@ -6,7 +6,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Questionnaire;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.QuestionnaireEvents;
 import ru.protei.portal.ui.common.client.lang.En_EmployeeEquipmentLang;
@@ -38,7 +37,7 @@ public abstract class QuestionnairePreviewActivity implements AbstractQuestionna
         view.setResourceList(CollectionUtils.join(value.getResourceList(), resourceLang::getName, ", "));
         view.setPost(value.getPost());
         if (value.getHeadOfDepartment() != null)
-            view.setHeadOfDepartment(PersonShortView.fromPerson(value.getHeadOfDepartment()).getDisplayShortName());
+            view.setHeadOfDepartment(value.getHeadOfDepartment().getDisplayShortName());
         else
             view.setHeadOfDepartment("");
 
