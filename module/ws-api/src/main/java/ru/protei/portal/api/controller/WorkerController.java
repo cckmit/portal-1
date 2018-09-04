@@ -1164,12 +1164,12 @@ public class WorkerController {
 
         public String getDepartment(String def) {
             if (activeWorkers == null || activeWorkers.isEmpty()) return def;
-            return activeWorkers.get(0).getDepartment().getName();
+            return activeWorkers.get(0).getDepartmentName();
         }
 
         public String getPosition(String def) {
             if (activeWorkers == null || activeWorkers.isEmpty()) return def;
-            return activeWorkers.get(0).getPosition().getName();
+            return activeWorkers.get(0).getPositionName();
         }
     }
 }

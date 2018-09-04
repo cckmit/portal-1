@@ -93,8 +93,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
             @Override
             public void onSuccess( List< Person > employees ) {
-                employees.forEach( employee -> fillViewer.accept( employee ) );
-                //fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
+                //employees.forEach( employee -> fillViewer.accept( employee ) );
+                fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
             }
         });
     }
@@ -122,8 +122,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         WorkerEntry mainEntry = entryFacade.getMainEntry();
         if ( mainEntry != null ) {
             itemView.setCompany( mainEntry.getCompanyName() );
-            itemView.setDepartment( mainEntry.getDepartment().getName() );
-            itemView.setPosition( mainEntry.getPosition().getName() );
+            itemView.setDepartment( mainEntry.getDepartmentName() );
+            itemView.setPosition( mainEntry.getPositionName() );
         }
 
         itemView.setPhoto( "/avatars/" + employee.getId() + ".jpg" );
