@@ -16,10 +16,12 @@
                 </div>
 
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.questionnaireEmploymentType}"/></label>
-                    <span class="col-xs-7 col-md-4" ui:field="employmentType"/>
-                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.questionnaireWithRegistration}"/></label>
-                    <span class="col-xs-7 col-md-4" ui:field="withRegistration"/>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireEmploymentType}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="employmentType"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireWithRegistration}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="withRegistration"/>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnairePost}"/></label>
@@ -31,9 +33,9 @@
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-2"><ui:text from="{lang.questionnaireEmploymentDate}"/></label>
-                    <span class="col-xs-7 col-md-4" ui:field="employmentDate"/>
+                    <span class="col-xs-7 col-md-3" ui:field="employmentDate"/>
                     <label class="col-xs-5 col-md-2"><ui:text from="{lang.questionnaireCreated}"/></label>
-                    <span class="col-xs-7 col-md-4" ui:field="created"/>
+                    <span class="col-xs-7 col-md-5" ui:field="created"/>
                 </div>
             </fieldset>
             <fieldset class="header">
