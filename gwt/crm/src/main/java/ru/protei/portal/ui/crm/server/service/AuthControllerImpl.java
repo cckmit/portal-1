@@ -4,7 +4,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
@@ -12,6 +14,8 @@ import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.yt.WorkItem;
+import ru.protei.portal.core.service.YtRepository;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -29,6 +33,9 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     public Profile authentificate( String login, String password ) throws RequestFailedException {
+
+        __debug();
+
         if ( login == null && password == null ) {
             log.debug( "authentificate: empty auth params" );
 
@@ -56,6 +63,27 @@ public class AuthControllerImpl implements AuthController {
             authService.logout( httpRequest.getSession().getId(), httpRequest.getRemoteAddr(), httpRequest.getHeader( CrmConstants.Header.USER_AGENT ) );
             sessionService.setUserSessionDescriptor( httpRequest, null );
         }
+    }
+
+    private void __debug() {
+        ytRepository.getTasks( null, "2018-08-21", YtRepository.DateType.WORK_ITEMS ).forEach((issue)->{
+            WorkItem[] changes = null;
+            try {
+                changes = ytRepository.getIssueWorkItems( issue.getId() );
+            }
+            catch ( HttpClientErrorException e ) {
+                if ( e.getStatusCode().equals( HttpStatus.BAD_REQUEST ) ) {
+                    return;
+                }
+            }
+
+            if (changes == null) {
+                System.out.println( "No changes: "+issue.getId() );
+                return;
+            }
+
+            System.out.println( changes );
+        });
     }
 
     private Profile makeProfileByDescriptor( UserSessionDescriptor sessionDescriptor ) {
@@ -111,6 +139,9 @@ public class AuthControllerImpl implements AuthController {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    YtRepository ytRepository;
 
     private static final Logger log = LoggerFactory.getLogger(AuthControllerImpl.class);
 }

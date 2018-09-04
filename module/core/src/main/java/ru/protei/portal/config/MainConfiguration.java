@@ -567,6 +567,9 @@ public class MainConfiguration {
         return new SiteFolderServiceImpl();
     }
 
+    @Bean
+    public YtRepository getYtRepository() { return new YtRepositoryImpl(); }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {
