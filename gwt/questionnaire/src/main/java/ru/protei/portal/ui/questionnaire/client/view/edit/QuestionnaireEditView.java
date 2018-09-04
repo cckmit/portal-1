@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -100,6 +101,15 @@ public class QuestionnaireEditView extends Composite implements AbstractQuestion
         return post;
     }
 
+    @Override
+    public HasValidable headOfDepartmentValidation() {
+        return headOfDepartment;
+    }
+
+    @Override
+    public void setEmploymentDateValid(boolean isValid) {
+        employmentDate.markInputValid(isValid);
+    }
 
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
@@ -114,6 +124,9 @@ public class QuestionnaireEditView extends Composite implements AbstractQuestion
             activity.onCancelClicked();
         }
     }
+
+    @UiField
+    Button saveButton;
 
     @UiField
     ValidableTextBox fullName;

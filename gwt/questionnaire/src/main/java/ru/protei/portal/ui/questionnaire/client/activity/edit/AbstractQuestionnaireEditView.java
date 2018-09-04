@@ -38,4 +38,8 @@ public interface AbstractQuestionnaireEditView extends IsWidget {
     HasValidable fullNameValidation();
 
     HasValidable postValidation();
+
+    HasValidable headOfDepartmentValidation();
+
+    void setEmploymentDateValid(boolean isValid);
 }

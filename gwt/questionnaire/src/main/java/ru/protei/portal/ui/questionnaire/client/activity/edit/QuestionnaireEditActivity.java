@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.ent.Questionnaire;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.QuestionnaireEvents;
@@ -40,10 +41,11 @@ public abstract class QuestionnaireEditActivity implements Activity, AbstractQue
 
     @Override
     public void onSaveClicked() {
-        Questionnaire newQuestionnaire = fillDto();
-        if (!isValid(newQuestionnaire)) {
+        if (!isViewValid()) {
+            validateView();
             return;
         }
+        Questionnaire newQuestionnaire = fillDto();
         saveQuestionnaire(newQuestionnaire);
     }
 
@@ -52,23 +54,37 @@ public abstract class QuestionnaireEditActivity implements Activity, AbstractQue
         fireEvent(new Back());
     }
 
-    private boolean isValid(Questionnaire newQuestionnaire) {
-//        if (!newQuestionnaire.isValid()) {
-//            fireErrorMessage(getValidationErrorMessage(newQuestionnaire));
-//            return false;
-//        }
+    private boolean isViewValid() {
+        if (StringUtils.isBlank(view.fullName().getValue()))
+            return false;
+        if (StringUtils.isBlank(view.post().getValue()))
+            return false;
+        if (view.headOfDepartment().getValue() == null)
+            return false;
+        if (view.employmentDate().getValue() == null)
+            return false;
         return true;
     }
 
-    private void fireErrorMessage(String msg) {
-        fireEvent(new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
+    private void validateView() {
+        boolean fullNameValid = !StringUtils.isBlank(view.fullName().getValue());
+        view.fullNameValidation().setValid(fullNameValid);
+
+        boolean postValid = !StringUtils.isBlank(view.post().getValue());
+        view.postValidation().setValid(postValid);
+
+        boolean employmentDateValid = view.employmentDate().getValue() != null;
+        view.setEmploymentDateValid(employmentDateValid);
+
+        boolean headOfDepartmentValid = view.headOfDepartment().getValue() != null;
+        view.headOfDepartmentValidation().setValid(headOfDepartmentValid);
     }
 
     private void saveQuestionnaire(Questionnaire questionnaire) {
         questionnaireService.createQuestionnaire(questionnaire, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
-                fireErrorMessage(lang.errNotCreated());
+                fireEvent(new NotifyEvents.Show(lang.errNotCreated(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
@@ -111,6 +127,8 @@ public abstract class QuestionnaireEditActivity implements Activity, AbstractQue
 
         view.postValidation().setValid(true);
         view.fullNameValidation().setValid(true);
+        view.headOfDepartmentValidation().setValid(true);
+        view.setEmploymentDateValid(true);
     }
 
     @Inject

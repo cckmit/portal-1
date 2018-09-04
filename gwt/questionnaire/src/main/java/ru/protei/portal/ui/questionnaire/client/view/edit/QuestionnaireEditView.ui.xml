@@ -29,14 +29,14 @@
                         <label>
                             <ui:text from="{lang.questionnaireHeadOfDepartment}"/>
                         </label>
-                        <person:EmployeeButtonSelector ui:field="headOfDepartment"/>
+                        <person:EmployeeButtonSelector ui:field="headOfDepartment" hasNullValue="false"/>
                     </div>
 
                     <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.questionnaireEmploymentDate}"/>
                         </label>
-                        <datepicker:SinglePicker ui:field="employmentDate" type="DATE" formatValue="dd.MM.yyyy"/>
+                        <datepicker:SinglePicker ui:field="employmentDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="true"/>
                     </div>
 
 
