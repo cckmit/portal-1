@@ -1,12 +1,12 @@
-package ru.protei.portal.ui.issue.client.widget.state.option;
+package ru.protei.portal.ui.common.client.widget.issuestate.optionlist;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.optionlist.list.OptionList;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.issue.client.widget.state.StateModel;
 
 import java.util.List;
 

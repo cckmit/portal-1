@@ -181,6 +181,10 @@ public class HelperFunc {
                 + ")";
     }
 
+    public static <T> String makeInArg(Collection<T> col, Function<T, String> mapper) {
+        return "(" + CollectionUtils.join(col, mapper, ",") + ")";
+    }
+
     /**
      * nullGreater - если значение null то трактовать как большее
      */

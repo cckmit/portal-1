@@ -19,17 +19,20 @@ import ru.protei.portal.ui.common.client.events.QuestionnaireEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.QuestionnaireControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.questionnaire.client.activity.filter.AbstractQuestionnaireFilterActivity;
+import ru.protei.portal.ui.questionnaire.client.activity.filter.AbstractQuestionnaireFilterView;
 
 import java.util.List;
 
-public abstract class QuestionnaireTableActivity implements AbstractQuestionnaireTableActivity, Activity {
+public abstract class QuestionnaireTableActivity implements AbstractQuestionnaireTableActivity,
+        AbstractQuestionnaireFilterActivity, Activity {
 
     @PostConstruct
     public void init() {
         view.setActivity(this);
         view.setAnimation(animation);
-
-        CREATE_ACTION = lang.buttonCreate();
+        filterView.setActivity(this);
+        view.getFilterContainer().add(filterView.asWidget());
     }
 
     @Event
@@ -43,11 +46,12 @@ public abstract class QuestionnaireTableActivity implements AbstractQuestionnair
         init.parent.add(view.asWidget());
 
         fireEvent(policyService.hasPrivilegeFor(En_Privilege.QUESTIONNAIRE_CREATE) ?
-                new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.QUESTIONNAIRE) :
+                new ActionBarEvents.Add(lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.QUESTIONNAIRE) :
                 new ActionBarEvents.Clear()
         );
 
-        requestQuestionnairesCount();
+        filterView.resetFilter();
+        requestQuestionnairesCount(makeQuery());
     }
 
     @Event
@@ -63,18 +67,14 @@ public abstract class QuestionnaireTableActivity implements AbstractQuestionnair
         showPreview(value);
     }
 
-    private void showPreview(Questionnaire value) {
-
-        if (value == null) {
-            animation.closeDetails();
-        } else {
-            animation.showDetails();
-            fireEvent(new QuestionnaireEvents.ShowPreview(view.getPreviewContainer(), value));
-        }
+    @Override
+    public void onFilterChanged() {
+        requestQuestionnairesCount(makeQuery());
     }
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Questionnaire>> asyncCallback) {
+        QuestionnaireQuery query = makeQuery();
         query.setOffset(offset);
         query.setLimit(limit);
 
@@ -92,7 +92,26 @@ public abstract class QuestionnaireTableActivity implements AbstractQuestionnair
 
     }
 
-    private void requestQuestionnairesCount() {
+    private QuestionnaireQuery makeQuery() {
+        QuestionnaireQuery query = new QuestionnaireQuery();
+        query.searchString = filterView.searchString().getValue();
+        query.setCreatedFrom(filterView.dateRange().getValue().from);
+        query.setCreatedTo(filterView.dateRange().getValue().to);
+        query.setStates(filterView.states().getValue());
+        return query;
+    }
+
+    private void showPreview(Questionnaire value) {
+
+        if (value == null) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent(new QuestionnaireEvents.ShowPreview(view.getPreviewContainer(), value));
+        }
+    }
+
+    private void requestQuestionnairesCount(QuestionnaireQuery query) {
         view.clearRecords();
         animation.closeDetails();
 
@@ -119,10 +138,9 @@ public abstract class QuestionnaireTableActivity implements AbstractQuestionnair
     @Inject
     private AbstractQuestionnaireTableView view;
     @Inject
+    private AbstractQuestionnaireFilterView filterView;
+    @Inject
     private QuestionnaireControllerAsync questionnaireService;
 
-    private QuestionnaireQuery query = new QuestionnaireQuery();
     private AppEvents.InitDetails init;
-
-    private static String CREATE_ACTION;
 }
