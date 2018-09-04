@@ -5,9 +5,12 @@ import com.google.inject.Singleton;
 import ru.protei.portal.ui.questionnaire.client.activity.edit.AbstractQuestionnaireEditView;
 import ru.protei.portal.ui.questionnaire.client.activity.edit.QuestionnaireEditActivity;
 import ru.protei.portal.ui.questionnaire.client.activity.page.QuestionnairePage;
+import ru.protei.portal.ui.questionnaire.client.activity.preview.AbstractQuestionnairePreviewView;
+import ru.protei.portal.ui.questionnaire.client.activity.preview.QuestionnairePreviewActivity;
 import ru.protei.portal.ui.questionnaire.client.activity.table.AbstractQuestionnaireTableView;
 import ru.protei.portal.ui.questionnaire.client.activity.table.QuestionnaireTableActivity;
 import ru.protei.portal.ui.questionnaire.client.view.edit.QuestionnaireEditView;
+import ru.protei.portal.ui.questionnaire.client.view.preview.QuestionnairePreviewView;
 import ru.protei.portal.ui.questionnaire.client.view.table.QuestionnaireTableView;
 
 public class QuestionnaireClientModule extends AbstractGinModule {
@@ -20,6 +23,9 @@ public class QuestionnaireClientModule extends AbstractGinModule {
 
         bind(QuestionnaireEditActivity.class).asEagerSingleton();
         bind(AbstractQuestionnaireEditView.class).to(QuestionnaireEditView.class).in(Singleton.class);
+
+        bind(QuestionnairePreviewActivity.class).asEagerSingleton();
+        bind(AbstractQuestionnairePreviewView.class).to(QuestionnairePreviewView.class).in(Singleton.class);
     }
 }
 

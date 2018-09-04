@@ -72,3 +72,7 @@
     border-right: 0;
   }
 }
+
+.inherit-color-checkbox-group .checkbox >*, .inherit-color, .inherit-color.toggle >* {
+  color: inherit;
+}

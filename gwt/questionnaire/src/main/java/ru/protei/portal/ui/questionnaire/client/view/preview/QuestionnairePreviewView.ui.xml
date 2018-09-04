@@ -1,0 +1,54 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid">
+        <div class="preview">
+            <fieldset class="header">
+                <legend><ui:text from="{lang.questionnaireCommonHeader}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireEmployeeFullName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="fullName"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireHeadOfDepartment}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="headOfDepartment"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireEmploymentDate}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="employmentDate"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireEmploymentType}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="employmentType"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnairePost}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="post"/>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <div class="col-xs-12">
+                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.questionnaireWorkplaceInfo}"/></label>
+                    <p>
+                        <span class="col-xs-12 col-md-12" ui:field="workplaceInfo"/>
+                    </p>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireEquipmentList}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="equipmentList"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.questionnaireResourceList}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="resourcesList"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-12 col-md-12"><ui:text from="{lang.questionnaireComment}"/></label>
+                    <p>
+                        <span class="col-xs-12 col-md-12" ui:field="comment"/>
+                    </p>
+                </div>
+            </fieldset>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>
