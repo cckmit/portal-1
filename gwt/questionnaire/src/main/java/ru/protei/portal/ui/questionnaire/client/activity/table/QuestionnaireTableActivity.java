@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Questionnaire;
 import ru.protei.portal.core.model.query.QuestionnaireQuery;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -98,6 +99,8 @@ public abstract class QuestionnaireTableActivity implements AbstractQuestionnair
         query.setCreatedFrom(filterView.dateRange().getValue().from);
         query.setCreatedTo(filterView.dateRange().getValue().to);
         query.setStates(filterView.states().getValue());
+        query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setSortField(filterView.sortField().getValue());
         return query;
     }
 

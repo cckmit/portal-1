@@ -16,16 +16,13 @@ import java.util.List;
 
 public class QuestionnaireDAO_Impl extends JdbcBaseDAO<Long, Questionnaire> implements QuestionnaireDAO {
 
-    private static final String JOINS = " JOIN case_object CO ON CO.ID = questionnaire.id ";
-
     @Override
     public List<Questionnaire> getListByQuery(QuestionnaireQuery query) {
         SqlCondition where = createSqlCondition(query);
         JdbcQueryParameters queryParameters = new JdbcQueryParameters()
-                .withJoins(JOINS)
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
-                .withSort(TypeConverters.createSort(query, "CO.CREATED"))
+                .withSort(TypeConverters.createSort(query, "CO"))
                 .withOffset(query.getOffset());
         if (query.limit > 0) {
             queryParameters = queryParameters.withLimit(query.getLimit());
@@ -36,7 +33,7 @@ public class QuestionnaireDAO_Impl extends JdbcBaseDAO<Long, Questionnaire> impl
     @Override
     public int countByQuery(QuestionnaireQuery query) {
         SqlCondition where = createSqlCondition(query);
-        return getObjectsCount(where.condition, where.args, JOINS, true);
+        return getObjectsCount(where.condition, where.args);
     }
 
     @SqlConditionBuilder

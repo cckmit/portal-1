@@ -33,22 +33,28 @@ public abstract class QuestionnairePreviewActivity implements AbstractQuestionna
         view.setComment(value.getComment());
         view.setWorkplaceInfo(value.getWorkplaceInfo());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
+        view.setCreated(DateFormatter.formatDateTime(value.getCreated()));
         view.setEquipmentList(CollectionUtils.join(value.getEquipmentList(), equipmentLang::getName, ", "));
         view.setResourceList(CollectionUtils.join(value.getResourceList(), resourceLang::getName, ", "));
         view.setPost(value.getPost());
-        if (value.getHeadOfDepartment() != null) {
+        if (value.getHeadOfDepartment() != null)
             view.setHeadOfDepartment(PersonShortView.fromPerson(value.getHeadOfDepartment()).getDisplayShortName());
-        } else {
+        else
             view.setHeadOfDepartment("");
-        }
+
         if (value.getEmploymentType() == null) {
             view.setEmploymentType("");
         } else {
             String employmentType = employmentTypeLang.getName(value.getEmploymentType());
-            if (value.isWithRegistration())
-                employmentType += " " + lang.questionnaireWithRegistration();
             view.setEmploymentType(employmentType);
         }
+
+        if (value.isWithRegistration())
+            view.setWithRegistration(lang.questionnaireEmployeeWithRegistrationTrue());
+        else
+            view.setWithRegistration(lang.questionnaireEmployeeWithRegistrationFalse());
+
+        view.setState(value.getState());
     }
 
     @Inject

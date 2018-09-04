@@ -1333,4 +1333,12 @@ public interface Lang extends Messages, ContactItemLang {
     String questionnaireSearchFullNameOrPost();
 
     String questionnaireState();
+
+    String questionnaireCreated();
+
+    String questionnaireEquipmentListPreview();
+
+    String questionnaireEmployeeWithRegistrationTrue();
+
+    String questionnaireEmployeeWithRegistrationFalse();
 }

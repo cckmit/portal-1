@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
@@ -91,8 +92,21 @@ public class Questionnaire implements Serializable {
     /**
      * ФИО сотрудника
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME")
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "CO")
     private String employeeFullName;
+
+    /**
+     * Дата создания
+     */
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "CREATED", sqlTableAlias = "CO")
+    private Date created;
+
+    /**
+     * Состояние
+     */
+    @JdbcEnumerated(EnumType.ID)
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "STATE", sqlTableAlias = "CO")
+    private En_CaseState state;
 
     public Long getId() {
         return id;
@@ -190,6 +204,22 @@ public class Questionnaire implements Serializable {
         this.employeeFullName = employeeFullName;
     }
 
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public En_CaseState getState() {
+        return state;
+    }
+
+    public void setState(En_CaseState state) {
+        this.state = state;
+    }
+
     @Override
     public String toString() {
         return "Questionnaire{" +
@@ -205,6 +235,8 @@ public class Questionnaire implements Serializable {
                 ", headOfDepartment=" + headOfDepartment +
                 ", comment='" + comment + '\'' +
                 ", employeeFullName='" + employeeFullName + '\'' +
+                ", created=" + created +
+                ", state=" + state +
                 '}';
     }
 

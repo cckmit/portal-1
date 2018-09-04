@@ -7,4 +7,6 @@
     <source path='helper'/>
     <source path='query'/>
     <source path='util'/>
+
+    <inherits name="ru.protei.winter.core.utils.Core"/>
 </module>

@@ -1,13 +1,16 @@
 package ru.protei.portal.ui.questionnaire.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.questionnaire.client.activity.preview.AbstractQuestionnairePreviewActivity;
 import ru.protei.portal.ui.questionnaire.client.activity.preview.AbstractQuestionnairePreviewView;
@@ -80,6 +83,26 @@ public class QuestionnairePreviewView extends Composite implements AbstractQuest
         this.resourcesList.setInnerText(resourcesList);
     }
 
+    @Override
+    public void setWithRegistration(String withRegistration) {
+        this.withRegistration.setInnerText(withRegistration);
+    }
+
+    @Override
+    public void setCreated(String created) {
+        this.created.setInnerText(created);
+    }
+
+    @Override
+    public void setState(En_CaseState state) {
+        if (state == null) {
+            this.caseState.setClassName("");
+            this.caseState.setInnerText("");
+        } else {
+            this.caseState.setClassName("small label label-" + state.getName().toLowerCase());
+            this.caseState.setInnerText(caseStateLang.getStateName(state));
+        }
+    }
 
     @UiField
     SpanElement fullName;
@@ -99,11 +122,20 @@ public class QuestionnairePreviewView extends Composite implements AbstractQuest
     SpanElement equipmentList;
     @UiField
     SpanElement resourcesList;
+    @UiField
+    SpanElement withRegistration;
+    @UiField
+    SpanElement created;
+    @UiField
+    DivElement caseState;
 
 
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    En_CaseStateLang caseStateLang;
 
     @Inject
     FixedPositioner positioner;

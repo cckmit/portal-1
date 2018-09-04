@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.questionnaire.client.activity.preview;
 
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_CaseState;
 
 public interface AbstractQuestionnairePreviewView extends IsWidget {
     void setActivity(AbstractQuestionnairePreviewActivity activity);
@@ -22,4 +23,10 @@ public interface AbstractQuestionnairePreviewView extends IsWidget {
     void setEquipmentList(String equipmentList);
 
     void setResourceList(String resourcesList);
+
+    void setWithRegistration(String withRegistration);
+
+    void setCreated(String created);
+
+    void setState(En_CaseState state);
 }
