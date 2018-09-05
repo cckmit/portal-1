@@ -2,12 +2,17 @@ package ru.protei.portal.core.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.IssueResponse;
 import ru.protei.portal.core.model.yt.WorkItem;
+import ru.protei.portal.util.UriUtils;
 
 import javax.annotation.PostConstruct;
 import java.net.URLEncoder;
@@ -19,53 +24,26 @@ import java.util.List;
  * Created by admin on 15/11/2017.
  */
 public class YoutrackServiceImpl implements YoutrackService {
-    RestTemplate ytClient;
+    private RestTemplate ytClient = new RestTemplate();
 
-    HttpHeaders authHeaders;
+    private HttpHeaders authHeaders;
+    private String BASE_URL;
+
+    @Autowired
+    PortalConfig portalConfig;
 
     @PostConstruct
-    public void onInit() {
-        ytClient = new RestTemplate(/*Arrays.asList( new HttpMessageConverter< IssueResponse >() {
-            @Override
-            public boolean canRead( Class< ? > aClass, MediaType mediaType ) {
-                return true;
-            }
-
-            @Override
-            public boolean canWrite( Class< ? > aClass, MediaType mediaType ) {
-                return false;
-            }
-
-            @Override
-            public List<MediaType> getSupportedMediaTypes() {
-                return Arrays.asList( MediaType.APPLICATION_JSON );
-            }
-
-            @Override
-            public IssueResponse read( Class< ? extends IssueResponse > aClass, HttpInputMessage httpInputMessage ) throws IOException, HttpMessageNotReadableException {
-                InputStreamReader r = new InputStreamReader( httpInputMessage.getBody() );
-                char buf[] = new char[ 256 ];
-                r.read( buf );
-                return null;
-            }
-
-            @Override
-            public void write(IssueResponse issueResponse, MediaType mediaType, HttpOutputMessage httpOutputMessage ) throws IOException, HttpMessageNotWritableException {
-
-            }
-        } ) )*/);
-//        RestTemplateBuilder builder = new RestTemplateBuilder(  );
-//        builder.additionalMessageConverters(  );
-//        ytClient = builder.build(  );
-
+    public void initAuthHeadersAndUrl() {
         authHeaders = new HttpHeaders();
         authHeaders.setAccept( Arrays.asList( MediaType.APPLICATION_JSON ) );
-        authHeaders.set( "Authorization", "Bearer perm:c2hhZ2FsZWV2.cGRiMg==.8KZv5OmkR1BKoK6eWmpf2cEm7jVCP9" );
+        authHeaders.set( "Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
+
+        BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
     }
 
     @Override
     public List<Issue> getTasks(String ytLogin, String date, DateType dateType) {
-        String url = "https://youtrack.protei/rest/issue?max=100&with=links&with=Assignee&with=projectShortName&with=Type&with=id&with=entityId&with=Заказчик&with=Номер обращения в CRM&with=resolved&with=created&with=reporterFullName&with=reporterName";
+        String url = BASE_URL + "/issue?max=100&with=links&with=Assignee&with=projectShortName&with=Type&with=id&with=entityId&with=Заказчик&with=Номер обращения в CRM&with=resolved&with=created&with=reporterFullName&with=reporterName";
 
         String filter = "";
         if ( ytLogin != null ) {
@@ -118,7 +96,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     @Override
     public Issue getIssueDetails(String issue) {
         ResponseEntity< Issue > resp = ytClient.exchange(
-                "https://youtrack.protei/rest/issue/"+issue+"?with=links&with=Assignee&with=projectShortName&with=Type&with=id&with=entityId&with=Заказчик&with=Номер обращения в CRM&with=resolved",
+                BASE_URL + "/issue/"+issue+"?with=links&with=Assignee&with=projectShortName&with=Type&with=id&with=entityId&with=Заказчик&with=Номер обращения в CRM&with=resolved",
                 HttpMethod.GET, new HttpEntity<>( authHeaders ), Issue.class
         );
         return resp.getBody();
@@ -127,7 +105,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     @Override
     public String getIssueChangesRaw(String issue) {
         ResponseEntity< String > resp = ytClient.exchange(
-                "https://youtrack.protei/rest/issue/"+issue+"/changes",
+                BASE_URL + "/issue/"+issue+"/changes",
                 HttpMethod.GET, new HttpEntity<>( authHeaders ), String.class
         );
         return resp.getBody();
@@ -138,7 +116,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         log.info( "requesting changes of {}", issue );
 
         ResponseEntity< ChangeResponse > resp = ytClient.exchange(
-                "https://youtrack.protei/rest/issue/"+issue+"/changes",
+                BASE_URL + "/issue/"+issue+"/changes",
                 HttpMethod.GET, new HttpEntity<>( authHeaders ), ChangeResponse.class
         );
         return resp.getBody();
@@ -149,7 +127,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         log.info( "requesting work items of {}", issue );
 
         ResponseEntity< String > resp = ytClient.exchange(
-                "https://youtrack.protei/rest/issue/"+issue+"/timetracking/workitem/",
+                BASE_URL + "/issue/"+issue+"/timetracking/workitem/",
                 HttpMethod.GET, new HttpEntity<>( authHeaders ), String.class
         );
         return resp.getBody();
@@ -160,10 +138,39 @@ public class YoutrackServiceImpl implements YoutrackService {
         log.info( "requesting work items of {}", issue );
 
         ResponseEntity< WorkItem[] > resp = ytClient.exchange(
-                "https://youtrack.protei/rest/issue/"+issue+"/timetracking/workitem/",
+                BASE_URL + "/issue/"+issue+"/timetracking/workitem/",
                 HttpMethod.GET, new HttpEntity<>( authHeaders ), WorkItem[].class
         );
         return resp.getBody();
+    }
+
+    @Override
+    public String createIssue(String project, String summary, String description) {
+        log.info( "creating issue: project={}, summary={}, description={}", project, summary, description);
+
+        String uri = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue")
+                .queryParam("project", project)
+                .queryParam("summary", summary)
+                .queryParam("description", StringUtils.emptyIfNull(description))
+                .build()
+                .encode()
+                .toUriString();
+
+        ResponseEntity<String> response = ytClient.exchange(
+                uri,
+                HttpMethod.PUT,
+                new HttpEntity<>(authHeaders),
+                String.class
+        );
+
+        String issueId = UriUtils.getLastPathSegment(response.getHeaders().getLocation());
+        if (issueId == null) {
+            log.error("failed to create issue: failed to extract issue id from response Location header: {}" + response.getHeaders().getLocation());
+            throw new RuntimeException();
+        }
+
+        log.info("created issue with id = {}", issueId);
+        return issueId;
     }
 
     private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );

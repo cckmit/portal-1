@@ -19,6 +19,8 @@ public interface YoutrackService {
 
     WorkItem[] getIssueWorkItems(String issue);
 
+    String createIssue(String project, String summary, String description);
+
     public enum DateType {
         COMPLETE, CREATED, UPDATED, WORK_ITEMS
     }

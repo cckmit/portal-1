@@ -7,13 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.UserSessionDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.EmployeeRegistrationDataSyncRunner;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +51,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private PortalConfig config;
+
+    @Autowired
+    private EmployeeRegistrationDataSyncRunner employeeRegistrationDataSyncRunner;
 
     public AuthServiceImpl() {
         this.sessionCache = new HashMap<>();
@@ -126,6 +135,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+
+        employeeRegistrationDataSyncRunner.__debug();
 
         String loginSuffix = config.data().getLoginSuffix();
         if (!ulogin.contains("@") && !loginSuffix.isEmpty()) {
