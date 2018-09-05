@@ -568,7 +568,7 @@ public class MainConfiguration {
     }
 
     @Bean
-    public YtRepository getYtRepository() { return new YtRepositoryImpl(); }
+    public YoutrackService getYoutrackService() { return new YoutrackServiceImpl(); }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

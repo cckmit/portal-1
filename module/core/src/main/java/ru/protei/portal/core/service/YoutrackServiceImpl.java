@@ -3,9 +3,6 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.client.RestTemplate;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
@@ -13,8 +10,6 @@ import ru.protei.portal.core.model.yt.IssueResponse;
 import ru.protei.portal.core.model.yt.WorkItem;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +18,7 @@ import java.util.List;
 /**
  * Created by admin on 15/11/2017.
  */
-public class YtRepositoryImpl implements YtRepository {
+public class YoutrackServiceImpl implements YoutrackService {
     RestTemplate ytClient;
 
     HttpHeaders authHeaders;
@@ -171,5 +166,5 @@ public class YtRepositoryImpl implements YtRepository {
         return resp.getBody();
     }
 
-    private final static Logger log = LoggerFactory.getLogger( YtRepositoryImpl.class );
+    private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
 }

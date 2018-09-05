@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.yt.WorkItem;
-import ru.protei.portal.core.service.YtRepository;
+import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -66,10 +66,10 @@ public class AuthControllerImpl implements AuthController {
     }
 
     private void __debug() {
-        ytRepository.getTasks( null, "2018-08-21", YtRepository.DateType.WORK_ITEMS ).forEach((issue)->{
+        youtrackService.getTasks( null, "2018-08-21", YoutrackService.DateType.WORK_ITEMS ).forEach((issue)->{
             WorkItem[] changes = null;
             try {
-                changes = ytRepository.getIssueWorkItems( issue.getId() );
+                changes = youtrackService.getIssueWorkItems( issue.getId() );
             }
             catch ( HttpClientErrorException e ) {
                 if ( e.getStatusCode().equals( HttpStatus.BAD_REQUEST ) ) {
@@ -141,7 +141,7 @@ public class AuthControllerImpl implements AuthController {
     private AuthService authService;
 
     @Autowired
-    YtRepository ytRepository;
+    YoutrackService youtrackService;
 
     private static final Logger log = LoggerFactory.getLogger(AuthControllerImpl.class);
 }
