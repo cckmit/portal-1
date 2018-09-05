@@ -4,11 +4,14 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Created by turik on 08.06.17.
  */
 public class PersonQuery extends BaseQuery {
-    private Long companyId;
+    private Set<Long> companyIds;
 
     private Boolean onlyPeople;
 
@@ -20,29 +23,29 @@ public class PersonQuery extends BaseQuery {
         super( "", En_SortField.person_full_name, En_SortDir.ASC );
     }
 
-    public PersonQuery( EntityOption company, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this ( company == null ? null : company.getId(), onlyPeople, fired, searchString, sortField, sortDir );
-    }
-
     public PersonQuery( Long companyId, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this(companyId, onlyPeople, fired, null, searchString, sortField, sortDir);
+        this ( makeCompanyIds(companyId), onlyPeople, fired, searchString, sortField, sortDir );
     }
 
-    public PersonQuery( Long companyId, Boolean onlyPeople, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+    public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
+        this(companyIds, onlyPeople, fired, null, searchString, sortField, sortDir);
+    }
+
+    public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, Boolean deleted, String searchString, En_SortField sortField, En_SortDir sortDir ) {
         super(searchString, sortField, sortDir);
-        this.companyId = companyId;
+        this.companyIds = companyIds;
         this.onlyPeople = onlyPeople;
         this.limit = 1000;
         this.fired = fired;
         this.deleted = deleted;
     }
 
-    public Long getCompanyId() {
-        return companyId;
+    public Set<Long> getCompanyIds() {
+        return companyIds;
     }
 
-    public void setCompanyId( Long companyId ) {
-        this.companyId = companyId;
+    public void setCompanyIds(Set<Long> companyIds) {
+        this.companyIds = companyIds;
     }
 
     public Boolean getOnlyPeople() {
@@ -69,10 +72,20 @@ public class PersonQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
+    public static Set<Long> makeCompanyIds(Long companyId) {
+        if (companyId == null) {
+            return null;
+        }
+        Set<Long> companyIds = new HashSet<>();
+        companyIds.add(companyId);
+        return companyIds;
+    }
+
+
     @Override
     public String toString() {
         return "PersonQuery{" +
-                "companyId=" + companyId +
+                "companyId=" + companyIds +
                 "onlyPeople=" + onlyPeople +
                 "fired=" + fired +
                 "deleted=" + deleted +

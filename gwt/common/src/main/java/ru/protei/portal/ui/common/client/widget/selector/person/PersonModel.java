@@ -12,9 +12,13 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -29,7 +33,9 @@ public abstract class PersonModel implements Activity {
 
     public void requestPersonList( Company company, Boolean fired, Consumer< List< PersonShortView > > fillOptionsAction ){
         isPushing = true;
-        PersonQuery query = new PersonQuery( company.getId(), null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC );
+        Set<Long> companyIds = new HashSet<>();
+        companyIds.add(company.getId());
+        PersonQuery query = new PersonQuery( companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC );
         personService.getPersonViewList( query, new RequestCallback< List<PersonShortView> >() {
             @Override
             public void onError( Throwable throwable ) {

@@ -69,7 +69,7 @@
                                               header="{lang.issueManager}"
                                               addStyleNames="form-group col-xs-12"/>
 
-                <person:EmployeeMultiSelector ui:field="initiators"
+                <person:InitiatorMultiSelector ui:field="initiators"
                                               header="{lang.issueInitiator}"
                                               addStyleNames="form-group col-xs-12"/>
 

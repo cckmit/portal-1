@@ -215,9 +215,9 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
-            if (query.getCompanyId() != null) {
-                condition.append(" and Person.company_id = ?");
-                args.add(query.getCompanyId());
+            if (query.getCompanyIds() != null) {
+                condition.append(" and Person.company_id in ");
+                condition.append(HelperFunc.makeInArg(query.getCompanyIds()));
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {

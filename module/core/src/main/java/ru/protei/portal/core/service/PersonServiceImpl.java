@@ -3,10 +3,13 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.dict.En_Scope;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.service.user.AuthService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +23,9 @@ public class PersonServiceImpl implements PersonService {
     PersonDAO personDAO;
 
     @Override
-    public CoreResponse< List< PersonShortView > > shortViewList( PersonQuery query ) {
+    public CoreResponse< List< PersonShortView > > shortViewList(AuthToken authToken, PersonQuery query) {
+        query = processQueryByPolicyScope(authToken, query);
+
         List<Person> list = personDAO.getPersons( query );
 
         if ( list == null )
@@ -42,4 +47,24 @@ public class PersonServiceImpl implements PersonService {
         list.forEach(a -> names.put(a.getId(), a.getDisplayName()));
         return new CoreResponse<Map<Long, String>>().success( names );
     }
+
+    private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
+            if(personQuery.getCompanyIds()!=null){
+                Set<Long> companyIds = new HashSet<>();
+                companyIds.add(descriptor.getPerson().getCompanyId());
+                personQuery.setCompanyIds(companyIds);
+            }
+        }
+        return personQuery;
+    }
+
+    @Autowired
+    AuthService authService;
+
+    @Autowired
+    PolicyService policyService;
+
 }

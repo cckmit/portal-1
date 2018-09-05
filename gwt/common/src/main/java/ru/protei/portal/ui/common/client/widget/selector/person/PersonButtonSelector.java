@@ -64,12 +64,12 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
             clearOptions();
             return;
         }
-        this.company = company;
-        updatePersons();
+//        this.company = company;
+//        updatePersons();
+        personModel.requestPersonList( company, fired, this::fillOptions );
     }
 
     private void updatePersons(){
-        personModel.requestPersonList( company, fired, this::fillOptions );
     }
 
     @Inject
@@ -80,7 +80,7 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
 
     PersonShortView deferred;
 
-    private Company company;
+//    private Company company;
     private String defaultValue;
     private Boolean fired = null;
 }
