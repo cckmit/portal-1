@@ -573,4 +573,9 @@ public class MainConfiguration {
     public ServiceLayerInterceptor getServiceLayerInterceptor () {
         return new ServiceLayerInterceptor();
     }
+
+    @Bean
+    public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging () {
+        return new ServiceLayerInterceptorLogging();
+    }
 }

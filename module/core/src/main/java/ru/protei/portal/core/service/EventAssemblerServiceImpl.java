@@ -29,7 +29,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         Person eventRelatedPerson = event.getPerson();
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
         if (assembledEventsMap.containsKey(key)) {
-            logger.debug("assemble event on case {}", event.getCaseObject().defGUID());
+            logger.info("assemble event on case {}", event.getCaseObject().defGUID());
             AssembledCaseEvent caseEvent = assembledEventsMap.get(key);
             if (caseEvent.isLastStateSet()) {
                 publishAndClear(key);
@@ -39,7 +39,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                 assembledEventsMap.get(key).attachCaseObject(event.getCaseObject());
             }
         } else {
-            logger.debug("push new event on case {} for assembly", event.getCaseObject().defGUID());
+            logger.info("push new event on case {} for assembly", event.getCaseObject().defGUID());
             assembledEventsMap.put(key, new AssembledCaseEvent(event));
 
         }
@@ -62,17 +62,17 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                         && existingEvent.isCaseCommentAttached()
                         && !Objects.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId()) //we don't take into account a last edited comment
                 ) {
-            logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
+            logger.info("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
             publishAndClear(key);
             assembledEventsMap.put(key, new AssembledCaseEvent(event));
         } else {
-            logger.debug("onCaseCommentEvent, push new event on case {}", event.getCaseObject().defGUID());
+            logger.info("onCaseCommentEvent, push new event on case {}", event.getCaseObject().defGUID());
             //In order to update case events map in both cases:
             // person and event pair already exist or
             // person and event pair does not exist;
 
             if (assembledEventsMap.containsKey(key)) {
-                logger.debug("attach comment event to existing case {}", event.getCaseObject().defGUID());
+                logger.info("attach comment event to existing case {}", event.getCaseObject().defGUID());
                 AssembledCaseEvent assembledCaseEvent = assembledEventsMap.get(key);
                 assembledCaseEvent.attachCaseComment(event.getCaseComment());
                 assembledCaseEvent.attachCaseObject(event.getCaseObject());
@@ -96,7 +96,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
         Person eventRelatedPerson = event.getPerson();
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
-        logger.debug("onCaseAttachmentEvent, adding attachments on case {}", event.getCaseObject().defGUID());
+        logger.info("onCaseAttachmentEvent, adding attachments on case {}", event.getCaseObject().defGUID());
 
         if (assembledEventsMap.containsKey(key)) {
             logger.debug("attach attachment event to existing case {}", event.getCaseObject().defGUID());
@@ -135,14 +135,14 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                 .collect(Collectors.toList());
 
         if (!events.isEmpty()) {
-            logger.debug("publish set of events, initiators : {}", events.size());
+            logger.info("publish set of events, initiators : {}", events.size());
             events.forEach(this::publishAndClear);
         }
     }
 
     private void publishAndClear(Tuple<Person, Long> key) {
         AssembledCaseEvent personsEvent = assembledEventsMap.get(key);
-        logger.debug("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObject().defGUID(),
+        logger.info("publishAndClear event, case:{}, person:{}", personsEvent.getCaseObject().defGUID(),
                 personsEvent.getInitiator().getDisplayName());
         publisherService.publishEvent(personsEvent);
         assembledEventsMap.remove(key);
