@@ -72,7 +72,7 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
                 addOption( En_SortField.person_full_name );
                 addOption( En_SortField.birthday );
                 break;
-            case QUESTIONNAIRE:
+            case EMPLOYEE_REGISTRATION:
                 addOption(En_SortField.creation_date);
                 break;
         }

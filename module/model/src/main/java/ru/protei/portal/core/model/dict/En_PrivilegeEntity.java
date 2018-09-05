@@ -22,5 +22,5 @@ public enum En_PrivilegeEntity {
     CASE_STATES,
     SITE_FOLDER,
     EMPLOYEE,
-    QUESTIONNAIRE
+    EMPLOYEE_REGISTRATION
 }

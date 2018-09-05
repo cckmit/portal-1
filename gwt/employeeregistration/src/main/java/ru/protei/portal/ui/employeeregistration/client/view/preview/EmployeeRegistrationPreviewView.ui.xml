@@ -1,0 +1,61 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="preview-wrapper grid">
+        <div class="preview">
+            <fieldset class="header">
+                <legend><ui:text from="{lang.employeeRegistrationCommonHeader}"/></legend>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationEmployeeFullName}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="fullName"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="headOfDepartment"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationEmploymentType}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="employmentType"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationWithRegistration}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="withRegistration"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationPost}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="post"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationState}"/></label>
+                    <span class="col-xs-7 col-md-7"><div ui:field="caseState"/></span>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
+                    <span class="col-xs-7 col-md-3" ui:field="employmentDate"/>
+                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationCreated}"/></label>
+                    <span class="col-xs-7 col-md-5" ui:field="created"/>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationWorkplaceInfo}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="workplaceInfo"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationEquipmentListPreview}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="equipmentList"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationResourceList}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="resourcesList"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationComment}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="comment"/>
+                </div>
+            </fieldset>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

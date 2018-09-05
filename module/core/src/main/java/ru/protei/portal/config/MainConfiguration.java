@@ -386,8 +386,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public QuestionnaireDAO getQuestionnaireDAO() {
-        return new QuestionnaireDAO_Impl();
+    public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
+        return new EmployeeRegistrationDAO_Impl();
     }
 
 /**
@@ -573,8 +573,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public QuestionnaireService getQuestionnaireService() {
-        return new QuestionnaireServiceImpl();
+    public EmployeeRegistrationService getEmployeeRegistrationService() {
+        return new EmployeeRegistrationServiceImpl();
     }
 
     /** ASPECT/INTERCEPTORS **/

@@ -1268,15 +1268,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentNotApproved();
 
-    String questionnaires();
+    String employeeRegistrations();
 
-    String questionnaireEmployeeFullNameColumnHeader();
+    String employeeRegistrationEmployeeFullNameColumnHeader();
 
-    String questionnaireHeadOfDepartmentColumnHeader();
+    String employeeRegistrationHeadOfDepartmentColumnHeader();
 
-    String questionnaireEmploymentDateColumnHeader();
+    String employeeRegistrationEmploymentDateColumnHeader();
 
-    String privilegeCategoryQuestionnaire();
+    String privilegeCategoryEmployeeRegistration();
 
     String employmentTypeFullTime();
 
@@ -1308,37 +1308,37 @@ public interface Lang extends Messages, ContactItemLang {
 
     String internalResourceCrm();
 
-    String questionnaireCommonHeader();
+    String employeeRegistrationCommonHeader();
 
-    String questionnaireEmployeeFullName();
+    String employeeRegistrationEmployeeFullName();
 
-    String questionnaireHeadOfDepartment();
+    String employeeRegistrationHeadOfDepartment();
 
-    String questionnaireEmploymentDate();
+    String employeeRegistrationEmploymentDate();
 
-    String questionnaireEmploymentType();
+    String employeeRegistrationEmploymentType();
 
-    String questionnaireWithRegistration();
+    String employeeRegistrationWithRegistration();
 
-    String questionnairePost();
+    String employeeRegistrationPost();
 
-    String questionnaireWorkplaceInfo();
+    String employeeRegistrationWorkplaceInfo();
 
-    String questionnaireComment();
+    String employeeRegistrationComment();
 
-    String questionnaireEquipmentList();
+    String employeeRegistrationEquipmentList();
 
-    String questionnaireResourceList();
+    String employeeRegistrationResourceList();
 
-    String questionnaireSearchFullNameOrPost();
+    String employeeRegistrationSearchFullNameOrPost();
 
-    String questionnaireState();
+    String employeeRegistrationState();
 
-    String questionnaireCreated();
+    String employeeRegistrationCreated();
 
-    String questionnaireEquipmentListPreview();
+    String employeeRegistrationEquipmentListPreview();
 
-    String questionnaireEmployeeWithRegistrationTrue();
+    String employeeRegistrationEmployeeWithRegistrationTrue();
 
-    String questionnaireEmployeeWithRegistrationFalse();
+    String employeeRegistrationEmployeeWithRegistrationFalse();
 }

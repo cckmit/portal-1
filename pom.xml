@@ -58,7 +58,7 @@
                 <module>gwt/casestate</module>
                 <module>gwt/sitefolder</module>
                 <module>gwt/employee</module>
-                <module>gwt/questionnaire</module>
+                <module>gwt/employeeregistration</module>
             </modules>
         </profile>
 

@@ -126,7 +126,7 @@
 
         <dependency>
             <groupId>ru.protei</groupId>
-            <artifactId>portal4.ui.questionnaire</artifactId>
+            <artifactId>portal4.ui.employeeregistration</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
