@@ -35,6 +35,9 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Autowired
     CompanyGroupHomeDAO groupHomeDAO;
 
+    @Autowired
+    EmployeeSqlBuilder employeeSqlBuilder;
+
     EntityCache<CompanyHomeGroupItem> homeGroupCache;
 
     private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
@@ -86,7 +89,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     @Override
-    public Person getEmployee( long id ) {
+    public Person getEmployee(long id) {
         final Person person = get(id);
 
         return person != null && ifPersonIsEmployee(person) ? person : null;
@@ -145,7 +148,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @SqlConditionBuilder
     public SqlCondition createContactSqlCondition(ContactQuery query) {
         return new SqlCondition().build((condition, args) -> {
-            condition.append("Person.company_id not in (select companyId from company_group_home)");
+            condition.append(buildHomeCompanyFilter(true));
 
             if (query.getCompanyId() != null) {
                 condition.append(" and Person.company_id=?");
@@ -165,7 +168,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-
                 args.add(likeArg);
                 args.add(likeArg);
             }
@@ -175,38 +177,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Override
     @SqlConditionBuilder
     public SqlCondition createEmployeeSqlCondition(EmployeeQuery query) {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append( buildHomeCompanyFilter() );
-
-            if (query.getFired() != null) {
-                condition.append(" and Person.isfired=?");
-                args.add(query.getFired() ? 1 : 0);
-            }
-
-            if (query.getDeleted() != null) {
-                condition.append(" and Person.isdeleted=?");
-                args.add(query.getDeleted() ? 1 : 0);
-            }
-
-            if (query.getOnlyPeople() != null) {
-                condition.append(" and Person.sex != ?");
-                args.add( En_Gender.UNDEFINED.getCode() );
-            }
-
-            if (!CollectionUtils.isEmpty(query.getHomeCompanies())) {
-                condition.append(" and WE.companyId in (")
-                        .append(query.getHomeCompanies().stream().map(option -> option.getId().toString()).collect(Collectors.joining(",")))
-                        .append(")");
-            }
-
-            if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-
-                args.add(likeArg);
-                args.add(likeArg);
-            }
-        });
+        return employeeSqlBuilder.createSqlCondition(query);
     }
 
     @Override
@@ -223,7 +194,6 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and (Person.displayName like ? or Person.contactInfo like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-
                 args.add(likeArg);
                 args.add(likeArg);
             }
@@ -240,7 +210,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
             if (query.getOnlyPeople() != null) {
                 condition.append(" and Person.sex != ?");
-                args.add( En_Gender.UNDEFINED.getCode() );
+                args.add(En_Gender.UNDEFINED.getCode());
             }
         });
     }

@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.ui.common.client.service.EmployeeController;
@@ -21,9 +21,9 @@ import java.util.List;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
-    public List<Person> getEmployees( EmployeeQuery query ) throws RequestFailedException {
+    public List< EmployeeShortView > getEmployees( EmployeeQuery query ) throws RequestFailedException {
         log.debug( "getEmployees(): query={}", query );
-        CoreResponse< List< Person > > response = employeeService.employeeList( query );
+        CoreResponse< List< EmployeeShortView > > response = employeeService.employeeList( query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );

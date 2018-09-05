@@ -5,9 +5,9 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
+import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractPositionItemActivity;
@@ -31,7 +31,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         fillView( event.employee );
     }
 
-    private void fillView( Person employee ) {
+    private void fillView( EmployeeShortView employee ) {
 
         view.setID( employee.getId().toString() );
         view.setIP( employee.getIpAddress() );
@@ -44,7 +44,7 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         } );
     }
 
-    private AbstractPositionItemView makeView( WorkerEntry workerEntry ) {
+    private AbstractPositionItemView makeView( WorkerEntryShortView workerEntry ) {
         AbstractPositionItemView itemView = factory.get();
         itemView.setActivity( this );
 

@@ -2,8 +2,8 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -17,9 +17,9 @@ public interface EmployeeController extends RemoteService {
 
     /**
      * Получение списка сотрудников
-     * @return список контактов
+     * @return список сотрудников
      */
-    List< Person > getEmployees ( EmployeeQuery query ) throws RequestFailedException;
+    List< EmployeeShortView > getEmployees ( EmployeeQuery query ) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления сотрудника

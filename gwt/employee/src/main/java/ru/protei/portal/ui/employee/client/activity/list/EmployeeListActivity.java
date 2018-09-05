@@ -7,11 +7,11 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.WorkerEntry;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
+import ru.protei.portal.core.model.view.EmployeeShortView;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
@@ -69,7 +69,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     @Override
     public void onPreviewClicked( AbstractEmployeeItemView itemView ) {
-        Person value = itemViewToModel.get( itemView );
+        EmployeeShortView value = itemViewToModel.get( itemView );
         if ( value == null ) {
             return;
         }
@@ -86,14 +86,13 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getChildContainer().clear();
         itemViewToModel.clear();
 
-        employeeService.getEmployees( makeQuery(), new RequestCallback< List< Person > >() {
+        employeeService.getEmployees( makeQuery(), new RequestCallback< List< EmployeeShortView > >() {
 
             @Override
             public void onError( Throwable throwable ) {}
 
             @Override
-            public void onSuccess( List< Person > employees ) {
-                //employees.forEach( employee -> fillViewer.accept( employee ) );
+            public void onSuccess( List< EmployeeShortView > employees ) {
                 fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
             }
         });
@@ -107,7 +106,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
     }
 
-    private AbstractEmployeeItemView makeView( Person employee ) {
+    private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {
         AbstractEmployeeItemView itemView = factory.get();
         itemView.setActivity( this );
 
@@ -119,7 +118,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setEmail( infoFacade.publicEmailsAsString() );
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
-        WorkerEntry mainEntry = entryFacade.getMainEntry();
+        WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
         if ( mainEntry != null ) {
             itemView.setCompany( mainEntry.getCompanyName() );
             itemView.setDepartment( mainEntry.getDepartmentName() );
@@ -131,9 +130,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         return itemView;
     }
 
-    Consumer< Person > fillViewer = new Consumer< Person >() {
+    Consumer< EmployeeShortView > fillViewer = new Consumer< EmployeeShortView >() {
         @Override
-        public void accept( Person employee ) {
+        public void accept( EmployeeShortView employee ) {
             AbstractEmployeeItemView itemView = makeView( employee );
 
             itemViewToModel.put( itemView, employee );
@@ -164,5 +163,5 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private AppEvents.InitDetails init;
-    private Map< AbstractEmployeeItemView, Person > itemViewToModel = new HashMap<>();
+    private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
 }

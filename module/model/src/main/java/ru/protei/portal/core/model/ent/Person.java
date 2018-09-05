@@ -4,16 +4,12 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContactInfo;
-import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.PersonShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
-
-import static ru.protei.portal.core.model.dict.En_ContactDataAccess.PRIVATE;
 
 /**
  * Created by michael on 30.03.16.
@@ -102,9 +98,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
 
     @JdbcColumn(name = "locale")
     private String locale;
-
-    @JdbcOneToMany( table = "worker_entry", localColumn = "id", remoteColumn = "personId" )
-    private List< WorkerEntry > workerEntries;
 
     public static Person fromPersonShortView( PersonShortView personShortView ){
         if(personShortView == null)
@@ -378,14 +371,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         };
     }
 
-    public List< WorkerEntry > getWorkerEntries() {
-        return workerEntries;
-    }
-
-    public void setWorkerEntries( List< WorkerEntry > workerEntries ) {
-        this.workerEntries = workerEntries;
-    }
-
     @Override
     public boolean isAllowedRemove() {
         return !isDeleted;
@@ -416,7 +401,6 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
                 ", oldId=" + oldId +
                 ", relations='" + relations + '\'' +
                 ", locale='" + locale + '\'' +
-                ", workerEntries=" + workerEntries +
                 '}';
     }
 }

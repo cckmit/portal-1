@@ -113,6 +113,10 @@ public class MainConfiguration {
         return new ServerSqlBuilder();
     }
 
+    @Bean
+    public EmployeeSqlBuilder employeeSqlBuilder() {
+        return new EmployeeSqlBuilder();
+    }
 
     /* DAO */
 
@@ -235,7 +239,6 @@ public class MainConfiguration {
     public WorkerEntryDAO getWorkerEntryDAO() {
         return new WorkerEntryDAO_Impl();
     }
-
 
     @Bean
     public CompanyGroupDAO getCompanyGroupDAO() {
@@ -385,6 +388,10 @@ public class MainConfiguration {
         return new DevUnitChildRefDAO_Impl();
     }
 
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
+    }
 /**
  *
  *
