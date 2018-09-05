@@ -80,7 +80,6 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
 
     PersonShortView deferred;
 
-//    private Company company;
     private String defaultValue;
     private Boolean fired = null;
 }

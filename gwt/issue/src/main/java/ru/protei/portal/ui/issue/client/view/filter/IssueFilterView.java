@@ -298,6 +298,17 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         state.setFilter(caseStateFilter);
     }
 
+    @Override
+    public void setCompaniesForInitiator(Set<Long> companyIds) {
+        initiators.updateCompanies(companyIds);
+    }
+
+    @Override
+    public void clearInitiator() {
+        initiators.clearOptions();
+        initiators.setValue(null);
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -352,7 +363,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiHandler( "companies" )
     public void onCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onCompaniesChanged();
         }
     }
 

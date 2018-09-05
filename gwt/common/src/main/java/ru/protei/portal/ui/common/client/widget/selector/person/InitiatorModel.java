@@ -18,34 +18,29 @@ import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Модель контактов домашней компании
  */
 public abstract class InitiatorModel implements Activity {
 
-
-
     @Event
     public void onInit( AuthEvents.Success event ) {
         myId = event.profile.getId();
-        companyId = event.profile.getCompany() != null ? event.profile.getCompany().getId() : null;
-
-        refreshOptions( );
-    }
-
-    @Event
-    public void onEmployeeListChanged( PersonEvents.ChangeEmployeeModel event ) {
-        refreshOptions();
     }
 
     public void subscribe( ModelSelector< PersonShortView > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
+    }
+
+    public void updateCompanies( Set<Long> companyIds ){
+        refreshOptions(companyIds);
+    }
+
+    public Collection getList() {
+        return new ArrayList(list);
     }
 
     private void notifySubscribers() {
@@ -55,9 +50,9 @@ public abstract class InitiatorModel implements Activity {
         }
     }
 
-    private void refreshOptions() {
+    private void refreshOptions(Set<Long> companyIds) {
 
-        PersonQuery query = new PersonQuery( makeCompanyIds(companyId), null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC );
+        PersonQuery query = new PersonQuery( companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC );
         personService.getPersonViewList( query, new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
@@ -98,6 +93,6 @@ public abstract class InitiatorModel implements Activity {
     List< ModelSelector< PersonShortView > > subscribers = new ArrayList<>();
 
     private Long myId;
-    private Long companyId;
     private Boolean fired = false;
+
 }

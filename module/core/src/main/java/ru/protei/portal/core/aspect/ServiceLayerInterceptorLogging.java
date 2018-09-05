@@ -102,10 +102,10 @@ public class ServiceLayerInterceptorLogging {
 }
 
 class MethodProfile {
-    Long invokeCount = 0L;
-    Long minTime = 0L;
-    Long maxTime = 0L;
-    Long average = 0L;
+    long invokeCount = 0L;
+    long minTime = 0L;
+    long maxTime = 0L;
+    long average = 0L;
 
     public void updateTime(long executionTime) {
         invokeCount++;

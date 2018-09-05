@@ -19,10 +19,12 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -42,6 +44,7 @@ import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -300,6 +303,20 @@ public abstract class IssueTableActivity
                 fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
             }
         });
+    }
+
+    @Override
+    public void onCompaniesChanged() {
+        onFilterChanged();
+        Set<Long> companyIds = CollectionUtils.stream(filterView.companies().getValue())
+                .map(v -> v.getId()).collect(Collectors.toSet());
+
+        if(companyIds.isEmpty()) {
+            filterView.clearInitiator();
+        } else {
+            filterView.setCompaniesForInitiator(companyIds);
+        }
+
     }
 
     @Override

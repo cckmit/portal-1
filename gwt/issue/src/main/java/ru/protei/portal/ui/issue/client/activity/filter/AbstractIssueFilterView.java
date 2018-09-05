@@ -73,4 +73,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     void toggleMsgSearchThreshold();
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
+
+    void setCompaniesForInitiator(Set<Long> companyIds);
+
+    void clearInitiator();
 }
