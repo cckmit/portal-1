@@ -21,6 +21,7 @@ import ru.protei.portal.ui.account.client.widget.role.RoleOptionList;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -114,8 +115,8 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     }
 
     @Override
-    public void changeCompany( Company company ) {
-        person.updateCompany( company );
+    public void changeCompanies(Set<Long> companyIds) {
+        person.updateCompanies(companyIds);
     }
 
     @UiHandler( "company" )
@@ -123,7 +124,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         Company company = Company.fromEntityOption( event.getValue() );
 
         person.setEnabled( company != null );
-        changeCompany( company );
+        changeCompanies(InitiatorModel.makeCompanyIds(company));
         person.setValue( null );
     }
 

@@ -36,6 +36,7 @@ import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.PersonButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -271,7 +272,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void initiatorUpdateCompany(Company company) {
-        initiator.updateCompany(company);
+        initiator.updateCompanies(InitiatorModel.makeCompanyIds(company));
     }
 
     @Override

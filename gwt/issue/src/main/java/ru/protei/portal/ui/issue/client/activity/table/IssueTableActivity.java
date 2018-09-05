@@ -42,10 +42,11 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.HelperFunc.collectIds;
 
 /**
  * Активность таблицы обращений
@@ -96,6 +97,8 @@ public abstract class IssueTableActivity
 
         if (event.query != null) {
             fillFilterFields(event.query);
+        }else{
+            updateInitiatorSelector(collectIds(filterView.companies().getValue()));
         }
 
         filterView.toggleMsgSearchThreshold();
@@ -308,16 +311,9 @@ public abstract class IssueTableActivity
     @Override
     public void onCompaniesChanged() {
         onFilterChanged();
-        Set<Long> companyIds = CollectionUtils.stream(filterView.companies().getValue())
-                .map(v -> v.getId()).collect(Collectors.toSet());
-
-        if(companyIds.isEmpty()) {
-            filterView.clearInitiator();
-        } else {
-            filterView.setCompaniesForInitiator(companyIds);
-        }
-
+        updateInitiatorSelector(collectIds(filterView.companies().getValue()));
     }
+
 
     @Override
     public void loadData( int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback ) {
@@ -406,8 +402,13 @@ public abstract class IssueTableActivity
         filterView.importances().setValue( IssueFilterUtils.getImportances( params.getImportanceIds() ) );
         filterView.states().setValue( IssueFilterUtils.getStates( params.getStateIds() ) );
         filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
+        updateInitiatorSelector(new HashSet<>(params.getCompanyIds()));
         filterView.managers().setValue( IssueFilterUtils.getManagers(params.getManagerIds()) );
-        filterView.initiators().setValue( IssueFilterUtils.getInitiators(params.getInitiatorIds()) );
+//        if(isEmpty(params.getCompanyIds())) {
+//            filterView.clearInitiator();
+//        } else {
+            filterView.initiators().setValue(IssueFilterUtils.getInitiators(params.getInitiatorIds()));
+//        }
         filterView.products().setValue( IssueFilterUtils.getProducts(params.getProductIds()) );
     }
 
@@ -560,6 +561,14 @@ public abstract class IssueTableActivity
             animation.filterCollapse();
         } else {
             animation.filterRestore();
+        }
+    }
+
+    private void updateInitiatorSelector(Set<Long> companyIds) {
+        if(isEmpty(companyIds)) {
+            filterView.clearInitiator();
+        } else {
+            filterView.setCompaniesForInitiator(companyIds);
         }
     }
 

@@ -6,14 +6,11 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.PersonEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -26,17 +23,17 @@ import java.util.*;
 public abstract class InitiatorModel implements Activity {
 
     @Event
-    public void onInit( AuthEvents.Success event ) {
+    public void onInit(AuthEvents.Success event) {
         myId = event.profile.getId();
     }
 
-    public void subscribe( ModelSelector< PersonShortView > selector ) {
-        subscribers.add( selector );
-        selector.fillOptions( list );
+    public void subscribe(ModelSelector<PersonShortView> selector) {
+        subscribers.add(selector);
+        selector.fillOptions(list);
     }
 
-    public void updateCompanies( Set<Long> companyIds ){
-        refreshOptions(companyIds);
+    public void updateCompanies(Set<Long> companyIds, boolean fired) {
+        refreshOptions(companyIds, fired);
     }
 
     public Collection getList() {
@@ -44,36 +41,43 @@ public abstract class InitiatorModel implements Activity {
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< PersonShortView > selector : subscribers ) {
-            selector.fillOptions( list );
+        for (ModelSelector<PersonShortView> selector : subscribers) {
+            selector.fillOptions(list);
             selector.refreshValue();
         }
     }
 
-    private void refreshOptions(Set<Long> companyIds) {
+    private void refreshOptions(Set<Long> companyIds, boolean fired) {
 
-        PersonQuery query = new PersonQuery( companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC );
-        personService.getPersonViewList( query, new RequestCallback< List< PersonShortView > >() {
+        PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+        personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
             @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+            public void onError(Throwable throwable) {
+                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess( List< PersonShortView > options ) {
-                int value = options.indexOf( new PersonShortView("", myId, false ) );
-                if ( value > 0 ) {
+            public void onSuccess(List<PersonShortView> options) {
+                int value = options.indexOf(new PersonShortView("", myId, false));
+                if (value > 0) {
                     options.add(0, options.remove(value));
                 }
 
                 list.clear();
-                list.addAll( options );
+                list.addAll(options);
                 notifySubscribers();
             }
-        } );
+        });
     }
 
-    private static Set<Long> makeCompanyIds(Long companyId) {
+    public static Set<Long> makeCompanyIds(Company company) {
+        if (company == null) {
+            return null;
+        }
+        return makeCompanyIds(company.getId());
+    }
+
+    public static Set<Long> makeCompanyIds(Long companyId) {
         if (companyId == null) {
             return null;
         }
@@ -88,11 +92,10 @@ public abstract class InitiatorModel implements Activity {
     @Inject
     Lang lang;
 
-    private List< PersonShortView > list = new ArrayList<>();
+    private List<PersonShortView> list = new ArrayList<>();
 
-    List< ModelSelector< PersonShortView > > subscribers = new ArrayList<>();
+    List<ModelSelector<PersonShortView>> subscribers = new ArrayList<>();
 
     private Long myId;
-    private Boolean fired = false;
 
 }

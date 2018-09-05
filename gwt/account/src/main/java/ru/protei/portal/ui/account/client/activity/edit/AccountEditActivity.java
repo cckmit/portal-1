@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.function.Consumer;
@@ -147,7 +148,7 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
     private void fillView( UserLogin userLogin ) {
         view.login().setValue( userLogin.getUlogin() );
         view.company().setValue( userLogin.getPerson() == null ? null : EntityOption.fromCompany( userLogin.getPerson().getCompany() ) );
-        view.changeCompany( userLogin.getPerson() == null ? null : userLogin.getPerson().getCompany() );
+        view.changeCompanies( userLogin.getPerson() == null ? null : InitiatorModel.makeCompanyIds(userLogin.getPerson().getCompany() ));
         view.person().setValue( PersonShortView.fromPerson( userLogin.getPerson() ) );
         view.password().setText( "" );
         view.confirmPassword().setText( "" );

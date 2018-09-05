@@ -1,14 +1,19 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Селектор person
@@ -16,7 +21,9 @@ import java.util.List;
 public class PersonButtonSelector extends ButtonSelector< PersonShortView > implements ModelSelector<PersonShortView> {
 
     @Inject
-    public void init() {
+    public void init(InitiatorModel model) {
+        this.model = model;
+        model.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> {
@@ -31,13 +38,13 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
         } );
     }
 
-    @Override
-    public void setValue( PersonShortView value ) {
-        if( personModel.isPushing() ){
-            deferred = value;
-        }else
-            super.setValue( value );
-    }
+//    @Override
+//    public void setValue( PersonShortView value ) {
+//        if( personModel.isPushing() ){
+//            deferred = value;
+//        }else
+//            super.setValue( value );
+//    }
 
 
     public void fillOptions( List< PersonShortView > persons ){
@@ -49,37 +56,45 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
 
         persons.forEach(this::addOption);
 
-        super.setValue( deferred );
-        deferred = null;
+//        super.setValue( deferred );
+//        deferred = null;
     }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
 
-    public void setFired ( Boolean value ) { this.fired = value; }
+    public void setFired ( boolean value ) { this.fired = value; }
 
-    public void updateCompany( Company company ){
-        if( company == null ) {
-            clearOptions();
-            return;
+
+    @Override
+    protected void showPopup(IsWidget relative) {
+        super.showPopup(relative);
+        if(companyIds==null){
+            SelectorItem item = new SelectorItem();
+            item.setName(lang.initiatorSelectACompany());
+            item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
+            popup.getChildContainer().add(item);
         }
-//        this.company = company;
-//        updatePersons();
-        personModel.requestPersonList( company, fired, this::fillOptions );
     }
 
-    private void updatePersons(){
+    public void updateCompanies(Set<Long> companyIds) {
+        this.companyIds = companyIds;
+        if(model!=null){
+            model.updateCompanies(companyIds, fired);
+        }
     }
 
     @Inject
     Lang lang;
-
-    @Inject
-    PersonModel personModel;
+//
+//    @Inject
+//    PersonModel personModel;
+    private InitiatorModel model;
 
     PersonShortView deferred;
 
     private String defaultValue;
-    private Boolean fired = null;
+    private boolean fired = false;
+    private Set<Long> companyIds;
 }
