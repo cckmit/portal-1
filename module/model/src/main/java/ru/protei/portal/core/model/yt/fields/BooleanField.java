@@ -1,22 +1,19 @@
 package ru.protei.portal.core.model.yt.fields;
 
-/**
- * Created by admin on 15/11/2017.
- */
-public class NumberField extends Field {
-    protected Integer value;
+public class BooleanField extends Field {
+    private Boolean value;
 
-    public Integer getValue() {
+    public Boolean getValue() {
         return value;
     }
 
-    public void setValue( Integer value ) {
+    public void setValue(Boolean value) {
         this.value = value;
     }
 
     @Override
     public String toString() {
-        return "NumberField{" +
+        return "BooleanField{" +
                 "name='" + name + '\'' +
                 ", value=" + value +
                 '}';

@@ -20,9 +20,9 @@ public class PersonArrayField extends Field {
 
     @Override
     public String toString() {
-        return "DateField{" +
-                "value=" + value +
-                ", name='" + name + '\'' +
+        return "PersonArrayField{" +
+                "name='" + name + '\'' +
+                ", value=" + value +
                 '}';
     }
 }

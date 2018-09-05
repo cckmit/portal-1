@@ -20,9 +20,9 @@ public class LinkArrayField extends Field {
 
     @Override
     public String toString() {
-        return "DateField{" +
-                "value=" + value +
-                ", name='" + name + '\'' +
+        return "LinkArrayField{" +
+                "name='" + name + '\'' +
+                ", value=" + value +
                 '}';
     }
 }

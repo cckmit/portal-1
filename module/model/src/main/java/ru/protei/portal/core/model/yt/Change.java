@@ -16,13 +16,6 @@ import java.util.Optional;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Change {
 
-//    public static class Field {
-//        public String name;
-//        public String value;
-//        public List<String> oldValue;
-//        public List<String> newValue;
-//    }
-
     private List<Field> field;
 
     public List< Field > getField() {

@@ -21,8 +21,8 @@ public class IdValueArrayField extends Field {
     @Override
     public String toString() {
         return "IdValueArrayField{" +
-                "value=" + value +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
+                ", value=" + value +
                 '}';
     }
 }

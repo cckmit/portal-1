@@ -39,9 +39,10 @@ public class StringField extends Field {
     @Override
     public String toString() {
         return "StringField{" +
-                "value='" + value + '\'' +
-                ", oldValue='" + oldValue + '\'' +
-                ", newValue='" + newValue + '\'' +
+                "name='" + name + '\'' +
+                ", value='" + value + '\'' +
+                ", oldValue=" + oldValue +
+                ", newValue=" + newValue +
                 '}';
     }
 }

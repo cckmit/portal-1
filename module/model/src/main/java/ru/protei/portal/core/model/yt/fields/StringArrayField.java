@@ -39,7 +39,8 @@ public class StringArrayField extends Field {
     @Override
     public String toString() {
         return "StringArrayField{" +
-                "value=" + value +
+                "name='" + name + '\'' +
+                ", value=" + value +
                 ", oldValue=" + oldValue +
                 ", newValue=" + newValue +
                 '}';

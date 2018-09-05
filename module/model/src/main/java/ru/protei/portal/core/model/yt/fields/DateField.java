@@ -19,8 +19,8 @@ public class DateField extends Field {
     @Override
     public String toString() {
         return "DateField{" +
-                "value=" + value +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
+                ", value=" + value +
                 '}';
     }
 }
