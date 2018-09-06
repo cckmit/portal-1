@@ -19,12 +19,10 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -45,9 +43,6 @@ import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.HelperFunc.collectIds;
-
 /**
  * Активность таблицы обращений
  */
@@ -66,6 +61,7 @@ public abstract class IssueTableActivity
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+        filterView.setInitiatorCompaniesSupplier(() -> filterView.companies().getValue());
 
         pagerView.setActivity( this );
 
@@ -97,8 +93,6 @@ public abstract class IssueTableActivity
 
         if (event.query != null) {
             fillFilterFields(event.query);
-        }else{
-            updateInitiatorSelector(collectIds(filterView.companies().getValue()));
         }
 
         filterView.toggleMsgSearchThreshold();
@@ -311,7 +305,7 @@ public abstract class IssueTableActivity
     @Override
     public void onCompaniesChanged() {
         onFilterChanged();
-        updateInitiatorSelector(collectIds(filterView.companies().getValue()));
+        updateInitiatorSelector();
     }
 
 
@@ -402,7 +396,7 @@ public abstract class IssueTableActivity
         filterView.importances().setValue( IssueFilterUtils.getImportances( params.getImportanceIds() ) );
         filterView.states().setValue( IssueFilterUtils.getStates( params.getStateIds() ) );
         filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
-        updateInitiatorSelector(new HashSet<>(params.getCompanyIds()));
+        updateInitiatorSelector();
         filterView.managers().setValue( IssueFilterUtils.getManagers(params.getManagerIds()) );
         filterView.initiators().setValue(IssueFilterUtils.getInitiators(params.getInitiatorIds()));
         filterView.products().setValue( IssueFilterUtils.getProducts(params.getProductIds()) );
@@ -560,12 +554,8 @@ public abstract class IssueTableActivity
         }
     }
 
-    private void updateInitiatorSelector(Set<Long> companyIds) {
-        if(isEmpty(companyIds)) {
-            filterView.clearInitiator();
-        } else {
-            filterView.setCompaniesForInitiator(companyIds);
-        }
+    private void updateInitiatorSelector() {
+        filterView.updateInitiators();
     }
 
     @Inject

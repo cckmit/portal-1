@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -57,6 +59,7 @@ public class PersonServiceImpl implements PersonService {
                 companyIds.add(descriptor.getPerson().getCompanyId());
                 personQuery.setCompanyIds(companyIds);
             }
+            log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
         }
         return personQuery;
     }
@@ -66,5 +69,7 @@ public class PersonServiceImpl implements PersonService {
 
     @Autowired
     PolicyService policyService;
+
+    private static final Logger log = LoggerFactory.getLogger(PersonServiceImpl.class);
 
 }

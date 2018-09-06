@@ -3,6 +3,9 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import org.apache.commons.collections4.CollectionUtils;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -11,8 +14,14 @@ import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSele
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Селектор сотрудников
@@ -42,18 +51,14 @@ public class InitiatorMultiSelector
     @Override
     public void onShowPopupClicked(ClickEvent event) {
         super.onShowPopupClicked(event);
-        if(companyIds==null){
+        Collection companies = companiesSupplier.get();
+        if(isEmpty(companies)){
+            super.clearOptions();
             SelectorItem item = new SelectorItem();
             item.setName(lang.initiatorSelectACompany());
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
             popup.getChildContainer().add(item);
         }
-    }
-
-    @Override
-    public void clearOptions() {
-        super.clearOptions();
-        companyIds = null;
     }
 
     @Override
@@ -63,17 +68,37 @@ public class InitiatorMultiSelector
 
     public void setFired ( boolean value ) { this.fired = value; }
 
-    public void updateCompanies(Set<Long> companyIds) {
-        this.companyIds = companyIds;
-        if(model!=null){
-            model.updateCompanies(companyIds, fired);
+    public void updateCompanies() {
+        if (model == null || companiesSupplier == null) {
+            return;
         }
+        Set<Long> companyIds = null;
+        Set<EntityOption> companies = companiesSupplier.get();
+        if (!isEmpty(companies)) {
+            companyIds = companies.stream().map(EntityOption::getId).collect(Collectors.toSet());
+        }else{
+            clearOptions();
+            setValue(null);
+        }
+
+        model.updateCompanies(companyIds, fired);
+
+    }
+
+    public void setCompaniesSupplier(Supplier<Set<EntityOption>> companiesSupplier) {
+        this.companiesSupplier = companiesSupplier;
     }
 
     Lang lang;
-    Provider<SelectorPopup> popupProvider;
     private InitiatorModel model;
-    private Set<Long> companyIds;
     private boolean fired;
 
+
+
+    private Supplier<Set<EntityOption>> companiesSupplier = new Supplier<Set<EntityOption>>() {
+        @Override
+        public Set<EntityOption> get() {
+            return Collections.EMPTY_SET;
+        }
+    };
 }

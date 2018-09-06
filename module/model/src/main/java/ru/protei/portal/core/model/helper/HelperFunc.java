@@ -211,9 +211,4 @@ public class HelperFunc {
         }
     }
 
-    public static Set<Long> collectIds(Collection<EntityOption> col) {
-        Set<Long> result = new HashSet<>();
-        CollectionUtils.transform(col, result, option -> option.getId());
-        return result;
-    }
 }

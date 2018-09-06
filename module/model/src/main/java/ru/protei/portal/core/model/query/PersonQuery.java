@@ -84,10 +84,10 @@ public class PersonQuery extends BaseQuery {
     @Override
     public String toString() {
         return "PersonQuery{" +
-                "companyId=" + companyIds +
                 "onlyPeople=" + onlyPeople +
-                "fired=" + fired +
-                "deleted=" + deleted +
+                ", fired=" + fired +
+                ", deleted=" + deleted +
+                ", companyIds=" + companyIds +
                 '}';
     }
 }
