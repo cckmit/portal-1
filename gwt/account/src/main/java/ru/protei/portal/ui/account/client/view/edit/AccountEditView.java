@@ -115,7 +115,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
     }
 
     @Override
-    public void changeCompanies(Set<Long> companyIds) {
+    public void setCompaniesForInitiator(Set<Long> companyIds) {
         person.updateCompanies(companyIds);
     }
 
@@ -124,7 +124,7 @@ public class AccountEditView extends Composite implements AbstractAccountEditVie
         Company company = Company.fromEntityOption( event.getValue() );
 
         person.setEnabled( company != null );
-        changeCompanies(InitiatorModel.makeCompanyIds(company));
+        setCompaniesForInitiator(InitiatorModel.makeCompanyIds(company));
         person.setValue( null );
     }
 

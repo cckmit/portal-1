@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.view.EntityOption;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +23,7 @@ public class PersonQuery extends BaseQuery {
     }
 
     public PersonQuery( Long companyId, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
-        this ( makeCompanyIds(companyId), onlyPeople, fired, searchString, sortField, sortDir );
+        this ( toSet(companyId), onlyPeople, fired, searchString, sortField, sortDir );
     }
 
     public PersonQuery( Set<Long> companyIds, Boolean onlyPeople, Boolean fired, String searchString, En_SortField sortField, En_SortDir sortDir ) {
@@ -72,7 +71,7 @@ public class PersonQuery extends BaseQuery {
         this.deleted = deleted;
     }
 
-    public static Set<Long> makeCompanyIds(Long companyId) {
+    private static Set<Long> toSet(Long companyId) {
         if (companyId == null) {
             return null;
         }

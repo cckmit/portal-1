@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import java.util.*;
 
 /**
- * Модель контактов домашней компании
+ * Модель заявителей по обращению
  */
 public abstract class InitiatorModel implements Activity {
 

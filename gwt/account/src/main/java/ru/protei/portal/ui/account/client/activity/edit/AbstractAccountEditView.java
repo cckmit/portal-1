@@ -47,5 +47,5 @@ public interface AbstractAccountEditView extends IsWidget {
 
     void setLoginStatus( NameStatus status );
 
-    void changeCompanies(Set<Long> companyIds);
+    void setCompaniesForInitiator(Set<Long> companyIds);
 }
