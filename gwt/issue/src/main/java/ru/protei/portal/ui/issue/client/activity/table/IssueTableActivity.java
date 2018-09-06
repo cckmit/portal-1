@@ -404,11 +404,7 @@ public abstract class IssueTableActivity
         filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
         updateInitiatorSelector(new HashSet<>(params.getCompanyIds()));
         filterView.managers().setValue( IssueFilterUtils.getManagers(params.getManagerIds()) );
-//        if(isEmpty(params.getCompanyIds())) {
-//            filterView.clearInitiator();
-//        } else {
-            filterView.initiators().setValue(IssueFilterUtils.getInitiators(params.getInitiatorIds()));
-//        }
+        filterView.initiators().setValue(IssueFilterUtils.getInitiators(params.getInitiatorIds()));
         filterView.products().setValue( IssueFilterUtils.getProducts(params.getProductIds()) );
     }
 
