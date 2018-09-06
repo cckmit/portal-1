@@ -34,41 +34,36 @@ public class ServiceLayerInterceptorLogging {
     private void inServiceLayer() {}
 
     @Around("coreResponseMethod() && inServiceLayer()")
-    public Object serviceMethodLogging(ProceedingJoinPoint pjp) {
+    public Object serviceMethodLogging(ProceedingJoinPoint pjp) throws Throwable {
         String threadName = Thread.currentThread().getName();
         String methodName = pjp.getSignature().toShortString();
         Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " " + methodName);
 
-        log.info("calling : {} args: {}", methodName, pjp.getArgs());
+        log.debug("calling : {} args: {}", methodName, pjp.getArgs());
         long currentTimeMillis = System.currentTimeMillis();
 
-        CoreResponse result = invokeMethod(pjp);
+        CoreResponse result = ERROR_RESPONSE;
+        try {
 
-        Long executionTime = System.currentTimeMillis() - currentTimeMillis;
+            result = (CoreResponse) pjp.proceed();
 
-        MethodProfile profile = profiling.get(methodName);
-        if(profile==null){
-            profile = new MethodProfile();
-            profiling.put(methodName, profile);
+        } finally {
+            Long executionTime = System.currentTimeMillis() - currentTimeMillis;
+
+            MethodProfile profile = profiling.get(methodName);
+            if (profile == null) {
+                profile = new MethodProfile();
+                profiling.put(methodName, profile);
+            }
+            profile.updateTime(executionTime);
+            log.debug("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
+                    methodName, profile.invokeCount, executionTime, profile.average, profile.maxTime, profile.minTime,
+                    makeResultAsString(result));
+
+            Thread.currentThread().setName(threadName);
         }
-        profile.updateTime(executionTime);
-        log.info("result  : {} : count={} : time={} : averageT={} : maxT={} : minT={} : Result [{}] ",
-                methodName, profile.invokeCount, executionTime, profile.average, profile.maxTime, profile.minTime,
-                makeResultAsString(result));
-
-        Thread.currentThread().setName(threadName);
 
         return result;
-    }
-
-    public CoreResponse invokeMethod(ProceedingJoinPoint pjp ) {
-        try {
-            return (CoreResponse) pjp.proceed();
-
-        } catch (Throwable t) {
-            log.error( "", t );
-            return new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
-        }
     }
 
     private String makeResultAsString( CoreResponse result ) {
@@ -89,7 +84,6 @@ public class ServiceLayerInterceptorLogging {
             log.trace( "ResultObject: {}", resultObject );
             return makeStatusString( result ) + " map size=" + ((Map) resultObject).size();
         }
-
         return String.valueOf( resultObject );
     }
 
@@ -97,7 +91,7 @@ public class ServiceLayerInterceptorLogging {
         return result == null ? "Result is null." : result.getStatus();
     }
 
-
+      private static final CoreResponse<Object> ERROR_RESPONSE = new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
 
 }
 
