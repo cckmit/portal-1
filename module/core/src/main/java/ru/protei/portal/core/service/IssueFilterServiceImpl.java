@@ -30,7 +30,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         List<CaseFilter > list = caseFilterDAO.getListByCondition( "login_id=?", loginId );
 
         if (list == null)
-            new CoreResponse<List<CaseFilterShortView >>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<CaseFilterShortView >>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List< CaseFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
 

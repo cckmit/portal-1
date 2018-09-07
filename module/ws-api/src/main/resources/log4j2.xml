@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Properties>
+        <Property name="basePath" value="/usr/protei/portal-api/logs/portal"/>
+        <Property name="archivePath" value="${basePath}/archive"/>
+        <Property name="extension" value=".log"/>
+        <Property name="appFileName" value="portal.app"/>
+        <Property name="apiFileName" value="portal.api"/>
+        <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
+        <Property name="maxFileSize" value="32MB"/>
+    </Properties>
+
+    <Loggers>
+        <Root level="DEBUG">
+            <!--<AppenderRef ref="Console"/>-->
+        </Root>
+        <Logger name="protei" level="DEBUG">
+            <AppenderRef ref="COMMON"/>
+        </Logger>
+        <Logger name="ru.protei.portal.api" level="DEBUG">
+            <AppenderRef ref="API"/>
+        </Logger>
+    </Loggers>
+
+    <Appenders>
+        <Console name="Console">
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+
+        <RollingFile name="COMMON"
+                     fileName="${basePath}/${appFileName}${extension}"
+                     filePattern="${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="API"
+                     fileName="${basePath}/${apiFileName}${extension}"
+                     filePattern="${archivePath}/${apiFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+            <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="false"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+</Configuration>

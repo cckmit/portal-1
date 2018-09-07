@@ -10,7 +10,10 @@ import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_AdminState;
+import ru.protei.portal.core.model.dict.En_AuthType;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
@@ -58,7 +61,7 @@ public class AccountServiceImpl implements AccountService {
         List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
-            new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
+            return new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
         jdbcManyRelationsHelper.fill( list, "roles" );
 
         return new CoreResponse< List< UserLogin > >().success( list );
@@ -112,6 +115,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
+            log.warn("saveAccount(): Can't save account. Expected one or more Roles.");
             return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
         }
 

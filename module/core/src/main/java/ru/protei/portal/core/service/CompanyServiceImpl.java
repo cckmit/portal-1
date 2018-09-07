@@ -4,8 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
+import ru.protei.portal.core.model.dao.CompanyDAO;
+import ru.protei.portal.core.model.dao.CompanyGroupDAO;
+import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
@@ -72,7 +78,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 
         if (list == null)
-            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<EntityOption> result = list.stream().map(Company::toEntityOption).collect(Collectors.toList());
 
@@ -85,7 +91,7 @@ public class CompanyServiceImpl implements CompanyService {
         List<Company> list = getCompanyList(token, query);
 
         if (list == null)
-            new CoreResponse<List<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<Company>>().success(list);
     }
@@ -135,7 +141,7 @@ public class CompanyServiceImpl implements CompanyService {
         List<CompanyGroup> list = companyGroupDAO.getListByQuery(new CompanyGroupQuery(null, En_SortField.group_name, En_SortDir.ASC));
 
         if (list == null)
-            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<EntityOption> result = list.stream().map(CompanyGroup::toEntityOption).collect(Collectors.toList());
 
@@ -161,7 +167,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         if (list == null)
-            new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<EntityOption> result = list.stream().map(CompanyCategory::toEntityOption).collect(Collectors.toList());
 
@@ -213,7 +219,7 @@ public class CompanyServiceImpl implements CompanyService {
         Boolean result = companyDAO.merge(company);
 
         if ( !result )
-            new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         updateCompanySubscription(company.getId(), company.getSubscriptions());
         return new CoreResponse<Company>().success(company);

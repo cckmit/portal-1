@@ -73,4 +73,5 @@
   <include file="2018-08-15-add-dev_unit_id-column-to-application.xml" relativeToChangelogFile="true"/>
   <include file="2018-08-16-add-manager_id-column-to-platform.xml" relativeToChangelogFile="true"/>
   <include file="2018-08-29-add-approved-column-to-document.xml" relativeToChangelogFile="true"/>
+  <include file="2018-08-31-create-table-employee_registration.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

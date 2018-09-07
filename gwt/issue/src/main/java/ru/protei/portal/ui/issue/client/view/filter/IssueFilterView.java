@@ -25,10 +25,12 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -37,11 +39,12 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActiv
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.widget.filter.IssueFilterSelector;
 import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroupMulti;
-import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.*;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 /**
  * Представление фильтра обращений
@@ -297,6 +300,16 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         state.setFilter(caseStateFilter);
     }
 
+    @Override
+    public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
+        initiators.setCompaniesSupplier(collectionSupplier);
+    }
+
+    @Override
+    public void updateInitiators() {
+        initiators.updateCompanies();
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
         if ( activity != null ) {
@@ -351,7 +364,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiHandler( "companies" )
     public void onCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onCompaniesChanged();
         }
     }
 
@@ -522,7 +535,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField ( provided = true )
-    EmployeeMultiSelector initiators;
+    InitiatorMultiSelector initiators;
 
     @Inject
     @UiField ( provided = true )

@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    
+    <changeSet id="create-table-employee_registration" author="efremov">
+        <createTable tableName="employee_registration">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="employment_date" type="DATE" />
+            <column name="employment_type" type="INT" />
+            <column name="with_registration" type="BOOLEAN" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position" type="VARCHAR(128)"/>
+            <column name="workplace" type="TEXT"/>
+            <column name="equipment_list" type="VARCHAR(64)"/>
+            <column name="resource_list" type="VARCHAR(128)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-employee_registration_case_object_fk" author="efremov">
+        <addForeignKeyConstraint baseTableName="employee_registration"
+                                 baseColumnNames="id"
+                                 constraintName="employee_registration-case_object-id-fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-employee_registration-into-case_type" author="efremov">
+        <insert tableName="case_type">
+            <column name="ID" valueNumeric="11"/>
+            <column name="CT_CODE" value="employee-reg"/>
+            <column name="CT_INFO" value="Анкета нового сотрудника"/>
+            <column name="NEXT_ID" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

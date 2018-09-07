@@ -1,17 +1,21 @@
 package ru.protei.portal.api.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import protei.sql.query.Tm_SqlQueryHelper;
+import ru.protei.portal.api.config.WSConfig;
+import ru.protei.portal.api.model.DepartmentRecord;
+import ru.protei.portal.api.model.En_ErrorCode;
+import ru.protei.portal.api.model.ServiceResult;
+import ru.protei.portal.api.model.WorkerRecord;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.api.config.WSConfig;
-import ru.protei.portal.api.model.*;
-import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import javax.jws.WebService;
@@ -30,7 +34,7 @@ import java.util.List;
 @WebService(endpointInterface = "ru.protei.portal.api.service.WorkerService", serviceName = "WorkerService")
 public class WorkerServiceImpl implements WorkerService {
 
-    private static Logger logger = Logger.getLogger(WorkerServiceImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(WorkerServiceImpl.class);
 
     @Autowired
     private PersonDAO personDAO;

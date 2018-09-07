@@ -181,6 +181,10 @@ public class HelperFunc {
                 + ")";
     }
 
+    public static <T> String makeInArg(Collection<T> col, Function<T, String> mapper) {
+        return "(" + CollectionUtils.join(col, mapper, ",") + ")";
+    }
+
     /**
      * nullGreater - если значение null то трактовать как большее
      */
@@ -207,5 +211,9 @@ public class HelperFunc {
         } else {
             return c1.compareTo(c2);
         }
+    }
+
+    public static <T> T defaultIfNull( T value, T defaultValue ) {
+        return value != null ? value : defaultValue;
     }
 }

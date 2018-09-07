@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.util;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -83,6 +84,15 @@ public class IssueFilterUtils {
             companies.add( company );
         }
         return companies;
+    }
+
+    public static EntityOption toEntityOption( Company company ) {
+        if ( company == null  ) {
+            return null;
+        }
+            EntityOption option = new EntityOption();
+            option.setId( company.getId() );
+        return option;
     }
 
     public static List< Long > getProductsIdList( Set< ProductShortView > productSet ) {
