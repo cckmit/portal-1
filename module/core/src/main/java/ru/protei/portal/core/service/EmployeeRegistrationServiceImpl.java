@@ -3,20 +3,22 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
-import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
+import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -27,7 +29,10 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     @Autowired
     CaseTypeDAO caseTypeDAO;
     @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    YoutrackService youtrackService;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+
 
     @Override
     public CoreResponse<Integer> count(AuthToken token, EmployeeRegistrationQuery query) {
@@ -49,7 +54,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistration == null)
             return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
 
-        jdbcManyRelationsHelper.fillAll(employeeRegistration);
         return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
     }
 
@@ -67,6 +71,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         employeeRegistration.setId(id);
         employeeRegistrationDAO.persist(employeeRegistration);
 
+        createAdminYoutrackIssueIfNeeded(employeeRegistration);
+        createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
+
         return new CoreResponse<Long>().success(id);
     }
 
@@ -82,5 +89,35 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         caseObject.setCreatorId(employeeRegistration.getCreatorId());
         caseObject.setName(employeeRegistration.getEmployeeFullName());
         return caseObject;
+    }
+
+    private void createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
+        if (CollectionUtils.isEmpty(resourceList)) {
+            return;
+        }
+        String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = "Необходимо открыть доступ к: " + CollectionUtils.join(resourceList, ", ");
+        String issueId = youtrackService.createIssue(CrmConstants.Youtrack.ADMIN_PROJECT_NAME, summary, description);
+        saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
+        if (CollectionUtils.isEmpty(equipmentList)) {
+            return;
+        }
+        String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = "Необходимо: " + CollectionUtils.join(equipmentList, ", ");
+        String issueId = youtrackService.createIssue(CrmConstants.Youtrack.EQUIPMENT_PROJECT_NAME, summary, description);
+        saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private void saveCaseLink(Long employeeRegistrationId, String issueId) {
+        CaseLink caseLink = new CaseLink();
+        caseLink.setCaseId(employeeRegistrationId);
+        caseLink.setType(En_CaseLink.YT);
+        caseLink.setRemoteId(issueId);
+        caseLinkDAO.persist(caseLink);
     }
 }

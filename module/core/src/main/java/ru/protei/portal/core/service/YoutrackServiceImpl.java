@@ -153,7 +153,6 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .queryParam("summary", summary)
                 .queryParam("description", StringUtils.emptyIfNull(description))
                 .build()
-                .encode()
                 .toUriString();
 
         ResponseEntity<String> response = ytClient.exchange(

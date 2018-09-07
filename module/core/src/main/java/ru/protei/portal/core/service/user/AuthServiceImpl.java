@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserSessionDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.EmployeeRegistrationDataSyncRunner;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,9 +50,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private PortalConfig config;
-
-    @Autowired
-    private EmployeeRegistrationDataSyncRunner employeeRegistrationDataSyncRunner;
 
     public AuthServiceImpl() {
         this.sessionCache = new HashMap<>();
@@ -135,8 +131,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
-
-        employeeRegistrationDataSyncRunner.__debug();
 
         String loginSuffix = config.data().getLoginSuffix();
         if (!ulogin.contains("@") && !loginSuffix.isEmpty()) {

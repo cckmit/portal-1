@@ -7,48 +7,42 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
 
-import javax.annotation.PostConstruct;
-
 @Component
-public class EmployeeRegistrationDataSyncRunner implements Runnable {
+public class EmployeeRegistrationDataSyncRunner {
     private final Logger log = LoggerFactory.getLogger(EmployeeRegistrationDataSyncRunner.class);
 
     @Autowired
-    YoutrackService youtrackService;
+    private YoutrackService youtrackService;
 
     @Autowired
-    PersonDAO personDAO;
+    private UserLoginDAO userLoginDAO;
 
     @Autowired
-    UserLoginDAO userLoginDAO;
+    private EmployeeRegistrationDAO employeeRegistrationDAO;
+
 
     @Autowired
     public EmployeeRegistrationDataSyncRunner(ThreadPoolTaskScheduler scheduler, PortalConfig config) {
-        CronTrigger cronTrigger = new CronTrigger(config.data().youtrack().getEmployeeRegistrationSyncSchedule());
-        scheduler.schedule(this, cronTrigger);
+        String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
+        scheduler.schedule(this::synchronizeWithYoutrack, new CronTrigger(syncCronSchedule));
     }
 
-    @Override
-    public void run() {
+    private void synchronizeWithYoutrack() {
+        log.debug("synchronizeWithYoutrack(): start synchronization");
+        employeeRegistrationDAO.getAll().forEach(this::synchronizeEmployeeRegistration);
     }
 
-    @PostConstruct
-    public void __debug() {
-        try {
-            ChangeResponse pg53Changes = youtrackService.getIssueChanges("PG-53");
-            ChangeResponse pg49Changes = youtrackService.getIssueChanges("PG-49");
-            System.out.println("oloo");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration) {
+        log.debug("synchronizeWithYoutrack(): synchronizing employee registration {}", employeeRegistration);
     }
 
     private void updateTwoTask(String issue1, String issue2) {
@@ -95,6 +89,6 @@ public class EmployeeRegistrationDataSyncRunner implements Runnable {
         caseComment.setAuthorId(user.getPersonId());
         caseComment.setCreated(ytComment.getCreated());
         caseComment.setText(ytComment.getText());
-        caseComment.set
+        return caseComment;
     }
 }

@@ -575,8 +575,6 @@ public class MainConfiguration {
 
     @Bean
     public YoutrackService getYoutrackService() { return new YoutrackServiceImpl(); }
-        return new EmployeeRegistrationServiceImpl();
-    }
     
     @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
