@@ -29,20 +29,8 @@ public abstract class ContactTableViewBase extends Composite {
                 root.appendChild(fioElement);
 
                 if (value.isFired() || value.isDeleted()) {
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("<i class='fa fa-info-circle'></i> <b>");
-                    if (value.isFired()) {
-                        sb.append(lang.contactFiredShort());
-                        if (value.isDeleted()) {
-                            sb.append(", ");
-                        }
-                    }
-                    if (value.isDeleted()) {
-                        sb.append(value.isFired() ? lang.contactDeletedShort().toLowerCase() : lang.contactDeletedShort());
-                    }
-                    sb.append("</b>");
                     Element stateElement = DOM.createDiv();
-                    stateElement.setInnerHTML(sb.toString());
+                    stateElement.setInnerHTML( makeFiredOrDeleted(value, lang));
                     root.appendChild(stateElement);
                 }
 
@@ -62,6 +50,22 @@ public abstract class ContactTableViewBase extends Composite {
                 }
             }
         };
+    }
+
+    public static String makeFiredOrDeleted(Person value, Lang lang) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<i class='fa fa-info-circle'></i> <b>");
+        if (value.isFired()) {
+            sb.append(lang.contactFiredShort());
+            if (value.isDeleted()) {
+                sb.append(", ");
+            }
+        }
+        if (value.isDeleted()) {
+            sb.append(value.isFired() ? lang.contactDeletedShort().toLowerCase() : lang.contactDeletedShort());
+        }
+        sb.append("</b>");
+        return sb.toString();
     }
 
     protected ClickColumn<Person> getCompanyColumn(Lang lang) {

@@ -21,4 +21,6 @@ public interface AbstractIssueFilterActivity {
     void onCancelSavingClicked();
 
     void onCreateReportClicked();
+
+    void onCompaniesChanged();
 }

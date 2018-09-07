@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.shared.model;
 
+import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 
 /**
@@ -27,7 +28,7 @@ public class ShortRequestCallback<T> extends RequestCallback<T> implements Succe
             errorHandler.onError(throwable);
         } else {
             if (errorMessage == null) errorMessage = throwable.getMessage();
-            activity.fireEvent(new NotifyEvents.Show(errorMessage, NotifyEvents.NotifyType.ERROR));
+            notificationHandler.accept(errorMessage, NotifyEvents.NotifyType.ERROR);
         }
     }
 
@@ -46,4 +47,6 @@ public class ShortRequestCallback<T> extends RequestCallback<T> implements Succe
         return this;
     }
 
+    @Inject
+    DefaultNotificationHandler notificationHandler;
 }

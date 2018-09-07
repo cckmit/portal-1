@@ -76,7 +76,7 @@ public class MaskedTextBox extends TextBox implements
         while (text.length() < mask.length()) {
             if (i < chars.length) {
                 if (literals.contains(String.valueOf(chars[i])) && String.valueOf(chars[i])
-                        .equals(String.valueOf(text.charAt(text.length() - 1))))
+                        .equals(getCharAt(text, text.length() - 1)))
                     i++;
                 text += String.valueOf(chars[i]);
             } else
@@ -89,10 +89,9 @@ public class MaskedTextBox extends TextBox implements
 
 
     public String applyMask(String text, boolean end) {
-
         String retText = text;
-        String input = String.valueOf(text.charAt(text.length() - 1));
-        String maskChar = String.valueOf(mask.charAt(text.length() - 1));
+        String input = getCharAt(text, text.length() - 1);
+        String maskChar = getCharAt(mask, text.length() - 1);
         if (literals.contains(String.valueOf(input)) || end) {
             int li = text.length();
             if (!end) {
@@ -125,6 +124,7 @@ public class MaskedTextBox extends TextBox implements
             } else {
                 inl = (li - ss);
             }
+
             for (int i = 0; i < inl; i++) {
                 if (mask.charAt(i + ss) == '9')
                     text = text.substring(0, ss) + "0"
@@ -133,9 +133,11 @@ public class MaskedTextBox extends TextBox implements
                     text = text.substring(0, ss) + '\ufeff'
                             + text.substring(ss, text.length());
             }
+
             retText = text;
             return retText;
         }
+
         if (checkMask(input, maskChar)) {
             if (text.length() == mask.length())
                 return text;
@@ -147,6 +149,11 @@ public class MaskedTextBox extends TextBox implements
             retText = text.substring(0, text.length() - 1);
         }
         return retText;
+    }
+
+    private String getCharAt(String text, int i) {
+        if(text == null || i < 0 || (text.length() < i)) return "";
+        return String.valueOf(text.charAt(i));
     }
 
     public boolean checkMask(String input, String maskChar) {
@@ -165,8 +172,8 @@ public class MaskedTextBox extends TextBox implements
 
     public void onKeyDown(Widget sender, char keyCode, int modifiers) {
         // TODO Auto-generated method stub
-        if (keyCode == KeyboardListener.KEY_BACKSPACE) {
-            if (literals.contains(String.valueOf(getText().charAt(getText().length() - 1))))
+        if (keyCode == KeyboardListener.KEY_BACKSPACE ) {
+            if (literals.contains(getCharAt(getText(), getText().length() - 1)))
                 setText(getText().substring(0, getText().length() - 1));
         }
     }

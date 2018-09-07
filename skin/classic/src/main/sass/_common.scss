@@ -1099,6 +1099,13 @@ label.bordered:after{
   }
 }
 
+.short-table-view {
+  table {
+    .column-hidable {
+      display: none;
+    }
+  }
+}
 
 .short-table-view {
   .issues {
@@ -1337,6 +1344,7 @@ label.bordered:after{
 
 .pager-container{
   position: sticky;
+  position: -webkit-sticky;
   bottom: 1px;
 }
 
@@ -3396,4 +3404,41 @@ div.select2-container {
 
 .margin-right-0 {
   margin-right: 0 !important;
+}
+
+.text-center{
+  text-align: center;
+ }
+  
+.nowrap {
+  white-space: nowrap;
+}
+
+
+/**
+   Схлопыватие раздела
+ */
+.collapsable {
+
+  .collapsable-legend{
+    cursor: pointer;
+  }
+
+  .collapsable-legend:before {
+    content: "\f0d7";
+    margin-right: 10px;
+    font: normal normal normal 18px/1 FontAwesome;
+
+  }
+
+  &.collapsed {
+
+    .collapsable-legend:before {
+      content: "\f0da";
+    }
+
+    .collapsable-container {
+      display: none;
+    }
+  }
 }

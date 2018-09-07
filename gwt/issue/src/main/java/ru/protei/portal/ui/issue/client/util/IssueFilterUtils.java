@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.util;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -85,6 +86,15 @@ public class IssueFilterUtils {
         return companies;
     }
 
+    public static EntityOption toEntityOption( Company company ) {
+        if ( company == null  ) {
+            return null;
+        }
+            EntityOption option = new EntityOption();
+            option.setId( company.getId() );
+        return option;
+    }
+
     public static List< Long > getProductsIdList( Set< ProductShortView > productSet ) {
 
         if ( productSet == null || productSet.isEmpty() ) {
@@ -133,5 +143,19 @@ public class IssueFilterUtils {
             managers.add( person );
         }
         return managers;
+    }
+
+    public static Set< PersonShortView > getInitiators( List< Long > initiatorsIds ) {
+
+        if ( initiatorsIds == null || initiatorsIds.isEmpty() ) {
+            return null;
+        }
+        Set< PersonShortView > initiators = new HashSet<>();
+        for ( Long id : initiatorsIds ) {
+            PersonShortView person = new PersonShortView();
+            person.setId( id );
+            initiators.add( person );
+        }
+        return initiators;
     }
 }

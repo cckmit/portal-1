@@ -859,6 +859,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String errTooMuchManagers();
 
+    String errTooMuchInitiators();
+
     String errTooMuchProducts();
 
     String issueFilterNotDefined();
@@ -1254,4 +1256,16 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeCompany();
 
     String employeeMainPosition();
+
+    String initiatorSelectACompany();
+    String serverAccessParamsColumn();
+    String contactPhone();
+
+    String documentApproveType();
+    String equipmentDecimalNumberNotCorrect();
+
+    String documentApproved();
+    String equipmentDecimalNumbeOccupied();
+
+    String documentNotApproved();
 }

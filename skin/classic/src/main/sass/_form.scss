@@ -85,6 +85,7 @@ textarea.input-field[disabled]{
 
 .panel.footer-fixable .footer {
   position: sticky;
+  position: -webkit-sticky;
   bottom: 0;
   left: 0;
   padding: 8px 5px;

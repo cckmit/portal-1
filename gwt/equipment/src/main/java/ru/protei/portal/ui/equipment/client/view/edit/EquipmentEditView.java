@@ -75,8 +75,17 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
-    public HasValue< List<DecimalNumber> > numbers() {
-        return numbers;
+    public void setNumbers(List<DecimalNumber> decimalNumbers, boolean isEnabled) {
+        if (isEnabled) {
+            numbers.setValue(decimalNumbers);
+        } else {
+            numbers.setNotEditableValue(decimalNumbers);
+        }
+    }
+
+    @Override
+    public List<DecimalNumber> getNumbers() {
+        return numbers.getValue();
     }
 
     @Override

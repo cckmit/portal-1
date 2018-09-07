@@ -19,10 +19,12 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -40,8 +42,7 @@ import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -62,6 +63,7 @@ public abstract class IssueTableActivity
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+        filterView.setInitiatorCompaniesSupplier(() -> filterView.companies().getValue());
 
         pagerView.setActivity( this );
 
@@ -93,6 +95,13 @@ public abstract class IssueTableActivity
 
         if (event.query != null) {
             fillFilterFields(event.query);
+        }
+
+        if(!policyService.hasGrantAccessFor( En_Privilege.COMPANY_VIEW ) ){
+            HashSet<EntityOption> companyIds = new HashSet<>();
+            companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
+            filterView.companies().setValue( companyIds );
+            filterView.updateInitiators();
         }
 
         filterView.toggleMsgSearchThreshold();
@@ -303,6 +312,13 @@ public abstract class IssueTableActivity
     }
 
     @Override
+    public void onCompaniesChanged() {
+        onFilterChanged();
+        updateInitiatorSelector();
+    }
+
+
+    @Override
     public void loadData( int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback ) {
         CaseQuery query = getQuery();
         query.setOffset( offset );
@@ -389,7 +405,9 @@ public abstract class IssueTableActivity
         filterView.importances().setValue( IssueFilterUtils.getImportances( params.getImportanceIds() ) );
         filterView.states().setValue( IssueFilterUtils.getStates( params.getStateIds() ) );
         filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
+        updateInitiatorSelector();
         filterView.managers().setValue( IssueFilterUtils.getManagers(params.getManagerIds()) );
+        filterView.initiators().setValue(IssueFilterUtils.getInitiators(params.getInitiatorIds()));
         filterView.products().setValue( IssueFilterUtils.getProducts(params.getProductIds()) );
     }
 
@@ -469,6 +487,7 @@ public abstract class IssueTableActivity
         query.setCompanyIds( IssueFilterUtils.getCompaniesIdList( filterView.companies().getValue() ) );
         query.setProductIds( IssueFilterUtils.getProductsIdList( filterView.products().getValue() ) );
         query.setManagerIds( IssueFilterUtils.getManagersIdList( filterView.managers().getValue() ) );
+        query.setInitiatorIds( IssueFilterUtils.getManagersIdList( filterView.initiators().getValue() ) );
         query.setImportanceIds( IssueFilterUtils.getImportancesIdList( filterView.importances().getValue() ) );
         query.setStates( IssueFilterUtils.getStateList( filterView.states().getValue() ) );
 
@@ -498,6 +517,11 @@ public abstract class IssueTableActivity
         if (filterView.managers().getValue().size() > 50){
             fireEvent( new NotifyEvents.Show( lang.errTooMuchManagers(), NotifyEvents.NotifyType.ERROR ) );
             filterView.setManagersErrorStyle(true);
+            isValid = false;
+        }
+        if (filterView.initiators().getValue().size() > 50){
+            fireEvent( new NotifyEvents.Show( lang.errTooMuchInitiators(), NotifyEvents.NotifyType.ERROR ) );
+            filterView.setInitiatorsErrorStyle(true);
             isValid = false;
         } else {
             filterView.setManagersErrorStyle(false);
@@ -537,6 +561,10 @@ public abstract class IssueTableActivity
         } else {
             animation.filterRestore();
         }
+    }
+
+    private void updateInitiatorSelector() {
+        filterView.updateInitiators();
     }
 
     @Inject

@@ -1,8 +1,11 @@
 package ru.protei.portal.test.hpsm;
 
+import com.thoughtworks.xstream.XStream;
 import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
@@ -17,8 +20,12 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.hpsm.api.HpsmStatus;
+import ru.protei.portal.hpsm.factories.BackChannelHandlerFactory;
+import ru.protei.portal.hpsm.factories.BackChannelHandlerFactoryImpl;
+import ru.protei.portal.hpsm.handlers.BackChannelEventHandler;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
+import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.TestServiceInstance;
@@ -27,12 +34,15 @@ import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 import javax.mail.internet.MimeMessage;
 import java.util.List;
 
+import static ru.protei.portal.core.model.dict.En_CaseState.WORKAROUND;
+
 /**
  * Created by Mike on 01.05.2017.
  */
 public class LiveSampleTest {
     private static final long LOCAL_PERSON_ID = 18L;
     private static final String HPSM_TEST_CASE_ID1 = "hpsm-live-test1642";
+    private static final String HPSM_TEST_REJECT_NO_PRODUCT = "hpsm-live-test-no-product";
     private static ApplicationContext ctx;
 
     @BeforeClass
@@ -61,6 +71,87 @@ public class LiveSampleTest {
         caseService.updateCaseObject(resultCase, testPerson);
 
         MimeMessage responseMail = testServiceInstance.getSentMessage();
+    }
+
+    @Test
+    public void rejectNoProductTest() throws Exception {
+        final TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
+        final InboundMainMessageHandler handler = ctx.getBean(InboundMainMessageHandler.class);
+        final HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
+        final XStream xStream = ctx.getBean(XStream.class);
+
+/*
+  prepare new request
+ */
+        final String newReqXml = testUtils.loadTestRequest("reject-test-no-product.xml");
+        Assert.assertNotNull(newReqXml);
+        Assert.assertFalse(newReqXml.isEmpty());
+
+        System.out.println("---- req start ----");
+
+        System.out.println("send request: " + newReqXml);
+
+
+        System.out.println("---- req end ----");
+
+        final HpsmMessageHeader subject = new HpsmMessageHeader(HPSM_TEST_REJECT_NO_PRODUCT, null, HpsmStatus.NEW);
+
+        /* execute create request and validate results */
+        boolean result = handler.handle(testUtils.createRequest(subject, newReqXml), testServiceInstance);
+
+        Assert.assertTrue(result);
+
+        final MimeMessage responseMail = testServiceInstance.getSentMessage();
+
+        Assert.assertNotNull(responseMail);
+
+        final HpsmEvent responseEvent = testUtils.parseEvent(responseMail);
+
+        Assert.assertNotNull(responseEvent);
+
+        System.out.println("---- response ----");
+
+        System.out.println(xStream.toXML(responseEvent.getHpsmMessage()));
+    }
+
+
+    @Test
+    public void workaroundTest() throws Exception {
+        final BackChannelHandlerFactory backChannelFactory = ctx.getBean(BackChannelHandlerFactory.class);
+        final TestServiceInstance testServiceInstance = ctx.getBean(TestServiceInstance.class);
+        final HpsmTestUtils testUtils = ctx.getBean(HpsmTestUtils.class);
+        final XStream xStream = ctx.getBean(XStream.class);
+
+        final HpsmMessage msg = new HpsmMessage();
+        msg.status(HpsmStatus.CONFIRM_WA);
+        msg.setMessage("123");
+
+        final CaseObject object = new CaseObject();
+        object.setState(WORKAROUND);
+        object.setId(100005000L);
+        object.setExtAppType("qwerty");
+
+        final CaseComment comment = new CaseComment("qwe");
+        final CaseService caseService = ctx.getBean(CaseService.class);
+        final AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseService, object, new Person());
+        assembledCaseEvent.attachCaseComment(comment);
+
+        final BackChannelEventHandler handler = backChannelFactory.createHandler(msg, assembledCaseEvent);
+        handler.handle(assembledCaseEvent, msg, testServiceInstance);
+
+        final MimeMessage response = testServiceInstance.getSentMessage();
+
+        Assert.assertNotNull(response);
+
+        final HpsmEvent event = testUtils.parseEvent(response);
+
+        Assert.assertNotNull(event);
+
+        Assert.assertEquals(HpsmStatus.WORKAROUND, event.getSubject().getStatus());
+
+        System.out.println("---- response ----");
+
+        System.out.println(xStream.toXML(event.getHpsmMessage()));
     }
 
     @Test

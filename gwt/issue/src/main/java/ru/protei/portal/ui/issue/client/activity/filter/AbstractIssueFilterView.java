@@ -12,9 +12,9 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Абстракция вида фильтра обращений
@@ -26,6 +26,7 @@ public interface AbstractIssueFilterView extends IsWidget {
     HasValue<Set<EntityOption>> companies();
     HasValue<Set<ProductShortView>> products();
     HasValue<Set<PersonShortView>> managers();
+    HasValue<Set<PersonShortView>> initiators();
     HasValue<Set<En_CaseState>> states();
     HasValue<Set<En_ImportanceLevel>> importances();
     HasValue<DateInterval> dateRange ();
@@ -63,6 +64,8 @@ public interface AbstractIssueFilterView extends IsWidget {
 
     void setManagersErrorStyle( boolean hasError );
 
+    void setInitiatorsErrorStyle( boolean hasError );
+
     void setUserFilterControlsVisibility( boolean hasVisible );
 
     void setReportButtonVisibility( boolean hasVisible );
@@ -70,4 +73,8 @@ public interface AbstractIssueFilterView extends IsWidget {
     void toggleMsgSearchThreshold();
 
     void setStateFilter(Selector.SelectorFilter<En_CaseState> filter);
+
+    void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier);
+
+    void updateInitiators();
 }

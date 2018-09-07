@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -17,6 +18,10 @@ import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 /**
@@ -65,21 +70,28 @@ public abstract class EquipmentEditActivity
             fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }else if(!view.isDecimalNumbersCorrect()){
+            fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotCorrect(), NotifyEvents.NotifyType.ERROR ) );
             return;
         }
 
-        equipmentService.saveEquipment(equipment, new RequestCallback<Equipment>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireErrorMessage(throwable.getMessage());
-            }
+        equipmentService.saveEquipment(equipment, new FluentCallback<Equipment>()
+                .withError(t -> {
+                    if (t instanceof RequestFailedException) {
+                        if (En_ResultStatus.ALREADY_EXIST_RELATED.equals(((RequestFailedException) t).status)) {
+                            notification.accept(lang.equipmentDecimalNumbeOccupied(), NotifyEvents.NotifyType.ERROR);
+                            return;
+                        }
+                    }
 
-            @Override
-            public void onSuccess(Equipment equipment) {
-                fireEvent( new EquipmentEvents.ChangeModel() );
-                fireEvent(new Back());
-            }
-        });
+                    defaultErrorHandler.accept(t);
+                    fireErrorMessage(t.getMessage());
+
+                })
+                .withSuccess(result -> {
+                    fireEvent(new EquipmentEvents.ChangeModel());
+                    fireEvent(new Back());
+                })
+        );
     }
 
     private boolean fireErrorMessage( String msg) {
@@ -93,7 +105,7 @@ public abstract class EquipmentEditActivity
         equipment.setComment( view.comment().getValue() );
         equipment.setType( view.type().getValue() );
         equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
-        equipment.setDecimalNumbers( view.numbers().getValue() );
+        equipment.setDecimalNumbers( view.getNumbers() );
         equipment.setManagerId( view.manager().getValue() == null ? null : view.manager().getValue().getId() );
         equipment.setProjectId( view.project().getValue() == null ? null : view.project().getValue().getId() );
         return equipment;
@@ -123,7 +135,7 @@ public abstract class EquipmentEditActivity
             linkedEquipment = new EquipmentShortView( null, equipment.getLinkedEquipmentId(), equipment.getLinkedEquipmentDecimalNumbers() );
         }
         view.linkedEquipment().setValue( linkedEquipment );
-        view.numbers().setValue( equipment.getDecimalNumbers() );
+        view.setNumbers(equipment.getDecimalNumbers(), isCreate);
 
         PersonShortView manager = null;
         if ( equipment.getManagerId() != null ) {
@@ -152,6 +164,11 @@ public abstract class EquipmentEditActivity
 
     @Inject
     EquipmentControllerAsync equipmentService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
+    @Inject
+    DefaultNotificationHandler notification;
+
 
     private AppEvents.InitDetails initDetails;
 }

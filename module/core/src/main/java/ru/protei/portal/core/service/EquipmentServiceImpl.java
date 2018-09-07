@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,21 +14,20 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
  * Реализация сервиса управления оборудованием
  */
 public class EquipmentServiceImpl implements EquipmentService {
 
-    private static Logger log = LoggerFactory.getLogger(CompanyServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(EquipmentServiceImpl.class);
 
     @Autowired
     EquipmentDAO equipmentDAO;
@@ -48,20 +46,25 @@ public class EquipmentServiceImpl implements EquipmentService {
 
         List<Equipment> list = equipmentDAO.getListByQuery(query);
 
-        if (list == null)
-            new CoreResponse<List<Equipment>>().error(En_ResultStatus.GET_DATA_ERROR);
-        jdbcManyRelationsHelper.fillAll( list );
+        if (list == null) {
+            return new CoreResponse<List<Equipment>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        fillDecimalNumbers(list);
 
         return new CoreResponse<List<Equipment>>().success(list);
     }
 
     @Override
     public CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query ) {
+
         List<Equipment > list = equipmentDAO.getListByQuery(query);
 
-        if (list == null)
-            new CoreResponse<List<PersonShortView >>().error(En_ResultStatus.GET_DATA_ERROR);
-        jdbcManyRelationsHelper.fillAll( list );
+        if (list == null) {
+            return new CoreResponse<List<EquipmentShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        fillDecimalNumbersWithoutLinkedEquipmentDN(list);
 
         List<EquipmentShortView> result = list.stream().map(EquipmentShortView::fromEquipment).collect(Collectors.toList());
 
@@ -72,7 +75,8 @@ public class EquipmentServiceImpl implements EquipmentService {
     public CoreResponse<Equipment> getEquipment( AuthToken token, long id) {
 
         Equipment equipment = equipmentDAO.get(id);
-        jdbcManyRelationsHelper.fillAll( equipment );
+        jdbcManyRelationsHelper.fill(equipment, "decimalNumbers");
+        jdbcManyRelationsHelper.fill(equipment, "linkedEquipmentDecimalNumbers");
 
         return equipment != null ? new CoreResponse<Equipment>().success(equipment)
                 : new CoreResponse<Equipment>().error(En_ResultStatus.NOT_FOUND);
@@ -86,7 +90,15 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        equipment.setCreated( new Date() );
+        for (DecimalNumber newNumber : selectNewNumbers(equipment.getDecimalNumbers())) {
+            if (decimalNumberDAO.checkExists(newNumber)) {
+                return new CoreResponse<Equipment>().error(En_ResultStatus.ALREADY_EXIST_RELATED);
+            }
+        }
+        
+	    if ( equipment.getId() == null ) {
+            equipment.setCreated( new Date() );
+        }
         if ( !equipmentDAO.saveOrUpdate(equipment) ) {
             return new CoreResponse<Equipment>().error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -217,5 +229,68 @@ public class EquipmentServiceImpl implements EquipmentService {
         }
 
         return true;
+    }
+
+    private void fillDecimalNumbers(List<Equipment> equipments) {
+        fillDecimalNumbersImpl(equipments, true);
+    }
+
+    private void fillDecimalNumbersWithoutLinkedEquipmentDN(List<Equipment> equipments) {
+        fillDecimalNumbersImpl(equipments, false);
+    }
+
+    private void fillDecimalNumbersImpl(List<Equipment> equipments, boolean fillAlsoLinkedEquipmentDN) {
+
+        if (equipments == null || equipments.isEmpty()) {
+            return;
+        }
+
+        Set<Long> equipmentIds = new HashSet<>();
+
+        equipments.stream()
+                .filter(Objects::nonNull)
+                .peek(equipment -> equipmentIds.add(equipment.getId()))
+                .filter(equipment -> fillAlsoLinkedEquipmentDN && equipment.getLinkedEquipmentId() != null)
+                .forEach(equipment -> equipmentIds.add(equipment.getLinkedEquipmentId()));
+
+        if (equipmentIds.isEmpty()) {
+            return;
+        }
+
+        List<DecimalNumber> decimalNumbers = decimalNumberDAO.getDecimalNumbersByEquipmentIds(equipmentIds);
+        if (decimalNumbers == null || decimalNumbers.isEmpty()) {
+            return;
+        }
+
+        decimalNumbers.stream()
+                .filter(Objects::nonNull)
+                .forEach(decimalNumber -> fillDecimalNumberIntoEquipments(equipments, decimalNumber, fillAlsoLinkedEquipmentDN));
+    }
+
+    private void fillDecimalNumberIntoEquipments(List<Equipment> equipments, DecimalNumber decimalNumber, boolean fillAlsoLinkedEquipmentDN) {
+        equipments.stream()
+                .filter(Objects::nonNull)
+                .forEach(equipment -> {
+                    if (Objects.equals(decimalNumber.getEntityId(), equipment.getId())) {
+                        equipment.addDecimalNumber(decimalNumber);
+                    }
+                    if (fillAlsoLinkedEquipmentDN && Objects.equals(decimalNumber.getEntityId(), equipment.getLinkedEquipmentId())) {
+                        equipment.addLinkedEquipmentDecimalNumber(decimalNumber);
+                    }
+                });
+    }
+
+    private List<DecimalNumber> selectNewNumbers(List<DecimalNumber> decimalNumbers) {
+        ArrayList<DecimalNumber> newNumbers = new ArrayList<>();
+        for (DecimalNumber decimalNumber : emptyIfNull(decimalNumbers)) {
+            if (isNew(decimalNumber)) {
+                newNumbers.add(decimalNumber);
+            }
+        }
+        return newNumbers;
+    }
+
+    private boolean isNew(DecimalNumber decimalNumber) {
+        return (decimalNumber != null && decimalNumber.getId() == null);
     }
 }

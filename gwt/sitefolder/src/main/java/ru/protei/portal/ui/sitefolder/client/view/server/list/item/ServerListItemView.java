@@ -50,6 +50,11 @@ public class ServerListItemView extends Composite implements AbstractServerListI
         copy.setVisible(visible);
     }
 
+    @Override
+    public void setParams(String params) {
+        this.params.setInnerText(params);
+    }
+
     @UiHandler("edit")
     public void editClick(ClickEvent event) {
         event.preventDefault();
@@ -80,6 +85,8 @@ public class ServerListItemView extends Composite implements AbstractServerListI
     SpanElement ip;
     @UiField
     SpanElement comment;
+    @UiField
+    SpanElement params;
     @UiField
     Anchor edit;
     @UiField

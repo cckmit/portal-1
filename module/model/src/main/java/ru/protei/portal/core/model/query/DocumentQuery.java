@@ -17,11 +17,12 @@ public class DocumentQuery extends BaseQuery {
     private List<String> keywords;
     private String inTextQuery;
     private List<Long> onlyIds;
+    private Boolean isApproved;
 
     public DocumentQuery() {
     }
 
-    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String inTextQuery) {
+    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String inTextQuery, Boolean isApproved) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;
         this.from = from;
@@ -30,6 +31,7 @@ public class DocumentQuery extends BaseQuery {
         this.documentType = documentType;
         this.managerId = managerId;
         this.inTextQuery = inTextQuery;
+        this.isApproved = isApproved;
     }
 
     public List<String> getKeywords() {
@@ -94,5 +96,13 @@ public class DocumentQuery extends BaseQuery {
 
     public void setOnlyIds(List<Long> onlyIds) {
         this.onlyIds = onlyIds;
+    }
+
+    public Boolean getApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(Boolean approved) {
+        isApproved = approved;
     }
 }

@@ -63,6 +63,8 @@ public class UiConstants {
 
     public interface Styles {
         String HIDE = "hide";
+        String REQUIRED = "required";
+        String TEXT_CENTER = "text-center";
     }
 
     /**

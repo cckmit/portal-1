@@ -7,7 +7,7 @@
     <g:HTMLPanel styleName="main-content">
         <div class="grid">
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-12">
-                <table:TableWidget ui:field="table" styleName="table-hover contacts"/>
+                <table:TableWidget ui:field="table" styleName="table-hover "/>
             </g:HTMLPanel>
         </div>
     </g:HTMLPanel>

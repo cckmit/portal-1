@@ -69,11 +69,12 @@
                     <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
 
-                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="col-xs-12">
+                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group col-xs-12">
                     <label ui:field="timeElapsedLabel">
                         <ui:text from="{lang.timeElapsed}"/>
                     </label>
                     <timefield:TimeLabel ui:field="timeElapsed" styleName="inline-block m-l-10"/>
+                    <timefield:TimeTextBox ui:field="timeElapsedInput" styleName="input-field time-elapsed" notNull="false"/>
                 </g:HTMLPanel>
 
                 <div class="form-group col-xs-12">

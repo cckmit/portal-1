@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
+import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
@@ -567,9 +568,17 @@ public class MainConfiguration {
         return new SiteFolderServiceImpl();
     }
 
+    @Bean
+    public YtRepository getYtRepository() { return new YtRepositoryImpl(); }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {
         return new ServiceLayerInterceptor();
+    }
+
+    @Bean
+    public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging () {
+        return new ServiceLayerInterceptorLogging();
     }
 }

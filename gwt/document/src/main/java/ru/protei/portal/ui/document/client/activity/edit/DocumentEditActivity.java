@@ -233,6 +233,7 @@ public abstract class DocumentEditActivity
         d.setVersion(view.version().getValue());
         d.setProjectId(view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
+        d.setApproved(true);
         return d;
     }
 

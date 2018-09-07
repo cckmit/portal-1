@@ -55,8 +55,10 @@ public abstract class ClickColumn<T> {
             if ( "a".equalsIgnoreCase( target.getNodeName() ) ) {
                 if (actionClickHandler != null) {
                     event.preventDefault();
-                    columnProvider.changeSelection( value );//сбросить предыдущее выделение
-                    columnProvider.setSelectedValue( value );//всегда выделять выбранный. PORTAL-209
+                    if ( columnProvider != null ) {
+                        columnProvider.changeSelection(value);//сбросить предыдущее выделение
+                        columnProvider.setSelectedValue(value);//всегда выделять выбранный. PORTAL-209
+                    }
                     actionClickHandler.onItemClicked(value);
                 }
                 return;

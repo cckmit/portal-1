@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
@@ -36,6 +37,7 @@ import java.util.Optional;
  * Created by Mike on 06.11.2016.
  */
 @Aspect
+@Order(0)
 public class ServiceLayerInterceptor {
 
     private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);

@@ -29,6 +29,7 @@ import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
@@ -40,6 +41,9 @@ import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtn
 import ru.protei.portal.ui.issue.client.widget.state.option.IssueStatesOptionList;
 
 import java.util.Set;
+import java.util.function.Supplier;
+
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.*;
 
 /**
  * Представление фильтра обращений
@@ -87,6 +91,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public HasValue<Set<PersonShortView>> managers() { return managers; }
 
     @Override
+    public HasValue<Set<PersonShortView>> initiators() { return initiators; }
+
+    @Override
     public HasValue< Set <En_CaseState > > states() { return state; }
 
     @Override
@@ -123,6 +130,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         companies.setValue( null );
         products.setValue( null );
         managers.setValue( null );
+        initiators.setValue( null );
         importance.setValue(null);
         state.setValue( null );
         dateRange.setValue( null );
@@ -131,7 +139,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         search.setValue( "" );
         userFilter.setValue( null );
         removeBtn.setVisible( false );
-        filterName.removeStyleName( "required" );
+        filterName.removeStyleName( REQUIRED );
         filterName.setValue( "" );
         searchByComments.setValue( false );
         searchPrivate.setValue( null );
@@ -191,45 +199,54 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setFilterNameContainerErrorStyle( boolean hasError ) {
         if ( hasError ) {
-            filterName.addStyleName( "required" );
+            filterName.addStyleName(REQUIRED);
         } else {
-            filterName.removeStyleName( "required" );
+            filterName.removeStyleName( REQUIRED );
         }
     }
 
     @Override
     public void setUserFilterNameVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
-            filterNameContainer.removeClassName( "hide" );
+            filterNameContainer.removeClassName( HIDE );
         } else {
-            filterNameContainer.addClassName( "hide" );
+            filterNameContainer.addClassName( HIDE );
         }
     }
 
     @Override
     public void setCompaniesErrorStyle( boolean hasError ) {
         if (hasError){
-            companies.addStyleName( "required" );
+            companies.addStyleName( REQUIRED );
         } else {
-            companies.removeStyleName( "required" );
+            companies.removeStyleName( REQUIRED );
         }
     }
 
     @Override
     public void setProductsErrorStyle( boolean hasError ) {
         if (hasError){
-            products.addStyleName( "required" );
+            products.addStyleName( REQUIRED );
         } else {
-            products.removeStyleName( "required" );
+            products.removeStyleName( REQUIRED );
         }
     }
 
     @Override
     public void setManagersErrorStyle( boolean hasError ) {
         if (hasError){
-            managers.addStyleName( "required" );
+            managers.addStyleName( REQUIRED );
         } else {
-            managers.removeStyleName( "required" );
+            managers.removeStyleName( REQUIRED );
+        }
+    }
+
+    @Override
+    public void setInitiatorsErrorStyle( boolean hasError ) {
+        if (hasError){
+            initiators.addStyleName( REQUIRED );
+        } else {
+            initiators.removeStyleName( REQUIRED );
         }
     }
 
@@ -237,18 +254,18 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
             if (reportBtnVisible) {
-                reportBtn.removeStyleName( "hide" );
+                reportBtn.removeStyleName( HIDE );
             }
-            saveBtn.removeStyleName( "hide" );
-            resetBtn.removeStyleName( "hide" );
-            removeBtn.removeStyleName( "hide" );
+            saveBtn.removeStyleName( HIDE );
+            resetBtn.removeStyleName( HIDE );
+            removeBtn.removeStyleName( HIDE );
         } else {
             if (reportBtnVisible) {
-                reportBtn.addStyleName( "hide" );
+                reportBtn.addStyleName( HIDE );
             }
-            saveBtn.addStyleName( "hide" );
-            resetBtn.addStyleName( "hide" );
-            removeBtn.addStyleName( "hide" );
+            saveBtn.addStyleName( HIDE );
+            resetBtn.addStyleName( HIDE );
+            removeBtn.addStyleName( HIDE );
         }
     }
 
@@ -256,9 +273,9 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void setReportButtonVisibility(boolean hasVisible) {
         reportBtnVisible = hasVisible;
         if (reportBtnVisible) {
-            reportBtn.removeStyleName( "hide" );
+            reportBtn.removeStyleName( HIDE );
         } else {
-            reportBtn.addStyleName( "hide" );
+            reportBtn.addStyleName( HIDE );
         }
     }
 
@@ -280,6 +297,16 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter){
         state.setFilter(caseStateFilter);
+    }
+
+    @Override
+    public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
+        initiators.setCompaniesSupplier(collectionSupplier);
+    }
+
+    @Override
+    public void updateInitiators() {
+        initiators.updateCompanies();
     }
 
     @UiHandler( "resetBtn" )
@@ -336,7 +363,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @UiHandler( "companies" )
     public void onCompaniesSelected( ValueChangeEvent<Set<EntityOption>> event ) {
         if ( activity != null ) {
-            activity.onFilterChanged();
+            activity.onCompaniesChanged();
         }
     }
 
@@ -349,6 +376,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @UiHandler( "managers" )
     public void onManagersSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
+        }
+    }
+
+    @UiHandler( "initiators" )
+    public void onInitiatorsSelected( ValueChangeEvent<Set<PersonShortView>> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -455,7 +489,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         products.setClearEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_CLEAR_BUTTON);
         managers.setAddEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ADD_BUTTON);
         managers.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_CLEAR_BUTTON);
-        managers.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_CLEAR_BUTTON);
+        initiators.setAddEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_ADD_BUTTON);
+        initiators.setClearEnsureDebugId(DebugIds.FILTER.INITIATORS_SELECTOR_CLEAR_BUTTON);
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
@@ -496,6 +531,10 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Inject
     @UiField ( provided = true )
     EmployeeMultiSelector managers;
+
+    @Inject
+    @UiField ( provided = true )
+    InitiatorMultiSelector initiators;
 
     @Inject
     @UiField ( provided = true )
@@ -571,6 +610,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Inject
     @UiField
     Lang lang;
+
 
     AbstractIssueFilterActivity activity;
     private boolean reportBtnVisible = true;
