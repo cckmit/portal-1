@@ -309,8 +309,11 @@ body {
   vertical-align: middle;
 }
 
+div.checkbox {
+  padding-right: 15px;
+}
+
 .checkbox label {
-  padding-left: 7px;
   position: relative;
   cursor: pointer;
 }

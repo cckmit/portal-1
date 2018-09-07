@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  * Created by bondarenko on 10.11.16.
  */
-public enum En_CaseState {
+public enum En_CaseState implements HasId {
     CREATED(1, "created"),
     OPENED(2, "opened"),
     CLOSED(3, "closed"),
@@ -45,6 +47,7 @@ public enum En_CaseState {
         this.name = name;
     }
 
+    @Override
     public int getId() {
         return id;
     }

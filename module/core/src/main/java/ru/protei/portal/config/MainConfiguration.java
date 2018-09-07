@@ -386,6 +386,11 @@ public class MainConfiguration {
         return new DevUnitChildRefDAO_Impl();
     }
 
+    @Bean
+    public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
+        return new EmployeeRegistrationDAO_Impl();
+    }
+
 /**
  *
  *
@@ -566,6 +571,11 @@ public class MainConfiguration {
     @Bean
     public SiteFolderService getSiteFolderService() {
         return new SiteFolderServiceImpl();
+    }
+
+    @Bean
+    public EmployeeRegistrationService getEmployeeRegistrationService() {
+        return new EmployeeRegistrationServiceImpl();
     }
 
     @Bean

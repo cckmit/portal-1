@@ -1,7 +1,5 @@
 package ru.protei.portal.core.model.helper;
 
-import ru.protei.portal.core.model.view.EntityOption;
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -181,6 +179,10 @@ public class HelperFunc {
                         .map(Object::toString)
                         .collect(Collectors.joining(","))
                 + ")";
+    }
+
+    public static <T> String makeInArg(Collection<T> col, Function<T, String> mapper) {
+        return "(" + CollectionUtils.join(col, mapper, ",") + ")";
     }
 
     /**
