@@ -112,6 +112,7 @@ public class AccountServiceImpl implements AccountService {
         }
 
         if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
+            log.warn("saveAccount(): Can't save account. Expected one or more Roles.");
             return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
         }
 

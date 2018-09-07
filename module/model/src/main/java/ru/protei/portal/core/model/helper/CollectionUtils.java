@@ -10,6 +10,10 @@ public class CollectionUtils {
         return (null == collection || collection.isEmpty());
     }
 
+    public static boolean isEmpty( Iterable iterable ) {
+        return (null == iterable || !iterable.iterator().hasNext());
+    }
+
     public static <T> Stream<T> stream(Collection<T> collection) {
         return null == collection ? Stream.empty() : collection.stream();
     }
@@ -40,5 +44,11 @@ public class CollectionUtils {
     public static String trim( String string ) {
         return null == string ? null : string.trim();
     }
+
+
+    public static <T> T getFirst( Iterable<T> iterable ) {
+        return isEmpty( iterable ) ? null : iterable.iterator().next();
+    }
+
 
 }

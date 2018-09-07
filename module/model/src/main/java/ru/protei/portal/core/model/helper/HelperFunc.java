@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.view.EntityOption;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -207,5 +209,9 @@ public class HelperFunc {
         } else {
             return c1.compareTo(c2);
         }
+    }
+
+    public static <T> T defaultIfNull( T value, T defaultValue ) {
+        return value != null ? value : defaultValue;
     }
 }
