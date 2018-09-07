@@ -45,7 +45,7 @@
                         <label>
                             <ui:text from="{lang.employeeRegistrationEmploymentType}"/>
                         </label>
-                        <selector:EmploymentTypeSelector ui:field="employmentType" styleName="input-field"/>
+                        <selector:EmploymentTypeSelector ui:field="employmentType" hasNullValue="false"/>
                         <option:OptionItem ui:field="withRegistration" styleName="toggle inherit-color" name="{lang.employeeRegistrationWithRegistration}"/>
                     </div>
 
