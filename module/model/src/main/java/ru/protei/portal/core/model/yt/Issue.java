@@ -97,12 +97,7 @@ public class Issue {
         return getStringFieldValue(Fields.updaterName);
     }
 
-    private String getStringFieldValue(String name) {
-        StringIssueField field = getField(name);
-        return field == null ? null : field.getValue();
-    }
-
-    private String getStateId() {
+    public String getStateId() {
         StringArrayWithIdArrayIssueField field = getField(Fields.state);
         if (field == null)
             return null;
@@ -110,6 +105,11 @@ public class Issue {
         if (CollectionUtils.isEmpty(valueId))
             return null;
         return valueId.get(0);
+    }
+
+    private String getStringFieldValue(String name) {
+        StringIssueField field = getField(name);
+        return field == null ? null : field.getValue();
     }
 
     @Override
