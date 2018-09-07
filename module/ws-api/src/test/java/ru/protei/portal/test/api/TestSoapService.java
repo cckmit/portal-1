@@ -3,15 +3,16 @@ package ru.protei.portal.test.api;
 import junit.framework.Assert;
 import org.apache.cxf.aegis.databinding.AegisDatabinding;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.DepartmentRecord;
-import ru.protei.portal.core.model.struct.Photo;
 import ru.protei.portal.api.model.ServiceResult;
 import ru.protei.portal.api.model.WorkerRecord;
 import ru.protei.portal.api.service.WorkerService;
+import ru.protei.portal.core.model.struct.Photo;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.Properties;
  */
 public class TestSoapService {
 
-    private static Logger logger = Logger.getLogger(TestSoapService.class);
+    private static Logger logger = LoggerFactory.getLogger(TestSoapService.class);
 
     private static JaxWsProxyFactoryBean factory;
     private static WorkerService client;

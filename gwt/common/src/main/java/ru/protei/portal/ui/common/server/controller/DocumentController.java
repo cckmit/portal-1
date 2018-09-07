@@ -4,7 +4,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
 @RestController
 public class DocumentController {
-    private static final Logger logger = Logger.getLogger(DocumentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(DocumentController.class);
     private final ServletFileUpload upload = new ServletFileUpload(new DiskFileItemFactory());
 
     @Autowired

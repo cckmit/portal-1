@@ -1,9 +1,9 @@
 package ru.protei.portal.tools.migrate.imp;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 import ru.protei.portal.config.PortalConfig;
 
 import java.util.concurrent.locks.Lock;
@@ -14,7 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class MigrationRunner {
 
-    private static Logger logger = Logger.getLogger(MigrationRunner.class);
+    private static Logger logger = LoggerFactory.getLogger(MigrationRunner.class);
 
     private static Lock runLock;
 

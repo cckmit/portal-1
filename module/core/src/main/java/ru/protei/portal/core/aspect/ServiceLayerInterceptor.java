@@ -1,12 +1,13 @@
 package ru.protei.portal.core.aspect;
 
-import org.apache.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -17,7 +18,9 @@ import ru.protei.portal.core.exception.InvalidAuthTokenException;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.LongAuditableObject;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.EventPublisherService;
@@ -39,7 +42,7 @@ import java.util.Optional;
 @Order(0)
 public class ServiceLayerInterceptor {
 
-    private static Logger logger = Logger.getLogger(ServiceLayerInterceptor.class);
+    private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);
 
     @Pointcut("execution(public ru.protei.portal.api.struct.CoreResponse *(..))")
 //    @Pointcut("call(public ru.protei.portal.api.struct.CoreResponse *(..))")
