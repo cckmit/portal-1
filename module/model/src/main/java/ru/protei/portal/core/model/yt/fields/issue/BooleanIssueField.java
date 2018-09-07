@@ -1,6 +1,6 @@
-package ru.protei.portal.core.model.yt.fields;
+package ru.protei.portal.core.model.yt.fields.issue;
 
-public class BooleanField extends Field {
+public class BooleanIssueField extends IssueField {
     private Boolean value;
 
     public Boolean getValue() {
@@ -13,7 +13,7 @@ public class BooleanField extends Field {
 
     @Override
     public String toString() {
-        return "BooleanField{" +
+        return "BooleanIssueField{" +
                 "name='" + name + '\'' +
                 ", value=" + value +
                 '}';

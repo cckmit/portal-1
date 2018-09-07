@@ -1,83 +1,98 @@
 package ru.protei.portal.core.model.yt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import ru.protei.portal.core.model.yt.fields.DateField;
-import ru.protei.portal.core.model.yt.fields.Field;
-import ru.protei.portal.core.model.yt.fields.StringField;
+import ru.protei.portal.core.model.yt.fields.Fields;
+import ru.protei.portal.core.model.yt.fields.change.ChangeField;
+import ru.protei.portal.core.model.yt.fields.change.DateChangeField;
+import ru.protei.portal.core.model.yt.fields.change.StringChangeField;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-/**
- * Created by admin on 15/11/2017.
- */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Change {
 
-    private List<Field> field;
+    private List<ChangeField> field;
+    private List<Comment> comment;
 
-    public List< Field > getField() {
+    public List<ChangeField> getField() {
         return field;
     }
 
-    public void setField( List< Field > field ) {
+    public void setField(List<ChangeField> field ) {
         this.field = field;
     }
 
-    public Optional<Double> getElapsedTime() {
-        Optional<String> newValue = getFieldByname("Затраченное время")
-                .map( (f)->(((StringField)f).getNewValue()) )
-                .filter( (list)->!list.isEmpty() )
-                .map( (list)->list.get( 0 ) );
+    public List<Comment> getComment() {
+        return comment;
+    }
 
-        if ( !newValue.isPresent() ) {
-            return Optional.empty();
+    public void setComment(List<Comment> comment) {
+        this.comment = comment;
+    }
+
+    private <T extends ChangeField> T getField(String name) {
+        if (field == null || name == null) {
+            return null;
         }
 
-        Double newDouble = convertToHours( newValue.get() );
+        ChangeField fieldValue = field.stream()
+                .filter(Objects::nonNull)
+                .filter((field) -> name.equals(field.getName()))
+                .findFirst()
+                .orElse(null);
 
-        Optional<String> oldValue = getFieldByname("Затраченное время")
-                .map( (f)->(((StringField)f).getOldValue()) )
-                .filter( (list)->!list.isEmpty() )
-                .map( (list)->list.get( 0 ) );
-
-        Double oldDouble = 0.0;
-        if ( oldValue.isPresent() ) {
-            String oldString = oldValue.get();
-            if ( !oldString.equalsIgnoreCase( "?" ) ) {
-                if ( !oldString.isEmpty() ) {
-                    oldDouble = convertToHours( oldString );
-                }
-            }
-        }
-
-        return Optional.of( newDouble - oldDouble );
+        if (fieldValue == null)
+            return null;
+        return (T) fieldValue;
     }
 
-    public Optional<String> getUpdaterName() {
-        return getFieldByname("updaterName")
-                .map( (f)->((StringField)f).getValue() );
+    public Date getUpdated() {
+        DateChangeField dateChangeField = getField(Fields.updated);
+        if (dateChangeField == null)
+            return null;
+        return dateChangeField.getValue();
     }
 
-    public Optional<Date> getUpdated() {
-        return getFieldByname("updated")
-                .map( (f)->(((DateField)f).getValue() ) );
-
+    public String getUpdaterName() {
+        StringChangeField stringChangeField = getField(Fields.updaterName);
+        if (stringChangeField == null)
+            return null;
+        return stringChangeField.getValue();
     }
-    //comment here
 
-    private Optional<Field> getFieldByname( String name ) {
-        if (Objects.isNull( field ) ) {
-            return Optional.empty();
-        }
+//    public Optional<Double> getElapsedTime() {
+//        Optional<String> newValue = getFieldByname("Затраченное время")
+//                .map( (f)->(((Str)f).getNewValue()) )
+//                .filter( (list)->!list.isEmpty() )
+//                .map( (list)->list.get( 0 ) );
+//
+//        if ( !newValue.isPresent() ) {
+//            return Optional.empty();
+//        }
+//
+//        Double newDouble = convertToHours( newValue.get() );
+//
+//        Optional<String> oldValue = getFieldByname("Затраченное время")
+//                .map( (f)->(((StringIssueField)f).getOldValue()) )
+//                .filter( (list)->!list.isEmpty() )
+//                .map( (list)->list.get( 0 ) );
+//
+//        Double oldDouble = 0.0;
+//        if ( oldValue.isPresent() ) {
+//            String oldString = oldValue.get();
+//            if ( !oldString.equalsIgnoreCase( "?" ) ) {
+//                if ( !oldString.isEmpty() ) {
+//                    oldDouble = convertToHours( oldString );
+//                }
+//            }
+//        }
+//
+//        return Optional.of( newDouble - oldDouble );
+//    }
 
-        return field.stream()
-                .filter((f)->f != null )
-                .filter((f)->name.equalsIgnoreCase( f.name ) )
-                .findFirst();
-    }
 
     private Double convertToHours( String value ) {
         Double hours = 0.0;
@@ -124,6 +139,7 @@ public class Change {
     public String toString() {
         return "Change{" +
                 "field=" + field +
+                ", comment=" + comment +
                 '}';
     }
 }

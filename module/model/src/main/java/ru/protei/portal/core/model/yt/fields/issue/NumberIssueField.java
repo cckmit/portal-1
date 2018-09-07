@@ -1,9 +1,9 @@
-package ru.protei.portal.core.model.yt.fields;
+package ru.protei.portal.core.model.yt.fields.issue;
 
 /**
  * Created by admin on 15/11/2017.
  */
-public class NumberField extends Field {
+public class NumberIssueField extends IssueField {
     protected Integer value;
 
     public Integer getValue() {
@@ -16,7 +16,7 @@ public class NumberField extends Field {
 
     @Override
     public String toString() {
-        return "NumberField{" +
+        return "NumberIssueField{" +
                 "name='" + name + '\'' +
                 ", value=" + value +
                 '}';

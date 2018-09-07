@@ -1,6 +1,6 @@
-package ru.protei.portal.core.model.yt;
+package ru.protei.portal.core.model.yt.fields;
 
-public interface IssueFields {
+public interface Fields {
     String created = "created";
     String updated = "updated";
     String resolved = "resolved";
@@ -28,7 +28,7 @@ public interface IssueFields {
     String subsystemRus = "Подсистема";
     String crmIssueNumber = "Номер обращения в CRM";
     String attachments = "attachments";
-    String evalution = "Оценка";
+    String evaluation = "Оценка";
     String component = "Компонент";
     String elapsedTime = "Затраченное время";
     String executor = "Исполнитель";

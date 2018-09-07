@@ -1,8 +1,8 @@
-package ru.protei.portal.core.model.yt.fields;
+package ru.protei.portal.core.model.yt.fields.issue;
 
 import java.util.List;
 
-public class StringArrayWithIdArrayField extends Field {
+public class StringArrayWithIdArrayIssueField extends IssueField {
     private List<String> value;
     private List<String> valueId;
 
@@ -24,7 +24,7 @@ public class StringArrayWithIdArrayField extends Field {
 
     @Override
     public String toString() {
-        return "StringArrayWithIdArrayField{" +
+        return "StringArrayWithIdArrayIssueField{" +
                 "name='" + name + '\'' +
                 ", value=" + value +
                 ", valueId=" + valueId +

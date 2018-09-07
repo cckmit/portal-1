@@ -1,4 +1,4 @@
-package ru.protei.portal.core.model.yt.fields;
+package ru.protei.portal.core.model.yt.fields.issue;
 
 import ru.protei.portal.core.model.yt.Link;
 
@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by admin on 15/11/2017.
  */
-public class LinkArrayField extends Field {
+public class LinkArrayIssueField extends IssueField {
     protected List<Link> value;
 
     public List<Link> getValue() {
@@ -20,7 +20,7 @@ public class LinkArrayField extends Field {
 
     @Override
     public String toString() {
-        return "LinkArrayField{" +
+        return "LinkArrayIssueField{" +
                 "name='" + name + '\'' +
                 ", value=" + value +
                 '}';
