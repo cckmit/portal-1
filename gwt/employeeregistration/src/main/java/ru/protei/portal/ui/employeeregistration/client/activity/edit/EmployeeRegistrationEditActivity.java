@@ -42,7 +42,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     @Override
     public void onSaveClicked() {
         EmployeeRegistration newEmployeeRegistration = fillDto();
-        if (!newEmployeeRegistration.isValid()) {
+        if (getValidationError(newEmployeeRegistration) != null) {
             showValidationError(newEmployeeRegistration);
             return;
         }

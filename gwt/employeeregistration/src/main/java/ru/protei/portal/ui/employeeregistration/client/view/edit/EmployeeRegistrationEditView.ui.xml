@@ -49,7 +49,7 @@
                         <option:OptionItem ui:field="withRegistration" styleName="toggle inherit-color" name="{lang.employeeRegistrationWithRegistration}"/>
                     </div>
 
-                    <div class="form-group col-xs-5">
+                    <div class="form-group col-xs-9">
                         <label>
                             <ui:text from="{lang.employeeRegistrationPost}"/>
                         </label>
