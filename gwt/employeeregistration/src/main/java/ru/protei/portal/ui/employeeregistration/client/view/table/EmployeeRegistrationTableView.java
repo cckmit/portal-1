@@ -3,6 +3,7 @@ package ru.protei.portal.ui.employeeregistration.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -14,6 +15,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableView;
@@ -66,6 +68,26 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
     }
 
     private void initTable() {
+        ClickColumn<EmployeeRegistration> state = new ClickColumn<EmployeeRegistration>() {
+            @Override
+            protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.setInnerText(lang.employeeRegistrationState());
+            }
+
+            @Override
+            public void fillColumnValue(Element cell, EmployeeRegistration value) {
+                if (value.getState() == null) {
+                    cell.setInnerText("");
+                    return;
+                }
+
+                Element stateElement = DOM.createElement( "p" );
+                stateElement.addClassName( "label label-" + value.getState().toString().toLowerCase() );
+                stateElement.setInnerText( caseStateLang.getStateName( value.getState() ) );
+                cell.appendChild( stateElement );
+            }
+        };
+
         ClickColumn<EmployeeRegistration> fullName = new ClickColumn<EmployeeRegistration>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
@@ -106,6 +128,7 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
             }
         };
 
+        clickColumns.add(state);
         clickColumns.add(fullName);
         clickColumns.add(headOfDepartment);
         clickColumns.add(employmentDate);
@@ -126,6 +149,9 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
     @Inject
     @UiField
     Lang lang;
+
+    @Inject
+    En_CaseStateLang caseStateLang;
 
     private ClickColumnProvider<EmployeeRegistration> columnProvider = new ClickColumnProvider<>();
 
