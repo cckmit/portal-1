@@ -1322,7 +1322,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationPost();
 
-    String employeeRegistrationWorkplaceInfo();
+    String employeeRegistrationWorkplace();
 
     String employeeRegistrationComment();
 

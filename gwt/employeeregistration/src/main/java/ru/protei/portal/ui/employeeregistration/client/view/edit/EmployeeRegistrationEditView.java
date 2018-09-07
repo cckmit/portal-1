@@ -67,8 +67,8 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     }
 
     @Override
-    public HasValue<String> post() {
-        return post;
+    public HasValue<String> position() {
+        return position;
     }
 
     @Override
@@ -77,8 +77,8 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     }
 
     @Override
-    public HasValue<String> workplaceInfo() {
-        return workplaceInfo;
+    public HasValue<String> workplace() {
+        return workplace;
     }
 
     @Override
@@ -97,8 +97,8 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     }
 
     @Override
-    public HasValidable postValidation() {
-        return post;
+    public HasValidable positionValidation() {
+        return position;
     }
 
     @Override
@@ -148,13 +148,13 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     OptionItem withRegistration;
 
     @UiField
-    ValidableTextBox post;
+    ValidableTextBox position;
 
     @UiField
     AutoResizeTextArea comment;
 
     @UiField
-    AutoResizeTextArea workplaceInfo;
+    AutoResizeTextArea workplace;
 
     @Inject
     @UiField(provided = true)

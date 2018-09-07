@@ -42,7 +42,7 @@ public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegi
             condition.append("1=1");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
-                condition.append(" and (CO.CASE_NAME like ? or employee registration.post like ?)");
+                condition.append(" and (CO.CASE_NAME like ? or employee registration.position like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);

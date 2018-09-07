@@ -53,16 +53,16 @@
                         <label>
                             <ui:text from="{lang.employeeRegistrationPost}"/>
                         </label>
-                        <validatefield:ValidableTextBox styleName="input-field" ui:field="post" notNull="true"/>
+                        <validatefield:ValidableTextBox styleName="input-field" ui:field="position" notNull="true"/>
                     </div>
                 </div>
 
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">
                         <label>
-                            <ui:text from="{lang.employeeRegistrationWorkplaceInfo}"/>
+                            <ui:text from="{lang.employeeRegistrationWorkplace}"/>
                         </label>
-                        <textarea:AutoResizeTextArea ui:field="workplaceInfo" minRows="1" styleName="input-field"/>
+                        <textarea:AutoResizeTextArea ui:field="workplace" minRows="1" styleName="input-field"/>
                     </div>
 
                     <div class="form-group col-xs-6">

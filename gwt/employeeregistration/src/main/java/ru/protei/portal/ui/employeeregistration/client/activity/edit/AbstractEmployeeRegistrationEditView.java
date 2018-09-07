@@ -25,11 +25,11 @@ public interface AbstractEmployeeRegistrationEditView extends IsWidget {
 
     HasValue<Boolean> withRegistration();
 
-    HasValue<String> post();
+    HasValue<String> position();
 
     HasValue<String> comment();
 
-    HasValue<String> workplaceInfo();
+    HasValue<String> workplace();
 
     HasValue<Set<En_EmployeeEquipment>> equipmentList();
 
@@ -37,7 +37,7 @@ public interface AbstractEmployeeRegistrationEditView extends IsWidget {
 
     HasValidable fullNameValidation();
 
-    HasValidable postValidation();
+    HasValidable positionValidation();
 
     HasValidable headOfDepartmentValidation();
 

@@ -14,11 +14,11 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setEmploymentType(String employmentType);
 
-    void setPost(String post);
+    void setPosition(String post);
 
     void setComment(String comment);
 
-    void setWorkplaceInfo(String workplaceInfo);
+    void setWorkplace(String workplace);
 
     void setEquipmentList(String equipmentList);
 

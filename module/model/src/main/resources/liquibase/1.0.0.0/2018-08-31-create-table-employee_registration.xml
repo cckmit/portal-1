@@ -6,7 +6,7 @@
     
     <changeSet id="create-table-employee_registration" author="efremov">
         <createTable tableName="employee_registration">
-            <column autoIncrement="true" name="id" type="BIGINT">
+            <column name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="employment_date" type="DATE" />
@@ -14,11 +14,14 @@
             <column name="with_registration" type="BOOLEAN" defaultValueBoolean="true">
                 <constraints nullable="false"/>
             </column>
-            <column name="post" type="VARCHAR(128)"/>
-            <column name="workplace_info" type="TEXT"/>
+            <column name="position" type="VARCHAR(128)"/>
+            <column name="workplace" type="TEXT"/>
             <column name="equipment_list" type="VARCHAR(64)"/>
             <column name="resource_list" type="VARCHAR(128)"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="add-employee_registration_case_object_fk" author="efremov">
         <addForeignKeyConstraint baseTableName="employee_registration"
                                  baseColumnNames="id"
                                  constraintName="employee_registration-case_object-id-fk"

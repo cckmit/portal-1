@@ -43,13 +43,13 @@ public class EmployeeRegistration implements Serializable {
      * Должность
      */
     @JdbcColumn
-    private String post;
+    private String position;
 
     /**
      * Расположение рабочего места
      */
-    @JdbcColumn(name = "workplace_info")
-    private String workplaceInfo;
+    @JdbcColumn
+    private String workplace;
 
     /**
      * Оборудование для рабочего места нового сотрудника
@@ -140,20 +140,20 @@ public class EmployeeRegistration implements Serializable {
         this.withRegistration = withRegistration;
     }
 
-    public String getPost() {
-        return post;
+    public String getPosition() {
+        return position;
     }
 
-    public void setPost(String post) {
-        this.post = post;
+    public void setPosition(String position) {
+        this.position = position;
     }
 
-    public String getWorkplaceInfo() {
-        return workplaceInfo;
+    public String getWorkplace() {
+        return workplace;
     }
 
-    public void setWorkplaceInfo(String workplaceInfo) {
-        this.workplaceInfo = workplaceInfo;
+    public void setWorkplace(String workplace) {
+        this.workplace = workplace;
     }
 
     public Set<En_EmployeeEquipment> getEquipmentList() {
@@ -241,8 +241,8 @@ public class EmployeeRegistration implements Serializable {
                 ", employmentDate=" + employmentDate +
                 ", employmentType=" + employmentType +
                 ", withRegistration=" + withRegistration +
-                ", post='" + post + '\'' +
-                ", workplaceInfo='" + workplaceInfo + '\'' +
+                ", position='" + position + '\'' +
+                ", workplace='" + workplace + '\'' +
                 ", equipmentList=" + equipmentList +
                 ", resourceList=" + resourceList +
                 ", creatorId=" + creatorId +

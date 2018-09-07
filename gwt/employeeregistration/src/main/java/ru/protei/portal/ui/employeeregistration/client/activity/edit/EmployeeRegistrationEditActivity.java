@@ -57,7 +57,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private boolean isViewValid() {
         if (StringUtils.isBlank(view.fullName().getValue()))
             return false;
-        if (StringUtils.isBlank(view.post().getValue()))
+        if (StringUtils.isBlank(view.position().getValue()))
             return false;
         if (view.headOfDepartment().getValue() == null)
             return false;
@@ -70,8 +70,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         boolean fullNameValid = !StringUtils.isBlank(view.fullName().getValue());
         view.fullNameValidation().setValid(fullNameValid);
 
-        boolean postValid = !StringUtils.isBlank(view.post().getValue());
-        view.postValidation().setValid(postValid);
+        boolean positionValid = !StringUtils.isBlank(view.position().getValue());
+        view.positionValidation().setValid(positionValid);
 
         boolean employmentDateValid = view.employmentDate().getValue() != null;
         view.setEmploymentDateValid(employmentDateValid);
@@ -99,8 +99,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         EmployeeRegistration q = new EmployeeRegistration();
         q.setEmployeeFullName(view.fullName().getValue());
         q.setComment(view.comment().getValue());
-        q.setWorkplaceInfo(view.workplaceInfo().getValue());
-        q.setPost(view.post().getValue());
+        q.setWorkplace(view.workplace().getValue());
+        q.setPosition(view.position().getValue());
         q.setEmploymentDate(view.employmentDate().getValue());
         if (view.headOfDepartment().getValue() == null)
             q.setHeadOfDepartmentId(null);
@@ -116,8 +116,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private void clearView() {
         view.fullName().setValue("");
         view.comment().setValue("");
-        view.workplaceInfo().setValue("");
-        view.post().setValue("");
+        view.workplace().setValue("");
+        view.position().setValue("");
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.equipmentList().setValue(new HashSet<>());
@@ -125,7 +125,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.withRegistration().setValue(true);
         view.employmentType().setValue(En_EmploymentType.FULL_TIME);
 
-        view.postValidation().setValid(true);
+        view.positionValidation().setValid(true);
         view.fullNameValidation().setValid(true);
         view.headOfDepartmentValidation().setValid(true);
         view.setEmploymentDateValid(true);

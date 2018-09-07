@@ -59,8 +59,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setPost(String post) {
-        this.post.setInnerText(post);
+    public void setPosition(String position) {
+        this.position.setInnerText(position);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setWorkplaceInfo(String workplaceInfo) {
-        this.workplaceInfo.setInnerText(workplaceInfo);
+    public void setWorkplace(String workplace) {
+        this.workplace.setInnerText(workplace);
     }
 
     @Override
@@ -113,11 +113,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @UiField
     SpanElement employmentType;
     @UiField
-    SpanElement post;
+    SpanElement position;
     @UiField
     SpanElement comment;
     @UiField
-    SpanElement workplaceInfo;
+    SpanElement workplace;
     @UiField
     SpanElement equipmentList;
     @UiField

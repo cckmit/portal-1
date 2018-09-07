@@ -30,12 +30,12 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     private void fillView( EmployeeRegistration value ) {
         view.setFullName(value.getEmployeeFullName());
         view.setComment(value.getComment());
-        view.setWorkplaceInfo(value.getWorkplaceInfo());
+        view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
         view.setCreated(DateFormatter.formatDateTime(value.getCreated()));
         view.setEquipmentList(CollectionUtils.join(value.getEquipmentList(), equipmentLang::getName, ", "));
         view.setResourceList(CollectionUtils.join(value.getResourceList(), resourceLang::getName, ", "));
-        view.setPost(value.getPost());
+        view.setPosition(value.getPosition());
         if (value.getHeadOfDepartment() != null)
             view.setHeadOfDepartment(value.getHeadOfDepartment().getDisplayShortName());
         else
