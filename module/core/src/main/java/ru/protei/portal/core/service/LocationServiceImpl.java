@@ -29,7 +29,7 @@ public class LocationServiceImpl implements LocationService {
         List<Location> list = locationDAO.listByQuery(query);
 
         if (list == null)
-            new CoreResponse<List<DistrictInfo>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return new CoreResponse<List<DistrictInfo>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<DistrictInfo>>().success(
             list.stream()

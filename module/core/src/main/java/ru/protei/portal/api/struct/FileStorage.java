@@ -10,7 +10,8 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class FileStorage {
 
     private String storagePath;
     private String authentication;
-    private static Logger logger = Logger.getLogger(FileStorage.class);
+    private static Logger logger = LoggerFactory.getLogger(FileStorage.class);
 
     public FileStorage(String storagePath, String user, String password){
         this.storagePath = storagePath;
@@ -113,7 +114,7 @@ public class FileStorage {
                 return new File(conn.getContentType(), IOUtils.toBufferedInputStream(conn.getInputStream()));
 
         }catch (IOException e){
-            logger.error(e);
+            logger.error("getFile", e);
         }finally {
             if (conn != null) {
                 conn.disconnect();
@@ -140,7 +141,7 @@ public class FileStorage {
 
             return HttpStatus.valueOf(getStatus(response)).is2xxSuccessful();
         }catch (IOException e){
-            logger.error(e);
+            logger.error("deleteFile", e);
         }
         return false;
     }

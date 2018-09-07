@@ -58,7 +58,7 @@ public class AccountServiceImpl implements AccountService {
         List< UserLogin > list = userLoginDAO.getAccounts( query );
 
         if (list == null)
-            new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
+            return new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
         jdbcManyRelationsHelper.fill( list, "roles" );
 
         return new CoreResponse< List< UserLogin > >().success( list );

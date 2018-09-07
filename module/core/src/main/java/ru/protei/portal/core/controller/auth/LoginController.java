@@ -1,7 +1,8 @@
 package ru.protei.portal.core.controller.auth;
 
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +16,7 @@ import ru.protei.portal.core.service.user.AuthService;
 @RestController
 public class LoginController {
 
-    private static Logger logger = Logger.getLogger(LoginController.class);
+    private static Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @Autowired
     private AuthService authService;

@@ -1,6 +1,7 @@
 package ru.protei.portal.api;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
@@ -11,7 +12,7 @@ import ru.protei.portal.api.config.APIConfigurationContext;
 
 public class Main {
 
-    private static Logger logger = Logger.getLogger(Main.class);
+    private static Logger logger = LoggerFactory.getLogger(Main.class);
     private static final int DEFAULT_PORT = 8090;
     private static final String MAPPING_URL = "/*";
     private static final String API_URL = "/api/*";
