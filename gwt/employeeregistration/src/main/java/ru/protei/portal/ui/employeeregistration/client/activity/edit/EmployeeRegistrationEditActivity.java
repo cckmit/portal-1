@@ -41,11 +41,11 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
     @Override
     public void onSaveClicked() {
-        if (!isViewValid()) {
-            validateView();
+        EmployeeRegistration newEmployeeRegistration = fillDto();
+        if (!newEmployeeRegistration.isValid()) {
+            showValidationError(newEmployeeRegistration);
             return;
         }
-        EmployeeRegistration newEmployeeRegistration = fillDto();
         saveEmployeeRegistration(newEmployeeRegistration);
     }
 
@@ -54,30 +54,24 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         fireEvent(new Back());
     }
 
-    private boolean isViewValid() {
-        if (StringUtils.isBlank(view.fullName().getValue()))
-            return false;
-        if (StringUtils.isBlank(view.position().getValue()))
-            return false;
-        if (view.headOfDepartment().getValue() == null)
-            return false;
-        if (view.employmentDate().getValue() == null)
-            return false;
-        return true;
+    private void showValidationError(EmployeeRegistration employeeRegistration) {
+        fireEvent(new NotifyEvents.Show(getValidationError(employeeRegistration), NotifyEvents.NotifyType.ERROR));
     }
 
-    private void validateView() {
-        boolean fullNameValid = !StringUtils.isBlank(view.fullName().getValue());
-        view.fullNameValidation().setValid(fullNameValid);
+    private String getValidationError(EmployeeRegistration registration) {
+        if (StringUtils.isBlank(registration.getEmployeeFullName()))
+            return lang.employeeRegistrationValidationEmployeeFullName();
 
-        boolean positionValid = !StringUtils.isBlank(view.position().getValue());
-        view.positionValidation().setValid(positionValid);
+        if (StringUtils.isBlank(registration.getPosition()))
+            return lang.employeeRegistrationValidationPosition();
 
-        boolean employmentDateValid = view.employmentDate().getValue() != null;
-        view.setEmploymentDateValid(employmentDateValid);
+        if (registration.getEmploymentDate() == null)
+            return lang.employeeRegistrationValidationEmploymentDate();
 
-        boolean headOfDepartmentValid = view.headOfDepartment().getValue() != null;
-        view.headOfDepartmentValidation().setValid(headOfDepartmentValid);
+        if (registration.getHeadOfDepartment() == null)
+            return lang.employeeRegistrationValidationHeadOfDepartment();
+
+        return null;
     }
 
     private void saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {

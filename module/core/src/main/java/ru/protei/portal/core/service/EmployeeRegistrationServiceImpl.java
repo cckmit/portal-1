@@ -56,7 +56,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     @Override
     @Transactional
     public CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration) {
-        if (employeeRegistration == null)
+        if (employeeRegistration == null || !employeeRegistration.isValid())
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = createCaseObjectFromEmployeeRegistration(employeeRegistration);
@@ -73,7 +73,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseType(En_CaseType.EMPLOYEE_REGISTRATION);
-        caseObject.setState(En_CaseState.ACTIVE);
+        caseObject.setState(En_CaseState.CREATED);
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.EMPLOYEE_REGISTRATION));
         caseObject.setCreated(new Date());
 

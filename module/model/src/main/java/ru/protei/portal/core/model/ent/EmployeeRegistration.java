@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -232,6 +233,13 @@ public class EmployeeRegistration implements Serializable {
 
     public void setHeadOfDepartmentShortName(String headOfDepartmentShortName) {
         this.headOfDepartmentShortName = headOfDepartmentShortName;
+    }
+
+    public boolean isValid() {
+        return !StringUtils.isBlank(employeeFullName) &&
+                !StringUtils.isBlank(position) &&
+                headOfDepartmentId != null &&
+                employmentDate != null;
     }
 
     @Override

@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:states="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist"
+             xmlns:states="urn:import:ru.protei.portal.ui.common.client.widget.employeeregstate"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
@@ -27,7 +27,7 @@
 
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.employeeRegistrationState}"/></label>
-                <states:IssueStatesOptionList ui:field="states"/>
+                <states:EmployeeRegistrationStateOptionList ui:field="states"/>
             </div>
         </div>
         <div class="footer">

@@ -19,7 +19,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
+import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterActivity;
@@ -145,7 +145,7 @@ public class EmployeeRegistrationFilterView extends Composite implements Abstrac
 
     @Inject
     @UiField(provided = true)
-    IssueStatesOptionList states;
+    EmployeeRegistrationStateOptionList states;
 
     @Inject
     @UiField(provided = true)

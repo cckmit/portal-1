@@ -1341,4 +1341,12 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationEmployeeWithRegistrationTrue();
 
     String employeeRegistrationEmployeeWithRegistrationFalse();
+
+    String employeeRegistrationValidationEmployeeFullName();
+
+    String employeeRegistrationValidationPosition();
+
+    String employeeRegistrationValidationEmploymentDate();
+
+    String employeeRegistrationValidationHeadOfDepartment();
 }
