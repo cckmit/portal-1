@@ -66,7 +66,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         CaseObject caseObject = createCaseObjectFromEmployeeRegistration(employeeRegistration);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
         employeeRegistrationDAO.persist(employeeRegistration);
