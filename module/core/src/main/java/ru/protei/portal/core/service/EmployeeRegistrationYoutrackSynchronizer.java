@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
 
@@ -87,6 +88,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         En_CaseState newStatus = getNewStatus(changes);
         employeeRegistration.setState(newStatus);
+
+        parseChanges(employeeRegistration, changes.getChange());
     }
 
     private void updateTwoIssues(EmployeeRegistration employeeRegistration, String issue1, String issue2) {
@@ -95,6 +98,10 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         En_CaseState newStatus = getNewStatus(changes1, changes2);
         employeeRegistration.setState(newStatus);
+
+        List<Change> changes = changes1.getChange();
+        changes.addAll(changes2.getChange());
+        parseChanges(employeeRegistration, changes);
     }
 
     private En_CaseState getNewStatus(ChangeResponse changes) {
@@ -134,6 +141,16 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         caseObject.setModified(employeeRegistration.getLastYoutrackSynchronization());
         caseObject.setState(employeeRegistration.getState());
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
+    }
+
+    private void parseChanges(EmployeeRegistration employeeRegistration, List<Change> changes) {
+        for (Change change : changes) {
+            if (change == null)
+                continue;
+            if (change.getUpdated() != null && change.getUpdated().before(employeeRegistration.getLastYoutrackSynchronization()))
+                continue;
+
+        }
     }
 
     private CaseComment toCaseComment(Comment ytComment) {

@@ -97,7 +97,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
         String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
-        String description = "Необходимо открыть доступ к: " + CollectionUtils.join(resourceList, ", ");
+        String description = "Необходимо открыть доступ к: " +
+                CollectionUtils.join(resourceList, r -> getResourceName(r),  ", ");
         String issueId = youtrackService.createIssue(CrmConstants.Youtrack.ADMIN_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
@@ -108,7 +109,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
-        String description = "Необходимо: " + CollectionUtils.join(equipmentList, ", ");
+        String description = "Необходимо: " +
+                CollectionUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
         String issueId = youtrackService.createIssue(CrmConstants.Youtrack.EQUIPMENT_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
@@ -119,5 +121,43 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         caseLink.setType(En_CaseLink.YT);
         caseLink.setRemoteId(issueId);
         caseLinkDAO.persist(caseLink);
+    }
+
+    private static String getResourceName(En_InternalResource internalResource) {
+        if (internalResource == null)
+            return "";
+        switch (internalResource) {
+            case YOUTRACK:
+                return "YouTrack";
+            case CVS:
+                return "CVS";
+            case SVN:
+                return "SVN";
+            case MERCURIAL:
+                return "Mercurial";
+            case GIT:
+                return "Git";
+            case CRM:
+                return "CRM";
+            case STORE_DELIVERY:
+                return "Store Delivery";
+        }
+        return "";
+    }
+
+    private static String getEquipmentName(En_EmployeeEquipment employeeEquipment) {
+        if (employeeEquipment == null)
+            return "";
+        switch (employeeEquipment) {
+            case TABLE:
+                return "стол";
+            case CHAIR:
+                return "стул";
+            case COMPUTER:
+                return "компьютер";
+            case MONITOR:
+                return "монитор";
+        }
+        return "";
     }
 }

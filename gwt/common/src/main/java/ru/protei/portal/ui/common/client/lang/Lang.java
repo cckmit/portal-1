@@ -1350,4 +1350,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationValidationEmploymentDate();
 
     String employeeRegistrationValidationHeadOfDepartment();
+
+    String internalResourceEmail();
 }
