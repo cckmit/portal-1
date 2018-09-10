@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
@@ -148,8 +149,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         for (Change change : changes) {
             if (change == null)
                 continue;
-            if (change.getUpdated() != null && change.getUpdated().before(employeeRegistration.getLastYoutrackSynchronization()))
+            if (DateUtils.beforeNotNull(change.getUpdated(), employeeRegistration.getLastYoutrackSynchronization()))
                 continue;
+
 
         }
     }
