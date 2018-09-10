@@ -11,4 +11,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add-remote_id-for-case_attachment" author="efremov">
+        <addColumn tableName="case_attachment">
+            <column name="remote_id" type="VARCHAR(64)">
+                <constraints unique="true" uniqueConstraintName="case_attachment-remote_id-uc"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

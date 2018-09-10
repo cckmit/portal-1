@@ -1,7 +1,7 @@
 package ru.protei.portal.core.model.yt.fields.issue;
 
 
-import ru.protei.portal.core.model.yt.Attachment;
+import ru.protei.portal.core.model.yt.YtAttachment;
 
 import java.util.List;
 
@@ -9,13 +9,13 @@ import java.util.List;
  * Created by admin on 15/11/2017.
  */
 public class AttachmentArrayIssueField extends IssueField {
-    protected List<Attachment> value;
+    protected List<YtAttachment> value;
 
-    public List<Attachment> getValue() {
+    public List<YtAttachment> getValue() {
         return value;
     }
 
-    public void setValue( List<Attachment> value ) {
+    public void setValue( List<YtAttachment> value ) {
         this.value = value;
     }
 

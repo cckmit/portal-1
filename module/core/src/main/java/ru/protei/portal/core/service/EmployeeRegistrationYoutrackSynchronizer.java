@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
+import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
 
 import java.util.*;
@@ -44,6 +45,12 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     private CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    private CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    private AttachmentDAO attachmentDAO;
 
 
     @Autowired
@@ -122,8 +129,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             ChangeResponse changes = issueToChanges.get(issueId);
             if (changes == null)
                 continue;
-            parseChanges(employeeRegistration, issueId, changes.getChange());
+            parseStateChanges(employeeRegistration, issueId, changes.getChange());
             parseAndUpdateComments(employeeRegistration.getId(), employeeRegistration.getLastYoutrackSynchronization(), changes.getIssue().getComment());
+            parseAndUpdateAttachments(employeeRegistration, issueId);
         }
     }
 
@@ -146,30 +154,37 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
     }
 
-    private void parseChanges(EmployeeRegistration employeeRegistration, String issueId, List<Change> changes) {
+    private void parseStateChanges(EmployeeRegistration employeeRegistration, String issueId, List<Change> changes) {
         List<CaseComment> stateChanges = new LinkedList<>();
+        changes.sort(Comparator.comparing(Change::getUpdated, Comparator.nullsFirst(Date::compareTo)));
         for (Change change : changes) {
             if (change == null)
                 continue;
             if (DateUtils.beforeNotNull(change.getUpdated(), employeeRegistration.getLastYoutrackSynchronization()))
                 continue;
 
-            StringArrayWithIdArrayOldNewChangeField stateChangeField = change.getStateChangeField();
-
-            if (stateChangeField == null)
-                continue;
-
-            En_CaseState newState = toCaseState(stateChangeField.getNewValue());
-
-            CaseComment stateChange = new CaseComment();
-            stateChange.setCaseId(employeeRegistration.getId());
-            stateChange.setCreated(change.getUpdated());
-            stateChange.setAuthorId(findPersonIdByLogin(change.getUpdaterName()));
-            stateChange.setCaseStateId((long) newState.getId());
-            stateChange.setText(issueId);
-            stateChanges.add(stateChange);
+            CaseComment stateChange = parseStateChange(employeeRegistration, issueId, change);
+            if (stateChange != null)
+                stateChanges.add(stateChange);
         }
         caseCommentDAO.persistBatch(stateChanges);
+    }
+
+    private CaseComment parseStateChange(EmployeeRegistration employeeRegistration, String issueId, Change change) {
+        StringArrayWithIdArrayOldNewChangeField stateChangeField = change.getStateChangeField();
+
+        if (stateChangeField == null)
+            return null;
+
+        En_CaseState newState = toCaseState(stateChangeField.getNewValue());
+
+        CaseComment stateChange = new CaseComment();
+        stateChange.setCaseId(employeeRegistration.getId());
+        stateChange.setCreated(change.getUpdated());
+        stateChange.setAuthorId(findPersonIdByLogin(change.getUpdaterName()));
+        stateChange.setCaseStateId((long) newState.getId());
+        stateChange.setText(issueId);
+        return stateChange;
     }
 
     private void parseAndUpdateComments(Long caseId, Date lastSynchronization, List<Comment> comments) {
@@ -210,5 +225,44 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             return null;
         UserLogin user = userLoginDAO.findByLogin(login);
         return user == null ? null : user.getPersonId();
+    }
+
+    private void parseAndUpdateAttachments(EmployeeRegistration employeeRegistration, String... issueIds) {
+        List<CaseAttachment> oldCaseAttachments = caseAttachmentDAO.getListByCaseId(employeeRegistration.getId());
+
+        List<YtAttachment> ytAttachments = new LinkedList<>();
+        for (String issueId : issueIds) {
+            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(issueId);
+            ytAttachments.addAll(issueAttachments);
+        }
+
+        for (YtAttachment ytAttachment : ytAttachments) {
+            if (ytAttachment == null || ytAttachment.getId() == null)
+                continue;
+
+            Optional<CaseAttachment> caseAttachment = CollectionUtils.find(oldCaseAttachments,
+                    ca -> ytAttachment.getId().equals(ca.getRemoteId()));
+
+            if (caseAttachment.isPresent())
+                oldCaseAttachments.remove(caseAttachment.get());
+            else {
+                Attachment attachment = new Attachment();
+                attachment.setCreated(ytAttachment.getCreated());
+                attachment.setCreatorId(findPersonIdByLogin(ytAttachment.getAuthorLogin()));
+                attachment.setFileName(ytAttachment.getName());
+                attachment.setExtLink(ytAttachment.getUrl());
+
+                Long attachmentId = attachmentDAO.persist(attachment);
+                if (attachmentId == null) {
+                    log.warn("parseAndUpdateAttachments(): attachment {} not saved", attachment);
+                    continue;
+                }
+
+                CaseAttachment ca = new CaseAttachment(employeeRegistration.getId(), attachmentId);
+                ca.setRemoteId(ytAttachment.getId());
+                caseAttachmentDAO.persist(ca);
+            }
+        }
+        caseAttachmentDAO.removeBatch(oldCaseAttachments);
     }
 }

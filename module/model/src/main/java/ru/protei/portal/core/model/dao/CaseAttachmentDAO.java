@@ -20,6 +20,8 @@ public interface CaseAttachmentDAO extends PortalBaseDAO<CaseAttachment>{
 
     int removeByAttachmentId(Long attachmentId);
 
+    CaseAttachment getByRemoteId(String remoteId);
+
     int removeByCommentId(Long commentId);
 
     void removeBatch(Collection<CaseAttachment> list);
@@ -29,6 +31,4 @@ public interface CaseAttachmentDAO extends PortalBaseDAO<CaseAttachment>{
      * @return удалённые CaseAttachments
      */
     Collection<CaseAttachment> calcDiffAndSynchronize(Collection<CaseAttachment> oldList, Collection<CaseAttachment> newList);
-
-
 }
