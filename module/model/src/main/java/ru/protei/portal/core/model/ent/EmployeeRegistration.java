@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -101,6 +100,12 @@ public class EmployeeRegistration implements Serializable {
      */
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "CREATED", sqlTableAlias = "CO")
     private Date created;
+
+    /**
+     * Дата и время последней синхронизации с YT
+     */
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MODIFIED", sqlTableAlias = "CO")
+    private Date lastYoutrackSynchronization;
 
     /**
      * Состояние
@@ -235,11 +240,12 @@ public class EmployeeRegistration implements Serializable {
         this.headOfDepartmentShortName = headOfDepartmentShortName;
     }
 
-    public boolean isValid() {
-        return !StringUtils.isBlank(employeeFullName) &&
-                !StringUtils.isBlank(position) &&
-                headOfDepartmentId != null &&
-                employmentDate != null;
+    public Date getLastYoutrackSynchronization() {
+        return lastYoutrackSynchronization;
+    }
+
+    public void setLastYoutrackSynchronization(Date lastYoutrackSynchronization) {
+        this.lastYoutrackSynchronization = lastYoutrackSynchronization;
     }
 
     @Override
@@ -259,6 +265,7 @@ public class EmployeeRegistration implements Serializable {
                 ", comment='" + comment + '\'' +
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +
+                ", lastYoutrackSynchronization=" + lastYoutrackSynchronization +
                 ", state=" + state +
                 '}';
     }
