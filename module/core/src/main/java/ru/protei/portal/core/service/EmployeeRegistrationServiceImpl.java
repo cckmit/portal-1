@@ -141,6 +141,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "CRM";
             case STORE_DELIVERY:
                 return "Store Delivery";
+            case EMAIL:
+                return "почта";
         }
         return "";
     }
