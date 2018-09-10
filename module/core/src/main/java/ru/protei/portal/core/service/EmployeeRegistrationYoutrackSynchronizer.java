@@ -9,14 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.yt.ChangeResponse;
@@ -40,6 +38,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     private EmployeeRegistrationDAO employeeRegistrationDAO;
+
+    @Autowired
+    private CaseObjectDAO caseObjectDAO;
 
 
     @Autowired
@@ -77,7 +78,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         employeeRegistration.setLastYoutrackSynchronization(synchronizationStarted);
 
-        if (!employeeRegistrationDAO.merge(employeeRegistration))
+        if (!saveEmployeeRegistration(employeeRegistration))
             log.warn("synchronizeEmployeeRegistration(): failed to execute DB merge for employee registration={}", employeeRegistration);
     }
 
@@ -127,7 +128,15 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return null;
     }
 
-    public CaseComment toCaseComment(Comment ytComment) {
+    @Transactional
+    public boolean saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {
+        CaseObject caseObject = caseObjectDAO.get(employeeRegistration.getId());
+        caseObject.setModified(employeeRegistration.getLastYoutrackSynchronization());
+        caseObject.setState(employeeRegistration.getState());
+        return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
+    }
+
+    private CaseComment toCaseComment(Comment ytComment) {
         if (ytComment == null)
             return null;
         UserLogin user = userLoginDAO.findByLogin(ytComment.getAuthor());
