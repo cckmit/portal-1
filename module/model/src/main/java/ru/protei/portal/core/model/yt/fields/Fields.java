@@ -10,7 +10,8 @@ public interface Fields {
     String links = "links";
     String priority = "Priority";
     String type = "Type";
-    String state = "State";
+    String stateEng = "State";
+    String stateRus = "Состояние";
     String sprintRus = "Спринт";
     String sprintEng = "sprint";
     String SP = "SP";

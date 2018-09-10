@@ -9,7 +9,8 @@ import ru.protei.portal.core.model.yt.fields.Fields;
 @JsonSubTypes( {
         @JsonSubTypes.Type( name = Fields.priority, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = Fields.type, value = StringArrayWithIdArrayOldNewChangeField.class ),
-        @JsonSubTypes.Type( name = Fields.state, value = StringArrayWithIdArrayOldNewChangeField.class ),
+        @JsonSubTypes.Type( name = Fields.stateEng, value = StringArrayWithIdArrayOldNewChangeField.class ),
+        @JsonSubTypes.Type( name = Fields.stateRus, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = Fields.updaterName, value = StringChangeField.class ),
         @JsonSubTypes.Type( name = Fields.updated, value = DateChangeField.class ),
         @JsonSubTypes.Type( name = Fields.assignee, value = PersonArrayOldNewChangeField.class ),

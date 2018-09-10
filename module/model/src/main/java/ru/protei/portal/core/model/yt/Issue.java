@@ -98,7 +98,7 @@ public class Issue {
     }
 
     public String getStateId() {
-        StringArrayWithIdArrayIssueField field = getField(Fields.state);
+        StringArrayWithIdArrayIssueField field = getField(Fields.stateEng);
         if (field == null)
             return null;
         List<String> valueId = field.getValueId();

@@ -8,10 +8,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
-import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
@@ -21,8 +18,10 @@ import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
+import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 @Component
@@ -37,6 +36,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     private CaseLinkDAO caseLinkDAO;
+
+    @Autowired
+    private CaseCommentDAO caseCommentDAO;
 
     @Autowired
     private EmployeeRegistrationDAO employeeRegistrationDAO;
@@ -90,9 +92,10 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private void updateOneIssue(EmployeeRegistration employeeRegistration, String issueId) {
         ChangeResponse changes = youtrackService.getIssueChanges(issueId);
 
-        En_CaseState newStatus = getNewStatus(changes);employeeRegistration.setState(newStatus);
+        En_CaseState newStatus = getNewStatus(changes);
+        employeeRegistration.setState(newStatus);
 
-        parseChanges(employeeRegistration, changes.getChange());
+        parseChanges(employeeRegistration, issueId, changes.getChange());
     }
 
     private void updateTwoIssues(EmployeeRegistration employeeRegistration, String issue1, String issue2) {
@@ -102,9 +105,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         En_CaseState newStatus = getNewStatus(changes1, changes2);
         employeeRegistration.setState(newStatus);
 
-        List<Change> changes = changes1.getChange();
-        changes.addAll(changes2.getChange());
-        parseChanges(employeeRegistration, changes);
+        parseChanges(employeeRegistration, issue1, changes1.getChange());
+        parseChanges(employeeRegistration, issue2, changes2.getChange());
     }
 
     private En_CaseState getNewStatus(ChangeResponse changes) {
@@ -127,6 +129,66 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return En_CaseState.ACTIVE;
     }
 
+    @Transactional
+    public boolean saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {
+        CaseObject caseObject = caseObjectDAO.get(employeeRegistration.getId());
+        caseObject.setModified(employeeRegistration.getLastYoutrackSynchronization());
+        caseObject.setState(employeeRegistration.getState());
+        return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
+    }
+
+    private void parseChanges(EmployeeRegistration employeeRegistration, String issueId, List<Change> changes) {
+        List<CaseComment> stateChanges = new LinkedList<>();
+        for (Change change : changes) {
+            if (change == null)
+                continue;
+            if (DateUtils.beforeNotNull(change.getUpdated(), employeeRegistration.getLastYoutrackSynchronization()))
+                continue;
+
+            StringArrayWithIdArrayOldNewChangeField stateChangeField = change.getStateChangeField();
+
+            if (stateChangeField == null)
+                continue;
+
+            En_CaseState newState = toCaseState(stateChangeField.getNewValue());
+
+            CaseComment stateChange = new CaseComment();
+            stateChange.setCaseId(employeeRegistration.getId());
+            stateChange.setCreated(change.getUpdated());
+            stateChange.setAuthorId(findPersonIdByLogin(change.getUpdaterName()));
+            stateChange.setCaseStateId((long) newState.getId());
+            stateChange.setText(issueId);
+            stateChanges.add(stateChange);
+        }
+        caseCommentDAO.persistBatch(stateChanges);
+    }
+
+    private CaseComment toCaseComment(Comment ytComment) {
+        if (ytComment == null)
+            return null;
+        CaseComment caseComment = new CaseComment();
+        caseComment.setAuthorId(findPersonIdByLogin(ytComment.getAuthor()));
+        caseComment.setCreated(ytComment.getCreated());
+        caseComment.setText(ytComment.getText());
+        return caseComment;
+    }
+
+    private Long findPersonIdByLogin(String login) {
+        if (login == null)
+            return null;
+        UserLogin user = userLoginDAO.findByLogin(login);
+        return user == null ? null : user.getPersonId();
+    }
+
+    private void createAndStoreStatusChangeComment(Long personId, Long caseId, En_CaseState caseState, String youtrackIssueId) {
+        CaseComment caseComment = new CaseComment();
+        caseComment.setText(youtrackIssueId);
+        caseComment.setCaseStateId((long) caseState.getId());
+        caseComment.setCaseId(caseId);
+        caseComment.setCreated(new Date());
+
+    }
+
     private static En_CaseState toCaseState(String ytStateId) {
         if (ytStateId == null)
             return null;
@@ -137,38 +199,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         }
     }
 
-    @Transactional
-    public boolean saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {
-        CaseObject caseObject = caseObjectDAO.get(employeeRegistration.getId());
-        caseObject.setModified(employeeRegistration.getLastYoutrackSynchronization());
-        caseObject.setState(employeeRegistration.getState());
-        return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
-    }
-
-    private void parseChanges(EmployeeRegistration employeeRegistration, List<Change> changes) {
-        for (Change change : changes) {
-            if (change == null)
-                continue;
-            if (DateUtils.beforeNotNull(change.getUpdated(), employeeRegistration.getLastYoutrackSynchronization()))
-                continue;
-
-
-        }
-    }
-
-    private CaseComment toCaseComment(Comment ytComment) {
-        if (ytComment == null)
+    private static En_CaseState toCaseState(List<String> ytStateIds) {
+        if (ytStateIds == null || ytStateIds.size() != 1)
             return null;
-        UserLogin user = userLoginDAO.findByLogin(ytComment.getAuthor());
-        if (user == null) {
-            log.error("");
-            return null;
-        }
-
-        CaseComment caseComment = new CaseComment();
-        caseComment.setAuthorId(user.getPersonId());
-        caseComment.setCreated(ytComment.getCreated());
-        caseComment.setText(ytComment.getText());
-        return caseComment;
+        return toCaseState(ytStateIds.get(0));
     }
 }

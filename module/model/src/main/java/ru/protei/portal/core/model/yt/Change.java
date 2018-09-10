@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.yt.fields.Fields;
 import ru.protei.portal.core.model.yt.fields.change.ChangeField;
 import ru.protei.portal.core.model.yt.fields.change.DateChangeField;
+import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
 import ru.protei.portal.core.model.yt.fields.change.StringChangeField;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -61,6 +63,12 @@ public class Change {
         if (stringChangeField == null)
             return null;
         return stringChangeField.getValue();
+    }
+
+    public StringArrayWithIdArrayOldNewChangeField getStateChangeField() {
+        return (StringArrayWithIdArrayOldNewChangeField)
+                Optional.ofNullable(getField(Fields.stateEng))
+                        .orElse(getField(Fields.stateRus));
     }
 
     @Override

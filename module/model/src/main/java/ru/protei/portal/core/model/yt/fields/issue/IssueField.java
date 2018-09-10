@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.yt.fields.Fields;
         @JsonSubTypes.Type( name = Fields.links, value = LinkArrayIssueField.class ),
         @JsonSubTypes.Type( name = Fields.priority, value = StringArrayWithIdArrayIssueField.class ),
         @JsonSubTypes.Type( name = Fields.type, value = StringArrayWithIdArrayIssueField.class ),
-        @JsonSubTypes.Type( name = Fields.state, value = StringArrayWithIdArrayIssueField.class ),
+        @JsonSubTypes.Type( name = Fields.stateEng, value = StringArrayWithIdArrayIssueField.class ),
         @JsonSubTypes.Type( name = Fields.sprintRus, value = StringArrayIssueField.class ),
         @JsonSubTypes.Type( name = Fields.sprintEng, value = IdValueArrayIssueField.class ),
         @JsonSubTypes.Type( name = Fields.SP, value = StringArrayIssueField.class ),
