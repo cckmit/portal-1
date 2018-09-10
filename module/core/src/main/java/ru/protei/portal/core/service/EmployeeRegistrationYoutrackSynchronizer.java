@@ -52,7 +52,10 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private void synchronizeAll() {
         log.debug("synchronizeAll(): start synchronization");
-        employeeRegistrationDAO.getAll().forEach(this::synchronizeEmployeeRegistration);
+        List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getAll();
+        for (EmployeeRegistration employeeRegistration : employeeRegistrations) {
+            synchronizeEmployeeRegistration(employeeRegistration);
+        }
     }
 
     @Transactional
@@ -86,8 +89,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private void updateOneIssue(EmployeeRegistration employeeRegistration, String issueId) {
         ChangeResponse changes = youtrackService.getIssueChanges(issueId);
 
-        En_CaseState newStatus = getNewStatus(changes);
-        employeeRegistration.setState(newStatus);
+        En_CaseState newStatus = getNewStatus(changes);employeeRegistration.setState(newStatus);
 
         parseChanges(employeeRegistration, changes.getChange());
     }
@@ -129,10 +131,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             return null;
         switch (ytStateId) {
             case "New": return En_CaseState.CREATED;
-            case "Active": return En_CaseState.ACTIVE;
             case "Done": return En_CaseState.DONE;
+            default: return En_CaseState.ACTIVE;
         }
-        return null;
     }
 
     @Transactional
