@@ -8,4 +8,10 @@ public class DateUtils {
             return false;
         return d1.before(d2);
     }
+
+    public static boolean afterNotNull(Date d1, Date d2) {
+        if (d1 == null || d2 == null)
+            return false;
+        return d1.after(d2);
+    }
 }

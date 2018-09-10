@@ -25,4 +25,6 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     @SqlConditionBuilder
     SqlCondition createSqlCondition( CaseCommentQuery query );
+
+    CaseComment getByRemoteId(String remoteId);
 }

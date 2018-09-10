@@ -51,6 +51,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="time_elapsed")
     private Long timeElapsed;
 
+    @JdbcColumn(name = "remote_id")
+    private String remoteId;
+
     public CaseComment() {}
 
     public CaseComment(String text) {
@@ -170,6 +173,14 @@ public class CaseComment extends AuditableObject {
 
     public void setTimeElapsed(Long timeElapsed) {
         this.timeElapsed = timeElapsed;
+    }
+
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 
     @Override
