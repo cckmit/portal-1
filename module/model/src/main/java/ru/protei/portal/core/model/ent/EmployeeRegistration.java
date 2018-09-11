@@ -109,6 +109,9 @@ public class EmployeeRegistration implements Serializable {
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "STATE", sqlTableAlias = "CO")
     private En_CaseState state;
 
+    @JdbcOneToMany(localColumn = "id", table = "case_link", remoteColumn = "case_id")
+    private Set<CaseLink> linkedIssues;
+
     public Long getId() {
         return id;
     }
@@ -233,6 +236,14 @@ public class EmployeeRegistration implements Serializable {
 
     public void setHeadOfDepartmentShortName(String headOfDepartmentShortName) {
         this.headOfDepartmentShortName = headOfDepartmentShortName;
+    }
+
+    public Set<CaseLink> getLinkedIssues() {
+        return linkedIssues;
+    }
+
+    public void setLinkedIssues(Set<CaseLink> linkedIssues) {
+        this.linkedIssues = linkedIssues;
     }
 
     public boolean isValid() {

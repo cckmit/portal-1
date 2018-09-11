@@ -36,6 +36,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setEquipmentList(CollectionUtils.join(value.getEquipmentList(), equipmentLang::getName, ", "));
         view.setResourceList(CollectionUtils.join(value.getResourceList(), resourceLang::getName, ", "));
         view.setPosition(value.getPosition());
+        view.setLastSynchronization("???");
         if (value.getHeadOfDepartment() != null)
             view.setHeadOfDepartment(value.getHeadOfDepartment().getDisplayShortName());
         else
@@ -54,6 +55,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
             view.setWithRegistration(lang.employeeRegistrationEmployeeWithRegistrationFalse());
 
         view.setState(value.getState());
+        view.setIssues(value.getLinkedIssues());
     }
 
     @Inject

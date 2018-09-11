@@ -2,6 +2,9 @@ package ru.protei.portal.ui.employeeregistration.client.activity.preview;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.ent.CaseLink;
+
+import java.util.Set;
 
 public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setActivity(AbstractEmployeeRegistrationPreviewActivity activity);
@@ -28,5 +31,9 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setCreated(String created);
 
+    void setLastSynchronization(String lastSynchronization);
+
     void setState(En_CaseState state);
+
+    void setIssues(Set<CaseLink> issues);
 }
