@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
 import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
+import ru.protei.winter.core.utils.services.lock.LockService;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -52,6 +53,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     @Autowired
     private AttachmentDAO attachmentDAO;
 
+    @Autowired
+    private LockService lockService;
+
 
     @Autowired
     public EmployeeRegistrationYoutrackSynchronizer(ThreadPoolTaskScheduler scheduler, PortalConfig config) {
@@ -81,33 +85,20 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private void synchronizeAll() {
         log.debug("synchronizeAll(): start synchronization");
         List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getAll();
-        for (EmployeeRegistration employeeRegistration : employeeRegistrations) {
-            synchronizeEmployeeRegistration(employeeRegistration);
-        }
+        employeeRegistrations.stream().filter(Objects::nonNull).forEach(this::synchronizeEmployeeRegistration);
     }
 
     @Transactional
     public void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration) {
-        if (employeeRegistration == null)
-            return;
-
         log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration {}", employeeRegistration);
         Date synchronizationStarted = new Date();
 
         List<CaseLink> issues = caseLinkDAO.getListByQuery(new CaseLinkQuery(employeeRegistration.getId(), En_CaseLink.YT));
         if (CollectionUtils.isEmpty(issues))
             return;
-        if (issues.size() > 2) {
-            log.warn("synchronizeEmployeeRegistration(): found more than 2 linked YouTrack issues for {}", employeeRegistration);
-            return;
-        }
 
-        if (issues.size() == 1) {
-            updateIssues(employeeRegistration, issues.get(0).getRemoteId());
-        } else if (issues.size() == 2) {
-            updateIssues(employeeRegistration, issues.get(0).getRemoteId(), issues.get(1).getRemoteId());
-        }
-
+        String[] issueIds = issues.stream().map(CaseLink::getRemoteId).toArray(String[]::new);
+        updateIssues(employeeRegistration, issueIds);
         employeeRegistration.setLastYoutrackSynchronization(synchronizationStarted);
 
         if (!saveEmployeeRegistration(employeeRegistration))
@@ -131,8 +122,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 continue;
             parseStateChanges(employeeRegistration, issueId, changes.getChange());
             parseAndUpdateComments(employeeRegistration.getId(), employeeRegistration.getLastYoutrackSynchronization(), changes.getIssue().getComment());
-            parseAndUpdateAttachments(employeeRegistration, issueId);
         }
+        parseAndUpdateAttachments(employeeRegistration, issueIds);
     }
 
     private En_CaseState getGeneralState(Collection<ChangeResponse> changes) {
@@ -194,7 +185,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             if (comment == null || comment.getDeleted() == Boolean.TRUE)
                 continue;
 
-            Date lastCommentChange = Optional.ofNullable(comment.getUpdated()).orElse(comment.getCreated());
+            Date lastCommentChange = DateUtils.max(comment.getUpdated(), comment.getCreated());
             if (DateUtils.beforeNotNull(lastCommentChange, lastSynchronization))
                 continue;
 
