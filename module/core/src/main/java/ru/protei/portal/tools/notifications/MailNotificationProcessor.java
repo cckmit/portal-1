@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
@@ -20,12 +21,17 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.CaseSubscriptionService;
+import ru.protei.portal.core.service.EmployeeService;
+import ru.protei.portal.core.service.TemplateService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.internet.MimeMessage;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -281,6 +287,17 @@ public class MailNotificationProcessor {
             log.error("Failed to make MimeMessage", e);
         }
     }
+
+    @EventListener
+    public void onEmployeeRegistrationEvent(EmployeeRegistrationEvent event) {
+        if (event.getEmployeeRegistration() == null) {
+            log.info("Failed to send employee registration notification: employee registration is null");
+            return;
+        }
+
+        System.out.println("sending emp reg notification");
+    }
+
 
     // -----
     // Utils

@@ -28,7 +28,7 @@
 <body bgcolor="#FFFFFF" text="#000000">
 <div style="margin-top: 12px">
 
-    <div style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToIssue}">${employee_registration_link}</a></b>
+    <div style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToEmployeeRegistration}">${employee_registration_link}</a></b>
     </div>
 
     <table>
