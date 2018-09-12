@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     YoutrackService youtrackService;
     @Autowired
     CaseLinkDAO caseLinkDAO;
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
     @Override
@@ -45,6 +48,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (list == null) {
             return new CoreResponse<List<EmployeeRegistration>>().error(En_ResultStatus.INTERNAL_ERROR);
         }
+        jdbcManyRelationsHelper.fillAll(list);
         return new CoreResponse<List<EmployeeRegistration>>().success(list);
     }
 
@@ -53,7 +57,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
             return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
-
+        jdbcManyRelationsHelper.fillAll(employeeRegistration);
         return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
     }
 

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_CaseLink;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
@@ -9,13 +10,18 @@ public class CaseLinkQuery extends BaseQuery {
     private Long caseId;
     private Boolean showOnlyPrivate;
     private String remoteId;
-    private En_CaseLink caseLink;
+    private En_CaseLink linkType;
+    private En_CaseType caseType;
 
-    public CaseLinkQuery() {}
+    public CaseLinkQuery(En_CaseLink linkType, String remoteId, En_CaseType caseType) {
+        this.linkType = linkType;
+        this.remoteId = remoteId;
+        this.caseType = caseType;
+    }
 
-    public CaseLinkQuery(Long caseId, En_CaseLink caseLink) {
+    public CaseLinkQuery(Long caseId, En_CaseLink linkType) {
         this.caseId = caseId;
-        this.caseLink = caseLink;
+        this.linkType = linkType;
     }
 
     public CaseLinkQuery(Long caseId, Boolean showOnlyPrivate, String remoteId) {
@@ -57,11 +63,19 @@ public class CaseLinkQuery extends BaseQuery {
         this.remoteId = remoteId;
     }
 
-    public En_CaseLink getCaseLink() {
-        return caseLink;
+    public En_CaseLink getLinkType() {
+        return linkType;
     }
 
-    public void setCaseLink(En_CaseLink caseLink) {
-        this.caseLink = caseLink;
+    public void setLinkType(En_CaseLink linkType) {
+        this.linkType = linkType;
+    }
+
+    public En_CaseType getCaseType() {
+        return caseType;
+    }
+
+    public void setCaseType(En_CaseType caseType) {
+        this.caseType = caseType;
     }
 }

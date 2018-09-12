@@ -15,6 +15,8 @@ import java.util.List;
 
 public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements CaseLinkDAO {
 
+    private static final String JOINS = " LEFT OUTER JOIN case_object co on co.id = case_link.case_id ";
+
     @Override
     public List<CaseLink> getListByQuery(CaseLinkQuery query) {
 
@@ -25,12 +27,12 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
 
         SqlCondition where = createSqlCondition(query);
         return getList(new JdbcQueryParameters()
+                .withJoins(JOINS)
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query))
         );
     }
-
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CaseLinkQuery query) {
@@ -52,9 +54,14 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
                 args.add(query.getRemoteId());
             }
 
-            if (query.getCaseLink() != null) {
-                condition.append(" and link_type = ? ");
-                args.add(query.getCaseLink().toString());
+            if (query.getLinkType() != null) {
+                condition.append(" and case_link.link_type = ? ");
+                args.add(query.getLinkType().toString());
+            }
+
+            if (query.getCaseType() != null) {
+                condition.append(" and CO.case_type = ?");
+                args.add(query.getCaseType().getId());
             }
         }));
     }

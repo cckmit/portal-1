@@ -11,16 +11,19 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
 import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
-import ru.protei.winter.core.utils.services.lock.LockService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,7 +57,10 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private AttachmentDAO attachmentDAO;
 
     @Autowired
-    private LockService lockService;
+    private MigrationEntryDAO migrationEntryDAO;
+
+    @Autowired
+    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
 
     @Autowired
@@ -84,28 +90,60 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private void synchronizeAll() {
         log.debug("synchronizeAll(): start synchronization");
-        List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getAll();
-        employeeRegistrations.stream().filter(Objects::nonNull).forEach(this::synchronizeEmployeeRegistration);
+        Date synchronizationStarted = new Date();
+
+        MigrationEntry migrationEntry = migrationEntryDAO.getOrCreateEntry(En_MigrationEntry.YOUTRACK_EMPLOYEE_REGISTRATION_ISSUE);
+        Date lastUpdate = migrationEntry.getLastUpdate();
+
+        Set<String> updatedIssueIds = getUpdatedIssueIds(lastUpdate);
+
+        Set<Long> equipmentRegistrationsToSynchronize = new HashSet<>();
+        updatedIssueIds.forEach(remoteIssueId -> {
+            List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(En_CaseLink.YT, remoteIssueId, En_CaseType.EMPLOYEE_REGISTRATION));
+            if (caseLinks != null && caseLinks.size() == 1)
+                equipmentRegistrationsToSynchronize.add(caseLinks.get(0).getCaseId());
+        });
+
+        for (Long id : equipmentRegistrationsToSynchronize) {
+            synchronizeEmployeeRegistration(id, lastUpdate);
+        }
+
+        migrationEntry.setLastUpdate(synchronizationStarted);
+        if (!migrationEntryDAO.saveOrUpdate(migrationEntry))
+            log.warn("synchronizeAll(): failed to update migration entry");
+    }
+
+    private Set<String> getUpdatedIssueIds(Date lastUpdate) {
+        Set<String> adminIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(CrmConstants.Youtrack.ADMIN_PROJECT_NAME, lastUpdate);
+        Set<String> equipmentIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(CrmConstants.Youtrack.EQUIPMENT_PROJECT_NAME, lastUpdate);
+
+        adminIssues.addAll(equipmentIssues);
+        return adminIssues;
     }
 
     @Transactional
-    public void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration) {
-        log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration {}", employeeRegistration);
-        Date synchronizationStarted = new Date();
+    public void synchronizeEmployeeRegistration(Long employeeRegistrationId, Date lastYtSynchronization) {
+        log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration with id={}", employeeRegistrationId);
 
-        List<CaseLink> issues = caseLinkDAO.getListByQuery(new CaseLinkQuery(employeeRegistration.getId(), En_CaseLink.YT));
+        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationId);
+        if (employeeRegistration == null) {
+            log.warn("synchronizeEmployeeRegistration(): employee registration with id={} not found", employeeRegistrationId);
+            return;
+        }
+        jdbcManyRelationsHelper.fill(employeeRegistration, "youtrackIssues");
+
+        Set<CaseLink> issues = employeeRegistration.getYoutrackIssues();
         if (CollectionUtils.isEmpty(issues))
             return;
 
         String[] issueIds = issues.stream().map(CaseLink::getRemoteId).toArray(String[]::new);
-        updateIssues(employeeRegistration, issueIds);
-        employeeRegistration.setLastYoutrackSynchronization(synchronizationStarted);
+        updateIssues(employeeRegistration, lastYtSynchronization, issueIds);
 
         if (!saveEmployeeRegistration(employeeRegistration))
             log.warn("synchronizeEmployeeRegistration(): failed to execute DB merge for employee registration={}", employeeRegistration);
     }
 
-    private void updateIssues(EmployeeRegistration employeeRegistration, String... issueIds) {
+    private void updateIssues(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, String... issueIds) {
         Map<String, ChangeResponse> issueToChanges = new HashMap<>();
 
         for (String issueId : issueIds) {
@@ -120,8 +158,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             ChangeResponse changes = issueToChanges.get(issueId);
             if (changes == null)
                 continue;
-            parseStateChanges(employeeRegistration, issueId, changes.getChange());
-            parseAndUpdateComments(employeeRegistration.getId(), employeeRegistration.getLastYoutrackSynchronization(), changes.getIssue().getComment());
+            parseStateChanges(employeeRegistration, lastYtSynchronization, issueId, changes.getChange());
+            parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, changes.getIssue().getComment());
         }
         parseAndUpdateAttachments(employeeRegistration, issueIds);
     }
@@ -140,18 +178,17 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private boolean saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = caseObjectDAO.get(employeeRegistration.getId());
-        caseObject.setModified(employeeRegistration.getLastYoutrackSynchronization());
         caseObject.setState(employeeRegistration.getState());
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
     }
 
-    private void parseStateChanges(EmployeeRegistration employeeRegistration, String issueId, List<Change> changes) {
+    private void parseStateChanges(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, String issueId, List<Change> changes) {
         List<CaseComment> stateChanges = new LinkedList<>();
         changes.sort(Comparator.comparing(Change::getUpdated, Comparator.nullsFirst(Date::compareTo)));
         for (Change change : changes) {
             if (change == null)
                 continue;
-            if (DateUtils.beforeNotNull(change.getUpdated(), employeeRegistration.getLastYoutrackSynchronization()))
+            if (DateUtils.beforeNotNull(change.getUpdated(), lastYtSynchronization))
                 continue;
 
             CaseComment stateChange = parseStateChange(employeeRegistration, issueId, change);

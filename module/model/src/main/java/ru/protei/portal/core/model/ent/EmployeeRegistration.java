@@ -102,17 +102,16 @@ public class EmployeeRegistration implements Serializable {
     private Date created;
 
     /**
-     * Дата и время последней синхронизации с YT
-     */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MODIFIED", sqlTableAlias = "CO")
-    private Date lastYoutrackSynchronization;
-
-    /**
      * Состояние
      */
     @JdbcEnumerated(EnumType.ID)
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "STATE", sqlTableAlias = "CO")
     private En_CaseState state;
+
+    @JdbcOneToMany(localColumn = "id", table = "case_link", remoteColumn = "case_id", additionalConditions = {
+            @JdbcManyJoinData(remoteColumn = "link_type", value = "YT", valueClass = String.class)
+    })
+    private Set<CaseLink> youtrackIssues;
 
     public Long getId() {
         return id;
@@ -240,12 +239,27 @@ public class EmployeeRegistration implements Serializable {
         this.headOfDepartmentShortName = headOfDepartmentShortName;
     }
 
-    public Date getLastYoutrackSynchronization() {
-        return lastYoutrackSynchronization;
+    public Set<CaseLink> getYoutrackIssues() {
+        return youtrackIssues;
     }
 
-    public void setLastYoutrackSynchronization(Date lastYoutrackSynchronization) {
-        this.lastYoutrackSynchronization = lastYoutrackSynchronization;
+    public void setYoutrackIssues(Set<CaseLink> youtrackIssues) {
+        this.youtrackIssues = youtrackIssues;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EmployeeRegistration that = (EmployeeRegistration) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
@@ -265,23 +279,7 @@ public class EmployeeRegistration implements Serializable {
                 ", comment='" + comment + '\'' +
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +
-                ", lastYoutrackSynchronization=" + lastYoutrackSynchronization +
                 ", state=" + state +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        EmployeeRegistration that = (EmployeeRegistration) o;
-
-        return id != null ? id.equals(that.id) : that.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 }

@@ -13,7 +13,12 @@ import ru.protei.portal.util.UriUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static protei.utils.common.DateUtils.formatDate;
 
 /**
  * Created by admin on 15/11/2017.
@@ -109,5 +114,53 @@ public class YoutrackServiceImpl implements YoutrackService {
         return issueId;
     }
 
+    @Override
+    public Set<String> getIssueIdsByProjectAndUpdatedAt(String projectId, Date updated) {
+
+        String filterQuery = updated == null ? "" : "updated:" + formatDate(updated);
+
+        String uri = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue/byproject/" + projectId)
+                .queryParam("filter", filterQuery)
+                .queryParam("with", "id")
+                .queryParam("max", MAX_ISSUES_IN_RESPONSE)
+                .build()
+                .encode()
+                .toUriString();
+
+        ResponseEntity<Issue[]> response = ytClient.exchange(
+                uri, HttpMethod.GET, new HttpEntity<>(authHeaders), Issue[].class
+        );
+        return Arrays.stream(response.getBody())
+                .map(Issue::getId)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<String> getIssueIdsByProjectAndUpdatedAfter(String projectId, Date updatedAfter) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue/byproject/" + projectId)
+                .queryParam("with", "id")
+                .queryParam("max", MAX_ISSUES_IN_RESPONSE);
+
+        if (updatedAfter != null)
+            builder.queryParam("updatedAfter", updatedAfter.getTime());
+
+        String uri = builder.build()
+                .encode()
+                .toUriString();
+
+        ResponseEntity<Issue[]> response = ytClient.exchange(
+                uri, HttpMethod.GET, new HttpEntity<>(authHeaders), Issue[].class
+        );
+        return Arrays.stream(response.getBody())
+                .map(Issue::getId)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<String> getIssueIdsByProject(String projectId) {
+        return getIssueIdsByProjectAndUpdatedAfter(projectId, null);
+    }
+
     private final static Logger log = LoggerFactory.getLogger(YoutrackServiceImpl.class);
+    private final static int MAX_ISSUES_IN_RESPONSE = Integer.MAX_VALUE;
 }
