@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -15,7 +16,7 @@ import java.util.Set;
  * Анкета нового сотрудника
  */
 @JdbcEntity(table = "employee_registration")
-public class EmployeeRegistration implements Serializable {
+public class EmployeeRegistration extends AuditableObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
@@ -245,6 +246,11 @@ public class EmployeeRegistration implements Serializable {
 
     public void setYoutrackIssues(Set<CaseLink> youtrackIssues) {
         this.youtrackIssues = youtrackIssues;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "EmployeeRegistration";
     }
 
     @Override

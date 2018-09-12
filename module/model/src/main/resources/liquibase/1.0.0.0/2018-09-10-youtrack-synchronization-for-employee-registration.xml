@@ -19,4 +19,12 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add-audit-type-for-employee-registration" author="efremov">
+        <insert tableName="audit_type">
+            <column name="id" value="46"/>
+            <column name="code" value="EMPLOYEE_REGISTRATION_CREATE"/>
+            <column name="info" value="Создание анкеты нового сотрудника"/>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
