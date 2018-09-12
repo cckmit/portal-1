@@ -13,10 +13,8 @@ import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -107,7 +105,7 @@ public class MailNotificationProcessor {
             return;
         }
 
-        List<String> recipients = notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
+        List<String> recipients = getNotifiersAddresses(notifiers);
 
         try {
             semaphore.acquire();
@@ -117,8 +115,7 @@ public class MailNotificationProcessor {
         }
 
         try {
-            CoreResponse<Long> lastMessageIdResponse = caseService.getEmailLastId(caseObject.getId());
-            Long lastMessageId = lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
+            Long lastMessageId = getEmailLastId(caseObject.getId());
             MimeMessageHeadersFacade headersFacade = new MimeMessageHeadersFacade()
                     .withMessageId(makeCaseObjectMessageId(caseObject, lastMessageId + 1))
                     .withInReplyTo(makeCaseObjectMessageId(caseObject, lastMessageId))
@@ -290,12 +287,48 @@ public class MailNotificationProcessor {
 
     @EventListener
     public void onEmployeeRegistrationEvent(EmployeeRegistrationEvent event) {
-        if (event.getEmployeeRegistration() == null) {
+        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
+        if (employeeRegistration == null) {
             log.info("Failed to send employee registration notification: employee registration is null");
             return;
         }
 
-        System.out.println("sending emp reg notification");
+        Set<NotificationEntry> notifiers = subscriptionService.subscribers(event);
+        if (CollectionUtils.isEmpty(notifiers))
+            return;
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        String urlTemplate = config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
+
+        PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for employeeRegistrationId={}", employeeRegistration.getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getEmployeeRegistrationEmailNotificationSubject(employeeRegistration);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for employeeRegistrationId={}", employeeRegistration.getId());
+            return;
+        }
+
+        notifiers.forEach(entry -> {
+            String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+            String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+
+            try {
+                MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+                msg.setSubject(subject);
+                msg.setFrom(getFromAddress());
+                msg.setText(HelperFunc.nvlt(body, ""), true);
+                msg.setTo(entry.getAddress());
+                mailSendChannel.send(msg.getMimeMessage());
+            } catch (Exception e) {
+                log.error("Failed to make MimeMessage", e);
+            }
+        });
     }
 
 
@@ -313,6 +346,15 @@ public class MailNotificationProcessor {
 
     private String getFromAddress() {
         return config.data().smtp().getFromAddressAlias() + " <" + config.data().smtp().getFromAddress() + ">";
+    }
+
+    private List<String> getNotifiersAddresses(Collection<NotificationEntry> notifiers) {
+        return notifiers.stream().map(NotificationEntry::getAddress).collect(toList());
+    }
+
+    private Long getEmailLastId(Long caseId) {
+        CoreResponse<Long> lastMessageIdResponse = caseService.getEmailLastId(caseId);
+        return lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
     }
 
     private class MimeMessageHeadersFacade {
