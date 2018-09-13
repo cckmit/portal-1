@@ -9,7 +9,7 @@ import java.util.Set;
 public class EmployeeRegistrationQuery extends BaseQuery {
     private Set<En_CaseState> states;
     private Date createdFrom, createdTo;
-    private Collection<String> issueIds;
+    private Collection<String> linkedIssueIds;
 
     public Set<En_CaseState> getStates() {
         return states;
@@ -35,12 +35,12 @@ public class EmployeeRegistrationQuery extends BaseQuery {
         this.createdTo = createdTo;
     }
 
-    public Collection<String> getIssueIds() {
-        return issueIds;
+    public Collection<String> getLinkedIssueIds() {
+        return linkedIssueIds;
     }
 
-    public void setIssueIds(Collection<String> issueIds) {
-        this.issueIds = issueIds;
+    public void setLinkedIssueIds(Collection<String> linkedIssueIds) {
+        this.linkedIssueIds = linkedIssueIds;
     }
 
     @Override

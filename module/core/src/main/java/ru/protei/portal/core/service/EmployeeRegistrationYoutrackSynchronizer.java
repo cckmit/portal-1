@@ -97,7 +97,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         Set<String> updatedIssueIds = getUpdatedIssueIds(lastUpdate);
 
         EmployeeRegistrationQuery query = new EmployeeRegistrationQuery();
-        query.setIssueIds(updatedIssueIds);
+        query.setLinkedIssueIds(updatedIssueIds);
         List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getListByQuery(query);
 
         for (EmployeeRegistration employeeRegistration : employeeRegistrations) {

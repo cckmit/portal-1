@@ -16,14 +16,17 @@ import java.util.List;
 
 public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegistration> implements EmployeeRegistrationDAO {
 
-    private String JOINS = " left outer join case_link cl on cl.case_id=employee_registration.id ";
+    private static final String CASE_LINK_JOIN = " left outer join case_link cl on cl.case_id=employee_registration.id ";
 
     @Override
     public List<EmployeeRegistration> getListByQuery(EmployeeRegistrationQuery query) {
         SqlCondition where = createSqlCondition(query);
-        JdbcQueryParameters queryParameters = new JdbcQueryParameters()
-                .withJoins(JOINS)
-                .withCondition(where.condition, where.args)
+        JdbcQueryParameters queryParameters = new JdbcQueryParameters();
+
+        if (CollectionUtils.isNotEmpty(query.getLinkedIssueIds()))
+            queryParameters.withJoins(CASE_LINK_JOIN);
+
+        queryParameters.withCondition(where.condition, where.args)
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query, "CO"))
                 .withOffset(query.getOffset());
@@ -66,9 +69,9 @@ public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegi
                 args.add(query.getCreatedTo());
             }
 
-            if (CollectionUtils.isNotEmpty(query.getIssueIds())) {
+            if (CollectionUtils.isNotEmpty(query.getLinkedIssueIds())) {
                 condition.append(" and cl.remote_id in ")
-                        .append(HelperFunc.makeInArg(query.getIssueIds(), true));
+                        .append(HelperFunc.makeInArg(query.getLinkedIssueIds(), true));
             }
         }));
     }
