@@ -1,8 +1,5 @@
 package ru.protei.portal.core.model.yt;
 
-/**
- * Created by admin on 22/11/2017.
- */
 public class Person {
     private String value;
     private String fullName;

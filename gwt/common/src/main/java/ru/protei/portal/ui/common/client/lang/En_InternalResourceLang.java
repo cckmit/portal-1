@@ -23,6 +23,8 @@ public class En_InternalResourceLang {
                 return lang.internalResourceCrm();
             case STORE_DELIVERY:
                 return lang.internalResourceStoreDelivery();
+            case EMAIL:
+                return lang.internalResourceEmail();
         }
         return lang.unknownField();
     }

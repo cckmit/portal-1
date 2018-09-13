@@ -27,6 +27,7 @@ public class PortalConfigData {
     private final ReportConfig reportConfig;
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
+    private final YoutrackConfig youtrackConfig;
 
     private final String loginSuffixConfig;
 
@@ -41,6 +42,7 @@ public class PortalConfigData {
         reportConfig = new ReportConfig(wrapper);
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
+        youtrackConfig = new YoutrackConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
@@ -90,6 +92,9 @@ public class PortalConfigData {
         return mailNotificationConfig;
     }
 
+    public YoutrackConfig youtrack() {
+        return youtrackConfig;
+    }
 
     public static class MailNotificationConfig {
         private final String crmUrlInternal;
@@ -412,6 +417,30 @@ public class PortalConfigData {
 
         public String getLinkYouTrack() {
             return linkYouTrack;
+        }
+    }
+
+    public static class YoutrackConfig {
+        private final String apiBaseUrl;
+        private final String authToken;
+        private final String employeeRegistrationSyncSchedule;
+
+        public YoutrackConfig(PropertiesWrapper properties) {
+            apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
+            authToken = properties.getProperty("youtrack.api.auth_token");
+            employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
+        }
+
+        public String getApiBaseUrl() {
+            return apiBaseUrl;
+        }
+
+        public String getAuthToken() {
+            return authToken;
+        }
+
+        public String getEmployeeRegistrationSyncSchedule() {
+            return employeeRegistrationSyncSchedule;
         }
     }
 }

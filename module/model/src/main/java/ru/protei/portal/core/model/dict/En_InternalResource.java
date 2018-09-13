@@ -10,5 +10,6 @@ public enum En_InternalResource {
     MERCURIAL,
     GIT,
     CRM,
-    STORE_DELIVERY
+    STORE_DELIVERY,
+    EMAIL
 }
