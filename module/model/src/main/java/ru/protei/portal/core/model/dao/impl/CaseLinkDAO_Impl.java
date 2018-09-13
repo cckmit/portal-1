@@ -31,7 +31,6 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
         );
     }
 
-
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CaseLinkQuery query) {
         return new SqlCondition().build(((condition, args) -> {
@@ -42,7 +41,7 @@ public class CaseLinkDAO_Impl extends PortalBaseJdbcDAO<CaseLink> implements Cas
                 args.add(query.getCaseId());
             }
 
-            if (query.isShowOnlyPrivate()) {
+            if (query.isShowOnlyPrivate() == Boolean.TRUE) {
                 condition.append(" and link_type = 'CRM'");
                 condition.append(" and (case_object.private_flag = FALSE or case_object.private_flag IS NULL)");
             }

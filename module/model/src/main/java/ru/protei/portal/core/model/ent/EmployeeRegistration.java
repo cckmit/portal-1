@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
-import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -16,7 +16,7 @@ import java.util.Set;
  * Анкета нового сотрудника
  */
 @JdbcEntity(table = "employee_registration")
-public class EmployeeRegistration implements Serializable {
+public class EmployeeRegistration extends AuditableObject implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
@@ -108,6 +108,11 @@ public class EmployeeRegistration implements Serializable {
     @JdbcEnumerated(EnumType.ID)
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "STATE", sqlTableAlias = "CO")
     private En_CaseState state;
+
+    @JdbcOneToMany(localColumn = "id", table = "case_link", remoteColumn = "case_id", additionalConditions = {
+            @JdbcManyJoinData(remoteColumn = "link_type", value = "YT", valueClass = String.class)
+    })
+    private Set<CaseLink> youtrackIssues;
 
     public Long getId() {
         return id;
@@ -235,11 +240,32 @@ public class EmployeeRegistration implements Serializable {
         this.headOfDepartmentShortName = headOfDepartmentShortName;
     }
 
-    public boolean isValid() {
-        return !StringUtils.isBlank(employeeFullName) &&
-                !StringUtils.isBlank(position) &&
-                headOfDepartmentId != null &&
-                employmentDate != null;
+    public Set<CaseLink> getYoutrackIssues() {
+        return youtrackIssues;
+    }
+
+    public void setYoutrackIssues(Set<CaseLink> youtrackIssues) {
+        this.youtrackIssues = youtrackIssues;
+    }
+
+    @Override
+    public String getAuditType() {
+        return "EmployeeRegistration";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EmployeeRegistration that = (EmployeeRegistration) o;
+
+        return id != null ? id.equals(that.id) : that.id == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 
     @Override
@@ -261,20 +287,5 @@ public class EmployeeRegistration implements Serializable {
                 ", created=" + created +
                 ", state=" + state +
                 '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        EmployeeRegistration that = (EmployeeRegistration) o;
-
-        return id != null ? id.equals(that.id) : that.id == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : 0;
     }
 }

@@ -18,7 +18,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
-import ru.protei.portal.ui.common.client.common.DateUtils;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
@@ -173,7 +173,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 html += "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>";
             }
             html += "<br/>";
-            html += "<b>" + value.getType().getName() + " " + DateUtils.getYearFromDate(value.getCreated()) + "</b>";
+            html += "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>";
             cell.setInnerHTML(html);
         }
     };

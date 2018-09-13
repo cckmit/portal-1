@@ -34,6 +34,7 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        resourcesList.setMandatoryOptions(En_InternalResource.EMAIL);
     }
     
     @Override

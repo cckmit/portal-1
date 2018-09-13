@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
+import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -115,7 +116,9 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.equipmentList().setValue(new HashSet<>());
-        view.resourcesList().setValue(new HashSet<>());
+        HashSet<En_InternalResource> resources = new HashSet<>();
+        resources.add(En_InternalResource.EMAIL);
+        view.resourcesList().setValue(resources);
         view.withRegistration().setValue(true);
         view.employmentType().setValue(En_EmploymentType.FULL_TIME);
 

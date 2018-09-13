@@ -1,22 +1,22 @@
-package ru.protei.portal.core.model.yt.fields;
+package ru.protei.portal.core.model.yt.fields.issue;
 
 import java.util.List;
 
 /**
  * Created by admin on 15/11/2017.
  */
-public class StringField extends Field {
-    protected String value;
+public class StringArrayIssueField extends IssueField {
+    protected List<String> value;
 
     protected List<String> oldValue;
 
     protected List<String> newValue;
 
-    public String getValue() {
+    public List<String> getValue() {
         return value;
     }
 
-    public void setValue( String value ) {
+    public void setValue( List<String> value ) {
         this.value = value;
     }
 
@@ -38,10 +38,11 @@ public class StringField extends Field {
 
     @Override
     public String toString() {
-        return "StringField{" +
-                "value='" + value + '\'' +
-                ", oldValue='" + oldValue + '\'' +
-                ", newValue='" + newValue + '\'' +
+        return "StringArrayIssueField{" +
+                "name='" + name + '\'' +
+                ", value=" + value +
+                ", oldValue=" + oldValue +
+                ", newValue=" + newValue +
                 '}';
     }
 }

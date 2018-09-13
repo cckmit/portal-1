@@ -26,6 +26,9 @@ public class CaseAttachment implements Serializable{
     @JdbcColumn(name = "ccomment_id")
     private Long commentId;
 
+    @JdbcColumn(name = "remote_id")
+    private String remoteId;
+
     public CaseAttachment() {
     }
 
@@ -74,6 +77,14 @@ public class CaseAttachment implements Serializable{
 
     public void setCommentId(Long commentId) {
         this.commentId = commentId;
+    }
+
+    public String getRemoteId() {
+        return remoteId;
+    }
+
+    public void setRemoteId(String remoteId) {
+        this.remoteId = remoteId;
     }
 
     @Override
