@@ -145,7 +145,7 @@
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;"><#rt>
                 <#if (er.equipmentList)??><#rt>
                     <#list er.equipmentList as eq><#rt>
-                        <#switch (eq.name())!''><#rt>
+                        <#switch (eq.name())!''>
                             <#case "TABLE">${_employee_equipment_table}<#break>
                             <#case "CHAIR">${_employee_equipment_chair}<#break>
                             <#case "COMPUTER">${_employee_equipment_computer}<#break>
@@ -162,15 +162,15 @@
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;"><#rt>
                 <#if (er.resourceList)??><#rt>
                     <#list er.resourceList as eq><#rt>
-                        <#switch (eq.name())!''><#rt>
+                        <#switch (eq.name())!''>
                             <#case "YOUTRACK">${_employee_resource_youtrack}<#break>
                             <#case "CVS">${_employee_resource_cvs}<#break>
-                            <#case "SVN"> ${_employee_resource_svn}<#break>
-                            <#case "MERCURIAL"> ${_employee_resource_mercurial}<#break>
-                            <#case "GIT"> ${_employee_resource_git}<#break>
-                            <#case "CRM"> ${_employee_resource_crm}<#break>
-                            <#case "STORE_DELIVERY"> ${_employee_resource_store_delivery}<#break>
-                            <#case "EMAIL"> ${_employee_resource_email}<#break>
+                            <#case "SVN">${_employee_resource_svn}<#break>
+                            <#case "MERCURIAL">${_employee_resource_mercurial}<#break>
+                            <#case "GIT">${_employee_resource_git}<#break>
+                            <#case "CRM">${_employee_resource_crm}<#break>
+                            <#case "STORE_DELIVERY">${_employee_resource_store_delivery}<#break>
+                            <#case "EMAIL">${_employee_resource_email}<#break>
                         </#switch><#sep>, </#sep><#rt>
                     </#list><#rt>
                 </#if><#rt>
