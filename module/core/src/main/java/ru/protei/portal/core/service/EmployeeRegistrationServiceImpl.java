@@ -84,8 +84,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if(!sendNotifyEvent(employeeRegistrationId))
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
-        createAdminYoutrackIssueIfNeeded(employeeRegistration);
-        createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
+//        createAdminYoutrackIssueIfNeeded(employeeRegistration);
+//        createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
 
         return new CoreResponse<Long>().success(id);
     }

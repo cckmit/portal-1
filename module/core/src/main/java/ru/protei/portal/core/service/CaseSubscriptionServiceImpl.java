@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
@@ -15,6 +16,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 
+import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +36,21 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     @Autowired
     CompanyGroupHomeDAO companyGroupHomeDAO;
 
+    @Autowired
+    PortalConfig portalConfig;
+
+    private Set<NotificationEntry> employeeRegistrationEventSubscribers = new HashSet<>();
+
+    @PostConstruct
+    private void parseEmployeeRegistrationRecipients() {
+        String[] recipientEmails = portalConfig.data().getMailNotificationConfig().getCrmEmployeeRegistrationNotificationsRecipients();
+
+        for (String recipientEmail : recipientEmails) {
+            NotificationEntry notificationEntry = new NotificationEntry(recipientEmail, En_ContactItemType.EMAIL, "ru");
+            employeeRegistrationEventSubscribers.add(notificationEntry);
+        }
+    }
+
 
     @Override
     public Set<NotificationEntry> subscribers(AssembledCaseEvent event) {
@@ -42,7 +59,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Override
     public Set<NotificationEntry> subscribers(EmployeeRegistrationEvent event) {
-        return new HashSet<NotificationEntry>(){{add(new NotificationEntry("efremov@protei.ru", En_ContactItemType.EMAIL, "ru"));}};
+        return employeeRegistrationEventSubscribers;
     }
 
     private Set<NotificationEntry> getByCase (CaseObject caseObject){
