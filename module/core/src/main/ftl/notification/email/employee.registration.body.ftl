@@ -20,6 +20,7 @@
 <@set name="_resources_list" value="${resources_list}"/>
 <@set name="_description" value="${description}"/>
 <@set name="_notification_footer" value="${notification_footer}"/>
+<@set name="_employee_registration_link" value="${employee_registration_link}"/>
 <#noparse>
 <html>
 <head>
@@ -28,7 +29,7 @@
 <body bgcolor="#FFFFFF" text="#000000">
 <div style="margin-top: 12px">
 
-    <div style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToEmployeeRegistration}">${employee_registration_link}</a></b>
+    <div style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><b><a href="${linkToEmployeeRegistration}">${_employee_registration_link}</a></b>
     </div>
 
     <table>
@@ -38,7 +39,7 @@
                 ${_employee_full_name}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${er.employeeFullName}
+                ${(er.employeeFullName)!''}
             </td>
         </tr>
         <tr>
@@ -46,7 +47,7 @@
                 ${_head_of_department}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${er.headOfDepartmentShortName}
+                ${(er.headOfDepartmentShortName)!''}
             </td>
         </tr>
         <tr>
@@ -87,7 +88,7 @@
                 ${_position}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                ${er.position}
+                ${(er.position)!''}
             </td>
         </tr>
         <tr>
@@ -119,7 +120,7 @@
                 ${_workplace}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">
-                ${er.workplace}
+                ${(er.workplace)!''}
             </td>
         </tr>
         <tr>
@@ -127,7 +128,7 @@
                 ${_equipment_list}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">
-                ${er.equipmentList}
+                ${(er.equipmentList)!''}
             </td>
         </tr>
         <tr>
@@ -135,7 +136,7 @@
                 ${_resources_list}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">
-                ${er.resourceList}
+                ${(er.resourceList)!''}
             </td>
         </tr>
         <tr>
@@ -143,7 +144,7 @@
                 ${_description}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">
-                ${er.comment}
+                ${(er.comment)!''}
             </td>
         </tr>
         </tbody>
