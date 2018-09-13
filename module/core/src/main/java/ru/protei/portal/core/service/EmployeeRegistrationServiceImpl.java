@@ -18,7 +18,6 @@ import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -39,16 +38,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     EventPublisherService publisherService;
-
-
-    @PostConstruct
-    public void __sendEvent() {
-        List<EmployeeRegistration> all = employeeRegistrationDAO.getAll();
-        if (CollectionUtils.isEmpty(all))
-            return;
-        EmployeeRegistrationEvent event = new EmployeeRegistrationEvent(this, all.get(0));
-        publisherService.publishEvent(event);
-    }
 
 
     @Override
