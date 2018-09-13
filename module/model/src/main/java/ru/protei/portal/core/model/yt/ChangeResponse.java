@@ -9,17 +9,17 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChangeResponse {
-//    private Issue issue;
+    private Issue issue;
 
     private List< Change > change;
 
-//    public Issue getIssue() {
-//        return issue;
-//    }
+    public Issue getIssue() {
+        return issue;
+    }
 
-//    public void setIssue(Issue issue) {
-//        this.issue = issue;
-//    }
+    public void setIssue(Issue issue) {
+        this.issue = issue;
+    }
 
     public List<Change> getChange() {
         return change;
@@ -32,7 +32,7 @@ public class ChangeResponse {
     @Override
     public String toString() {
         return "ChangeResponse{" +
-//                "issue=" + issue +
+                "issue=" + issue +
                 ", change=" + change +
                 '}';
     }

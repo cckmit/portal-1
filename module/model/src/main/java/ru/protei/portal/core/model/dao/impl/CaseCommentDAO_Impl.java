@@ -51,4 +51,14 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
             }
         });
     }
+
+    @Override
+    public CaseComment getByRemoteId(String remoteId) {
+        return getByCondition(" remote_id=? ", remoteId);
+    }
+
+    @Override
+    public boolean checkExistsByRemoteIdAndText(String remoteId, String text) {
+        return checkExistsByCondition(" remote_id=? and comment_text=?", remoteId, text);
+    }
 }

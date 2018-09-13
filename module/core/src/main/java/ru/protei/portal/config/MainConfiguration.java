@@ -574,12 +574,13 @@ public class MainConfiguration {
     }
 
     @Bean
+    public YoutrackService getYoutrackService() { return new YoutrackServiceImpl(); }
+    
+    @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
         return new EmployeeRegistrationServiceImpl();
     }
 
-    @Bean
-    public YtRepository getYtRepository() { return new YtRepositoryImpl(); }
 
     /** ASPECT/INTERCEPTORS **/
     @Bean

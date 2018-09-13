@@ -13,10 +13,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Список чекбоксов с заголовом
@@ -64,6 +61,11 @@ public class OptionList<T>
         itemView.setName( name );
         itemView.addValueChangeHandler( this );
         itemView.setEnabled(isEnabled);
+
+        if (isMandatoryOption(value)) {
+            makeOptionMandatory(itemView);
+            selected.add(value);
+        }
         itemViewToModel.put( itemView, value );
         itemToViewModel.put( value, itemView );
         itemToNameModel.put( value, name );
@@ -71,6 +73,8 @@ public class OptionList<T>
             itemView.setStyleName( styleName );
         }
         container.add( itemView.asWidget() );
+
+
     }
 
     public void addOption( String name, T value ) {
@@ -92,7 +96,11 @@ public class OptionList<T>
     @Override
     public void onValueChange( ValueChangeEvent< Boolean > event ) {
         T value = itemViewToModel.get( event.getSource() );
-        if ( value == null && !itemViewToModel.containsKey( event.getSource() ) ) {
+        if ( value == null && !itemViewToModel.containsKey( event.getSource() )) {
+            return;
+        }
+
+        if (event.getValue() == Boolean.FALSE && isMandatoryOption(value)) {
             return;
         }
 
@@ -131,6 +139,24 @@ public class OptionList<T>
         }
     }
 
+    public void setMandatoryOptions(T...options) {
+        mandatoryOptions = options == null ? new ArrayList<>() : Arrays.asList(options);
+        itemViewToModel.entrySet().stream()
+                .filter(p -> isMandatoryOption(p.getValue()))
+                .map(Map.Entry::getKey)
+                .forEach(this::makeOptionMandatory);
+        selected.addAll(mandatoryOptions);
+    }
+
+    private void makeOptionMandatory(OptionItem item) {
+        item.setEnabled(false);
+        item.setValue(true);
+    }
+
+    private boolean isMandatoryOption(T option) {
+        return mandatoryOptions != null && mandatoryOptions.contains(option);
+    }
+
     @UiField
     FlowPanel container;
     @UiField
@@ -146,7 +172,7 @@ public class OptionList<T>
 
     private boolean isEnabled = true;
     protected Selector.SelectorFilter<T> filter = null;
-
+    private List<T> mandatoryOptions;
 
     interface OptionListUiBinder extends UiBinder< HTMLPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );

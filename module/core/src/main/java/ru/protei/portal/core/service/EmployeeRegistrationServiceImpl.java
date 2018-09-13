@@ -3,20 +3,23 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -27,7 +30,12 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     @Autowired
     CaseTypeDAO caseTypeDAO;
     @Autowired
+    YoutrackService youtrackService;
+    @Autowired
+    CaseLinkDAO caseLinkDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
 
     @Override
     public CoreResponse<Integer> count(AuthToken token, EmployeeRegistrationQuery query) {
@@ -49,7 +57,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
             return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
-
         jdbcManyRelationsHelper.fillAll(employeeRegistration);
         return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
     }
@@ -63,10 +70,13 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         CaseObject caseObject = createCaseObjectFromEmployeeRegistration(employeeRegistration);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
         employeeRegistrationDAO.persist(employeeRegistration);
+
+        createAdminYoutrackIssueIfNeeded(employeeRegistration);
+        createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
 
         return new CoreResponse<Long>().success(id);
     }
@@ -83,5 +93,77 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         caseObject.setCreatorId(employeeRegistration.getCreatorId());
         caseObject.setName(employeeRegistration.getEmployeeFullName());
         return caseObject;
+    }
+
+    private void createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
+        if (CollectionUtils.isEmpty(resourceList)) {
+            return;
+        }
+        String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = "Необходимо открыть доступ к: " +
+                CollectionUtils.join(resourceList, r -> getResourceName(r),  ", ");
+        String issueId = youtrackService.createIssue(CrmConstants.Youtrack.ADMIN_PROJECT_NAME, summary, description);
+        saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
+        if (CollectionUtils.isEmpty(equipmentList)) {
+            return;
+        }
+        String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = "Необходимо: " +
+                CollectionUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
+        String issueId = youtrackService.createIssue(CrmConstants.Youtrack.EQUIPMENT_PROJECT_NAME, summary, description);
+        saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private void saveCaseLink(Long employeeRegistrationId, String issueId) {
+        CaseLink caseLink = new CaseLink();
+        caseLink.setCaseId(employeeRegistrationId);
+        caseLink.setType(En_CaseLink.YT);
+        caseLink.setRemoteId(issueId);
+        caseLinkDAO.persist(caseLink);
+    }
+
+    private static String getResourceName(En_InternalResource internalResource) {
+        if (internalResource == null)
+            return "";
+        switch (internalResource) {
+            case YOUTRACK:
+                return "YouTrack";
+            case CVS:
+                return "CVS";
+            case SVN:
+                return "SVN";
+            case MERCURIAL:
+                return "Mercurial";
+            case GIT:
+                return "Git";
+            case CRM:
+                return "CRM";
+            case STORE_DELIVERY:
+                return "Store Delivery";
+            case EMAIL:
+                return "почта";
+        }
+        return "";
+    }
+
+    private static String getEquipmentName(En_EmployeeEquipment employeeEquipment) {
+        if (employeeEquipment == null)
+            return "";
+        switch (employeeEquipment) {
+            case TABLE:
+                return "стол";
+            case CHAIR:
+                return "стул";
+            case COMPUTER:
+                return "компьютер";
+            case MONITOR:
+                return "монитор";
+        }
+        return "";
     }
 }
