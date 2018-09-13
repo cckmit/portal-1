@@ -16,10 +16,13 @@ import java.util.List;
 
 public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegistration> implements EmployeeRegistrationDAO {
 
+    private String JOINS = " left outer join case_link cl on cl.case_id=employee_registration.id ";
+
     @Override
     public List<EmployeeRegistration> getListByQuery(EmployeeRegistrationQuery query) {
         SqlCondition where = createSqlCondition(query);
         JdbcQueryParameters queryParameters = new JdbcQueryParameters()
+                .withJoins(JOINS)
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
                 .withSort(TypeConverters.createSort(query, "CO"))
@@ -42,7 +45,7 @@ public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegi
             condition.append("1=1");
 
             if (StringUtils.isNotEmpty(query.getSearchString())) {
-                condition.append(" and (CO.CASE_NAME like ? or employee registration.position like ?)");
+                condition.append(" and (CO.CASE_NAME like ? or employee_registration.position like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
                 args.add(likeArg);
                 args.add(likeArg);
@@ -54,13 +57,18 @@ public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegi
             }
 
             if (query.getCreatedFrom() != null) {
-                condition.append(" and employee registration.employment_date >= ?");
+                condition.append(" and employee_registration.employment_date >= ?");
                 args.add(query.getCreatedFrom());
             }
 
             if (query.getCreatedTo() != null) {
-                condition.append(" and employee registration.employment_date <= ?");
+                condition.append(" and employee_registration.employment_date <= ?");
                 args.add(query.getCreatedTo());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getIssueIds())) {
+                condition.append(" and cl.remote_id in ")
+                        .append(HelperFunc.makeInArg(query.getIssueIds(), true));
             }
         }));
     }

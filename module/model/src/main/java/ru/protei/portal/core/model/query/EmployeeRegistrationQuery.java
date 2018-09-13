@@ -2,12 +2,14 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
 public class EmployeeRegistrationQuery extends BaseQuery {
     private Set<En_CaseState> states;
     private Date createdFrom, createdTo;
+    private Collection<String> issueIds;
 
     public Set<En_CaseState> getStates() {
         return states;
@@ -31,6 +33,14 @@ public class EmployeeRegistrationQuery extends BaseQuery {
 
     public void setCreatedTo(Date createdTo) {
         this.createdTo = createdTo;
+    }
+
+    public Collection<String> getIssueIds() {
+        return issueIds;
+    }
+
+    public void setIssueIds(Collection<String> issueIds) {
+        this.issueIds = issueIds;
     }
 
     @Override

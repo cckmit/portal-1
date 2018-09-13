@@ -9,14 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateUtils;
-import ru.protei.portal.core.model.query.CaseLinkQuery;
+import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
@@ -88,7 +86,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return toCaseState(ytStateIds.get(0));
     }
 
-    private void synchronizeAll() {
+    @Transactional
+    public void synchronizeAll() {
         log.debug("synchronizeAll(): start synchronization");
         Date synchronizationStarted = new Date();
 
@@ -97,15 +96,12 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         Set<String> updatedIssueIds = getUpdatedIssueIds(lastUpdate);
 
-        Set<Long> equipmentRegistrationsToSynchronize = new HashSet<>();
-        updatedIssueIds.forEach(remoteIssueId -> {
-            List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(En_CaseLink.YT, remoteIssueId, En_CaseType.EMPLOYEE_REGISTRATION));
-            if (caseLinks != null && caseLinks.size() == 1)
-                equipmentRegistrationsToSynchronize.add(caseLinks.get(0).getCaseId());
-        });
+        EmployeeRegistrationQuery query = new EmployeeRegistrationQuery();
+        query.setIssueIds(updatedIssueIds);
+        List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getListByQuery(query);
 
-        for (Long id : equipmentRegistrationsToSynchronize) {
-            synchronizeEmployeeRegistration(id, lastUpdate);
+        for (EmployeeRegistration employeeRegistration : employeeRegistrations) {
+            synchronizeEmployeeRegistration(employeeRegistration, lastUpdate);
         }
 
         migrationEntry.setLastUpdate(synchronizationStarted);
@@ -121,15 +117,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return adminIssues;
     }
 
-    @Transactional
-    public void synchronizeEmployeeRegistration(Long employeeRegistrationId, Date lastYtSynchronization) {
-        log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration with id={}", employeeRegistrationId);
-
-        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationId);
-        if (employeeRegistration == null) {
-            log.warn("synchronizeEmployeeRegistration(): employee registration with id={} not found", employeeRegistrationId);
-            return;
-        }
+    private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, Date lastYtSynchronization) {
+        log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration={}", employeeRegistration);
         jdbcManyRelationsHelper.fill(employeeRegistration, "youtrackIssues");
 
         Set<CaseLink> issues = employeeRegistration.getYoutrackIssues();
@@ -204,9 +193,21 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         if (stateChangeField == null)
             return null;
 
+        boolean changeExistsOrNullId = Optional.ofNullable(change.getUpdated())
+                .map(Date::getTime)
+                .map(caseCommentDAO::checkExistsByKey)
+                .orElse(true);
+
+        if (changeExistsOrNullId)
+            return null;
+
         En_CaseState newState = toCaseState(stateChangeField.getNewValue());
 
         CaseComment stateChange = new CaseComment();
+        /*
+            Используем в качестве id дату обновления, чтобы исключить возможность добавления одного и того же изменения дважды
+         */
+        stateChange.setId(change.getUpdated().getTime());
         stateChange.setCaseId(employeeRegistration.getId());
         stateChange.setCreated(change.getUpdated());
         stateChange.setAuthorId(findPersonIdByLogin(change.getUpdaterName()));
