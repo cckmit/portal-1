@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.yt.fields.Fields;
         @JsonSubTypes.Type( name = Fields.type, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = Fields.stateEng, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = Fields.stateRus, value = StringArrayWithIdArrayOldNewChangeField.class ),
+        @JsonSubTypes.Type( name = Fields.equipmentStateRus, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = Fields.updaterName, value = StringChangeField.class ),
         @JsonSubTypes.Type( name = Fields.updated, value = DateChangeField.class ),
         @JsonSubTypes.Type( name = Fields.assignee, value = PersonArrayOldNewChangeField.class ),

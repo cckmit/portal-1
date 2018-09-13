@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.yt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.yt.fields.Fields;
 import ru.protei.portal.core.model.yt.fields.issue.DateIssueField;
 import ru.protei.portal.core.model.yt.fields.issue.IssueField;
@@ -98,13 +99,21 @@ public class Issue {
     }
 
     public String getStateId() {
-        StringArrayWithIdArrayIssueField field = getField(Fields.stateEng);
+        StringArrayWithIdArrayIssueField field = getStateField();
         if (field == null)
             return null;
         List<String> valueId = field.getValueId();
         if (CollectionUtils.isEmpty(valueId))
             return null;
         return valueId.get(0);
+    }
+
+    private StringArrayWithIdArrayIssueField getStateField() {
+        return HelperFunc.nvlt(
+                getField(Fields.stateEng),
+                getField(Fields.stateRus),
+                getField(Fields.equipmentStateRus)
+        );
     }
 
     private String getStringFieldValue(String name) {

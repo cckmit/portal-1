@@ -77,7 +77,13 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         switch (ytStateId) {
             case "New":
                 return En_CaseState.CREATED;
+            case "Новый":
+                return En_CaseState.CREATED;
             case "Done":
+                return En_CaseState.DONE;
+            case "Complete":
+                return En_CaseState.DONE;
+            case "Выдан заказчику":
                 return En_CaseState.DONE;
             default:
                 return En_CaseState.ACTIVE;
