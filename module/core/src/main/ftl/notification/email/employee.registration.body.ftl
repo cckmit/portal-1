@@ -55,7 +55,7 @@
                 ${_employment_type}
             </td>
             <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;">
-                <#switch (er.employmentType.name())??>
+                <#switch (er.employmentType.name())!>
                     <#case "FULL_TIME">
                         ${_employment_type_full_time}
                         <#break>
