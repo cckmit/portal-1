@@ -8,6 +8,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_MigrationEntry;
@@ -59,6 +60,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    private EventPublisherService publisherService;
 
 
     @Autowired
@@ -121,6 +125,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         log.debug("synchronizeEmployeeRegistration(): start synchronizing employee registration={}", employeeRegistration);
         jdbcManyRelationsHelper.fill(employeeRegistration, "youtrackIssues");
 
+        En_CaseState oldState = employeeRegistration.getState();
+
         Set<CaseLink> issues = employeeRegistration.getYoutrackIssues();
         if (CollectionUtils.isEmpty(issues))
             return;
@@ -130,6 +136,11 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         if (!saveEmployeeRegistration(employeeRegistration))
             log.warn("synchronizeEmployeeRegistration(): failed to execute DB merge for employee registration={}", employeeRegistration);
+
+
+        En_CaseState newState = employeeRegistration.getState();
+        if (newState != oldState && newState == En_CaseState.DONE)
+            fireEmployeeRegistrationEvent(employeeRegistration);
     }
 
     private void updateIssues(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, String... issueIds) {
@@ -289,5 +300,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             }
         }
         caseAttachmentDAO.removeBatch(oldCaseAttachments);
+    }
+
+    private void fireEmployeeRegistrationEvent(EmployeeRegistration employeeRegistration) {
+        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
     }
 }
