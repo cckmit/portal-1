@@ -31,8 +31,6 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setCreated(String created);
 
-    void setLastSynchronization(String lastSynchronization);
-
     void setState(En_CaseState state);
 
     void setIssues(Set<CaseLink> issues);

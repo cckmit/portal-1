@@ -36,14 +36,10 @@
                     <span class="col-xs-7 col-md-7"><div ui:field="caseState"/></span>
                 </div>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
-                    <span class="col-xs-7 col-md-7"><span ui:field="employmentDate"/></span>
-                </div>
-                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
+                    <span class="col-xs-7 col-md-3" ui:field="employmentDate"/>
                     <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationCreated}"/></label>
-                    <span class="col-xs-7 col-md-3" ui:field="created"/>
-                    <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationLastYoutrackSynchronization}"/></label>
-                    <span class="col-xs-7 col-md-5" ui:field="lastSynchronization"/>
+                    <span class="col-xs-7 col-md-5" ui:field="created"/>
                 </div>
             </fieldset>
             <fieldset class="header">

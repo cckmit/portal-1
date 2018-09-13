@@ -98,11 +98,6 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setLastSynchronization(String lastSynchronization) {
-        this.lastSynchronization.setInnerText(lastSynchronization);
-    }
-
-    @Override
     public void setState(En_CaseState state) {
         if (state == null) {
             this.caseState.setClassName("");
@@ -145,8 +140,6 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     SpanElement created;
     @UiField
     DivElement caseState;
-    @UiField
-    SpanElement lastSynchronization;
 
 
     @Inject
