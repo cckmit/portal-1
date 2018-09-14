@@ -247,9 +247,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.72.7 - PORTAL-193 Заканчивается место на сервере с внутренним CRM
  * 4.0.73.0 - PORTAL-353 Раздел Анкеты сотрудников: таблица, форма создания и редактирования
  * 4.0.74.0 - PORTAL-357 Раздел Анкеты сотрудников: синхронизация с youtrack
+ * 4.0.74.1 - PORTAL-381 Не работает создание продуктов
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.74.0";
+        return "4.0.74.1";
     }
 }
