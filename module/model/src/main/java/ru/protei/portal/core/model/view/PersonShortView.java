@@ -20,6 +20,11 @@ public class PersonShortView implements Serializable {
         this.isFired = isFired;
     }
 
+    public PersonShortView(String displayShortName, Long id) {
+        this.displayShortName = displayShortName;
+        this.id = id;
+    }
+
     public String getDisplayShortName() {
         return displayShortName;
     }

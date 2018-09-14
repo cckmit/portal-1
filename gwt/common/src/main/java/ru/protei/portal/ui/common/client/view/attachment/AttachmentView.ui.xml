@@ -6,6 +6,7 @@
         </div>
         <div class="attach-controls" ui:field="attachControls">
             <g:Anchor href="javascript:void(0)" ui:field="showPreviewButton" styleName="fa fa-search-plus attach-preview-btn"/>
+            <g:Anchor href="javascript:void(0)" ui:field="downloadFullButton" styleName="fa fa-cloud-download attach-download-btn" target="_blank"/>
             <g:Anchor href="javascript:void(0)" ui:field="deleteButton" styleName="fa fa-times attach-remove-btn"/>
         </div>
         <div class="attach-info">

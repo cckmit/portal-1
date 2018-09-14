@@ -1,6 +1,7 @@
 package ru.protei.portal.core.controller.auth;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -20,7 +21,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     public static final String AUTH_HANDLER_LOG_PREFIX = "** AUTH-HANDLER **";
 
-    private static Logger log = Logger.getLogger(AuthInterceptor.class);
+    private static Logger log = LoggerFactory.getLogger(AuthInterceptor.class);
 
     @Autowired
     private AuthService authService;

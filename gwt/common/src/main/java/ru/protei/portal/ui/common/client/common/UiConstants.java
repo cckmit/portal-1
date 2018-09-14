@@ -26,6 +26,7 @@ public class UiConstants {
         String CASE_STATE = "fa fa-bookmark ";
         String SITE_FOLDER = "fa fa-folder";
         String EMPLOYEE = "fa fa-user-circle";
+        String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
     }
 
     public interface ActionBarIcons {
@@ -54,6 +55,7 @@ public class UiConstants {
         String SITE_FOLDER_PLATFORM = "site_folder_platform";
         String SITE_FOLDER_SERVER = "site_folder_server";
         String SITE_FOLDER_APP = "site_folder_app";
+        String EMPLOYEE_REGISTRATION = "employee_registration";
     }
 
     public interface UserIcon {
@@ -63,6 +65,8 @@ public class UiConstants {
 
     public interface Styles {
         String HIDE = "hide";
+        String REQUIRED = "required";
+        String TEXT_CENTER = "text-center";
     }
 
     /**

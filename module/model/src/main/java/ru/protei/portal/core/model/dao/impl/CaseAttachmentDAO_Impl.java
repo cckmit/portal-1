@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +33,11 @@ public class CaseAttachmentDAO_Impl extends PortalBaseJdbcDAO<CaseAttachment> im
     public CaseAttachment getByAttachmentId(Long attachmentId) {
         List<CaseAttachment> result = getListByCondition("att_id = ?", attachmentId);
         return result.isEmpty()? null: result.get(0);
+    }
+
+    @Override
+    public CaseAttachment getByRemoteId(String remoteId) {
+        return getByCondition("remote_id=?", remoteId);
     }
 
     @Override

@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.widget.selector.event.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
+
 /**
  * Вид виджета децимального номера
  */
@@ -294,9 +295,8 @@ public class DecimalNumberBox extends Composite
             if (handler == null) {
                 return;
             }
-
             if (classifierCode.getText().length() == 6
-                    && regNum.getText().length() < 3) {
+                    && regNum.getText().length() == 0) {
                 handler.onGetNextNumber(DecimalNumberBox.this);
             }
 

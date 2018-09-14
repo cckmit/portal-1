@@ -89,6 +89,11 @@ public class En_PrivilegeLang {
             case EMPLOYEE_VIEW:
                 return lang.privilegeView();
 
+            case EMPLOYEE_REGISTRATION_VIEW:
+                return lang.privilegeView();
+            case EMPLOYEE_REGISTRATION_CREATE:
+                return lang.privilegeCreate();
+
             default:
                 return lang.unknownField();
         }

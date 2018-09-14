@@ -262,9 +262,9 @@ public abstract class MultipleSelector<T>
     }
 
     @Inject
-    SelectorPopup popup;
+    protected SelectorPopup popup;
     @Inject
-    Provider<SelectableItem> itemFactory;
+    protected Provider<SelectableItem> itemFactory;
 
     private int selectedLimit = 0;
     protected boolean hasAnyValue = false;

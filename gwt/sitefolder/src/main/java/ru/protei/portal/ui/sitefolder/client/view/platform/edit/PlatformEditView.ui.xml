@@ -2,7 +2,9 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'>
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
+>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -34,13 +36,11 @@
                     <g:TextArea ui:field="comment" styleName="input-field sf-comment"/>
                 </div>
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.siteFolderCompanyContacts}"/></label>
-                </div>
-                <g:HTMLPanel styleName="form-group col-xs-12 main-content-padding-0" ui:field="contactsContainer"/>
+                <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable form-group col-xs-12 main-content-padding-0"
+                                             legend="{lang.siteFolderCompanyContacts}"/>
 
                 <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-xs-12">
-                    <label><ui:text from="{lang.siteFolderServers}"/></label>
+                    <legend><ui:text from="{lang.siteFolderServers}"/></legend>
                     <g:Button ui:field="openButton" styleName="btn btn-white pull-right m-l-10" text="{lang.openTableView}"/>
                     <g:Button ui:field="createButton" styleName="btn btn-white pull-right m-l-10" text="{lang.siteFolderServerCreate}"/>
                 </g:HTMLPanel>

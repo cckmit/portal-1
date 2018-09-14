@@ -144,4 +144,17 @@ public class DecimalNumber implements Serializable {
         return getClassifierCode() != null &&
                 getRegisterNumber() != null;
     }
+
+    @Override
+    public String toString() {
+        return "DecimalNumber{" +
+                "id=" + id +
+                ", organizationCode=" + organizationCode +
+                ", classifierCode=" + classifierCode +
+                ", registerNumber=" + registerNumber +
+                ", modification=" + modification +
+                ", entityId=" + entityId +
+                ", isReserve=" + isReserve +
+                '}';
+    }
 }

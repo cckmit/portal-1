@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service.user;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import javax.naming.AuthenticationException;
@@ -21,7 +22,7 @@ public class LDAPAuthProvider {
     public static String BASE_DN = "ou=Users,dc=protei,dc=ru";
 
 
-    Logger logger = Logger.getLogger("logger-security");
+    Logger logger = LoggerFactory.getLogger("logger-security");
 
     public En_ResultStatus checkAuth (String username, String pwd) {
         Hashtable<Object,Object> env = new Hashtable<>();

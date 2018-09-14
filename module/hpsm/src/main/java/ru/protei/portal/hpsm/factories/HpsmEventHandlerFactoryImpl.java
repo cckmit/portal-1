@@ -42,6 +42,8 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
     public HpsmEventHandler createHandler (HpsmEvent request, ServiceInstance instance) {
         if (request.getSubject().isNewCaseRequest()) {
             logger.debug("new case creation handler");
+
+
             return new CreateNewCaseHandler();
         }
 
@@ -70,19 +72,19 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             Person contactPerson = getAssignedPerson(request.getCompany().getId(), request.getHpsmMessage());
             if (contactPerson == null) {
-                instance.sendReject(request, "No contact person provided");
+                new RejectHandler("No contact person provided").handle(request, instance);
                 return;
             }
 
             DevUnit product = getAssignedProduct(request.getHpsmMessage());
             if (product == null) {
-                instance.sendReject(request, "product not found");
+                new RejectHandler("Product not found").handle(request, instance);
                 return;
             }
 
             CaseObject ex_test = caseObjectDAO.getByCondition("ext_app_id=?", request.getSubject().getHpsmId());
             if (ex_test != null) {
-                instance.sendReject(request, "already_registered");
+                new RejectHandler("Already registered").handle(request, instance);
                 return;
             }
 
@@ -152,7 +154,14 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
         @Override
         public void handle(HpsmEvent request, ServiceInstance instance) throws Exception {
-            instance.sendReject(request, messageText);
+            HpsmMessageHeader replySubj = new HpsmMessageHeader(request.getSubject().getHpsmId(), null, HpsmStatus.REJECTED);
+            HpsmMessage replyEvent = request.getHpsmMessage().createCopy();
+
+            replyEvent.status(HpsmStatus.REJECTED);
+            replyEvent.setMessage(messageText);
+
+            instance.sendReply(request.getEmailSourceAddr(), replySubj, replyEvent);
+            /*instance.sendReject(request, messageText);*/
         }
     }
 

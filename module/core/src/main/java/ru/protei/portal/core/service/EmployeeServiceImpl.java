@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
@@ -64,9 +65,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public CoreResponse< Person > getEmployee( Long id ) {
         Person person = personDAO.getEmployee(id);
+        if ( person == null ) {
+            return new CoreResponse<Person>().success(person);
+        }
 
-        return person != null ? new CoreResponse<Person>().success(person)
-            : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
+        // RESET PRIVACY INFO
+        person.setPassportInfo(null);
+
+        return new CoreResponse<Person>().success(person);
     }
 
     public EmployeeDetailView getEmployeeProfile(Long id){
@@ -96,7 +102,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<EmployeeShortView>> employeeList(EmployeeQuery query) {
+    public CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
         List<EmployeeShortView> list = employeeShortViewDAO.getEmployees(query);
 
         if (list == null)

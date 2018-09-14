@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,4 +20,6 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
     Integer getNextAvailableModification(DecimalNumberQuery filter);
 
     DecimalNumber find(DecimalNumber decimalNumber);
+
+    List<DecimalNumber> getDecimalNumbersByEquipmentIds(Collection<Long> equipmentIds);
 }

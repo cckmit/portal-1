@@ -22,4 +22,9 @@ public class CrmConstants {
     public interface FileUpload {
         String FILE_ITEM_DESC = "file-item";
     }
+
+    public interface Youtrack {
+        String EQUIPMENT_PROJECT_NAME = "PG";
+        String ADMIN_PROJECT_NAME = "PG";
+    }
 }

@@ -5,7 +5,9 @@ import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -103,7 +105,7 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
         return jdbcTemplate.queryForObject(sql.toString(), Integer.class,
                 filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber(),
                 filter.getNumber().getOrganizationCode().name(), filter.getNumber().getClassifierCode(), filter.getNumber().getRegisterNumber());
-   }
+    }
 
     @Override
     public DecimalNumber find(DecimalNumber decimalNumber) {
@@ -113,5 +115,18 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
             return null;
         }
         return numbers.get(0);
+    }
+
+    @Override
+    public List<DecimalNumber> getDecimalNumbersByEquipmentIds(Collection<Long> equipmentIds) {
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        if (equipmentIds != null && !equipmentIds.isEmpty()) {
+            parameters.withCondition("decimal_number.entity_id in (" +
+                    equipmentIds.stream()
+                            .map(Object::toString)
+                            .collect(Collectors.joining(",")) +
+                    ")");
+        }
+        return getList(parameters);
     }
 }

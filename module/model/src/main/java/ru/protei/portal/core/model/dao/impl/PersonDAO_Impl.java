@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
 /**
  * Created by michael on 04.04.16.
  */
@@ -186,9 +188,9 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1");
 
-            if (query.getCompanyId() != null) {
-                condition.append(" and Person.company_id = ?");
-                args.add(query.getCompanyId());
+            if (!isEmpty(query.getCompanyIds() )) {
+                condition.append(" and Person.company_id in ");
+                condition.append(HelperFunc.makeInArg(query.getCompanyIds()));
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {

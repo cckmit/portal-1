@@ -1,0 +1,28 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="add-remote_id-for-case_comment" author="efremov">
+        <addColumn tableName="case_comment">
+            <column name="remote_id" type="VARCHAR(64)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-remote_id-for-case_attachment" author="efremov">
+        <addColumn tableName="case_attachment">
+            <column name="remote_id" type="VARCHAR(64)">
+                <constraints unique="true" uniqueConstraintName="case_attachment-remote_id-uc"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-audit-type-for-employee-registration" author="efremov">
+        <insert tableName="audit_type">
+            <column name="id" value="46"/>
+            <column name="code" value="EMPLOYEE_REGISTRATION_CREATE"/>
+            <column name="info" value="Создание анкеты нового сотрудника"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

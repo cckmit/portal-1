@@ -12,4 +12,8 @@ public interface DocumentStorageIndex {
     List<Long> getDocumentsByQuery(String contentQuery, int maxHits) throws IOException;
 
     void removeDocument(long documentId) throws IOException;
+
+    void updateDocument(String body, Long documentId, Long projectId) throws IOException;
+
+    void updatePdfDocument(byte[] fileData, Long documentId, Long projectId) throws IOException;
 }

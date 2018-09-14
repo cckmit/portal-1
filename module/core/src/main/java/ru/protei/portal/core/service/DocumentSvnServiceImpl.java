@@ -15,8 +15,7 @@ import org.tmatesoft.svn.core.wc.SVNWCUtil;
 import ru.protei.portal.config.PortalConfig;
 
 import javax.annotation.PostConstruct;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 public class DocumentSvnServiceImpl implements DocumentSvnService {
 
@@ -66,16 +65,63 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
             editor.closeDir(); // close root directory
         } catch (SVNException e) {
             editor.abortEdit();
-            log.error("Failed to commit: projectId=" + projectId + ", documentId=" + documentId, e);
+            log.error("saveDocument(p=" + projectId + ",d=" + documentId + "): Failed to commit", e);
             throw e;
         }
         SVNCommitInfo svnCommitInfo = editor.closeEdit();
-        log.info("Commit info: " + svnCommitInfo);
+        log.info("saveDocument(p=" + projectId + ",d=" + documentId + "): Commit info: " + svnCommitInfo);
+    }
+
+    @Override
+    public void updateDocument(Long projectId, Long documentId, InputStream newDocumentStream) throws SVNException, IOException {
+        // see "File modification" at https://wiki.svnkit.com/Committing_To_A_Repository#line-264
+
+        String fileName = getFileName(projectId, documentId);
+
+        final InputStream oldDocumentStream;
+        try {
+            oldDocumentStream = getDocument(projectId, documentId);
+        } catch (SVNException e) {
+            log.error("updateDocument(p=" + projectId + ",d=" + documentId + "): Failed to get old document stream");
+            throw e;
+        } catch (IOException e) {
+            log.error("updateDocument(p=" + projectId + ",d=" + documentId + "): Failed to close old document stream");
+            throw e;
+        }
+
+        ISVNEditor editor = repository.getCommitEditor(getFormattedCommitMessage(projectId, documentId), null);
+
+        try {
+            editor.openRoot(HEAD_REVISION);
+            editor.openDir(projectId.toString(), HEAD_REVISION);
+            editor.openFile(fileName, HEAD_REVISION);
+            editor.applyTextDelta(fileName, null);
+
+            SVNDeltaGenerator deltaGenerator = new SVNDeltaGenerator();
+            String checksum = deltaGenerator.sendDelta(fileName, oldDocumentStream, 0, newDocumentStream, editor, true);
+
+            editor.closeFile(fileName, checksum);
+            editor.closeDir(); // close project directory
+            editor.closeDir(); // close root directory
+        } catch (SVNException e) {
+            editor.abortEdit();
+            log.error("updateDocument(p=" + projectId + ",d=" + documentId + "): Failed to commit", e);
+            throw e;
+        }
+        SVNCommitInfo svnCommitInfo = editor.closeEdit();
+        log.info("updateDocument(p=" + projectId + ",d=" + documentId + "): Commit info: " + svnCommitInfo);
     }
 
     @Override
     public void getDocument(Long projectId, Long documentId, OutputStream outputStream) throws SVNException {
         repository.getFile(getFilePath(projectId, documentId), HEAD_REVISION, new SVNProperties(), outputStream);
+    }
+
+    private InputStream getDocument(Long projectId, Long documentId) throws SVNException, IOException {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            getDocument(projectId, documentId, out);
+            return new ByteArrayInputStream(out.toByteArray());
+        }
     }
 
     private static String getFilePath(Long projectId, Long documentId) {

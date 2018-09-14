@@ -40,6 +40,7 @@ public class DebugIds {
         String REGION = "sidebar-menu-region";
         String ROLE = "sidebar-menu-role";
         String SITE_FOLDER = "sidebar-menu-site-folder";
+        String EMPLOYEE_REGISTRATION = "sidebar-menu-employee-registration";
         @Deprecated String SITE_FOLDER_PLATFORMS = "sidebar-menu-site-folder-platforms";
         @Deprecated String SITE_FOLDER_SERVERS = "sidebar-menu-site-folder-servers";
         @Deprecated String SITE_FOLDER_APPS = "sidebar-menu-site-folder-apps";
@@ -75,6 +76,8 @@ public class DebugIds {
         String PRODUCT_SELECTOR_CLEAR_BUTTON = "filter-product-selector-clear-button";
         String MANAGER_SELECTOR_ADD_BUTTON = "filter-manager-selector-add-button";
         String MANAGER_SELECTOR_CLEAR_BUTTON = "filter-manager-selector-clear-button";
+        String INITIATORS_SELECTOR_ADD_BUTTON = "filter-initiators-selector-add-button";
+        String INITIATORS_SELECTOR_CLEAR_BUTTON = "filter-initiators-selector-clear-button";
         String PRIVACY_YES_BUTTON = "filter-privacy-yes-button";
         String PRIVACY_NO_BUTTON = "filter-privacy-no-button";
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
@@ -153,6 +156,7 @@ public class DebugIds {
         String PRODUCT_SELECTOR = "issue-product-selector";
         String MANAGER_SELECTOR = "issue-manager-selector";
         String TIME_ELAPSED_LABEL = "issue-time-elapsed-label";
+        String TIME_ELAPSED_INPUT = "issue-time-elapsed-input";
         String DESCRIPTION_INPUT = "issue-description-input";
         String NOTIFIERS_SELECTOR_ADD_BUTTON = "issue-notifiers-selector-add-button";
         String NOTIFIERS_SELECTOR_CLEAR_BUTTON = "issue-notifiers-selector-clear-button";

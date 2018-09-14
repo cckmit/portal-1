@@ -82,6 +82,9 @@ public enum En_Privilege {
 
     EMPLOYEE_VIEW (EMPLOYEE, VIEW),
 
+    EMPLOYEE_REGISTRATION_VIEW(EMPLOYEE_REGISTRATION, VIEW),
+    EMPLOYEE_REGISTRATION_CREATE(EMPLOYEE_REGISTRATION, CREATE),
+
     // Набор дополнительных привилегий, которые вычисляются по scope и не пишутся в базу. Устанавливаются без action
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),

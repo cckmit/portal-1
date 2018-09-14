@@ -40,6 +40,13 @@
     margin-left: 23px;
   }
 
+  .attach-preview-btn{
+    display: block;
+  }
+  .attach-download-btn{
+    display: none;
+  }
+
   &.attach-minimize{
     border: 0;
 
@@ -81,9 +88,12 @@
       display: none !important;
     }
   }
-  &.attach-hide-preview-btn{
+  &.attach-hide-preview{
     .attach-preview-btn{
       display: none !important;
+    }
+    .attach-download-btn{
+      display: block !important;
     }
   }
 
@@ -168,7 +178,7 @@
     a {
       color: white;
     }
-    .fa-search-plus {
+    .fa-search-plus, .fa-cloud-download {
       $textShadow: "1px 1px 1px rgba(0,0,0,0.3)";
       text-shadow: #{$textShadow};
       font-size: 20px;
