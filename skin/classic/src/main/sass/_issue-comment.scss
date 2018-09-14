@@ -134,10 +134,7 @@
       width: 100%;
       margin-top: 6px;
       margin-bottom: 0;
-
-      > * {
-        color: $info_dark_color;
-      }
+      color: $info_dark_color;
 
       .icon {
         position: absolute;
@@ -149,6 +146,7 @@
         margin: 0;
         top: 0;
         left: 0;
+        color: $info_dark_color;
       }
 
       .hint {
@@ -160,6 +158,7 @@
         margin: 0 0 0 14px;
         font-size: 0.9em;
         font-weight: 900;
+        color: $info_dark_color;
       }
     }
   }
