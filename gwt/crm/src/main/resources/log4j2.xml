@@ -80,7 +80,7 @@
         </RollingFile>
 
         <RollingFile name="APPSERVICE" fileName="${basePath}/${appServiceFileName}${extension}"
-                     filePattern="${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+                     filePattern="${archivePath}/${appServiceFileName}.%d{yyyyMMdd}.%i${extension}.gz">
             <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
@@ -89,7 +89,7 @@
         </RollingFile>
 
         <RollingFile name="MIGRATE" fileName="${basePath}/${migrateFileName}${extension}"
-                     filePattern="${archivePath}/${appFileName}.%d{yyyyMMdd}.%i${extension}.gz">
+                     filePattern="${archivePath}/${migrateFileName}.%d{yyyyMMdd}.%i${extension}.gz">
             <PatternLayout><pattern>${pattern}</pattern></PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="${maxFileSize}"/>
