@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.EmployeeRegistration;
 
 public class EmployeeRegistrationEvents {
 
@@ -15,14 +14,26 @@ public class EmployeeRegistrationEvents {
     public static class Create {
     }
 
-    public static class ShowPreview {
+    @Url(value = "employee_registration_preview", primary = true)
+    public static class ShowFullScreen {
+        public ShowFullScreen() {}
 
-        public ShowPreview (HasWidgets parent, EmployeeRegistration employeeRegistration) {
-            this.parent = parent;
-            this.employeeRegistration = employeeRegistration;
+        public ShowFullScreen(Long id )
+        {
+            this.id = id;
         }
 
-        public EmployeeRegistration employeeRegistration;
+        public Long id;
+    }
+
+    public static class ShowPreview {
+
+        public ShowPreview (HasWidgets parent, Long id) {
+            this.parent = parent;
+            this.id = id;
+        }
+
+        public Long id;
         public HasWidgets parent;
     }
 }

@@ -51,7 +51,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (list == null) {
             return new CoreResponse<List<EmployeeRegistration>>().error(En_ResultStatus.INTERNAL_ERROR);
         }
-        jdbcManyRelationsHelper.fillAll(list);
         return new CoreResponse<List<EmployeeRegistration>>().success(list);
     }
 

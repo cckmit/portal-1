@@ -107,7 +107,7 @@ public class PortalConfigData {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
-            crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url", "#employee_registrations/employee_registration:id=%d;" );
+            crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
         }
 
