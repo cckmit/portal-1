@@ -249,9 +249,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.74.0 - PORTAL-357 Раздел Анкеты сотрудников: синхронизация с youtrack
  * 4.0.74.1 - PORTAL-328 Оптимизация списка сотрудников
  * 4.0.74.2 - PORTAL-376 Некорректный поиск сотрудников
+ * 4.0.74.3 - PORTAL-381 Не работает создание продуктов
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.74.2";
+        return "4.0.74.3";
     }
 }
