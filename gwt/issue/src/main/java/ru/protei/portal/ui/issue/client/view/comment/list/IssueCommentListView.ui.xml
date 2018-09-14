@@ -41,7 +41,6 @@
 
                             <div class="hints">
                                 <span class="icon fa fa-info-circle"/>
-                                <span class="hint"><ui:text from='{lang.newLineOnCtrl}'/></span>
                                 <span class="hint"><ui:text from='{lang.sendOnCtrlEnter}'/></span>
                             </div>
                         </div>

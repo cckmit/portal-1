@@ -1353,7 +1353,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String internalResourceEmail();
 
-    String newLineOnCtrl();
-
     String sendOnCtrlEnter();
 }
