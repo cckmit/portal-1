@@ -20,7 +20,7 @@
                         <div class="message">
                             <autoresizetextarea:AutoResizeTextArea
                                     ui:field="comment"
-                                    styleName="input-field form-group"
+                                    styleName="input-field form-group message-input"
                                     minRows="5" maxRows="20"/>
 
                             <div class="attachments">
@@ -37,6 +37,12 @@
                                 <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field inline-block time-elapsed" notNull="false"/>
 
                                 <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
+                            </div>
+
+                            <div class="hints">
+                                <span class="icon fa fa-info-circle"/>
+                                <span class="hint"><ui:text from='{lang.newLineOnCtrl}'/></span>
+                                <span class="hint"><ui:text from='{lang.sendOnCtrlEnter}'/></span>
                             </div>
                         </div>
                     </div>
