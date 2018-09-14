@@ -69,6 +69,11 @@ public class IssueCommentListView
     }
 
     @Override
+    public void setEnabledAttachAndComment(boolean isEnabled) {
+        newMessage.setVisible(isEnabled);
+    }
+
+    @Override
     public HasTime timeElapsed() {
         return timeElapsed;
     }

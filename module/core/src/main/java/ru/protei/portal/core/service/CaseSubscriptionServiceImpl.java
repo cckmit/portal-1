@@ -6,21 +6,17 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.CompanySubscription;
-import ru.protei.portal.core.model.ent.DevUnitSubscription;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by michael on 26.05.17.
@@ -35,6 +31,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Autowired
     CompanyGroupHomeDAO companyGroupHomeDAO;
+
+    @Autowired
+    PersonDAO personDAO;
 
     @Autowired
     PortalConfig portalConfig;
@@ -59,7 +58,15 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Override
     public Set<NotificationEntry> subscribers(EmployeeRegistrationEvent event) {
-        return employeeRegistrationEventSubscribers;
+        HashSet<NotificationEntry> notifiers = new HashSet<>(employeeRegistrationEventSubscribers);
+        Optional.ofNullable(event.getEmployeeRegistration())
+                .map(EmployeeRegistration::getCreatorId)
+                .map(personDAO::get)
+                .map(Person::getContactInfo)
+                .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
+                .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
+                .ifPresent(notifiers::add);
+        return notifiers;
     }
 
     private Set<NotificationEntry> getByCase (CaseObject caseObject){

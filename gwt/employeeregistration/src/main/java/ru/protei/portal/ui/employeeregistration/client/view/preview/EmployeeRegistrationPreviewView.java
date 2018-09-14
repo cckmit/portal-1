@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -104,6 +105,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         }
     }
 
+    @Override
+    public HasWidgets getCommentsContainer() {
+        return commentContainer;
+    }
+
     @UiField
     SpanElement fullName;
     @UiField
@@ -128,6 +134,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     SpanElement created;
     @UiField
     DivElement caseState;
+    @UiField
+    HTMLPanel commentContainer;
 
 
     @Inject

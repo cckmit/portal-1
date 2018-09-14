@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
+import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.En_EmployeeEquipmentLang;
 import ru.protei.portal.ui.common.client.lang.En_EmploymentTypeLang;
@@ -95,6 +96,8 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
             view.setWithRegistration(lang.employeeRegistrationEmployeeWithRegistrationFalse());
 
         view.setState(value.getState());
+
+        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), false, true) );
     }
 
     private HasWidgets fullScreenContainer;

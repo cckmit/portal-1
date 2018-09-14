@@ -56,6 +56,10 @@
                     <span class="col-xs-7 col-md-7" ui:field="comment"/>
                 </div>
             </fieldset>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.comments}"/></legend>
+                <g:HTMLPanel ui:field="commentContainer" />
+            </fieldset>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

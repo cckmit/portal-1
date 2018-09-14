@@ -137,8 +137,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         if (CollectionUtils.isEmpty(issues))
             return;
 
-        String[] issueIds = issues.stream().map(CaseLink::getRemoteId).toArray(String[]::new);
-        updateIssues(employeeRegistration, lastYtSynchronization, issueIds);
+        updateIssues(employeeRegistration, lastYtSynchronization, issues);
 
         if (!saveEmployeeRegistration(employeeRegistration))
             log.warn("synchronizeEmployeeRegistration(): failed to execute DB merge for employee registration={}", employeeRegistration);
@@ -149,25 +148,25 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             fireEmployeeRegistrationEvent(employeeRegistration);
     }
 
-    private void updateIssues(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, String... issueIds) {
-        Map<String, ChangeResponse> issueToChanges = new HashMap<>();
+    private void updateIssues(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, Collection<CaseLink> caseLinks) {
+        Map<CaseLink, ChangeResponse> issueToChanges = new HashMap<>();
 
-        for (String issueId : issueIds) {
-            ChangeResponse issueChanges = youtrackService.getIssueChanges(issueId);
-            issueToChanges.put(issueId, issueChanges);
+        for (CaseLink caseLink : caseLinks) {
+            ChangeResponse issueChanges = youtrackService.getIssueChanges(caseLink.getRemoteId());
+            issueToChanges.put(caseLink, issueChanges);
         }
 
         En_CaseState state = getGeneralState(issueToChanges.values());
         employeeRegistration.setState(state);
 
-        for (String issueId : issueIds) {
-            ChangeResponse changes = issueToChanges.get(issueId);
+        for (CaseLink caseLink : caseLinks) {
+            ChangeResponse changes = issueToChanges.get(caseLink);
             if (changes == null)
                 continue;
-            parseStateChanges(employeeRegistration, lastYtSynchronization, issueId, changes.getChange());
-            parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, changes.getIssue().getComment());
+            parseStateChanges(employeeRegistration, lastYtSynchronization, caseLink.getId(), changes.getChange());
+            parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), changes.getIssue().getComment());
         }
-        parseAndUpdateAttachments(employeeRegistration, issueIds);
+        parseAndUpdateAttachments(employeeRegistration, caseLinks);
     }
 
     private En_CaseState getGeneralState(Collection<ChangeResponse> changes) {
@@ -188,7 +187,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return caseObjectDAO.merge(caseObject) && employeeRegistrationDAO.merge(employeeRegistration);
     }
 
-    private void parseStateChanges(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, String issueId, List<Change> changes) {
+    private void parseStateChanges(EmployeeRegistration employeeRegistration, Date lastYtSynchronization, Long caseLinkId, List<Change> changes) {
         List<CaseComment> stateChanges = new LinkedList<>();
         changes.sort(Comparator.comparing(Change::getUpdated, Comparator.nullsFirst(Date::compareTo)));
         for (Change change : changes) {
@@ -197,14 +196,14 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             if (DateUtils.beforeNotNull(change.getUpdated(), lastYtSynchronization))
                 continue;
 
-            CaseComment stateChange = parseStateChange(employeeRegistration, issueId, change);
+            CaseComment stateChange = parseStateChange(employeeRegistration, caseLinkId, change);
             if (stateChange != null)
                 stateChanges.add(stateChange);
         }
         caseCommentDAO.persistBatch(stateChanges);
     }
 
-    private CaseComment parseStateChange(EmployeeRegistration employeeRegistration, String issueId, Change change) {
+    private CaseComment parseStateChange(EmployeeRegistration employeeRegistration, Long caseLinkId, Change change) {
         StringArrayWithIdArrayOldNewChangeField stateChangeField = change.getStateChangeField();
         if (change.getUpdated() == null || stateChangeField == null)
             return null;
@@ -214,7 +213,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         String remoteId = String.valueOf(change.getUpdated().getTime());
 
-        if (caseCommentDAO.checkExistsByRemoteIdAndText(remoteId, issueId))
+        if (caseCommentDAO.checkExistsByRemoteIdAndRemoteLinkId(remoteId, caseLinkId))
             return null;
 
         En_CaseState newState = toCaseState(stateChangeField.getNewValue());
@@ -223,13 +222,13 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         stateChange.setRemoteId(remoteId);
         stateChange.setCaseId(employeeRegistration.getId());
         stateChange.setCreated(change.getUpdated());
-        stateChange.setText(issueId);
+        stateChange.setRemoteLinkId(caseLinkId);
         stateChange.setAuthorId(findPersonIdByLogin(change.getUpdaterName()));
         stateChange.setCaseStateId((long) newState.getId());
         return stateChange;
     }
 
-    private void parseAndUpdateComments(Long caseId, Date lastSynchronization, List<Comment> comments) {
+    private void parseAndUpdateComments(Long caseId, Date lastSynchronization, Long caseLinkId, List<Comment> comments) {
         List<CaseComment> commentsToAdd = new LinkedList<>();
         List<CaseComment> commentsToMerge = new LinkedList<>();
         for (Comment comment : comments) {
@@ -250,6 +249,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 caseComment.setCreated(comment.getCreated());
                 caseComment.setCaseId(caseId);
                 caseComment.setRemoteId(comment.getId());
+                caseComment.setRemoteLinkId(caseLinkId);
             }
             caseComment.setText(comment.getText());
 
@@ -269,12 +269,12 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         return user == null ? null : user.getPersonId();
     }
 
-    private void parseAndUpdateAttachments(EmployeeRegistration employeeRegistration, String... issueIds) {
+    private void parseAndUpdateAttachments(EmployeeRegistration employeeRegistration, Collection<CaseLink> caseLinks) {
         List<CaseAttachment> oldCaseAttachments = caseAttachmentDAO.getListByCaseId(employeeRegistration.getId());
 
         List<YtAttachment> ytAttachments = new LinkedList<>();
-        for (String issueId : issueIds) {
-            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(issueId);
+        for (CaseLink caseLink : caseLinks) {
+            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId());
             ytAttachments.addAll(issueAttachments);
         }
 
