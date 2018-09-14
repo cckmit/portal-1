@@ -1056,14 +1056,26 @@ label.bordered:after{
   }
 }
 
+.short-table-view {
+  .equipment table .equipment-number-column {
+      width: 40%;
+  }
+}
+
 .equipment {
   table {
+
+    .decimal-numbers{
+      white-space: pre-line;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
     thead {
-      .equipment-type-column {
-        width: 90px;
-      }
-      .equipment-number-column {
-        min-width: 175px;
+
+      th{
+        white-space: pre-line;
+        overflow: hidden;
       }
     }
     tbody {
@@ -1071,13 +1083,14 @@ label.bordered:after{
         td {
           height: 75px;
 
-          > div {
+          .decimal-numbers{
             height: 75px;
             max-height: 75px;
-            white-space: pre-line;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            .decimal-number{
+              white-space: nowrap;
+            }
           }
+
         }
 
         .equipment-type-column {
@@ -1089,6 +1102,29 @@ label.bordered:after{
           }
         }
       }
+    }
+
+    .equipment-type-column {
+      width: 90px;
+    }
+
+    .equipment-name-column{
+      max-width: 20px;
+      width: 20%;
+    }
+
+    .equipment-number-column {
+      max-width: 20px;
+      width: 20%;
+    }
+
+    .column-hidable{
+      max-width: 20px;
+      width: 20%;
+    }
+
+    .edit{
+      width: 20px;
     }
   }
 }

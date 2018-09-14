@@ -251,9 +251,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.74.2 - PORTAL-376 Некорректный поиск сотрудников
  * 4.0.74.3 - PORTAL-381 Не работает создание продуктов
  * 4.0.74.4 - PORTAL-346 Обращения. Отправлять комментарий по Ctrl+Enter
+ * 4.0.75.4 - PORTAL-338 Поле поиска / карточка "залезают" на перечень Оборудования
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.74.4";
+        return "4.0.75.4";
     }
 }
