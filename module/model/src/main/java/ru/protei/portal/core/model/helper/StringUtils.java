@@ -34,4 +34,17 @@ public class StringUtils {
     public static String emptyIfNull(String s) {
         return s == null ? "" : s;
     }
+
+    public static StringBuilder join(CharSequence... str) {
+        return join(null, str);
+    }
+
+    public static StringBuilder join(StringBuilder sb, CharSequence... str) {
+        if (sb == null) sb = new StringBuilder();
+        for (CharSequence chars : str) {
+            sb.append(chars);
+        }
+        return sb;
+    }
+
 }

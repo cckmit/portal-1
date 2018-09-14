@@ -1065,10 +1065,16 @@ label.bordered:after{
   }
 }
 
+.short-table-view {
+  .equipment table .equipment-number-column {
+      width: 40%;
+  }
+}
+
 .equipment {
   table {
 
-    .decimal-number{
+    .decimal-numbers{
       white-space: pre-line;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1079,7 +1085,6 @@ label.bordered:after{
       th{
         white-space: pre-line;
         overflow: hidden;
-        text-overflow: ellipsis;
       }
     }
     tbody {
@@ -1087,9 +1092,12 @@ label.bordered:after{
         td {
           height: 75px;
 
-          .decimal-number{
+          .decimal-numbers{
             height: 75px;
             max-height: 75px;
+            .decimal-number{
+              white-space: nowrap;
+            }
           }
 
         }
