@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 
 public class EmployeeEvents {
 
@@ -21,12 +21,12 @@ public class EmployeeEvents {
      */
     public static class ShowPreview {
 
-        public ShowPreview( HasWidgets parent, Person employee ) {
+        public ShowPreview( HasWidgets parent, EmployeeShortView employee ) {
             this.parent = parent;
             this.employee = employee;
         }
 
         public HasWidgets parent;
-        public Person employee;
+        public EmployeeShortView employee;
     }
 }

@@ -114,6 +114,10 @@ public class MainConfiguration {
         return new ServerSqlBuilder();
     }
 
+    @Bean
+    public EmployeeSqlBuilder employeeSqlBuilder() {
+        return new EmployeeSqlBuilder();
+    }
 
     /* DAO */
 
@@ -387,6 +391,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
+    }
+
+    @Bean
     public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
         return new EmployeeRegistrationDAO_Impl();
     }
@@ -575,7 +584,7 @@ public class MainConfiguration {
 
     @Bean
     public YoutrackService getYoutrackService() { return new YoutrackServiceImpl(); }
-    
+
     @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
         return new EmployeeRegistrationServiceImpl();

@@ -1,10 +1,9 @@
 package ru.protei.portal.core.model.struct;
 
-import ru.protei.portal.core.model.ent.WorkerEntry;
+import ru.protei.portal.core.model.view.WorkerEntryShortView;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -12,26 +11,26 @@ import java.util.stream.Stream;
  */
 public class WorkerEntryFacade {
 
-    List< WorkerEntry > workerEntries;
+    List< WorkerEntryShortView > workerEntries;
 
-    public WorkerEntryFacade( List< WorkerEntry > workerEntries ) {
+    public WorkerEntryFacade( List< WorkerEntryShortView > workerEntries ) {
         this.workerEntries = workerEntries;
     }
 
-    public Stream< WorkerEntry > entryStream() {
+    public Stream< WorkerEntryShortView > entryStream() {
         return this.workerEntries.stream();
     }
 
-    public WorkerEntry getMainEntry() {
-        return entryStream().filter( WorkerEntry::isMain ).findFirst().orElse( getFirstEntry() );
+    public WorkerEntryShortView getMainEntry() {
+        return entryStream().filter( WorkerEntryShortView::isMain ).findFirst().orElse( getFirstEntry() );
     }
 
-    public WorkerEntry getFirstEntry() {
+    public WorkerEntryShortView getFirstEntry() {
         return entryStream().findFirst().orElse( null );
     }
 
-    public List< WorkerEntry > getSortedEntries() {
-        workerEntries.sort( Comparator.comparing( WorkerEntry::isMain ).reversed() );
+    public List< WorkerEntryShortView > getSortedEntries() {
+        workerEntries.sort( Comparator.comparing( WorkerEntryShortView::isMain ).reversed() );
         return workerEntries;
     }
 }

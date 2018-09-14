@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerView;
 
@@ -21,7 +22,7 @@ public interface EmployeeService {
     CoreResponse<List<WorkerView>> list(String param);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    CoreResponse<List<Person>> employeeList(AuthToken token, EmployeeQuery query);
+    CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
 
     CoreResponse<Person> getEmployee( Long id );
     EmployeeDetailView getEmployeeProfile (Long id);

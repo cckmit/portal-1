@@ -2,19 +2,16 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
-import ru.protei.portal.core.model.dao.PersonAbsenceDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeDetailView;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerView;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -42,6 +39,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     PersonAbsenceDAO absenceDAO;
+
+    @Autowired
+    EmployeeShortViewDAO employeeShortViewDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -94,7 +94,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            return new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+            new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
@@ -102,25 +102,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<Person>> employeeList(AuthToken token, EmployeeQuery query) {
-        List<Person> list = personDAO.getEmployees(query);
+    public CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
+        List<EmployeeShortView> list = employeeShortViewDAO.getEmployees(query);
 
         if (list == null)
-            return new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+            new CoreResponse<List<EmployeeShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         jdbcManyRelationsHelper.fill(list, "workerEntries");
 
-        // RESET PRIVACY INFO
-        list.forEach(person -> {
-            person.setPassportInfo(null);
-            CollectionUtils.emptyIfNull(person.getWorkerEntries()).forEach(workerEntry -> {
-                if (workerEntry.getPerson() != null) {
-                    workerEntry.getPerson().setPassportInfo(null);
-                }
-            });
-        });
-
-        return new CoreResponse<List<Person>>().success(list);
+        return new CoreResponse<List<EmployeeShortView>>().success(list);
     }
 
     @Override

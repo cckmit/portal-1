@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.EmployeeService;
 import ru.protei.portal.ui.common.client.service.EmployeeController;
@@ -25,7 +25,7 @@ import java.util.List;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
-    public List<Person> getEmployees( EmployeeQuery query ) throws RequestFailedException {
+    public List< EmployeeShortView > getEmployees( EmployeeQuery query ) throws RequestFailedException {
         log.debug( "getEmployees(): query={}", query );
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
@@ -34,7 +34,7 @@ public class EmployeeControllerImpl implements EmployeeController {
             throw new RequestFailedException( En_ResultStatus.SESSION_NOT_FOUND );
         }
 
-        CoreResponse< List< Person > > response = employeeService.employeeList( descriptor.makeAuthToken(), query );
+        CoreResponse< List< EmployeeShortView > > response = employeeService.employeeList( descriptor.makeAuthToken(), query );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -69,5 +69,4 @@ public class EmployeeControllerImpl implements EmployeeController {
     private EmployeeService employeeService;
 
     private static final Logger log = LoggerFactory.getLogger( EmployeeControllerImpl.class );
-
 }
