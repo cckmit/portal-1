@@ -1,6 +1,7 @@
 package ru.protei.portal.tools.migrate.parts;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import protei.sql.Tm_SqlHelper;
 import protei.sql.query.Tm_BaseQueryCmd;
 import protei.sql.utils.Tm_QueryExecutor;
@@ -22,7 +23,7 @@ public class BatchUpdateTask {
 
 //    String query;
 
-    private static Logger logger = Logger.getLogger(BatchUpdateTask.class);
+    private static Logger logger = LoggerFactory.getLogger(BatchUpdateTask.class);
 
     int fetchSize = 1000;
     int batchSize = 1000;

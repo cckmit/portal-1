@@ -309,8 +309,11 @@ body {
   vertical-align: middle;
 }
 
+div.checkbox {
+  padding-right: 15px;
+}
+
 .checkbox label {
-  padding-left: 7px;
   position: relative;
   cursor: pointer;
 }
@@ -3406,6 +3409,10 @@ div.select2-container {
   margin-right: 0 !important;
 }
 
+.text-center{
+  text-align: center;
+ }
+  
 .nowrap {
   white-space: nowrap;
 }

@@ -75,8 +75,8 @@ public class ProductControllerImpl implements ProductController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        if ( !isNameUnique( product.getName(), product.getId() ) )
-            throw new RequestFailedException ();
+        if ( product == null || !isNameUnique( product.getName(), product.getId() ) )
+            throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
         CoreResponse response = product.getId() == null
                 ? productService.createProduct( descriptor.makeAuthToken(), product )

@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public interface EmployeeControllerAsync {
      * Получение списка сотрудников
      * @return список контактов
      */
-    void getEmployees( EmployeeQuery query, AsyncCallback< List< Person > > async );
+    void getEmployees( EmployeeQuery query, AsyncCallback< List< EmployeeShortView > > async );
 
     /**
      * Получение списка сокращенного представления сотрудника

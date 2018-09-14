@@ -25,6 +25,7 @@ import java.io.Serializable;
         @JsonSubTypes.Type(value = WorkerPosition.class, name = "Position"),
         @JsonSubTypes.Type(value = WorkerEntry.class, name = "Worker"),
         @JsonSubTypes.Type(value = Photo.class, name = "Photo"),
+        @JsonSubTypes.Type(value = EmployeeRegistration.class, name = "EmployeeRegistration"),
         @JsonSubTypes.Type(value = LongAuditableObject.class, name = "LongAuditableObject"),
 })
 public abstract class AuditableObject implements Serializable {

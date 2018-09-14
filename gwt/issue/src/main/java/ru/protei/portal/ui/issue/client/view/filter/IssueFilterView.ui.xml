@@ -5,12 +5,12 @@
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.importance.btngroup'
-             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.option'
              xmlns:filter='urn:import:ru.protei.portal.ui.issue.client.widget.filter'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
              xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
-             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'>
+             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
+             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -57,20 +57,20 @@
                     </div>
                 </div>
 
+                <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                                                              header="{lang.issueProduct}"
+                                                              addStyleNames="form-group col-xs-12"/>
+
                 <companyselector:CompanyMultiSelector ui:field="companies"
                                                       header="{lang.issueCompany}"
                                                       addStyleNames="form-group col-xs-12"/>
 
-                <productselector:devunit.DevUnitMultiSelector ui:field="products"
-                                          header="{lang.issueProduct}"
-                                          addStyleNames="form-group col-xs-12"/>
+                <person:InitiatorMultiSelector ui:field="initiators"
+                                               header="{lang.issueInitiator}"
+                                               addStyleNames="form-group col-xs-12"/>
 
                 <person:EmployeeMultiSelector ui:field="managers"
                                               header="{lang.issueManager}"
-                                              addStyleNames="form-group col-xs-12"/>
-
-                <person:EmployeeMultiSelector ui:field="initiators"
-                                              header="{lang.issueInitiator}"
                                               addStyleNames="form-group col-xs-12"/>
 
                 <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12">
@@ -85,7 +85,7 @@
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.issueState}"/></label>
-                    <state:IssueStatesOptionList ui:field="state"/>
+                    <optionlist:IssueStatesOptionList ui:field="state"/>
                 </div>
             </div>
 

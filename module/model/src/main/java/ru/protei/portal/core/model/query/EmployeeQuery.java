@@ -75,6 +75,11 @@ public class EmployeeQuery extends BaseQuery {
                 ", deleted=" + deleted +
                 ", onlyPeople=" + onlyPeople +
                 ", homeCompanies=" + homeCompanies +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
                 '}';
     }
 }

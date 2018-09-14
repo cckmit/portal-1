@@ -318,8 +318,8 @@ public class WorkerRecord {
         setCompanyCode(w.getExternalCode());
         copy(w.getPerson());
         setWorkerId(w.getExternalId());
-        setDepartmentId(w.getDepartment().getExternalId());
-        setPositionName(w.getPosition() == null ? null : w.getPosition().getName());
+        setDepartmentId(w.getDepartmentExternalId());
+        setPositionName(w.getPositionName());
         setHireDate(w.getHireDate() == null ? null : HelperService.DATE.format (w.getHireDate()));
         setHireOrderNo(w.getHireOrderNo());
         setActive(w.getActiveFlag());

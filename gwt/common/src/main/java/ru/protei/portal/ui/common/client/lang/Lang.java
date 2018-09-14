@@ -1257,6 +1257,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeMainPosition();
 
+    String initiatorSelectACompany();
     String serverAccessParamsColumn();
 
     String contactPhone();
@@ -1270,6 +1271,90 @@ public interface Lang extends Messages, ContactItemLang {
     String documentApproved();
 
     String documentNotApproved();
+
+    String employeeRegistrations();
+
+    String employeeRegistrationEmployeeFullNameColumnHeader();
+
+    String employeeRegistrationHeadOfDepartmentColumnHeader();
+
+    String employeeRegistrationEmploymentDateColumnHeader();
+
+    String privilegeCategoryEmployeeRegistration();
+
+    String employmentTypeFullTime();
+
+    String employmentTypePartTime();
+
+    String employmentTypeRemote();
+
+    String employmentTypeContract();
+
+    String employeeEquipmentTable();
+
+    String employeeEquipmentChair();
+
+    String employeeEquipmentComputer();
+
+    String employeeEquipmentMonitor();
+
+    String internalResourceYoutrack();
+
+    String internalResourceCvs();
+
+    String internalResourceStoreDelivery();
+
+    String internalResourceSvn();
+
+    String internalResourceMercurial();
+
+    String internalResourceGit();
+
+    String internalResourceCrm();
+
+    String employeeRegistrationCommonHeader();
+
+    String employeeRegistrationEmployeeFullName();
+
+    String employeeRegistrationHeadOfDepartment();
+
+    String employeeRegistrationEmploymentDate();
+
+    String employeeRegistrationEmploymentType();
+
+    String employeeRegistrationWithRegistration();
+
+    String employeeRegistrationPost();
+
+    String employeeRegistrationWorkplace();
+
+    String employeeRegistrationComment();
+
+    String employeeRegistrationEquipmentList();
+
+    String employeeRegistrationResourceList();
+
+    String employeeRegistrationSearchFullNameOrPost();
+
+    String employeeRegistrationState();
+
+    String employeeRegistrationCreated();
+
+    String employeeRegistrationEquipmentListPreview();
+
+    String employeeRegistrationEmployeeWithRegistrationTrue();
+
+    String employeeRegistrationEmployeeWithRegistrationFalse();
+
+    String employeeRegistrationValidationEmployeeFullName();
+
+    String employeeRegistrationValidationPosition();
+
+    String employeeRegistrationValidationEmploymentDate();
+
+    String employeeRegistrationValidationHeadOfDepartment();
+
+    String internalResourceEmail();
 
     String equipmentDocuments();
 

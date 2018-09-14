@@ -26,8 +26,11 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name="dep_id")
     private Long departmentId;
 
-    @JdbcJoinedObject(localColumn = "dep_id", remoteColumn = "id")
-    private CompanyDepartment department;
+    @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", sqlTableAlias = "d", remoteColumn = "id", mappedColumn = "dep_name")
+    private String departmentName;
+
+    @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", sqlTableAlias = "d", remoteColumn = "id", mappedColumn = "dep_extId")
+    private String departmentExternalId;
 
     @JdbcColumn(name="companyId")
     private Long companyId;
@@ -41,8 +44,8 @@ public class WorkerEntry extends AuditableObject {
     @JdbcColumn(name="positionId")
     private Long positionId;
 
-    @JdbcJoinedObject(localColumn = "positionId", remoteColumn = "id")
-    private WorkerPosition position;
+    @JdbcJoinedColumn(localColumn = "positionId", table = "worker_position", remoteColumn = "id", mappedColumn = "pos_name")
+    private String positionName;
 
     @JdbcColumn(name="hireDate")
     private Date hireDate;
@@ -100,12 +103,20 @@ public class WorkerEntry extends AuditableObject {
         this.departmentId = departmentId;
     }
 
-    public CompanyDepartment getDepartment() {
-        return department;
+    public String getDepartmentName() {
+        return departmentName;
     }
 
-    public void setDepartment(CompanyDepartment department) {
-        this.department = department;
+    public void setDepartmentName( String departmentName ) {
+        this.departmentName = departmentName;
+    }
+
+    public String getDepartmentExternalId() {
+        return departmentExternalId;
+    }
+
+    public void setDepartmentExternalId( String departmentExternalId ) {
+        this.departmentExternalId = departmentExternalId;
     }
 
     public Long getCompanyId() {
@@ -132,12 +143,12 @@ public class WorkerEntry extends AuditableObject {
         this.positionId = positionId;
     }
 
-    public WorkerPosition getPosition() {
-        return position;
+    public String getPositionName() {
+        return positionName;
     }
 
-    public void setPosition(WorkerPosition position) {
-        this.position = position;
+    public void setPositionName( String positionName ) {
+        this.positionName = positionName;
     }
 
     public Date getHireDate() {
@@ -179,6 +190,10 @@ public class WorkerEntry extends AuditableObject {
 
     public String getCompanyName() {
         return companyName;
+    }
+
+    public void setCompanyName( String companyName ) {
+        this.companyName = companyName;
     }
 
     public boolean isMain() {
