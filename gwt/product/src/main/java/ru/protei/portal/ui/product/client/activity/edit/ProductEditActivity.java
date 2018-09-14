@@ -47,9 +47,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         productId = event.productId;
 
         if( productId == null ) {
+            product = new DevUnit();
             resetView();
             resetValidationStatus();
-
             fireEvent(new AppEvents.InitPanelName(lang.productNew()));
             return;
         }
@@ -175,10 +175,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     private void fillDTO(DevUnit product) {
-        if (productId == null) {
-            product = new DevUnit();
-        }
-
         product.setName(view.name().getValue().trim());
         product.setTypeId(view.type().getValue().getId());
         product.setInfo(view.info().getValue().trim());
