@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -48,34 +47,32 @@ public abstract class EquipmentEditActivity
 
     @Event(Type.FILL_CONTENT)
     public void onShow( EquipmentEvents.Edit event ) {
-        view.setVisibilitySettingsForCreated(! (event.id == null));
-        if( event.id == null ) {
-            Equipment newEquipment = new Equipment();
-            fillView(newEquipment);
+
+        view.setVisibilitySettingsForCreated(event.id != null);
+
+        if (event.id == null) {
+            fillView(new Equipment());
             return;
         }
 
-        equipmentService.getEquipment(event.id, new RequestCallback<Equipment>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireErrorMessage(lang.errGetList());
-            }
-
-            @Override
-            public void onSuccess(Equipment equipment) {
-                fillView(equipment);
-            }
-        });
+        equipmentService.getEquipment(event.id, new FluentCallback<Equipment>()
+                .withErrorMessage(lang.errGetList())
+                .withSuccess(this::fillView)
+        );
     }
 
     @Override
     public void onSaveClicked() {
-        Equipment equipment = applyChanges();
-        if ( equipment.getDecimalNumbers() == null || equipment.getDecimalNumbers().isEmpty() ) {
-            fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotDefinied(), NotifyEvents.NotifyType.ERROR ) );
+
+        fillDTO(equipment);
+
+        if (equipment.getDecimalNumbers() == null || equipment.getDecimalNumbers().isEmpty()) {
+            fireEvent(new NotifyEvents.Show(lang.equipmentDecimalNumberNotDefinied(), NotifyEvents.NotifyType.ERROR));
             return;
-        }else if(!view.isDecimalNumbersCorrect()){
-            fireEvent( new NotifyEvents.Show( lang.equipmentDecimalNumberNotCorrect(), NotifyEvents.NotifyType.ERROR ) );
+        }
+
+        if (!view.isDecimalNumbersCorrect()) {
+            fireEvent(new NotifyEvents.Show(lang.equipmentDecimalNumberNotCorrect(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -104,18 +101,6 @@ public abstract class EquipmentEditActivity
         return false;
     }
 
-    private Equipment applyChanges () {
-        equipment.setNameSldWrks( view.nameSldWrks().getValue() );
-        equipment.setName( view.name().getValue() );
-        equipment.setComment( view.comment().getValue() );
-        equipment.setType( view.type().getValue() );
-        equipment.setLinkedEquipmentId( view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId() );
-        equipment.setDecimalNumbers( view.getNumbers() );
-        equipment.setManagerId( view.manager().getValue() == null ? null : view.manager().getValue().getId() );
-        equipment.setProjectId( view.project().getValue() == null ? null : view.project().getValue().getId() );
-        return equipment;
-    }
-
     @Override
     public void onCancelClicked() {
         fireEvent(new Back());
@@ -123,23 +108,22 @@ public abstract class EquipmentEditActivity
 
     @Override
     public void onDecimalNumbersChanged() {
-        decimalNumber = getDecimalNumber(view.getNumbers());
+        decimalNumberWithoutModification = getFirstNotReservedDecimalNumberWithoutModification(view.getNumbers());
         updateViewBasedOnDecimalNumber();
     }
 
     @Override
     public void onCreateDocumentClicked() {
 
-        if (equipment == null || equipment.getProjectId() == null || decimalNumber == null) {
+        if (equipment == null || equipment.getProjectId() == null || decimalNumberWithoutModification == null) {
             return;
         }
 
-        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getProjectId(), decimalNumber));
+        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getProjectId(), decimalNumberWithoutModification));
     }
 
     private void fillView(Equipment equipment) {
         this.equipment = equipment;
-        this.decimalNumber = getDecimalNumber(equipment.getDecimalNumbers());
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -174,27 +158,43 @@ public abstract class EquipmentEditActivity
         }
         view.project().setValue( info );
 
-        updateViewBasedOnDecimalNumber();
+        onDecimalNumbersChanged();
+    }
+
+    private void fillDTO(Equipment equipment) {
+        equipment.setNameSldWrks(view.nameSldWrks().getValue());
+        equipment.setName(view.name().getValue());
+        equipment.setComment(view.comment().getValue());
+        equipment.setType(view.type().getValue());
+        equipment.setLinkedEquipmentId(view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId());
+        equipment.setDecimalNumbers(view.getNumbers());
+        equipment.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
+        equipment.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
+    }
+
+    private boolean isNew(Equipment equipment) {
+        return equipment.getId() == null;
     }
 
     private void updateViewBasedOnDecimalNumber() {
-        if (equipment.getId() == null) {
+        if (isNew(equipment)) {
             view.createDocumentButtonEnabled().setEnabled(false);
             view.documentsVisibility().setVisible(false);
-        } else {
-            view.decimalNumber().setValue(decimalNumber);
-            if (decimalNumber == null) {
-                view.createDocumentButtonEnabled().setEnabled(false);
-                view.documentsVisibility().setVisible(false);
-            } else {
-                view.createDocumentButtonEnabled().setEnabled(true);
-                view.documentsVisibility().setVisible(true);
-                fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumber));
-            }
+            return;
         }
+        if (decimalNumberWithoutModification == null) {
+            view.decimalNumber().setValue("");
+            view.createDocumentButtonEnabled().setEnabled(false);
+            view.documentsVisibility().setVisible(false);
+            return;
+        }
+        view.decimalNumber().setValue(decimalNumberWithoutModification);
+        view.createDocumentButtonEnabled().setEnabled(true);
+        view.documentsVisibility().setVisible(true);
+        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumberWithoutModification));
     }
 
-    private String getDecimalNumber(List<DecimalNumber> decimalNumbers) {
+    private String getFirstNotReservedDecimalNumberWithoutModification(List<DecimalNumber> decimalNumbers) {
 
         if (decimalNumbers == null) {
             return null;
@@ -227,6 +227,6 @@ public abstract class EquipmentEditActivity
     @Inject
     DefaultNotificationHandler notification;
 
-    private String decimalNumber;
+    private String decimalNumberWithoutModification;
     private AppEvents.InitDetails initDetails;
 }
