@@ -23,7 +23,7 @@ public class CaseLink implements Serializable {
 
     @JdbcJoinedObject( sqlTableAlias = "case_object", joinData = {
             @JdbcJoinData(localColumn = "link_type", value = "'CRM'"),
-            @JdbcJoinData(remoteColumn = "id", value = "(SELECT CAST(remote_id AS UNSIGNED INTEGER))")
+            @JdbcJoinData(remoteColumn = "id", value = "(SELECT CAST(case_link.remote_id AS UNSIGNED INTEGER))")
     })
     private CaseInfo caseInfo;
 

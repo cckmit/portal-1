@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
@@ -35,6 +36,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     CaseLinkDAO caseLinkDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    EventPublisherService publisherService;
 
 
     @Override
@@ -48,7 +51,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (list == null) {
             return new CoreResponse<List<EmployeeRegistration>>().error(En_ResultStatus.INTERNAL_ERROR);
         }
-        jdbcManyRelationsHelper.fillAll(list);
         return new CoreResponse<List<EmployeeRegistration>>().success(list);
     }
 
@@ -73,7 +75,13 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
-        employeeRegistrationDAO.persist(employeeRegistration);
+        Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
+
+        if (employeeRegistrationId == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+
+        if(!sendNotifyEvent(employeeRegistrationId))
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
         createAdminYoutrackIssueIfNeeded(employeeRegistration);
         createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
@@ -95,6 +103,16 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return caseObject;
     }
 
+    private boolean sendNotifyEvent(Long employeeRegistrationId) {
+        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationId);
+        if (employeeRegistration == null)
+            return false;
+
+        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+        return true;
+    }
+    
+    
     private void createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
         if (CollectionUtils.isEmpty(resourceList)) {

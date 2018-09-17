@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
@@ -19,10 +20,14 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
+import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Один комментарий
@@ -116,6 +121,11 @@ public class IssueCommentItemView
     }
 
     @Override
+    public void enableReply(boolean isEnabled) {
+        reply.setVisible(isEnabled);
+    }
+
+    @Override
     public void showAttachments( boolean isShow ){
         if( isShow )
             attachBlock.removeClassName( "hide" );
@@ -148,6 +158,15 @@ public class IssueCommentItemView
         timeElapsed.setText("");
     }
 
+    @Override
+    public void setRemoteLink(CaseLink remoteLink) {
+        Set<CaseLink> set = new HashSet<>();
+        if (remoteLink != null)
+            set.add(remoteLink);
+        this.remoteLink.setValue(set);
+        this.remoteLink.setVisible(remoteLink != null);
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -177,6 +196,10 @@ public class IssueCommentItemView
         activity.onRemoveAttachment(this, event.getAttachment());
     }
 
+
+    @Inject
+    @UiField(provided = true)
+    IssueLinks remoteLink;
     @UiField
     InlineLabel message;
     @UiField

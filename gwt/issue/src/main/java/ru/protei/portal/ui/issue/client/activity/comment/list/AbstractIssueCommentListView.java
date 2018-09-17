@@ -30,6 +30,8 @@ public interface AbstractIssueCommentListView extends IsWidget {
 
     void enabledNewComment( boolean value );
 
+    void setEnabledAttachAndComment(boolean isEnabled);
+
     HasTime timeElapsed();
 
     void clearTimeElapsed();

@@ -12,6 +12,7 @@ public interface Fields {
     String type = "Type";
     String stateEng = "State";
     String stateRus = "Состояние";
+    String equipmentStateRus = "Статус заказа";
     String sprintRus = "Спринт";
     String sprintEng = "sprint";
     String SP = "SP";

@@ -58,6 +58,8 @@
                     <arguments>
                         <argument>notification/email/crm.subject.ftl</argument>
                         <argument>notification/email/crm.body.ftl</argument>
+                        <argument>notification/email/employee.registration.subject.ftl</argument>
+                        <argument>notification/email/employee.registration.body.ftl</argument>
                         <argument>notification/email/user.login.subject.ftl</argument>
                         <argument>notification/email/user.login.body.ftl</argument>
                     </arguments>

@@ -105,15 +105,20 @@ public class IssueEvents {
         }
 
         public ShowComments(HasWidgets parent, Long caseId, boolean isElapsedTimeEnabled) {
+            this(parent, caseId, isElapsedTimeEnabled, false);
+        }
+
+        public ShowComments(HasWidgets parent, Long caseId, boolean isElapsedTimeEnabled, boolean isReadOnly) {
             this.parent = parent;
             this.caseId = caseId;
             this.isElapsedTimeEnabled = isElapsedTimeEnabled;
+            this.isReadOnly = isReadOnly;
         }
 
         public Long caseId;
         public HasWidgets parent;
         public boolean isElapsedTimeEnabled;
-
+        public boolean isReadOnly;
     }
 
     public static class SaveComment {

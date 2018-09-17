@@ -28,5 +28,5 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     CaseComment getByRemoteId(String remoteId);
 
-    boolean checkExistsByRemoteIdAndText(String remoteId, String text);
+    boolean checkExistsByRemoteIdAndRemoteLinkId(String remoteId, Long remoteLinkId);
 }

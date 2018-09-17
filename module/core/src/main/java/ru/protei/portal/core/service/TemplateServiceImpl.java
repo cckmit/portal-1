@@ -9,10 +9,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.template.PreparedTemplate;
@@ -118,6 +115,30 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "importanceLevel", En_ImportanceLevel.getById( caseObject.getImpLevel() ).getCode() );
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.subject.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
+        templateModel.put( "er", employeeRegistration );
+        templateModel.put( "recipients", recipients );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.body.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEmployeeRegistrationEmailNotificationSubject(EmployeeRegistration employeeRegistration) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "employeeFullName", employeeRegistration.getEmployeeFullName() );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.subject.%s.ftl" );
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
         return template;

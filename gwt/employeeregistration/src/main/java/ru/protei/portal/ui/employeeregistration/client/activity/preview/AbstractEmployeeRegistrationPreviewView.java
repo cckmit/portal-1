@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employeeregistration.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -34,4 +35,6 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setState(En_CaseState state);
 
     void setIssues(Set<CaseLink> issues);
+    
+    HasWidgets getCommentsContainer();
 }

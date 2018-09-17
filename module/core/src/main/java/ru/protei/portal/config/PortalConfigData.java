@@ -100,11 +100,15 @@ public class PortalConfigData {
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmCaseUrl;
+        private final String crmEmployeeRegistrationUrl;
+        private final String[] crmEmployeeRegistrationNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+            crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
+            crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
         }
 
         public String getCrmUrlInternal() {
@@ -117,6 +121,14 @@ public class PortalConfigData {
 
         public String getCrmCaseUrl() {
             return crmCaseUrl;
+        }
+
+        public String getCrmEmployeeRegistrationUrl() {
+            return crmEmployeeRegistrationUrl;
+        }
+
+        public String[] getCrmEmployeeRegistrationNotificationsRecipients() {
+            return crmEmployeeRegistrationNotificationsRecipients;
         }
     }
 

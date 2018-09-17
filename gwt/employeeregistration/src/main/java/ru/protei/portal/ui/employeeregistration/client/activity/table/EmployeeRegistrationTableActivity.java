@@ -105,12 +105,11 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
     }
 
     private void showPreview(EmployeeRegistration value) {
-
-        if (value == null) {
+        if (value == null || value.getId() == null) {
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new EmployeeRegistrationEvents.ShowPreview(view.getPreviewContainer(), value));
+            fireEvent(new EmployeeRegistrationEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
         }
     }
 

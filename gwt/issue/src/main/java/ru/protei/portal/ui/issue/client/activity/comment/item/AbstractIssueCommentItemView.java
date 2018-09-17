@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.comment.item;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 
@@ -17,7 +18,7 @@ public interface AbstractIssueCommentItemView extends IsWidget {
 
     void setOwner( String value );
 
-    void setMessage( String value );
+    void setMessage(String value );
 
     void setMine();
 
@@ -26,6 +27,8 @@ public interface AbstractIssueCommentItemView extends IsWidget {
     void setImportanceLevel( En_ImportanceLevel importance );
 
     void enabledEdit( boolean isEnabled );
+
+    void enableReply(boolean isEnabled);
 
     void showAttachments(boolean isShow);
 
@@ -38,4 +41,6 @@ public interface AbstractIssueCommentItemView extends IsWidget {
     HasTime timeElapsed();
 
     void clearElapsedTime();
+
+    void setRemoteLink(CaseLink remoteLink);
 }
