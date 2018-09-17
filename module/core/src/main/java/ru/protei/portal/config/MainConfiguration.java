@@ -72,6 +72,7 @@ public class MainConfiguration {
     @Inject
     private JdbcObjectMapperRegistrator objectMapperRegistrator;
     private String winterConfigPath;
+    private String portalConfigPath;
 
     @PostConstruct
     private void init() {
@@ -96,7 +97,7 @@ public class MainConfiguration {
     @Bean
     @Autowired
     public JdbcConfig getJdbcConfig(@Qualifier("winter-xstream-marshaller") XStreamMarshaller marshaller) throws ConfigException {
-   return  new JdbcConfig(winterConfigPath);
+        return  new JdbcConfig(winterConfigPath);
     }
 
     /**
@@ -105,6 +106,9 @@ public class MainConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig () throws ConfigException{
+        if(portalConfigPath!=null){
+            return new PortalConfig(portalConfigPath);
+        }
         return new PortalConfig("portal.properties");
     }
 
@@ -647,5 +651,8 @@ public class MainConfiguration {
 
     public void setWinterConfigPath(String winterConfigPath) {
         this.winterConfigPath = winterConfigPath;
+    }
+    public void setPortalConfigPath(String portalConfigPath) {
+        this.portalConfigPath = portalConfigPath;
     }
 }

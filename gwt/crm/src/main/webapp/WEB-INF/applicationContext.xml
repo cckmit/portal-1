@@ -26,8 +26,8 @@
        <mvc:annotation-driven />
 
        <bean id="mainConfig" class="ru.protei.portal.config.MainConfiguration" scope="singleton">
-              <property name="winterConfigPath"
-                        value="${catalina.home}/cfg/winter.properties"/>
+              <property name="winterConfigPath" value="${catalina.home}/cfg/winter.properties"/>
+              <property name="portalConfigPath" value="${catalina.home}/cfg/portal.properties"/>
        </bean>
        <context:property-placeholder location="classpath:spring.properties" />
 
