@@ -20,11 +20,14 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.issuelinks.link.IssueLink;
+import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Один комментарий
@@ -118,7 +121,7 @@ public class IssueCommentItemView
     }
 
     @Override
-    public void enableReply( boolean isEnabled ) {
+    public void enableReply(boolean isEnabled) {
         reply.setVisible(isEnabled);
     }
 
@@ -157,7 +160,10 @@ public class IssueCommentItemView
 
     @Override
     public void setRemoteLink(CaseLink remoteLink) {
-        this.remoteLink.setValue(remoteLink);
+        Set<CaseLink> set = new HashSet<>();
+        if (remoteLink != null)
+            set.add(remoteLink);
+        this.remoteLink.setValue(set);
         this.remoteLink.setVisible(remoteLink != null);
     }
 
@@ -193,7 +199,7 @@ public class IssueCommentItemView
 
     @Inject
     @UiField(provided = true)
-    IssueLink remoteLink;
+    IssueLinks remoteLink;
     @UiField
     InlineLabel message;
     @UiField

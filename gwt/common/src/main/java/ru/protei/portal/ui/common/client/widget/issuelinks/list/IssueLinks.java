@@ -18,6 +18,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
@@ -25,7 +26,10 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issuelinks.link.IssueLink;
 import ru.protei.portal.ui.common.client.widget.issuelinks.popup.CreateLinkPopup;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, HasEnabled {
 
@@ -61,6 +65,10 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Ha
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
+    }
+
+    public void setShowLabel(boolean showLabel) {
+        this.showLabel = showLabel;
     }
 
     public void showError(String error) {
@@ -134,12 +142,15 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Ha
     }
 
     private void toggleVisibility() {
-        if (items == null || items.size() == 0) {
-            linksLabel.addClassName("hide");
+        if (CollectionUtils.isEmpty(items)) {
             linksContainer.addStyleName("hide");
         } else {
-            linksLabel.removeClassName("hide");
             linksContainer.removeStyleName("hide");
+        }
+        if (!showLabel || CollectionUtils.isEmpty(items)) {
+            linksLabel.addClassName("hide");
+        } else {
+            linksLabel.removeClassName("hide");
         }
     }
 
@@ -250,6 +261,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Ha
     Lang lang;
 
     private boolean enabled = true;
+    private boolean showLabel = true;
     private Map<CaseLink, IssueLink> itemToViewModel = new HashMap<>();
     private Set<CaseLink> items = null;
 

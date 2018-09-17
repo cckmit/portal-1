@@ -305,7 +305,7 @@ public abstract class IssueCommentListActivity
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
         itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
-//        itemView.setRemoteLink(value.getRemoteLink());
+        itemView.setRemoteLink(value.getRemoteLink());
 
         itemView.clearElapsedTime();
         if (value.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) {
