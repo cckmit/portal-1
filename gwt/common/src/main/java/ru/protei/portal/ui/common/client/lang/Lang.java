@@ -1351,6 +1351,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartment();
 
+    String employeeRegistrationLastYoutrackSynchronization();
+    
     String internalResourceEmail();
 
     String sendOnCtrlEnter();

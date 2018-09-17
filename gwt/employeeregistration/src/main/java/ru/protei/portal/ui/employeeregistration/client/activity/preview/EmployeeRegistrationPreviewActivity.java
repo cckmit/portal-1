@@ -54,6 +54,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
             view.setWithRegistration(lang.employeeRegistrationEmployeeWithRegistrationFalse());
 
         view.setState(value.getState());
+        view.setIssues(value.getYoutrackIssues());
     }
 
     @Inject
