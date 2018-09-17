@@ -1,12 +1,16 @@
 package ru.protei.portal.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
+import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.WebApplicationContext;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
@@ -33,27 +37,66 @@ import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.config.CoreConfig;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
+import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
+import ru.protei.winter.jdbc.config.JdbcConfig;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.inject.Inject;
+import java.io.File;
+import java.util.Properties;
 
 
 @Configuration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 @EnableScheduling
+@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class})
 public class MainConfiguration {
+
+    @Autowired
+    Environment environment;
+
+    @Autowired
+    ApplicationContext ctx;
+
+    @Autowired
+    WebApplicationContext wctx;
 
     @Inject
     private JdbcObjectMapperRegistrator objectMapperRegistrator;
+    private String winterConfigPath;
 
     @PostConstruct
     private void init() {
         objectMapperRegistrator.registerMapper(CaseInfo.class);
+    }
+
+    @Bean
+    @Scope(BeanDefinition.SCOPE_SINGLETON)
+    public CoreConfig getCoreConfig( @Autowired
+                                                 Environment environment2) throws ConfigException {
+        if(environment2==null) {
+            return new CoreConfig(CoreConfigurationContext.WINTER_CONFIG);
+        }
+
+        String winterConfigPath = this.winterConfigPath;
+
+        String winterPath = environment2.getProperty("winterProperties");
+
+        return new CoreConfig(winterConfigPath);
+    }
+
+    @Bean
+    @Autowired
+    public JdbcConfig getJdbcConfig(@Qualifier("winter-xstream-marshaller") XStreamMarshaller marshaller) throws ConfigException {
+   return  new JdbcConfig(winterConfigPath);
     }
 
     /**
@@ -600,5 +643,9 @@ public class MainConfiguration {
     @Bean
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging () {
         return new ServiceLayerInterceptorLogging();
+    }
+
+    public void setWinterConfigPath(String winterConfigPath) {
+        this.winterConfigPath = winterConfigPath;
     }
 }
