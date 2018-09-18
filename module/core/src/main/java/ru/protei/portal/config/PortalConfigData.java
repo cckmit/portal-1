@@ -424,11 +424,15 @@ public class PortalConfigData {
         private final String apiBaseUrl;
         private final String authToken;
         private final String employeeRegistrationSyncSchedule;
+        private final String equipmentProject;
+        private final String adminProject;
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
             authToken = properties.getProperty("youtrack.api.auth_token");
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
+            equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
+            adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
         }
 
         public String getApiBaseUrl() {
@@ -441,6 +445,14 @@ public class PortalConfigData {
 
         public String getEmployeeRegistrationSyncSchedule() {
             return employeeRegistrationSyncSchedule;
+        }
+
+        public String getEquipmentProject() {
+            return equipmentProject;
+        }
+
+        public String getAdminProject() {
+            return adminProject;
         }
     }
 }
