@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Comment;
@@ -31,14 +30,13 @@ import java.util.stream.Collectors;
 public class EmployeeRegistrationYoutrackSynchronizer {
     private final Logger log = LoggerFactory.getLogger(EmployeeRegistrationYoutrackSynchronizer.class);
 
+    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
+
     @Autowired
     private YoutrackService youtrackService;
 
     @Autowired
     private UserLoginDAO userLoginDAO;
-
-    @Autowired
-    private CaseLinkDAO caseLinkDAO;
 
     @Autowired
     private CaseCommentDAO caseCommentDAO;
@@ -69,6 +67,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     public EmployeeRegistrationYoutrackSynchronizer(ThreadPoolTaskScheduler scheduler, PortalConfig config) {
         String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
         scheduler.schedule(this::synchronizeAll, new CronTrigger(syncCronSchedule));
+
+        EQUIPMENT_PROJECT_NAME = config.data().youtrack().getEquipmentProject();
+        ADMIN_PROJECT_NAME = config.data().youtrack().getAdminProject();
     }
 
     private static En_CaseState toCaseState(String ytStateId) {
@@ -120,8 +121,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     }
 
     private Set<String> getUpdatedIssueIds(Date lastUpdate) {
-        Set<String> adminIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(CrmConstants.Youtrack.ADMIN_PROJECT_NAME, lastUpdate);
-        Set<String> equipmentIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(CrmConstants.Youtrack.EQUIPMENT_PROJECT_NAME, lastUpdate);
+        Set<String> adminIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(ADMIN_PROJECT_NAME, lastUpdate);
+        Set<String> equipmentIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(EQUIPMENT_PROJECT_NAME, lastUpdate);
 
         adminIssues.addAll(equipmentIssues);
         return adminIssues;

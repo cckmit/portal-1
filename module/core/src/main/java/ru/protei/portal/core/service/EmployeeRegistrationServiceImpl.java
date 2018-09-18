@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -15,14 +16,16 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
-import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
+
+    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
 
     @Autowired
     EmployeeRegistrationDAO employeeRegistrationDAO;
@@ -38,7 +41,14 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    PortalConfig portalConfig;
 
+    @PostConstruct
+    public void setYoutrackProjectNames() {
+        EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
+        ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+    }
 
     @Override
     public CoreResponse<Integer> count(AuthToken token, EmployeeRegistrationQuery query) {
@@ -121,7 +131,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо открыть доступ к: " +
                 CollectionUtils.join(resourceList, r -> getResourceName(r),  ", ");
-        String issueId = youtrackService.createIssue(CrmConstants.Youtrack.ADMIN_PROJECT_NAME, summary, description);
+        String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
@@ -133,7 +143,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо: " +
                 CollectionUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
-        String issueId = youtrackService.createIssue(CrmConstants.Youtrack.EQUIPMENT_PROJECT_NAME, summary, description);
+        String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 

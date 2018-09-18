@@ -254,9 +254,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.75.4 - PORTAL-338 Поле поиска / карточка "залезают" на перечень Оборудования
  * 4.0.75.5 - PORTAL-370 Раздел Анкеты сотрудников: отображение информации по youtrack задачам в превью
  * 4.0.76.0 - PORTAL-377 Раздел Анкеты сотрудников: рассылка уведомлений
+ * 4.0.76.1 - Move youtrack project names to properties
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.76.0";
+        return "4.0.76.1";
     }
 }
