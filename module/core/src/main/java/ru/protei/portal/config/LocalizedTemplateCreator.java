@@ -69,6 +69,7 @@ public class LocalizedTemplateCreator {
      * @throws TemplateException
      */
     private static void createFor(String basePackagePath, Map<Locale, Object> models, Template template, OpenOption... options) throws IOException, TemplateException{
+        System.out.println("Try basePackagePath="+ basePackagePath +"");
         if(!template.getName().endsWith(".ftl"))
             throw new TemplateException("Name of template "+ template.getName() +" doesn't end with \".ftl\"", null);
 
@@ -77,6 +78,7 @@ public class LocalizedTemplateCreator {
             Path path = Paths.get(
                 basePackagePath, baseTemplateName + langToModel.getKey().getLanguage() + ".ftl"
             );
+            System.out.println("Try Template  with path="+ path +"");
             try(Writer writer = Files.newBufferedWriter(path, options)) {
                 template.process(langToModel.getValue(), writer);
             }
