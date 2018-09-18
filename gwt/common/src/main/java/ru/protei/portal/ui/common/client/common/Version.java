@@ -255,9 +255,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.75.5 - PORTAL-370 Раздел Анкеты сотрудников: отображение информации по youtrack задачам в превью
  * 4.0.76.0 - PORTAL-377 Раздел Анкеты сотрудников: рассылка уведомлений
  * 4.0.76.1 - Move youtrack project names to properties
+ * 4.0.76.2 - PORTAL-351 не корректно передаётся поле "критичность" в email нотификации
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.76.1";
+        return "4.0.76.2";
     }
 }
