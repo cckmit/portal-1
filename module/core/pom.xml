@@ -63,6 +63,7 @@
                         <argument>notification/email/user.login.subject.ftl</argument>
                         <argument>notification/email/user.login.body.ftl</argument>
                     </arguments>
+                    <!--<workingDirectory>${basedir}</workingDirectory>-->
                 </configuration>
             </plugin>
 

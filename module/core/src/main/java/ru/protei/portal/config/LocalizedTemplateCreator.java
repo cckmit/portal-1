@@ -24,8 +24,16 @@ public class LocalizedTemplateCreator {
      * @param templates template paths
      */
     public static void main(String[] templates) throws Exception {
-        if(templates.length == 0)
-            return;
+        if(templates.length == 0){
+            templates =  Arrays.<String>asList(
+                        "notification/email/crm.subject.ftl",
+                        "notification/email/crm.body.ftl",
+                        "notification/email/employee.registration.subject.ftl",
+                        "notification/email/employee.registration.body.ftl",
+                        "notification/email/user.login.subject.ftl",
+                        "notification/email/user.login.body.ftl").toArray(templates);
+        }
+
 
         Lang keys = getLang();
         String basePackagePath = Paths.get(LocalizedTemplateCreator.class.getResource("/").toURI()).toFile().getAbsolutePath();
@@ -72,7 +80,7 @@ public class LocalizedTemplateCreator {
             try(Writer writer = Files.newBufferedWriter(path, options)) {
                 template.process(langToModel.getValue(), writer);
             }
-            System.out.println("Template "+ path.getFileName() +" is created!");
+            System.out.println("Template "+ path.toAbsolutePath() +" is created!");
         }
     }
 
