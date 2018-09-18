@@ -29,7 +29,8 @@
               <property name="winterConfigPath" value="${catalina.home}/cfg/winter.properties"/>
               <property name="portalConfigPath" value="${catalina.home}/cfg/portal.properties"/>
        </bean>
+       <!--Нужно для своевременной инициализации ${catalina.home} посредством PropertyPlaceholderConfigurer-->
        <context:property-placeholder location="classpath:spring.properties" />
 
-       <util:properties id="winterProperties" location="file:${catalina.home}/cfg/winter.properties"/>
+       <!--<util:properties id="winterProperties" location="file:${catalina.home}/cfg/winter.properties"/>-->
 </beans>

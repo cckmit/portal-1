@@ -4,7 +4,7 @@
         <Property name="basePath" value="${sys:catalina.home}/logs/portal"/>
         <Property name="archivePath" value="${basePath}/archive"/>
         <Property name="extension" value=".log"/>
-        <Property name="appFileName" value="portal2.app"/>
+        <Property name="appFileName" value="portal.app"/>
         <Property name="migrateFileName" value="portal.migrate"/>
         <Property name="appServiceFileName" value="portal.app.service"/>
         <Property name="hpsmFileName" value="portal.hpsm.service"/>
