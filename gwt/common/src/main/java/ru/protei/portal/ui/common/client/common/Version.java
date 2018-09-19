@@ -258,9 +258,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.76.2 - PORTAL-351 не корректно передаётся поле "критичность" в email нотификации
  * 4.0.76.3 - PORTAL-374 Нельзя прикрепить файл к обращению, выдается ошибка, что файл не сохранен
  * 4.0.76.4 - PORTAL-393 Отсутствуют локализованные шаблоны freemaker для рассылки писем при сборке на jenkins
+ * 4.0.76.5 - PORTAL-393 Отсутствуют локализованные шаблоны freemaker для рассылки писем при сборке на jenkins (fix Пробел в названии сборки jenkins ломает генерацию)
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.76.4";
+        return "4.0.76.5";
     }
 }
