@@ -13,7 +13,9 @@
 
 Путь к файлу log4j2.xml определяется на старте приложения  
 чтением значения переменной `log4j.configurationFile`  
-из файла `portal/gwt/crm/src/main/resources/log4j2.component.properties`
+из файла `portal/gwt/crm/src/main/resources/log4j2.component.properties`  
+
+Примеры файлов размещены в каталоге `cfg_example`
 
 #### winter.properties
 
