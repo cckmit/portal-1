@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Для утилиты генерации шаблонов LocalizedTemplateCreator-->
 <Configuration>
     <Loggers>
         <Root level="TRACE">

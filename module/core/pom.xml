@@ -63,7 +63,6 @@
                         <argument>notification/email/user.login.subject.ftl</argument>
                         <argument>notification/email/user.login.body.ftl</argument>
                     </arguments>
-                    <workingDirectory>${project.build.directory}</workingDirectory>
                 </configuration>
             </plugin>
 

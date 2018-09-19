@@ -6,7 +6,6 @@ import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -25,19 +24,12 @@ public class LocalizedTemplateCreator {
      * @param templates template paths
      */
     public static void main(String[] templates) throws Exception {
-        if(templates.length == 0){
-            templates =  Arrays.<String>asList(//TODO DEBUG
-                        "notification/email/crm.subject.ftl",
-                        "notification/email/crm.body.ftl",
-                        "notification/email/employee.registration.subject.ftl",
-                        "notification/email/employee.registration.body.ftl",
-                        "notification/email/user.login.subject.ftl",
-                        "notification/email/user.login.body.ftl").toArray(templates);
-        }
+        if(templates.length == 0)
+            return;
 
 
         Lang keys = getLang();
-        String basePackagePath = Paths.get(LocalizedTemplateCreator.class.getResource("/").toURI()).toFile().getAbsolutePath();
+        String basePackagePath = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
         Map<Locale, Object> models = new HashMap<>(LOCALES.length);
         for (Locale locale : LOCALES) {
@@ -48,19 +40,6 @@ public class LocalizedTemplateCreator {
         templateConfiguration.setClassForTemplateLoading( LocalizedTemplateCreator.class, "/" );
         templateConfiguration.setDefaultEncoding( "UTF-8" );
         templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.RETHROW_HANDLER );
-        System.out.println("Working Directory = " +System.getProperty("user.dir"));//TODO DEBUG
-        System.out.println("Current relative path is: " + Paths.get("").toAbsolutePath().toString());//TODO DEBUG
-//        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-//        ClassLoader classLoader = LocalizedTemplateCreator.class.getClassLoader();
-//        System.out.println("Current classLoader path is: " + classLoader.getResource("LocalizedTemplateCreator.class"));//TODO DEBUG
-        String dirPath = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        if(!Objects.equals(dirPath, basePackagePath)){
-            System.out.println("Detected differen paths basePackagePath: " + basePackagePath + " dirPath: "+dirPath);//TODO DEBUG
-            basePackagePath = dirPath;
-        }
-        System.out.println("Current classLoader path is URL: " + dirPath);//TODO DEBUG
-//        System.out.println("Current LocalizedTemplateCreator package is: " + LocalizedTemplateCreator.class.getPackage().getName());//TODO DEBUG
-        System.out.println("Current LocalizedTemplateCreator path is: " + LocalizedTemplateCreator.class.getResource("/").toURI());//TODO DEBUG
         try {
             for (String template: templates){
                 createFor(basePackagePath, models, templateConfiguration.getTemplate(template, "UTF-8"));
@@ -82,7 +61,6 @@ public class LocalizedTemplateCreator {
      * @throws TemplateException
      */
     private static void createFor(String basePackagePath, Map<Locale, Object> models, Template template, OpenOption... options) throws IOException, TemplateException{
-        System.out.println("Try basePackagePath="+ basePackagePath +"");//TODO DEBUG
         if(!template.getName().endsWith(".ftl"))
             throw new TemplateException("Name of template "+ template.getName() +" doesn't end with \".ftl\"", null);
 
@@ -91,7 +69,6 @@ public class LocalizedTemplateCreator {
             Path path = Paths.get(
                 basePackagePath, baseTemplateName + langToModel.getKey().getLanguage() + ".ftl"
             );
-            System.out.println("Try Template  with path="+ path +"");//TODO DEBUG
             try(Writer writer = Files.newBufferedWriter(path, options)) {
                 template.process(langToModel.getValue(), writer);
             }
