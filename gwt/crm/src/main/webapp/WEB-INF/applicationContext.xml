@@ -4,9 +4,11 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd   http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+>
 
 
        <context:component-scan base-package="ru.protei.winter.core" />
@@ -24,7 +26,4 @@
        <context:component-scan base-package="ru.protei.portal.ui" />
 
        <mvc:annotation-driven />
-       <!--Нужно для своевременной инициализации ${catalina.home} посредством PropertyPlaceholderConfigurer-->
-       <!--<context:property-placeholder location="classpath:spring.properties" />-->
-       <!--<util:properties id="winter_file_path_prefix" location="file:${catalina.home}/cfg/"/>-->
 </beans>
