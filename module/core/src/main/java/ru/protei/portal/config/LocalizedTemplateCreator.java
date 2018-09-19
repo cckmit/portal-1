@@ -38,10 +38,10 @@ public class LocalizedTemplateCreator {
 
         Lang keys = getLang();
         URL location = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation();
-        String basePackagePath = location.getPath();
         System.out.println("location.getPath()=" +location.getPath());
         System.out.println("location.getFile()=" +location.getFile());
         System.out.println("URI  getPath()=" +location.toURI().getPath());
+        String basePackagePath = location.toURI().getPath();
 
         Map<Locale, Object> models = new HashMap<>(LOCALES.length);
         for (Locale locale : LOCALES) {
