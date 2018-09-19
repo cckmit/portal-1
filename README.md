@@ -28,7 +28,7 @@
 задается в `spring.properties`  
 
 #### log4j2.xml
- 
+
 Размещения файла указывается в `log4j2.component.properties`  
 
 ### Запуск из IDEA
@@ -39,4 +39,7 @@ IDEA->Конфигурация запуска->VM options добавить:
 `-Dcatalina.home={путь до каталога}`
 > Пример:  
 Файлы настроек лежат в /home/user/Projects/java/portal/cfg/  
-тогда занчение будет: `-Dcatalina.home=/home/user/Projects/java/portal`
+тогда занчение будет: `-Dcatalina.home=/home/user/Projects/java/portal`  
+>
+> Примечание:  
+системная переменная `сatalina.home` устанавливается Tomcat-ом при его старте  
