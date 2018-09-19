@@ -24,13 +24,7 @@
        <context:component-scan base-package="ru.protei.portal.ui" />
 
        <mvc:annotation-driven />
-
-       <bean id="mainConfig" class="ru.protei.portal.config.MainConfiguration" scope="singleton">
-              <property name="winterConfigPath" value="${catalina.home}/cfg/winter.properties"/>
-              <property name="portalConfigPath" value="${catalina.home}/cfg/portal.properties"/>
-       </bean>
        <!--Нужно для своевременной инициализации ${catalina.home} посредством PropertyPlaceholderConfigurer-->
-       <context:property-placeholder location="classpath:spring.properties" />
-
-       <!--<util:properties id="winterProperties" location="file:${catalina.home}/cfg/winter.properties"/>-->
+       <!--<context:property-placeholder location="classpath:spring.properties" />-->
+       <!--<util:properties id="winter_file_path_prefix" location="file:${catalina.home}/cfg/"/>-->
 </beans>

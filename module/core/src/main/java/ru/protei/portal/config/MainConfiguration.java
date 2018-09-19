@@ -1,16 +1,11 @@
 package ru.protei.portal.config;
 
+import org.springframework.core.env.Environment;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.env.Environment;
-import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.context.WebApplicationContext;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
@@ -37,55 +32,28 @@ import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
-import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.core.config.CoreConfig;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
-import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import ru.protei.winter.jdbc.JdbcObjectMapperRegistrator;
-import ru.protei.winter.jdbc.config.JdbcConfig;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import java.io.File;
-import java.util.Properties;
 
 
 @Configuration
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 @EnableScheduling
-@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class})
+@PropertySource("classpath:spring.properties")
 public class MainConfiguration {
 
     @Inject
     private JdbcObjectMapperRegistrator objectMapperRegistrator;
-    private String winterConfigPath;
-    private String portalConfigPath;
 
     @PostConstruct
     private void init() {
         objectMapperRegistrator.registerMapper(CaseInfo.class);
-    }
-
-    @Bean
-    @Scope(BeanDefinition.SCOPE_SINGLETON)
-    public CoreConfig getCoreConfig() throws ConfigException {
-        if (winterConfigPath == null) {
-            return new CoreConfig(CoreConfigurationContext.WINTER_CONFIG);
-        }
-
-        return new CoreConfig(winterConfigPath);
-    }
-
-    @Bean
-    public JdbcConfig getJdbcConfig() throws ConfigException {
-        if (winterConfigPath == null) {
-            return new JdbcConfig(CoreConfigurationContext.WINTER_CONFIG);
-        }
-        return new JdbcConfig(winterConfigPath);
     }
 
     /**
@@ -94,9 +62,6 @@ public class MainConfiguration {
      */
     @Bean
     public PortalConfig getPortalConfig() throws ConfigException {
-        if (portalConfigPath != null) {
-            return new PortalConfig(portalConfigPath);
-        }
         return new PortalConfig("portal.properties");
     }
 
@@ -671,11 +636,4 @@ public class MainConfiguration {
         return new ServiceLayerInterceptorLogging();
     }
 
-    public void setWinterConfigPath(String winterConfigPath) {
-        this.winterConfigPath = winterConfigPath;
-    }
-
-    public void setPortalConfigPath(String portalConfigPath) {
-        this.portalConfigPath = portalConfigPath;
-    }
 }
