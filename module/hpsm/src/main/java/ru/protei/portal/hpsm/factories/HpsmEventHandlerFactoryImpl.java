@@ -350,7 +350,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
                 try {
                     logger.debug("invoke file controller to store attachment {} (size={})", in.getFileName(), in.getSize());
-                    Long caId = fileController.saveAttachment(a, in.getStreamSource(), caseObjId);
+                    Long caId = fileController.saveAttachment(a, in.getStreamSource(), in.getSize(), in.getContentType(), caseObjId);
                     logger.debug("result from file controller = {} for {} (size={})", caId, in.getFileName(), in.getSize());
 
                     if (caId != null) {

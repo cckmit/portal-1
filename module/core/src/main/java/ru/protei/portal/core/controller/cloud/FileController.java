@@ -148,11 +148,11 @@ public class FileController {
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
-    public Long saveAttachment (Attachment attachment, InputStreamSource content, Long caseId) throws IOException, SQLException {
+    public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
         if(caseId == null)
             throw new RuntimeException("Case-ID is required");
 
-        attachment.setExtLink(fileStorage.save(generateUniqueFileName(attachment.getFileName()), content.getInputStream()));
+        attachment.setExtLink(fileStorage.save(generateUniqueFileName(attachment.getFileName()), content.getInputStream(), fileSize, contentType));
 
         if(attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());
@@ -191,7 +191,7 @@ public class FileController {
     }
 
     private String saveFile(FileItem file, String fileName) throws IOException{
-        return fileStorage.save(generateUniqueFileName(fileName), file.getInputStream());
+        return fileStorage.save(generateUniqueFileName(fileName), file.getInputStream(), file.getSize(), file.getContentType() );
     }
 
     private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{

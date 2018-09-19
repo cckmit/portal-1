@@ -6,7 +6,6 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.UrlResource;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
@@ -24,10 +23,8 @@ import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.utils.HttpInputSource;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class CommonServiceImpl implements CommonService {
 
@@ -66,7 +63,7 @@ public final class CommonServiceImpl implements CommonService {
                         try {
                             logger.debug("invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
                             Long caId = fileController.saveAttachment(a,
-                                    new HttpInputSource(x.getContentURL(), endpoint.getApiKey()), caseObjId);
+                                    new HttpInputSource(x.getContentURL(), endpoint.getApiKey()), x.getFileSize(), x.getContentType(), caseObjId);
                             logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
                             final boolean isAlreadyExists =
                                     caseAttachmentDAO.getByCondition("CASE_ID = ? and ATT_ID = ?", caseObjId, a.getId()) != null;

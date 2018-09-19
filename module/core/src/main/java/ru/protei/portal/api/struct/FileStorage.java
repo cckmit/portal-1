@@ -7,6 +7,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -42,7 +43,7 @@ public class FileStorage {
      * Saves file to storage
      * @return Saved file's path or IOException
      */
-    public String save(String fileName, InputStream data) throws IOException{
+    public String save(String fileName, InputStream data, long fileSize, String contentType) throws IOException{
 
         logger.debug("save: fileName=" + fileName);
 
@@ -50,7 +51,7 @@ public class FileStorage {
 
             String currentYearMonth = YearMonth.now().toString();
             String filePath = currentYearMonth +"/"+ encodePath(fileName);
-            HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, data);
+            HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, data, fileSize, contentType);
 
             CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);
             logFileCreationResponse(fileName, "1", fileCreationResponse);
@@ -78,13 +79,15 @@ public class FileStorage {
     }
 
 
-    private HttpUriRequest buildFileCreationRequest(String filePath, InputStream data) throws IOException{
+    private HttpUriRequest buildFileCreationRequest(String filePath, InputStream data, long fileSize, String contentType) throws IOException{
+        InputStreamEntity entity = new InputStreamEntity(data, fileSize, ContentType.create(contentType));
         RequestBuilder request = RequestBuilder.create("PUT");
         request.setUri(storagePath + filePath);
         request.addHeader("Authorization", "Basic " + authentication);
-        request.addHeader("Content-Type", "text/plain");
-        request.addHeader("Translate", "f");
-        request.setEntity(new InputStreamEntity(data));
+//        request.addHeader("Content-Type", "text/plain");
+//        request.addHeader("Translate", "f");
+
+        request.setEntity(entity);
         return request.build();
     }
 
