@@ -25,23 +25,12 @@ public class LocalizedTemplateCreator {
      * @param templates template paths
      */
     public static void main(String[] templates) throws Exception {
-        if(templates.length == 0){
-            templates =  Arrays.<String>asList(//TODO DEBUG
-                        "notification/email/crm.subject.ftl",
-                        "notification/email/crm.body.ftl",
-                        "notification/email/employee.registration.subject.ftl",
-                        "notification/email/employee.registration.body.ftl",
-                        "notification/email/user.login.subject.ftl",
-                        "notification/email/user.login.body.ftl").toArray(templates);
+        if(templates.length == 0) {
+            return;
         }
 
-
         Lang keys = getLang();
-        URL location = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation();
-        System.out.println("location.getPath()=" +location.getPath());
-        System.out.println("location.getFile()=" +location.getFile());
-        System.out.println("URI  getPath()=" +location.toURI().getPath());
-        String basePackagePath = location.toURI().getPath();
+        String basePackagePath = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 
         Map<Locale, Object> models = new HashMap<>(LOCALES.length);
         for (Locale locale : LOCALES) {
