@@ -256,9 +256,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.76.0 - PORTAL-377 Раздел Анкеты сотрудников: рассылка уведомлений
  * 4.0.76.1 - Move youtrack project names to properties
  * 4.0.76.2 - PORTAL-351 не корректно передаётся поле "критичность" в email нотификации
+ * 4.0.76.3 - PORTAL-374 Нельзя прикрепить файл к обращению, выдается ошибка, что файл не сохранен
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.76.2";
+        return "4.0.76.3";
     }
 }
