@@ -25,7 +25,7 @@ public class LocalizedTemplateCreator {
      */
     public static void main(String[] templates) throws Exception {
         if(templates.length == 0){
-            templates =  Arrays.<String>asList(
+            templates =  Arrays.<String>asList(//TODO DEBUG
                         "notification/email/crm.subject.ftl",
                         "notification/email/crm.body.ftl",
                         "notification/email/employee.registration.subject.ftl",
@@ -47,7 +47,7 @@ public class LocalizedTemplateCreator {
         templateConfiguration.setClassForTemplateLoading( LocalizedTemplateCreator.class, "/" );
         templateConfiguration.setDefaultEncoding( "UTF-8" );
         templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.RETHROW_HANDLER );
-
+        System.out.println("Working Directory = " +System.getProperty("user.dir"));
         try {
             for (String template: templates){
                 createFor(basePackagePath, models, templateConfiguration.getTemplate(template, "UTF-8"));
