@@ -27,8 +27,9 @@ public class LocalizedTemplateCreator {
         if(templates.length == 0)
             return;
 
+
         Lang keys = getLang();
-        String basePackagePath = Paths.get(LocalizedTemplateCreator.class.getResource("/").toURI()).toFile().getAbsolutePath();
+        String basePackagePath = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 
         Map<Locale, Object> models = new HashMap<>(LOCALES.length);
         for (Locale locale : LOCALES) {
@@ -39,7 +40,6 @@ public class LocalizedTemplateCreator {
         templateConfiguration.setClassForTemplateLoading( LocalizedTemplateCreator.class, "/" );
         templateConfiguration.setDefaultEncoding( "UTF-8" );
         templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.RETHROW_HANDLER );
-
         try {
             for (String template: templates){
                 createFor(basePackagePath, models, templateConfiguration.getTemplate(template, "UTF-8"));
@@ -72,7 +72,7 @@ public class LocalizedTemplateCreator {
             try(Writer writer = Files.newBufferedWriter(path, options)) {
                 template.process(langToModel.getValue(), writer);
             }
-            System.out.println("Template "+ path.getFileName() +" is created!");
+            System.out.println("Template "+ path.toAbsolutePath() +" is created!");
         }
     }
 
