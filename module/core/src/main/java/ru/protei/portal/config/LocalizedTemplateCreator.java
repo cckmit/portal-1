@@ -6,6 +6,7 @@ import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -52,7 +53,12 @@ public class LocalizedTemplateCreator {
 //        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 //        ClassLoader classLoader = LocalizedTemplateCreator.class.getClassLoader();
 //        System.out.println("Current classLoader path is: " + classLoader.getResource("LocalizedTemplateCreator.class"));//TODO DEBUG
-        System.out.println("Current classLoader path is: " + LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation());//TODO DEBUG
+        String dirPath = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        if(!Objects.equals(dirPath, basePackagePath)){
+            System.out.println("Detected differen paths basePackagePath: " + basePackagePath + " dirPath: "+dirPath);//TODO DEBUG
+            basePackagePath = dirPath;
+        }
+        System.out.println("Current classLoader path is URL: " + dirPath);//TODO DEBUG
 //        System.out.println("Current LocalizedTemplateCreator package is: " + LocalizedTemplateCreator.class.getPackage().getName());//TODO DEBUG
         System.out.println("Current LocalizedTemplateCreator path is: " + LocalizedTemplateCreator.class.getResource("/").toURI());//TODO DEBUG
         try {
