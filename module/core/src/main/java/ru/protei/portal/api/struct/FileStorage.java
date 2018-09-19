@@ -14,6 +14,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import ru.protei.portal.core.model.struct.FileStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +44,7 @@ public class FileStorage {
      * Saves file to storage
      * @return Saved file's path or IOException
      */
-    public String save(String fileName, InputStream data, long fileSize, String contentType) throws IOException{
+    public String save(String fileName, FileStream fileStream) throws IOException{
 
         logger.debug("save: fileName=" + fileName);
 
@@ -51,7 +52,7 @@ public class FileStorage {
 
             String currentYearMonth = YearMonth.now().toString();
             String filePath = currentYearMonth +"/"+ encodePath(fileName);
-            HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, data, fileSize, contentType);
+            HttpUriRequest fileCreationRequest = buildFileCreationRequest(filePath, fileStream);
 
             CloseableHttpResponse fileCreationResponse = httpClient.execute(fileCreationRequest);
             logFileCreationResponse(fileName, "1", fileCreationResponse);
@@ -79,15 +80,12 @@ public class FileStorage {
     }
 
 
-    private HttpUriRequest buildFileCreationRequest(String filePath, InputStream data, long fileSize, String contentType) throws IOException{
-        InputStreamEntity entity = new InputStreamEntity(data, fileSize, ContentType.create(contentType));
+    private HttpUriRequest buildFileCreationRequest(String filePath, FileStream fileStream) throws IOException {
         RequestBuilder request = RequestBuilder.create("PUT");
         request.setUri(storagePath + filePath);
         request.addHeader("Authorization", "Basic " + authentication);
-//        request.addHeader("Content-Type", "text/plain");
+        request.setEntity(fileStream2InputStreamEntity(fileStream));
 //        request.addHeader("Translate", "f");
-
-        request.setEntity(entity);
         return request.build();
     }
 
@@ -167,6 +165,14 @@ public class FileStorage {
         }
     }
 
+    private InputStreamEntity fileStream2InputStreamEntity(FileStream fileStream) {
+        return new InputStreamEntity(
+                fileStream.getInputStream(),
+                fileStream.getFileSize(),
+                ContentType.create(fileStream.getContentType())
+        );
+    }
+
     private String encodePath(String path) throws UnsupportedEncodingException{
         final Base64.Encoder enc = Base64.getUrlEncoder();
         int lastDotPos = path.lastIndexOf('.');
@@ -178,6 +184,7 @@ public class FileStorage {
                 + enc.encodeToString(path.substring(firstUnderscorePos + 1, lastDotPos).getBytes())
                 + path.substring(lastDotPos);
     }
+
     private int getStatus(HttpResponse response){
         return response.getStatusLine().getStatusCode();
     }

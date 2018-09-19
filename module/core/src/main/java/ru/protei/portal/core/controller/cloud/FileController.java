@@ -23,6 +23,7 @@ import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
@@ -32,6 +33,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Collections;
@@ -152,7 +154,8 @@ public class FileController {
         if(caseId == null)
             throw new RuntimeException("Case-ID is required");
 
-        attachment.setExtLink(fileStorage.save(generateUniqueFileName(attachment.getFileName()), content.getInputStream(), fileSize, contentType));
+        String filePath = saveFileStream(content.getInputStream(), attachment.getFileName(), fileSize, contentType);
+        attachment.setExtLink(filePath);
 
         if(attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());
@@ -190,8 +193,15 @@ public class FileController {
         ));
     }
 
-    private String saveFile(FileItem file, String fileName) throws IOException{
-        return fileStorage.save(generateUniqueFileName(fileName), file.getInputStream(), file.getSize(), file.getContentType() );
+    private String saveFile(FileItem file, String fileName) throws IOException {
+        return saveFileStream(file.getInputStream(), fileName, file.getSize(), file.getContentType());
+    }
+
+    private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {
+        return fileStorage.save(
+                generateUniqueFileName(fileName),
+                new FileStream(inputStream, fileSize, contentType)
+        );
     }
 
     private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{
