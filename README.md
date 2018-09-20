@@ -19,12 +19,12 @@
 
 #### winter.properties
 
-Размещения файла зависит от значения переменной окружения `winter_file_path_prefix`,  
+Размещения файла определяется значением переменной окружения `winter_file_path_prefix`,  
 задается в `spring.properties`  
 
 #### portal.properties
 
-Размещения файла зависит от значения переменной окружения `winter_file_path_prefix`,  
+Размещение файла определяется значением переменной окружения `winter_file_path_prefix`,  
 задается в `spring.properties`  
 
 #### log4j2.xml
