@@ -11,11 +11,11 @@
 читающей значение переменной `winter_file_path_prefix`  
 из файла `portal/gwt/crm/src/main/resources/spring.properties`  
 
-Путь к файлу log4j2.xml определяется на старте приложения  
+Путь к файлу `log4j2.xml` определяется на старте приложения  
 чтением значения переменной `log4j.configurationFile`  
 из файла `portal/gwt/crm/src/main/resources/log4j2.component.properties`  
 
-Примеры файлов размещены в каталоге `cfg_example`
+На Tomcat файлы настроек размещаются в каталоге "tomcat" в каталоге `cfg`  
 
 #### winter.properties
 
@@ -38,8 +38,8 @@
 IDEA->Конфигурация запуска->VM options добавить:
 `-Dcatalina.home={путь до каталога}`
 > Пример:  
-Файлы настроек лежат в /home/user/Projects/java/portal/cfg/  
-тогда занчение будет: `-Dcatalina.home=/home/user/Projects/java/portal`  
+Файлы настроек лежат в /home/user/Projects/java/portal/debug/cfg/  
+тогда значение будет: `-Dcatalina.home=/home/user/Projects/java/portal/debug`  
 >
 > Примечание:  
 системная переменная `сatalina.home` устанавливается Tomcat-ом при его старте  
