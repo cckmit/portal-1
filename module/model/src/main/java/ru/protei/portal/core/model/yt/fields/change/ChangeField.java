@@ -24,7 +24,7 @@ import ru.protei.portal.core.model.yt.fields.Fields;
         @JsonSubTypes.Type( name = Fields.attachments, value = AttachmentArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = Fields.evaluation, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = Fields.elapsedTime, value = StringArrayWithIdArrayOldNewChangeField.class ),
-        @JsonSubTypes.Type( name = Fields.executor, value = StringOldNewChangeField.class ),
+        @JsonSubTypes.Type( name = Fields.executor, value = StringArrayWithIdArrayOldNewChangeField.class ),
 } )
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChangeField {
