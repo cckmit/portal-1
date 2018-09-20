@@ -40,13 +40,14 @@ public class En_ResultStatusLang {
             case NOT_AVAILABLE:  return lang.errNotAvailable();
             case UNDEFINED_OBJECT: return lang.errUndefinedObject();
             case ALREADY_EXIST :  return lang.errAlreadyExist();
+            case ALREADY_EXIST_RELATED: return lang.errAlreadyExistRelated();
             case VALIDATION_ERROR: return lang.errValidationError();
             case INCORRECT_PARAMS: return lang.errIncorrectParams();
             case DB_COMMON_ERROR: return  lang.errDatabaseError();
             case DB_TEMP_ERROR: return lang.errDatabaseTempError();
             case PERMISSION_DENIED: return lang.errPermissionDenied();
             case SESSION_NOT_FOUND: return lang.errSessionNotFound();
-
+            case INVENTORY_NUMBER_ALREADY_EXIST: return lang.errInventoryNumberAlreadyExist();
             default: return lang.errUnknownResult();
         }
     }

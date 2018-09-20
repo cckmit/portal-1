@@ -91,6 +91,18 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
+    public boolean checkInventoryNumberAvailable(long inventoryNumber) throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Boolean> response = documentService.checkInventoryNumberAvailable(descriptor.makeAuthToken(), inventoryNumber);
+
+        if (response.isOk())
+            return response.getData();
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
     public Integer getDocumentCount(DocumentQuery query) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 

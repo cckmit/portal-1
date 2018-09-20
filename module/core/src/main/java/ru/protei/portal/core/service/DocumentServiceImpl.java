@@ -16,7 +16,9 @@ import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -107,6 +109,10 @@ public class DocumentServiceImpl implements DocumentService {
         if (document == null || !document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
+        if (!isDocumentInventoryNumberUnique(document)) {
+            return new CoreResponse<Document>().error(En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST);
+        }
+
         if (!documentDAO.saveOrUpdate(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -134,6 +140,9 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            if (!isDocumentInventoryNumberUnique(document)) {
+                return new CoreResponse<Document>().error(En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST);
+            }
 
             final Long projectId = document.getProjectId(), documentId = document.getId();
 
@@ -182,6 +191,10 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            if (!isDocumentInventoryNumberUnique(document)) {
+                return new CoreResponse<Document>().error(En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST);
+            }
+
             if (!documentDAO.saveOrUpdate(document)) {
                 return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
             }
@@ -209,5 +222,9 @@ public class DocumentServiceImpl implements DocumentService {
                 return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
             }
         });
+    }
+
+    private boolean isDocumentInventoryNumberUnique(Document document) {
+        return document.getInventoryNumber() == null || documentDAO.checkInventoryNumberNotExists(document.getInventoryNumber());
     }
 }

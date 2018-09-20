@@ -103,5 +103,10 @@ public enum En_ResultStatus {
     /**
      * ошибка сессии
      */
-    SESSION_NOT_FOUND
+    SESSION_NOT_FOUND,
+
+    /**
+     * уже существует такой инвентарный номер
+     */
+    INVENTORY_NUMBER_ALREADY_EXIST
 }

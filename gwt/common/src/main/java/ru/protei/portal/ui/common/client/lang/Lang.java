@@ -1356,4 +1356,10 @@ public interface Lang extends Messages, ContactItemLang {
     String internalResourceEmail();
 
     String sendOnCtrlEnter();
+
+    String abroadDocumentCategory();
+
+    String errAlreadyExistRelated();
+
+    String errInventoryNumberAlreadyExist();
 }

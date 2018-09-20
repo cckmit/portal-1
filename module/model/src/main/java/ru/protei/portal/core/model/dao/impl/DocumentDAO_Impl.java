@@ -38,6 +38,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
         return getObjectsCount(where.condition, where.args, JOINS, true);
     }
 
+    @Override
+    public boolean checkInventoryNumberNotExists(long inventoryNumber) {
+        return !checkExistsByCondition(" inventory_number=?", inventoryNumber);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(DocumentQuery query) {
         return new SqlCondition().build(((condition, args) -> {
