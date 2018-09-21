@@ -109,9 +109,6 @@ public class DocumentServiceImpl implements DocumentService {
         if (document == null || !document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        if (!isDocumentInventoryNumberUnique(document)) {
-            return new CoreResponse<Document>().error(En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST);
-        }
 
         if (!documentDAO.saveOrUpdate(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
@@ -140,10 +137,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-            if (!isDocumentInventoryNumberUnique(document)) {
-                return new CoreResponse<Document>().error(En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST);
-            }
-
             final Long projectId = document.getProjectId(), documentId = document.getId();
 
             final Document oldDocument = documentDAO.get(document.getId());
@@ -191,7 +184,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-            if (!isDocumentInventoryNumberUnique(document)) {
+            if (isDocumentInventoryNumberExists(document)) {
                 return new CoreResponse<Document>().error(En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST);
             }
 
@@ -224,7 +217,7 @@ public class DocumentServiceImpl implements DocumentService {
         });
     }
 
-    private boolean isDocumentInventoryNumberUnique(Document document) {
-        return document.getInventoryNumber() == null || documentDAO.checkInventoryNumberNotExists(document.getInventoryNumber());
+    private boolean isDocumentInventoryNumberExists(Document document) {
+        return document.getInventoryNumber() != null && documentDAO.checkInventoryNumberExists(document.getInventoryNumber());
     }
 }

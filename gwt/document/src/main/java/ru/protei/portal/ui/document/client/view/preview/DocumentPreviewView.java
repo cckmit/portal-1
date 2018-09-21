@@ -107,6 +107,11 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
         downloadButton.setHref(link);
     }
 
+    @Override
+    public void setExecutionType(String executionType) {
+        this.executionType.setInnerText(executionType);
+    }
+
 
     @UiField Anchor downloadButton;
     @UiField LegendElement header;
@@ -122,6 +127,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     @UiField SpanElement numberDecimal;
     @UiField SpanElement numberInventory;
     @UiField SpanElement keyWords;
+    @UiField SpanElement executionType;
 
     @Inject
     @UiField

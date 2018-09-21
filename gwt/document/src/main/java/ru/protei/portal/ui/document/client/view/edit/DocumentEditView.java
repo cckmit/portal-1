@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
@@ -29,6 +30,7 @@ import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditAct
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
 import ru.protei.portal.ui.document.client.widget.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeSelector;
 import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
 
@@ -68,6 +70,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public HasValidable nameValidator() {
         return name;
+    }
+
+    @Override
+    public HasValue<En_DocumentExecutionType> executionType() {
+        return executionType;
     }
 
     @Override
@@ -299,6 +306,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @UiField
     TextBox version;
+
+    @Inject
+    @UiField(provided = true)
+    DocumentExecutionTypeSelector executionType;
 
     @Inject
     @UiField(provided = true)

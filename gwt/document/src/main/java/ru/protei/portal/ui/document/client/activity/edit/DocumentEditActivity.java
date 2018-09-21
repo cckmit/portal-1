@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
@@ -23,12 +24,12 @@ import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
-import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
 
 import java.util.List;
+import java.util.Objects;
 
 
 public abstract class DocumentEditActivity
@@ -102,21 +103,21 @@ public abstract class DocumentEditActivity
     public void onDocumentCategoryChanged() {
         En_DocumentCategory category = view.documentCategory().getValue();
 
+        view.documentTypeEnabled().setEnabled(category != null);
+
         if (category == null) {
             view.equipmentVisible().setVisible(false);
-            view.documentTypeEnabled().setEnabled(false);
             return;
         }
 
-        boolean isForEquipment = category.isForEquipment();
-
-        view.equipmentVisible().setVisible(isForEquipment);
-        view.documentTypeEnabled().setEnabled(true);
         view.setDocumentTypeCategoryFilter(category);
+        view.equipmentVisible().setVisible(category.isForEquipment());
 
         setDecimalNumberEnabled();
+        setDesignationVisibility();
 
-        if (view.documentType().getValue() != null && !category.equals(view.documentType().getValue().getDocumentCategory())) {
+        if (view.documentType().getValue() != null &&
+                !Objects.equals(category, view.documentType().getValue().getDocumentCategory())) {
             view.documentType().setValue(null, true);
         }
     }
@@ -147,15 +148,25 @@ public abstract class DocumentEditActivity
     }
 
     private void setDesignationVisibility() {
-        ProjectInfo project = view.project().getValue();
-        boolean isDesignationVisible = project != null &&
-                (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE || project.getCustomerType() == En_CustomerType.STATE_BUDGET);
+        boolean isDesignationVisible = isDesignationVisible();
         view.decimalNumberVisible().setVisible(isDesignationVisible);
         view.inventoryNumberVisible().setVisible(isDesignationVisible);
     }
 
+    private boolean isDesignationVisible() {
+        En_DocumentCategory documentCategory = view.documentCategory().getValue();
+        ProjectInfo project = view.project().getValue();
+
+        if (project == null || documentCategory == null || documentCategory == En_DocumentCategory.ABROAD)
+            return false;
+
+        return project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE ||
+                project.getCustomerType() == En_CustomerType.STATE_BUDGET;
+    }
+
     private void setDecimalNumberEnabled() {
-        view.decimalNumberEnabled().setEnabled(view.documentCategory().getValue() != null && !view.documentCategory().getValue().isForEquipment());
+        En_DocumentCategory category = view.documentCategory().getValue();
+        view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
     }
 
     private boolean checkDocumentUploadValid(Document newDocument) {
@@ -226,6 +237,7 @@ public abstract class DocumentEditActivity
         d.setAnnotation(view.annotation().getValue());
         d.setDecimalNumber(view.decimalNumberText().getText());
         d.setType(view.documentType().getValue());
+        d.setExecutionType(view.executionType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
         d.setKeywords(view.keywords().getValue());
         d.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
@@ -247,6 +259,7 @@ public abstract class DocumentEditActivity
 
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
+        view.executionType().setValue(isNew ? En_DocumentExecutionType.ELECTRONIC : document.getExecutionType());
         view.setCreated( document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
@@ -287,8 +300,6 @@ public abstract class DocumentEditActivity
     AbstractDocumentEditView view;
     @Inject
     DocumentControllerAsync documentService;
-    @Inject
-    EquipmentControllerAsync equipmentService;
 
     private Document document;
     private Profile authorizedProfile;

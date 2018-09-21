@@ -39,8 +39,8 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
-    public boolean checkInventoryNumberNotExists(long inventoryNumber) {
-        return !checkExistsByCondition(" inventory_number=?", inventoryNumber);
+    public boolean checkInventoryNumberExists(long inventoryNumber) {
+        return checkExistsByCondition(" inventory_number=?", inventoryNumber);
     }
 
     @SqlConditionBuilder

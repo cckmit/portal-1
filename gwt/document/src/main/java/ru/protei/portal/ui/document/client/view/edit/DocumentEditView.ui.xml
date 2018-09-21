@@ -8,6 +8,7 @@
              xmlns:decnum='urn:import:ru.protei.portal.ui.common.client.widget.selector.decimalnumber'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.document.client.widget.uploader'
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
+             xmlns:execution="urn:import:ru.protei.portal.ui.document.client.widget.executiontype"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -47,20 +48,26 @@
                         </label>
                         <g:TextBox ui:field="version" styleName="input-field"/>
                     </div>
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
+                        <label>
+                            <ui:text from="{lang.documentExecutionType}"/>
+                        </label>
+                        <execution:DocumentExecutionTypeSelector ui:field="executionType"   />
+                    </div>
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.documentCategory}"/>
                         </label>
                         <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
                     </div>
 
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.documentType}"/>
                         </label>
                         <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
@@ -90,20 +97,19 @@
                     </div>
                 </div>
 
-                <legend class="header">
-                    <ui:text from="{lang.documentDecimalNumber}"/>
-                </legend>
-
                 <div class="grid grid-indent">
 
-                    <g:HTMLPanel styleName="form-group col-xs-4" ui:field="inventoryNumberContainer">
+                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="inventoryNumberContainer">
                         <label>
                             <ui:text from="{lang.inventoryNumber}"/>
                         </label>
                         <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
                     </g:HTMLPanel>
 
-                    <g:HTMLPanel styleName="form-group col-xs-12" ui:field="decimalNumberContainer">
+                    <g:HTMLPanel styleName="form-group col-xs-9" ui:field="decimalNumberContainer">
+                        <label>
+                            <ui:text from="{lang.documentDecimalNumber}"/>
+                        </label>
                         <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="input-field"/>
                     </g:HTMLPanel>
 
