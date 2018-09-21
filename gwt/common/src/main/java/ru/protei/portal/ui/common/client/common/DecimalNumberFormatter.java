@@ -36,17 +36,24 @@ public class DecimalNumberFormatter {
     }
 
     private static void appendNumberClassifierCode(StringBuilder sb, DecimalNumber number) {
+        if (number.getClassifierCode() == null) {
+            return;
+        }
         sb.append(".").append(NumberFormat.getFormat("000000").format(number.getClassifierCode()));
     }
 
     private static void appendNumberRegisterNumber(StringBuilder sb, DecimalNumber number) {
+        if (number.getClassifierCode() == null) {
+            return;
+        }
         sb.append(".").append(NumberFormat.getFormat("000").format(number.getRegisterNumber()));
     }
 
     private static void appendNumberModification(StringBuilder sb, DecimalNumber number) {
-        if (number.getModification() != null) {
-            sb.append("–").append(NumberFormat.getFormat("00").format(number.getModification()));
+        if (number.getModification() == null) {
+            return;
         }
+        sb.append("–").append(NumberFormat.getFormat("00").format(number.getModification()));
     }
 
     @Inject

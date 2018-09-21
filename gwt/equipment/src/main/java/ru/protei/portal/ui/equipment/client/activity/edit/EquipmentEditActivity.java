@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -24,8 +25,8 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -108,14 +109,42 @@ public abstract class EquipmentEditActivity
 
     @Override
     public void onDecimalNumbersChanged() {
-        decimalNumberWithoutModification = getFirstNotReservedDecimalNumberWithoutModification(view.getNumbers());
-        updateViewBasedOnDecimalNumber();
+        String decimalNumberOld = view.decimalNumbersForDocuments().getValue();
+        List<String> numbers = getDecimalNumbersWithoutModification(view.getNumbers());
+        if (numbers.isEmpty()) {
+            numbers.add(null);
+        }
+        view.setDecimalNumbersForDocuments(numbers);
+        if (decimalNumberOld != null && numbers.contains(decimalNumberOld)) {
+            view.decimalNumbersForDocuments().setValue(decimalNumberOld, false);
+        } else {
+            view.decimalNumbersForDocuments().setValue(numbers.get(0), true);
+        }
+    }
+
+    @Override
+    public void onDecimalNumberForDocumentsSelected() {
+        String decimalNumber = view.decimalNumbersForDocuments().getValue();
+        boolean isEdit = !isNew(equipment);
+        boolean isEnabled = decimalNumber != null && isEdit;
+        view.createDocumentButtonEnabled().setEnabled(isEnabled);
+        view.documentsVisibility().setVisible(isEnabled);
+        view.decimalNumbersForDocumentsEnabled().setEnabled(isEdit);
+        if (isEnabled) {
+            fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumber));
+        }
     }
 
     @Override
     public void onCreateDocumentClicked() {
 
-        if (equipment == null || equipment.getProjectId() == null || decimalNumberWithoutModification == null) {
+        if (equipment == null || equipment.getProjectId() == null) {
+            return;
+        }
+
+        String decimalNumberWithoutModification = view.decimalNumbersForDocuments().getValue();
+
+        if (decimalNumberWithoutModification == null) {
             return;
         }
 
@@ -176,40 +205,22 @@ public abstract class EquipmentEditActivity
         return equipment.getId() == null;
     }
 
-    private void updateViewBasedOnDecimalNumber() {
-        if (isNew(equipment)) {
-            view.createDocumentButtonEnabled().setEnabled(false);
-            view.documentsVisibility().setVisible(false);
-            return;
-        }
-        if (decimalNumberWithoutModification == null) {
-            view.decimalNumber().setValue("");
-            view.createDocumentButtonEnabled().setEnabled(false);
-            view.documentsVisibility().setVisible(false);
-            return;
-        }
-        view.decimalNumber().setValue(decimalNumberWithoutModification);
-        view.createDocumentButtonEnabled().setEnabled(true);
-        view.documentsVisibility().setVisible(true);
-        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumberWithoutModification));
-    }
+    private List<String> getDecimalNumbersWithoutModification(List<DecimalNumber> decimalNumbers) {
 
-    private String getFirstNotReservedDecimalNumberWithoutModification(List<DecimalNumber> decimalNumbers) {
+        List<String> result = new ArrayList<>();
 
         if (decimalNumbers == null) {
-            return null;
+            return result;
         }
 
-        DecimalNumber decimalNumber = decimalNumbers.stream()
-                .filter(dn -> !dn.isReserve())
-                .findFirst()
-                .orElse(null);
+        decimalNumbers.forEach(decimalNumber -> {
+            String number = DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
+            if (StringUtils.isNotBlank(number)) {
+                result.add(number);
+            }
+        });
 
-        if (decimalNumber == null) {
-            return null;
-        }
-
-        return DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
+        return result;
     }
 
     @Inject
@@ -227,6 +238,5 @@ public abstract class EquipmentEditActivity
     @Inject
     DefaultNotificationHandler notification;
 
-    private String decimalNumberWithoutModification;
     private AppEvents.InitDetails initDetails;
 }

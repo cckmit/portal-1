@@ -15,9 +15,11 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.text.RawTextButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
@@ -34,7 +36,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        decimalNumber.getElement().setPropertyString("placeholder", lang.equipmentDecimalNumber());
+        decimalNumberSelector.setDisplayOptionCreator(value -> new DisplayOption(value == null ? lang.equipmentDecimalNumber() : value));
     }
 
     @Override
@@ -102,6 +104,21 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
+    public HasEnabled decimalNumbersForDocumentsEnabled() {
+        return decimalNumberSelector;
+    }
+
+    @Override
+    public HasValue<String> decimalNumbersForDocuments() {
+        return decimalNumberSelector;
+    }
+
+    @Override
+    public void setDecimalNumbersForDocuments(List<String> decimalNumbers) {
+        decimalNumberSelector.fillOptions(decimalNumbers);
+    }
+
+    @Override
     public boolean isDecimalNumbersCorrect() {
         return numbers.checkIfCorrect();
     }
@@ -119,11 +136,6 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Override
     public HasValue<String> date() {
         return dateTextBox;
-    }
-
-    @Override
-    public HasValue<String> decimalNumber() {
-        return decimalNumber;
     }
 
     @Override
@@ -156,6 +168,13 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     public void onDecimalNumbersChanged(ValueChangeEvent<List<DecimalNumber>> event) {
         if ( activity != null ) {
             activity.onDecimalNumbersChanged();
+        }
+    }
+
+    @UiHandler( "decimalNumberSelector" )
+    public void onDecimalNumberSelectorChanged(ValueChangeEvent<String> event) {
+        if (activity != null) {
+            activity.onDecimalNumberForDocumentsSelected();
         }
     }
 
@@ -215,8 +234,9 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     HTMLPanel projectBox;
     @UiField
     HTMLPanel managerBox;
-    @UiField
-    TextBox decimalNumber;
+    @Inject
+    @UiField(provided = true)
+    RawTextButtonSelector decimalNumberSelector;
     @UiField
     Button createDocumentButton;
     @UiField

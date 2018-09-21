@@ -36,8 +36,6 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     HasValue<String> date();
 
-    HasValue<String> decimalNumber();
-
     HasWidgets documents();
 
     void setVisibilitySettingsForCreated(boolean isVisible);
@@ -46,9 +44,15 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     void setNumbers(List<DecimalNumber> decimalNumbers, boolean isEditable);
 
+    void setDecimalNumbersForDocuments(List<String> decimalNumbers);
+
     List<DecimalNumber> getNumbers();
 
     HasEnabled createDocumentButtonEnabled();
 
     HasVisibility documentsVisibility();
+
+    HasEnabled decimalNumbersForDocumentsEnabled();
+
+    HasValue<String> decimalNumbersForDocuments();
 }

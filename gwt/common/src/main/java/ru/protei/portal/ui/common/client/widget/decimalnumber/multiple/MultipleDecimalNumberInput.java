@@ -162,6 +162,7 @@ public class MultipleDecimalNumberInput
             box.removeFromParent();
             numberBoxes.remove( box );
             checkIfCorrect();
+            fireValuesChanged();
 
         } );
         box.addValueChangeHandler( event -> {
