@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -16,6 +17,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
+import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -185,6 +187,16 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                 .withResult(() -> {
                     view.saveButtonEnabled().setEnabled(true);
                     view.cancelButtonEnabled().setEnabled(true);
+                })
+                .withError(throwable -> {
+                    if (throwable instanceof RequestFailedException) {
+                        RequestFailedException rf = (RequestFailedException) throwable;
+                        if (En_ResultStatus.ALREADY_EXIST.equals(rf.status)) {
+                            notificationHandler.accept(lang.equipmentDocumentAlreadyExists(), NotifyEvents.NotifyType.ERROR);
+                            return;
+                        }
+                    }
+                    errorHandler.accept(throwable);
                 })
                 .withSuccess(doc -> {
                     notificationHandler.accept(lang.documentSaved(), NotifyEvents.NotifyType.SUCCESS);

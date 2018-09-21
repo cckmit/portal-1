@@ -1367,4 +1367,6 @@ public interface Lang extends Messages, ContactItemLang {
     String documentSaving();
 
     String documentSaved();
+
+    String equipmentDocumentAlreadyExists();
 }

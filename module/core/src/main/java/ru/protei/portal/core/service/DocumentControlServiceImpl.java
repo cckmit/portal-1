@@ -4,6 +4,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -73,8 +74,12 @@ public class DocumentControlServiceImpl implements DocumentControlService {
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-            if (!documentDAO.saveOrUpdate(document)) {
-                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+            try {
+                if (!documentDAO.saveOrUpdate(document)) {
+                    return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+                }
+            } catch (DuplicateKeyException ex) {
+                return new CoreResponse<Document>().error(En_ResultStatus.ALREADY_EXIST);
             }
 
             Long documentId = document.getId(), projectId = document.getProjectId();
@@ -110,8 +115,12 @@ public class DocumentControlServiceImpl implements DocumentControlService {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!documentDAO.saveOrUpdate(document)) {
-            return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+        try {
+            if (!documentDAO.saveOrUpdate(document)) {
+                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        } catch (DuplicateKeyException ex) {
+            return new CoreResponse<Document>().error(En_ResultStatus.ALREADY_EXIST);
         }
 
         return new CoreResponse<Document>().success(document);
@@ -151,7 +160,11 @@ public class DocumentControlServiceImpl implements DocumentControlService {
             out.close();
 
             try {
-                documentDAO.merge(document);
+                try {
+                    documentDAO.merge(document);
+                } catch (DuplicateKeyException ex) {
+                    return new CoreResponse<Document>().error(En_ResultStatus.ALREADY_EXIST);
+                }
                 documentStorageIndex.updatePdfDocument(fileData, projectId, documentId);
                 documentSvnService.updateDocument(projectId, documentId, fileInputStream);
                 return new CoreResponse<Document>().success(document);
