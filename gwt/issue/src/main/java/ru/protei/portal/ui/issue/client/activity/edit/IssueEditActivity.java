@@ -354,7 +354,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             return false;
         }
 
-        if (!isStateAllowedWithoutProductManager(view.state().getValue())) {
+        if (isStateWithRestrictions(view.state().getValue())) {
             if (view.manager().getValue() == null) {
                 fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
                 return false;
@@ -418,9 +418,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
     }
 
-    private boolean isStateAllowedWithoutProductManager(En_CaseState caseState) {
-        return En_CaseState.CREATED.equals(caseState) ||
-                En_CaseState.CANCELED.equals(caseState);
+    private boolean isStateWithRestrictions(En_CaseState caseState) {
+        return !En_CaseState.CREATED.equals(caseState) &&
+                !En_CaseState.CANCELED.equals(caseState);
     }
 
     @Inject
