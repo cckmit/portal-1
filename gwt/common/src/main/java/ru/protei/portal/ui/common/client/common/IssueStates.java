@@ -17,7 +17,7 @@ public abstract class IssueStates implements Activity{
     @Event
     public void onInit( AuthEvents.Init event ) {
 
-        states = new ArrayList<>(10);
+        states = new ArrayList<>(11);
         states.add(En_CaseState.CREATED);
         states.add(En_CaseState.OPENED);
         states.add(En_CaseState.ACTIVE);
@@ -28,6 +28,7 @@ public abstract class IssueStates implements Activity{
         states.add(En_CaseState.DONE);
         states.add(En_CaseState.TEST_CUST);
         states.add(En_CaseState.VERIFIED);
+        states.add(En_CaseState.CANCELED);
 
         activeStates = new ArrayList<>(6);
         activeStates.add(En_CaseState.CREATED);
@@ -37,11 +38,12 @@ public abstract class IssueStates implements Activity{
         activeStates.add(En_CaseState.WORKAROUND);
         activeStates.add(En_CaseState.INFO_REQUEST);
 
-        inactiveStates = new ArrayList<>(4);
+        inactiveStates = new ArrayList<>(5);
         inactiveStates.add(En_CaseState.CUST_PENDING);
         inactiveStates.add(En_CaseState.DONE);
         inactiveStates.add(En_CaseState.TEST_CUST);
         inactiveStates.add(En_CaseState.VERIFIED);
+        inactiveStates.add(En_CaseState.CANCELED);
 
 //        issueService.getStateList(new RequestCallback<List<En_CaseState>>() {
 //            @Override

@@ -1863,6 +1863,15 @@ td.info {
   font-weight: bold;
 }
 
+.option-canceled .option-name, .label-canceled {
+  background-color: #868686;
+}
+
+.case-canceled {
+  color: #868686;
+  font-weight: bold;
+}
+
 .option-name {
   display: inline-block;
   padding: .2em .6em .3em;
