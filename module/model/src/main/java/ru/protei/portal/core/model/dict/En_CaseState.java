@@ -28,6 +28,7 @@ public enum En_CaseState implements HasId {
     DESIGN(21, "design"),
     WORKAROUND(30, "workaround"),
     INFO_REQUEST(31, "info request"),
+    CANCELED(33, "canceled"),
     CUST_PENDING(34, "customer pending")
     ;
 

@@ -260,9 +260,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.76.4 - PORTAL-393 Отсутствуют локализованные шаблоны freemaker для рассылки писем при сборке на jenkins
  * 4.0.76.5 - PORTAL-393 Отсутствуют локализованные шаблоны freemaker для рассылки писем при сборке на jenkins (fix Пробел в названии сборки jenkins ломает генерацию)
  * 4.0.76.6 - PORTAL-267 Раздел Анкеты сотрудников (исправления после тестирования)
+ * 4.0.76.7 - PORTAL-387 Отмена обращения со стороны заказчика
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.76.6";
+        return "4.0.76.7";
     }
 }

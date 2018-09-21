@@ -331,6 +331,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String custPendingCaseState();
 
+    String canceledCaseState();
+
     String criticalImportance();
 
     String importantImportance();
