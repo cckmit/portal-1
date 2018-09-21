@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.yt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.yt.fields.Fields;
+import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.core.model.yt.fields.change.ChangeField;
 import ru.protei.portal.core.model.yt.fields.change.DateChangeField;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
@@ -52,14 +52,14 @@ public class Change {
     }
 
     public Date getUpdated() {
-        DateChangeField dateChangeField = getField(Fields.updated);
+        DateChangeField dateChangeField = getField(YtFields.updated);
         if (dateChangeField == null)
             return null;
         return dateChangeField.getValue();
     }
 
     public String getUpdaterName() {
-        StringChangeField stringChangeField = getField(Fields.updaterName);
+        StringChangeField stringChangeField = getField(YtFields.updaterName);
         if (stringChangeField == null)
             return null;
         return stringChangeField.getValue();
@@ -67,9 +67,9 @@ public class Change {
 
     public StringArrayWithIdArrayOldNewChangeField getStateChangeField() {
         return HelperFunc.nvlt(
-                getField(Fields.stateEng),
-                getField(Fields.stateRus),
-                getField(Fields.equipmentStateRus)
+                getField(YtFields.stateEng),
+                getField(YtFields.stateRus),
+                getField(YtFields.equipmentStateRus)
         );
     }
 
