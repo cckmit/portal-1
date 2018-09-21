@@ -70,9 +70,7 @@
 
                 <legend class="header">
                     <ui:text from="{lang.equipmentDocuments}"/>
-                    <div class="form-group col-xs-3 header-inline-button">
-                        <g:Button ui:field="createDocumentButton" styleName="btn btn-white" text="{lang.equipmentDocumentCreate}"/>
-                    </div>
+                    <g:Button ui:field="createDocumentButton" styleName="btn btn-primary header-button-right" text="{lang.equipmentDocumentCreate}"/>
                 </legend>
                 <div class="grid grid-indent">
                     <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12"/>

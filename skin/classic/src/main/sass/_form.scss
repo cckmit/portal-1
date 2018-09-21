@@ -108,8 +108,15 @@ textarea.input-field[disabled]{
   border: 0;
   border-bottom: 1px solid #e5e5e5;
 
-  > .header-inline-button {
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  > .header-button-right {
     display: inline-block;
-    margin: 1px 5px 1px 5px;
+    margin: 1px 1px 1px 5px;
+    float: right;
   }
 }
