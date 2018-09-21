@@ -93,11 +93,6 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem) {
-        return documentControlService.updateDocumentAndContent(document, fileItem);
-    }
-
-    @Override
     public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
         return documentControlService.createDocument(document, fileItem);
     }

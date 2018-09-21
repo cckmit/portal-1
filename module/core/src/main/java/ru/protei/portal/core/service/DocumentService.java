@@ -27,10 +27,6 @@ public interface DocumentService {
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     CoreResponse<Document> updateDocument(AuthToken token, Document document);
 
-    @Privileged(requireAny = En_Privilege.DOCUMENT_EDIT)
-    @Auditable(En_AuditType.DOCUMENT_MODIFY)
-    CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem);
-
     @Privileged(requireAny = En_Privilege.DOCUMENT_CREATE)
     CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem);
 }
