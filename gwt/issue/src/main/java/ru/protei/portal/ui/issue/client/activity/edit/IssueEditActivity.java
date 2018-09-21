@@ -354,14 +354,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             return false;
         }
 
-        if(!En_CaseState.CREATED.equals(view.state().getValue()) && view.manager().getValue() == null){
-            fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
-            return false;
-        }
-
-        if(!En_CaseState.CREATED.equals(view.state().getValue()) && view.product().getValue() == null){
-            fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
-            return false;
+        if (!isStateAllowedWithoutProductManager(view.state().getValue())) {
+            if (view.manager().getValue() == null) {
+                fireEvent(new NotifyEvents.Show(lang.errSaveIssueNeedSelectManager(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
+            if (view.product().getValue() == null) {
+                fireEvent(new NotifyEvents.Show(lang.errProductNotSelected(), NotifyEvents.NotifyType.ERROR));
+                return false;
+            }
         }
 
         boolean isFieldsValid = view.nameValidator().isValid() &&
@@ -415,6 +416,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private void setSubscriptionEmails(String value) {
         view.setSubscriptionEmails(value);
         view.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
+    }
+
+    private boolean isStateAllowedWithoutProductManager(En_CaseState caseState) {
+        return En_CaseState.CREATED.equals(caseState) ||
+                En_CaseState.CANCELED.equals(caseState);
     }
 
     @Inject
