@@ -21,7 +21,7 @@ public class DecimalNumberFormatter {
     }
 
     public static String formatNumberWithoutModification(DecimalNumber number) {
-        if (number == null) {
+        if (number == null || number.getClassifierCode() == null || number.getRegisterNumber() == null) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
@@ -43,7 +43,7 @@ public class DecimalNumberFormatter {
     }
 
     private static void appendNumberRegisterNumber(StringBuilder sb, DecimalNumber number) {
-        if (number.getClassifierCode() == null) {
+        if (number.getRegisterNumber() == null) {
             return;
         }
         sb.append(".").append(NumberFormat.getFormat("000").format(number.getRegisterNumber()));

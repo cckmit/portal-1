@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.equipment.client.activity.edit;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -51,6 +53,11 @@ public abstract class EquipmentEditActivity
 
         view.setVisibilitySettingsForCreated(event.id != null);
 
+        if (equipment != null) {
+            fillView(equipment);
+            return;
+        }
+
         if (event.id == null) {
             fillView(new Equipment());
             return;
@@ -66,6 +73,11 @@ public abstract class EquipmentEditActivity
     public void onSaveClicked() {
 
         fillDTO(equipment);
+
+        if (equipment.getProjectId() == null) {
+            notification.accept(lang.projectRequired(), NotifyEvents.NotifyType.ERROR);
+            return;
+        }
 
         if (equipment.getDecimalNumbers() == null || equipment.getDecimalNumbers().isEmpty()) {
             fireEvent(new NotifyEvents.Show(lang.equipmentDecimalNumberNotDefinied(), NotifyEvents.NotifyType.ERROR));
@@ -109,46 +121,32 @@ public abstract class EquipmentEditActivity
 
     @Override
     public void onDecimalNumbersChanged() {
-        String decimalNumberOld = view.decimalNumbersForDocuments().getValue();
-        List<String> numbers = getDecimalNumbersWithoutModification(view.getNumbers());
-        if (numbers.isEmpty()) {
-            numbers.add(null);
-        }
-        view.setDecimalNumbersForDocuments(numbers);
-        if (decimalNumberOld != null && numbers.contains(decimalNumberOld)) {
-            view.decimalNumbersForDocuments().setValue(decimalNumberOld, false);
-        } else {
-            view.decimalNumbersForDocuments().setValue(numbers.get(0), true);
-        }
-    }
-
-    @Override
-    public void onDecimalNumberForDocumentsSelected() {
-        String decimalNumber = view.decimalNumbersForDocuments().getValue();
-        boolean isEdit = !isNew(equipment);
-        boolean isEnabled = decimalNumber != null && isEdit;
-        view.createDocumentButtonEnabled().setEnabled(isEnabled);
-        view.documentsVisibility().setVisible(isEnabled);
-        view.decimalNumbersForDocumentsEnabled().setEnabled(isEdit);
-        if (isEnabled) {
-            fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumber));
-        }
+        List<String> decimalNumbers = getDecimalNumbersWithoutModification(view.getNumbers());
+        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumbers));
     }
 
     @Override
     public void onCreateDocumentClicked() {
 
-        if (equipment == null || equipment.getProjectId() == null) {
+        if (equipment == null) {
             return;
         }
 
-        String decimalNumberWithoutModification = view.decimalNumbersForDocuments().getValue();
-
-        if (decimalNumberWithoutModification == null) {
+        if (view.project().getValue() == null || view.project().getValue().getId() == null) {
+            notification.accept(lang.projectRequired(), NotifyEvents.NotifyType.INFO);
             return;
         }
 
-        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getProjectId(), decimalNumberWithoutModification));
+        List<String> decimalNumbers = getDecimalNumbersWithoutModification(view.getNumbers());
+
+        if (CollectionUtils.isEmpty(decimalNumbers)) {
+            notification.accept(lang.decimalNumbersRequired(), NotifyEvents.NotifyType.INFO);
+            return;
+        }
+
+        fillDTO(equipment);
+
+        fireEvent(new EquipmentEvents.DocumentEdit(view.project().getValue().getId(), decimalNumbers));
     }
 
     private void fillView(Equipment equipment) {
@@ -164,12 +162,13 @@ public abstract class EquipmentEditActivity
         view.date().setValue(DateFormatter.formatDateTime(equipment.getCreated()));
         view.comment().setValue( equipment.getComment() );
         view.type().setValue( isCreate ? En_EquipmentType.DETAIL : equipment.getType() );
+        view.setNumbers(equipment.getDecimalNumbers(), isCreate);
+
         EquipmentShortView linkedEquipment = null;
         if ( equipment.getLinkedEquipmentId() != null ) {
             linkedEquipment = new EquipmentShortView( null, equipment.getLinkedEquipmentId(), equipment.getLinkedEquipmentDecimalNumbers() );
         }
         view.linkedEquipment().setValue( linkedEquipment );
-        view.setNumbers(equipment.getDecimalNumbers(), isCreate);
 
         PersonShortView manager = null;
         if ( equipment.getManagerId() != null ) {
@@ -180,12 +179,15 @@ public abstract class EquipmentEditActivity
         view.manager().setValue( manager );
 
         ProjectInfo info = null;
-        if ( equipment.getProjectId() == null ) {
+        if (equipment.getProjectId() != null) {
             info = new ProjectInfo();
             info.setId(equipment.getProjectId());
             info.setName(equipment.getProjectName());
         }
         view.project().setValue( info );
+
+        view.createDocumentButtonEnabled().setEnabled(!isCreate);
+        view.documentsVisibility().setVisible(!isCreate);
 
         onDecimalNumbersChanged();
     }
@@ -195,10 +197,28 @@ public abstract class EquipmentEditActivity
         equipment.setName(view.name().getValue());
         equipment.setComment(view.comment().getValue());
         equipment.setType(view.type().getValue());
-        equipment.setLinkedEquipmentId(view.linkedEquipment().getValue() == null ? null : view.linkedEquipment().getValue().getId());
         equipment.setDecimalNumbers(view.getNumbers());
-        equipment.setManagerId(view.manager().getValue() == null ? null : view.manager().getValue().getId());
-        equipment.setProjectId(view.project().getValue() == null ? null : view.project().getValue().getId());
+        if (view.linkedEquipment().getValue() == null) {
+            equipment.setLinkedEquipmentId(null);
+            equipment.setLinkedEquipmentDecimalNumbers(null);
+        } else {
+            equipment.setLinkedEquipmentId(view.linkedEquipment().getValue().getId());
+            equipment.setLinkedEquipmentDecimalNumbers(view.linkedEquipment().getValue().getDecimalNumbers());
+        }
+        if (view.manager().getValue() == null) {
+            equipment.setManagerId(null);
+            equipment.setManagerShortName(null);
+        } else {
+            equipment.setManagerId(view.manager().getValue().getId());
+            equipment.setManagerShortName(view.manager().getValue().getDisplayShortName());
+        }
+        if (view.project().getValue() == null) {
+            equipment.setProjectId(null);
+            equipment.setProjectName(null);
+        } else {
+            equipment.setProjectId(view.project().getValue().getId());
+            equipment.setProjectName(view.project().getValue().getName());
+        }
     }
 
     private boolean isNew(Equipment equipment) {
@@ -229,6 +249,7 @@ public abstract class EquipmentEditActivity
     @Inject
     Lang lang;
 
+    @ContextAware
     Equipment equipment;
 
     @Inject

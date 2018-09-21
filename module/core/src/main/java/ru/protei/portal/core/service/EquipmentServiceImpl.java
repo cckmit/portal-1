@@ -96,6 +96,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Transactional
     public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
 
+        if (equipment.getProjectId() == null) {
+            return new CoreResponse<Equipment>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         if ( CollectionUtils.isEmpty( equipment.getDecimalNumbers() ) ) {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
         }
@@ -196,10 +200,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<List<Document>> documentList(AuthToken token, String decimalNumber) {
+    public CoreResponse<List<Document>> documentList(AuthToken token, List<String> decimalNumbers) {
 
         DocumentQuery query = new DocumentQuery();
-        query.setDecimalNumber(decimalNumber);
+        query.setDecimalNumbers(decimalNumbers);
         List<Document> list = documentDAO.getListByQuery(query);
 
         if (list == null) {

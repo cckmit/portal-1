@@ -156,6 +156,7 @@ public class MultipleDecimalNumberInput
             );
             values.add(newNumber);
             createBoxAndFillValue(newNumber, true);
+            fireValuesChanged();
         }));
         box.addRemoveHandler( event -> {
             values.remove( number );
@@ -163,7 +164,6 @@ public class MultipleDecimalNumberInput
             numberBoxes.remove( box );
             checkIfCorrect();
             fireValuesChanged();
-
         } );
         box.addValueChangeHandler( event -> {
             fireValuesChanged();

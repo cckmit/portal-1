@@ -44,15 +44,9 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     void setNumbers(List<DecimalNumber> decimalNumbers, boolean isEditable);
 
-    void setDecimalNumbersForDocuments(List<String> decimalNumbers);
-
     List<DecimalNumber> getNumbers();
 
     HasEnabled createDocumentButtonEnabled();
 
     HasVisibility documentsVisibility();
-
-    HasEnabled decimalNumbersForDocumentsEnabled();
-
-    HasValue<String> decimalNumbersForDocuments();
 }

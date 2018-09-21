@@ -6,7 +6,9 @@
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.document.uploader'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
+             xmlns:text='urn:import:ru.protei.portal.ui.common.client.widget.selector.text'>
+
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -23,7 +25,7 @@
                         <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </g:HTMLPanel>
                     <g:HTMLPanel styleName="form-group col-xs-3" ui:field="documentUploaderContainer">
-                        <label><ui:text from="{lang.uploadDocuments}"/></label>
+                        <label ui:field="documentUploaderLabel"><ui:text from="{lang.uploadDocuments}"/></label>
                         <div class="input-group">
                             <g:TextBox ui:field="fileName" styleName="input-field" enabled="false"/>
                             <div class="input-group-btn">
@@ -54,7 +56,7 @@
 
                     <div class="form-group col-xs-6">
                         <label><ui:text from="{lang.equipmentDecimalNumber}"/></label>
-                        <g:TextBox ui:field="decimalNumber" styleName="input-field" enabled="false"/>
+                        <text:RawTextButtonSelector ui:field="decimalNumberSelector"/>
                     </div>
                     <div class="form-group col-xs-6">
                         <label><ui:text from="{lang.inventoryNumber}"/></label>

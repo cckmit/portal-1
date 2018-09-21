@@ -12,6 +12,4 @@ public interface AbstractEquipmentEditActivity {
     void onCreateDocumentClicked();
 
     void onDecimalNumbersChanged();
-
-    void onDecimalNumberForDocumentsSelected();
 }

@@ -215,13 +215,13 @@ public class EquipmentControllerImpl implements EquipmentController {
     }
 
     @Override
-    public List<Document> getDocuments(String decimalNumber) throws RequestFailedException {
+    public List<Document> getDocuments(List<String> decimalNumbers) throws RequestFailedException {
 
-        log.debug("getDocuments: decimalNumber={}", decimalNumber);
+        log.debug("getDocuments: decimalNumbers={}", decimalNumbers);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<Document>> response = equipmentService.documentList(descriptor.makeAuthToken(), decimalNumber);
+        CoreResponse<List<Document>> response = equipmentService.documentList(descriptor.makeAuthToken(), decimalNumbers);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

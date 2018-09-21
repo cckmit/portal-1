@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.view.document.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -20,6 +21,7 @@ import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocume
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.text.RawTextButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.document.edit.AbstractEquipmentDocumentEditActivity;
@@ -78,7 +80,7 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
 
     @Override
     public HasValue<String> decimalNumber() {
-        return decimalNumber;
+        return decimalNumberSelector;
     }
 
     @Override
@@ -118,13 +120,23 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     }
 
     @Override
-    public HasEnabled decimalNumberEnabled() {
-        return decimalNumber;
+    public void setDocumentUploaderLabel(String value) {
+        documentUploaderLabel.setInnerText(value);
+    }
+
+    @Override
+    public void setDecimalNumbersAvailableValues(List<String> decimalNumbers) {
+        decimalNumberSelector.fillOptions(decimalNumbers);
     }
 
     @Override
     public HasEnabled documentCategoryEnabled() {
         return documentCategory;
+    }
+
+    @Override
+    public HasEnabled documentTypeEnabled() {
+        return documentType;
     }
 
     @Override
@@ -145,6 +157,11 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     @Override
     public HasEnabled cancelButtonEnabled() {
         return cancelButton;
+    }
+
+    @Override
+    public HasEnabled decimalNumberEnabled() {
+        return decimalNumberSelector;
     }
 
     @UiHandler("saveButton")
@@ -196,6 +213,8 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     Button selectFileButton;
     @UiField
     HTMLPanel documentUploaderContainer;
+    @UiField
+    LabelElement documentUploaderLabel;
     @Inject
     @UiField(provided = true)
     DocumentUploader documentUploader;
@@ -209,8 +228,9 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     DocumentTypeSelector documentType;
     @UiField
     TextBox version;
-    @UiField
-    TextBox decimalNumber;
+    @Inject
+    @UiField(provided = true)
+    RawTextButtonSelector decimalNumberSelector;
     @UiField
     LongBox inventoryNumber;
     @Inject

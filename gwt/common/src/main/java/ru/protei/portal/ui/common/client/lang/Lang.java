@@ -1369,4 +1369,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentSaved();
 
     String equipmentDocumentAlreadyExists();
+
+    String reUploadDocuments();
+
+    String projectRequired();
+
+    String decimalNumbersRequired();
 }

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -22,6 +23,8 @@ import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
+
+import java.util.List;
 
 public abstract class EquipmentDocumentEditActivity implements Activity, AbstractEquipmentDocumentEditActivity {
 
@@ -48,21 +51,20 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     @Event(Type.FILL_CONTENT)
     public void onShow(EquipmentEvents.DocumentEdit event) {
 
-        decimalNumber = null;
+        decimalNumbers = null;
 
         if (event.documentId == null) {
-            if (event.projectId == null || StringUtils.isBlank(event.decimalNumber)) {
+            if (event.projectId == null || CollectionUtils.isEmpty(event.decimalNumbers)) {
                 notificationHandler.accept(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR);
                 fireEvent(new Back());
                 return;
             }
             drawView();
             fireEvent(new AppEvents.InitPanelName(lang.documentCreate()));
-            decimalNumber = event.decimalNumber;
+            decimalNumbers = event.decimalNumbers;
             Document document = new Document();
             document.setApproved(false);
             document.setProjectId(event.projectId);
-            document.setDecimalNumber(event.decimalNumber);
             fillView(document);
         } else {
             drawView();
@@ -129,14 +131,17 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.name().setValue(document.getName());
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();
+        view.setDocumentUploaderLabel(isNew ? lang.uploadDocuments() : lang.reUploadDocuments());
         view.approved().setValue(document.getApproved());
         view.approvedEnabled().setEnabled(approveMode);
         view.setDocumentCategory(En_DocumentCategory.TD);
         view.documentCategoryEnabled().setEnabled(false);
         view.documentType().setValue(document.getType());
+        view.documentTypeEnabled().setEnabled(isNew);
         view.version().setValue(document.getVersion());
-        view.decimalNumber().setValue(document.getDecimalNumber());
-        view.decimalNumberEnabled().setEnabled(false);
+        view.setDecimalNumbersAvailableValues(decimalNumbers);
+        view.decimalNumber().setValue(isNew ? decimalNumbers.get(0) : document.getDecimalNumber());
+        view.decimalNumberEnabled().setEnabled(isNew);
         view.inventoryNumber().setValue(document.getApproved() ? document.getInventoryNumber() : null);
         view.inventoryNumberEnabled().setEnabled(document.getApproved());
 
@@ -162,13 +167,11 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         document.setType(view.documentType().getValue());
         document.setVersion(view.version().getValue());
         document.setInventoryNumber(view.approved().getValue() ? view.inventoryNumber().getValue() : null);
+        document.setDecimalNumber(view.decimalNumber().getValue() + "-" + view.documentType().getValue().getShortName());
         document.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
         document.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         document.setAnnotation(view.annotation().getValue());
         document.setKeywords(view.keywords().getValue());
-        if (document.getId() == null && decimalNumber != null) {
-            document.setDecimalNumber(decimalNumber + "-" + view.documentType().getValue().getShortName());
-        }
     }
 
     private void saveDocument() {
@@ -247,7 +250,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     DefaultNotificationHandler notificationHandler;
 
     private Document document;
-    private String decimalNumber;
+    private List<String> decimalNumbers;
     private Profile authorizedProfile;
     private AppEvents.InitDetails initDetails;
 }

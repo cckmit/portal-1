@@ -2,9 +2,11 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
+import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.view.EntityOption;
+
+import java.util.List;
 
 /**
  * События модуля - классификтор оборудования
@@ -67,26 +69,26 @@ public class EquipmentEvents {
         public DocumentEdit(Long documentId) {
             this.documentId = documentId;
         }
-        public DocumentEdit(Long projectId, String decimalNumber) {
+        public DocumentEdit(Long projectId, List<String> decimalNumbers) {
             this.projectId = projectId;
-            this.decimalNumber = decimalNumber;
+            this.decimalNumbers = decimalNumbers;
         }
 
         @Name("id")
         public Long documentId;
         @Name("project")
         public Long projectId;
-        @Name("dn")
-        public String decimalNumber;
+        @Omit
+        public List<String> decimalNumbers;
     }
 
     public static class ShowDocumentList {
-        public ShowDocumentList(HasWidgets parent, String decimalNumber) {
+        public ShowDocumentList(HasWidgets parent, List<String> decimalNumbers) {
             this.parent = parent;
-            this.decimalNumber = decimalNumber;
+            this.decimalNumbers = decimalNumbers;
         }
         public HasWidgets parent;
-        public String decimalNumber;
+        public List<String> decimalNumbers;
     }
 
     public static class ChangeModel {}

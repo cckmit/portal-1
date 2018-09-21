@@ -57,7 +57,7 @@ public interface EquipmentController extends RemoteService {
     Integer getNextAvailableRegisterNumberModification( DecimalNumberQuery filter ) throws RequestFailedException;
 
 
-    List<Document> getDocuments(String decimalNumber) throws RequestFailedException;
+    List<Document> getDocuments(List<String> decimalNumbers) throws RequestFailedException;
 
     Document getDocument(Long id) throws RequestFailedException;
 

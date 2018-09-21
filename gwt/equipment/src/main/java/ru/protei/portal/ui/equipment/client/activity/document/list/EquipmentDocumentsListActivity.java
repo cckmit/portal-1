@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
@@ -18,6 +19,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemActivity;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,12 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
         stopPeriodicTask(tdFillViewHandler);
         stopPeriodicTask(pdFillViewHandler);
 
-        equipmentController.getDocuments(event.decimalNumber, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
+        if (CollectionUtils.isEmpty(event.decimalNumbers)) {
+            handleDocuments(new ArrayList<>());
+            return;
+        }
+
+        equipmentController.getDocuments(event.decimalNumbers, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
     }
 
     @Override

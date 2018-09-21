@@ -5,8 +5,7 @@
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.decimalnumber.multiple"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
-             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
-             xmlns:text="urn:import:ru.protei.portal.ui.common.client.widget.selector.text">
+             xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="main-content">
@@ -69,14 +68,13 @@
                     </div>
                 </div>
 
-                <legend class="header"><ui:text from="{lang.equipmentDocuments}"/></legend>
-                <div class="grid grid-indent">
-                    <div class="form-group col-xs-3">
-                        <text:RawTextButtonSelector ui:field="decimalNumberSelector"/>
-                    </div>
-                    <div class="form-group col-xs-3">
+                <legend class="header">
+                    <ui:text from="{lang.equipmentDocuments}"/>
+                    <div class="form-group col-xs-3 header-inline-button">
                         <g:Button ui:field="createDocumentButton" styleName="btn btn-white" text="{lang.equipmentDocumentCreate}"/>
                     </div>
+                </legend>
+                <div class="grid grid-indent">
                     <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12"/>
                 </div>
 

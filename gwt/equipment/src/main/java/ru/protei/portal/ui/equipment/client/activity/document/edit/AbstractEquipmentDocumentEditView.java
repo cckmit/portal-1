@@ -43,9 +43,13 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
 
     void setApprovedMode(boolean off);
 
-    HasEnabled decimalNumberEnabled();
+    void setDocumentUploaderLabel(String value);
+
+    void setDecimalNumbersAvailableValues(List<String> decimalNumbers);
 
     HasEnabled documentCategoryEnabled();
+
+    HasEnabled documentTypeEnabled();
 
     HasEnabled approvedEnabled();
 
@@ -54,4 +58,6 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
     HasEnabled saveButtonEnabled();
 
     HasEnabled cancelButtonEnabled();
+
+    HasEnabled decimalNumberEnabled();
 }

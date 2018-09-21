@@ -5,9 +5,9 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -20,6 +20,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -123,10 +125,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
             view.setLinkedEquipment( lang.equipmentPrimaryUseNotDefinied() );
         }
 
-        String decimalNumber = getDecimalNumber(value);
-        if (decimalNumber != null) {
-            fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumber));
-        }
+        List<String> decimalNumbers = getDecimalNumbersWithoutModification(value);
+        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumbers));
     }
 
     private void fillView( Long id ) {
@@ -148,22 +148,22 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         } );
     }
 
-    private String getDecimalNumber(Equipment equipment) {
+    private List<String> getDecimalNumbersWithoutModification(Equipment equipment) {
+
+        List<String> result = new ArrayList<>();
 
         if (equipment == null || CollectionUtils.isEmpty(equipment.getDecimalNumbers())) {
-            return null;
+            return result;
         }
 
-        DecimalNumber decimalNumber = equipment.getDecimalNumbers().stream()
-                .filter(dn -> !dn.isReserve())
-                .findFirst()
-                .orElse(null);
+        equipment.getDecimalNumbers().forEach(decimalNumber -> {
+            String number = DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
+            if (StringUtils.isNotBlank(number)) {
+                result.add(number);
+            }
+        });
 
-        if (decimalNumber == null) {
-            return null;
-        }
-
-        return DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
+        return result;
     }
 
     @Inject
