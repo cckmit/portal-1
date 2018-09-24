@@ -159,6 +159,13 @@ public abstract class PlatformTableActivity implements
     }
 
     @Override
+    public void onOpenServersClicked(Platform value) {
+        if (value != null) {
+            fireEvent(new SiteFolderServerEvents.Show(value.getId()));
+        }
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Platform>> asyncCallback) {
         PlatformQuery query = getQuery();
         query.setOffset(offset);

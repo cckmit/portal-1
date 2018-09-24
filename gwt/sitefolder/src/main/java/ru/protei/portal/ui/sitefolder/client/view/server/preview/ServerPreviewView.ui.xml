@@ -5,6 +5,10 @@
 
     <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
+            <div class="actions col-xs-12">
+                <g:Button styleName="btn btn-white" ui:field="openAppsButton" text="{lang.siteFolderApps}"/>
+                <!--<g:Button styleName="btn btn-white" ui:field="fullScreen" title="{lang.fullScreen}"><i class="fa fa-external-link"/></g:Button>-->
+            </div>
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.siteFolderPlatform}"/></legend>

@@ -184,6 +184,13 @@ public abstract class ServerTableActivity implements
     }
 
     @Override
+    public void onOpenAppsClicked(Server value) {
+        if (value != null) {
+            fireEvent(new SiteFolderAppEvents.Show(value.getId()));
+        }
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Server>> asyncCallback) {
         ServerQuery query = getQuery();
         query.setOffset(offset);

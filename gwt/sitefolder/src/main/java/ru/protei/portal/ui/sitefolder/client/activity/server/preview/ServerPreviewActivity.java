@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Server;
+import ru.protei.portal.ui.common.client.events.SiteFolderAppEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 
 public abstract class ServerPreviewActivity implements Activity, AbstractServerPreviewActivity {
@@ -18,6 +19,8 @@ public abstract class ServerPreviewActivity implements Activity, AbstractServerP
     public void onShow(SiteFolderServerEvents.ShowPreview event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+
+        serverId = event.server.getId();
 
         fillView(event.server);
     }
@@ -33,6 +36,15 @@ public abstract class ServerPreviewActivity implements Activity, AbstractServerP
         view.setComment(value.getComment() == null ? "" : value.getComment());
     }
 
+    @Override
+    public void onOpenAppsClicked() {
+        if (serverId != null) {
+            fireEvent(new SiteFolderAppEvents.Show(serverId));
+        }
+    }
+
     @Inject
     AbstractServerPreviewView view;
+
+    private Long serverId;
 }

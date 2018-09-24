@@ -2,8 +2,11 @@ package ru.protei.portal.ui.sitefolder.client.view.server.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -59,6 +62,13 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
         comment.setInnerText(value);
     }
 
+    @UiHandler("openAppsButton")
+    public void openButtonClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onOpenAppsClicked();
+        }
+    }
+
     @UiField
     SpanElement name;
     @UiField
@@ -69,6 +79,8 @@ public class ServerPreviewView extends Composite implements AbstractServerPrevie
     SpanElement parameters;
     @UiField
     SpanElement comment;
+    @UiField
+    Button openAppsButton;
 
     @Inject
     FixedPositioner positioner;
