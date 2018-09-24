@@ -1,9 +1,7 @@
 package ru.protei.portal.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -46,6 +44,7 @@ import javax.inject.Inject;
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 @EnableScheduling
+@PropertySource("classpath:spring.properties")
 public class MainConfiguration {
 
     @Inject
@@ -61,12 +60,12 @@ public class MainConfiguration {
      * @return
      */
     @Bean
-    public PortalConfig getPortalConfig () throws ConfigException{
+    public PortalConfig getPortalConfig() throws ConfigException {
         return new PortalConfig("portal.properties");
     }
 
     @Bean
-    public FileStorage getFileStorage (@Autowired PortalConfig config){
+    public FileStorage getFileStorage(@Autowired PortalConfig config) {
         PortalConfigData.CloudConfig cloud = config.data().cloud();
         return new FileStorage(cloud.getStoragePath(), cloud.getUser(), cloud.getPassword());
     }
@@ -85,7 +84,7 @@ public class MainConfiguration {
     }
 
     @Bean
-    public SybConnProvider getSybConnProvider (@Autowired PortalConfig config) throws Throwable {
+    public SybConnProvider getSybConnProvider(@Autowired PortalConfig config) throws Throwable {
         return new SybConnWrapperImpl(
                 config.data().legacySysConfig().getJdbcDriver(),
                 config.data().legacySysConfig().getJdbcURL(),
@@ -96,7 +95,9 @@ public class MainConfiguration {
 
 
     @Bean
-    public LegacySystemDAO getLegacySystemDAO () { return new LegacySystemDAO(); }
+    public LegacySystemDAO getLegacySystemDAO() {
+        return new LegacySystemDAO();
+    }
 
     @Bean
     public LDAPAuthProvider getLDAPAuthProvider() {
@@ -105,7 +106,7 @@ public class MainConfiguration {
 
 
     @Bean
-    public CaseObjectSqlBuilder sqlDefaultBuilder () {
+    public CaseObjectSqlBuilder sqlDefaultBuilder() {
         return new CaseObjectSqlBuilder();
     }
 
@@ -278,7 +279,9 @@ public class MainConfiguration {
     }
 
     @Bean
-    public EquipmentDAO getEquipmentDAO() { return new EquipmentDAO_Impl(); }
+    public EquipmentDAO getEquipmentDAO() {
+        return new EquipmentDAO_Impl();
+    }
 
     @Bean
     public LocationDAO getLocationDAO() {
@@ -286,29 +289,37 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseMemberDAO getCaseMemberDAO() { return new CaseMemberDAO_Impl(); }
-
-    @Bean
-    public CaseLocationDAO getCaseLocationDAO() { return new CaseLocationDAO_Impl(); }
-
-    @Bean
-    public CaseTypeDAO getCaseTypeDAO() { return new CaseTypeDAO_Impl(); }
-
-    @Bean
-    public DecimalNumberDAO getDecimalNumberDAO() { return new DecimalNumberDAO_Impl(); }
-
-    @Bean
-    public CompanySubscriptionDAO getCompanySubscriptionDAO () {
-        return new CompanySubscriptionDAO_Impl ();
+    public CaseMemberDAO getCaseMemberDAO() {
+        return new CaseMemberDAO_Impl();
     }
 
     @Bean
-    public ExternalCaseAppDAO getExternalCaseAppDAO () {
+    public CaseLocationDAO getCaseLocationDAO() {
+        return new CaseLocationDAO_Impl();
+    }
+
+    @Bean
+    public CaseTypeDAO getCaseTypeDAO() {
+        return new CaseTypeDAO_Impl();
+    }
+
+    @Bean
+    public DecimalNumberDAO getDecimalNumberDAO() {
+        return new DecimalNumberDAO_Impl();
+    }
+
+    @Bean
+    public CompanySubscriptionDAO getCompanySubscriptionDAO() {
+        return new CompanySubscriptionDAO_Impl();
+    }
+
+    @Bean
+    public ExternalCaseAppDAO getExternalCaseAppDAO() {
         return new ExternalCaseAppDAO_Impl();
     }
 
     @Bean
-    public ExportSybEntryDAO getExportSybEntryDAO () {
+    public ExportSybEntryDAO getExportSybEntryDAO() {
         return new ExportSybEntryDAO_Impl();
     }
 
@@ -343,7 +354,9 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseFilterDAO getIssueFilterDAO() { return new CaseFilterDAO_Impl(); }
+    public CaseFilterDAO getIssueFilterDAO() {
+        return new CaseFilterDAO_Impl();
+    }
 
     @Bean
     public ProductSubscriptionDAO getProductSubscriptionDAO() {
@@ -400,15 +413,9 @@ public class MainConfiguration {
         return new EmployeeRegistrationDAO_Impl();
     }
 
-/**
- *
- *
- *
- * SERVICES
- *
- *
- *
- **/
+    /**
+     * SERVICES
+     **/
     @Bean
     public SessionIdGen getSessionIdGenerator() {
         return new SimpleSidGenerator();
@@ -425,12 +432,14 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseControlService getCaseControlService () {
+    public CaseControlService getCaseControlService() {
         return new CaseControlServiceImpl();
     }
 
     @Bean
-    public EmployeeService getEmployeeService () { return new EmployeeServiceImpl(); }
+    public EmployeeService getEmployeeService() {
+        return new EmployeeServiceImpl();
+    }
 
     @Bean
     public CompanyService getCompanyService() {
@@ -443,15 +452,19 @@ public class MainConfiguration {
     }
 
     @Bean
-    public ContactService getContactService () {
+    public ContactService getContactService() {
         return new ContactServiceImpl();
     }
 
     @Bean
-    public CaseService getCaseService() { return new CaseServiceImpl(); }
+    public CaseService getCaseService() {
+        return new CaseServiceImpl();
+    }
 
     @Bean
-    public CaseStateService getCaseStateService() { return new CaseStateServiceImpl(); }
+    public CaseStateService getCaseStateService() {
+        return new CaseStateServiceImpl();
+    }
 
     @Bean
     public AuditService getAuditService() {
@@ -459,29 +472,37 @@ public class MainConfiguration {
     }
 
     @Bean
-    public AttachmentService getAttachmentService() { return new AttachmentServiceImpl(); }
+    public AttachmentService getAttachmentService() {
+        return new AttachmentServiceImpl();
+    }
 
     @Bean
-    public LocationService getLocationService() { return new LocationServiceImpl(); }
+    public LocationService getLocationService() {
+        return new LocationServiceImpl();
+    }
 
     @Bean
-    public ProjectService getProjectService() { return new ProjectServiceImpl(); }
+    public ProjectService getProjectService() {
+        return new ProjectServiceImpl();
+    }
 
     @Bean
-    public EquipmentService getEquipmentService() { return new EquipmentServiceImpl(); }
+    public EquipmentService getEquipmentService() {
+        return new EquipmentServiceImpl();
+    }
 
     @Bean
-    public EventPublisherService getEventPublisherService () {
+    public EventPublisherService getEventPublisherService() {
         return new AsyncEventPublisherService();
     }
 
     @Bean
-    public CaseSubscriptionService getCaseSubscriptionService () {
+    public CaseSubscriptionService getCaseSubscriptionService() {
         return new CaseSubscriptionServiceImpl();
     }
 
     @Bean
-    public UserRoleService getUserRoleService () {
+    public UserRoleService getUserRoleService() {
         return new UserRoleServiceImpl();
     }
 
@@ -496,13 +517,19 @@ public class MainConfiguration {
     }
 
     @Bean
-    public TemplateService getTemplateService() { return new TemplateServiceImpl(); }
+    public TemplateService getTemplateService() {
+        return new TemplateServiceImpl();
+    }
 
     @Bean
-    public PolicyService getPolicyService() { return new PolicyServiceImpl(); }
+    public PolicyService getPolicyService() {
+        return new PolicyServiceImpl();
+    }
 
     @Bean
-    public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
+    public OfficialService getOfficialService() {
+        return new OfficialServiceImpl();
+    }
 
     @Bean
     public BootstrapService getBootstrapService() {
@@ -530,22 +557,22 @@ public class MainConfiguration {
     }
 
     @Bean
-    public IssueFilterService getIssueFilterService () {
+    public IssueFilterService getIssueFilterService() {
         return new IssueFilterServiceImpl();
     }
 
     @Bean
-    public ExportDataService getExportDataService (@Autowired PortalConfig config) {
+    public ExportDataService getExportDataService(@Autowired PortalConfig config) {
         return config.data().legacySysConfig().isExportEnabled() ? new ActiveExportDataService() : new DummyExportDataService();
     }
 
     @Bean
-    public MigrationRunner getImportDataRunner (@Autowired PortalConfig config) {
+    public MigrationRunner getImportDataRunner(@Autowired PortalConfig config) {
         return config.data().legacySysConfig().isImportEnabled() ? new MigrationRunner() : null;
     }
 
     @Bean
-    public ImportDataService getImportDataService (@Autowired PortalConfig config) {
+    public ImportDataService getImportDataService(@Autowired PortalConfig config) {
         return new ImportDataServiceImpl();
     }
 
@@ -553,7 +580,7 @@ public class MainConfiguration {
     public LockService getLockService() {
         return new LockServiceImpl();
     }
-    
+
     @Bean
     public ReportStorageService getReportStorageService() {
         return new ReportStorageServiceImpl();
@@ -563,7 +590,7 @@ public class MainConfiguration {
     public DocumentSvnService getDocumentSvnService() {
         return new DocumentSvnServiceImpl();
     }
-    
+
     @Bean
     public ReportService getReportService() {
         return new ReportServiceImpl();
@@ -575,7 +602,9 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseLinkService getCaseLinkService() { return new CaseLinkServiceImpl(); }
+    public CaseLinkService getCaseLinkService() {
+        return new CaseLinkServiceImpl();
+    }
 
     @Bean
     public SiteFolderService getSiteFolderService() {
@@ -583,7 +612,9 @@ public class MainConfiguration {
     }
 
     @Bean
-    public YoutrackService getYoutrackService() { return new YoutrackServiceImpl(); }
+    public YoutrackService getYoutrackService() {
+        return new YoutrackServiceImpl();
+    }
 
     @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
@@ -591,14 +622,17 @@ public class MainConfiguration {
     }
 
 
-    /** ASPECT/INTERCEPTORS **/
+    /**
+     * ASPECT/INTERCEPTORS
+     **/
     @Bean
-    public ServiceLayerInterceptor getServiceLayerInterceptor () {
+    public ServiceLayerInterceptor getServiceLayerInterceptor() {
         return new ServiceLayerInterceptor();
     }
 
     @Bean
-    public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging () {
+    public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
     }
+
 }
