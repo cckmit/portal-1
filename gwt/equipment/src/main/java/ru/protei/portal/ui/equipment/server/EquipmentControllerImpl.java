@@ -153,6 +153,24 @@ public class EquipmentControllerImpl implements EquipmentController {
     }
 
     @Override
+    public List<DecimalNumber> getDecimalNumbersOfEquipment(long equipmentId) throws RequestFailedException {
+
+        log.debug("get decimal numbers of equipment, id: {}", equipmentId);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<DecimalNumber>> response = equipmentService.getDecimalNumbersOfEquipment(descriptor.makeAuthToken(), equipmentId);
+
+        log.debug("get decimal numbers of equipment, id: {} -> {} ", equipmentId, response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
+    @Override
     public boolean checkIfExistDecimalNumber( DecimalNumber number ) throws RequestFailedException {
         if (number == null) {
             log.warn("null number in request");

@@ -93,6 +93,18 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public CoreResponse<List<DecimalNumber>> getDecimalNumbersOfEquipment(AuthToken token, long id) {
+
+        List<DecimalNumber> numbers = decimalNumberDAO.getDecimalNumbersByEquipmentId(id);
+
+        if (numbers == null) {
+            return new CoreResponse<List<DecimalNumber>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return new CoreResponse<List<DecimalNumber>>().success(numbers);
+    }
+
+    @Override
     @Transactional
     public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
 
@@ -248,7 +260,7 @@ public class EquipmentServiceImpl implements EquipmentService {
         Long equipmentId = equipment.getId();
         log.info( "binding update to linked decimal numbers for equipmentId = {}", equipmentId );
 
-        List<Long> toRemoveNumberIds = decimalNumberDAO.getDecimalNumbersByEquipmentId( equipmentId );
+        List<Long> toRemoveNumberIds = decimalNumberDAO.getDecimalNumberIdsByEquipmentId( equipmentId );
         if ( CollectionUtils.isEmpty(equipment.getDecimalNumbers()) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
             return true;
         }

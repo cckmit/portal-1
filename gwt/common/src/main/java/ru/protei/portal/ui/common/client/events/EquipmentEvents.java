@@ -69,12 +69,15 @@ public class EquipmentEvents {
         public DocumentEdit(Long documentId) {
             this.documentId = documentId;
         }
-        public DocumentEdit(Long projectId, List<String> decimalNumbers) {
+        public DocumentEdit(Long equipmentId, Long projectId, List<String> decimalNumbers) {
+            this.equipmentId = equipmentId;
             this.projectId = projectId;
             this.decimalNumbers = decimalNumbers;
         }
 
-        @Name("id")
+        @Name("eqId")
+        public Long equipmentId;
+        @Name("docId")
         public Long documentId;
         @Name("project")
         public Long projectId;

@@ -3,15 +3,19 @@ package ru.protei.portal.ui.common.client.common;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class DecimalNumberFormatter {
 
     public static String formatNumber(DecimalNumber number) {
-        if (number == null) {
+        if (number == null || number.isEmpty()) {
             return "";
         }
-
         StringBuilder sb = new StringBuilder();
         appendNumberOrganizationCode(sb, number);
         appendNumberClassifierCode(sb, number);
@@ -21,7 +25,7 @@ public class DecimalNumberFormatter {
     }
 
     public static String formatNumberWithoutModification(DecimalNumber number) {
-        if (number == null || number.getClassifierCode() == null || number.getRegisterNumber() == null) {
+        if (number == null || number.isEmpty()) {
             return "";
         }
         StringBuilder sb = new StringBuilder();
@@ -29,6 +33,24 @@ public class DecimalNumberFormatter {
         appendNumberClassifierCode(sb, number);
         appendNumberRegisterNumber(sb, number);
         return sb.toString();
+    }
+
+    public static List<String> formatNumbersWithoutModification(Collection<DecimalNumber> decimalNumbers) {
+
+        List<String> result = new ArrayList<>();
+
+        if (decimalNumbers == null) {
+            return result;
+        }
+
+        decimalNumbers.forEach(decimalNumber -> {
+            String number = formatNumberWithoutModification(decimalNumber);
+            if (StringUtils.isNotBlank(number)) {
+                result.add(number);
+            }
+        });
+
+        return result;
     }
 
     private static void appendNumberOrganizationCode(StringBuilder sb, DecimalNumber number) {

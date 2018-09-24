@@ -37,6 +37,8 @@ public interface EquipmentController extends RemoteService {
 
     Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException;
 
+    List<DecimalNumber> getDecimalNumbersOfEquipment( long equipmentId ) throws RequestFailedException;
+
     /**
      * Проверка валидности заданного децимального номера
      */

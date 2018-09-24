@@ -13,7 +13,9 @@ public interface DecimalNumberDAO extends PortalBaseDAO<DecimalNumber> {
 
     boolean checkExists(DecimalNumber number );
 
-    List<Long> getDecimalNumbersByEquipmentId( Long id );
+    List<DecimalNumber> getDecimalNumbersByEquipmentId(Long id);
+
+    List<Long> getDecimalNumberIdsByEquipmentId(Long id);
 
     Integer getNextAvailableRegNumber(DecimalNumberQuery filter);
 

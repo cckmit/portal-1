@@ -8,19 +8,21 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Document;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
-import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
@@ -34,7 +36,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.documentUploader().setUploadHandler(new UploadHandler() {
             @Override
             public void onError() {
-                notificationHandler.accept(lang.errSaveDocumentFile(), NotifyEvents.NotifyType.ERROR);
+                fireEvent(new NotifyEvents.Show(lang.errSaveDocumentFile(), NotifyEvents.NotifyType.ERROR));
             }
             @Override
             public void onSuccess() {
@@ -53,20 +55,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
 
         decimalNumbers = null;
 
-        if (event.documentId == null) {
-            if (event.projectId == null || CollectionUtils.isEmpty(event.decimalNumbers)) {
-                notificationHandler.accept(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR);
-                fireEvent(new Back());
-                return;
-            }
-            drawView();
-            fireEvent(new AppEvents.InitPanelName(lang.documentCreate()));
-            decimalNumbers = event.decimalNumbers;
-            Document document = new Document();
-            document.setApproved(false);
-            document.setProjectId(event.projectId);
-            fillView(document);
-        } else {
+        if (event.documentId != null) {
             drawView();
             fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
             equipmentController.getDocument(event.documentId, new FluentCallback<Document>()
@@ -76,6 +65,27 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     })
                     .withSuccess(this::fillView)
             );
+            return;
+        }
+
+        if (event.projectId == null || event.equipmentId == null) {
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
+            fireEvent(new Back());
+            return;
+        }
+
+        drawView();
+        fireEvent(new AppEvents.InitPanelName(lang.documentCreate()));
+
+        Document document = new Document();
+        document.setApproved(false);
+        document.setProjectId(event.projectId);
+        document.setEquipment(new Equipment(event.equipmentId));
+        if (CollectionUtils.isEmpty(event.decimalNumbers)) {
+            requestDecimalNumbers(event.equipmentId, () -> fillView(document));
+        } else {
+            decimalNumbers = event.decimalNumbers;
+            fillView(document);
         }
     }
 
@@ -113,6 +123,25 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         if (!isNew) {
             view.setApprovedMode(!isApproved);
         }
+    }
+
+    private void requestDecimalNumbers(Long equipmentId, Runnable andThen) {
+
+        if (equipmentId == null) {
+            andThen.run();
+            return;
+        }
+
+        equipmentController.getDecimalNumbersOfEquipment(equipmentId, new FluentCallback<List<DecimalNumber>>()
+                .withError(throwable -> {
+                    errorHandler.accept(throwable);
+                    andThen.run();
+                })
+                .withSuccess(numbers -> {
+                    decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(numbers);
+                    andThen.run();
+                })
+        );
     }
 
     private void drawView() {
@@ -178,7 +207,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.saveButtonEnabled().setEnabled(false);
         view.cancelButtonEnabled().setEnabled(false);
         if ((document.getId() == null || !document.getApproved()) && StringUtils.isNotBlank(view.documentUploader().getFilename())) {
-            notificationHandler.accept(lang.documentSaving(), NotifyEvents.NotifyType.INFO);
+            fireEvent(new NotifyEvents.Show(lang.documentSaving(), NotifyEvents.NotifyType.INFO));
             view.documentUploader().uploadBindToDocument(document);
         } else {
             saveUploadedDocument();
@@ -195,14 +224,14 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     if (throwable instanceof RequestFailedException) {
                         RequestFailedException rf = (RequestFailedException) throwable;
                         if (En_ResultStatus.ALREADY_EXIST.equals(rf.status)) {
-                            notificationHandler.accept(lang.equipmentDocumentAlreadyExists(), NotifyEvents.NotifyType.ERROR);
+                            fireEvent(new NotifyEvents.Show(lang.equipmentDocumentAlreadyExists(), NotifyEvents.NotifyType.ERROR));
                             return;
                         }
                     }
                     errorHandler.accept(throwable);
                 })
                 .withSuccess(doc -> {
-                    notificationHandler.accept(lang.documentSaved(), NotifyEvents.NotifyType.SUCCESS);
+                    fireEvent(new NotifyEvents.Show(lang.documentSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new DocumentEvents.ChangeModel());
                     fireEvent(new Back());
                 })
@@ -211,7 +240,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
 
     private boolean checkDocumentUploadValid(Document document) {
         if (document.getId() == null && StringUtils.isBlank(view.documentUploader().getFilename())) {
-            notificationHandler.accept(lang.uploadingDocumentNotSet(), NotifyEvents.NotifyType.ERROR);
+            fireEvent(new NotifyEvents.Show(lang.uploadingDocumentNotSet(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
         return true;
@@ -219,7 +248,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
 
     private boolean checkDocumentValid(Document document) {
         if (!document.isValid()) {
-            notificationHandler.accept(getValidationErrorMessage(document), NotifyEvents.NotifyType.ERROR);
+            fireEvent(new NotifyEvents.Show(getValidationErrorMessage(document), NotifyEvents.NotifyType.ERROR));
             return false;
         }
         return true;
@@ -246,8 +275,6 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     EquipmentControllerAsync equipmentController;
     @Inject
     DefaultErrorHandler errorHandler;
-    @Inject
-    DefaultNotificationHandler notificationHandler;
 
     private Document document;
     private List<String> decimalNumbers;

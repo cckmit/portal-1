@@ -9,10 +9,8 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -25,10 +23,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
-import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,7 +71,7 @@ public abstract class EquipmentEditActivity
         fillDTO(equipment);
 
         if (equipment.getProjectId() == null) {
-            notification.accept(lang.projectRequired(), NotifyEvents.NotifyType.ERROR);
+            fireEvent(new NotifyEvents.Show(lang.projectRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -93,7 +89,7 @@ public abstract class EquipmentEditActivity
                 .withError(t -> {
                     if (t instanceof RequestFailedException) {
                         if (En_ResultStatus.ALREADY_EXIST_RELATED.equals(((RequestFailedException) t).status)) {
-                            notification.accept(lang.equipmentDecimalNumbeOccupied(), NotifyEvents.NotifyType.ERROR);
+                            fireEvent(new NotifyEvents.Show(lang.equipmentDecimalNumbeOccupied(), NotifyEvents.NotifyType.ERROR));
                             return;
                         }
                     }
@@ -121,7 +117,7 @@ public abstract class EquipmentEditActivity
 
     @Override
     public void onDecimalNumbersChanged() {
-        List<String> decimalNumbers = getDecimalNumbersWithoutModification(view.getNumbers());
+        List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(view.getNumbers());
         fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumbers));
     }
 
@@ -133,20 +129,20 @@ public abstract class EquipmentEditActivity
         }
 
         if (view.project().getValue() == null || view.project().getValue().getId() == null) {
-            notification.accept(lang.projectRequired(), NotifyEvents.NotifyType.INFO);
+            fireEvent(new NotifyEvents.Show(lang.projectRequired(), NotifyEvents.NotifyType.INFO));
             return;
         }
 
-        List<String> decimalNumbers = getDecimalNumbersWithoutModification(view.getNumbers());
+        List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(view.getNumbers());
 
         if (CollectionUtils.isEmpty(decimalNumbers)) {
-            notification.accept(lang.decimalNumbersRequired(), NotifyEvents.NotifyType.INFO);
+            fireEvent(new NotifyEvents.Show(lang.decimalNumbersRequired(), NotifyEvents.NotifyType.INFO));
             return;
         }
 
         fillDTO(equipment);
 
-        fireEvent(new EquipmentEvents.DocumentEdit(view.project().getValue().getId(), decimalNumbers));
+        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), view.project().getValue().getId(), decimalNumbers));
     }
 
     private void fillView(Equipment equipment) {
@@ -225,24 +221,6 @@ public abstract class EquipmentEditActivity
         return equipment.getId() == null;
     }
 
-    private List<String> getDecimalNumbersWithoutModification(List<DecimalNumber> decimalNumbers) {
-
-        List<String> result = new ArrayList<>();
-
-        if (decimalNumbers == null) {
-            return result;
-        }
-
-        decimalNumbers.forEach(decimalNumber -> {
-            String number = DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
-            if (StringUtils.isNotBlank(number)) {
-                result.add(number);
-            }
-        });
-
-        return result;
-    }
-
     @Inject
     AbstractEquipmentEditView view;
 
@@ -256,8 +234,6 @@ public abstract class EquipmentEditActivity
     EquipmentControllerAsync equipmentService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
-    @Inject
-    DefaultNotificationHandler notification;
 
     private AppEvents.InitDetails initDetails;
 }

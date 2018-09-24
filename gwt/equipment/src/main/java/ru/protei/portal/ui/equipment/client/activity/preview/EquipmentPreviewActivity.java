@@ -156,14 +156,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
             return result;
         }
 
-        equipment.getDecimalNumbers().forEach(decimalNumber -> {
-            String number = DecimalNumberFormatter.formatNumberWithoutModification(decimalNumber);
-            if (StringUtils.isNotBlank(number)) {
-                result.add(number);
-            }
-        });
-
-        return result;
+        return DecimalNumberFormatter.formatNumbersWithoutModification(equipment.getDecimalNumbers());
     }
 
     @Inject

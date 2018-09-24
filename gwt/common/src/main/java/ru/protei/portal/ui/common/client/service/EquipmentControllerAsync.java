@@ -35,6 +35,8 @@ public interface EquipmentControllerAsync {
      */
     void getEquipmentCount( EquipmentQuery query, AsyncCallback<Long> callback );
 
+    void getDecimalNumbersOfEquipment(long equipmentId, AsyncCallback<List<DecimalNumber>> async);
+
     /**
      * Проверка валидности заданного децимального номера
      * @param number
