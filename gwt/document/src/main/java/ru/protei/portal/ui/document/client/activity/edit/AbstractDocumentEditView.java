@@ -2,6 +2,7 @@ package ru.protei.portal.ui.document.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -17,6 +18,8 @@ public interface AbstractDocumentEditView extends IsWidget {
     void setActivity(AbstractDocumentEditActivity activity);
 
     HasValue<String> name();
+
+    HasValue<En_DocumentExecutionType> executionType();
 
     HasValue<DocumentType> documentType();
 
@@ -53,6 +56,8 @@ public interface AbstractDocumentEditView extends IsWidget {
     HasEnabled equipmentEnabled();
 
     HasEnabled documentTypeEnabled();
+
+    HasEnabled inventoryNumberEnabled();
 
 
     HasVisibility uploaderVisible();

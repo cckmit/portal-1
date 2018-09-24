@@ -2,13 +2,11 @@ package ru.protei.portal.core.model.yt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.yt.fields.Fields;
-import ru.protei.portal.core.model.yt.fields.issue.DateIssueField;
+import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.core.model.yt.fields.issue.IssueField;
 import ru.protei.portal.core.model.yt.fields.issue.StringArrayWithIdArrayIssueField;
-import ru.protei.portal.core.model.yt.fields.issue.StringIssueField;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,34 +69,8 @@ public class Issue {
         return (T) fieldValue;
     }
 
-    public String getProjectShortName() {
-        return getStringFieldValue(Fields.projectShortName);
-    }
-
-    public String getSummary() {
-        return getStringFieldValue(Fields.summary);
-    }
-
-    public String getDescription() {
-        return getStringFieldValue(Fields.description);
-    }
-
-    public Date getCreated() {
-        DateIssueField field = getField(Fields.created);
-        return field == null ? null : field.getValue();
-    }
-
-    public Date getUpdated() {
-        DateIssueField field = getField(Fields.updated);
-        return field == null ? null : field.getValue();
-    }
-
-    public String getUpdaterName() {
-        return getStringFieldValue(Fields.updaterName);
-    }
-
     public String getStateId() {
-        StringArrayWithIdArrayIssueField field = getField(Fields.stateEng);
+        StringArrayWithIdArrayIssueField field = getStateField();
         if (field == null)
             return null;
         List<String> valueId = field.getValueId();
@@ -107,9 +79,12 @@ public class Issue {
         return valueId.get(0);
     }
 
-    private String getStringFieldValue(String name) {
-        StringIssueField field = getField(name);
-        return field == null ? null : field.getValue();
+    private StringArrayWithIdArrayIssueField getStateField() {
+        return HelperFunc.nvlt(
+                getField(YtFields.stateEng),
+                getField(YtFields.stateRus),
+                getField(YtFields.equipmentStateRus)
+        );
     }
 
     @Override

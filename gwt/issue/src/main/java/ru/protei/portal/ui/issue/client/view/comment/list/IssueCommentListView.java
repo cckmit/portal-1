@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -66,6 +67,11 @@ public class IssueCommentListView
     public void enabledNewComment( boolean value ) {
         comment.setVisible( value );
         send.setVisible( value );
+    }
+
+    @Override
+    public void setEnabledAttachAndComment(boolean isEnabled) {
+        newMessage.setVisible(isEnabled);
     }
 
     @Override
@@ -125,6 +131,13 @@ public class IssueCommentListView
     @UiHandler("attachmentList")
     public void onRemoveAttachment(RemoveEvent event){
         activity.removeTempAttachment(event.getAttachment());
+    }
+
+    @UiHandler("comment")
+    public void onCtrlEnterClicked(AddEvent event) {
+        if (activity != null) {
+            activity.onSendClicked();
+        }
     }
 
     @Override

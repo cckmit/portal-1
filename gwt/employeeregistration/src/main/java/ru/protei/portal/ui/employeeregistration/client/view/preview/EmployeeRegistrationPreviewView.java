@@ -7,13 +7,18 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewView;
+
+import java.util.Set;
 
 public class EmployeeRegistrationPreviewView extends Composite implements AbstractEmployeeRegistrationPreviewView {
     @Inject
@@ -104,6 +109,19 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         }
     }
 
+    @Override
+    public void setIssues(Set<CaseLink> issues) {
+        this.issues.setValue(issues);
+    }
+    
+    @Override
+    public HasWidgets getCommentsContainer() {
+        return commentContainer;
+    }
+
+    @Inject
+    @UiField(provided = true)
+    IssueLinks issues;
     @UiField
     SpanElement fullName;
     @UiField
@@ -128,6 +146,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     SpanElement created;
     @UiField
     DivElement caseState;
+    @UiField
+    HTMLPanel commentContainer;
 
 
     @Inject

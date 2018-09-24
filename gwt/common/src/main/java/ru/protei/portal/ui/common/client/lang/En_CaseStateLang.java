@@ -44,6 +44,7 @@ public class En_CaseStateLang {
             case WORKAROUND: return lang.workaroundCaseState();
             case INFO_REQUEST: return lang.requestInfoCaseState();
             case CUST_PENDING: return lang.custPendingCaseState();
+            case CANCELED: return lang.canceledCaseState();
             default:
                 return lang.errUnknownResult();
         }

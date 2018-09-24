@@ -109,7 +109,10 @@ public class DebugIdsHelper {
             if (id == 31) {
                 return DebugIds.ISSUE_STATE.INFO_REQUEST;
             }
-            if (id == 32) {
+            if (id == 33) {
+                return DebugIds.ISSUE_STATE.CANCELED;
+            }
+            if (id == 34) {
                 return DebugIds.ISSUE_STATE.CUST_PENDING;
             }
             return DebugIds.ISSUE_STATE.DEFAULT + id;

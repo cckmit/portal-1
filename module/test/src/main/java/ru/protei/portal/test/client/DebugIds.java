@@ -136,6 +136,7 @@ public class DebugIds {
         String DESIGN = "issue-state-design";
         String WORKAROUND = "issue-state-workaround";
         String INFO_REQUEST = "issue-state-info-request";
+        String CANCELED = "issue-state-canceled";
         String CUST_PENDING = "issue-state-cust-pending";
     }
 

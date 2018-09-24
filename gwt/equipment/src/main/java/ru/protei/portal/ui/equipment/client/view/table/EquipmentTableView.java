@@ -56,7 +56,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         table.setLoadHandler( activity );
         table.setPagerListener( activity );
     }
-    
+
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
@@ -110,11 +110,13 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
         ClickColumn< Equipment > name = new ClickColumn< Equipment >() {
             @Override
             protected void fillColumnHeader( Element element ) {
+                element.addClassName( "equipment-name-column" );
                 element.setInnerText( lang.equipmentNameBySpecification() );
             }
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
+                cell.addClassName( "equipment-name-column" );
                 String nameSldWrksHtml = "<div><i><small><i class='fa fa-file-o m-r-5'></i>" + value.getNameSldWrks() + "</small></i></div>";
                 cell.setInnerHTML( HTMLHelper.wrapDiv( value.getName() + nameSldWrksHtml ) );
             }
@@ -133,14 +135,15 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                 if ( value.getDecimalNumbers() == null ) {
                     return;
                 }
+                cell.addClassName( "equipment-number-column" );
 
                 Element root = DOM.createDiv();
-                cell.appendChild( root );
-                root.setClassName( "decimal-number" );
+                root.setClassName( "decimal-numbers" );
 
                 for ( DecimalNumber number : value.getDecimalNumbers() ) {
                     Element numElem = DOM.createDiv();
                     numElem.setInnerHTML( DecimalNumberFormatter.formatNumber( number ) );
+                    numElem.setClassName("decimal-number");
                     if ( number.isReserve() ) {
                         Element isReserveEl = DOM.createElement("i");
                         isReserveEl.addClassName( "fa fa-flag text-danger m-l-10" );
@@ -148,6 +151,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
                     }
                     root.appendChild( numElem );
                 }
+                cell.appendChild( root );
             }
         };
         columns.add( decimalNumber );
@@ -191,7 +195,7 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
                 Element root = DOM.createDiv();
-                root.addClassName( "equipment-type-column" );
+                cell.addClassName( "equipment-type-column" );
                 cell.appendChild( root );
                 ImageElement imageElement = DOM.createImg().cast();
                 imageElement.setSrc( "./images/eq_" + value.getType().name().toLowerCase() + ".png" );
@@ -210,13 +214,19 @@ public class EquipmentTableView extends Composite implements AbstractEquipmentTa
 
             @Override
             public void fillColumnValue ( Element cell, Equipment value ) {
-                cell.setClassName( "decimal-number" );
+                cell.setClassName( "equipment-number-column" );
+                Element root = DOM.createDiv();
+                root.setClassName( "decimal-numbers" );
 
-                if ( value != null && value.getLinkedEquipmentDecimalNumbers() != null ) {
-                    cell.setInnerHTML( HTMLHelper.wrapDiv(
-                            value.getLinkedEquipmentDecimalNumbers().stream().map( DecimalNumberFormatter:: formatNumber ).collect( Collectors.joining(", "))
-                    ));
+                if (value != null && value.getLinkedEquipmentDecimalNumbers() != null) {
+                    root.setInnerHTML(StringUtils.join(
+                            "<div class='decimal-number'>",
+                            value.getLinkedEquipmentDecimalNumbers().stream()
+                                    .map(DecimalNumberFormatter::formatNumber).collect(Collectors.joining(", ")),
+                            "</div>"
+                    ).toString());
                 }
+                cell.appendChild( root );
             }
         };
         columns.add( primaryUse );

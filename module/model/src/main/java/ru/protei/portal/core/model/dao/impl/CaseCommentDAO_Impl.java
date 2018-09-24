@@ -36,12 +36,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
             condition.append("1=1");
 
             if (query.getCaseId() != null) {
-                condition.append(" and case_id=?");
+                condition.append(" and case_comment.case_id=?");
                 args.add(query.getCaseId());
             }
 
             if (HelperFunc.isNotEmpty(query.getSearchString())) {
-                condition.append(" and comment_text like ?");
+                condition.append(" and case_comment.comment_text like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
 
@@ -54,11 +54,11 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
     @Override
     public CaseComment getByRemoteId(String remoteId) {
-        return getByCondition(" remote_id=? ", remoteId);
+        return getByCondition(" case_comment.remote_id=? ", remoteId);
     }
 
     @Override
-    public boolean checkExistsByRemoteIdAndText(String remoteId, String text) {
-        return checkExistsByCondition(" remote_id=? and comment_text=?", remoteId, text);
+    public boolean checkExistsByRemoteIdAndRemoteLinkId(String remoteId, Long remoteLinkId) {
+        return checkExistsByCondition(" case_comment.remote_id=? and case_comment.remote_link_id=?", remoteId, remoteLinkId);
     }
 }

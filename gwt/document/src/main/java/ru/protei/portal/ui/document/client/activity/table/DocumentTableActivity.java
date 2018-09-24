@@ -121,7 +121,7 @@ public abstract class DocumentTableActivity
         if (value == null || value.getProjectInfo() == null)
             return;
         fireEvent(new ProjectEvents.Show());
-        fireEvent(new ProjectEvents.Edit(value.getProjectInfo().getId()));
+        fireEvent(new ProjectEvents.ShowFullScreen(value.getProjectInfo().getId()));
     }
 
     @Override

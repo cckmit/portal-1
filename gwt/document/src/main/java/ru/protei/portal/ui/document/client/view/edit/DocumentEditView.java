@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
@@ -27,6 +28,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
+import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeSelector;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
@@ -68,6 +70,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Override
     public HasValidable nameValidator() {
         return name;
+    }
+
+    @Override
+    public HasValue<En_DocumentExecutionType> executionType() {
+        return executionType;
     }
 
     @Override
@@ -187,6 +194,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public HasEnabled inventoryNumberEnabled() {
+        return inventoryNumber;
+    }
+
+    @Override
     public void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints) {
         decimalNumber.setHints(decimalNumberHints);
     }
@@ -302,6 +314,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Inject
     @UiField(provided = true)
+    DocumentExecutionTypeSelector executionType;
+
+    @Inject
+    @UiField(provided = true)
     StringSelectInput keywords;
 
     @Inject
@@ -326,6 +342,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     HTMLPanel inventoryNumberContainer;
 
     @Inject
+    @UiField
     Lang lang;
 
     private AbstractDocumentEditActivity activity;

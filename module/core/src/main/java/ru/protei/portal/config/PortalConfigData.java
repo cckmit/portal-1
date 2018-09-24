@@ -100,11 +100,15 @@ public class PortalConfigData {
         private final String crmUrlInternal;
         private final String crmUrlExternal;
         private final String crmCaseUrl;
+        private final String crmEmployeeRegistrationUrl;
+        private final String[] crmEmployeeRegistrationNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+            crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
+            crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
         }
 
         public String getCrmUrlInternal() {
@@ -117,6 +121,14 @@ public class PortalConfigData {
 
         public String getCrmCaseUrl() {
             return crmCaseUrl;
+        }
+
+        public String getCrmEmployeeRegistrationUrl() {
+            return crmEmployeeRegistrationUrl;
+        }
+
+        public String[] getCrmEmployeeRegistrationNotificationsRecipients() {
+            return crmEmployeeRegistrationNotificationsRecipients;
         }
     }
 
@@ -412,11 +424,15 @@ public class PortalConfigData {
         private final String apiBaseUrl;
         private final String authToken;
         private final String employeeRegistrationSyncSchedule;
+        private final String equipmentProject;
+        private final String adminProject;
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
             authToken = properties.getProperty("youtrack.api.auth_token");
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
+            equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
+            adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
         }
 
         public String getApiBaseUrl() {
@@ -429,6 +445,14 @@ public class PortalConfigData {
 
         public String getEmployeeRegistrationSyncSchedule() {
             return employeeRegistrationSyncSchedule;
+        }
+
+        public String getEquipmentProject() {
+            return equipmentProject;
+        }
+
+        public String getAdminProject() {
+            return adminProject;
         }
     }
 }

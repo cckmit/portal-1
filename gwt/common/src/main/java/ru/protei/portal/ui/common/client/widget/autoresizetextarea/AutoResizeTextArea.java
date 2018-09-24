@@ -1,10 +1,17 @@
 package ru.protei.portal.ui.common.client.widget.autoresizetextarea;
 
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.TextArea;
+import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 
-public class AutoResizeTextArea extends TextArea {
+public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAddHandlers {
 
     private final static String NEW_LINE_SYMBOL = "\n";
     private final static int INDEX_NOT_FOUND = -1;
@@ -12,6 +19,10 @@ public class AutoResizeTextArea extends TextArea {
     private int minRows = 5;
     private int maxRows = 20;
     private int extraRows = 2;
+
+    public AutoResizeTextArea() {
+        addKeyUpHandler(this);
+    }
 
     /**
      * Устанавливает минимальное количество строк, которое будет отображаться
@@ -100,5 +111,18 @@ public class AutoResizeTextArea extends TextArea {
             lines = maxRows;
         }
         super.setVisibleLines(lines);
+    }
+
+    @Override
+    public void onKeyUp(KeyUpEvent event) {
+        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER && event.isControlKeyDown()) {
+            event.preventDefault();
+            AddEvent.fire(this);
+        }
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
+        return addHandler(handler, AddEvent.getType());
     }
 }

@@ -331,6 +331,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String custPendingCaseState();
 
+    String canceledCaseState();
+
     String criticalImportance();
 
     String importantImportance();
@@ -1354,7 +1356,27 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartment();
 
+    String employeeRegistrationLastYoutrackSynchronization();
+    
     String internalResourceEmail();
+
+    String sendOnCtrlEnter();
+
+    String abroadDocumentCategory();
+
+    String errAlreadyExistRelated();
+
+    String errInventoryNumberAlreadyExist();
+
+    String documentExecutionTypeElectronic();
+
+    String documentExecutionTypePaper();
+
+    String documentExecutionTypeTypographic();
+
+    String documentExecutionType();
+
+    String errDecimalNumberAlreadyExist();
 
     String equipmentDocuments();
 

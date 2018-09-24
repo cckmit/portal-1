@@ -24,7 +24,7 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="case_id")
     private Long caseId;
 
-    @JdbcJoinedObject(localColumn = "author_id", remoteColumn = "id", updateLocalColumn = true )
+    @JdbcJoinedObject(localColumn = "author_id", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "person")
     private Person author;
 
     @JdbcColumn(name="cstate_id")
@@ -53,6 +53,12 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name = "remote_id")
     private String remoteId;
+
+    @JdbcColumn(name = "remote_link_id")
+    private Long remoteLinkId;
+
+    @JdbcJoinedObject(localColumn = "remote_link_id", remoteColumn = "id", table = "case_link", sqlTableAlias = "case_link")
+    private CaseLink remoteLink;
 
     public CaseComment() {}
 
@@ -181,6 +187,22 @@ public class CaseComment extends AuditableObject {
 
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
+    }
+
+    public Long getRemoteLinkId() {
+        return remoteLinkId;
+    }
+
+    public void setRemoteLinkId(Long remoteLinkId) {
+        this.remoteLinkId = remoteLinkId;
+    }
+
+    public CaseLink getRemoteLink() {
+        return remoteLink;
+    }
+
+    public void setRemoteLink(CaseLink remoteLink) {
+        this.remoteLink = remoteLink;
     }
 
     @Override
