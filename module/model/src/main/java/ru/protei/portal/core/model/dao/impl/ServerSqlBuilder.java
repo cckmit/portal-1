@@ -16,6 +16,11 @@ public class ServerSqlBuilder {
                 args.add(query.getServerId());
             }
 
+            if (query.getCompanyIds() != null && !query.getCompanyIds().isEmpty()) {
+                condition.append(" and p.company_id in ")
+                        .append(JdbcHelper.makeSqlStringCollection(query.getCompanyIds(), args, null));
+            }
+
             if (query.getPlatformIds() != null && !query.getPlatformIds().isEmpty()) {
                 condition.append(" and server.platform_id in ")
                         .append(JdbcHelper.makeSqlStringCollection(query.getPlatformIds(), args, null));

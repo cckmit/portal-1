@@ -252,6 +252,12 @@ public abstract class ServerTableActivity implements
         query.setSearchString(filterView.name().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setCompanyIds(filterView.companies().getValue() == null
+                ? null
+                : filterView.companies().getValue().stream()
+                .map(EntityOption::getId)
+                .collect(Collectors.toList())
+        );
         query.setPlatformIds(filterView.platforms().getValue() == null
                 ? null
                 : filterView.platforms().getValue().stream()

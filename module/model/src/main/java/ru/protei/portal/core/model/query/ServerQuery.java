@@ -9,6 +9,7 @@ import java.util.List;
 public class ServerQuery extends BaseQuery {
 
     private Long serverId;
+    private List<Long> companyIds;
     private List<Long> platformIds;
     private String ip;
     private String params;
@@ -41,6 +42,27 @@ public class ServerQuery extends BaseQuery {
 
     public void setServerId(Long serverId) {
         this.serverId = serverId;
+    }
+
+    public List<Long> getCompanyIds() {
+        return companyIds;
+    }
+
+    public void setCompanyIds(List<Long> companyIds) {
+        this.companyIds = companyIds != null ? companyIds : new ArrayList<>();
+    }
+
+    public void setCompanyId(Long companyId) {
+        if (companyId == null) {
+            this.companyIds.clear();
+            return;
+        }
+        this.companyIds = new ArrayList<>();
+        this.companyIds.add(companyId);
+    }
+
+    public void addCompanyId(Long companyId) {
+        this.companyIds.add(companyId);
     }
 
     public List<Long> getPlatformIds() {

@@ -15,6 +15,8 @@ public interface AbstractServerFilterView extends IsWidget {
 
     HasValue<String> name();
 
+    HasValue<Set<EntityOption>> companies();
+
     HasValue<Set<EntityOption>> platforms();
 
     HasValue<En_SortField> sortField();
