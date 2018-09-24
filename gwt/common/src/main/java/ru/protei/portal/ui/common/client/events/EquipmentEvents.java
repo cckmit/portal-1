@@ -75,10 +75,10 @@ public class EquipmentEvents {
             this.decimalNumbers = decimalNumbers;
         }
 
-        @Name("eqId")
-        public Long equipmentId;
-        @Name("docId")
+        @Name("document")
         public Long documentId;
+        @Name("equipment")
+        public Long equipmentId;
         @Name("project")
         public Long projectId;
         @Omit
