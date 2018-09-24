@@ -24,6 +24,7 @@ import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNew
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -86,6 +87,14 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 return En_CaseState.DONE;
             case "Выдан заказчику":
                 return En_CaseState.DONE;
+            case "Ignore":
+                return En_CaseState.IGNORED;
+            case "Closed":
+                return En_CaseState.CLOSED;
+            case "Canceled":
+                return En_CaseState.CANCELED;
+            case "Отменен":
+                return En_CaseState.CANCELED;
             default:
                 return En_CaseState.ACTIVE;
         }
@@ -175,10 +184,19 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 .map(change -> toCaseState(change.getIssue().getStateId()))
                 .collect(Collectors.toList());
 
-        if (caseStates.stream().allMatch(cs -> cs == En_CaseState.DONE))
+        Predicate<En_CaseState> isDone = cs -> cs == En_CaseState.DONE || cs == En_CaseState.CLOSED;
+        Predicate<En_CaseState> isCanceled = cs -> cs == En_CaseState.IGNORED || cs == En_CaseState.CANCELED;
+        Predicate<En_CaseState> isCreated = cs -> cs == En_CaseState.CREATED;
+
+        if (caseStates.stream().allMatch(isDone))
             return En_CaseState.DONE;
-        if (caseStates.stream().allMatch(cs -> cs == En_CaseState.CREATED))
+        if (caseStates.stream().allMatch(isCanceled))
+            return En_CaseState.CANCELED;
+        if (caseStates.stream().allMatch(isCreated))
             return En_CaseState.CREATED;
+        if (caseStates.stream().allMatch(isDone.or(isCanceled)) &&
+                caseStates.stream().anyMatch(isDone))
+            return En_CaseState.DONE;
         return En_CaseState.ACTIVE;
     }
 
