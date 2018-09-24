@@ -1371,4 +1371,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentExecutionType();
 
+    String errDecimalNumberAlreadyExist();
 }

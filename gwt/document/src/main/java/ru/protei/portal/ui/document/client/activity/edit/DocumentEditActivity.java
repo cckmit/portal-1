@@ -167,6 +167,7 @@ public abstract class DocumentEditActivity
     private void setDecimalNumberEnabled() {
         En_DocumentCategory category = view.documentCategory().getValue();
         view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
+        view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
     }
 
     private boolean checkDocumentUploadValid(Document newDocument) {
@@ -235,7 +236,7 @@ public abstract class DocumentEditActivity
         d.setId(document.getId());
         d.setName(view.name().getValue());
         d.setAnnotation(view.annotation().getValue());
-        d.setDecimalNumber(view.decimalNumberText().getText());
+        d.setDecimalNumber(StringUtils.nullIfEmpty(view.decimalNumberText().getText()));
         d.setType(view.documentType().getValue());
         d.setExecutionType(view.executionType().getValue());
         d.setInventoryNumber(view.inventoryNumber().getValue());
@@ -261,7 +262,6 @@ public abstract class DocumentEditActivity
         view.annotation().setValue(document.getAnnotation());
         view.executionType().setValue(isNew ? En_DocumentExecutionType.ELECTRONIC : document.getExecutionType());
         view.setCreated( document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
-        view.decimalNumberText().setText(document.getDecimalNumber());
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
         view.documentType().setValue(document.getType(), true);
         view.inventoryNumber().setValue(document.getInventoryNumber());
@@ -269,6 +269,7 @@ public abstract class DocumentEditActivity
         view.project().setValue(document.getProjectInfo(), true);
         view.version().setValue(document.getVersion());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()), true);
+        view.decimalNumberText().setText(document.getDecimalNumber());
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
@@ -280,10 +281,12 @@ public abstract class DocumentEditActivity
         }
 
         boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
+        boolean inventoryNumberIsNotSet = document.getInventoryNumber() == null;
 
         view.uploaderVisible().setVisible(isNew);
         view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
         view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
+        view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
 
         view.nameValidator().setValid(true);
 

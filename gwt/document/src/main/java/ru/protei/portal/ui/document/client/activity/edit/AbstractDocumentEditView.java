@@ -57,6 +57,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasEnabled documentTypeEnabled();
 
+    HasEnabled inventoryNumberEnabled();
+
 
     HasVisibility uploaderVisible();
 

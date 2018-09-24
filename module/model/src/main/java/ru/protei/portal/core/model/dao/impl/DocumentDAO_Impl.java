@@ -43,6 +43,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
         return checkExistsByCondition(" inventory_number=?", inventoryNumber);
     }
 
+    @Override
+    public boolean checkDecimalNumberExists(String decimalNumber) {
+        return checkExistsByCondition(" decimal_number=?", decimalNumber);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(DocumentQuery query) {
         return new SqlCondition().build(((condition, args) -> {

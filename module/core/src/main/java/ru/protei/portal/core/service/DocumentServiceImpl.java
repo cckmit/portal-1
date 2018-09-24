@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
@@ -110,6 +111,15 @@ public class DocumentServiceImpl implements DocumentService {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        Document oldDocument = documentDAO.get(document.getId());
+
+        if (oldDocument == null)
+            return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
+        if (validationStatus != En_ResultStatus.OK)
+            return new CoreResponse<Document>().error(validationStatus);
+
         if (!documentDAO.saveOrUpdate(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
@@ -140,9 +150,14 @@ public class DocumentServiceImpl implements DocumentService {
             final Long projectId = document.getProjectId(), documentId = document.getId();
 
             final Document oldDocument = documentDAO.get(document.getId());
-            if (oldDocument == null) {
+
+            if (oldDocument == null)
                 return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
-            }
+
+            En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
+            if (validationStatus != En_ResultStatus.OK)
+                return new CoreResponse<Document>().error(validationStatus);
+
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
             documentSvnService.getDocument(projectId, documentId, out);
             final byte[] oldFileData = out.toByteArray();
@@ -184,9 +199,9 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-            if (isDocumentInventoryNumberExists(document)) {
-                return new CoreResponse<Document>().error(En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST);
-            }
+            En_ResultStatus validationStatus = checkDocumentDesignationValid(null, document);
+            if (validationStatus != En_ResultStatus.OK)
+                return new CoreResponse<Document>().error(validationStatus);
 
             if (!documentDAO.saveOrUpdate(document)) {
                 return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
@@ -217,7 +232,36 @@ public class DocumentServiceImpl implements DocumentService {
         });
     }
 
+    private En_ResultStatus checkDocumentDesignationValid(Document oldDocument, Document document) {
+
+        if (oldDocument != null && (
+                isValueSetTwice(oldDocument.getInventoryNumber(), document.getInventoryNumber()) ||
+                isValueSetTwice(oldDocument.getDecimalNumber(), document.getDecimalNumber()))) {
+            return En_ResultStatus.INCORRECT_PARAMS;
+        }
+
+        if ((oldDocument == null || !Objects.equals(oldDocument.getInventoryNumber(), document.getInventoryNumber())) &&
+                isDocumentInventoryNumberExists(document)) {
+            return En_ResultStatus.INVENTORY_NUMBER_ALREADY_EXIST;
+        }
+
+        if ((oldDocument == null || !Objects.equals(oldDocument.getDecimalNumber(), document.getDecimalNumber())) &&
+                isDocumentDecimalNumberExists(document)) {
+            return En_ResultStatus.DECIMAL_NUMBER_ALREADY_EXIST;
+        }
+
+        return En_ResultStatus.OK;
+    }
+
     private boolean isDocumentInventoryNumberExists(Document document) {
         return document.getInventoryNumber() != null && documentDAO.checkInventoryNumberExists(document.getInventoryNumber());
+    }
+
+    private boolean isDocumentDecimalNumberExists(Document document) {
+        return document.getDecimalNumber() != null && documentDAO.checkDecimalNumberExists(document.getDecimalNumber());
+    }
+
+    private <T> boolean isValueSetTwice(T oldObj, T newObj) {
+        return oldObj != null && !oldObj.equals(newObj);
     }
 }

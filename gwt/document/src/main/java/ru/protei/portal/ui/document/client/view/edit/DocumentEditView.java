@@ -194,6 +194,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public HasEnabled inventoryNumberEnabled() {
+        return inventoryNumber;
+    }
+
+    @Override
     public void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints) {
         decimalNumber.setHints(decimalNumberHints);
     }

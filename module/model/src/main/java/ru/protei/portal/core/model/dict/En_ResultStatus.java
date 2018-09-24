@@ -108,5 +108,10 @@ public enum En_ResultStatus {
     /**
      * уже существует такой инвентарный номер
      */
-    INVENTORY_NUMBER_ALREADY_EXIST
+    INVENTORY_NUMBER_ALREADY_EXIST,
+
+    /**
+     * уже существует такой инвентарный номер
+     */
+    DECIMAL_NUMBER_ALREADY_EXIST
 }
