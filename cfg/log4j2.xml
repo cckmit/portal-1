@@ -15,7 +15,6 @@
 
     <Loggers>
         <Root level="DEBUG">
-            <!--<AppenderRef ref="CONSOLE"/>-->
         </Root>
 
         <Logger name="ru.protei" level="DEBUG">
