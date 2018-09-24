@@ -11,4 +11,6 @@ public interface AbstractApplicationListItemView extends IsWidget {
     void setComment(String comment);
 
     void setEditVisible(boolean visible);
+
+    void setRemoveVisible(boolean visible);
 }
