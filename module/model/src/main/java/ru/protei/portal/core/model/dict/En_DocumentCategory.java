@@ -16,7 +16,7 @@ public enum En_DocumentCategory {
     KD(En_DecimalNumberType.ESKD),
 
     /**
-     * Программная документациё
+     * Программная документация
      */
     PD(En_DecimalNumberType.ESPD),
 
@@ -28,7 +28,12 @@ public enum En_DocumentCategory {
     /**
      * Технологическая документация
      */
-    TD(En_DecimalNumberType.TD);
+    TD(En_DecimalNumberType.TD),
+
+    /**
+     * Зарубежье
+     */
+    ABROAD(null);
 
     En_DocumentCategory(En_DecimalNumberType type) {
         this.type = type;

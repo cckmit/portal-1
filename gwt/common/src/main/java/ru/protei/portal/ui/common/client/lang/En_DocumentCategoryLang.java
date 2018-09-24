@@ -19,6 +19,7 @@ public class En_DocumentCategoryLang {
             case PD: return lang.pdDocumentCategory();
             case ED: return lang.edDocumentCategory();
             case TD: return lang.tdDocumentCategory();
+            case ABROAD: return lang.abroadDocumentCategory();
             default: return lang.errUnknownResult();
         }
     }

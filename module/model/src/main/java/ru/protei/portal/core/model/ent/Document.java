@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.annotations.*;
@@ -83,6 +84,11 @@ public class Document implements Serializable, Downloadable {
 
     @JdbcColumn(name = "is_approved")
     private Boolean isApproved;
+
+
+    @JdbcColumn(name = "execution_type")
+    @JdbcEnumerated(EnumType.ORDINAL)
+    private En_DocumentExecutionType executionType;
 
     public Document() {
     }
@@ -212,6 +218,14 @@ public class Document implements Serializable, Downloadable {
         isApproved = approved;
     }
 
+    public En_DocumentExecutionType getExecutionType() {
+        return executionType;
+    }
+
+    public void setExecutionType(En_DocumentExecutionType executionType) {
+        this.executionType = executionType;
+    }
+
     public boolean isValid() {
         return  this.getType() != null &&
                 (this.getInventoryNumber() == null || this.getInventoryNumber() > 0) &&
@@ -234,7 +248,7 @@ public class Document implements Serializable, Downloadable {
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "Document{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
@@ -251,6 +265,7 @@ public class Document implements Serializable, Downloadable {
                 ", created=" + created +
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
+                ", executionType=" + executionType +
                 '}';
     }
 }

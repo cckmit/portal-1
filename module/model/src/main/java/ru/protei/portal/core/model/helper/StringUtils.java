@@ -35,6 +35,10 @@ public class StringUtils {
         return s == null ? "" : s;
     }
 
+    public static String nullIfEmpty(String s) {
+        return isEmpty(s) ? null : s;
+    }
+
     public static StringBuilder join(CharSequence... str) {
         return join(null, str);
     }
@@ -46,5 +50,4 @@ public class StringUtils {
         }
         return sb;
     }
-
 }

@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public abstract class DocumentPreviewActivity implements Activity, AbstractDocumentPreviewActivity {
@@ -48,6 +49,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setAnnotation(document.getAnnotation());
         view.setNumberDecimal(document.getDecimalNumber());
         view.setNumberInventory(document.getInventoryNumber() == null ? "" : document.getInventoryNumber().toString());
+        view.setExecutionType(document.getExecutionType() == null ? "" : executionTypeLang.getName(document.getExecutionType()));
         view.setKeyWords(document.getKeywords() == null ? "" : HelperFunc.join(", ", document.getKeywords()));
         view.setDownloadLink(DOWNLOAD_PATH + document.getProjectId() + "/" + document.getId());
 
@@ -68,6 +70,8 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
 
     @Inject
     Lang lang;
+    @Inject
+    En_DocumentExecutionTypeLang executionTypeLang;
     @Inject
     AbstractDocumentPreviewView view;
 }
