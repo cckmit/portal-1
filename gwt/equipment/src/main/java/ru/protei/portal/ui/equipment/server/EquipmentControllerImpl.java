@@ -12,10 +12,10 @@ import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.portal.core.service.DocumentService;
 import ru.protei.portal.core.service.EquipmentService;
 import ru.protei.portal.ui.common.client.service.EquipmentController;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -233,28 +233,13 @@ public class EquipmentControllerImpl implements EquipmentController {
     }
 
     @Override
-    public List<Document> getDocuments(List<String> decimalNumbers) throws RequestFailedException {
-
-        log.debug("getDocuments: decimalNumbers={}", decimalNumbers);
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<Document>> response = equipmentService.documentList(descriptor.makeAuthToken(), decimalNumbers);
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
-    }
-
-    @Override
     public List<Document> getDocuments(Long equipmentId) throws RequestFailedException {
 
         log.debug("getDocuments: equipmentId={}", equipmentId);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<List<Document>> response = equipmentService.documentList(descriptor.makeAuthToken(), equipmentId);
+        CoreResponse<List<Document>> response = documentService.documentList(descriptor.makeAuthToken(), equipmentId);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -269,7 +254,7 @@ public class EquipmentControllerImpl implements EquipmentController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Document> response = equipmentService.getDocument(descriptor.makeAuthToken(), id);
+        CoreResponse<Document> response = documentService.getDocument(descriptor.makeAuthToken(), id);
         log.debug("getDocument: id={} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -299,14 +284,14 @@ public class EquipmentControllerImpl implements EquipmentController {
                 throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
             }
             sessionService.setFileItem(httpRequest, null);
-            response = equipmentService.createDocument(descriptor.makeAuthToken(), document, fileItem);
+            response = documentService.createDocument(descriptor.makeAuthToken(), document, fileItem);
         } else {
             FileItem fileItem = sessionService.getFileItem(httpRequest);
             if (fileItem == null) {
-                response = equipmentService.updateDocument(descriptor.makeAuthToken(), document);
+                response = documentService.updateDocument(descriptor.makeAuthToken(), document);
             } else {
                 sessionService.setFileItem(httpRequest, null);
-                response = equipmentService.updateDocumentAndContent(descriptor.makeAuthToken(), document, fileItem);
+                response = documentService.updateDocumentAndContent(descriptor.makeAuthToken(), document, fileItem);
             }
         }
 
@@ -331,6 +316,9 @@ public class EquipmentControllerImpl implements EquipmentController {
 
     @Autowired
     private EquipmentService equipmentService;
+
+    @Autowired
+    DocumentService documentService;
 
     @Autowired
     SessionService sessionService;

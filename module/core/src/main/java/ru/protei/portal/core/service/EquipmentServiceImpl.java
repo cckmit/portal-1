@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.fileupload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,7 @@ import ru.protei.portal.core.model.dao.EquipmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -47,9 +44,6 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Autowired
     PolicyService policyService;
-
-    @Autowired
-    DocumentControlService documentControlService;
 
     @Override
     public CoreResponse<List<Equipment>> equipmentList(AuthToken token, EquipmentQuery query ) {
@@ -211,59 +205,6 @@ public class EquipmentServiceImpl implements EquipmentService {
         return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
     }
 
-    @Override
-    public CoreResponse<List<Document>> documentList(AuthToken token, List<String> decimalNumbers) {
-
-        DocumentQuery query = new DocumentQuery();
-        query.setDecimalNumbers(decimalNumbers);
-        List<Document> list = documentDAO.getListByQuery(query);
-
-        if (list == null) {
-            return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        resetDocumentsPrivacyInfo(list);
-
-        return new CoreResponse<List<Document>>().success(list);
-    }
-
-    @Override
-    public CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId) {
-
-        DocumentQuery query = new DocumentQuery();
-        query.setEquipmentIds(Collections.singletonList(equipmentId));
-        List<Document> list = documentDAO.getListByQuery(query);
-
-        if (list == null) {
-            return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
-        resetDocumentsPrivacyInfo(list);
-
-        return new CoreResponse<List<Document>>().success(list);
-    }
-
-    @Override
-    public CoreResponse<Document> getDocument(AuthToken token, Long id) {
-        return documentControlService.getDocument(id);
-    }
-
-    @Override
-    public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
-        return documentControlService.createDocument(document, fileItem);
-    }
-
-    @Override
-    public CoreResponse<Document> updateDocument(AuthToken token, Document document) {
-        return documentControlService.updateDocument(document);
-    }
-
-    @Override
-    public CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem) {
-        return documentControlService.updateDocumentAndContent(document, fileItem);
-    }
-
-
     private boolean updateDecimalNumbers( Equipment equipment ) {
         Long equipmentId = equipment.getId();
         log.info( "binding update to linked decimal numbers for equipmentId = {}", equipmentId );
@@ -370,17 +311,5 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private boolean isNew(DecimalNumber decimalNumber) {
         return (decimalNumber != null && decimalNumber.getId() == null);
-    }
-
-    private void resetDocumentsPrivacyInfo(List<Document> documents) {
-        // RESET PRIVACY INFO
-        documents.forEach(document -> {
-            if (document.getContractor() != null) {
-                document.getContractor().resetPrivacyInfo();
-            }
-            if (document.getRegistrar() != null) {
-                document.getRegistrar().resetPrivacyInfo();
-            }
-        });
     }
 }

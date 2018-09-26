@@ -64,8 +64,6 @@ public interface EquipmentControllerAsync {
     void equipmentOptionList( EquipmentQuery query, AsyncCallback< List< EquipmentShortView > > async );
 
 
-    void getDocuments(List<String> decimalNumbers, AsyncCallback<List<Document>> async);
-
     void getDocuments(Long equipmentId, AsyncCallback<List<Document>> async);
 
     void getDocument(Long id, AsyncCallback<Document> async);

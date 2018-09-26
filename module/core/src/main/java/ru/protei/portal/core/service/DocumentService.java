@@ -14,19 +14,26 @@ import java.util.List;
 
 public interface DocumentService {
 
-    @Privileged(En_Privilege.DOCUMENT_VIEW)
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
     CoreResponse<Integer> count(AuthToken token, DocumentQuery query);
 
-    @Privileged(En_Privilege.DOCUMENT_VIEW)
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
     CoreResponse<List<Document>> documentList(AuthToken token, DocumentQuery query);
 
-    @Privileged(En_Privilege.DOCUMENT_VIEW)
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
+    CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId);
+
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
     CoreResponse<Document> getDocument(AuthToken token, Long id);
 
-    @Privileged(requireAny = En_Privilege.DOCUMENT_EDIT)
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_CREATE, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
+    CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem);
+
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     CoreResponse<Document> updateDocument(AuthToken token, Document document);
 
-    @Privileged(requireAny = En_Privilege.DOCUMENT_CREATE)
-    CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem);
+    @Privileged(requireAny = {En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
+    @Auditable(En_AuditType.DOCUMENT_MODIFY)
+    CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem);
 }

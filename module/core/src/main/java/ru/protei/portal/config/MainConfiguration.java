@@ -624,11 +624,6 @@ public class MainConfiguration {
         return new EmployeeRegistrationServiceImpl();
     }
 
-    @Bean
-    public DocumentControlService getDocumentControlService() {
-        return new DocumentControlServiceImpl();
-    }
-
     /**
      * ASPECT/INTERCEPTORS
      **/
