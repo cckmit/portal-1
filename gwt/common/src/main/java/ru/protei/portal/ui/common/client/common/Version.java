@@ -266,6 +266,7 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.78.0 - PORTAL-360 Исправления по разделу "Банк документов"
  * 4.0.78.1 - PORTAL-267 Раздел Анкеты сотрудников (исправления после тестирования, убран парсинг неиспользуемых полей, обработаны статусы cancel/ignored)
  * 4.0.78.2 - PORTAL-347 Площадки заказчиков. Замечания
+ * 4.0.78.3 - PORTAL-360 Исправления по разделу "Банк документов" (#comment=85-94560)
  */
 public class Version {
     public static String getVersion() {

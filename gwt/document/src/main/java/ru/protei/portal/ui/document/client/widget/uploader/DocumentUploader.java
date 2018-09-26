@@ -24,11 +24,6 @@ public class DocumentUploader extends FileUploader implements AbstractDocumentUp
     }
 
     @Override
-    public String getFilename() {
-        return fileUpload.getFilename();
-    }
-
-    @Override
     public void resetAction() {
         form.setAction("javascript:void(0);");
     }
