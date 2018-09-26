@@ -8,4 +8,8 @@ public interface AbstractEquipmentEditActivity {
     void onSaveClicked();
 
     void onCancelClicked();
+
+    void onCreateDocumentClicked();
+
+    void onDecimalNumbersChanged();
 }

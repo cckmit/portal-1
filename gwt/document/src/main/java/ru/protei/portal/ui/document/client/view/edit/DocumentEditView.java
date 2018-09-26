@@ -28,11 +28,11 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
-import ru.protei.portal.ui.document.client.widget.doccategory.DocumentCategorySelector;
-import ru.protei.portal.ui.document.client.widget.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeSelector;
-import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
-import ru.protei.portal.ui.document.client.widget.uploader.DocumentUploader;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
+import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -342,6 +342,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     HTMLPanel inventoryNumberContainer;
 
     @Inject
+    @UiField
     Lang lang;
 
     private AbstractDocumentEditActivity activity;

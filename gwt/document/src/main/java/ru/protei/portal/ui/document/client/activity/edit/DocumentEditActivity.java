@@ -26,7 +26,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
+import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
 
 import java.util.List;
 import java.util.Objects;

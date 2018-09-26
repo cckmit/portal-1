@@ -6,6 +6,8 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
@@ -18,6 +20,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -110,6 +114,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
         view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
 
+
         if( value.getDecimalNumbers() != null ) {
             view.setDecimalNumbers( value.getDecimalNumbers().stream().map( DecimalNumberFormatter::formatNumber ).collect( Collectors.joining(", ")) );
         }
@@ -119,6 +124,8 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         } else {
             view.setLinkedEquipment( lang.equipmentPrimaryUseNotDefinied() );
         }
+
+        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }
 
     private void fillView( Long id ) {

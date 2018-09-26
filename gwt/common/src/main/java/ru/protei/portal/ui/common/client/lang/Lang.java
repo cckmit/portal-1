@@ -1261,13 +1261,16 @@ public interface Lang extends Messages, ContactItemLang {
 
     String initiatorSelectACompany();
     String serverAccessParamsColumn();
+
     String contactPhone();
 
-    String documentApproveType();
     String equipmentDecimalNumberNotCorrect();
 
-    String documentApproved();
     String equipmentDecimalNumbeOccupied();
+
+    String documentApproveType();
+
+    String documentApproved();
 
     String documentNotApproved();
 
@@ -1374,4 +1377,24 @@ public interface Lang extends Messages, ContactItemLang {
     String documentExecutionType();
 
     String errDecimalNumberAlreadyExist();
+
+    String equipmentDocuments();
+
+    String equipmentDocumentCreate();
+
+    String documentEdit();
+
+    String documentCreate();
+
+    String documentSaving();
+
+    String documentSaved();
+
+    String equipmentDocumentAlreadyExists();
+
+    String reUploadDocuments();
+
+    String projectRequired();
+
+    String decimalNumbersRequired();
 }

@@ -30,6 +30,9 @@ public interface EquipmentService {
     @Privileged( En_Privilege.EQUIPMENT_VIEW )
     CoreResponse< Equipment > getEquipment( AuthToken token, long id );
 
+    @Privileged( En_Privilege.EQUIPMENT_VIEW )
+    CoreResponse< List<DecimalNumber> > getDecimalNumbersOfEquipment( AuthToken token, long id );
+
     @Privileged( requireAny = { En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT })
     @Auditable( En_AuditType.EQUIPMENT_MODIFY )
     CoreResponse< Equipment > saveEquipment( AuthToken token, Equipment equipment );

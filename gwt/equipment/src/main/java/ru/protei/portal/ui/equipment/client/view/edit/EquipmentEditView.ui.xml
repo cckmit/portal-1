@@ -68,6 +68,14 @@
                     </div>
                 </div>
 
+                <legend class="header">
+                    <ui:text from="{lang.equipmentDocuments}"/>
+                    <g:Button ui:field="createDocumentButton" styleName="btn btn-primary header-button-right" text="{lang.equipmentDocumentCreate}"/>
+                </legend>
+                <div class="grid grid-indent">
+                    <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12"/>
+                </div>
+
                 <legend class="header"><ui:text from="{lang.equipmentComment}"/></legend>
                 <div class="grid grid-indent">
                     <div class="form-group col-xs-12">

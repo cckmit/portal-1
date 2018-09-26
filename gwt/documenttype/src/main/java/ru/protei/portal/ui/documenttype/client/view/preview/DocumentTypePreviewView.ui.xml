@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:doccategory="urn:import:ru.protei.portal.ui.document.client.widget.doccategory">
+             xmlns:doccategory="urn:import:ru.protei.portal.ui.common.client.widget.document.doccategory">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 

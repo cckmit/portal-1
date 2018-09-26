@@ -107,4 +107,16 @@ textarea.input-field[disabled]{
   color: #333;
   border: 0;
   border-bottom: 1px solid #e5e5e5;
+
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  > .header-button-right {
+    display: inline-block;
+    margin: 1px 1px 1px 5px;
+    float: right;
+  }
 }

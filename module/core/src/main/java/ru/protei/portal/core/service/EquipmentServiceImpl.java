@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
+import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -34,6 +35,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Autowired
     DecimalNumberDAO decimalNumberDAO;
+
+    @Autowired
+    DocumentDAO documentDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -83,8 +87,24 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public CoreResponse<List<DecimalNumber>> getDecimalNumbersOfEquipment(AuthToken token, long id) {
+
+        List<DecimalNumber> numbers = decimalNumberDAO.getDecimalNumbersByEquipmentId(id);
+
+        if (numbers == null) {
+            return new CoreResponse<List<DecimalNumber>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return new CoreResponse<List<DecimalNumber>>().success(numbers);
+    }
+
+    @Override
     @Transactional
     public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
+
+        if (equipment.getProjectId() == null) {
+            return new CoreResponse<Equipment>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if ( CollectionUtils.isEmpty( equipment.getDecimalNumbers() ) ) {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
@@ -185,12 +205,11 @@ public class EquipmentServiceImpl implements EquipmentService {
         return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
     }
 
-
     private boolean updateDecimalNumbers( Equipment equipment ) {
         Long equipmentId = equipment.getId();
         log.info( "binding update to linked decimal numbers for equipmentId = {}", equipmentId );
 
-        List<Long> toRemoveNumberIds = decimalNumberDAO.getDecimalNumbersByEquipmentId( equipmentId );
+        List<Long> toRemoveNumberIds = decimalNumberDAO.getDecimalNumberIdsByEquipmentId( equipmentId );
         if ( CollectionUtils.isEmpty(equipment.getDecimalNumbers()) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
             return true;
         }

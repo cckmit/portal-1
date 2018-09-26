@@ -18,6 +18,8 @@ public class DocumentQuery extends BaseQuery {
     private String inTextQuery;
     private List<Long> onlyIds;
     private Boolean isApproved;
+    private List<String> decimalNumbers;
+    private List<Long> equipmentIds;
 
     public DocumentQuery() {
     }
@@ -104,5 +106,21 @@ public class DocumentQuery extends BaseQuery {
 
     public void setApproved(Boolean approved) {
         isApproved = approved;
+    }
+
+    public List<String> getDecimalNumbers() {
+        return decimalNumbers;
+    }
+
+    public void setDecimalNumbers(List<String> decimalNumbers) {
+        this.decimalNumbers = decimalNumbers;
+    }
+
+    public List<Long> getEquipmentIds() {
+        return equipmentIds;
+    }
+
+    public void setEquipmentIds(List<Long> equipmentIds) {
+        this.equipmentIds = equipmentIds;
     }
 }

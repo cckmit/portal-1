@@ -268,9 +268,12 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.78.2 - PORTAL-347 Площадки заказчиков. Замечания
  * 4.0.78.3 - PORTAL-360 Исправления по разделу "Банк документов" (#comment=85-94560)
  * 4.0.79.0 - PORTAL-397 Вынести webapp(gwt/crm) в app. Переименовать crm -> portal
+ * 4.0.79.1 - PORTAL-345 База децимальных номеров: отображение документации
+ *            PORTAL-344 База децимальных номеров: создание документации
+ *            PORTAL-178 База децимальных номеров: расширение функций
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.79.0";
+        return "4.0.79.1";
     }
 }

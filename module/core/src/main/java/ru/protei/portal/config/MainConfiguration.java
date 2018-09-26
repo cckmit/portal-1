@@ -624,7 +624,6 @@ public class MainConfiguration {
         return new EmployeeRegistrationServiceImpl();
     }
 
-
     /**
      * ASPECT/INTERCEPTORS
      **/

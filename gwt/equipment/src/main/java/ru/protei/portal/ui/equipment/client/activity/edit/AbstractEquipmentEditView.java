@@ -1,8 +1,6 @@
 package ru.protei.portal.ui.equipment.client.activity.edit;
 
-import com.google.gwt.user.client.ui.HasEnabled;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -38,6 +36,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
 
     HasValue<String> date();
 
+    HasWidgets documents();
+
     void setVisibilitySettingsForCreated(boolean isVisible);
 
     boolean isDecimalNumbersCorrect();
@@ -45,4 +45,8 @@ public interface AbstractEquipmentEditView extends IsWidget {
     void setNumbers(List<DecimalNumber> decimalNumbers, boolean isEditable);
 
     List<DecimalNumber> getNumbers();
+
+    HasEnabled createDocumentButtonEnabled();
+
+    HasVisibility documentsVisibility();
 }

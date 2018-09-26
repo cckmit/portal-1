@@ -119,6 +119,22 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
                 condition.append(" and document.is_approved=?");
                 args.add(query.getApproved());
             }
+
+            if (CollectionUtils.isNotEmpty(query.getDecimalNumbers())) {
+                condition.append(" and (");
+                condition.append(query.getDecimalNumbers()
+                        .stream()
+                        .map(dn -> " document.decimal_number like ? ")
+                        .collect(Collectors.joining(" or "))
+                );
+                condition.append(" ) ");
+                query.getDecimalNumbers().forEach(dn -> args.add(HelperFunc.makeLikeArg(dn, false)));
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getEquipmentIds())) {
+                condition.append(" and document.equipment_id in ");
+                condition.append(HelperFunc.makeInArg(query.getEquipmentIds(), false));
+            }
         }));
     }
 }
