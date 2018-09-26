@@ -59,6 +59,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasEnabled inventoryNumberEnabled();
 
+    HasEnabled saveEnabled();
+
 
     HasVisibility uploaderVisible();
 
@@ -71,9 +73,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     AbstractDocumentUploader documentUploader();
 
-    void resetFilename();
 
-    void setSaveEnabled(boolean isEnabled);
+    void resetFilename();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 
