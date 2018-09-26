@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.document.client.activity.preview;
 
+import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -66,7 +67,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
         view.setRegistrar(document.getRegistrar() == null ? "" : document.getRegistrar().getDisplayShortName());
     }
 
-    private static final String DOWNLOAD_PATH = "Crm/springApi/document/";
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/document/";
 
     @Inject
     Lang lang;
