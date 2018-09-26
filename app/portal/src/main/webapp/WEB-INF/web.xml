@@ -29,17 +29,17 @@
 
     <servlet-mapping>
         <servlet-name>springGwtRemoteServiceServlet</servlet-name>
-        <url-pattern>/Crm/springGwtServices/*</url-pattern>
+        <url-pattern>/Portal/springGwtServices/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>springServlet</servlet-name>
-        <url-pattern>/Crm/springApi/*</url-pattern>
+        <url-pattern>/Portal/springApi/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>reportDownloadServlet</servlet-name>
-        <url-pattern>/Crm/download/report</url-pattern>
+        <url-pattern>/Portal/download/report</url-pattern>
     </servlet-mapping>
 
     <filter>
@@ -55,6 +55,6 @@
 
 
     <welcome-file-list>
-        <welcome-file>crm.html</welcome-file>
+        <welcome-file>portal.html</welcome-file>
     </welcome-file-list>
 </web-app>

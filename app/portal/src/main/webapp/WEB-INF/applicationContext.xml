@@ -24,6 +24,7 @@
        <task:scheduler id="winter-task-scheduler" pool-size="10"/>
 
        <context:component-scan base-package="ru.protei.portal.ui" />
+       <context:component-scan base-package="ru.protei.portal.app" />
 
        <mvc:annotation-driven />
 </beans>

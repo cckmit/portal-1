@@ -26,7 +26,7 @@
 
     <profiles>
         <profile>
-            <id>crm</id>
+            <id>portal</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
