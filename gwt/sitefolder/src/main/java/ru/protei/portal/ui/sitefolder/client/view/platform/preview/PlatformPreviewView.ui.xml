@@ -9,7 +9,6 @@
         <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
             <div class="actions col-xs-12">
                 <g:Button styleName="btn btn-white" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
-                <!--<g:Button styleName="btn btn-white" ui:field="fullScreen" title="{lang.fullScreen}"><i class="fa fa-external-link"/></g:Button>-->
             </div>
 
             <fieldset class="header">
