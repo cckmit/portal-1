@@ -66,6 +66,8 @@ public interface EquipmentControllerAsync {
 
     void getDocuments(List<String> decimalNumbers, AsyncCallback<List<Document>> async);
 
+    void getDocuments(Long equipmentId, AsyncCallback<List<Document>> async);
+
     void getDocument(Long id, AsyncCallback<Document> async);
 
     void saveDocument(Document document, AsyncCallback<Document> async);

@@ -248,6 +248,21 @@ public class EquipmentControllerImpl implements EquipmentController {
     }
 
     @Override
+    public List<Document> getDocuments(Long equipmentId) throws RequestFailedException {
+
+        log.debug("getDocuments: equipmentId={}", equipmentId);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<Document>> response = equipmentService.documentList(descriptor.makeAuthToken(), equipmentId);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
+    @Override
     public Document getDocument(Long id) throws RequestFailedException {
 
         log.debug("getDocument: id={}", id);

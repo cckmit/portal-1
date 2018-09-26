@@ -125,8 +125,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
             view.setLinkedEquipment( lang.equipmentPrimaryUseNotDefinied() );
         }
 
-        List<String> decimalNumbers = getDecimalNumbersWithoutModification(value);
-        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumbers));
+        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }
 
     private void fillView( Long id ) {
@@ -146,17 +145,6 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
                 fillView( value );
             }
         } );
-    }
-
-    private List<String> getDecimalNumbersWithoutModification(Equipment equipment) {
-
-        List<String> result = new ArrayList<>();
-
-        if (equipment == null || CollectionUtils.isEmpty(equipment.getDecimalNumbers())) {
-            return result;
-        }
-
-        return DecimalNumberFormatter.formatNumbersWithoutModification(equipment.getDecimalNumbers());
     }
 
     @Inject

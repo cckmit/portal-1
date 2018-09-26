@@ -50,12 +50,12 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
         stopPeriodicTask(tdFillViewHandler);
         stopPeriodicTask(pdFillViewHandler);
 
-        if (CollectionUtils.isEmpty(event.decimalNumbers)) {
+        if (event.equipmentId == null) {
             handleDocuments(new ArrayList<>());
             return;
         }
 
-        equipmentController.getDocuments(event.decimalNumbers, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
+        equipmentController.getDocuments(event.equipmentId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
     }
 
     @Override

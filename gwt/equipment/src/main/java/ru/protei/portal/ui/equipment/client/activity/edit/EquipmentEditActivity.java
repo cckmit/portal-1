@@ -116,10 +116,7 @@ public abstract class EquipmentEditActivity
     }
 
     @Override
-    public void onDecimalNumbersChanged() {
-        List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(view.getNumbers());
-        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), decimalNumbers));
-    }
+    public void onDecimalNumbersChanged() {}
 
     @Override
     public void onCreateDocumentClicked() {
@@ -185,7 +182,7 @@ public abstract class EquipmentEditActivity
         view.createDocumentButtonEnabled().setEnabled(!isCreate);
         view.documentsVisibility().setVisible(!isCreate);
 
-        onDecimalNumbersChanged();
+        fireEvent(new EquipmentEvents.ShowDocumentList(view.documents(), equipment.getId()));
     }
 
     private void fillDTO(Equipment equipment) {

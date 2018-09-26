@@ -86,12 +86,12 @@ public class EquipmentEvents {
     }
 
     public static class ShowDocumentList {
-        public ShowDocumentList(HasWidgets parent, List<String> decimalNumbers) {
+        public ShowDocumentList(HasWidgets parent, Long equipmentId) {
             this.parent = parent;
-            this.decimalNumbers = decimalNumbers;
+            this.equipmentId = equipmentId;
         }
         public HasWidgets parent;
-        public List<String> decimalNumbers;
+        public Long equipmentId;
     }
 
     public static class ChangeModel {}

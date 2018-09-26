@@ -61,6 +61,8 @@ public interface EquipmentController extends RemoteService {
 
     List<Document> getDocuments(List<String> decimalNumbers) throws RequestFailedException;
 
+    List<Document> getDocuments(Long equipmentId) throws RequestFailedException;
+
     Document getDocument(Long id) throws RequestFailedException;
 
     Document saveDocument(Document document) throws RequestFailedException;

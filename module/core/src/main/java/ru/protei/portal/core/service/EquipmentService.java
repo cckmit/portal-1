@@ -63,6 +63,9 @@ public interface EquipmentService {
     CoreResponse<List<Document>> documentList(AuthToken token, List<String> decimalNumbers);
 
     @Privileged(En_Privilege.EQUIPMENT_VIEW)
+    CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId);
+
+    @Privileged(En_Privilege.EQUIPMENT_VIEW)
     CoreResponse<Document> getDocument(AuthToken token, Long id);
 
     @Privileged(requireAny = {En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})

@@ -222,15 +222,23 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        // RESET PRIVACY INFO
-        list.forEach(document -> {
-            if (document.getContractor() != null) {
-                document.getContractor().resetPrivacyInfo();
-            }
-            if (document.getRegistrar() != null) {
-                document.getRegistrar().resetPrivacyInfo();
-            }
-        });
+        resetDocumentsPrivacyInfo(list);
+
+        return new CoreResponse<List<Document>>().success(list);
+    }
+
+    @Override
+    public CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId) {
+
+        DocumentQuery query = new DocumentQuery();
+        query.setEquipmentIds(Collections.singletonList(equipmentId));
+        List<Document> list = documentDAO.getListByQuery(query);
+
+        if (list == null) {
+            return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        resetDocumentsPrivacyInfo(list);
 
         return new CoreResponse<List<Document>>().success(list);
     }
@@ -362,5 +370,17 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private boolean isNew(DecimalNumber decimalNumber) {
         return (decimalNumber != null && decimalNumber.getId() == null);
+    }
+
+    private void resetDocumentsPrivacyInfo(List<Document> documents) {
+        // RESET PRIVACY INFO
+        documents.forEach(document -> {
+            if (document.getContractor() != null) {
+                document.getContractor().resetPrivacyInfo();
+            }
+            if (document.getRegistrar() != null) {
+                document.getRegistrar().resetPrivacyInfo();
+            }
+        });
     }
 }

@@ -19,6 +19,7 @@ public class DocumentQuery extends BaseQuery {
     private List<Long> onlyIds;
     private Boolean isApproved;
     private List<String> decimalNumbers;
+    private List<Long> equipmentIds;
 
     public DocumentQuery() {
     }
@@ -113,5 +114,13 @@ public class DocumentQuery extends BaseQuery {
 
     public void setDecimalNumbers(List<String> decimalNumbers) {
         this.decimalNumbers = decimalNumbers;
+    }
+
+    public List<Long> getEquipmentIds() {
+        return equipmentIds;
+    }
+
+    public void setEquipmentIds(List<Long> equipmentIds) {
+        this.equipmentIds = equipmentIds;
     }
 }
