@@ -266,9 +266,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.78.0 - PORTAL-360 Исправления по разделу "Банк документов"
  * 4.0.78.1 - PORTAL-267 Раздел Анкеты сотрудников (исправления после тестирования, убран парсинг неиспользуемых полей, обработаны статусы cancel/ignored)
  * 4.0.78.2 - PORTAL-347 Площадки заказчиков. Замечания
+ * 4.0.79.0 - PORTAL-397 Вынести webapp(gwt/crm) в app. Переименовать crm -> portal
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.78.2";
+        return "4.0.79.0";
     }
 }
