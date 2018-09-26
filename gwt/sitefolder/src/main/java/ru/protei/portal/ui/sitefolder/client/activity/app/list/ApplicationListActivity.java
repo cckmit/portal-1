@@ -134,6 +134,7 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
         itemView.setName(application.getName());
         itemView.setComment(application.getComment());
         itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT));
+        itemView.setRemoveVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE));
         return itemView;
     }
 

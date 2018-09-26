@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface ServerDAO extends PortalBaseDAO<Server> {
 
+    Long count(ServerQuery query);
+
     @SqlConditionBuilder
     SqlCondition createSqlCondition(ServerQuery query);
 }

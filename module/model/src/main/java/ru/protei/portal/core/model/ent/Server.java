@@ -28,7 +28,7 @@ public class Server implements Serializable, Removable {
     @JdbcColumn(name="comment")
     private String comment;
 
-    @JdbcJoinedObject(localColumn = "platform_id", remoteColumn = "id")
+    @JdbcJoinedObject(localColumn = "platform_id", remoteColumn = "id", sqlTableAlias = "p")
     private Platform platform;
 
     private Long applicationsCount;
