@@ -49,18 +49,18 @@
                 <module>gwt/issuereport</module>
                 <module>gwt/region</module>
                 <module>gwt/project</module>
-                <module>gwt/crm</module>
                 <module>gwt/equipment</module>
                 <module>gwt/account</module>
                 <module>gwt/role</module>
                 <module>gwt/official</module>
                 <module>gwt/document</module>
                 <module>gwt/documenttype</module>
-                <!--<module>app/crm</module>-->
                 <module>gwt/casestate</module>
                 <module>gwt/sitefolder</module>
                 <module>gwt/employee</module>
                 <module>gwt/employeeregistration</module>
+
+                <module>app/portal</module>
             </modules>
         </profile>
 

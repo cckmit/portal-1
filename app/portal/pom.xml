@@ -13,11 +13,11 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.protei</groupId>
-    <artifactId>portal4.ui.crm</artifactId>
+    <artifactId>portal4.app.portal</artifactId>
     <packaging>war</packaging>
     <version>1.1-SNAPSHOT</version>
 
-    <name>Portal UI :: CRM Application</name>
+    <name>Portal :: Application</name>
     <url>http://www.protei.ru</url>
 
     <properties>
