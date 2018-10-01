@@ -27,8 +27,18 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
         logger.debug("Modified object has id: {}", caseId);
 
-        final CaseObject caseObject = event.getCaseObject();
-        caseObjectDAO.saveOrUpdate(caseObject);
+        /** PORTAL-162
+         * Я не понял, зачем нужно в back-channel делать сохранение case?
+         * Задача back-channel - отправлять сигнал об изменениях удаленной стороне,
+         * а не вносить изменения локально. Если для работы redmine-plugin'a требуется
+         * обновление какого-либо отдельного поля, то нужно сделать соответствующий
+         * метод в DAO типа updateLastAccessTime (), в котором будет вызов partial-update,
+         * для внесения изменений только в те поля, которые требуется.
+         * А вообще такого быть не должно, здесь должна быть ТОЛЬКО отправка
+         * сообщения удаленной стороне
+         **/
+//        final CaseObject caseObject = event.getCaseObject();
+//        caseObjectDAO.saveOrUpdate(caseObject);
 
         String extAppId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
         if (extAppId == null) {
