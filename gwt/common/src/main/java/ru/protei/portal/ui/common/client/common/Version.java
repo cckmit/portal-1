@@ -271,9 +271,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.79.1 - PORTAL-345 База децимальных номеров: отображение документации
  *            PORTAL-344 База децимальных номеров: создание документации
  *            PORTAL-178 База децимальных номеров: расширение функций
+ * 4.0.79.2 - PORTAL-267 Раздел Анкеты сотрудников (защита от дабл-кликов #comment=85-95372)
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.79.1";
+        return "4.0.79.2";
     }
 }
