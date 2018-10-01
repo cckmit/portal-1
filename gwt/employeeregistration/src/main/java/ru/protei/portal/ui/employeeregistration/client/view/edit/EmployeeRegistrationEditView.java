@@ -5,10 +5,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
@@ -110,6 +107,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Override
     public void setEmploymentDateValid(boolean isValid) {
         employmentDate.markInputValid(isValid);
+    }
+
+    @Override
+    public HasEnabled saveEnabled() {
+        return saveButton;
     }
 
     @UiHandler("saveButton")
