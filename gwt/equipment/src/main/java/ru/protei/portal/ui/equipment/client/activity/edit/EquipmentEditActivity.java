@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.equipment.client.activity.edit;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -49,11 +48,6 @@ public abstract class EquipmentEditActivity
 
         view.setVisibilitySettingsForCreated(event.id != null);
 
-        if (equipment != null) {
-            fillView(equipment);
-            return;
-        }
-
         if (event.id == null) {
             fillView(new Equipment());
             return;
@@ -95,19 +89,13 @@ public abstract class EquipmentEditActivity
                     }
 
                     defaultErrorHandler.accept(t);
-                    fireErrorMessage(t.getMessage());
-
+                    fireEvent(new NotifyEvents.Show(t.getMessage(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
                     fireEvent(new Back());
                 })
         );
-    }
-
-    private boolean fireErrorMessage( String msg) {
-        fireEvent( new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
-        return false;
     }
 
     @Override
@@ -125,21 +113,19 @@ public abstract class EquipmentEditActivity
             return;
         }
 
-        if (view.project().getValue() == null || view.project().getValue().getId() == null) {
+        if (equipment.getProjectId() == null) {
             fireEvent(new NotifyEvents.Show(lang.projectRequired(), NotifyEvents.NotifyType.INFO));
             return;
         }
 
-        List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(view.getNumbers());
+        List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(equipment.getDecimalNumbers());
 
         if (CollectionUtils.isEmpty(decimalNumbers)) {
             fireEvent(new NotifyEvents.Show(lang.decimalNumbersRequired(), NotifyEvents.NotifyType.INFO));
             return;
         }
 
-        fillDTO(equipment);
-
-        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), view.project().getValue().getId(), decimalNumbers));
+        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), equipment.getProjectId(), decimalNumbers));
     }
 
     private void fillView(Equipment equipment) {
@@ -224,13 +210,11 @@ public abstract class EquipmentEditActivity
     @Inject
     Lang lang;
 
-    @ContextAware
-    Equipment equipment;
-
     @Inject
     EquipmentControllerAsync equipmentService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 
     private AppEvents.InitDetails initDetails;
+    private Equipment equipment;
 }
