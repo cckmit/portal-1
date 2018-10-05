@@ -4,7 +4,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DuplicateKeyException;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
@@ -19,6 +19,7 @@ import ru.protei.winter.core.utils.services.lock.LockStrategy;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +28,7 @@ import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
 
 public class DocumentServiceImpl implements DocumentService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(DocumentServiceImpl.class);
 
     @Autowired
     DocumentDAO documentDAO;
@@ -40,7 +41,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     DocumentSvnService documentSvnService;
-
 
     @Override
     public CoreResponse<Integer> count(AuthToken token, DocumentQuery query) {
@@ -55,6 +55,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public CoreResponse<List<Document>> documentList(AuthToken token, DocumentQuery query) {
+
         try {
             checkApplyFullTextSearchFilter(query);
         } catch (IOException e) {
@@ -62,67 +63,120 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         List<Document> list = documentDAO.getListByQuery(query);
+
         if (list == null) {
             return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        list.forEach( document -> {
-                    // RESET PRIVACY INFO
-                    if (document.getContractor() != null) {
-                        document.getContractor().resetPrivacyInfo();
-                    }
-                    if (document.getRegistrar() != null) {
-                        document.getRegistrar().resetPrivacyInfo();
-                    }
-                }
-        );
-
+        list.forEach(this::resetDocumentPrivacyInfo);
 
         return new CoreResponse<List<Document>>().success(list);
     }
 
-    private void checkApplyFullTextSearchFilter(DocumentQuery query)  throws IOException {
-        if (!isEmptyOrWhitespaceOnly(query.getInTextQuery())) {
-            query.setOnlyIds(documentStorageIndex.getDocumentsByQuery(query.getInTextQuery(), query.limit));
-        }
+    @Override
+    public CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId) {
+        DocumentQuery query = new DocumentQuery();
+        query.setEquipmentIds(Collections.singletonList(equipmentId));
+        return documentList(token, query);
     }
 
     @Override
     public CoreResponse<Document> getDocument(AuthToken token, Long id) {
-        Document document = documentDAO.get(id);
-        if (document == null)
-            return new CoreResponse<Document>().error(En_ResultStatus.NOT_FOUND);
 
-        // RESET PRIVACY INFO
-        if (document.getContractor() != null) {
-            document.getContractor().resetPrivacyInfo();
+        Document document = documentDAO.get(id);
+
+        if (document == null) {
+            return new CoreResponse<Document>().error(En_ResultStatus.NOT_FOUND);
         }
-        if (document.getRegistrar() != null) {
-            document.getRegistrar().resetPrivacyInfo();
-        }
+
+        resetDocumentPrivacyInfo(document);
 
         return new CoreResponse<Document>().success(document);
     }
 
     @Override
-    @Transactional
+    public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
+
+        if (document == null || !document.isValid()) {
+            return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        byte[] fileData = fileItem.get();
+
+        InputStream fileInputStream;
+        try {
+            fileInputStream = fileItem.getInputStream();
+        } catch (IOException e) {
+            log.error("createDocument(" + document.getId() + "): failed to get input stream from file item", e);
+            return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+
+            En_ResultStatus validationStatus = checkDocumentDesignationValid(null, document);
+            if (validationStatus != En_ResultStatus.OK) {
+                return new CoreResponse<Document>().error(validationStatus);
+            }
+
+            try {
+                if (!documentDAO.saveOrUpdate(document)) {
+                    return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+                }
+            } catch (DuplicateKeyException ex) {
+                return new CoreResponse<Document>().error(En_ResultStatus.ALREADY_EXIST);
+            }
+
+            Long documentId = document.getId(), projectId = document.getProjectId();
+
+            try {
+                documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
+            } catch (IOException e) {
+                log.error("createDocument(" + document.getId() + "): failed to add file to the index", e);
+                documentDAO.removeByKey(documentId);
+                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+            }
+            try {
+                documentSvnService.saveDocument(projectId, documentId, fileInputStream);
+                return new CoreResponse<Document>().success(document);
+            } catch (SVNException e) {
+                log.error("createDocument(" + document.getId() + "): failed to save in the repository", e);
+                try {
+                    documentStorageIndex.removeDocument(documentId);
+                } catch (IOException e1) {
+                    log.error("createDocument(" + document.getId() + "): failed to delete document from the index");
+                }
+                documentDAO.removeByKey(documentId);
+                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        });
+    }
+
+    @Override
     public CoreResponse<Document> updateDocument(AuthToken token, Document document) {
+
         if (document == null || !document.isValid()) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         Document oldDocument = documentDAO.get(document.getId());
 
-        if (oldDocument == null)
+        if (oldDocument == null) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
-        if (validationStatus != En_ResultStatus.OK)
+        if (validationStatus != En_ResultStatus.OK) {
             return new CoreResponse<Document>().error(validationStatus);
-
-        if (!documentDAO.saveOrUpdate(document)) {
-            return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
+
+        try {
+            if (!documentDAO.saveOrUpdate(document)) {
+                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+            }
+        } catch (DuplicateKeyException ex) {
+            return new CoreResponse<Document>().error(En_ResultStatus.ALREADY_EXIST);
+        }
+
         return new CoreResponse<Document>().success(document);
     }
 
@@ -142,39 +196,43 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             fileInputStream = fileItem.getInputStream();
         } catch (IOException e) {
-            logger.error("updateDocumentAndContent(" + document.getId() + "): Failed to get input stream from file item", e);
+            log.error("updateDocumentAndContent(" + document.getId() + "): Failed to get input stream from file item", e);
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+
             final Long projectId = document.getProjectId(), documentId = document.getId();
 
             final Document oldDocument = documentDAO.get(document.getId());
-
-            if (oldDocument == null)
+            if (oldDocument == null) {
                 return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
-
+            }
             En_ResultStatus validationStatus = checkDocumentDesignationValid(oldDocument, document);
-            if (validationStatus != En_ResultStatus.OK)
+            if (validationStatus != En_ResultStatus.OK) {
                 return new CoreResponse<Document>().error(validationStatus);
-
+            }
             final ByteArrayOutputStream out = new ByteArrayOutputStream();
             documentSvnService.getDocument(projectId, documentId, out);
             final byte[] oldFileData = out.toByteArray();
             out.close();
 
             try {
-                documentDAO.merge(document);
+                try {
+                    documentDAO.merge(document);
+                } catch (DuplicateKeyException ex) {
+                    return new CoreResponse<Document>().error(En_ResultStatus.ALREADY_EXIST);
+                }
                 documentStorageIndex.updatePdfDocument(fileData, projectId, documentId);
                 documentSvnService.updateDocument(projectId, documentId, fileInputStream);
                 return new CoreResponse<Document>().success(document);
             } catch (SVNException | IOException e) {
-                logger.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back", e);
+                log.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back", e);
                 documentDAO.merge(oldDocument);
                 try {
                     documentStorageIndex.updatePdfDocument(oldFileData, documentId, projectId);
                 } catch (IOException e1) {
-                    logger.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back | failed to update document at the index", e1);
+                    log.error("updateDocumentAndContent(" + document.getId() + "): Failed to update, rolling back | failed to update document at the index", e1);
                 }
             }
             return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
@@ -182,61 +240,46 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
+    public CoreResponse<Document> removeDocument(AuthToken token, Document document) {
 
-        if (document == null || !document.isValid()) {
+        if (document == null || document.getId() == null) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        byte[] fileData = fileItem.get();
-
-        InputStream fileInputStream;
-        try {
-            fileInputStream = fileItem.getInputStream();
-        } catch (IOException e) {
-            logger.error("createDocument(" + document.getId() + "): failed to get input stream from file item", e);
-            return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
+        if (document.getApproved()) {
+            return new CoreResponse<Document>().error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
-            En_ResultStatus validationStatus = checkDocumentDesignationValid(null, document);
-            if (validationStatus != En_ResultStatus.OK)
-                return new CoreResponse<Document>().error(validationStatus);
-
-            if (!documentDAO.saveOrUpdate(document)) {
-                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
-            }
-
-            Long documentId = document.getId(), projectId = document.getProjectId();
-
-            try {
-                documentStorageIndex.addPdfDocument(fileData, projectId, documentId);
-            } catch (IOException e) {
-                logger.error("createDocument(" + document.getId() + "): failed to add file to the index", e);
-                documentDAO.removeByKey(documentId);
-                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
-            }
-            try {
-                documentSvnService.saveDocument(projectId, documentId, fileInputStream);
-                return new CoreResponse<Document>().success(document);
-            } catch (SVNException e) {
-                logger.error("createDocument(" + document.getId() + "): failed to save in the repository", e);
-                try {
-                    documentStorageIndex.removeDocument(documentId);
-                } catch (IOException e1) {
-                    logger.error("createDocument(" + document.getId() + "): failed to delete document from the index");
-                }
-                documentDAO.removeByKey(documentId);
-                return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
-            }
+            Long projectId = document.getProjectId(), documentId = document.getId();
+            documentDAO.removeByKey(documentId);
+            documentSvnService.removeDocument(projectId, documentId);
+            documentStorageIndex.removeDocument(documentId);
+            return new CoreResponse<Document>().success(document);
         });
+    }
+
+    private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {
+        if (!isEmptyOrWhitespaceOnly(query.getInTextQuery())) {
+            query.setOnlyIds(documentStorageIndex.getDocumentsByQuery(query.getInTextQuery(), query.limit));
+        }
+    }
+
+    private void resetDocumentPrivacyInfo(Document document) {
+        // RESET PRIVACY INFO
+        if (document.getContractor() != null) {
+            document.getContractor().resetPrivacyInfo();
+        }
+        if (document.getRegistrar() != null) {
+            document.getRegistrar().resetPrivacyInfo();
+        }
     }
 
     private En_ResultStatus checkDocumentDesignationValid(Document oldDocument, Document document) {
 
-        if (oldDocument != null && (
+        if (oldDocument != null && document.getApproved() && (
                 isValueSetTwice(oldDocument.getInventoryNumber(), document.getInventoryNumber()) ||
-                isValueSetTwice(oldDocument.getDecimalNumber(), document.getDecimalNumber()))) {
+                        isValueSetTwice(oldDocument.getDecimalNumber(), document.getDecimalNumber()))) {
             return En_ResultStatus.INCORRECT_PARAMS;
         }
 

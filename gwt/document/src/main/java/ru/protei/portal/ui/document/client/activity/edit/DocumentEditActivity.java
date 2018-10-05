@@ -26,7 +26,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.document.client.widget.uploader.UploadHandler;
+import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
 
 import java.util.List;
 import java.util.Objects;
@@ -46,6 +46,7 @@ public abstract class DocumentEditActivity
         view.documentUploader().setUploadHandler(new UploadHandler() {
             @Override
             public void onError() {
+                view.saveEnabled().setEnabled(true);
                 fireErrorMessage(lang.errSaveDocumentFile());
             }
 
@@ -83,6 +84,9 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onSaveClicked() {
+        if (!view.saveEnabled().isEnabled())
+            return;
+
         Document newDocument = fillDto();
         if (!checkDocumentUploadValid(newDocument) || !checkDocumentValid(newDocument)) {
             return;
@@ -171,7 +175,7 @@ public abstract class DocumentEditActivity
     }
 
     private boolean checkDocumentUploadValid(Document newDocument) {
-        if (newDocument.getId() == null && HelperFunc.isEmpty(view.documentUploader().getFilename())) {
+        if (newDocument.getId() == null && !view.documentUploader().isFileSet()) {
             fireErrorMessage(lang.uploadingDocumentNotSet());
             return false;
         }
@@ -188,6 +192,7 @@ public abstract class DocumentEditActivity
 
     private void saveDocument(Document document) {
         this.document = document;
+        view.saveEnabled().setEnabled(false);
         if (document.getId() == null)
             view.documentUploader().uploadBindToDocument(document);
         else
@@ -203,6 +208,7 @@ public abstract class DocumentEditActivity
             @Override
             public void onError(Throwable throwable) {
                 fireErrorMessage(lang.errDocumentNotSaved());
+                view.saveEnabled().setEnabled(true);
             }
 
             @Override
@@ -244,7 +250,7 @@ public abstract class DocumentEditActivity
         d.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
         d.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         d.setVersion(view.version().getValue());
-        d.setProjectId(view.project().getValue().getId());
+        d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         d.setApproved(true);
         return d;
@@ -292,7 +298,7 @@ public abstract class DocumentEditActivity
 
         view.resetFilename();
         view.documentUploader().resetAction();
-        view.setSaveEnabled(true);
+        view.saveEnabled().setEnabled(true);
 
         setDesignationVisibility();
     }

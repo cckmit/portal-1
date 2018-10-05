@@ -23,7 +23,12 @@ public class DecimalNumberDAO_Impl extends PortalBaseJdbcDAO<DecimalNumber > imp
     }
 
     @Override
-    public List< Long > getDecimalNumbersByEquipmentId( Long id ) {
+    public List<DecimalNumber> getDecimalNumbersByEquipmentId(Long id) {
+        return getListByCondition("entity_id=?", id);
+    }
+
+    @Override
+    public List< Long > getDecimalNumberIdsByEquipmentId(Long id ) {
         StringBuilder sql = new StringBuilder("SELECT id FROM ").append(getTableName()).append( " WHERE entity_id=?" );
         return jdbcTemplate.queryForList(sql.toString(), Long.class, id);
     }

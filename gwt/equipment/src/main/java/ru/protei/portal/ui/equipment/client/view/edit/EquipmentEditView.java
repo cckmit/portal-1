@@ -2,6 +2,7 @@ package ru.protei.portal.ui.equipment.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -12,6 +13,7 @@ import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -89,6 +91,16 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Override
+    public HasEnabled createDocumentButtonEnabled() {
+        return createDocumentButton;
+    }
+
+    @Override
+    public HasVisibility documentsVisibility() {
+        return documents;
+    }
+
+    @Override
     public boolean isDecimalNumbersCorrect() {
         return numbers.checkIfCorrect();
     }
@@ -108,6 +120,11 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         return dateTextBox;
     }
 
+    @Override
+    public HasWidgets documents() {
+        return documents;
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -119,6 +136,20 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     public void onCancelClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onCancelClicked();
+        }
+    }
+
+    @UiHandler( "createDocumentButton" )
+    public void onCreateDocumentClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onCreateDocumentClicked();
+        }
+    }
+
+    @UiHandler( "numbers" )
+    public void onDecimalNumbersChanged(ValueChangeEvent<List<DecimalNumber>> event) {
+        if ( activity != null ) {
+            activity.onDecimalNumbersChanged();
         }
     }
 
@@ -139,6 +170,10 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
         date.setVisible(isVisible);
         dateTextBox.setEnabled(false);
     }
+
+    @Inject
+    @UiField
+    Lang lang;
 
     @UiField
     Button saveButton;
@@ -174,6 +209,10 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     HTMLPanel projectBox;
     @UiField
     HTMLPanel managerBox;
+    @UiField
+    Button createDocumentButton;
+    @UiField
+    HTMLPanel documents;
 
     AbstractEquipmentEditActivity activity;
 

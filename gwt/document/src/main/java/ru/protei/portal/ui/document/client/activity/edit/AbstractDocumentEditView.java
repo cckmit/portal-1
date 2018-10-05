@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
+import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 
 import java.util.List;
 
@@ -59,6 +59,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasEnabled inventoryNumberEnabled();
 
+    HasEnabled saveEnabled();
+
 
     HasVisibility uploaderVisible();
 
@@ -71,9 +73,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     AbstractDocumentUploader documentUploader();
 
-    void resetFilename();
 
-    void setSaveEnabled(boolean isEnabled);
+    void resetFilename();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 

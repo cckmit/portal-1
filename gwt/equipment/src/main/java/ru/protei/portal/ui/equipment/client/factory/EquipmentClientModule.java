@@ -4,6 +4,8 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.equipment.client.activity.copy.AbstractEquipmentCopyView;
 import ru.protei.portal.ui.equipment.client.activity.copy.EquipmentCopyActivity;
+import ru.protei.portal.ui.equipment.client.activity.document.edit.AbstractEquipmentDocumentEditView;
+import ru.protei.portal.ui.equipment.client.activity.document.edit.EquipmentDocumentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.edit.AbstractEquipmentEditView;
 import ru.protei.portal.ui.equipment.client.activity.edit.EquipmentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterView;
@@ -13,10 +15,16 @@ import ru.protei.portal.ui.equipment.client.activity.preview.EquipmentPreviewAct
 import ru.protei.portal.ui.equipment.client.activity.table.AbstractEquipmentTableView;
 import ru.protei.portal.ui.equipment.client.activity.table.EquipmentTableActivity;
 import ru.protei.portal.ui.equipment.client.view.copy.EquipmentCopyView;
+import ru.protei.portal.ui.equipment.client.view.document.list.EquipmentDocumentsListView;
+import ru.protei.portal.ui.equipment.client.view.document.list.item.EquipmentDocumentsListItemView;
+import ru.protei.portal.ui.equipment.client.view.document.edit.EquipmentDocumentEditView;
 import ru.protei.portal.ui.equipment.client.view.edit.EquipmentEditView;
 import ru.protei.portal.ui.equipment.client.view.filter.EquipmentFilterView;
 import ru.protei.portal.ui.equipment.client.view.preview.EquipmentPreviewView;
 import ru.protei.portal.ui.equipment.client.view.table.EquipmentTableView;
+import ru.protei.portal.ui.equipment.client.activity.document.list.AbstractEquipmentDocumentsListView;
+import ru.protei.portal.ui.equipment.client.activity.document.list.EquipmentDocumentsListActivity;
+import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemView;
 
 /**
  * Описание классов фабрики
@@ -40,6 +48,13 @@ public class EquipmentClientModule extends AbstractGinModule {
 
         bind( EquipmentCopyActivity.class ).asEagerSingleton();
         bind( AbstractEquipmentCopyView.class ).to( EquipmentCopyView.class ).in( Singleton.class );
+
+        bind(EquipmentDocumentEditActivity.class).asEagerSingleton();
+        bind(AbstractEquipmentDocumentEditView.class).to(EquipmentDocumentEditView.class).in(Singleton.class);
+
+        bind(EquipmentDocumentsListActivity.class).asEagerSingleton();
+        bind(AbstractEquipmentDocumentsListView.class).to(EquipmentDocumentsListView.class);
+        bind(AbstractEquipmentDocumentsListItemView.class).to(EquipmentDocumentsListItemView.class);
     }
 }
 

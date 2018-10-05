@@ -9,6 +9,7 @@ import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 /**
  * Загрузчик файлов
@@ -60,6 +61,15 @@ public abstract class FileUploader extends Composite implements HasHTML, HasSafe
     @Override
     public void setText(String text) {
         visibleContent.getElement().setInnerText(text);
+    }
+
+    public boolean isFileSet() {
+        return !StringUtils.isEmpty(fileUpload.getFilename());
+    }
+
+    public String getFilename() {
+        String[] split = fileUpload.getFilename().split("\\\\");
+        return split[split.length - 1];
     }
 
     public void setEnsureDebugId(String debugId) {
