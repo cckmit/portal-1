@@ -2,6 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfield='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -18,6 +19,8 @@
                     <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
                 </div>
             </div>
+
+            <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-xs-12"/>
 
             <platform:PlatformMultiSelector ui:field="platforms" header="{lang.siteFolderPlatform}" addStyleNames="form-group col-xs-12"/>
 

@@ -83,6 +83,17 @@
     &.full-screen {
         box-sizing: border-box;
     }
+
+    .actions {
+        > .btn {
+            float: right;
+        }
+        &:after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+    }
 }
 
 .preview-container {

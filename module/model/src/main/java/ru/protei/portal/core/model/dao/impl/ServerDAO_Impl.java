@@ -9,6 +9,12 @@ import ru.protei.portal.core.model.query.SqlCondition;
 
 public class ServerDAO_Impl extends PortalBaseJdbcDAO<Server> implements ServerDAO {
 
+    @Override
+    public Long count(ServerQuery query) {
+        SqlCondition where = createSqlCondition(query);
+        return (long) getObjectsCount(where.condition, where.args);
+    }
+
     @Autowired
     ServerSqlBuilder serverSqlBuilder;
 

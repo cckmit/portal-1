@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.sitefolder.client.view.server.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -39,6 +41,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             c.setHandler(activity);
             c.setColumnProvider(columnProvider);
         });
+        appsColumn.setActionHandler(activity::onOpenAppsClicked);
     }
 
     @Override
@@ -172,6 +175,11 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
         @Override
         public void fillColumnValue(Element cell, Server value) {
             cell.setInnerText((value.getApplicationsCount() == null ? "0" : String.valueOf(value.getApplicationsCount())) + " " +lang.amountShort());
+            AnchorElement a = DOM.createAnchor().cast();
+            a.setHref("#");
+            a.addClassName("fa fa-share cell-inline-icon");
+            a.setTitle(lang.siteFolderServers());
+            cell.appendChild(a);
         }
     };
     private Collection<ClickColumn<Server>> columns = new LinkedList<>();

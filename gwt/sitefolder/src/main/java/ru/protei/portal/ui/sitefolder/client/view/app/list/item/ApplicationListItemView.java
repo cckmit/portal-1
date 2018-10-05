@@ -40,6 +40,11 @@ public class ApplicationListItemView extends Composite implements AbstractApplic
         edit.setVisible(visible);
     }
 
+    @Override
+    public void setRemoveVisible(boolean visible) {
+        remove.setVisible(visible);
+    }
+
     @UiHandler("edit")
     public void editClick(ClickEvent event) {
         event.preventDefault();

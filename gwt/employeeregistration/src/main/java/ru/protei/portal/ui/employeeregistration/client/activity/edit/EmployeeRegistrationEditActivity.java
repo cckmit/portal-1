@@ -76,10 +76,12 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     }
 
     private void saveEmployeeRegistration(EmployeeRegistration employeeRegistration) {
+        view.saveEnabled().setEnabled(false);
         employeeRegistrationService.createEmployeeRegistration(employeeRegistration, new RequestCallback<Long>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errNotCreated(), NotifyEvents.NotifyType.ERROR));
+                view.saveEnabled().setEnabled(true);
             }
 
             @Override
@@ -126,6 +128,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.fullNameValidation().setValid(true);
         view.headOfDepartmentValidation().setValid(true);
         view.setEmploymentDateValid(true);
+
+        view.saveEnabled().setEnabled(true);
     }
 
     @Inject

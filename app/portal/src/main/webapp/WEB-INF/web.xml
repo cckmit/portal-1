@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee     http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
+    <!-- Сервлет для проброса запросов из GWT в спринговые сервисы-->
+    <servlet>
+        <servlet-name>springGwtRemoteServiceServlet</servlet-name>
+        <servlet-class>org.spring4gwt.server.SpringGwtRemoteServiceServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>springServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>reportDownloadServlet</servlet-name>
+        <servlet-class>ru.protei.portal.ui.issue.server.service.ReportDownloadServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>springGwtRemoteServiceServlet</servlet-name>
+        <url-pattern>/Portal/springGwtServices/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>springServlet</servlet-name>
+        <url-pattern>/Portal/springApi/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>reportDownloadServlet</servlet-name>
+        <url-pattern>/Portal/download/report</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+        <filter-name>gwtCacheControlFilter</filter-name>
+        <filter-class>ru.protei.portal.ui.common.server.GWTCacheControlFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>gwtCacheControlFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+
+
+    <welcome-file-list>
+        <welcome-file>portal.html</welcome-file>
+    </welcome-file-list>
+</web-app>

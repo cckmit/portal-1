@@ -21,6 +21,8 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        platformId = event.platform.getId();
+
         fillView(event.platform);
     }
 
@@ -38,6 +40,15 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
         fireEvent(new SiteFolderServerEvents.ShowDetailedList(view.serversContainer(), value.getId()));
     }
 
+    @Override
+    public void onOpenServersClicked() {
+        if (platformId != null) {
+            fireEvent(new SiteFolderServerEvents.Show(platformId));
+        }
+    }
+
     @Inject
     AbstractPlatformPreviewView view;
+
+    private Long platformId;
 }

@@ -78,6 +78,10 @@
   margin-left: 60px;
 }
 
+.chats .message > span {
+  white-space: pre-wrap;
+}
+
 .chats .message {
   border: 1px solid #ccd0d4;
   padding: 7px 12px;
