@@ -257,7 +257,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private En_ResultStatus checkDocumentDesignationValid(Document oldDocument, Document document) {
 
-        if (oldDocument != null && (
+        if (oldDocument != null && document.getApproved() && (
                 isValueSetTwice(oldDocument.getInventoryNumber(), document.getInventoryNumber()) ||
                         isValueSetTwice(oldDocument.getDecimalNumber(), document.getDecimalNumber()))) {
             return En_ResultStatus.INCORRECT_PARAMS;
