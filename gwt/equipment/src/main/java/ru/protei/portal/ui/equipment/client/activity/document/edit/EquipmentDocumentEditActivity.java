@@ -191,12 +191,14 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     }
 
     private void fillDTO(Document document) {
+        boolean isNew = document.getId() == null;
+
         document.setName(view.name().getValue());
         document.setApproved(view.approved().getValue());
         document.setType(view.documentType().getValue());
         document.setVersion(view.version().getValue());
         document.setInventoryNumber(view.approved().getValue() ? view.inventoryNumber().getValue() : null);
-        document.setDecimalNumber(view.decimalNumber().getValue() + "-" + view.documentType().getValue().getShortName());
+        document.setDecimalNumber(isNew ? view.decimalNumber().getValue() + "-" + view.documentType().getValue().getShortName() : view.decimalNumber().getValue());
         document.setContractor(Person.fromPersonShortView(view.contractor().getValue()));
         document.setRegistrar(Person.fromPersonShortView(view.registrar().getValue()));
         document.setAnnotation(view.annotation().getValue());

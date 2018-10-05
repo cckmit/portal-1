@@ -13,4 +13,6 @@ public interface DocumentSvnService {
     void updateDocument(Long projectId, Long documentId, InputStream inputStream) throws SVNException, IOException;
 
     void getDocument(Long projectId, Long documentId, OutputStream outputStream) throws SVNException;
+
+    void removeDocument(Long projectId, Long documentId) throws SVNException;
 }

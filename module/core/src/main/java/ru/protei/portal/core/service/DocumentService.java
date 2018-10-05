@@ -36,4 +36,8 @@ public interface DocumentService {
     @Privileged(requireAny = {En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
     @Auditable(En_AuditType.DOCUMENT_MODIFY)
     CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem);
+
+    @Privileged(requireAny = {En_Privilege.EQUIPMENT_REMOVE})
+    @Auditable(En_AuditType.DOCUMENT_REMOVE)
+    CoreResponse<Document> removeDocument(AuthToken token, Document document);
 }
