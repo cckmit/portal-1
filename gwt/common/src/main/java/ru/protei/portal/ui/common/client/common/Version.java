@@ -273,9 +273,10 @@ package ru.protei.portal.ui.common.client.common;
  *            PORTAL-178 База децимальных номеров: расширение функций
  * 4.0.79.2 - PORTAL-267 Раздел Анкеты сотрудников (защита от дабл-кликов #comment=85-95372)
  * 4.0.79.3 - PORTAL-398 Комментарий в CRM без форматирования
+ * 4.0.79.5 - PORTAL-344#comment=85-96423 PORTAL-178#comment=85-95455 PORTAL-178#comment=85-96255
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.79.3";
+        return "4.0.79.5";
     }
 }
