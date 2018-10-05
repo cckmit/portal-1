@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
@@ -13,11 +14,14 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.struct.ContactItem;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Реализация сервиса управления контактами
@@ -31,6 +35,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Autowired
     UserLoginDAO userLoginDAO;
+
+    @Autowired
+    CompanySubscriptionDAO companySubscriptionDAO;
 
     @Autowired
     PolicyService policyService;
@@ -138,6 +145,10 @@ public class ContactServiceImpl implements ContactService {
 
         boolean result = personDAO.merge(person);
 
+        if (result) {
+            removePersonEmailsFromCompany(person);
+        }
+
         return new CoreResponse<Boolean>().success(result);
     }
 
@@ -154,6 +165,10 @@ public class ContactServiceImpl implements ContactService {
 
         boolean result = personDAO.merge(person);
 
+        if (result) {
+            removePersonEmailsFromCompany(person);
+        }
+
         return new CoreResponse<Boolean>().success(result);
     }
 
@@ -162,5 +177,27 @@ public class ContactServiceImpl implements ContactService {
     public CoreResponse<Long> count( AuthToken token, ContactQuery query ) {
 
         return new CoreResponse<Long>().success(personDAO.count(query));
+    }
+
+    private void removePersonEmailsFromCompany(Person person) {
+
+        if (person == null || person.getCompanyId() == null) {
+            return;
+        }
+
+        int removed = companySubscriptionDAO.removeByCondition(
+                "company_id = ? and email_addr in " +
+                HelperFunc.makeInArg(
+                        new PlainContactInfoFacade(person.getContactInfo())
+                                .emailsStream()
+                                .map(ContactItem::value)
+                                .collect(Collectors.toList())
+                ),
+                person.getCompanyId()
+        );
+
+        if (removed > 0) {
+            log.debug("person({}) : removed {} email(s) from company with id {}");
+        }
     }
 }
