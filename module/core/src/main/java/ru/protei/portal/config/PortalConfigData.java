@@ -318,13 +318,15 @@ public class PortalConfigData {
     }
 
     public static class SvnConfig {
-        private final String url, username, password, commitMessage;
+        private final String url, username, password, commitMessageAdd, commitMessageUpdate, commitMessageRemove;
 
         public SvnConfig(PropertiesWrapper properties) throws ConfigException {
             this.url = properties.getProperty("svn.url");
             this.username = properties.getProperty("svn.username");
             this.password = properties.getProperty("svn.password");
-            this.commitMessage = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
+            this.commitMessageAdd = properties.getProperty("svn.commit_message", "Add document №%2$s to project №%1$s");
+            this.commitMessageUpdate = properties.getProperty("svn.commit_message.update", "Update document №%2$s at project №%1$s");
+            this.commitMessageRemove = properties.getProperty("svn.commit_message.remove", "Remove document №%2$s at project №%1$s");
         }
 
         public String getUrl() {
@@ -339,8 +341,16 @@ public class PortalConfigData {
             return username;
         }
 
-        public String getCommitMessage() {
-            return commitMessage;
+        public String getCommitMessageAdd() {
+            return commitMessageAdd;
+        }
+
+        public String getCommitMessageUpdate() {
+            return commitMessageUpdate;
+        }
+
+        public String getCommitMessageRemove() {
+            return commitMessageRemove;
         }
     }
 
