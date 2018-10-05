@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -69,6 +70,11 @@ public abstract class EquipmentEditActivity
     public void onSaveClicked() {
 
         fillDTO(equipment);
+
+        if (StringUtils.isBlank(equipment.getName()) || StringUtils.isBlank(equipment.getNameSldWrks())) {
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
 
         if (equipment.getProjectId() == null) {
             fireEvent(new NotifyEvents.Show(lang.projectRequired(), NotifyEvents.NotifyType.ERROR));

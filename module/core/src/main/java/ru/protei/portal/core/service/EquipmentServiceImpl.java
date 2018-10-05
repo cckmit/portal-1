@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -101,6 +102,10 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     @Transactional
     public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
+
+        if (StringUtils.isBlank(equipment.getName()) || StringUtils.isBlank(equipment.getNameSldWrks())) {
+            return new CoreResponse<Equipment>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if (equipment.getProjectId() == null) {
             return new CoreResponse<Equipment>().error(En_ResultStatus.INCORRECT_PARAMS);
