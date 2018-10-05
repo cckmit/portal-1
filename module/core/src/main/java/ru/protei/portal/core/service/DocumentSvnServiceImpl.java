@@ -45,7 +45,7 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
     public void saveDocument(Long projectId, Long documentId, InputStream inputStream) throws SVNException {
         String fileName = getFileName(projectId, documentId);
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedCommitMessage(projectId, documentId), null);
+        ISVNEditor editor = repository.getCommitEditor(getFormattedAddCommitMessage(projectId, documentId), null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -89,7 +89,7 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
             throw e;
         }
 
-        ISVNEditor editor = repository.getCommitEditor(getFormattedCommitMessage(projectId, documentId), null);
+        ISVNEditor editor = repository.getCommitEditor(getFormattedUpdateCommitMessage(projectId, documentId), null);
 
         try {
             editor.openRoot(HEAD_REVISION);
@@ -117,6 +117,27 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
         repository.getFile(getFilePath(projectId, documentId), HEAD_REVISION, new SVNProperties(), outputStream);
     }
 
+    @Override
+    public void removeDocument(Long projectId, Long documentId) throws SVNException {
+        String fileName = getFileName(projectId, documentId);
+
+        ISVNEditor editor = repository.getCommitEditor(getFormattedRemoveCommitMessage(projectId, documentId), null);
+
+        try {
+            editor.openRoot(HEAD_REVISION);
+            editor.openDir(projectId.toString(), HEAD_REVISION);
+            editor.deleteEntry(fileName, HEAD_REVISION);
+            editor.closeDir(); // close project directory
+            editor.closeDir(); // close root directory
+        } catch (SVNException e) {
+            editor.abortEdit();
+            log.error("removeDocument(p=" + projectId + ",d=" + documentId + "): Failed to commit", e);
+            throw e;
+        }
+        SVNCommitInfo svnCommitInfo = editor.closeEdit();
+        log.info("removeDocument(p=" + projectId + ",d=" + documentId + "): Commit info: " + svnCommitInfo);
+    }
+
     private InputStream getDocument(Long projectId, Long documentId) throws SVNException, IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             getDocument(projectId, documentId, out);
@@ -132,8 +153,18 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
         return documentId + ".pdf";
     }
 
-    private String getFormattedCommitMessage(Long projectId, Long documentId) {
-        String commitMessage = config.data().svn().getCommitMessage();
+    private String getFormattedAddCommitMessage(Long projectId, Long documentId) {
+        String commitMessage = config.data().svn().getCommitMessageAdd();
+        return String.format(commitMessage, projectId, documentId);
+    }
+
+    private String getFormattedUpdateCommitMessage(Long projectId, Long documentId) {
+        String commitMessage = config.data().svn().getCommitMessageUpdate();
+        return String.format(commitMessage, projectId, documentId);
+    }
+
+    private String getFormattedRemoveCommitMessage(Long projectId, Long documentId) {
+        String commitMessage = config.data().svn().getCommitMessageRemove();
         return String.format(commitMessage, projectId, documentId);
     }
 }

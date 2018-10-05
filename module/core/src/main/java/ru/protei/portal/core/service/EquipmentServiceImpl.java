@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dao.EquipmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EquipmentQuery;
@@ -45,6 +46,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    DocumentService documentService;
 
     @Override
     public CoreResponse<List<Equipment>> equipmentList(AuthToken token, EquipmentQuery query ) {
@@ -200,6 +204,8 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        removeLinkedDocuments(token, equipmentId);
+
         Boolean removeStatus = equipmentDAO.removeByKey(equipmentId);
         return new CoreResponse<Boolean>().success( removeStatus );
     }
@@ -316,5 +322,35 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private boolean isNew(DecimalNumber decimalNumber) {
         return (decimalNumber != null && decimalNumber.getId() == null);
+    }
+
+    private void removeLinkedDocuments(AuthToken token, Long equipmentId) {
+
+        CoreResponse<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
+
+        if (documentsResponse.isError()) {
+            return;
+        }
+
+        List<Document> documents = documentsResponse.getData();
+
+        if (CollectionUtils.isEmpty(documents)) {
+            return;
+        }
+
+        List<Document> documents2merge = new ArrayList<>();
+
+        for (Document document : documents) {
+            if (document.getApproved()) {
+                document.setEquipment(null);
+                documents2merge.add(document);
+                continue;
+            }
+            documentService.removeDocument(token, document);
+        }
+
+        if (CollectionUtils.isNotEmpty(documents2merge)) {
+            documentDAO.mergeBatch(documents2merge);
+        }
     }
 }

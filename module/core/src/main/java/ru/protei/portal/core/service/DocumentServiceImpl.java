@@ -239,6 +239,26 @@ public class DocumentServiceImpl implements DocumentService {
         });
     }
 
+    @Override
+    public CoreResponse<Document> removeDocument(AuthToken token, Document document) {
+
+        if (document == null || document.getId() == null) {
+            return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (document.getApproved()) {
+            return new CoreResponse<Document>().error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        return lockService.doWithLock(DocumentStorageIndex.class, "", LockStrategy.TRANSACTION, TimeUnit.SECONDS, 5, () -> {
+            Long projectId = document.getProjectId(), documentId = document.getId();
+            documentDAO.removeByKey(documentId);
+            documentSvnService.removeDocument(projectId, documentId);
+            documentStorageIndex.removeDocument(documentId);
+            return new CoreResponse<Document>().success(document);
+        });
+    }
+
     private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {
         if (!isEmptyOrWhitespaceOnly(query.getInTextQuery())) {
             query.setOnlyIds(documentStorageIndex.getDocumentsByQuery(query.getInTextQuery(), query.limit));
