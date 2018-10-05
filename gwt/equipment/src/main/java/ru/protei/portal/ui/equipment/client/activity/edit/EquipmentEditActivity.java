@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.equipment.client.activity.edit;
 
 import com.google.inject.Inject;
+import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -48,6 +49,11 @@ public abstract class EquipmentEditActivity
 
         view.setVisibilitySettingsForCreated(event.id != null);
 
+        if (equipment != null) {
+            fillView(equipment);
+            return;
+        }
+
         if (event.id == null) {
             fillView(new Equipment());
             return;
@@ -57,6 +63,14 @@ public abstract class EquipmentEditActivity
                 .withErrorMessage(lang.errGetList())
                 .withSuccess(this::fillView)
         );
+    }
+
+    // Запил PORTAL-413
+    // Кривая работа @ContextAware при использовании кнопок истории браузера (кнопка назад)
+    // Сбрасываем @ContextAware при спуске на уровень ниже (таблица), при других уровнях работать не будет
+    @Event
+    public void onShowEquipmentsTable(EquipmentEvents.Show event) {
+        equipment = null;
     }
 
     @Override
@@ -109,7 +123,7 @@ public abstract class EquipmentEditActivity
     @Override
     public void onCreateDocumentClicked() {
 
-        if (equipment == null) {
+        if (equipment == null || equipment.getId() == null) {
             return;
         }
 
@@ -118,6 +132,7 @@ public abstract class EquipmentEditActivity
             return;
         }
 
+        Long projectId = equipment.getProjectId();
         List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(equipment.getDecimalNumbers());
 
         if (CollectionUtils.isEmpty(decimalNumbers)) {
@@ -125,7 +140,9 @@ public abstract class EquipmentEditActivity
             return;
         }
 
-        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), equipment.getProjectId(), decimalNumbers));
+        fillDTO(equipment);
+
+        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), projectId, decimalNumbers));
     }
 
     private void fillView(Equipment equipment) {
@@ -210,11 +227,13 @@ public abstract class EquipmentEditActivity
     @Inject
     Lang lang;
 
+    @ContextAware
+    Equipment equipment;
+
     @Inject
     EquipmentControllerAsync equipmentService;
     @Inject
     DefaultErrorHandler defaultErrorHandler;
 
     private AppEvents.InitDetails initDetails;
-    private Equipment equipment;
 }
