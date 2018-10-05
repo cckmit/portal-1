@@ -65,6 +65,14 @@ public abstract class EquipmentEditActivity
         );
     }
 
+    // Запил PORTAL-413
+    // Кривая работа @ContextAware при использовании кнопок истории браузера (кнопка назад)
+    // Сбрасываем @ContextAware при спуске на уровень ниже (таблица), при других уровнях работать не будет
+    @Event
+    public void onShowEquipmentsTable(EquipmentEvents.Show event) {
+        equipment = null;
+    }
+
     @Override
     public void onSaveClicked() {
 
@@ -95,19 +103,13 @@ public abstract class EquipmentEditActivity
                     }
 
                     defaultErrorHandler.accept(t);
-                    fireErrorMessage(t.getMessage());
-
+                    fireEvent(new NotifyEvents.Show(t.getMessage(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(result -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
                     fireEvent(new Back());
                 })
         );
-    }
-
-    private boolean fireErrorMessage( String msg) {
-        fireEvent( new NotifyEvents.Show(msg, NotifyEvents.NotifyType.ERROR));
-        return false;
     }
 
     @Override
@@ -121,16 +123,17 @@ public abstract class EquipmentEditActivity
     @Override
     public void onCreateDocumentClicked() {
 
-        if (equipment == null) {
+        if (equipment == null || equipment.getId() == null) {
             return;
         }
 
-        if (view.project().getValue() == null || view.project().getValue().getId() == null) {
+        if (equipment.getProjectId() == null) {
             fireEvent(new NotifyEvents.Show(lang.projectRequired(), NotifyEvents.NotifyType.INFO));
             return;
         }
 
-        List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(view.getNumbers());
+        Long projectId = equipment.getProjectId();
+        List<String> decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(equipment.getDecimalNumbers());
 
         if (CollectionUtils.isEmpty(decimalNumbers)) {
             fireEvent(new NotifyEvents.Show(lang.decimalNumbersRequired(), NotifyEvents.NotifyType.INFO));
@@ -139,7 +142,7 @@ public abstract class EquipmentEditActivity
 
         fillDTO(equipment);
 
-        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), view.project().getValue().getId(), decimalNumbers));
+        fireEvent(new EquipmentEvents.DocumentEdit(equipment.getId(), projectId, decimalNumbers));
     }
 
     private void fillView(Equipment equipment) {
