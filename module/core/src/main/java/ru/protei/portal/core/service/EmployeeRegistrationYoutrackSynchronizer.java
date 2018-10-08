@@ -32,12 +32,10 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private final Logger log = LoggerFactory.getLogger(EmployeeRegistrationYoutrackSynchronizer.class);
 
     private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
+    private long YOUTRACK_USER_ID;
 
     @Autowired
     private YoutrackService youtrackService;
-
-    @Autowired
-    private UserLoginDAO userLoginDAO;
 
     @Autowired
     private CaseCommentDAO caseCommentDAO;
@@ -71,6 +69,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         EQUIPMENT_PROJECT_NAME = config.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = config.data().youtrack().getAdminProject();
+        YOUTRACK_USER_ID = config.data().youtrack().getYoutrackUserId();
     }
 
     private static En_CaseState toCaseState(String ytStateId) {
@@ -235,12 +234,6 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         if (caseCommentDAO.checkExistsByRemoteIdAndRemoteLinkId(remoteId, caseLinkId))
             return null;
 
-        Long updaterId = findPersonIdByLogin(change.getUpdaterName());
-        if (updaterId == null) {
-            log.warn("parseStateChange(): for person with YouTrack login=\"{}\" failed to found CRM person with such login; skipping state change", change.getUpdaterName());
-            return null;
-        }
-
         En_CaseState newState = toCaseState(stateChangeField.getNewValue());
 
         CaseComment stateChange = new CaseComment();
@@ -248,8 +241,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         stateChange.setCaseId(employeeRegistration.getId());
         stateChange.setCreated(change.getUpdated());
         stateChange.setRemoteLinkId(caseLinkId);
-        stateChange.setAuthorId(updaterId);
+        stateChange.setAuthorId(YOUTRACK_USER_ID);
         stateChange.setCaseStateId((long) newState.getId());
+        stateChange.setOriginalAuthorName(change.getUpdaterName());
         return stateChange;
     }
 
@@ -269,18 +263,14 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             boolean isNew = caseComment == null;
 
             if (isNew) {
-                Long authorId = findPersonIdByLogin(comment.getAuthor());
-                if (authorId == null) {
-                    log.warn("parseAndUpdateComments(): for person with YouTrack login=\"{}\" failed to found CRM person with such login; skipping comment", comment.getAuthor());
-                    continue;
-                }
-
                 caseComment = new CaseComment();
-                caseComment.setAuthorId(authorId);
+                caseComment.setAuthorId(YOUTRACK_USER_ID);
                 caseComment.setCreated(comment.getCreated());
                 caseComment.setCaseId(caseId);
                 caseComment.setRemoteId(comment.getId());
                 caseComment.setRemoteLinkId(caseLinkId);
+                caseComment.setOriginalAuthorName(comment.getAuthor());
+                caseComment.setOriginalAuthorFullName(comment.getAuthorFullName());
             }
             caseComment.setText(comment.getText());
 
@@ -291,13 +281,6 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         }
         caseCommentDAO.persistBatch(commentsToAdd);
         caseCommentDAO.mergeBatch(commentsToMerge);
-    }
-
-    private Long findPersonIdByLogin(String login) {
-        if (login == null)
-            return null;
-        UserLogin user = userLoginDAO.findByLogin(login);
-        return user == null ? null : user.getPersonId();
     }
 
     private void parseAndUpdateAttachments(EmployeeRegistration employeeRegistration, Collection<CaseLink> caseLinks) {
@@ -319,15 +302,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             if (caseAttachment.isPresent())
                 oldCaseAttachments.remove(caseAttachment.get());
             else {
-                Long creatorId = findPersonIdByLogin(ytAttachment.getAuthorLogin());
-                if (creatorId == null) {
-                    log.warn("parseAndUpdateAttachments(): for person with YouTrack login=\"{}\" failed to found CRM person with such login; skipping attachment", ytAttachment.getAuthorLogin());
-                    continue;
-                }
-
                 Attachment attachment = new Attachment();
                 attachment.setCreated(ytAttachment.getCreated());
-                attachment.setCreatorId(creatorId);
+                attachment.setCreatorId(YOUTRACK_USER_ID);
                 attachment.setFileName(ytAttachment.getName());
                 attachment.setExtLink(ytAttachment.getUrl());
 
