@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
@@ -303,7 +304,7 @@ public abstract class IssueCommentListActivity
         }
 
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
-        itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
+        itemView.setOwner( getOwnerName(value) );
         itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
         itemView.setRemoteLink(value.getRemoteLink());
 
@@ -472,6 +473,13 @@ public abstract class IssueCommentListActivity
         fireEvent( new IssueEvents.ChangeTimeElapsed(timeElapsed) );
     }
 
+    private String getOwnerName(CaseComment caseComment) {
+        if (!StringUtils.isEmpty(caseComment.getOriginalAuthorName()))
+            return caseComment.getOriginalAuthorName();
+        if (caseComment.getAuthor() != null)
+            return caseComment.getAuthor().getDisplayName();
+        return "Unknown";
+    }
 
     @Inject
     Lang lang;
