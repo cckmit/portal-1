@@ -293,6 +293,15 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<List<CaseComment>>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
+        return getCaseCommentList(caseId);
+    }
+
+    @Override
+    public CoreResponse<List<CaseComment>> getEmployeeRegistrationCommentList(AuthToken token, long caseId) {
+        return getCaseCommentList(caseId);
+    }
+
+    private CoreResponse<List<CaseComment>> getCaseCommentList(long caseId) {
         List<CaseComment> list = caseCommentDAO.getCaseComments( caseId );
 
         if ( list == null )
@@ -749,6 +758,12 @@ public class CaseServiceImpl implements CaseService {
             }
         }
         return true;
+    }
+
+    private Set<UserRole> getRoles(AuthToken token) {
+        return Optional.ofNullable(authService.findSession(token))
+                .map(d -> d.getLogin().getRoles())
+                .orElse(null);
     }
 
     private boolean personBelongsToHomeCompany(AuthToken token) {

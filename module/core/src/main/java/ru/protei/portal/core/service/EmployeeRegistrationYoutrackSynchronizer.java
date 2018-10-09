@@ -115,6 +115,13 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         Set<String> updatedIssueIds = getUpdatedIssueIds(lastUpdate);
 
+        if (CollectionUtils.isEmpty(updatedIssueIds)) {
+            log.debug("synchronizeAll(): nothing to synchronize");
+            return;
+        }
+
+        log.debug("synchronizeAll(): synchronize updates for {}",  Arrays.toString(updatedIssueIds.toArray()));
+
         EmployeeRegistrationQuery query = new EmployeeRegistrationQuery();
         query.setLinkedIssueIds(updatedIssueIds);
         List<EmployeeRegistration> employeeRegistrations = employeeRegistrationDAO.getListByQuery(query);
@@ -250,19 +257,24 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private void parseAndUpdateComments(Long caseId, Date lastSynchronization, Long caseLinkId, List<Comment> comments) {
         List<CaseComment> commentsToAdd = new LinkedList<>();
         List<CaseComment> commentsToMerge = new LinkedList<>();
-        for (Comment comment : comments) {
-            if (comment == null || comment.getDeleted() == Boolean.TRUE)
-                continue;
+        List<Long> commentsToDelete = new LinkedList<>();
 
-            Date lastCommentChange = DateUtils.max(comment.getUpdated(), comment.getCreated());
-            if (DateUtils.beforeNotNull(lastCommentChange, lastSynchronization))
+        for (Comment comment : comments) {
+            if (comment == null)
                 continue;
 
             CaseComment caseComment = caseCommentDAO.getByRemoteId(comment.getId());
 
-            boolean isNew = caseComment == null;
+            Boolean isDeleted = comment.getDeleted();
+            boolean existInDb = caseComment != null;
 
-            if (isNew) {
+            if (Boolean.TRUE.equals(isDeleted)) {
+                if (existInDb)
+                    commentsToDelete.add(caseComment.getId());
+                continue;
+            }
+
+            if (!existInDb) {
                 caseComment = new CaseComment();
                 caseComment.setAuthorId(YOUTRACK_USER_ID);
                 caseComment.setCreated(comment.getCreated());
@@ -271,16 +283,21 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 caseComment.setRemoteLinkId(caseLinkId);
                 caseComment.setOriginalAuthorName(comment.getAuthor());
                 caseComment.setOriginalAuthorFullName(comment.getAuthorFullName());
-            }
-            caseComment.setText(comment.getText());
-
-            if (isNew)
                 commentsToAdd.add(caseComment);
-            else
+                continue;
+            }
+
+            Date lastCommentChange = DateUtils.max(comment.getUpdated(), comment.getCreated());
+            boolean commentContentChanged = DateUtils.beforeNotNull(lastSynchronization, lastCommentChange);
+
+            if (commentContentChanged) {
+                caseComment.setText(comment.getText());
                 commentsToMerge.add(caseComment);
+            }
         }
         caseCommentDAO.persistBatch(commentsToAdd);
         caseCommentDAO.mergeBatch(commentsToMerge);
+        caseCommentDAO.removeByKeys(commentsToDelete);
     }
 
     private void parseAndUpdateAttachments(EmployeeRegistration employeeRegistration, Collection<CaseLink> caseLinks) {

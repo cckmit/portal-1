@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EmployeeRegistrationService;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationController;
@@ -81,6 +83,17 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
         throw new RequestFailedException(response.getStatus());
     }
 
+    @Override
+    public List<CaseComment> getEmployeeRegistrationComments(long id) throws RequestFailedException {
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        log.debug("getEmployeeRegistrationComments(): id={}", id);
+        CoreResponse<List<CaseComment>> response = caseService.getEmployeeRegistrationCommentList(descriptor.makeAuthToken(), id);
+        if (response.isError())
+            throw new RequestFailedException(response.getStatus());
+        return response.getData();
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
         log.info("userSessionDescriptor={}", descriptor);
@@ -96,6 +109,9 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
 
     @Autowired
     SessionService sessionService;
+
+    @Autowired
+    CaseService caseService;
 
     @Autowired
     HttpServletRequest httpRequest;

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 
@@ -14,4 +15,6 @@ public interface EmployeeRegistrationControllerAsync {
     void getEmployeeRegistration(Long id, AsyncCallback<EmployeeRegistration> callback);
 
     void createEmployeeRegistration(EmployeeRegistration employeeRegistration, AsyncCallback<Long> callback);
+
+    void getEmployeeRegistrationComments(long id, AsyncCallback<List<CaseComment>> commentsLoadedCallback);
 }
