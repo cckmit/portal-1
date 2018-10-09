@@ -45,6 +45,9 @@ public interface CaseService {
     @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })
     CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId );
 
+    @Privileged( En_Privilege.EMPLOYEE_REGISTRATION_VIEW )
+    CoreResponse<List<CaseComment>> getEmployeeRegistrationCommentList( AuthToken token, long caseId );
+
     @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })
     CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, CaseCommentQuery query );
 

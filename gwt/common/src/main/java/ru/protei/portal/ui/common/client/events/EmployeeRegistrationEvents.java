@@ -36,4 +36,14 @@ public class EmployeeRegistrationEvents {
         public Long id;
         public HasWidgets parent;
     }
+
+    public static class ShowComments {
+        public long id;
+        public HasWidgets parent;
+
+        public ShowComments(HasWidgets parent, long id) {
+            this.parent = parent;
+            this.id = id;
+        }
+    }
 }
