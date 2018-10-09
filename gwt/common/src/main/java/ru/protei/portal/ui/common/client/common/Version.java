@@ -276,9 +276,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.79.4 - PORTAL-413 Открывается неправильная форма при редактировании
  * 4.0.79.5 - PORTAL-344#comment=85-96423 PORTAL-178#comment=85-95455 PORTAL-178#comment=85-96255
  * 4.0.79.6 - PORTAL-377 Раздел Анкеты сотрудников: рассылка уведомлений (указание id пользователя в properties #comment=85-97317)
+ * 4.0.79.7 - PORTAL-377 исправление #comment=85-97654
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.79.6";
+        return "4.0.79.7";
     }
 }
