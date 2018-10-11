@@ -40,7 +40,7 @@ public class DocumentTypeSelector
         if (categoryFilter != null) {
             options = options
                     .stream()
-                    .filter(d -> d.getDocumentCategory().equals(categoryFilter))
+                    .filter(d -> d.getDocumentCategory() == categoryFilter)
                     .collect(Collectors.toList());
         }
         clearOptions();
