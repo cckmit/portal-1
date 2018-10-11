@@ -79,4 +79,5 @@
   <include file="2018-09-20-add-document-execution-type.xml" relativeToChangelogFile="true"/>
   <include file="2018-09-21-add-canceled-state-to-issues.xml" relativeToChangelogFile="true"/>
   <include file="2018-10-08-add-original-author-info-in-case_comment.xml" relativeToChangelogFile="true"/>
+  <include file="2018-10-11-increase-document_category-name-length.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
