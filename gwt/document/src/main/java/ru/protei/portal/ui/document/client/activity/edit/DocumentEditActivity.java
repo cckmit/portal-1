@@ -24,12 +24,11 @@ import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
 
 import java.util.List;
-import java.util.Objects;
 
 
 public abstract class DocumentEditActivity
@@ -121,7 +120,7 @@ public abstract class DocumentEditActivity
         setDesignationVisibility();
 
         if (view.documentType().getValue() != null &&
-                !Objects.equals(category, view.documentType().getValue().getDocumentCategory())) {
+                category == view.documentType().getValue().getDocumentCategory()) {
             view.documentType().setValue(null, true);
         }
     }
