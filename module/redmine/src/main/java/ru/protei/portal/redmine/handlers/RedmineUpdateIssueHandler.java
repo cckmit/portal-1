@@ -80,9 +80,16 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
 
         final List<Journal> latestJournals = issue.getJournals()
                 .stream()
+                .filter(Objects::nonNull)
                 .filter(x -> x.getCreatedOn() != null
                         && x.getCreatedOn().compareTo(endpoint.getLastUpdatedOnDate()) > 0)
                 .collect(Collectors.toList());
+
+        logger.debug("got {} journals after {}", latestJournals.size(), latestCreated);
+
+        latestJournals.forEach(x -> logger.debug("Journal with id {} has following notes: {}", x.getId(), x.getNotes()));
+
+        logger.debug("finding comments (journals where notes are not empty)");
 
         final List<Journal> nonEmptyJournals = issue.getJournals()
                 .stream()
@@ -91,6 +98,9 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
                 .filter(x -> x.getCreatedOn().compareTo(latestCreated) > 0)
                 .filter(x -> !x.getNotes().isEmpty())
                 .collect(Collectors.toList());
+
+        logger.debug("found {} comments", nonEmptyJournals.size());
+        nonEmptyJournals.forEach(x -> logger.debug("Comment with id {} has following text: {}", x.getId(), x.getNotes()));
 
         final List<CaseComment> comments = nonEmptyJournals
                 .stream()
