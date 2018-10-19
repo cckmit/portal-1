@@ -64,12 +64,20 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     @Autowired
     public EmployeeRegistrationYoutrackSynchronizer(ThreadPoolTaskScheduler scheduler, PortalConfig config) {
-        String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
-        scheduler.schedule(this::synchronizeAll, new CronTrigger(syncCronSchedule));
-
+        if (!config.data().integrationConfig().isYoutrackEnabled()) {
+            log.debug("employee registration youtrack synchronizer is not started because YouTrack integration is disabled in configuration");
+            return;
+        }
         EQUIPMENT_PROJECT_NAME = config.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = config.data().youtrack().getAdminProject();
         YOUTRACK_USER_ID = config.data().youtrack().getYoutrackUserId();
+
+        String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
+        scheduler.schedule(this::synchronizeAll, new CronTrigger(syncCronSchedule));
+
+        log.debug("employee registration youtrack synchronizer was started: " +
+                "schedule={}, project for equipment={}, project for admin={}, youtrack user id={}",
+                syncCronSchedule, EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME, YOUTRACK_USER_ID);
     }
 
     private static En_CaseState toCaseState(String ytStateId) {

@@ -301,10 +301,12 @@ public class PortalConfigData {
     public static class IntegrationConfig {
         private final boolean hpsmEnabled;
         private final boolean redmineEnabled;
+        private final boolean youtrackEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
+            youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, true);
         }
 
 
@@ -314,6 +316,10 @@ public class PortalConfigData {
 
         public boolean isRedmineEnabled() {
             return redmineEnabled;
+        }
+
+        public boolean isYoutrackEnabled() {
+            return youtrackEnabled;
         }
     }
 
