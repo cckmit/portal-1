@@ -168,6 +168,14 @@
   }
 }
 
+.chats .right .list-inline {
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
 .chats .right .name {
   float: right;
 }
