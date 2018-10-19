@@ -315,11 +315,14 @@ public abstract class IssueCommentListActivity
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
 
-        if ( HelperFunc.isNotEmpty( value.getText() ) && !isStateChangeComment ) {
+        if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
-        } else {
+        }
+
+        if ( HelperFunc.isEmpty( value.getText() ) && isStateChangeComment ) {
             itemView.hideOptions();
         }
+
         itemView.enabledEdit( isEditingEnabled && policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
 
         if ( isStateChangeComment ) {
