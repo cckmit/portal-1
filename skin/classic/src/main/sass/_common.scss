@@ -1433,12 +1433,13 @@ label.bordered:after{
 .filter-container .panel{
   overflow-y: auto;
   box-sizing: border-box;
-  max-height: calc(100vh - 30px); // 30px = top offset (15px) + bottom offset (15px)
+  max-height: calc(100vh - 80px); // 80px = main-header (50px) + top offset (15px) + bottom offset (15px)
   position: relative;
   z-index: 0;
 }
 .filter-container .panel.fixed{
   position: fixed !important;
+  max-height: calc(100vh - 30px) !important; // 30px = top offset (15px) + bottom offset (15px)
 }
 
 /**** Collapsable filter ****/

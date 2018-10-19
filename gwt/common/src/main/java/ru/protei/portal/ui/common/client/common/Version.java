@@ -282,9 +282,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.80.1 - PORTAL-357 опция integration.youtrack в portal.properties #comment=85-100091
  * 4.0.80.2 - PORTAL-410 Сбрасывается компания после добавления нового сотрудника
  * 4.0.80.3 - PORTAL-418 В новом crm2.protei.ru не во всех заявках отображается текст
+ * 4.0.80.4 - PORTAL-419 Новый CRM: Некорректно работает прокрутка страницы (общий скролл).
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.80.3";
+        return "4.0.80.4";
     }
 }
