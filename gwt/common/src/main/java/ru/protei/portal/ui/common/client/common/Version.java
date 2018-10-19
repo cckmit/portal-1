@@ -279,9 +279,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.79.7 - PORTAL-377 исправление #comment=85-97654
  * 4.0.79.8 - PORTAL-377 исправлена ошибка с невыставляющимся текстом у новых комментов, добавлены логи #comment=85-98069
  * 4.0.80.0 - PORTAL-360 увеличен размер колонки вида документа, fix NPE #comment=85-98300
+ * 4.0.80.1 - PORTAL-357 опция integration.youtrack в portal.properties #comment=85-100091
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.80.0";
+        return "4.0.80.1";
     }
 }
