@@ -63,7 +63,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         if (event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
             if (issue != null) {
-                initialView(issue);
+                initialRestoredView(issue);
             } else {
                 CaseObject caseObject = new CaseObject();
                 initNewIssue(caseObject);
@@ -231,7 +231,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     private void initialView(CaseObject issue){
         this.issue = issue;
-        fillView(this.issue);
+        fillView(this.issue, false);
+    }
+
+    private void initialRestoredView(CaseObject issue){
+        this.issue = issue;
+        fillView(this.issue, true);
     }
 
     private void requestIssue(Long number, Consumer<CaseObject> successAction){
@@ -251,7 +256,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         caseObject.setPrivateCase(isPrivacyVisible ? true : false);
     }
 
-    private void fillView(CaseObject issue) {
+    private void fillView(CaseObject issue, boolean isRestoredIssue) {
         view.companyEnabled().setEnabled( isCompanyChangeAllowed(issue) );
         view.productEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRODUCT_EDIT ) );
         view.managerEnabled().setEnabled( policyService.hasPrivilegeFor( En_Privilege.ISSUE_MANAGER_EDIT) );
@@ -287,14 +292,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.isLocal().setValue(issue.isPrivateCase());
         view.description().setText(issue.getInfo());
 
-        view.state().setValue(isNew(issue) ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
+        view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
         view.stateEnabled().setEnabled(!isNew(issue) || policyService.personBelongsToHomeCompany());
-        view.importance().setValue(isNew(issue) ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
+        view.importance().setValue(isNew(issue) && !isRestoredIssue ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
 
         boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
         view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
         if (hasPrivilegeForTimeElapsed) {
-            if (isNew(issue)) {
+            if (isNew(issue) && !isRestoredIssue) {
                 boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
                 view.timeElapsedLabel().setTime(null);
                 view.timeElapsedInput().setTime(0L);
@@ -309,7 +314,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             }
         }
 
-        if (isNew(issue)) {
+        if (isNew(issue) && !isRestoredIssue) {
             view.applyCompanyValueIfOneOption();
         } else {
             Company initiatorCompany = issue.getInitiatorCompany();
