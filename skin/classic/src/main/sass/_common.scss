@@ -1439,6 +1439,7 @@ label.bordered:after{
 }
 .filter-container .panel.fixed{
   position: fixed !important;
+  max-height: calc(100vh - 30px) !important; // 30px = top offset (15px) + bottom offset (15px)
 }
 
 /**** Collapsable filter ****/
