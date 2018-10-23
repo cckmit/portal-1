@@ -306,7 +306,7 @@ public class PortalConfigData {
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
-            youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, true);
+            youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
         }
 
 
@@ -420,7 +420,7 @@ public class PortalConfigData {
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
             this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
-            this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei/issue/%id%");
+            this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }
 
         public String getLinkCrm() {
@@ -442,7 +442,7 @@ public class PortalConfigData {
         private final String employeeRegistrationSyncSchedule;
         private final String equipmentProject;
         private final String adminProject;
-        private final long youtrackUserId;
+        private final Long youtrackUserId;
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
@@ -473,7 +473,7 @@ public class PortalConfigData {
             return adminProject;
         }
 
-        public long getYoutrackUserId() {
+        public Long getYoutrackUserId() {
             return youtrackUserId;
         }
     }
