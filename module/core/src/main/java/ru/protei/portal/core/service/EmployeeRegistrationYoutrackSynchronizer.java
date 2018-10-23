@@ -23,6 +23,7 @@ import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.fields.change.StringArrayWithIdArrayOldNewChangeField;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private final Logger log = LoggerFactory.getLogger(EmployeeRegistrationYoutrackSynchronizer.class);
 
     private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
-    private long YOUTRACK_USER_ID;
+    private Long YOUTRACK_USER_ID;
 
     @Autowired
     private YoutrackService youtrackService;
@@ -61,9 +62,15 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     @Autowired
     private EventPublisherService publisherService;
 
+    @Autowired
+    private ThreadPoolTaskScheduler scheduler;
 
     @Autowired
-    public EmployeeRegistrationYoutrackSynchronizer(ThreadPoolTaskScheduler scheduler, PortalConfig config) {
+    private PortalConfig config;
+
+
+    @PostConstruct
+    public void startSynchronization() {
         if (!config.data().integrationConfig().isYoutrackEnabled()) {
             log.debug("employee registration youtrack synchronizer is not started because YouTrack integration is disabled in configuration");
             return;
@@ -71,6 +78,19 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         EQUIPMENT_PROJECT_NAME = config.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = config.data().youtrack().getAdminProject();
         YOUTRACK_USER_ID = config.data().youtrack().getYoutrackUserId();
+
+        if (EQUIPMENT_PROJECT_NAME == null) {
+            log.warn("bad youtrack configuration: equipment project name not set. Employee registration youtrack synchronizer not started");
+            return;
+        }
+        if (ADMIN_PROJECT_NAME == null) {
+            log.warn("bad youtrack configuration: admin project name not set. Employee registration youtrack synchronizer not started");
+            return;
+        }
+        if (YOUTRACK_USER_ID == null) {
+            log.warn("bad youtrack configuration: user id for synchronization not set. Employee registration youtrack synchronizer not started");
+            return;
+        }
 
         String syncCronSchedule = config.data().youtrack().getEmployeeRegistrationSyncSchedule();
         scheduler.schedule(this::synchronizeAll, new CronTrigger(syncCronSchedule));
