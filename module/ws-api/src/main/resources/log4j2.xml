@@ -11,15 +11,20 @@
     </Properties>
 
     <Loggers>
+
         <Root level="DEBUG">
             <!--<AppenderRef ref="Console"/>-->
         </Root>
+        <Logger name="ru.protei" level="DEBUG">
+            <AppenderRef ref="COMMON"/>
+        </Logger>
         <Logger name="protei" level="DEBUG">
             <AppenderRef ref="COMMON"/>
         </Logger>
         <Logger name="ru.protei.portal.api" level="DEBUG">
             <AppenderRef ref="API"/>
         </Logger>
+
     </Loggers>
 
     <Appenders>
