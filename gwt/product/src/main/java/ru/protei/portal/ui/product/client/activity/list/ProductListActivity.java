@@ -56,6 +56,16 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
         requestProducts();
     }
 
+    @Event
+    public void onFilterChange(ProductEvents.UpdateData event) {
+        if (event.viewType != ViewType.LIST) {
+            return;
+        }
+
+        this.query = event.query;
+        requestProducts();
+    }
+
     @Override
     public void onFavoriteClicked(AbstractProductItemView itemView) {
         Window.alert( "On favorite clicked" );

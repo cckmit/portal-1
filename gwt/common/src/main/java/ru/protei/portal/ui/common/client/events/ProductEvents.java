@@ -65,4 +65,17 @@ public class ProductEvents {
     }
 
     public static class ChangeModel {}
+
+    /**
+     * Обновление списка продуктов по фильтру
+     */
+    public static class UpdateData {
+        public UpdateData(ViewType type, ProductQuery query) {
+            this.viewType = type;
+            this.query = query;
+        }
+
+        public ViewType viewType;
+        public ProductQuery query;
+    }
 }

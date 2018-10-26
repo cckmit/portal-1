@@ -75,7 +75,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery();
-        fireEvent(new ProductEvents.ShowDefinite(currentViewType, filterView.asWidget(), query));
+        fireEvent(new ProductEvents.UpdateData(currentViewType, query));
     }
 
     private ProductQuery makeQuery() {
