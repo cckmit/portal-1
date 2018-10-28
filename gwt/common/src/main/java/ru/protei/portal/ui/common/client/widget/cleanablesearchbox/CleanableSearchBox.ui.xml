@@ -4,7 +4,7 @@
     <g:HTMLPanel>
         <div class="cleanable-search">
             <g:Anchor ui:field="textBoxAction" styleName="icon cleanable-search-icon"/>
-            <g:TextBox ui:field="textBox" styleName="input-field"/>
+            <g:TextBox ui:field="textBox" styleName="form-control input-sm"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

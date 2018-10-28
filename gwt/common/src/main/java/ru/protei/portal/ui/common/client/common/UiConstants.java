@@ -9,9 +9,9 @@ public class UiConstants {
      */
     public interface TabIcons {
         String SUB_ITEM = "fa fa-chevron-right";
-        String COMPANY = "icon icon-organization";
+        String COMPANY = "fa fa-building";
         String CONTACT = "fa fa-address-book";
-        String PRODUCT = "icon icon-product";
+        String PRODUCT = "fa fa-cubes";
         String ISSUE = "fa fa-tasks";
         String DASHBOARD = "fa fa-dashboard";
         String REGION = "fa fa-globe";
@@ -20,9 +20,9 @@ public class UiConstants {
         String ACCOUNT = "fa fa-group";
         String ROLE = "fa fa-user";
         String OFFICIAL = "fa fa-book";
-        String DOCUMENT = "fa fa-server";
-        String DOCUMENT_TYPE = "fa fa-server";
-        String ISSUE_REPORTS = "fa fa-tasks";
+        String DOCUMENT = "fa fa-file-text";
+        String DOCUMENT_TYPE = "fa fa-list-alt";
+        String ISSUE_REPORTS = "fa fa-file";
         String CASE_STATE = "fa fa-bookmark ";
         String SITE_FOLDER = "fa fa-folder";
         String EMPLOYEE = "fa fa-user-circle";

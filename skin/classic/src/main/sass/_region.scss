@@ -1,21 +1,17 @@
-.header-block {
-  overflow: hidden;
-}
 
 .region-picture {
   position: relative;
-  display: block;
-  left: calc( 100% - 120px );
+  display: inline-block;
+  left: calc(100% - 75px);
   top: -20px;
   opacity: 0.3;
 
   & > i {
     position: relative;
     display: block;
-    top: -46px;
-    left: 0px;
-
-    font-size: 10em;
+    bottom: 0.3em;
+    left: 0;
+    font-size: 6em;
   }
 }
 
@@ -31,10 +27,8 @@
 }
 
 .region-state {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
+  font-family: FontAwesome, serif;
+  font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
@@ -121,17 +115,12 @@
     min-width: 100px;
   }
 
-  table > tbody > tr > td.status {
-    opacity: 0.5;
-  }
-
   table > tbody > tr > td.region {
     background-color: #f9f9f9;
   }
 }
 
 .preview.project {
-
   .header {
     padding: 0;
     width: 100%;
@@ -188,11 +177,11 @@
     }
   }
 
-  .btn-selector > button.btn-white {
+  .dropdown > button {
     border: 1px solid white;
     box-sizing: border-box;
 
-    span.caret {
+    &:after {
       display: none;
     }
 
@@ -200,7 +189,7 @@
       border: 1px solid rgb(197, 202, 208);
       background-color: white;
 
-      span.caret {
+      &:after {
         display: inline;
       }
     }

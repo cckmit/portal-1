@@ -1,7 +1,7 @@
 .attachment-block {
   $background: "rgba(243, 240, 240,.4)";
   background: #{$background};
-  padding: 6px 10px;
+  padding: 3px 6px;
   white-space: normal;
   .attachment-list{
     padding-left: 0;
@@ -38,13 +38,6 @@
 
   +.attach{
     margin-left: 23px;
-  }
-
-  .attach-preview-btn{
-    display: block;
-  }
-  .attach-download-btn{
-    display: none;
   }
 
   &.attach-minimize{
@@ -88,12 +81,9 @@
       display: none !important;
     }
   }
-  &.attach-hide-preview{
+  &.attach-hide-preview-btn{
     .attach-preview-btn{
       display: none !important;
-    }
-    .attach-download-btn{
-      display: block !important;
     }
   }
 
@@ -178,7 +168,7 @@
     a {
       color: white;
     }
-    .fa-search-plus, .fa-cloud-download {
+    .fa-search-plus {
       $textShadow: "1px 1px 1px rgba(0,0,0,0.3)";
       text-shadow: #{$textShadow};
       font-size: 20px;

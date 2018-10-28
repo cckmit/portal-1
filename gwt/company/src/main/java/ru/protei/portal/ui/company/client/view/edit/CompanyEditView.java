@@ -13,9 +13,9 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
@@ -62,17 +62,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasValidable actualAddressValidator() {
-        return actualAddress;
-    }
-
-    @Override
     public HasValue<String> legalAddress() {
-        return legalAddress;
-    }
-
-    @Override
-    public HasValidable legalAddressValidator() {
         return legalAddress;
     }
 
@@ -155,10 +145,10 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     Element verifiableIcon;
 
     @UiField
-    ValidableTextArea actualAddress;
+    AutoResizeTextArea actualAddress;
 
     @UiField
-    ValidableTextArea legalAddress;
+    AutoResizeTextArea legalAddress;
 
     @UiField
     TextArea comment;

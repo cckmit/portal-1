@@ -42,13 +42,13 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
 
         fireEvent(new ActionBarEvents.Clear());
         if(policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE )){
-            fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.COMPANY ));
+            fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.COMPANY ));
         }
 
         boolean isListCurrent = currentViewType == ViewType.LIST;
         fireEvent(new ActionBarEvents.Add(
                 isListCurrent? lang.table(): lang.list(),
-                isListCurrent? UiConstants.ActionBarIcons.TABLE: UiConstants.ActionBarIcons.LIST,
+                null,
                 UiConstants.ActionBarIdentity.COMPANY_TYPE_VIEW
         ));
 

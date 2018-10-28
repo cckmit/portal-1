@@ -6,9 +6,9 @@
     <g:HTMLPanel tag="li" ui:field="inputContainer">
 
         <g:Anchor ui:field="anchor" href="#">
-            <img ui:field="image" src=""/>
+            <img ui:field="image" src="" style="height: 1em;"/>
             <span ui:field="label"/>
-            <i class="caret-icon"/>
+            <i class="m-l-10 ion ion-ios-arrow-down"/>
         </g:Anchor>
 
     </g:HTMLPanel>

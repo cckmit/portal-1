@@ -4,8 +4,8 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="main-content grid">
-        <div class="block low col-xs-9">
+    <g:HTMLPanel styleName="p-3 row">
+        <div class="block low col-md-9">
             <platelist:PlateList ui:field="childContainer"
                                  styleName="plate-list"
                                  createButtonStyleName="plate-list-create"
@@ -13,6 +13,6 @@
             />
         </div>
 
-        <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
+        <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
     </g:HTMLPanel>
 </ui:UiBinder>

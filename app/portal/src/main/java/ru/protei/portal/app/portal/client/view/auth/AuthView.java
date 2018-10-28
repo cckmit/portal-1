@@ -2,6 +2,7 @@ package ru.protei.portal.app.portal.client.view.auth;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
@@ -17,6 +18,7 @@ import com.google.gwt.user.client.ui.TextBox;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
  * Вид формы авторизации
@@ -27,6 +29,7 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         initWidget (ourUiBinder.createAndBindUi (this));
         ensureDebugIds();
         initHandlers();
+        initPlaceholders();
     }
 
     public void setActivity(AbstractAuthActivity activity) {
@@ -69,8 +72,8 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     }
 
     private void initHandlers() {
-        loginPanel.sinkEvents(Event.ONKEYPRESS);
-        loginPanel.addHandler(this, KeyPressEvent.getType());
+        loginContainer.sinkEvents(Event.ONKEYPRESS);
+        loginContainer.addHandler(this, KeyPressEvent.getType());
     }
 
     public void setFocus () {
@@ -79,19 +82,24 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
 
     @Override
     public void showError(String msg){
-        authErrorPanel.setInnerText(msg);
-        authErrorPanel.addClassName("active");
+        errorMessage.removeClassName("hide");
+        errorText.setInnerText(msg);
     }
 
     @Override
     public void hideError(){
-        authErrorPanel.removeClassName("active");
+        errorMessage.addClassName("hide");
     }
 
-    public void reset()
-    {
+    @Override
+    public void reset() {
         login.setText("");
         password.setText("");
+    }
+
+    private void initPlaceholders() {
+        login.getElement().setAttribute("placeholder", lang.accountLogin() );
+        password.getElement().setAttribute("placeholder", lang.accountPassword() );
     }
 
     @UiField
@@ -104,10 +112,13 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     Button loginButton;
 
     @UiField
-    HTMLPanel loginPanel;
-
+    Lang lang;
     @UiField
-    DivElement authErrorPanel;
+    HTMLPanel loginContainer;
+    @UiField
+    SpanElement errorText;
+    @UiField
+    DivElement errorMessage;
 
     AbstractAuthActivity activity;
 

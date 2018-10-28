@@ -2,6 +2,7 @@ package ru.protei.portal.ui.company.client.view.table;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
@@ -9,11 +10,16 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.brainworm.factory.widget.table.client.TableWidget;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -105,19 +111,29 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
+
+
         category = new DynamicColumn<>(
-            lang.companyCategory(),
-            "company-category",
-            company -> company.getCategory() != null? company.getCategory().getName(): ""
+                lang.companyCategory(),
+                "company-category",
+                company -> {
+                    if ( company == null || company.getCategory() == null ) {
+                        return "";
+                    }
+
+                    En_CompanyCategory enCategory = En_CompanyCategory.findById(company.getCategory().getId());
+                    return "<img src='" + "./images/company_" + enCategory.name().toLowerCase() + ".svg" + "'/>";
+                }
         );
+
         group = new DynamicColumn<>(
                 lang.companyGroup(),
                 "company-group",
-                company -> company.getCompanyGroup() != null? company.getCompanyGroup().getName(): ""
+                company -> company.getCompanyGroup() != null ? company.getCompanyGroup().getName(): ""
         );
 
-        table.addColumn( name.header, name.values );
         table.addColumn( category.header, category.values );
+        table.addColumn( name.header, name.values );
         table.addColumn( group.header, group.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
@@ -157,7 +173,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         Element icon = DOM.createElement("i");
         icon.addClassName(iconClass);
 
-        Element wrapper = DOM.createDiv();
+        Element wrapper = DOM.createElement("small");
         wrapper.addClassName("contacts");
         wrapper.appendChild(icon);
         wrapper.appendChild(element);

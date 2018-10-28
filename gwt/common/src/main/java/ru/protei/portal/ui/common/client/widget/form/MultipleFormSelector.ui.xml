@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel styleName="form-group form-group-default form-group-default-select2" ui:field="formContainer">
+        <g:HTMLPanel ui:field="label" tag="label" styleName="hide"/>
+
+        <div class="select2 select2-container select2-container--default select2-container--below select2-container--focus">
+            <g:HTMLPanel ui:field="itemContainer" tag="ul" styleName="selection"/>
+            <div class="select2-button">
+                <g:Button ui:field="caretButton" styleName="btn btn-flat btn-default">
+                    <span ui:field="addIcon" class="hide"/>
+                    <span ui:field="add" class="caret"/>
+                </g:Button>
+                <g:Button ui:field="clearButton" styleName="btn btn-flat btn-default">
+                    <span ui:field="clearIcon" class="hide"/>
+                    <span ui:field="clear" class="fa fa-times"/>
+                </g:Button>
+            </div>
+        </div>
+
+    </g:HTMLPanel>
+
+</ui:UiBinder>

@@ -1,35 +1,55 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
-    <g:HTMLPanel tag="aside" ui:field="loginPanel" styleName="global">
-        <div class="signIn_block">
-            <div class="t_wrapper">
-                <div class="tc_wrapper">
-                    <div class="block">
-                        <div class="authForm">
-                            <div class="head">
-                                <div class="company"><span class="logo"></span><span class="name">PROTEI</span></div>
-                            </div>
-                            <div class="body">
-                                <div class="signInForm">
-                                    <div class="user form-group">
-                                        <div class="btn empty grayC hide"><span class="icon-user"></span></div>
-                                        <g:TextBox ui:field="login" styleName="input-field"/>
-                                    </div>
-                                    <div class="password form-group">
-                                        <div class="btn empty grayC hide"><span class="icon-lock"></span></div>
-                                        <g:PasswordTextBox ui:field="password" styleName="input-field"/>
-                                    </div>
-                                    <label class="submitBlock hideSource">
-                                        <g:Button ui:field="loginButton" text="{lang.buttonLogin}" styleName="btn btn-white"/>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div ui:field="authErrorPanel" class="errorNotice"></div>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel styleName="login-wrapper">
+
+        <div class="bg-pic">
+            <img src="./images/login_background.jpg"/>
+
+            <div class="bg-caption pull-bottom sm-pull-bottom text-white p-l-20 m-b-20">
+                <h2 class="semi-bold text-white">
+                    <ui:text from="{lang.proteiTitleFull}"/>
+                    <br/>
+                    <ui:text from="{lang.authTitle}"/>
+                </h2>
+                <p class="small">
+                    © 2018 НТЦ ПРОТЕЙ. All rights reserved
+                </p>
+            </div>
+
+        </div>
+
+        <g:HTMLPanel styleName="login-container bg-white" ui:field="loginContainer">
+            <div class="login-container-wrapper">
+                <div class="login-header">
+                    <div class="brand">
+                        <img src="./images/logo_blue.png" width="50" height="50"/>
+                        <span ui:field="header"><ui:text from="{lang.proteiTitleShort}"/></span>
+                    </div>
+                    <div class="icon">
+                        <i class="ion-ios-locked"/>
+                    </div>
+                </div>
+                <p class="p-t-35"><ui:text from="{lang.authDescription}"/></p>
+                <div class="p-t-15">
+                    <div class="form-group form-group-default">
+                        <label><ui:text from="{lang.accountLogin}"/></label>
+                        <g:TextBox ui:field="login" styleName="form-control"/>
+                    </div>
+                    <div class="form-group form-group-default">
+                        <label><ui:text from="{lang.accountPassword}"/></label>
+                        <g:PasswordTextBox ui:field="password" styleName="form-control"/>
+                    </div>
+                    <g:Button ui:field="loginButton" text="{lang.buttonLogin}"
+                              styleName="btn btn-complete btn-cons m-t-10"/>
+
+                    <div class="alert alert-danger fade in m-t-15 text-center hide" ui:field="errorMessage">
+                        <span ui:field="errorText"/>
                     </div>
                 </div>
             </div>
-        </div>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

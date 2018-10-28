@@ -1397,4 +1397,18 @@ public interface Lang extends Messages, ContactItemLang {
     String projectRequired();
 
     String decimalNumbersRequired();
+
+    String proteiTitleShort();
+
+    String authDescription();
+
+    String proteiTitleFull();
+
+    String authTitle();
+
+    String companyMainInfoTitle();
+
+    String companyContactInfoTitle();
+
+    String companyContactsHeader();
 }

@@ -85,13 +85,6 @@ ul.plate-list {
       }
     }
 
-    &.employee {
-      height: 250px;
-      .header-block {
-        height: calc(240px - 3em);
-      }
-    }
-
     &.partner .header-block:after {
       font-family: FontAwesome, serif;
       content: "\f2b5";
@@ -136,7 +129,7 @@ ul.plate-list {
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       z-index: 1;
-      width: calc(100% - 3em);
+      //width: calc(100% - 3em);
       height: calc(170px - 3em);
       top: 0;
       left: 0;
@@ -146,11 +139,11 @@ ul.plate-list {
       }
       &:before {
         position: absolute;
-        top: 0;
-        right: 1.5em;
-        left: 1.5em;
+        top: 0.6em;
+        right: 2em;
+        left: 2em;
         z-index: -1;
-        height: 3em;
+        height: 2.6em;
         background: gray;
         content: '';
         -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
@@ -173,6 +166,7 @@ ul.plate-list {
         text-transform: uppercase;
         word-spacing: 0.15em;
         font-weight: 300;
+        font-size: 1.5em;
       }
 
       p {
@@ -188,7 +182,7 @@ ul.plate-list {
         transform: translate3d(0, -10px, 0);
 
         a {
-          margin: 0.5em;
+          margin: 0.2em 0.4em;
           color: white;
           outline: none;
           text-decoration: none !important;

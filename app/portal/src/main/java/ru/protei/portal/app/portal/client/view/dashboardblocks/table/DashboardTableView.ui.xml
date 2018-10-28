@@ -17,7 +17,7 @@
             <div class="rightSide">
                 <searchbtn:SearchButton ui:field="search" styleName="dashboard-search-btn" placeholder="{lang.issueNumber}"/>
                 <person:PersonButtonViewerSelector ui:field="initiatorsBtn" styleName="dashboard-btn" defaultValue="{lang.withoutContact}"/>
-                <importance:CustomImportanceBtnGroupMulti ui:field="importance"/>
+                <importance:CustomImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-sm"/>
             </div>
         </div>
         <div ui:field="loader" class="Loader"/>

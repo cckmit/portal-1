@@ -4,7 +4,6 @@ import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -25,8 +24,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasValue<String> legalAddress();
 
     HasValidable companyNameValidator();
-    HasValidable actualAddressValidator();
-    HasValidable legalAddressValidator();
 
     HasText webSite();
     HasText comment();

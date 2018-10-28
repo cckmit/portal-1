@@ -1,17 +1,25 @@
-@import "colors";
+
 
 .chats {
   margin: 0;
   padding: 12px 15px 15px;
   list-style: none;
+}
 
+.chats ul {
+  font-size: 13px;
+  line-height: 22px;
 }
 
 .chats > li {
   position: relative;
+  line-height: 14px;
+  padding: 0;
+  margin: 0;
 }
+
 .chats > li + li {
-  margin-top: 15px
+  margin-top: 5px
 }
 
 .chats > li:after, .chats > li:before {
@@ -39,11 +47,9 @@
 }
 
 .chats .date-time {
-  font-size: 10px;
   display: block;
   float: right;
   color: #999;
-  margin-top: 3px
 }
 
 .chats .image {
@@ -62,10 +68,6 @@
   display: inline-block;
 }
 
-.chats .right .time-label {
-  float: right;
-}
-
 .chats .image img {
   max-width: 100%
 }
@@ -78,24 +80,23 @@
   margin-left: 60px;
 }
 
-.chats .message > span {
-  white-space: pre-wrap;
-}
-
 .chats .message {
   border: 1px solid #ccd0d4;
   padding: 7px 12px;
   font-size: 12px;
   position: relative;
   background: #fff;
-  white-space: normal;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
   min-height: 20px;
   color: #000;
 
-  .input-field.time-elapsed {
+  .message-text {
+    white-space: pre-wrap;
+  }
+
+  .form-control.time-elapsed {
     width: 190px;
     max-height: 31px;
     height: 31px;
@@ -121,59 +122,16 @@
 
 .chats {
   .message {
-    .message-input {
-      margin-top: 12px;
-      margin-bottom: 12px;
-    }
-
     .attachments {
       .visible-content {
         display: inline-block;
       }
     }
-
-    .hints {
-      position: relative;
-      display: block;
-      width: 100%;
-      margin-top: 6px;
-      margin-bottom: 0;
-      color: $info_dark_color;
-
-      .icon {
-        position: absolute;
-        display: block;
-        box-sizing: border-box;
-        height: 14px;
-        line-height: 14px;
-        width: 14px;
-        margin: 0;
-        top: 0;
-        left: 0;
-        color: $info_dark_color;
-      }
-
-      .hint {
-        position: relative;
-        display: block;
-        width: calc(100% - 14px);
-        height: 14px;
-        line-height: 14px;
-        margin: 0 0 0 14px;
-        font-size: 0.9em;
-        font-weight: 900;
-        color: $info_dark_color;
-      }
-    }
   }
 }
 
-.chats .right .list-inline {
-  &:after {
-    content: "";
-    display: block;
-    clear: both;
-  }
+.chats .left .date-time {
+  float: left;
 }
 
 .chats .right .name {
@@ -186,15 +144,6 @@
 
 .chats .right .status {
   float: right;
-}
-
-.chats .right .date-time {
-  float: left;
-}
-
-.chats .right .issue-link {
-  float: left;
-  padding-right: 10px;
 }
 
 .chats .right .image {
@@ -268,19 +217,16 @@
 }
 
 blockquote {
-  margin-left: 0;
   border-left: 2px solid #015d5d;
   padding-left: 5px;
   color: #015d5d;
+  padding: 0;
+  margin: 0;
 }
 
 .new-message {
-  .message {
-    padding-top: 0px;
-
-    textarea {
-      border: none;
-      padding: 0px;
-    }
+  textarea {
+    border: none;
+    padding: 0;
   }
 }

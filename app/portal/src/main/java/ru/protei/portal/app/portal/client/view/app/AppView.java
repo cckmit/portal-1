@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.ParagraphElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -13,7 +14,6 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.app.portal.client.widget.localeselector.LocaleImage;
-import ru.protei.portal.app.portal.client.widget.navsearch.NavSearchBox;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
@@ -31,8 +31,6 @@ public class AppView extends Composite
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         initHandlers();
-        // todo temporary set invisible
-        search.setVisible( false );
     }
 
     @Override
@@ -43,6 +41,7 @@ public class AppView extends Composite
     @Override
     public void setUser( String username, String company, String iconSrc ) {
         this.username.setInnerText( username );
+        this.headerUsername.setInnerText( username );
         this.company.setInnerText( company );
         this.icon.setSrc( iconSrc );
     }
@@ -138,12 +137,22 @@ public class AppView extends Composite
                 activity.onUserClicked();
             }
         }, ClickEvent.getType() );
+
+        navbar.sinkEvents( Event.ONMOUSEOVER );
+        navbar.addHandler( event -> {
+            RootPanel.get().addStyleName("sidebar-visible");
+            navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
+        }, MouseOverEvent.getType() );
+
+        navbar.sinkEvents( Event.ONMOUSEOUT );
+        navbar.addHandler( event -> {
+            RootPanel.get().removeStyleName("sidebar-visible");
+            navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
+        }, MouseOutEvent.getType() );
     }
 
     @UiField
     Anchor toggleButton;
-    @UiField
-    NavSearchBox search;
     @Inject
     @UiField( provided = true )
     LocaleSelector locale;
@@ -175,6 +184,10 @@ public class AppView extends Composite
     Label appVersion;
     @UiField
     HTMLPanel globalContainer;
+    @UiField
+    SpanElement headerUsername;
+    @UiField
+    HTMLPanel navbar;
 
     AbstractAppActivity activity;
 

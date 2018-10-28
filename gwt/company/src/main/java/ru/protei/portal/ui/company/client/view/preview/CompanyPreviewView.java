@@ -1,15 +1,10 @@
 package ru.protei.portal.ui.company.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.FieldSetElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
@@ -80,16 +75,18 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
-    public void setCategory ( String value ) { this.category.setInnerText( value ); }
+    public void setCategory ( String value ) {
+        this.categoryImage.setSrc( value );
+    }
 
     @Override
     public void setGroupCompany( String value ) {
-        this.groupCompany.setInnerText( value );
+        this.groupCompany.setText( value );
     }
 
     @Override
     public void setInfo( String value ) {
-        this.info.setInnerText( value );
+        this.info.setText( value );
     }
 
     @Override
@@ -101,15 +98,15 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     public Widget asWidget(boolean isForTableView) {
         if(isForTableView){
             rootWrapper.addStyleName("preview-wrapper");
-            contacts.setClassName("header");
-            comments.setClassName("header");
+//            contacts.setClassName("header");
+//            comments.setClassName("header");
         }else {
             rootWrapper.removeStyleName("preview-wrapper");
-            contacts.setClassName("contacts");
-            comments.setClassName("comments");
+//            contacts.setClassName("contacts");
+//            comments.setClassName("comments");
         }
 
-        companyNameBlock.setVisible(isForTableView);
+//        companyNameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
@@ -120,7 +117,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
 
     @Override
     public void setSubscriptionEmails(String value) {
-        subscription.setInnerText(value);
+        subscription.setText(value);
     }
 
     @UiField
@@ -130,31 +127,23 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     SpanElement email;
     @UiField
-    SpanElement category;
-    @UiField
-    SpanElement groupCompany;
+    InlineLabel groupCompany;
     @UiField
     SpanElement addressDejure;
     @UiField
     SpanElement addressFact;
     @UiField
-    SpanElement info;
+    Label info;
     @UiField
-    HTMLPanel groupContainer;
-    @UiField
-    FieldSetElement contacts;
-    @UiField
-    HTMLPanel companyNameBlock;
-    @UiField
-    SpanElement companyName;
+    HeadingElement companyName;
     @UiField
     HTMLPanel rootWrapper;
     @UiField
-    FieldSetElement comments;
-    @UiField
     HTMLPanel contactsContainer;
     @UiField
-    SpanElement subscription;
+    InlineLabel subscription;
+    @UiField
+    ImageElement categoryImage;
 
     @Inject
     FixedPositioner positioner;

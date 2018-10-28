@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -46,7 +47,13 @@ public abstract class CompanyPreviewActivity
 
         view.setName(value.getCname());
 
-        view.setCategory( value.getCategory() == null ? "" : value.getCategory().getName() );
+        String categoryImage = null;
+        if ( value.getCategory() != null ) {
+            En_CompanyCategory enCategory = En_CompanyCategory.findById(value.getCategory().getId());
+            categoryImage = "./images/company_" + enCategory.name().toLowerCase() + ".svg";
+        }
+        view.setCategory( categoryImage );
+
         view.setGroupCompany( value.getCompanyGroup() == null ? "" : value.getCompanyGroup().getName() );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());

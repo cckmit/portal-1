@@ -2,8 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel styleName="btn-selector" ui:field="inputContainer">
-        <label ui:field="label"/>
-        <g:Button ui:field="button" styleName="btn btn-white">
+        <label ui:field="label" class="hide"/>
+        <g:Button ui:field="button" styleName="btn btn-white btn-block">
             <i ui:field="icon"/>
             <span ui:field="text" class="selector-val"></span>
             <span class="caret"></span>

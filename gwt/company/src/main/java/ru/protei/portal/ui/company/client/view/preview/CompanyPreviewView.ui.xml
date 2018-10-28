@@ -1,67 +1,51 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
->
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+<ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="rootWrapper">
-        <g:HTMLPanel styleName="preview grid">
-            <g:HTMLPanel ui:field="companyNameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend><ui:text from="{lang.company}"/></legend>
-                <span ui:field="companyName"></span>
-            </g:HTMLPanel>
-            <g:HTMLPanel ui:field="groupContainer" tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.companyCommonHeader}"/></legend>
-                <div class="col-xs-12">
-                    <label><ui:text from="{lang.companyCategory}"/></label>
-                    <span ui:field="category"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label><ui:text from="{lang.companyGroupLabel}"/></label>
-                    <span ui:field="groupCompany"></span>
-                </div>
-            </g:HTMLPanel>
+<g:HTMLPanel ui:field="rootWrapper">
+    <div class="card card-default">
+        <div class="card-block">
+            <h4 class="col-md-12 no-margin" ui:field="companyName"/>
+            <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
+            <div class="small hint-text no-margin">
+                <a class="col-md-7" ui:field="site" href="#" target="_blank"/>
+            </div>
+            <div class="small hint-text">
+                <g:InlineLabel>
+                    <ui:text from="{lang.companyGroup} "/>
+                </g:InlineLabel>
+                <g:InlineLabel ui:field="groupCompany"/>
+            </div>
+            <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
 
-            <fieldset ui:field="contacts" class="contacts">
-                <legend><ui:text from="{lang.companyInfoHeader}"/></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.phone}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="phone"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyWebSite}"/></label>
-                    <a class="col-xs-7 col-md-7" ui:field="site" href="#" target="_blank"></a>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="email"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyActualAddress}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="addressFact"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.companyLegalAddress}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="addressDejure"></span>
-                </div>
-            </fieldset>
+            <p class="small">
+                <span class="bold"><ui:text from="{lang.companySubscription}: "/></span>
+                <g:InlineLabel ui:field="subscription"/>
+            </p>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.companySubscription}"/></legend>
-                <span ui:field="subscription"/>
-            </fieldset>
+            <h5><ui:text from="{lang.companyContactsHeader}"/></h5>
 
-            <fieldset ui:field="comments" class="comments">
-                <legend><ui:text from="{lang.companyAdditionalInfoHeader}"/></legend>
-                <span ui:field="info" class="pre-formatted-info"></span>
-            </fieldset>
+            <div class="small">
+                <b><ui:text from="{lang.phone}: "/></b>
+                <span ui:field="phone"/>
+            </div>
+            <div class="small">
+                <b><ui:text from="{lang.email}: "/></b>
+                <span ui:field="email"/>
+            </div>
+            <div class="small">
+                <b><ui:text from="{lang.companyActualAddress}: "/></b>
+                <span ui:field="addressFact"/>
+            </div>
+            <div class="small">
+                <b><ui:text from="{lang.companyLegalAddress}: "/></b>
+                <span ui:field="addressDejure"/>
+            </div>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.contacts}"/></legend>
-
-                <g:HTMLPanel ui:field="contactsContainer" styleName="col-xs-12"/>
-            </fieldset>
-        </g:HTMLPanel>
-    </g:HTMLPanel>
+            <h5><ui:text from="{lang.contacts}"/></h5>
+            <g:HTMLPanel ui:field="contactsContainer" styleName="col-xs-12"/>
+        </div>
+    </div>
+</g:HTMLPanel>
 </ui:UiBinder>
