@@ -1411,4 +1411,12 @@ public interface Lang extends Messages, ContactItemLang {
     String companyContactInfoTitle();
 
     String companyContactsHeader();
+
+    String contactMainInfoTitle();
+
+    String contactContactInfoTitle();
+
+    String contactAccountTitle();
+
+    String contactAccountHint();
 }

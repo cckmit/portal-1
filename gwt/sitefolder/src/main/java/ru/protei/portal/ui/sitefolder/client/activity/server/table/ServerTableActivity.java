@@ -63,7 +63,7 @@ public abstract class ServerTableActivity implements
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.siteFolderServerCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_SERVER));
+            fireEvent(new ActionBarEvents.Add(lang.siteFolderServerCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_SERVER));
         }
 
         if (platformId != null) {

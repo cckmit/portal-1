@@ -60,7 +60,7 @@ public abstract class PlatformTableActivity implements
 
         fireEvent(new ActionBarEvents.Clear());
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE)) {
-            fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
+            fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
         }
 
         requestPlatformsCount();

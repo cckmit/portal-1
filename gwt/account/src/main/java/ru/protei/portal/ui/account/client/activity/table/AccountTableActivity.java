@@ -61,7 +61,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_CREATE ) ?
-                new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ACCOUNT ) :
+                new ActionBarEvents.Add( CREATE_ACTION, null, UiConstants.ActionBarIdentity.ACCOUNT ) :
                 new ActionBarEvents.Clear()
         );
 

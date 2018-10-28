@@ -40,7 +40,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
 
         fireEvent(new ActionBarEvents.Clear());
         if(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE )){
-            fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.PRODUCT ));
+            fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.PRODUCT ));
         }
 
         boolean isListCurrent = currentViewType == ViewType.LIST;

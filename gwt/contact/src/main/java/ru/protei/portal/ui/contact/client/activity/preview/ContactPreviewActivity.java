@@ -1,12 +1,14 @@
 package ru.protei.portal.ui.contact.client.activity.preview;
 
-import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -60,15 +62,13 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
     private void fillView( Person value ) {
         view.firedMsgVisibility().setVisible(value.isFired());
         view.deletedMsgVisibility().setVisible(value.isDeleted());
-
-        view.setLastName( value.getLastName() );
-        view.setFirstName( value.getFirstName() );
-        view.setSecondName( value.getSecondName() );
         view.setDisplayName( value.getDisplayName() );
-        view.setShortName( value.getDisplayShortName() );
         view.setCompany( value.getCompany().getCname() );
-        view.setPosition( value.getPosition() );
-        view.setDepartment( value.getDepartment() );
+        String positionDisplay = StringUtils.isEmpty(value.getPosition()) ? "" : value.getPosition();
+        if (!StringUtils.isEmpty( value.getDepartment() )) {
+            positionDisplay += " (" + lang.department() + " " + value.getDepartment() + " )";
+        }
+        view.setPosition( positionDisplay );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
@@ -76,13 +76,12 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setEmail( infoFacade.allEmailsAsString() );
         view.setAddress( infoFacade.getFactAddress() );
         view.setHomeAddress( infoFacade.getHomeAddress() );
-        view.setBirthday( value.getBirthday() != null ? format.format( value.getBirthday() ) : "" );
-        view.setGender( value.getGender().getCode() );
+        view.setBirthday( value.getBirthday() != null ? DateFormatter.formatDateMonth(value.getBirthday()) : "" );
+        view.setGenderImage( UserIconUtils.getGenderIcon(value.getGender() ) );
         view.setInfo( value.getInfo() );
     }
 
     private void fillView( Long id ) {
-
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -112,6 +111,4 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
     private Long contactId;
     private AppEvents.InitDetails initDetails;
-
-    DateTimeFormat format = DateTimeFormat.getFormat("dd.MM.yyyy");
 }
