@@ -95,8 +95,6 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     @UiField
     InfiniteTableWidget<Report> table;
     @UiField
-    HTMLPanel tableContainer;
-    @UiField
     HTMLPanel pagerContainer;
 
     @Inject
