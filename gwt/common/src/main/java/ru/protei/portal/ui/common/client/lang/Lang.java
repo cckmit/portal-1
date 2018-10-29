@@ -1419,4 +1419,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contactAccountTitle();
 
     String contactAccountHint();
+
+    String projectCreateBy();
 }

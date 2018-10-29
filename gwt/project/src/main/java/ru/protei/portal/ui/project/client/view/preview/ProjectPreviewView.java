@@ -80,8 +80,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
+    public void setInitiatorShortName(String value) {
+        this.initiatorShortName.setInnerHTML( value );
     }
 
     @Override
@@ -207,10 +207,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     Anchor fullScreen;
 
     @UiField
-    Element header;
-
-    @UiField
-    LabelElement creationDate;
+    Element creationDate;
 
     @Inject
     @UiField(provided = true)
@@ -255,6 +252,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+    @UiField
+    Element initiatorShortName;
 
     AbstractProjectPreviewActivity activity;
 

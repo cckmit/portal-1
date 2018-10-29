@@ -108,7 +108,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
     private void fillView( ProjectInfo value ) {
         this.project = value;
         view.setName( value.getName() );
-        view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
+        view.setInitiatorShortName( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.state().setValue( value.getState() );
         view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );

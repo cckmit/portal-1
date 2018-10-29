@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.CaseLocation;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -51,21 +52,23 @@ public class ProjectInfo extends AuditableObject {
     /**
      * продуктовое направление
      */
-    EntityOption productDirection;
+    private EntityOption productDirection;
 
     /**
      * Дата создания
      */
-    Date created;
+    private Date created;
 
     /**
      * Команда проекта
      */
     private List<PersonProjectMemberView> team;
 
-    EntityOption region;
+    private EntityOption region;
 
-    Set<ProductShortView> products;
+    private Set<ProductShortView> products;
+
+    private Person creator;
 
     public Long getId() {
         return id;
@@ -147,6 +150,14 @@ public class ProjectInfo extends AuditableObject {
         this.products = products;
     }
 
+    public Person getCreator() {
+        return creator;
+    }
+
+    public void setCreator(Person creator) {
+        this.creator = creator;
+    }
+
     public List<PersonProjectMemberView> getTeam() {
         return team;
     }
@@ -179,6 +190,7 @@ public class ProjectInfo extends AuditableObject {
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setId( project.getId() );
         projectInfo.setName( project.getName() );
+        projectInfo.setCreator(project.getCreator());
         projectInfo.setDescription(project.getInfo());
         projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
         if ( project.getProduct() != null ) {
