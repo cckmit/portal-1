@@ -286,9 +286,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.80.5 - PORTAL-439 Проверка и исправление интеграции с YouTrack после обновления
  * 4.0.80.6 - PORTAL-348 Авторизация пользователя после увольнения / исключения email уволенного из списка оповещения
  * 4.0.80.7 - PORTAL-380 Вкладка "Продукты": В поле поиска теряется фокус фильтра.
+ * 4.0.80.8 - PORTAL-405 Галочки в фильтре 'статус'
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.80.7";
+        return "4.0.80.8";
     }
 }
