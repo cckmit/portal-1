@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.helper;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -65,13 +64,8 @@ public class CollectionUtils {
                 .collect(Collectors.joining(delimiter));
     }
 
-
-    public static <T> T getFirst( Iterable<T> iterable ) {
-        return isEmpty( iterable ) ? null : iterable.iterator().next();
-    }
-
-    public static <T> Optional<T> find(Collection<T> col, Predicate<T> predicate) {
-        return col.stream().filter(predicate).findAny();
+    public static <T> T find(Collection<T> col, Predicate<T> predicate) {
+        return col.stream().filter(predicate).findAny().orElse(null);
     }
 
 }

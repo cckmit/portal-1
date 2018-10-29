@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.comment.list;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -12,15 +14,14 @@ import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
-import ru.protei.portal.ui.common.client.events.AttachmentEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -62,14 +63,24 @@ public abstract class IssueCommentListActivity
     public void onAuthSuccess( AuthEvents.Success event ) {
         this.profile = event.profile;
     }
+    
+    @Event
+    public void onShowEmployeeRegistrationComments(EmployeeRegistrationEvents.ShowComments event) {
+        onShow(event.parent, event.id, false, true);
+    }
 
     @Event
-    public void onShow( IssueEvents.ShowComments event ) {
-        this.showEvent = event;
+    public void onShowIssue( IssueEvents.ShowComments event ) {
+        onShow(event.parent, event.caseId, event.isElapsedTimeEnabled, false);
+    }
+    
+    private void onShow(HasWidgets parent, long caseId, boolean isElapsedTimeEnabled, boolean isEmployeeRegistration) {
+        parent.clear();
+        parent.add(view.asWidget());
 
-        event.parent.clear();
-        event.parent.add(view.asWidget());
-
+        this.caseId = caseId;
+        this.isEditingEnabled = !isEmployeeRegistration;
+        
         comment = null;
         lastCommentView = null;
         tempAttachments.clear();
@@ -78,10 +89,16 @@ public abstract class IssueCommentListActivity
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
-        view.timeElapsedVisibility().setVisible(event.isElapsedTimeEnabled);
+        view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
+        view.enabledNewComment(isEditingEnabled);
+        view.setEnabledAttachAndComment(isEditingEnabled);
 
-        requestData( event.caseId );
+        if (isEmployeeRegistration) {
+            employeeRegistrationService.getEmployeeRegistrationComments(caseId, commentsLoadedCallback);
+        } else {
+            issueService.getIssueComments(caseId, commentsLoadedCallback);
+        }
     }
 
     @Event
@@ -133,7 +150,7 @@ public abstract class IssueCommentListActivity
             public void onSuccess( Void result ) {
                 Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
                 if(!commentAttachments.isEmpty())
-                    fireEvent(new AttachmentEvents.Remove(showEvent.caseId, commentAttachments));
+                    fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
 
                 view.removeComment( itemView );
                 itemViewToModel.remove(itemView);
@@ -235,7 +252,7 @@ public abstract class IssueCommentListActivity
         }
 
         removeAttachment(attachment.getId(), () -> {
-            fireEvent(new AttachmentEvents.Remove(showEvent.caseId, Collections.singletonList(attachment)));
+            fireEvent(new AttachmentEvents.Remove(caseId, Collections.singletonList(attachment)));
 
             itemView.attachmentContainer().remove(attachment);
             if(itemView.attachmentContainer().getAll().isEmpty()){
@@ -267,25 +284,9 @@ public abstract class IssueCommentListActivity
         tempAttachments.add(attach);
     }
 
-    private void requestData(Long id ) {
-        issueService.getIssueComments( id, new RequestCallback<List<CaseComment>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( List<CaseComment> cm ) {
-                comments = cm;
-                fillView();
-            }
-        } );
-    }
-
-    private void fillView(){
+    private void fillView(List<CaseComment> comments){
         itemViewToModel.clear();
         view.clearCommentsContainer();
-        view.setEnabledAttachAndComment(!showEvent.isReadOnly);
         view.enabledNewComment( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ));
 
         for (CaseComment value : comments) {
@@ -303,7 +304,7 @@ public abstract class IssueCommentListActivity
         }
 
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
-        itemView.setOwner( value.getAuthor() == null ? "Unknown" : value.getAuthor().getDisplayName() );
+        itemView.setOwner( getOwnerName(value) );
         itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
         itemView.setRemoteLink(value.getRemoteLink());
 
@@ -314,13 +315,15 @@ public abstract class IssueCommentListActivity
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
 
-        if ( HelperFunc.isNotEmpty( value.getText() ) && !isStateChangeComment ) {
+        if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
-        } else {
+        }
+
+        if ( HelperFunc.isEmpty( value.getText() ) && isStateChangeComment ) {
             itemView.hideOptions();
         }
-        itemView.enabledEdit( !showEvent.isReadOnly && policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
-        itemView.enableReply(!showEvent.isReadOnly);
+
+        itemView.enabledEdit( isEditingEnabled && policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
 
         if ( isStateChangeComment ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
@@ -334,8 +337,8 @@ public abstract class IssueCommentListActivity
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
 
-        itemView.enabledEdit( !showEvent.isReadOnly && IssueCommentUtils.isEnableEdit( value, profile.getId() ) );
-        itemView.enableReply(!showEvent.isReadOnly);
+        itemView.enabledEdit( isEditingEnabled && IssueCommentUtils.isEnableEdit( value, profile.getId() ) );
+        itemView.enableReply(isEditingEnabled);
         itemViewToModel.put( itemView, value );
 
         return itemView;
@@ -377,9 +380,9 @@ public abstract class IssueCommentListActivity
         listForRemove.removeIf(listForAdd::remove);
 
         if(!listForRemove.isEmpty())
-            fireEvent(new AttachmentEvents.Remove(showEvent.caseId, listForRemove));
+            fireEvent(new AttachmentEvents.Remove(caseId, listForRemove));
         if(!listForAdd.isEmpty())
-            fireEvent(new AttachmentEvents.Add(showEvent.caseId, listForAdd));
+            fireEvent(new AttachmentEvents.Add(caseId, listForAdd));
     }
 
     private List<Long> extractIds(Collection<CaseAttachment> list){
@@ -404,12 +407,12 @@ public abstract class IssueCommentListActivity
             return;
         }
 
-        comment.setCaseId( id != null ? id : showEvent.caseId );
+        comment.setCaseId( id != null ? id : caseId );
         comment.setText( message );
         comment.setTimeElapsed(view.timeElapsed().getTime());
         comment.setCaseAttachments(
                 tempAttachments.stream()
-                        .map(a -> new CaseAttachment(showEvent.caseId, a.getId(), isEdit? comment.getId(): null))
+                        .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))
                         .collect(Collectors.toList())
         );
 
@@ -449,7 +452,7 @@ public abstract class IssueCommentListActivity
                         lastCommentView.showAttachments(!tempAttachments.isEmpty());
                     }
                 } else {
-                    fireEvent(new AttachmentEvents.Add(showEvent.caseId, tempAttachments));
+                    fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
                     AbstractIssueCommentItemView itemView = makeCommentView( result );
                     lastCommentView = itemView;
                     view.addCommentToFront( itemView.asWidget() );
@@ -472,11 +475,20 @@ public abstract class IssueCommentListActivity
         fireEvent( new IssueEvents.ChangeTimeElapsed(timeElapsed) );
     }
 
+    private String getOwnerName(CaseComment caseComment) {
+        if (!StringUtils.isEmpty(caseComment.getOriginalAuthorName()))
+            return caseComment.getOriginalAuthorName();
+        if (caseComment.getAuthor() != null)
+            return caseComment.getAuthor().getDisplayName();
+        return "Unknown";
+    }
 
     @Inject
     Lang lang;
     @Inject
     IssueControllerAsync issueService;
+    @Inject
+    EmployeeRegistrationControllerAsync employeeRegistrationService;
     @Inject
     AbstractIssueCommentListView view;
     @Inject
@@ -490,8 +502,22 @@ public abstract class IssueCommentListActivity
     private AbstractIssueCommentItemView lastCommentView;
 
     private Profile profile;
-    private IssueEvents.ShowComments showEvent;
+
+    private boolean isEditingEnabled = true;
+    private Long caseId;
+
+    private final AsyncCallback<List<CaseComment>> commentsLoadedCallback = new RequestCallback<List<CaseComment>>() {
+        @Override
+        public void onError( Throwable throwable ) {
+            fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+        }
+
+        @Override
+        public void onSuccess( List<CaseComment> cm ) {
+            fillView(cm);
+        }
+    };
+    
     private Map<AbstractIssueCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
-    private List<CaseComment> comments = new ArrayList<CaseComment>();
 }

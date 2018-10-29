@@ -17,8 +17,6 @@ import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -144,8 +142,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
                 endpoint.setLastUpdatedOnDate(lastUpdatedOn);
                 redmineEndpointDAO.updateUpdatedOn(endpoint);
-            }
-            else {
+            } else {
                 logger.debug("no changed issues from {}", endpoint.getServerAddress());
             }
         } catch (RedmineException re) {
@@ -179,7 +176,14 @@ public final class RedmineServiceImpl implements RedmineService {
                 .add("updated_on", date)
                 .add("project_id", projectName);
 
-        return manager.getIssueManager().getIssues(params).getResults();
+        final List<Integer> idsOfClosed = manager.getIssueManager().getIssues(params).getResults()
+                .parallelStream()
+                .map(Issue::getId)
+                .collect(Collectors.toList());
+
+        idsOfClosed.forEach(x -> logger.debug("Issue with id {} was closed recently, handling it", x));
+
+        return requestIssues(idsOfClosed, endpoint);
     }
 
     private List<Issue> getIssuesCreatedAfterDate(String date, String projectName, RedmineEndpoint endpoint) throws RedmineException {

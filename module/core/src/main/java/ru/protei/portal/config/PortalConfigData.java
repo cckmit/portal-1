@@ -301,10 +301,12 @@ public class PortalConfigData {
     public static class IntegrationConfig {
         private final boolean hpsmEnabled;
         private final boolean redmineEnabled;
+        private final boolean youtrackEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
+            youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
         }
 
 
@@ -314,6 +316,10 @@ public class PortalConfigData {
 
         public boolean isRedmineEnabled() {
             return redmineEnabled;
+        }
+
+        public boolean isYoutrackEnabled() {
+            return youtrackEnabled;
         }
     }
 
@@ -414,7 +420,7 @@ public class PortalConfigData {
         public CaseLinkConfig(PropertiesWrapper properties) throws ConfigException {
             this.linkCrm = properties.getProperty("case.link.internal", "http://newportal/crm/#issues/issue:id=%id%");
             this.linkOldCrm = properties.getProperty("case.link.internal.old", "http://portal/crm/session/session_support.jsp?id=%id%&&action_ref=SessionManageBean_Support.applyFilterAction_Support");
-            this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei/issue/%id%");
+            this.linkYouTrack = properties.getProperty("case.link.youtrack", "https://youtrack.protei.ru/issue/%id%");
         }
 
         public String getLinkCrm() {
@@ -436,6 +442,7 @@ public class PortalConfigData {
         private final String employeeRegistrationSyncSchedule;
         private final String equipmentProject;
         private final String adminProject;
+        private final Long youtrackUserId;
 
         public YoutrackConfig(PropertiesWrapper properties) {
             apiBaseUrl = properties.getProperty("youtrack.api.baseurl");
@@ -443,6 +450,7 @@ public class PortalConfigData {
             employeeRegistrationSyncSchedule = properties.getProperty("youtrack.employee_registration.sync_schedule", "0 */15 * * * *");
             equipmentProject = properties.getProperty("youtrack.employee_registration.equipment_project");
             adminProject = properties.getProperty("youtrack.employee_registration.admin_project");
+            youtrackUserId = properties.getProperty("youtrack.user_id_for_synchronization", Long.class);
         }
 
         public String getApiBaseUrl() {
@@ -463,6 +471,10 @@ public class PortalConfigData {
 
         public String getAdminProject() {
             return adminProject;
+        }
+
+        public Long getYoutrackUserId() {
+            return youtrackUserId;
         }
     }
 }
