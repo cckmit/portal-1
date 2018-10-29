@@ -2734,6 +2734,12 @@ div.select2-container {
   padding-right: 27px;
 }
 
+.dropdown-selector .dropdown-toggle::after {
+  position: absolute;
+  top: 45%;
+  right: 15px;
+}
+
 .form-group-default-selectFx.disabled {
   cursor: not-allowed;
   pointer-events: none;
