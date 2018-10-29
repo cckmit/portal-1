@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableActivity;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
@@ -31,9 +32,10 @@ import ru.protei.portal.ui.project.client.view.table.columns.StatusColumn;
 public class ProjectTableView extends Composite implements AbstractProjectTableView {
 
     @Inject
-    public void onInit(EditClickColumn< ProjectInfo > editClickColumn) {
+    public void onInit(EditClickColumn< ProjectInfo > editClickColumn, RemoveClickColumn<ProjectInfo> removeClickColumn) {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         this.editClickColumn = editClickColumn;
+        this.removeClickColumn = removeClickColumn;
         initTable();
     }
 
@@ -44,6 +46,9 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+        removeClickColumn.setHandler( activity );
+        removeClickColumn.setRemoveHandler( activity );
+        removeClickColumn.setColumnProvider( columnProvider );
         number.setHandler( activity );
         number.setColumnProvider( columnProvider );
         status.setHandler( activity );
@@ -97,12 +102,14 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.PROJECT_EDIT );
+        removeClickColumn.setPrivilege( En_Privilege.PROJECT_REMOVE );
 
         table.addColumn( status.header, status.values );
         table.addColumn( number.header, number.values );
         table.addColumn( info.header, info.values );
         table.addColumn( manager.header, manager.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn( removeClickColumn.header, removeClickColumn.values );
     }
 
     @UiField
@@ -121,6 +128,7 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     ClickColumnProvider<ProjectInfo> columnProvider = new ClickColumnProvider<>();
     EditClickColumn< ProjectInfo > editClickColumn;
+    RemoveClickColumn<ProjectInfo> removeClickColumn;
     @Inject
     NumberColumn number;
     @Inject
