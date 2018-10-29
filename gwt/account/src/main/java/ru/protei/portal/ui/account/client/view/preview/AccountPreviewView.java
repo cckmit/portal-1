@@ -2,6 +2,8 @@ package ru.protei.portal.ui.account.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -16,10 +18,30 @@ import ru.protei.portal.ui.account.client.activity.preview.AbstractAccountPrevie
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-public class AccountPreviewView extends Composite implements AbstractAccountPreviewView {
+public class AccountPreviewView
+        extends Composite
+        implements AbstractAccountPreviewView {
+
     public AccountPreviewView() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
+
+    @Override
+    public void setActivity( AbstractAccountPreviewActivity activity ) {
+        this.activity = activity;
+    }
+
+    @Override
+    public void setLogin( String value ) { this.login.setInnerHTML( value ); }
+
+    @Override
+    public void setRoles( String value ) { this.roles.setInnerHTML( value ); }
+
+    @Override
+    public void setPersonInfo( String value ) { this.personInfo .setInnerHTML( value ); }
+
+    @Override
+    public void setTypeImage(String value) { this.typeImage.setSrc( value ); }
 
     @Override
     protected void onAttach() {
@@ -33,46 +55,14 @@ public class AccountPreviewView extends Composite implements AbstractAccountPrev
         positioner.ignore( this );
     }
 
-    @Override
-    public void setActivity( AbstractAccountPreviewActivity activity ) {
-        this.activity = activity;
-    }
-
-    @Override
-    public void setLogin( String value ) { this.login.setInnerHTML( value ); }
-
-    @Override
-    public void setLastName( String value ) { this.lastName.setInnerHTML( value ); }
-
-    @Override
-    public void setFirstName( String value ) { this.firstName.setInnerHTML( value ); }
-
-    @Override
-    public void setSecondName( String value ) { this.secondName.setInnerHTML( value ); }
-
-    @Override
-    public void setCompany ( String value ) { this.company.setInnerHTML( value ); }
-
-    @Override
-    public void setRoles( String value ) { this.roles.setInnerHTML( value ); }
-
     @UiField
     SpanElement login;
-
-    @UiField
-    SpanElement lastName;
-
-    @UiField
-    SpanElement firstName;
-
-    @UiField
-    SpanElement secondName;
-
-    @UiField
-    SpanElement company;
-
     @UiField
     SpanElement roles;
+    @UiField
+    Element personInfo;
+    @UiField
+    ImageElement typeImage;
 
     @Inject
     @UiField

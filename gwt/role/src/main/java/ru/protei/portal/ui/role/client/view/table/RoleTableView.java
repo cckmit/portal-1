@@ -8,7 +8,9 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -21,7 +23,6 @@ import ru.protei.portal.ui.role.client.activity.table.AbstractRoleTableView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Представление таблицы роли
@@ -51,7 +52,7 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
             clickColumn.setColumnProvider( columnProvider );
         });
     }
-    
+
     @Override
     public void setAnimation ( TableAnimation animation ) {
         animation.setContainers( tableContainer, previewContainer, filterContainer );
@@ -79,6 +80,29 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
         editClickColumn.setPrivilege( En_Privilege.ROLE_EDIT );
         removeClickColumn.setPrivilege( En_Privilege.ROLE_REMOVE );
 
+
+        ClickColumn< UserRole > advanceInfo = new ClickColumn< UserRole >() {
+            @Override
+            protected void fillColumnHeader( Element element ) {}
+
+            @Override
+            public void fillColumnValue ( Element cell, UserRole value ) {
+                String htmlValue = "";
+                if ( value.isDefaultForContact() ) {
+                    htmlValue = "<i class=\"inline fa fa-lg fa-flag text-danger m-r-10\"></i>";
+                }
+                String scopeStyleName = "warning";
+                if ( value.getScope().equals( En_Scope.SYSTEM )) {
+                    scopeStyleName = "inverse";
+                } else if ( value.getScope().equals( En_Scope.COMPANY )) {
+                    scopeStyleName = "success";
+                }
+                htmlValue += "<p class=\"label label-" + scopeStyleName + "\">" + scopeLang.getName(value.getScope()) + "</p>";
+                cell.setInnerHTML( HTMLHelper.wrapDiv( htmlValue ));
+            }
+        };
+        columns.add( advanceInfo );
+
         ClickColumn< UserRole > name = new ClickColumn< UserRole >() {
             @Override
             protected void fillColumnHeader( Element element ) {
@@ -105,23 +129,8 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
         };
         columns.add( description );
 
-        ClickColumn< UserRole > scope = new ClickColumn< UserRole >() {
-            @Override
-            protected void fillColumnHeader( Element element ) {
-                element.setInnerText( lang.roleScope() );
-            }
-
-            @Override
-            public void fillColumnValue ( Element cell, UserRole value ) {
-                cell.setInnerText( value.getScope() == null
-                        ? ""
-                        : scopeLang.getName( value.getScope() ));
-            }
-        };
-        columns.add( description );
-
+        table.addColumn( advanceInfo.header, advanceInfo.values );
         table.addColumn( name.header, name.values );
-        table.addColumn( scope.header, scope.values );
         table.addColumn( description.header, description.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( removeClickColumn.header, removeClickColumn.values );

@@ -1421,4 +1421,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contactAccountHint();
 
     String projectCreateBy();
+
+    String accountFor();
+
+    String accountRolesNotFound();
 }
