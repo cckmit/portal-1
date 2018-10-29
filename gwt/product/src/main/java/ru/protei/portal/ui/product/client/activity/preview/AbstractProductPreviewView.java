@@ -9,10 +9,10 @@ import com.google.gwt.user.client.ui.Widget;
 public interface AbstractProductPreviewView extends IsWidget {
 
     void setName( String name );
-    void setType( String type );
     void setActivity( AbstractProductPreviewActivity activity );
     void watchForScroll(boolean isWatch);
-    void setInfo( String value );
+    void setTypeImage(String image);
+    void setInfo(String value );
     Widget asWidget(boolean isForTableView);
 
 }

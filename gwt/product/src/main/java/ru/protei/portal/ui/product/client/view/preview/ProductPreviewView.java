@@ -1,12 +1,13 @@
 package ru.protei.portal.ui.product.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LegendElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -45,13 +46,13 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    public void setType(String type) {
-        productType.setInnerText(type);
+    public void setTypeImage(String image) {
+        typeImage.setSrc(image);
     }
 
     @Override
     public void setInfo( String value ) {
-        this.info.setInnerText(value);
+        this.info.setText(value);
     }
 
     @Override
@@ -62,22 +63,20 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
             rootWrapper.removeStyleName("preview-wrapper");
         }
 
-        productNameBlock.setVisible(isForTableView);
+//        productNameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
     @UiField
     Lang lang;
     @UiField
-    SpanElement info;
+    Label info;
     @UiField
     HTMLPanel rootWrapper;
     @UiField
-    SpanElement productName;
+    HeadingElement productName;
     @UiField
-    SpanElement productType;
-    @UiField
-    HTMLPanel productNameBlock;
+    ImageElement typeImage;
 
     @Inject
     FixedPositioner positioner;
