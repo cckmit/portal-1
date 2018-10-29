@@ -284,9 +284,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.80.3 - PORTAL-418 В новом crm2.protei.ru не во всех заявках отображается текст
  * 4.0.80.4 - PORTAL-419 Новый CRM: Некорректно работает прокрутка страницы (общий скролл).
  * 4.0.80.5 - PORTAL-439 Проверка и исправление интеграции с YouTrack после обновления
+ * 4.0.80.7 - PORTAL-380 Вкладка "Продукты": В поле поиска теряется фокус фильтра.
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.80.5";
+        return "4.0.80.7";
     }
 }
