@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.List;
 import java.util.Map;
@@ -34,4 +33,6 @@ public interface RegionController extends RemoteService {
     long createNewProject() throws RequestFailedException;
 
     List<ProjectInfo> getProjectsList() throws RequestFailedException;
+
+    Boolean removeProject(Long projectId) throws RequestFailedException;
 }
