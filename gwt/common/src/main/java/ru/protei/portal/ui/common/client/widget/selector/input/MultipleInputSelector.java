@@ -16,9 +16,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.MultipleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Абстрактный селектор с полем ввода
@@ -77,7 +75,6 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     public void fillSelectorView(List<String> selectedValues, List<T> selectedItems) {
         itemContainer.clear();
         itemViews.clear();
-        itemViewToModel.clear();
 
         for (int i = 0; i < selectedValues.size(); i++) {
             addItem( selectedValues.get(i), selectedItems.get(i) );
@@ -178,7 +175,6 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     Provider<SelectItemView> itemViewProvider;
 
     List< SelectItemView > itemViews = new ArrayList<SelectItemView >();
-    Map<SelectItemView, T> itemViewToModel = new HashMap<>();
 
     private boolean isEnabled = true;
 
