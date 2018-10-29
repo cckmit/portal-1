@@ -43,7 +43,7 @@
 
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.documentCategory}"/></label>
-                        <doccategory:DocumentCategorySelector ui:field="documentCategory" enabled="false"/>
+                        <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
                     </div>
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.documentType}"/></label>
