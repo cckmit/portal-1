@@ -4,13 +4,17 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="main-content">
-        <div class="grid">
-            <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-xs-9">
-                <table:TableWidget ui:field="table" styleName="table-hover doctypes"/>
+    <g:HTMLPanel styleName="p-3">
+        <div class="row">
+            <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-md-9">
+                <div class="card card-default no-border">
+                    <div class="card-block no-padding">
+                        <table:TableWidget ui:field="table" styleName="table table-hover doctypes"/>
+                    </div>
+                </div>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
-            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
+            <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
         </div>
-     </g:HTMLPanel>
+    </g:HTMLPanel>
 </ui:UiBinder>
