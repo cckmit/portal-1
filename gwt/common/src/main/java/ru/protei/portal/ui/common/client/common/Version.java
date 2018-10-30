@@ -288,9 +288,10 @@ package ru.protei.portal.ui.common.client.common;
  * 4.0.80.7 - PORTAL-380 Вкладка "Продукты": В поле поиска теряется фокус фильтра.
  * 4.0.80.8 - PORTAL-405 Галочки в фильтре 'статус'
  * 4.0.80.9 - PORTAL-427 Добавить возможность "удаления" проекта из портала
+ * 4.0.80.10 - PORTAL-445 Не работают методы Portal-API, не работает миграция в старую БД
  */
 public class Version {
     public static String getVersion() {
-        return "4.0.80.9";
+        return "4.0.80.10";
     }
 }
