@@ -72,14 +72,11 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     }
 
     @Override
-    public void fillSelectorView(List<String> selectedValues, List<T> selectedItems) {
+    public void fillSelectorView(List<T> selectedItems) {
         itemContainer.clear();
         itemViews.clear();
-
-        for (int i = 0; i < selectedValues.size(); i++) {
-            addItem( selectedValues.get(i), selectedItems.get(i) );
-        }
-        clearButton.setVisible(!selectedValues.isEmpty());
+        selectedItems.forEach(this::addItem);
+        clearButton.setVisible(!selectedItems.isEmpty());
     }
 
     public void setAddName( String text ) {
@@ -120,9 +117,9 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         }
     }
 
-    private void addItem( final String val, T item ) {
+    private void addItem(T item) {
         SelectItemView itemView = itemViewProvider.get();
-        itemView.setValue( val );
+        itemView.setValue(getNameForItem(item));
         itemView.setEnabled(isEnabled);
 
         itemViews.add( itemView );

@@ -126,7 +126,7 @@ public abstract class MultipleSelector<T>
         }
     }
 
-    public abstract void fillSelectorView( List<String> selectedValues, List<T> selectedItems );
+    public abstract void fillSelectorView( List<T> selectedItems );
 
     @Override
     protected void onLoad() {
@@ -222,19 +222,17 @@ public abstract class MultipleSelector<T>
     }
 
     private void getSelectedItemNamesAndFillSelectorView() {
-        List<String> selectedNames = new ArrayList<>();
         List<T> selectedItems = new ArrayList<>();
         if ( selected.isEmpty() && hasAnyValue ) {
-            selectedNames.add( itemToNameModel.get( null ) );
             selectedItems.add( null );
         } else {
-            for ( T item : selected ) {
-                selectedNames.add( itemToNameModel.get( item ) );
-                selectedItems.add(item);
-            }
+            selectedItems.addAll(selected);
         }
+        fillSelectorView(selectedItems);
+    }
 
-        fillSelectorView( selectedNames, selectedItems );
+    protected String getNameForItem(T item) {
+        return itemToNameModel.get(item);
     }
 
     protected void fillItemsSelection() {
