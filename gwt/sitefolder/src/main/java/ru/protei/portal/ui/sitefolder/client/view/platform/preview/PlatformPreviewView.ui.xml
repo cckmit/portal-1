@@ -7,6 +7,9 @@
 
     <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
+            <div class="actions col-xs-12">
+                <g:Button styleName="btn btn-white" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
+            </div>
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.siteFolderPlatform}"/></legend>
@@ -40,7 +43,6 @@
 
             <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
                                          legend="{lang.siteFolderCompanyContacts}"/>
-
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.siteFolderServers}"/></legend>

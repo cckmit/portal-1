@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.equipment.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
 /**
@@ -34,4 +35,6 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
     void setCreatedDate(String created);
 
     void showFullScreen( boolean value );
+
+    HasWidgets documents();
 }

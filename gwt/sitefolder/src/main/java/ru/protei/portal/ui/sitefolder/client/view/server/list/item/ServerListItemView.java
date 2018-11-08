@@ -51,6 +51,11 @@ public class ServerListItemView extends Composite implements AbstractServerListI
     }
 
     @Override
+    public void setRemoveVisible(boolean visible) {
+        remove.setVisible(visible);
+    }
+
+    @Override
     public void setParams(String params) {
         this.params.setInnerText(params);
     }

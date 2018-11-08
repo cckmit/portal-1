@@ -9,4 +9,8 @@ public interface DocumentDAO extends PortalBaseDAO<Document> {
     List<Document> getListByQuery(DocumentQuery query);
 
     int countByQuery(DocumentQuery query);
+
+    boolean checkInventoryNumberExists(long inventoryNumber);
+
+    boolean checkDecimalNumberExists(String decimalNumber);
 }

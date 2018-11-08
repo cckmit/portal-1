@@ -6,6 +6,7 @@ import ru.protei.portal.core.Lang;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -29,7 +30,7 @@ public class LocalizedTemplateCreator {
 
 
         Lang keys = getLang();
-        String basePackagePath = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String basePackagePath = LocalizedTemplateCreator.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
 
         Map<Locale, Object> models = new HashMap<>(LOCALES.length);
         for (Locale locale : LOCALES) {

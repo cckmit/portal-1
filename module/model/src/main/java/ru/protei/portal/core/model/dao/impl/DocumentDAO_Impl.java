@@ -38,6 +38,16 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
         return getObjectsCount(where.condition, where.args, JOINS, true);
     }
 
+    @Override
+    public boolean checkInventoryNumberExists(long inventoryNumber) {
+        return checkExistsByCondition(" inventory_number=?", inventoryNumber);
+    }
+
+    @Override
+    public boolean checkDecimalNumberExists(String decimalNumber) {
+        return checkExistsByCondition(" decimal_number=?", decimalNumber);
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(DocumentQuery query) {
         return new SqlCondition().build(((condition, args) -> {
@@ -108,6 +118,22 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             if (query.getApproved() != null) {
                 condition.append(" and document.is_approved=?");
                 args.add(query.getApproved());
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getDecimalNumbers())) {
+                condition.append(" and (");
+                condition.append(query.getDecimalNumbers()
+                        .stream()
+                        .map(dn -> " document.decimal_number like ? ")
+                        .collect(Collectors.joining(" or "))
+                );
+                condition.append(" ) ");
+                query.getDecimalNumbers().forEach(dn -> args.add(HelperFunc.makeLikeArg(dn, false)));
+            }
+
+            if (CollectionUtils.isNotEmpty(query.getEquipmentIds())) {
+                condition.append(" and document.equipment_id in ");
+                condition.append(HelperFunc.makeInArg(query.getEquipmentIds(), false));
             }
         }));
     }

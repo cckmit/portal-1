@@ -26,6 +26,7 @@ import java.util.Set;
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
     private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
+    private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
     EmployeeRegistrationDAO employeeRegistrationDAO;
@@ -46,6 +47,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     @PostConstruct
     public void setYoutrackProjectNames() {
+        YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
         EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
     }
@@ -93,8 +95,10 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if(!sendNotifyEvent(employeeRegistrationId))
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
-        createAdminYoutrackIssueIfNeeded(employeeRegistration);
-        createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
+        if (YOUTRACK_INTEGRATION_ENABLED) {
+            createAdminYoutrackIssueIfNeeded(employeeRegistration);
+            createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
+        }
 
         return new CoreResponse<Long>().success(id);
     }

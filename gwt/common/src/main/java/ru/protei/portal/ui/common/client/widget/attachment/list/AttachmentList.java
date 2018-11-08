@@ -196,7 +196,7 @@ public class AttachmentList extends Composite implements HasAttachments, HasAtta
     private boolean isSimpleMode;
     private boolean isHiddenControls;
     private Map<AbstractAttachmentView, Attachment> viewToAttachment;
-    private static final String DOWNLOAD_PATH = "Crm/springApi/files/";
+    private static final String DOWNLOAD_PATH = GWT.getModuleBaseURL() + "springApi/files/";
 
     interface AttachmentListUiBinder extends UiBinder<HTMLPanel, AttachmentList> {}
     private static AttachmentListUiBinder ourUiBinder = GWT.create(AttachmentListUiBinder.class);

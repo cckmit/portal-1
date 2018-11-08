@@ -60,6 +60,12 @@ public class CaseComment extends AuditableObject {
     @JdbcJoinedObject(localColumn = "remote_link_id", remoteColumn = "id", table = "case_link", sqlTableAlias = "case_link")
     private CaseLink remoteLink;
 
+    @JdbcColumn(name = "original_author_name")
+    private String originalAuthorName;
+
+    @JdbcColumn(name = "original_author_full_name")
+    private String originalAuthorFullName;
+
     public CaseComment() {}
 
     public CaseComment(String text) {
@@ -205,6 +211,22 @@ public class CaseComment extends AuditableObject {
         this.remoteLink = remoteLink;
     }
 
+    public String getOriginalAuthorName() {
+        return originalAuthorName;
+    }
+
+    public void setOriginalAuthorName(String originalAuthorName) {
+        this.originalAuthorName = originalAuthorName;
+    }
+
+    public String getOriginalAuthorFullName() {
+        return originalAuthorFullName;
+    }
+
+    public void setOriginalAuthorFullName(String originalAuthorFullName) {
+        this.originalAuthorFullName = originalAuthorFullName;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -217,7 +239,7 @@ public class CaseComment extends AuditableObject {
                 ", created=" + created +
                 ", clientIp='" + clientIp + '\'' +
                 ", caseId=" + caseId +
-                ", authorId=" + author +
+                ", author=" + author +
                 ", caseStateId=" + caseStateId +
                 ", caseImpLevel=" + caseImpLevel +
                 ", replyTo=" + replyTo +
@@ -225,6 +247,10 @@ public class CaseComment extends AuditableObject {
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
                 ", timeElapsed=" + timeElapsed +
+                ", remoteId='" + remoteId + '\'' +
+                ", remoteLinkId=" + remoteLinkId +
+                ", originalAuthorName='" + originalAuthorName + '\'' +
+                ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
                 '}';
     }
 }

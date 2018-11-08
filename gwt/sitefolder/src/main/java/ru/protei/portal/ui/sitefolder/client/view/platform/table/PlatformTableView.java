@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -16,6 +18,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableView;
@@ -41,6 +44,7 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
             c.setHandler(activity);
             c.setColumnProvider(columnProvider);
         });
+        serversColumn.setActionHandler(activity::onOpenServersClicked);
     }
 
     @Override
@@ -156,7 +160,12 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
 
         @Override
         public void fillColumnValue(Element cell, Platform value) {
-            cell.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " +lang.amountShort());
+            cell.setInnerText((value.getServersCount() == null ? "0" : String.valueOf(value.getServersCount())) + " " + lang.amountShort());
+            AnchorElement a = DOM.createAnchor().cast();
+            a.setHref("#");
+            a.addClassName("fa fa-share cell-inline-icon");
+            a.setTitle(lang.siteFolderServers());
+            cell.appendChild(a);
         }
     };
     private Collection<ClickColumn<Platform>> columns = new LinkedList<>();

@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -106,6 +107,11 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
+    public HasWidgets documents() {
+        return documents;
+    }
+
+    @Override
     public void setCopyBtnEnabledStyle( boolean isEnabled ){
         if (isEnabled) {
             copy.removeStyleName( "link-disabled" );
@@ -175,6 +181,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     Button fullScreen;
     @UiField
     SpanElement created;
+    @UiField
+    HTMLPanel documents;
 
     @Inject
     FixedPositioner positioner;

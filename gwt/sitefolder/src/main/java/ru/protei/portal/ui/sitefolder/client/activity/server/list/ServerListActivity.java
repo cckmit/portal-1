@@ -153,6 +153,7 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
         itemView.setParams(server.getParams());
         itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_EDIT));
         itemView.setCopyVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_CREATE));
+        itemView.setRemoveVisible(policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_REMOVE));
         return itemView;
     }
 

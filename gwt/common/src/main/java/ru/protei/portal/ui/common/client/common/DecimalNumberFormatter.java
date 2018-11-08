@@ -3,27 +3,79 @@ package ru.protei.portal.ui.common.client.common;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.lang.En_OrganizationCodeLang;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class DecimalNumberFormatter {
 
     public static String formatNumber(DecimalNumber number) {
-        if (number == null) {
+        if (number == null || number.isEmpty()) {
             return "";
         }
-
         StringBuilder sb = new StringBuilder();
-        sb.append(lang.getName(number.getOrganizationCode()))
-                .append(".")
-                .append(NumberFormat.getFormat("000000").format(number.getClassifierCode()))
-                .append(".")
-                .append(NumberFormat.getFormat("000").format(number.getRegisterNumber()));
+        appendNumberOrganizationCode(sb, number);
+        appendNumberClassifierCode(sb, number);
+        appendNumberRegisterNumber(sb, number);
+        appendNumberModification(sb, number);
+        return sb.toString();
+    }
 
-        if (number.getModification() != null) {
-            sb.append("–").append(NumberFormat.getFormat("00").format(number.getModification()));
+    public static String formatNumberWithoutModification(DecimalNumber number) {
+        if (number == null || number.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        appendNumberOrganizationCode(sb, number);
+        appendNumberClassifierCode(sb, number);
+        appendNumberRegisterNumber(sb, number);
+        return sb.toString();
+    }
+
+    public static List<String> formatNumbersWithoutModification(Collection<DecimalNumber> decimalNumbers) {
+
+        List<String> result = new ArrayList<>();
+
+        if (decimalNumbers == null) {
+            return result;
         }
 
-        return sb.toString();
+        decimalNumbers.forEach(decimalNumber -> {
+            String number = formatNumberWithoutModification(decimalNumber);
+            if (StringUtils.isNotBlank(number)) {
+                result.add(number);
+            }
+        });
+
+        return result;
+    }
+
+    private static void appendNumberOrganizationCode(StringBuilder sb, DecimalNumber number) {
+        sb.append(lang.getName(number.getOrganizationCode()));
+    }
+
+    private static void appendNumberClassifierCode(StringBuilder sb, DecimalNumber number) {
+        if (number.getClassifierCode() == null) {
+            return;
+        }
+        sb.append(".").append(NumberFormat.getFormat("000000").format(number.getClassifierCode()));
+    }
+
+    private static void appendNumberRegisterNumber(StringBuilder sb, DecimalNumber number) {
+        if (number.getRegisterNumber() == null) {
+            return;
+        }
+        sb.append(".").append(NumberFormat.getFormat("000").format(number.getRegisterNumber()));
+    }
+
+    private static void appendNumberModification(StringBuilder sb, DecimalNumber number) {
+        if (number.getModification() == null) {
+            return;
+        }
+        sb.append("–").append(NumberFormat.getFormat("00").format(number.getModification()));
     }
 
     @Inject

@@ -2,13 +2,14 @@ package ru.protei.portal.ui.document.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.document.client.widget.uploader.AbstractDocumentUploader;
+import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 
 import java.util.List;
 
@@ -17,6 +18,8 @@ public interface AbstractDocumentEditView extends IsWidget {
     void setActivity(AbstractDocumentEditActivity activity);
 
     HasValue<String> name();
+
+    HasValue<En_DocumentExecutionType> executionType();
 
     HasValue<DocumentType> documentType();
 
@@ -54,6 +57,10 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasEnabled documentTypeEnabled();
 
+    HasEnabled inventoryNumberEnabled();
+
+    HasEnabled saveEnabled();
+
 
     HasVisibility uploaderVisible();
 
@@ -66,9 +73,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     AbstractDocumentUploader documentUploader();
 
-    void resetFilename();
 
-    void setSaveEnabled(boolean isEnabled);
+    void resetFilename();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
 

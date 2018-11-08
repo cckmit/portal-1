@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.uploader;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -76,8 +77,8 @@ public class AttachmentUploader extends FileUploader{
         return attachment;
     }
 
-    private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = "Crm/springApi/uploadFile";
-    private static final String UPLOAD_WITH_AUTOBINDING_URL = "Crm/springApi/uploadFileToCase";
+    private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFile";
+    private static final String UPLOAD_WITH_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFileToCase";
     private FileUploadHandler uploadHandler;
     private Long caseNumber;
 }

@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
+import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DecimalNumber;
+import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.Equipment;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
@@ -36,10 +39,16 @@ public class EquipmentServiceImpl implements EquipmentService {
     DecimalNumberDAO decimalNumberDAO;
 
     @Autowired
+    DocumentDAO documentDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
     PolicyService policyService;
+
+    @Autowired
+    DocumentService documentService;
 
     @Override
     public CoreResponse<List<Equipment>> equipmentList(AuthToken token, EquipmentQuery query ) {
@@ -83,8 +92,28 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
+    public CoreResponse<List<DecimalNumber>> getDecimalNumbersOfEquipment(AuthToken token, long id) {
+
+        List<DecimalNumber> numbers = decimalNumberDAO.getDecimalNumbersByEquipmentId(id);
+
+        if (numbers == null) {
+            return new CoreResponse<List<DecimalNumber>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return new CoreResponse<List<DecimalNumber>>().success(numbers);
+    }
+
+    @Override
     @Transactional
     public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
+
+        if (StringUtils.isBlank(equipment.getName()) || StringUtils.isBlank(equipment.getNameSldWrks())) {
+            return new CoreResponse<Equipment>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (equipment.getProjectId() == null) {
+            return new CoreResponse<Equipment>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         if ( CollectionUtils.isEmpty( equipment.getDecimalNumbers() ) ) {
             return new CoreResponse<Equipment>().error( En_ResultStatus.INCORRECT_PARAMS );
@@ -175,6 +204,8 @@ public class EquipmentServiceImpl implements EquipmentService {
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        removeLinkedDocuments(token, equipmentId);
+
         Boolean removeStatus = equipmentDAO.removeByKey(equipmentId);
         return new CoreResponse<Boolean>().success( removeStatus );
     }
@@ -185,12 +216,11 @@ public class EquipmentServiceImpl implements EquipmentService {
         return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
     }
 
-
     private boolean updateDecimalNumbers( Equipment equipment ) {
         Long equipmentId = equipment.getId();
         log.info( "binding update to linked decimal numbers for equipmentId = {}", equipmentId );
 
-        List<Long> toRemoveNumberIds = decimalNumberDAO.getDecimalNumbersByEquipmentId( equipmentId );
+        List<Long> toRemoveNumberIds = decimalNumberDAO.getDecimalNumberIdsByEquipmentId( equipmentId );
         if ( CollectionUtils.isEmpty(equipment.getDecimalNumbers()) && CollectionUtils.isEmpty(toRemoveNumberIds) ) {
             return true;
         }
@@ -292,5 +322,35 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private boolean isNew(DecimalNumber decimalNumber) {
         return (decimalNumber != null && decimalNumber.getId() == null);
+    }
+
+    private void removeLinkedDocuments(AuthToken token, Long equipmentId) {
+
+        CoreResponse<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
+
+        if (documentsResponse.isError()) {
+            return;
+        }
+
+        List<Document> documents = documentsResponse.getData();
+
+        if (CollectionUtils.isEmpty(documents)) {
+            return;
+        }
+
+        List<Document> documents2merge = new ArrayList<>();
+
+        for (Document document : documents) {
+            if (document.getApproved()) {
+                document.setEquipment(null);
+                documents2merge.add(document);
+                continue;
+            }
+            documentService.removeDocument(token, document);
+        }
+
+        if (CollectionUtils.isNotEmpty(documents2merge)) {
+            documentDAO.mergeBatch(documents2merge);
+        }
     }
 }

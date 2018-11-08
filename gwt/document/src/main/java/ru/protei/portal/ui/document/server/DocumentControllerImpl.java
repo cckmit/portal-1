@@ -71,13 +71,7 @@ public class DocumentControllerImpl implements DocumentController {
             sessionService.setFileItem(httpRequest, null);
             response = documentService.createDocument(descriptor.makeAuthToken(), document, fileItem);
         } else {
-            FileItem fileItem = sessionService.getFileItem(httpRequest);
-            if (fileItem == null) {
-                response = documentService.updateDocument(descriptor.makeAuthToken(), document);
-            } else {
-                sessionService.setFileItem(httpRequest, null);
-                response = documentService.updateDocumentAndContent(descriptor.makeAuthToken(), document, fileItem);
-            }
+            response = documentService.updateDocument(descriptor.makeAuthToken(), document);
         }
 
         log.debug("save document, result: {}", response.isOk() ? "ok" : response.getStatus());

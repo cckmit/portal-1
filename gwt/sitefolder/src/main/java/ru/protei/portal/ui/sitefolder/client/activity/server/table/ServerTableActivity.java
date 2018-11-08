@@ -184,6 +184,13 @@ public abstract class ServerTableActivity implements
     }
 
     @Override
+    public void onOpenAppsClicked(Server value) {
+        if (value != null) {
+            fireEvent(new SiteFolderAppEvents.Show(value.getId()));
+        }
+    }
+
+    @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Server>> asyncCallback) {
         ServerQuery query = getQuery();
         query.setOffset(offset);
@@ -245,6 +252,12 @@ public abstract class ServerTableActivity implements
         query.setSearchString(filterView.name().getValue());
         query.setSortField(filterView.sortField().getValue());
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setCompanyIds(filterView.companies().getValue() == null
+                ? null
+                : filterView.companies().getValue().stream()
+                .map(EntityOption::getId)
+                .collect(Collectors.toList())
+        );
         query.setPlatformIds(filterView.platforms().getValue() == null
                 ? null
                 : filterView.platforms().getValue().stream()

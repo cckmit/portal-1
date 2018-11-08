@@ -21,10 +21,12 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBox;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBoxHandler;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.provider.DecimalNumberDataProvider;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Список децимальных номеров
@@ -32,6 +34,7 @@ import java.util.*;
 public class MultipleDecimalNumberInput
         extends Composite
         implements HasValue<List<DecimalNumber>>, DecimalNumberBoxHandler {
+
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -52,7 +55,7 @@ public class MultipleDecimalNumberInput
         setNewValues(value, true);
 
         if ( fireEvents ) {
-            ValueChangeEvent.fire( this, value );
+            fireValuesChanged();
         }
     }
 
@@ -69,27 +72,27 @@ public class MultipleDecimalNumberInput
     public void onGetNextNumber( DecimalNumberBox box ) {
         DecimalNumberQuery query = new DecimalNumberQuery( box.getValue(), getUsedRegNumbersByClassifier( box.getValue() ) );
 
-        dataProvider.getNextAvailableRegisterNumber( query, new RequestCallback< Integer >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                box.showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
-            }
+        dataProvider.getNextAvailableRegisterNumber(query, new FluentCallback<Integer>()
+                .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
+                .withSuccess(registerNumber -> {
+                    DecimalNumber number = box.getValue();
+                    number.setRegisterNumber(registerNumber);
+                    number.setModification(null);
 
-            @Override
-            public void onSuccess( Integer registerNumber ) {
-                DecimalNumber number = box.getValue();
-                number.setRegisterNumber( registerNumber );
-                number.setModification( null );
-
-                box.setValue( number );
-                box.setFocusToRegisterNumberField( true );
-            }
-        } );
+                    box.setValue(number);
+                    box.setFocusToRegisterNumberField(true);
+                })
+        );
     }
 
     @Override
     public void onGetNextModification( DecimalNumberBox box ) {
-        getNextModification( box, false );
+        getNextModification(box, modification -> {
+            DecimalNumber value = box.getValue();
+            value.setModification( modification );
+            box.setValue(value);
+            box.clearBoxState();
+        });
     }
 
     @UiHandler( "addPamr" )
@@ -119,17 +122,17 @@ public class MultipleDecimalNumberInput
         return isValid;
     }
 
-    private void setNewValues(List<DecimalNumber> value, boolean isEabled) {
-        this.values = value;
-        if ( values == null ) {
-            values = new ArrayList<>();
+    private void setNewValues(List<DecimalNumber> values, boolean isEnabled) {
+        this.values = values;
+        if (this.values == null) {
+            this.values = new ArrayList<>();
         }
 
         clearBoxes();
-        if ( values == null || values.isEmpty() ) {
+        if (this.values == null || this.values.isEmpty()) {
             createEmptyBox(En_OrganizationCode.PAMR);
         } else {
-            values.forEach(number -> createBoxAndFillValue(number, isEabled) );
+            this.values.forEach(number -> createBoxAndFillValue(number, isEnabled));
         }
     }
 
@@ -140,26 +143,32 @@ public class MultipleDecimalNumberInput
         occupiedNumbers.clear();
     }
 
-    private void createBoxAndFillValue( DecimalNumber number) {
-        createBoxAndFillValue(number, true);
-    }
-
     private void createBoxAndFillValue( DecimalNumber number, boolean isEnabled) {
         DecimalNumberBox box = boxProvider.get();
 
         box.setValue( number );
         box.setHandler(this);
-        box.addAddHandler( event -> getNextModification( box, true ) );
+        box.addAddHandler(event -> getNextModification(box, modification -> {
+            DecimalNumber value = box.getValue();
+            DecimalNumber newNumber = new DecimalNumber(
+                    value.getOrganizationCode(), value.getClassifierCode(),
+                    value.getRegisterNumber(), modification
+            );
+            values.add(newNumber);
+            createBoxAndFillValue(newNumber, true);
+            fireValuesChanged();
+        }));
         box.addRemoveHandler( event -> {
             values.remove( number );
             box.removeFromParent();
             numberBoxes.remove( box );
             checkIfCorrect();
-
+            fireValuesChanged();
         } );
         box.addValueChangeHandler( event -> {
-            if ( !event.getValue().isEmpty() ) {
-                if(validateNumber( box )) {
+            fireValuesChanged();
+            if (!event.getValue().isEmpty()) {
+                if (validateNumber(box)) {
                     checkExistNumber(box);
                 }
             }
@@ -175,7 +184,7 @@ public class MultipleDecimalNumberInput
         emptyNumber.setOrganizationCode(orgCode);
         values.add( emptyNumber );
 
-        createBoxAndFillValue( emptyNumber );
+        createBoxAndFillValue( emptyNumber, true );
     }
 
     private void placeBox( DecimalNumber number, DecimalNumberBox box ) {
@@ -186,30 +195,14 @@ public class MultipleDecimalNumberInput
         }
     }
 
-    private void getNextModification( DecimalNumberBox box, boolean needCreareNewBox ) {
+    private void getNextModification( DecimalNumberBox box, Consumer<Integer> successAction ) {
         DecimalNumber value = box.getValue();
         DecimalNumberQuery query = new DecimalNumberQuery( box.getValue(), getUsedModificationsByClassifierAndRegNumber( value ) );
 
-        dataProvider.getNextAvailableModification( query, new RequestCallback< Integer>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                box.showMessage( lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER );
-            }
-
-            @Override
-            public void onSuccess( Integer modification ) {
-                if ( needCreareNewBox ) {
-                    DecimalNumber newNumber = new DecimalNumber( value.getOrganizationCode(), value.getClassifierCode(),
-                            value.getRegisterNumber(), modification );
-                    values.add( newNumber );
-                    createBoxAndFillValue( newNumber );
-                } else {
-                    value.setModification( modification );
-                    box.setValue( value );
-                    box.clearBoxState();
-                }
-            }
-        } );
+        dataProvider.getNextAvailableModification(query, new FluentCallback<Integer>()
+                .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
+                .withSuccess(successAction)
+        );
     }
 
     private Set<Integer> getUsedRegNumbersByClassifier( DecimalNumber number ) {
@@ -260,28 +253,30 @@ public class MultipleDecimalNumberInput
 
     private void checkExistNumber(final DecimalNumberBox box) {
 
-        dataProvider.checkIfExistDecimalNumber(box.getValue(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-                box.showMessage(lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER);
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                if (result) {
-                    occupiedNumbers.add(new DecimalNumber(box.getValue()));
-                } else {
-                    occupiedNumbers.remove(box.getValue());
-                }
-                checkIfCorrect();
-            }
-        });
+        dataProvider.checkIfExistDecimalNumber(box.getValue(), new FluentCallback<Boolean>()
+                .withError(throwable -> box.showMessage(lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER))
+                .withSuccess(result -> {
+                    if (result) {
+                        occupiedNumbers.add(new DecimalNumber(box.getValue()));
+                    } else {
+                        occupiedNumbers.remove(box.getValue());
+                    }
+                    checkIfCorrect();
+                })
+        );
     }
 
     private boolean isSameNumberInList(Collection<DecimalNumber> values, DecimalNumber number) {
         return values.stream().anyMatch( value -> !number.equals( value ) && number.isSameNumber( value ) );
     }
 
+    private void fireValuesChanged() {
+        ValueChangeEvent.fire(this, values);
+    }
+
+    @Inject
+    @UiField
+    Lang lang;
 
     @UiField
     HTMLPanel pamrList;
@@ -292,8 +287,6 @@ public class MultipleDecimalNumberInput
     @UiField
     Button addPdra;
 
-    @Inject
-    Lang lang;
     @Inject
     DecimalNumberDataProvider dataProvider;
     @Inject

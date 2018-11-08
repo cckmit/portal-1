@@ -16,4 +16,5 @@ public interface AbstractServerTableActivity extends
     void onCopyClicked(Server value);
     void onEditClicked(Server value);
     void onRemoveClicked(Server value);
+    void onOpenAppsClicked(Server value);
 }

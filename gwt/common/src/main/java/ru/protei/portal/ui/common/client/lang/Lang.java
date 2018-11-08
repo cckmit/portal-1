@@ -331,6 +331,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String custPendingCaseState();
 
+    String canceledCaseState();
+
     String criticalImportance();
 
     String importantImportance();
@@ -1259,13 +1261,16 @@ public interface Lang extends Messages, ContactItemLang {
 
     String initiatorSelectACompany();
     String serverAccessParamsColumn();
+
     String contactPhone();
 
-    String documentApproveType();
     String equipmentDecimalNumberNotCorrect();
 
-    String documentApproved();
     String equipmentDecimalNumbeOccupied();
+
+    String documentApproveType();
+
+    String documentApproved();
 
     String documentNotApproved();
 
@@ -1356,4 +1361,40 @@ public interface Lang extends Messages, ContactItemLang {
     String internalResourceEmail();
 
     String sendOnCtrlEnter();
+
+    String abroadDocumentCategory();
+
+    String errAlreadyExistRelated();
+
+    String errInventoryNumberAlreadyExist();
+
+    String documentExecutionTypeElectronic();
+
+    String documentExecutionTypePaper();
+
+    String documentExecutionTypeTypographic();
+
+    String documentExecutionType();
+
+    String errDecimalNumberAlreadyExist();
+
+    String equipmentDocuments();
+
+    String equipmentDocumentCreate();
+
+    String documentEdit();
+
+    String documentCreate();
+
+    String documentSaving();
+
+    String documentSaved();
+
+    String equipmentDocumentAlreadyExists();
+
+    String reUploadDocuments();
+
+    String projectRequired();
+
+    String decimalNumbersRequired();
 }

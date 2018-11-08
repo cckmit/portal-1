@@ -14,4 +14,5 @@ public interface AbstractPlatformTableActivity extends
     void onItemClicked(Platform value);
     void onEditClicked(Platform value);
     void onRemoveClicked(Platform value);
+    void onOpenServersClicked(Platform value);
 }
