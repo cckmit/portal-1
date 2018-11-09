@@ -7,4 +7,6 @@ public interface AbstractEquipmentDocumentEditActivity {
     void onCancelClicked();
 
     void onApproveChanged(boolean isApproved);
+
+    void onDocumentCategoryChanged();
 }
