@@ -95,6 +95,7 @@ public abstract class IssueTableActivity
 
         if (event.query != null) {
             fillFilterFields(event.query);
+            event.query = null;
         }
 
         if(!policyService.hasGrantAccessFor( En_Privilege.COMPANY_VIEW ) ){

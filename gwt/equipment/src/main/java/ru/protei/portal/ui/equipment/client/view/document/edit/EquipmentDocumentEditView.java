@@ -27,6 +27,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.equipment.client.activity.document.edit.AbstractEquipmentDocumentEditActivity;
 import ru.protei.portal.ui.equipment.client.activity.document.edit.AbstractEquipmentDocumentEditView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EquipmentDocumentEditView extends Composite implements AbstractEquipmentDocumentEditView {
@@ -35,6 +36,11 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
+        List<En_DocumentCategory> availableDocumentCategories = new ArrayList<>();
+        availableDocumentCategories.add(En_DocumentCategory.TD);
+        availableDocumentCategories.add(En_DocumentCategory.ED);
+        availableDocumentCategories.add(En_DocumentCategory.KD);
+        documentCategory.fillOptions(availableDocumentCategories);
     }
 
     @Override
@@ -63,14 +69,18 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     }
 
     @Override
-    public void setDocumentCategory(En_DocumentCategory documentCategory) {
-        this.documentCategory.setValue(documentCategory);
-        this.documentType.setCategoryFilter(documentCategory);
+    public HasValue<En_DocumentCategory> documentCategory() {
+        return documentCategory;
     }
 
     @Override
     public HasValue<DocumentType> documentType() {
         return documentType;
+    }
+
+    @Override
+    public void setDocumentTypeCategoryFilter(En_DocumentCategory documentCategory) {
+        documentType.setCategoryFilter(documentCategory);
     }
 
     @Override
@@ -192,6 +202,13 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     public void onApprovedChanged(ValueChangeEvent<Boolean> event) {
         if (activity != null) {
             activity.onApproveChanged(event.getValue());
+        }
+    }
+
+    @UiHandler("documentCategory")
+    public void onDocumentCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
+        if (activity != null) {
+            activity.onDocumentCategoryChanged();
         }
     }
 

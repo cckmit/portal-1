@@ -60,6 +60,7 @@ public class OptionList<T>
         OptionItem itemView = itemFactory.get();
         itemView.setName( name );
         itemView.addValueChangeHandler( this );
+        itemView.setValue(selected.contains(value));
         itemView.setEnabled(isEnabled);
 
         if (isMandatoryOption(value)) {

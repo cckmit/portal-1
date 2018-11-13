@@ -125,6 +125,14 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         }
     }
 
+    @Override
+    public void onDocumentCategoryChanged() {
+        En_DocumentCategory category = view.documentCategory().getValue();
+        view.documentType().setValue(null, true);
+        view.setDocumentTypeCategoryFilter(category);
+        view.documentTypeEnabled().setEnabled(category != null);
+    }
+
     private void requestDecimalNumbers(Long equipmentId, Runnable andThen) {
 
         if (equipmentId == null) {
@@ -163,9 +171,9 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         view.setDocumentUploaderLabel(isNew ? lang.uploadDocuments() : lang.reUploadDocuments());
         view.approved().setValue(document.getApproved());
         view.approvedEnabled().setEnabled(approveMode);
-        view.setDocumentCategory(En_DocumentCategory.TD);
-        view.documentCategoryEnabled().setEnabled(false);
-        view.documentType().setValue(document.getType());
+        view.documentCategory().setValue(document.getType() == null ? En_DocumentCategory.TD : document.getType().getDocumentCategory(), true);
+        view.documentType().setValue(document.getType(), true);
+        view.documentCategoryEnabled().setEnabled(isNew);
         view.documentTypeEnabled().setEnabled(isNew);
         view.version().setValue(document.getVersion());
         view.setDecimalNumbersAvailableValues(decimalNumbers);

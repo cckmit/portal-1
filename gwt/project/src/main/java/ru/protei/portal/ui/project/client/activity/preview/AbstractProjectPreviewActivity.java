@@ -5,6 +5,7 @@ package ru.protei.portal.ui.project.client.activity.preview;
  */
 public interface AbstractProjectPreviewActivity {
     void onFullScreenPreviewClicked();
+    void onRemoveClicked();
 
     void onProjectChanged();
 }

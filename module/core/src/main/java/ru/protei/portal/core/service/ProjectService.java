@@ -54,5 +54,9 @@ public interface ProjectService {
     @Privileged( En_Privilege.PROJECT_CREATE )
     CoreResponse<Long> createProject( AuthToken token, Long creatorId );
 
+    @Privileged( En_Privilege.PROJECT_REMOVE )
+    @Auditable( En_AuditType.PROJECT_REMOVE )
+    CoreResponse<Boolean> removeProject( AuthToken token, Long projectId );
+
     CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken);
 }

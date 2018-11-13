@@ -13,8 +13,13 @@
 
     <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview project">
-            <div class="col-xs-12">
-                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right hide" href="#"/>
+            <div class="pull-right">
+                <g:Button ui:field="removeBtn" styleName="btn btn-danger" title="{lang.buttonRemove}">
+                    <i class="fa fa-trash-o"/>
+                </g:Button>
+                <g:Button ui:field="fullScreenBtn" styleName="btn btn-white" title="{lang.fullScreen}">
+                    <i class="fa fa-external-link"/>
+                </g:Button>
             </div>
 
             <fieldset class="header grid grid-indent">

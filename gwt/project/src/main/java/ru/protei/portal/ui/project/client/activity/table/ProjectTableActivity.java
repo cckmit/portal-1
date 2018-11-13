@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.project.client.activity.table;
 
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -15,6 +14,7 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterActivity;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
@@ -59,6 +59,7 @@ public abstract class ProjectTableActivity
             new ActionBarEvents.Clear()
         );
 
+        projectIdForRemove = null;
         requestProjects( null );
     }
 
@@ -108,6 +109,36 @@ public abstract class ProjectTableActivity
         }
     }
 
+    @Event
+    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
+
+        if (!getClass().getName().equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
+            return;
+        }
+
+        regionService.removeProject(projectIdForRemove, new FluentCallback<Boolean>()
+                .withResult(() -> {
+                    projectIdForRemove = null;
+                })
+                .withSuccess(result -> {
+                    fireEvent(new ProjectEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
+    }
+
+    @Event
+    public void onProjectCancelRemove(ConfirmDialogEvents.Cancel event) {
+        if (!getClass().getName().equals(event.identity)) {
+            return;
+        }
+        projectIdForRemove = null;
+    }
+
     @Override
     public void onItemClicked( ProjectInfo value ) {
         showPreview( value );
@@ -117,6 +148,20 @@ public abstract class ProjectTableActivity
     public void onEditClicked( ProjectInfo value ) {
         //fireEvent(new ProjectEvents.Edit(value.getId()));
         showPreview( value );
+    }
+
+    @Override
+    public void onRemoveClicked(ProjectInfo value) {
+        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
+            return;
+        }
+
+        if (value == null) {
+            return;
+        }
+
+        projectIdForRemove = value.getId();
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.projectRemoveConfirmMessage(value.getName())));
     }
 
     @Override
@@ -219,6 +264,7 @@ public abstract class ProjectTableActivity
     PolicyService policyService;
 
     ProjectInfo currentValue = null;
+    private Long projectIdForRemove = null;
 
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;

@@ -11,14 +11,16 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.app.portal.client.service.AppServiceAsync;
 import ru.protei.portal.app.portal.client.widget.localeselector.LocaleImage;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
-import ru.protei.portal.ui.common.client.common.Version;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
+import ru.protei.portal.ui.common.shared.model.ClientConfigData;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
@@ -39,6 +41,7 @@ public abstract class AppActivity
         this.init = event;
 
         initApp();
+        requestsAppVersion();
 
         initialToken = History.getToken();
         fireEvent( new AuthEvents.Show() );
@@ -50,8 +53,6 @@ public abstract class AppActivity
         init.parent.add( view.asWidget() );
 
         view.setUser( event.profile.getName(), event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(), UserIconUtils.getGenderIcon(event.profile.getGender()));
-
-        view.setAppVersion(lang.version() + " " + Version.getVersion());
 
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
         view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
@@ -130,6 +131,15 @@ public abstract class AppActivity
         pingTimer.scheduleRepeating( 60000 );
     }
 
+    private void requestsAppVersion() {
+        appService.getClientConfig(new FluentCallback<ClientConfigData>()
+                .withSuccess(config -> {
+                    if (config != null) {
+                        view.setAppVersion(lang.version() + " " + config.appVersion);
+                    }
+                }));
+    }
+
     private void stopPingServerTimer() {
         pingTimer.cancel();
     }
@@ -140,6 +150,8 @@ public abstract class AppActivity
     PageService pageService;
     @Inject
     PingControllerAsync pingService;
+    @Inject
+    AppServiceAsync appService;
     @Inject
     Lang lang;
 

@@ -1397,4 +1397,8 @@ public interface Lang extends Messages, ContactItemLang {
     String projectRequired();
 
     String decimalNumbersRequired();
+
+    String projectRemoveConfirmMessage(String name);
+
+    String projectRemoveSucceeded();
 }

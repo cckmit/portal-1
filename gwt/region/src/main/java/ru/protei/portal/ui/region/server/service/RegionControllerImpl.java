@@ -135,6 +135,22 @@ public class RegionControllerImpl implements RegionController {
         return response.getData();
     }
 
+    @Override
+    public Boolean removeProject(Long projectId) throws RequestFailedException {
+        log.debug("removeProject(): id={}", projectId);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<Boolean> response = projectService.removeProject(descriptor.makeAuthToken(), projectId);
+        log.debug("removeProject(): id={}, result={}", projectId, response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

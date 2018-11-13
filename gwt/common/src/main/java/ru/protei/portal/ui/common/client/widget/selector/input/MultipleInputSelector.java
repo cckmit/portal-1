@@ -71,14 +71,12 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         caretButton.setVisible(isCanAdd);
     }
 
-    public void fillSelectorView(List<String> selectedValues ) {
+    @Override
+    public void fillSelectorView(List<T> selectedItems) {
         itemContainer.clear();
         itemViews.clear();
-
-        for ( String val : selectedValues ) {
-            addItem( val );
-        }
-        clearButton.setVisible(!selectedValues.isEmpty());
+        selectedItems.forEach(this::addItem);
+        clearButton.setVisible(!selectedItems.isEmpty());
     }
 
     public void setAddName( String text ) {
@@ -119,21 +117,21 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         }
     }
 
-    private void addItem( final String val ) {
+    private void addItem(T item) {
         SelectItemView itemView = itemViewProvider.get();
-        itemView.setValue( val );
+        itemView.setValue(getNameForItem(item));
         itemView.setEnabled(isEnabled);
 
         itemViews.add( itemView );
-        itemView.setActivity( item -> removeItem( item, val ) );
+        itemView.setActivity( itemViewToRemove -> removeItem( itemViewToRemove, item ) );
         itemContainer.add( itemView );
     }
 
-    private void removeItem( SelectItemView itemView, String name ) {
+    private void removeItem( SelectItemView itemView, T item ) {
         itemContainer.remove( itemView );
         itemViews.remove( itemView );
 
-        removeItemByName( name );
+        setItemChecked(item, false);
     }
 
     private void initHandlers() {

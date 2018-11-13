@@ -32,6 +32,11 @@ import java.util.List;
 public class APIConfigurationContext extends WebMvcConfigurerAdapter {
 
     @Bean
+    public EmployeeSqlBuilder employeeSqlBuilder() {
+        return new EmployeeSqlBuilder();
+    }
+
+    @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
         return new CompanyGroupHomeDAO_Impl();
     }
