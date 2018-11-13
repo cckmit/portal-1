@@ -1,0 +1,14 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-decimal_number-id-fk" author="ponomareva">
+        <addForeignKeyConstraint constraintName="decimal_number_entity_id_fk"
+                                 baseTableName="decimal_number"
+                                 baseColumnNames="entity_id"
+                                 referencedTableName="equipment"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>
