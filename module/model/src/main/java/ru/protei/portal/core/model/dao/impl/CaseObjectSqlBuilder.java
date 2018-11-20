@@ -64,12 +64,12 @@ public class CaseObjectSqlBuilder {
                 }
             }
 
-            if ( query.isOrWithoutManager() ) {
-                condition.append(" or manager is null" );
-            }
-
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
                 condition.append(" and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+
+                if ( query.isOrWithoutManager() ) {
+                    condition.append(" or manager is null" );
+                }
             }
 
             if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
