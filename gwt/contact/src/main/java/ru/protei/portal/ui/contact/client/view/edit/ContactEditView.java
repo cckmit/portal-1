@@ -149,23 +149,9 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     }
 
     @Override
-    public String getPersonInfo() {
-        return personInfo.getElement().getInnerHTML();
+    public HasText personInfo() {
+        return personInfo;
     }
-
-    @Override
-    public void setPersonInfo(String info) {
-        if(info==null){
-            personInfo.getElement().setInnerHTML("");
-//            setInnerHTML(personInfo.getElement(), "");
-            return;
-        }
-        personInfo.getElement().setInnerHTML(info);
-    }
-
-//    public final native void setInnerHTML(JavaScriptObject personInfo, String html) /*-{
-//        personInfo.innerHTML = html;
-//    }-*/;
 
     @Override
     public HasText login() {

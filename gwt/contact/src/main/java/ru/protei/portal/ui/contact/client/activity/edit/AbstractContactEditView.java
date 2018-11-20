@@ -45,9 +45,7 @@ public interface AbstractContactEditView extends IsWidget {
 
     HasText displayDepartment ();
 
-    String getPersonInfo();
-
-    void setPersonInfo(String info);
+    HasText personInfo ();
 
     HasText login();
 

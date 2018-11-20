@@ -212,7 +212,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         contact.setDisplayShortName(view.shortName().getText());
         contact.setBirthday(view.birthDay().getValue());
         contact.setLocale(view.locale().getValue());
-        contact.setInfo(view.getPersonInfo());
+        contact.setInfo(view.personInfo().getText());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(contact.getContactInfo());
 
@@ -267,7 +267,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
 
-        view.setPersonInfo(person.getInfo());
+        view.personInfo().setText(defaultString(person.getInfo(), ""));
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
 
