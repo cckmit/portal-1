@@ -68,4 +68,16 @@ public class CollectionUtils {
         return col.stream().filter(predicate).findAny().orElse(null);
     }
 
+    public static <T> boolean equals(Collection<T> col1, Collection<T> col2) {
+        if( col1 == null || col2 == null ) {
+            return false;
+        }
+
+        if( col1.size() != col2.size() ) {
+            return false;
+        }
+
+        return col1.containsAll( col2 );
+    }
+
 }

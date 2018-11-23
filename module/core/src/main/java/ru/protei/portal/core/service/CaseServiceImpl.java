@@ -1,7 +1,5 @@
 package ru.protei.portal.core.service;
 
-
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +11,7 @@ import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -23,7 +22,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления обращениями
@@ -210,57 +209,57 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseObject> updateCaseObject( CaseObject caseObject, Person initiator ) {
-        if (caseObject == null)
+    public CoreResponse<CaseObject> updateCaseObject( CaseObject newCaseObject, Person initiator ) {
+        if ( newCaseObject == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        jdbcManyRelationsHelper.persist(caseObject, "notifiers");
+        jdbcManyRelationsHelper.persist( newCaseObject, "notifiers" );
 
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+        CaseObject oldCaseObject = caseObjectDAO.get( newCaseObject.getId() );
 
-        applyStateBasedOnManager(caseObject);
+        applyStateBasedOnManager( newCaseObject );
 
-        if(isCaseHasNoChanges(caseObject, oldState))
-            return new CoreResponse<CaseObject>().success( caseObject ); //ignore
+        if( isCaseHasNoChanges( newCaseObject, oldCaseObject ) )
+            return new CoreResponse<CaseObject>().success( newCaseObject ); //ignore
 
-        caseObject.setModified(new Date());
-        caseObject.setTimeElapsed(getTimeElapsed(caseObject.getId()));
+        newCaseObject.setModified( new Date() );
+        newCaseObject.setTimeElapsed(getTimeElapsed( newCaseObject.getId()) );
 
-        if (CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+        if ( CollectionUtils.isNotEmpty( newCaseObject.getNotifiers() )) {
             // update partially filled objects
-            caseObject.setNotifiers(new HashSet<>(
+            newCaseObject.setNotifiers(new HashSet<>(
                     personDAO.partialGetListByKeys(
-                            caseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()),
+                            newCaseObject.getNotifiers().stream().map(Person::getId).collect(Collectors.toList()),
                             "id", "contactInfo")
             ));
         }
 
-        boolean isUpdated = caseObjectDAO.merge(caseObject);
+        boolean isUpdated = caseObjectDAO.merge(newCaseObject);
         if (!isUpdated)
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
-        if(oldState.getState() != caseObject.getState()){
-            Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null);
+        if(oldCaseObject.getState() != newCaseObject.getState()){
+            Long messageId = createAndPersistStateMessage(initiator, newCaseObject.getId(), newCaseObject.getState(), null);
             if(messageId == null)
-                log.error("State message for the issue %d isn't saved!", caseObject.getId());
+                log.error("State message for the issue %d isn't saved!", newCaseObject.getId());
         }
 
-        if (!oldState.getImpLevel().equals(caseObject.getImpLevel())) {
-            Long messageId = createAndPersistImportanceMessage(initiator, caseObject.getId(), caseObject.getImpLevel());
+        if (!oldCaseObject.getImpLevel().equals(newCaseObject.getImpLevel())) {
+            Long messageId = createAndPersistImportanceMessage(initiator, newCaseObject.getId(), newCaseObject.getImpLevel());
             if (messageId == null) {
-                log.error("Importance level message for the issue %d isn't saved!", caseObject.getId());
+                log.error("Importance level message for the issue %d isn't saved!", newCaseObject.getId());
             }
         }
 
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
-        CaseObject newState = caseObjectDAO.get(caseObject.getId());
-        newState.setAttachments(caseObject.getAttachments());
-        newState.setNotifiers(caseObject.getNotifiers());
-        jdbcManyRelationsHelper.fill( oldState, "attachments");
+        CaseObject newState = caseObjectDAO.get(newCaseObject.getId());
+        newState.setAttachments(newCaseObject.getAttachments());
+        newState.setNotifiers(newCaseObject.getNotifiers());
+        jdbcManyRelationsHelper.fill( oldCaseObject, "attachments");
 
-        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, initiator));
+        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldCaseObject, initiator));
 
-        return new CoreResponse<CaseObject>().success( caseObject );
+        return new CoreResponse<CaseObject>().success( newCaseObject );
     }
 
     @Override
@@ -703,19 +702,19 @@ public class CaseServiceImpl implements CaseService {
         list.forEach(ca -> attachmentService.removeAttachment( token, ca.getAttachmentId()));
     }
 
-    private boolean isCaseHasNoChanges(CaseObject co1, CaseObject co2){
-        // without notifiers
-        // without links
+    private boolean isCaseHasNoChanges(CaseObject newCaseObject, CaseObject oldCaseObject){
         return
-                Objects.equals(co1.getName(), co2.getName())
-                && Objects.equals(co1.getInfo(), co2.getInfo())
-                && Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
-                && Objects.equals(co1.getState(), co2.getState())
-                && Objects.equals(co1.getImpLevel(), co2.getImpLevel())
-                && Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
-                && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
-                && Objects.equals(co1.getProductId(), co2.getProductId())
-                && Objects.equals(co1.getManagerId(), co2.getManagerId());
+                Objects.equals( newCaseObject.getName(), oldCaseObject.getName() )
+                && Objects.equals( newCaseObject.getInfo(), oldCaseObject.getInfo() )
+                && Objects.equals( newCaseObject.isPrivateCase(), oldCaseObject.isPrivateCase() )
+                && Objects.equals( newCaseObject.getState(), oldCaseObject.getState() )
+                && Objects.equals( newCaseObject.getImpLevel(), oldCaseObject.getImpLevel() )
+                && Objects.equals( newCaseObject.getInitiatorCompanyId(), oldCaseObject.getInitiatorCompanyId() )
+                && Objects.equals( newCaseObject.getInitiatorId(), oldCaseObject.getInitiatorId() )
+                && Objects.equals( newCaseObject.getProductId(), oldCaseObject.getProductId() )
+                && Objects.equals( newCaseObject.getManagerId(), oldCaseObject.getManagerId() )
+                && CollectionUtils.equals( newCaseObject.getNotifiers(), oldCaseObject.getNotifiers() )
+                && CollectionUtils.equals( newCaseObject.getLinks(), oldCaseObject.getLinks() );
     }
 
     private CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed) {
