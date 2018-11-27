@@ -12,7 +12,6 @@ import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -117,18 +116,11 @@ public class MailNotificationProcessor {
 
         try {
             Long lastMessageId = getEmailLastId(caseObject.getId());
-            MimeMessageHeadersFacade headersFacade = new MimeMessageHeadersFacade()
-                    .withMessageId(makeCaseObjectMessageId(caseObject, lastMessageId + 1))
-                    .withInReplyTo(makeCaseObjectMessageId(caseObject, lastMessageId))
-                    .withReferences(LongStream.iterate(lastMessageId, id -> id - 1).limit(lastMessageId + 1)
-                            .mapToObj(id -> makeCaseObjectMessageId(caseObject, id))
-                            .collect(toList())
-                    );
 
             performCaseObjectNotification(
                     event,
                     comments.getData(),
-                    headersFacade,
+                    lastMessageId,
                     recipients,
                     true,
                     config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
@@ -140,7 +132,7 @@ public class MailNotificationProcessor {
             performCaseObjectNotification(
                     event,
                     comments.getData(),
-                    headersFacade,
+                    lastMessageId,
                     recipients,
                     false,
                     config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
@@ -157,8 +149,18 @@ public class MailNotificationProcessor {
         }
     }
 
+    private MimeMessageHeadersFacade makeHeaders( Long caseNumber, Long lastMessageId, int recipientAddressHashCode ) {
+        return new MimeMessageHeadersFacade()
+                .withMessageId(makeCaseObjectMessageId(caseNumber, lastMessageId + 1, recipientAddressHashCode))
+                .withInReplyTo(makeCaseObjectMessageId(caseNumber, lastMessageId, recipientAddressHashCode ))
+                .withReferences( LongStream.iterate(lastMessageId, id -> id - 1).limit(lastMessageId + 1)
+                        .mapToObj(id -> makeCaseObjectMessageId(caseNumber, id, recipientAddressHashCode ))
+                        .collect(toList())
+                );
+    }
+
     private void performCaseObjectNotification(
-            AssembledCaseEvent event, List<CaseComment> comments, MimeMessageHeadersFacade headers, List<String> recipients,
+            AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
@@ -181,6 +183,9 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach((entry) -> {
+
+            MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
+
             String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
             String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
             try {
@@ -222,8 +227,8 @@ public class MailNotificationProcessor {
                 allNotifiers;
     }
 
-    private String makeCaseObjectMessageId(CaseObject caseObject, Long id) {
-        return "case." + String.valueOf(caseObject.getCaseNumber()) + "." + String.valueOf(id);
+    private String makeCaseObjectMessageId( Long caseNumber, Long id, int recipientAddressHashCode ) {
+        return "case." + caseNumber + "." + id + "-" + recipientAddressHashCode;
     }
 
     // -----------------------
