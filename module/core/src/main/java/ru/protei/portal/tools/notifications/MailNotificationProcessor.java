@@ -195,6 +195,7 @@ public class MailNotificationProcessor {
                 helper.setFrom(getFromAddress());
                 helper.setText(HelperFunc.nvlt(body, ""), true);
                 helper.setTo(entry.getAddress());
+                log.info("Send message to {} with headers {}", entry.getAddress(), headers );
                 mailSendChannel.send(helper.getMimeMessage());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
@@ -402,6 +403,15 @@ public class MailNotificationProcessor {
 
         public List<String> getReferences() {
             return references;
+        }
+
+        @Override
+        public String toString() {
+            return "MimeMessageHeadersFacade{" +
+                    "messageId='" + messageId + '\'' +
+                    ", inReplyTo='" + inReplyTo + '\'' +
+                    ", references=" + references +
+                    '}';
         }
     }
 }
