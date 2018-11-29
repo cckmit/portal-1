@@ -10,12 +10,6 @@ import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
  */
 public class DialogAnimation {
 
-    private AnimationHandler handler;
-
-    public interface AnimationHandler {
-        void onAnimationComplete();
-    }
-
     public void show() {
         popup.setGlassStyleName( "dialog-overlay dialog-open" );
         dialog.removeClassName( "dialog-close" );
@@ -36,16 +30,11 @@ public class DialogAnimation {
         this.popup = popup;
     }
 
-    public void setCompleteHandler( AnimationHandler handler ) {
-        this.handler = handler;
-    }
-
     private Timer closeTimer = new Timer() {
         @Override
         public void run() {
             popup.hide();
             closeTimer.cancel();
-            if(handler!=null) handler.onAnimationComplete();
         }
     };
 

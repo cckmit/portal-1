@@ -19,12 +19,11 @@ import ru.protei.portal.ui.common.client.animation.DialogAnimation;
 /**
  * Вид для карточки
  */
-public class DialogDetailsView extends PopupPanel implements AbstractDialogDetailsView, DialogAnimation.AnimationHandler {
+public class DialogDetailsView extends PopupPanel implements AbstractDialogDetailsView {
 
     @Inject
     public DialogDetailsView( DialogAnimation animation ) {
         this.dialogAnimation = animation;
-        dialogAnimation.setCompleteHandler(this);
         add( ourUiBinder.createAndBindUi( this ) );
         setGlassEnabled( true );
         setAutoHideEnabled( false );
@@ -50,6 +49,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
 
     @Override
     public void hidePopup() {
+        isSaveEnabled = false;
         getDialogAnimation().hide();
     }
 
@@ -76,11 +76,6 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     }
 
     @Override
-    public void onAnimationComplete() {
-        isSaveEnabled = true;
-    }
-
-    @Override
     protected void onPreviewNativeEvent( Event.NativePreviewEvent event ) {
         super.onPreviewNativeEvent( event );
 
@@ -101,7 +96,6 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
 
     private void fireSaveClicked() {
         if ( isSaveEnabled && activity != null ) {
-            isSaveEnabled = false;
             activity.onSaveClicked();
         }
     }
