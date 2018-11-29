@@ -16,7 +16,9 @@ public interface AbstractDialogDetailsView extends IsWidget {
      */
     HasWidgets getBodyContainer();
 
-    DialogAnimation getDialogAnimation();
+    void showPopup();
+
+    void hidePopup();
 
     /**
      * Установить заголовок окна детализации

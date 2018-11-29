@@ -19,11 +19,12 @@ import ru.protei.portal.ui.common.client.animation.DialogAnimation;
 /**
  * Вид для карточки
  */
-public class DialogDetailsView extends PopupPanel implements AbstractDialogDetailsView {
+public class DialogDetailsView extends PopupPanel implements AbstractDialogDetailsView, DialogAnimation.AnimationHandler {
 
     @Inject
     public DialogDetailsView( DialogAnimation animation ) {
         this.dialogAnimation = animation;
+        dialogAnimation.setCompleteHandler(this);
         add( ourUiBinder.createAndBindUi( this ) );
         setGlassEnabled( true );
         setAutoHideEnabled( false );
@@ -42,6 +43,17 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     }
 
     @Override
+    public void showPopup() {
+        getDialogAnimation().show();
+        isSaveEnabled = true;
+    }
+
+    @Override
+    public void hidePopup() {
+        getDialogAnimation().hide();
+    }
+
+
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
     }
@@ -64,6 +76,11 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     }
 
     @Override
+    public void onAnimationComplete() {
+        isSaveEnabled = true;
+    }
+
+    @Override
     protected void onPreviewNativeEvent( Event.NativePreviewEvent event ) {
         super.onPreviewNativeEvent( event );
 
@@ -83,7 +100,8 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     }
 
     private void fireSaveClicked() {
-        if ( activity != null ) {
+        if ( isSaveEnabled && activity != null ) {
+            isSaveEnabled = false;
             activity.onSaveClicked();
         }
     }
@@ -104,6 +122,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     AbstractDialogDetailsActivity activity;
 
     private DialogAnimation dialogAnimation;
+    private boolean isSaveEnabled;
 
     interface DetailsViewUiBinder extends UiBinder<HTMLPanel, DialogDetailsView> {}
     private static DetailsViewUiBinder ourUiBinder = GWT.create( DetailsViewUiBinder.class );

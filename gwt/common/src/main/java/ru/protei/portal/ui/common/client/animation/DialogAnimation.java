@@ -3,11 +3,18 @@ package ru.protei.portal.ui.common.client.animation;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.PopupPanel;
+import ru.protei.portal.ui.common.client.view.dialogdetails.DialogDetailsView;
 
 /**
  * Анимация диалогового окна
  */
 public class DialogAnimation {
+
+    private AnimationHandler handler;
+
+    public interface AnimationHandler {
+        void onAnimationComplete();
+    }
 
     public void show() {
         popup.setGlassStyleName( "dialog-overlay dialog-open" );
@@ -29,11 +36,16 @@ public class DialogAnimation {
         this.popup = popup;
     }
 
+    public void setCompleteHandler( AnimationHandler handler ) {
+        this.handler = handler;
+    }
+
     private Timer closeTimer = new Timer() {
         @Override
         public void run() {
             popup.hide();
             closeTimer.cancel();
+            if(handler!=null) handler.onAnimationComplete();
         }
     };
 
