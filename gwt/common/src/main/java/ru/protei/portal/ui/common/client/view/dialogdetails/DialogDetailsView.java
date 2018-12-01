@@ -42,6 +42,18 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     }
 
     @Override
+    public void showPopup() {
+        getDialogAnimation().show();
+        isSaveEnabled = true;
+    }
+
+    @Override
+    public void hidePopup() {
+        isSaveEnabled = false;
+        getDialogAnimation().hide();
+    }
+
+
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
     }
@@ -83,7 +95,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     }
 
     private void fireSaveClicked() {
-        if ( activity != null ) {
+        if ( isSaveEnabled && activity != null ) {
             activity.onSaveClicked();
         }
     }
@@ -104,6 +116,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
     AbstractDialogDetailsActivity activity;
 
     private DialogAnimation dialogAnimation;
+    private boolean isSaveEnabled;
 
     interface DetailsViewUiBinder extends UiBinder<HTMLPanel, DialogDetailsView> {}
     private static DetailsViewUiBinder ourUiBinder = GWT.create( DetailsViewUiBinder.class );

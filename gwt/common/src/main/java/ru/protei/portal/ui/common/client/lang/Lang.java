@@ -1425,4 +1425,8 @@ public interface Lang extends Messages, ContactItemLang {
     String accountFor();
 
     String accountRolesNotFound();
+
+    String projectRemoveConfirmMessage(String name);
+
+    String projectRemoveSucceeded();
 }

@@ -51,9 +51,9 @@
 
     <distributionManagement>
         <repository>
-            <id>protei-central</id>
+            <id>protei-repo</id>
             <name>ext-snaphot-local</name>
-            <url>http://192.168.110.20:8081/artifactory/ext-snapshot-local</url>
+            <url>https://repo.protei.ru/repository/ext-snapshot-local</url>
         </repository>
     </distributionManagement>
 </project>

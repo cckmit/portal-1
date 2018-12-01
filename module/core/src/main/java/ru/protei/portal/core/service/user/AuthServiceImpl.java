@@ -187,6 +187,11 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Person person = personDAO.get(login.getPersonId());
+        if (person.isFired() || person.isDeleted()) {
+            logger.debug("login [{}] - person {}, access denied", ulogin, person.isFired() ? "fired" : "deleted");
+            return new CoreResponse().error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         Company company = companyDAO.get(person.getCompanyId());
         jdbcManyRelationsHelper.fillAll( company );
 

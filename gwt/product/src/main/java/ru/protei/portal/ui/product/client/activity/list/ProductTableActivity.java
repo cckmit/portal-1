@@ -52,6 +52,16 @@ public abstract class ProductTableActivity implements
         requestProductsCount();
     }
 
+    @Event
+    public void onFilterChange(ProductEvents.UpdateData event) {
+        if (event.viewType != ViewType.TABLE) {
+            return;
+        }
+
+        this.query = event.query;
+        requestProductsCount();
+    }
+
     @Override
     public void onFirstClicked() {
         view.scrollTo( 0 );

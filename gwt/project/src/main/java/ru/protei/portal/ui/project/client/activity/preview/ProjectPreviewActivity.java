@@ -11,12 +11,10 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -60,9 +58,36 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.showFullScreen( true );
     }
 
+    @Event
+    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
+
+        if (!getClass().getName().equals(event.identity)) {
+            return;
+        }
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
+            return;
+        }
+
+        regionService.removeProject(project.getId(), new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    fireEvent(new ProjectEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                })
+        );
+    }
+
     @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new ProjectEvents.ShowFullScreen( projectId ) );
+    }
+
+    @Override
+    public void onRemoveClicked() {
+        if (project == null) {
+            return;
+        }
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.projectRemoveConfirmMessage(project.getName())));
     }
 
     @Override
@@ -119,6 +144,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.company().setValue(customer == null ? null : customer.toEntityOption());
         view.products().setValue(value.getProducts());
         view.customerType().setValue(value.getCustomerType());
+
+        view.removeBtnVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE));
 
         fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), false ) );
 

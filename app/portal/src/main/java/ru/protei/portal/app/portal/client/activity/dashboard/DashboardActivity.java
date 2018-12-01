@@ -13,6 +13,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,8 +90,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     private CaseQuery generateNewRecordsQuery(){
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
-        query.setStates(issueStates.getActiveStates());
-        query.setWithoutManager( true );
+        query.setStates(Arrays.asList(En_CaseState.CREATED));
+        query.setOrWithoutManager( true );
 
         return query;
     }

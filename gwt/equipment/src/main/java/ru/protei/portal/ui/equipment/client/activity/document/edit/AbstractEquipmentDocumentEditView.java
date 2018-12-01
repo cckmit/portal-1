@@ -23,9 +23,11 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
 
     HasValue<Boolean> approved();
 
-    void setDocumentCategory(En_DocumentCategory documentCategory);
+    HasValue<En_DocumentCategory> documentCategory();
 
     HasValue<DocumentType> documentType();
+
+    void setDocumentTypeCategoryFilter(En_DocumentCategory documentCategory);
 
     HasValue<String> version();
 

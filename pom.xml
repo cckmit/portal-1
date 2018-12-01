@@ -89,12 +89,9 @@
 
     <repositories>
         <repository>
-            <id>protei-central</id>
-            <name>protei-central</name>
-            <url>http://192.168.110.20:8081/artifactory/repo</url>
-            <!--<snapshots>-->
-                <!--<enabled>true</enabled>-->
-            <!--</snapshots>-->
+            <id>protei-repo</id>
+            <name>central</name>
+            <url>https://repo.protei.ru/repository/central</url>
         </repository>
 
         <repository>
@@ -103,5 +100,13 @@
             <url>https://repo.spring.io/libs-release</url>
         </repository>
     </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>protei-repo</id>
+            <name>ext-snaphot-local</name>
+            <url>https://repo.protei.ru/repository/ext-snapshot-local</url>
+        </repository>
+    </distributionManagement>
 
 </project>

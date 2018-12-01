@@ -3,10 +3,7 @@ package ru.protei.portal.core.model.struct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DevUnitPersonRoleType;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.ent.CaseLocation;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -17,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Информация о проекте в регионе
  */
-public class ProjectInfo extends AuditableObject {
+public class ProjectInfo extends AuditableObject implements Removable {
 
     /**
      * Идентификатор записи о проекте
@@ -69,6 +66,8 @@ public class ProjectInfo extends AuditableObject {
     private Set<ProductShortView> products;
 
     private Person creator;
+
+    private boolean deleted;
 
     public Long getId() {
         return id;
@@ -183,6 +182,19 @@ public class ProjectInfo extends AuditableObject {
         team.add(person);
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    @Override
+    public boolean isAllowedRemove() {
+        return id != null && !deleted;
+    }
+
     public static ProjectInfo fromCaseObject( CaseObject project ) {
         if (project == null)
             return null;
@@ -193,6 +205,7 @@ public class ProjectInfo extends AuditableObject {
         projectInfo.setCreator(project.getCreator());
         projectInfo.setDescription(project.getInfo());
         projectInfo.setState( En_RegionState.forId( project.getStateId() ) );
+        projectInfo.setDeleted(project.isDeleted());
         if ( project.getProduct() != null ) {
             projectInfo.setProductDirection( new EntityOption(
                 project.getProduct().getName(), project.getProduct().getId()
@@ -260,6 +273,7 @@ public class ProjectInfo extends AuditableObject {
                 ", created=" + created +
                 ", region=" + region +
                 ", team=" + team +
+                ", deleted=" + deleted +
                 '}';
     }
 }

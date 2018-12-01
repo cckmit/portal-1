@@ -63,7 +63,6 @@ public abstract class MultipleSelector<T>
             itemView.addValueChangeHandler( this );
             itemViewToModel.put( itemView, value );
             itemToViewModel.put( value, itemView );
-            nameToItemView.put( name, itemView );
             itemToNameModel.put(value, name);
         }
         itemToDisplayOptionModel.put( value, new DisplayOption( name ) );
@@ -75,7 +74,6 @@ public abstract class MultipleSelector<T>
 
         itemToNameModel.clear();
         itemViewToModel.clear();
-        nameToItemView.clear();
         itemToDisplayOptionModel.clear();
     }
 
@@ -128,7 +126,7 @@ public abstract class MultipleSelector<T>
         }
     }
 
-    public abstract void fillSelectorView( List<String> selectedValues );
+    public abstract void fillSelectorView( List<T> selectedItems );
 
     @Override
     protected void onLoad() {
@@ -187,13 +185,13 @@ public abstract class MultipleSelector<T>
 //        }
     }
 
-    protected void removeItemByName( String name ) {
-        SelectableItem itemView = nameToItemView.get( name );
-        if ( itemView == null ) {
+    protected void setItemChecked(T item, boolean isChecked) {
+        SelectableItem selectableItem = itemToViewModel.get(item);
+        if (selectableItem == null) {
             return;
         }
 
-        itemView.setValue( false, true );
+        selectableItem.setValue(isChecked, true);
     }
 
     protected void clearSelected() {
@@ -224,16 +222,17 @@ public abstract class MultipleSelector<T>
     }
 
     private void getSelectedItemNamesAndFillSelectorView() {
-        List<String> selectedNames = new ArrayList<>();
+        List<T> selectedItems = new ArrayList<>();
         if ( selected.isEmpty() && hasAnyValue ) {
-            selectedNames.add( itemToNameModel.get( null ) );
+            selectedItems.add( null );
         } else {
-            for ( T item : selected ) {
-                selectedNames.add( itemToNameModel.get( item ) );
-            }
+            selectedItems.addAll(selected);
         }
+        fillSelectorView(selectedItems);
+    }
 
-        fillSelectorView( selectedNames );
+    protected String getNameForItem(T item) {
+        return itemToNameModel.get(item);
     }
 
     protected void fillItemsSelection() {
@@ -274,7 +273,6 @@ public abstract class MultipleSelector<T>
     private SelectableItem anyItemView;
 
     private Map<T, String> itemToNameModel = new HashMap<T, String>();
-    private Map<String, SelectableItem> nameToItemView = new HashMap<String, SelectableItem>();
 
     private Map<SelectableItem, T> itemViewToModel = new HashMap< SelectableItem, T >();
 

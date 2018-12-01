@@ -10,6 +10,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -20,6 +21,8 @@ import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import static ru.protei.portal.core.model.helper.StringUtils.defaultString;
 
 /**
  * Активность создания и редактирования контактного лица
@@ -264,7 +267,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.birthDay().setValue(person.getBirthday());
         view.locale().setValue(person.getLocale());
 
-        ((IsWidget)view.personInfo()).asWidget().getElement().setInnerHTML(person.getInfo());
+        view.personInfo().setText(defaultString(person.getInfo(), ""));
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
 

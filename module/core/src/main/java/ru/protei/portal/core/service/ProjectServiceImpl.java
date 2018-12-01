@@ -205,6 +205,21 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
+    public CoreResponse<Boolean> removeProject(AuthToken token, Long projectId) {
+
+        CaseObject caseObject = caseObjectDAO.get(projectId);
+
+        if (caseObject == null) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        caseObject.setDeleted(true);
+        boolean result = caseObjectDAO.partialMerge(caseObject, "deleted");
+
+        return new CoreResponse<Boolean>().success(result);
+    }
+
+    @Override
     public CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken) {
 
         CaseQuery caseQuery = new CaseQuery();

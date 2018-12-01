@@ -131,7 +131,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @Override
     public void showFullScreen( boolean value ) {
-        this.fullScreen.setVisible( !value );
+        this.fullScreenBtn.setVisible( !value );
         if ( value ) {
             this.preview.addStyleName( "col-xs-12 col-lg-6" );
         } else {
@@ -140,16 +140,28 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
+    public HasVisibility removeBtnVisibility() {
+        return removeBtn;
+    }
+
+    @Override
     public HasWidgets getCommentsContainer() {
         return commentsContainer;
     }
 
-    @UiHandler( "fullScreen" )
+    @UiHandler( "fullScreenBtn" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
-
         if ( activity != null ) {
             activity.onFullScreenPreviewClicked();
+        }
+    }
+
+    @UiHandler( "removeBtn" )
+    public void onRemoveBtnClicked (ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onRemoveClicked();
         }
     }
 
@@ -204,7 +216,10 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel preview;
 
     @UiField
-    Anchor fullScreen;
+    Anchor fullScreenBtn;
+
+    @UiField
+    Anchor removeBtn;
 
     @UiField
     Element creationDate;

@@ -12,10 +12,10 @@ import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.event.UserLoginCreatedEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -116,18 +116,11 @@ public class MailNotificationProcessor {
 
         try {
             Long lastMessageId = getEmailLastId(caseObject.getId());
-            MimeMessageHeadersFacade headersFacade = new MimeMessageHeadersFacade()
-                    .withMessageId(makeCaseObjectMessageId(caseObject, lastMessageId + 1))
-                    .withInReplyTo(makeCaseObjectMessageId(caseObject, lastMessageId))
-                    .withReferences(LongStream.iterate(lastMessageId, id -> id - 1).limit(lastMessageId + 1)
-                            .mapToObj(id -> makeCaseObjectMessageId(caseObject, id))
-                            .collect(toList())
-                    );
 
             performCaseObjectNotification(
                     event,
                     comments.getData(),
-                    headersFacade,
+                    lastMessageId,
                     recipients,
                     true,
                     config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
@@ -139,7 +132,7 @@ public class MailNotificationProcessor {
             performCaseObjectNotification(
                     event,
                     comments.getData(),
-                    headersFacade,
+                    lastMessageId,
                     recipients,
                     false,
                     config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
@@ -156,8 +149,18 @@ public class MailNotificationProcessor {
         }
     }
 
+    private MimeMessageHeadersFacade makeHeaders( Long caseNumber, Long lastMessageId, int recipientAddressHashCode ) {
+        return new MimeMessageHeadersFacade()
+                .withMessageId(makeCaseObjectMessageId(caseNumber, lastMessageId + 1, recipientAddressHashCode))
+                .withInReplyTo(makeCaseObjectMessageId(caseNumber, lastMessageId, recipientAddressHashCode ))
+                .withReferences( LongStream.iterate(lastMessageId, id -> id - 1).limit(lastMessageId + 1)
+                        .mapToObj(id -> makeCaseObjectMessageId(caseNumber, id, recipientAddressHashCode ))
+                        .collect(toList())
+                );
+    }
+
     private void performCaseObjectNotification(
-            AssembledCaseEvent event, List<CaseComment> comments, MimeMessageHeadersFacade headers, List<String> recipients,
+            AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
@@ -180,6 +183,9 @@ public class MailNotificationProcessor {
         }
 
         notifiers.forEach((entry) -> {
+
+            MimeMessageHeadersFacade headers =  makeHeaders( caseObject.getCaseNumber(), lastMessageId, entry.hashCode() );
+
             String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
             String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), isProteiRecipients);
             try {
@@ -189,6 +195,7 @@ public class MailNotificationProcessor {
                 helper.setFrom(getFromAddress());
                 helper.setText(HelperFunc.nvlt(body, ""), true);
                 helper.setTo(entry.getAddress());
+                log.info("Send message to {} with headers {}", entry.getAddress(), headers );
                 mailSendChannel.send(helper.getMimeMessage());
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
@@ -200,26 +207,20 @@ public class MailNotificationProcessor {
      * Form case notifiers with initiator, creator and manager
      */
     private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager, boolean isPrivateCase){
-        String initiatorEmail = new PlainContactInfoFacade( initiator.getContactInfo() ).getEmail();
-        String creatorEmail = creator == null? null: new PlainContactInfoFacade( creator.getContactInfo() ).getEmail();
-        String managerEmail = manager == null? null: new PlainContactInfoFacade( manager.getContactInfo() ).getEmail();
 
-        if( !(initiatorEmail == null || initiatorEmail.isEmpty()) ){
-            allNotifiers.add(
-                    new NotificationEntry(initiatorEmail, En_ContactItemType.EMAIL,  "ru")
-            );
+        NotificationEntry initiatorEmail = fetchNotificationEntryFromPerson(initiator);
+        if (initiatorEmail != null) {
+            allNotifiers.add(initiatorEmail);
         }
 
-        if( !(creatorEmail == null || creatorEmail.isEmpty()) ){
-            allNotifiers.add(
-                    new NotificationEntry(creatorEmail, En_ContactItemType.EMAIL,  "ru")
-            );
+        NotificationEntry creatorEmail = fetchNotificationEntryFromPerson(initiator);
+        if (creatorEmail != null) {
+            allNotifiers.add(creatorEmail);
         }
 
-        if ( !(managerEmail == null || managerEmail.isEmpty()) ) {
-            allNotifiers.add(
-                    new NotificationEntry(managerEmail, En_ContactItemType.EMAIL, "ru")
-            );
+        NotificationEntry managerEmail = fetchNotificationEntryFromPerson(initiator);
+        if (managerEmail != null) {
+            allNotifiers.add(managerEmail);
         }
 
         return isPrivateCase || config.data().smtp().isBlockExternalRecipients() ?
@@ -227,8 +228,8 @@ public class MailNotificationProcessor {
                 allNotifiers;
     }
 
-    private String makeCaseObjectMessageId(CaseObject caseObject, Long id) {
-        return "case." + String.valueOf(caseObject.getCaseNumber()) + "." + String.valueOf(id);
+    private String makeCaseObjectMessageId( Long caseNumber, Long id, int recipientAddressHashCode ) {
+        return "case." + caseNumber + "." + id + "-" + recipientAddressHashCode;
     }
 
     // -----------------------
@@ -357,6 +358,18 @@ public class MailNotificationProcessor {
         return lastMessageIdResponse.isOk() ? lastMessageIdResponse.getData() : 0L;
     }
 
+    private NotificationEntry fetchNotificationEntryFromPerson(Person person) {
+        if (person == null || person.isFired() || person.isDeleted()) {
+            return null;
+        }
+        String email = new PlainContactInfoFacade(person.getContactInfo()).getEmail();
+        if (StringUtils.isBlank(email)) {
+            return null;
+        }
+        String locale = person.getLocale() == null ? "ru" : person.getLocale();
+        return NotificationEntry.email(email, locale);
+    }
+
     private class MimeMessageHeadersFacade {
 
         public MimeMessageHeadersFacade() {}
@@ -390,6 +403,15 @@ public class MailNotificationProcessor {
 
         public List<String> getReferences() {
             return references;
+        }
+
+        @Override
+        public String toString() {
+            return "MimeMessageHeadersFacade{" +
+                    "messageId='" + messageId + '\'' +
+                    ", inReplyTo='" + inReplyTo + '\'' +
+                    ", references=" + references +
+                    '}';
         }
     }
 }
