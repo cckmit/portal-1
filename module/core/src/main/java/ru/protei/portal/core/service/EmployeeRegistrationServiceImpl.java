@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -134,7 +135,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
         String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо открыть доступ к: " +
-                CollectionUtils.join(resourceList, r -> getResourceName(r),  ", ");
+                StringUtils.join(resourceList, r -> getResourceName(r),  ", ");
         String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
@@ -146,7 +147,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо: " +
-                CollectionUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
+                StringUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
         String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
