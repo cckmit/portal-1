@@ -65,14 +65,21 @@
                         <textarea:AutoResizeTextArea ui:field="workplace" minRows="1" styleName="input-field"/>
                     </div>
 
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-xs-5">
                         <label>
                             <ui:text from="{lang.employeeRegistrationEquipmentList}"/>
                         </label>
                         <multiselector:EmployeeEquipmentOptionList ui:field="equipmentList" styleName="inherit-color-checkbox-group"/>
                     </div>
 
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-xs-2">
+                        <label>
+                            <ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}"/>
+                        </label>
+                        <multiselector:PhoneOfficeTypeOptionList ui:field="phoneTypeList" styleName="inherit-color-checkbox-group"/>
+                    </div>
+
+                    <div class="form-group col-xs-5">
                         <label>
                             <ui:text from="{lang.employeeRegistrationResourceList}"/>
                         </label>

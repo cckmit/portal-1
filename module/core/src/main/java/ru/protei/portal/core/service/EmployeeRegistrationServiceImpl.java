@@ -195,6 +195,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "компьютер";
             case MONITOR:
                 return "монитор";
+            case TELEPHONE:
+                return "телефон";
         }
         return "";
     }

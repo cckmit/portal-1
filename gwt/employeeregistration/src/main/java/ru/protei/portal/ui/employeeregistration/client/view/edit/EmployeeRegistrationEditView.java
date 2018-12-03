@@ -11,6 +11,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -22,6 +23,7 @@ import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmp
 import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmployeeRegistrationEditView;
 import ru.protei.portal.ui.employeeregistration.client.widget.optionlist.EmployeeEquipmentOptionList;
 import ru.protei.portal.ui.employeeregistration.client.widget.optionlist.InternalResourceOptionList;
+import ru.protei.portal.ui.employeeregistration.client.widget.optionlist.PhoneOfficeTypeOptionList;
 import ru.protei.portal.ui.employeeregistration.client.widget.selector.EmploymentTypeSelector;
 
 import java.util.Date;
@@ -87,6 +89,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Override
     public HasValue<Set<En_InternalResource>> resourcesList() {
         return resourcesList;
+    }
+
+    @Override
+    public HasValue<Set<En_PhoneOfficeType>> phoneOfficeTypeList() {
+        return phoneTypeList;
     }
 
     @Override
@@ -166,6 +173,10 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Inject
     @UiField(provided = true)
     EmployeeEquipmentOptionList equipmentList;
+
+    @Inject
+    @UiField(provided = true)
+    PhoneOfficeTypeOptionList phoneTypeList;
 
     @Inject
     Lang lang;

@@ -17,6 +17,8 @@ public class En_EmployeeEquipmentLang {
                 return lang.employeeEquipmentComputer();
             case MONITOR:
                 return lang.employeeEquipmentMonitor();
+            case TELEPHONE:
+                return lang.employeeEquipmentTelepahne();
         }
         return lang.unknownField();
     }
