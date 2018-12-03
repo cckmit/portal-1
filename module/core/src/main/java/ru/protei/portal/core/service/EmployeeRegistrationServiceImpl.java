@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
-    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
+    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME,ACRM_PROJECT_NAME;
     private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
@@ -51,6 +51,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
         EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        ACRM_PROJECT_NAME = portalConfig.data().youtrack().getAcrmProject();
     }
 
     @Override
@@ -97,6 +98,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
+            createAcrmYoutrackIssueIfNeeded(employeeRegistration);
             createAdminYoutrackIssueIfNeeded(employeeRegistration);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
@@ -137,6 +139,19 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String description = "Необходимо открыть доступ к: " +
                 StringUtils.join(resourceList, r -> getResourceName(r),  ", ");
         String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
+        saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private void createAcrmYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        Set<En_PhoneOfficeType> resourceList = employeeRegistration.getPhoneOfficeTypeList();
+        if (CollectionUtils.isEmpty(resourceList)) {
+            return;
+        }
+
+        String summary = "Настройка телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = "Необходимо открыть доступ к офисной телефонии: " +
+                StringUtils.join(resourceList, r -> getPhoneOfficeTypeName(r),  ", ");
+        String issueId = youtrackService.createIssue(ACRM_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
@@ -198,6 +213,19 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "монитор";
             case TELEPHONE:
                 return "телефон";
+        }
+        return "";
+    }
+
+    private static String getPhoneOfficeTypeName(En_PhoneOfficeType phoneOfficeType) {
+        if (phoneOfficeType == null)
+            return "";
+        switch (phoneOfficeType) {
+            case INTERNATIONAL:
+                return "международной";
+            case LONG_DISTANCE:
+                return "мождугородней";
+
         }
         return "";
     }

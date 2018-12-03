@@ -64,6 +64,13 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     private Set<En_InternalResource> resourceList;
 
     /**
+     * Доступ к офисной телефонии
+     */
+    @JdbcEnumerated(EnumType.ORDINAL)
+    @JdbcColumnCollection(name = "phone_office_type_list", separator = ",")
+    private Set<En_PhoneOfficeType> phoneOfficeTypeList;
+
+    /**
      * Создатель анкеты
      */
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CREATOR", table = "case_object", sqlTableAlias = "CO")
@@ -284,6 +291,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", workplace='" + workplace + '\'' +
                 ", equipmentList=" + equipmentList +
                 ", resourceList=" + resourceList +
+                ", phoneOfficeTypeList=" + phoneOfficeTypeList +
                 ", creatorId=" + creatorId +
                 ", headOfDepartmentId=" + headOfDepartmentId +
                 ", headOfDepartmentShortName='" + headOfDepartmentShortName + '\'' +
@@ -294,5 +302,4 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 '}';
     }
 
-    private Set<En_PhoneOfficeType> phoneOfficeTypeList;
 }
