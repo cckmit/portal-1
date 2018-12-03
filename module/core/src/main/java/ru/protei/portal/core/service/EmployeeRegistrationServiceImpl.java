@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
-    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME,ACRM_PROJECT_NAME;
+    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME,ACRM_PROJECT_NAME,PORTAL_URL;
     private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
@@ -52,6 +52,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
         ACRM_PROJECT_NAME = portalConfig.data().youtrack().getAcrmProject();
+        PORTAL_URL = portalConfig.data().getMailNotificationConfig().getCrmUrlInternal();
     }
 
     @Override
@@ -96,6 +97,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         if(!sendNotifyEvent(employeeRegistrationId))
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+
+        // Заполнить связанные поля
+        employeeRegistration = employeeRegistrationDAO.get( employeeRegistrationId );
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
             createAcrmYoutrackIssueIfNeeded(employeeRegistration);
@@ -148,9 +152,16 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
 
-        String summary = "Настройка телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
-        String description = "Необходимо открыть доступ к офисной телефонии: " +
+        String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = "Необходимо включить связь: " +
                 StringUtils.join(resourceList, r -> getPhoneOfficeTypeName(r),  ", ");
+
+        description = StringUtils.join( description,
+                "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
+                "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
+                "\n", "Анкета: ", PORTAL_URL, HASH_SYMBOL, "employee_registration_preview:id="+employeeRegistration.getId()//TODO ссылка на анкету
+        ).toString();
+
         String issueId = youtrackService.createIssue(ACRM_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
@@ -222,11 +233,14 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return "";
         switch (phoneOfficeType) {
             case INTERNATIONAL:
-                return "международной";
+                return "международную";
             case LONG_DISTANCE:
-                return "мождугородней";
+                return "междугороднюю";
 
         }
         return "";
     }
+
+    private static final String HASH_SYMBOL = "#";
+//    private static final String HASH_SYMBOL = "%23";
 }
