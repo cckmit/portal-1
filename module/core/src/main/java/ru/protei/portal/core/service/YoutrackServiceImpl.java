@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.util.UriUtils;
+import org.json.JSONObject;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -38,6 +41,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public void initAuthHeadersAndUrl() {
         authHeaders = new HttpHeaders();
         authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        authHeaders.setContentType( MediaType.APPLICATION_JSON_UTF8 );
         authHeaders.set("Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
 
         BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
@@ -48,7 +52,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         log.debug("requesting changes of {}", issue);
 
         ResponseEntity<ChangeResponse> resp = ytClient.exchange(
-                BASE_URL + "/issue/" + issue + "/changes",
+                BASE_URL + "/rest/issue/" + issue + "/changes",
                 HttpMethod.GET, new HttpEntity<>(authHeaders), ChangeResponse.class
         );
         return resp.getBody();
@@ -59,7 +63,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         log.debug("requesting attachments of {}", issueId);
 
         ResponseEntity<AttachmentResponse> resp = ytClient.exchange(
-                BASE_URL + "/issue/" + issueId + "/attachment",
+                BASE_URL + "/rest/issue/" + issueId + "/attachment",
                 HttpMethod.GET, new HttpEntity<>(authHeaders), AttachmentResponse.class
         );
         return resp.getBody().getAttachments();
@@ -67,38 +71,55 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public String createIssue(String project, String summary, String description) {
-        log.info("creating issue: project={}, summary={}, description={}", project, summary, description);
+        log.info("createIssue: project={}, summary={}, description={}", project, summary, description);
 
-        String uri = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue")
-                .queryParam("project", project)
-                .queryParam("summary", summary)
-                .queryParam("description", StringUtils.emptyIfNull(description))
+        String uri = UriComponentsBuilder.fromHttpUrl( "https://youtrack.protei.ru" + "/api/issues" )//TODO base_url
+                .queryParam( "fields", "idReadable,id,name")
                 .build()
-                .encode()
                 .toUriString();
 
-        RestTemplate restTemplate = new RestTemplate();
-        ((DefaultUriTemplateHandler)restTemplate.getUriTemplateHandler()).setStrictEncoding( true );
-        ResponseEntity<String> response = restTemplate.exchange(
+        JSONObject projectJson = new JSONObject();
+        projectJson.put( "id", project );
+
+        JSONObject json = new JSONObject();
+        json.put("project", projectJson );
+        json.put("summary", summary);
+        json.put("description", StringUtils.emptyIfNull(description));
+
+//        JSONArray array = new JSONArray();//TODO telephone
+//        array.put( new JSONObject(customFieldJsonString) );
+//        json.put( "fields", array);
+
+        ResponseEntity<String> response = ytClient.exchange(
                 uri,
-                HttpMethod.PUT,
-                new HttpEntity<>(authHeaders),
+                HttpMethod.POST,
+                new HttpEntity<>(json.toString(), authHeaders),
                 String.class
         );
-
-        String issueId = UriUtils.getLastPathSegment(response.getHeaders().getLocation());
+        JSONObject result = new JSONObject( response.getBody() );
+        String issueId = result.getString( "idReadable" );
         if (issueId == null) {
-            log.error("failed to create issue: failed to extract issue id from response Location header: {}" + response.getHeaders().getLocation());
+            log.error("createIssue: failed to create YT issue: failed to extract issue id from YT response body: {}", response.getBody());
             throw new RuntimeException();
         }
 
-        log.debug("created issue with id = {}", issueId);
+        log.debug("createIssue: with idReadable = {}", issueId);
         return issueId;
     }
+//
+//    public static void main(String [] args  ) {
+//        makeCustomFielsPnone();
+//    }
+//    private static void makeCustomFielsPnone() {
+//
+//        JSONObject customField = new JSONObject(customFieldJsonString);
+//
+//int stop = 0;
+//    }
 
     @Override
     public Set<String> getIssueIdsByProjectAndUpdatedAfter(String projectId, Date updatedAfter) {
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue/byproject/" + projectId)
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/rest/issue/byproject/" + projectId)
                 .queryParam("with", "id")
                 .queryParam("max", MAX_ISSUES_IN_RESPONSE);
 
@@ -116,6 +137,53 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .map(Issue::getId)
                 .collect(Collectors.toSet());
     }
+
+    private static String customFieldJsonString = "        {\n" +
+            "            \"projectCustomField\": {\n" +
+            "                \"bundle\": {\n" +
+            "                    \"id\": \"35-87\",\n" +
+            "                    \"$type\": \"jetbrains.charisma.customfields.complex.enumeration.EnumBundle\",\n" +
+            "                    \"name\": \"AdminCRM: Тип заявки\",\n" +
+            "                    \"isUpdateable\": false\n" +
+            "                },\n" +
+            "                \"ordinal\": 4,\n" +
+            "                \"isPublic\": false,\n" +
+            "                \"canBeEmpty\": true,\n" +
+            "                \"emptyFieldText\": \"Прочее\",\n" +
+            "                \"field\": {\n" +
+            "                    \"ordinal\": 147,\n" +
+            "                    \"fieldType\": {\n" +
+            "                        \"valueType\": \"enum\",\n" +
+            "                        \"isMultiValue\": true,\n" +
+            "                        \"$type\": \"jetbrains.charisma.customfields.rest.FieldType\"\n" +
+            "                    },\n" +
+            "                    \"localizedName\": null,\n" +
+            "                    \"name\": \"Тип заявки\",\n" +
+            "                    \"id\": \"34-190\",\n" +
+            "                    \"$type\": \"jetbrains.charisma.customfields.rest.CustomField\"\n" +
+            "                },\n" +
+            "                \"id\": \"67-1851\",\n" +
+            "                \"$type\": \"jetbrains.charisma.customfields.complex.enumeration.EnumProjectCustomField\"\n" +
+            "            },\n" +
+            "            \"value\": [\n" +
+            "                {\n" +
+            "                    \"localizedName\": null,\n" +
+            "                    \"description\": \"Задачи связанные с офисной телефонией\",\n" +
+            "                    \"ordinal\": 7,\n" +
+            "                    \"hasRunningJob\": false,\n" +
+            "                    \"color\": {\n" +
+            "                        \"id\": \"13\",\n" +
+            "                        \"$type\": \"jetbrains.charisma.persistence.customfields.FieldStyle\"\n" +
+            "                    },\n" +
+            "                    \"name\": \"Телефония\",\n" +
+            "                    \"id\": \"36-13132\",\n" +
+            "                    \"$type\": \"jetbrains.charisma.customfields.complex.enumeration.EnumBundleElement\"\n" +
+            "                }\n" +
+            "            ],\n" +
+            "            \"id\": \"67-1851\",\n" +
+            "            \"$type\": \"jetbrains.charisma.customfields.complex.enumeration.MultiEnumIssueCustomField\"\n" +
+            "        }"
+            ;
 
     private final static Logger log = LoggerFactory.getLogger(YoutrackServiceImpl.class);
     private final static int MAX_ISSUES_IN_RESPONSE = Integer.MAX_VALUE;
