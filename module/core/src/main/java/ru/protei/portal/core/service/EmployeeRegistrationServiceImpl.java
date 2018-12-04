@@ -52,7 +52,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
         ACRM_PROJECT_NAME = portalConfig.data().youtrack().getAcrmProject();
-        PORTAL_URL = portalConfig.data().getMailNotificationConfig().getCrmUrlInternal();
+        PORTAL_URL = portalConfig.data().getMailNotificationConfig().getCrmUrlInternal();//TODO
+//        PORTAL_URL = "http://127.0.0.1:9007/";
     }
 
     @Override
@@ -159,7 +160,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         description = StringUtils.join( description,
                 "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
                 "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
-                "\n", "Анкета: ", PORTAL_URL, HASH_SYMBOL, "employee_registration_preview:id="+employeeRegistration.getId()//TODO ссылка на анкету
+                "\n", "Анкета: [", PORTAL_URL, HASH_SYMBOL, "employee_registration_preview:id="+employeeRegistration.getId(),
+                " ",employeeRegistration.getEmployeeFullName(), "]"//TODO ссылка на анкету
         ).toString();
 
         String issueId = youtrackService.createIssue(ACRM_PROJECT_NAME, summary, description);
