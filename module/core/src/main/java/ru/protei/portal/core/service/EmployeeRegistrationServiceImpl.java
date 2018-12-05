@@ -143,7 +143,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо открыть доступ к: " +
                 StringUtils.join(resourceList, r -> getResourceName(r),  ", ");
-        String issueId = youtrackService.createIssue(PG_PROJECT_ID, summary, description);
+        String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
@@ -164,7 +164,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 " ",employeeRegistration.getEmployeeFullName(), "]"//TODO ссылка на анкету
         ).toString();
 
-        String issueId = youtrackService.createIssue( PG_PROJECT_ID, summary, description);
+        String issueId = youtrackService.createIssue(ACRM_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
@@ -176,7 +176,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо: " +
                 StringUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
-        String issueId = youtrackService.createIssue(PG_PROJECT_ID, summary, description);
+        String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
@@ -244,8 +244,5 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     private static final String HASH_SYMBOL = "#";
-    public static final String PG_PROJECT_ID = "66-66";
-    public static final String FAKE_1_PROJECT_ID = "66-263";
-    public static final String AdminCRM_PROJECT_ID  = "66-253";
 //    private static final String HASH_SYMBOL = "%23";
 }
