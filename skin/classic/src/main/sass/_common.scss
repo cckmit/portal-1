@@ -879,7 +879,8 @@ label.bordered:after {
 /* table expandable width */
 
 .no-width {
-  width: 0%;
+  width: 0;
+  max-width: 0;
   opacity: 0;
 }
 
@@ -2040,7 +2041,7 @@ td.info {
 /**** SITE FOLDER ****/
 
 .sf-comment {
-  min-height: 120px;
+  min-height: 60px;
 }
 
 .sf-parameters {
@@ -2356,8 +2357,9 @@ td.info {
 
 .privilege-entity-container > label {
   width: 20%;
-  margin-left: 10px;
+  margin: 0;
   border-right: 1px solid lightgray;
+  padding-top: 11px;
 }
 
 .privilege-entity-container > div {
@@ -2368,6 +2370,11 @@ td.info {
   margin: auto;
   width: 50px;
   text-align: center;
+  font-family: montserrat, serif;
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-weight: 500;
 }
 
 ul.privileges {
@@ -2384,11 +2391,12 @@ ul.privileges {
 }
 
 .btn.privilege-btn {
-  padding: 0;
-  min-width: 30px;
-  border-left: 0;
+    min-width: 30px;
+  border: 0;
   height: 40px;
-  font-size: 2.3em;
+  font-size: 2.2em;
+  text-align: center;
+  padding-top: 9px;
 }
 
 .btn.privilege-btn.btn-down:after,
@@ -2915,4 +2923,10 @@ div.select2-container {
   position: absolute;
   right: 10px;
   top: 14px;
+}
+
+div.select2-container {
+  border: 1px solid #f0f0f0;
+  width: initial;
+  border-radius: 4px;
 }

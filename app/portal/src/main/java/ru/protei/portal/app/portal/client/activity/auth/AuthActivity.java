@@ -43,6 +43,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         } );
     }
 
+    @Override
     public void onLoginClicked() {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
             @Override

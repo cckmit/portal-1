@@ -47,7 +47,7 @@ ul.plate-list {
     margin: 7.5px;
     display: block;
     background: white;
-    border: 1px solid #d3d3d3;
+    border: 1px solid #ededed;
     -webkit-transition: opacity 0.35s;
     transition: opacity 0.35s;
     -webkit-font-smoothing: antialiased;
@@ -105,6 +105,19 @@ ul.plate-list {
       content: "\f448";
     }
 
+    &.employee {
+      height: 250px;
+      .header-block {
+        height: calc(240px - 3em);
+
+        & div {
+          font-size: 11px;
+          margin-bottom: 5px;
+          line-height: 11px;
+        }
+      }
+    }
+
     &:hover {
       .header-block{
         &:before {
@@ -140,8 +153,8 @@ ul.plate-list {
       &:before {
         position: absolute;
         top: 0.6em;
-        right: 2em;
-        left: 2em;
+        right: 1.4em;
+        left: 1.4em;
         z-index: -1;
         height: 2.6em;
         background: gray;
@@ -215,7 +228,7 @@ ul.plate-list {
 
       .plate-list-expander {
         transition: height 350ms ease;
-        border: 1px solid #d3d3d3;
+        border: 1px solid #ededed;
         opacity: 1;
         z-index: 10001;
       }
@@ -225,7 +238,7 @@ ul.plate-list {
       top: auto;
       left: 0;
       width: 100%;
-      margin-top: 29px;
+      margin-top: 52px;
       text-align: left;
       overflow: hidden;
       background: white;
@@ -236,3 +249,10 @@ ul.plate-list {
   }
 }
 
+.employee-list-image {
+  display: block;
+  font-size: 6em;
+  height: 135px;
+  float: right;
+  margin: 0 0 5px 5px;
+}

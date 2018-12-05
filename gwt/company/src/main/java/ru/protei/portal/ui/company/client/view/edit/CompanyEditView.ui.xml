@@ -5,125 +5,130 @@
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
-<ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-<g:HTMLPanel>
-    <div class="container-fluid padding-15">
-        <div class="card card-transparent no-margin">
-            <div class="card-header">
-                <div class="card-title">
-                    <ui:text from="{lang.companyMainInfoTitle}"/>
+    <g:HTMLPanel>
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.companyMainInfoTitle}"/>
+                    </div>
                 </div>
-            </div>
-            <div class="card-block">
-                <div class="row">
-                    <div class="form-group col-md-4">
-                        <label>
-                            <ui:text from="{lang.companyName}"/>
-                        </label>
-                        <div class="panelField verifiable">
-                            <i ui:field="verifiableIcon"/>
-                            <validablefield:ValidableTextBox ui:field="companyName" styleName="form-control" notNull="true"/>
+                <div class="card-block">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label>
+                                <ui:text from="{lang.companyName}"/>
+                            </label>
+                            <div class="panelField verifiable">
+                                <i ui:field="verifiableIcon"/>
+                                <validablefield:ValidableTextBox ui:field="companyName" styleName="form-control"
+                                                                 notNull="true"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>
+                                <ui:text from="{lang.companyCategory}"/>
+                            </label>
+                            <companycategory:CategoryButtonSelector ui:field="companyCategory"/>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label>
+                                <ui:text from="{lang.companyGroupLabel}"/>
+                            </label>
+                            <companygroup:GroupButtonSelector ui:field="companyGroup"/>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label>
+                                <ui:text from="{lang.companySubscription}"/>
+                            </label>
+                            <list:SubscriptionList ui:field="subscriptions"/>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label>
+                                <ui:text from="{lang.comment}"/>
+                            </label>
+                            <autoresizetextarea:AutoResizeTextArea ui:field="comment"
+                                                                   minRows="2"
+                                                                   maxRows="10"
+                                                                   styleName="form-control"/>
                         </div>
                     </div>
-                    <div class="form-group col-md-4">
-                        <label>
-                            <ui:text from="{lang.companyCategory}"/>
-                        </label>
-                        <companycategory:CategoryButtonSelector ui:field="companyCategory"/>
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label>
-                            <ui:text from="{lang.companyGroupLabel}"/>
-                        </label>
-                        <companygroup:GroupButtonSelector ui:field="companyGroup"/>
-                    </div>
-
-                    <div class="form-group col-md-12">
-                        <label><ui:text from="{lang.companySubscription}"/></label>
-                        <list:SubscriptionList ui:field="subscriptions"/>
-                    </div>
-
-                    <div class="form-group col-md-12">
-                        <label>
-                            <ui:text from="{lang.comment}"/>
-                        </label>
-                        <autoresizetextarea:AutoResizeTextArea ui:field="comment"
-                                                               minRows="2"
-                                                               maxRows="10"
-                                                               styleName="form-control"/>
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="container-fluid padding-15 bg-white">
-        <div class="card card-transparent no-margin">
-            <div class="card-header">
-                <div class="card-title">
-                    <ui:text from="{lang.companyContactInfoTitle}"/>
+        <div class="container-fluid padding-15 bg-white">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.companyContactInfoTitle}"/>
+                    </div>
                 </div>
-            </div>
-            <div class="card-block">
-                <div class="row">
-                    <div class="form-group col-md-12">
-                        <label>
-                            <ui:text from="{lang.companyWebSite}"/>
-                        </label>
-                        <div class="input-group">
-                            <span class="input-group-addon">http://</span>
-                            <g:TextBox ui:field="webSite" styleName="form-control"/>
+                <div class="card-block">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label>
+                                <ui:text from="{lang.companyWebSite}"/>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-addon">http://</span>
+                                <g:TextBox ui:field="webSite" styleName="form-control"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.phone}"/>
+                            </label>
+                            <g:HTMLPanel ui:field="phonesContainer" styleName="panelField phone"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>Email</label>
+                            <g:HTMLPanel ui:field="emailsContainer" styleName="panelField"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.companyActualAddress}"/>
+                            </label>
+                            <autoresizetextarea:AutoResizeTextArea ui:field="actualAddress" styleName="form-control"
+                                                                   minRows="1" maxRows="7"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.companyLegalAddress}"/>
+                            </label>
+                            <autoresizetextarea:AutoResizeTextArea ui:field="legalAddress" styleName="form-control"
+                                                                   minRows="1" maxRows="7"/>
                         </div>
                     </div>
-                    <div class="form-group col-md-6">
-                        <label>
-                            <ui:text from="{lang.phone}"/>
-                        </label>
-                        <g:HTMLPanel ui:field="phonesContainer" styleName="panelField phone"/>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label>Email</label>
-                        <g:HTMLPanel ui:field="emailsContainer" styleName="panelField"/>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label>
-                            <ui:text from="{lang.companyActualAddress}"/>
-                        </label>
-                        <autoresizetextarea:AutoResizeTextArea ui:field="actualAddress" styleName="form-control" minRows="1" maxRows="7"/>
-                    </div>
-                    <div class="form-group col-md-6">
-                        <label>
-                            <ui:text from="{lang.companyLegalAddress}"/>
-                        </label>
-                        <autoresizetextarea:AutoResizeTextArea ui:field="legalAddress" styleName="form-control" minRows="1" maxRows="7"/>
-                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="container-fluid padding-15">
-        <div class="card card-transparent no-margin">
-            <div class="card-header">
-                <div class="card-title">
-                    <ui:text from="{lang.contacts}"/>
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.contacts}"/>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <g:HTMLPanel ui:field="tableContainer"/>
                 </div>
             </div>
-            <div class="card-block">
-                <g:HTMLPanel ui:field="tableContainer"/>
-            </div>
         </div>
-    </div>
 
-    <div class="container-fluid padding-15 bg-white">
-        <div class="card card-transparent no-margin">
-            <div class="card-block">
-                <div class="text-right">
-                    <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-                    <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
+        <div class="container-fluid padding-15 bg-white">
+            <div class="card card-transparent no-margin">
+                <div class="card-block">
+                    <div class="text-right">
+                        <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                        <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</g:HTMLPanel>
+    </g:HTMLPanel>
 </ui:UiBinder>

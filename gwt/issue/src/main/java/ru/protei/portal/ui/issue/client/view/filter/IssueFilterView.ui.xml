@@ -12,106 +12,116 @@
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="filter-collapsable issue-filter panel">
-
-        <div class="collapsed">
-            <div class="header">
-                <g:Anchor styleName="btn btn-default btn-sm" ui:field="filterRestoreBtn">
-                    <span class="fa fa-dedent"/>
-                </g:Anchor>
+    <g:HTMLPanel styleName="filter-collapsable issue-filter card card-default">
+        <div class="card-block">
+            <div class="collapsed">
+                <div class="header">
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="filterRestoreBtn">
+                        <span class="fa fa-dedent"/>
+                    </g:Anchor>
+                </div>
             </div>
-        </div>
+            <div class="full">
+                <div class="header">
+                    <label class="bold">
+                        <ui:text from="{lang.filters}"/>
+                    </label>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="filterCollapseBtn">
+                        <span class="fa fa-indent"/>
+                    </g:Anchor>
+                </div>
 
-        <div class="full">
-            <div class="header">
-                <label class="bold"><ui:text from="{lang.filters}"/></label>
-                <g:Anchor styleName="btn btn-default btn-sm" ui:field="filterCollapseBtn">
-                    <span class="fa fa-indent"/>
-                </g:Anchor>
-            </div>
+                <div class="user-filter">
+                    <filter:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
+                </div>
 
-            <div class="user-filter">
-                <filter:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
-            </div>
 
-            <div class="body">
-
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
-                <div class="form-group col-xs-12 local-search-options-container">
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}"
+                                                       styleName="form-group col-md-12 m-b-0"/>
+                <div class="form-group col-md-12 local-search-options-container">
                     <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
                     <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="bold"><ui:text from="{lang.created}"/></label>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.created}"/>
+                    </label>
                     <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
                 </div>
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.sortBy}"/></label>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.sortBy}"/>
+                    </label>
                     <div class="control-group">
-                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
+                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE"/>
                         <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                     </div>
                 </div>
 
                 <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                               header="{lang.issueProduct}"
-                                                              addStyleNames="form-group col-xs-12"/>
+                                                              addStyleNames="form-group col-md-12"/>
 
                 <companyselector:CompanyMultiSelector ui:field="companies"
                                                       header="{lang.issueCompany}"
-                                                      addStyleNames="form-group col-xs-12"/>
+                                                      addStyleNames="form-group col-md-12"/>
 
                 <person:InitiatorMultiSelector ui:field="initiators"
                                                header="{lang.issueInitiator}"
-                                               addStyleNames="form-group col-xs-12"/>
+                                               addStyleNames="form-group col-md-12"/>
 
                 <person:EmployeeMultiSelector ui:field="managers"
                                               header="{lang.issueManager}"
-                                              addStyleNames="form-group col-xs-12"/>
+                                              addStyleNames="form-group col-md-12"/>
 
-                <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12">
-                    <label><ui:text from="{lang.searchPrivate}"/></label>
+                <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.searchPrivate}"/>
+                    </label>
                     <threestate:ThreeStateButton ui:field="searchPrivate"/>
                 </g:HTMLPanel>
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.issueImportance}"/></label>
-                    <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.issueImportance}"/>
+                    </label>
+                    <importance:ImportanceBtnGroupMulti ui:field="importance"
+                                                        styleName="btn-group btn-group-justified"/>
                 </div>
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.issueState}"/></label>
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.issueState}"/>
+                    </label>
                     <optionlist:IssueStatesOptionList ui:field="state"/>
                 </div>
             </div>
-
-            <div class="footer">
-
-                <div class="user-filter-name hide" ui:field="filterNameContainer">
-                    <label class="bold">
-                        <ui:text from="{lang.issueFilterName}"/>
-                    </label>
-                    <div class="col-xs-12">
-                        <g:TextBox ui:field="filterName" styleName="input-field"/>
-                        <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
-                            <span class="fa fa-check"/>
-                        </g:Anchor>
-                        <g:Anchor styleName="btn btn-default btn-sm" ui:field="cancelBtn">
-                            <span class="fa fa-times"/>
-                        </g:Anchor>
-                    </div>
-                </div>
-
-                <g:Button ui:field="reportBtn" styleName="btn btn-white" text="{lang.buttonReport}"/>
-                <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
-                <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
-                <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
-            </div>
         </div>
+        <div class="card-footer">
+            <div class="user-filter-name hide" ui:field="filterNameContainer">
+                <label class="bold">
+                    <ui:text from="{lang.issueFilterName}"/>
+                </label>
+                <div class="col-md-12">
+                    <g:TextBox ui:field="filterName" styleName="input-field"/>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
+                        <span class="fa fa-check"/>
+                    </g:Anchor>
+                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="cancelBtn">
+                        <span class="fa fa-times"/>
+                    </g:Anchor>
+                </div>
+            </div>
 
+            <g:Button ui:field="reportBtn" styleName="btn btn-white" text="{lang.buttonReport}"/>
+            <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
+            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+            <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
+        </div>
     </g:HTMLPanel>
+
 </ui:UiBinder>

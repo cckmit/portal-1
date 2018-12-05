@@ -7,12 +7,11 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel">
-        <div class="body">
+    <g:HTMLPanel styleName="card card-default">
+        <div class="card-block row">
+            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.siteFolderName}" styleName="form-group col-md-12"/>
 
-            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.siteFolderName}" styleName="form-group col-xs-12"/>
-
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
                     <sortfield:SortFieldSelector ui:field="sortField" type="SITE_FOLDER" hasNullValue="false"/>
@@ -20,33 +19,34 @@
                 </div>
             </div>
 
-            <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-xs-12"/>
+            <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-md-12"/>
 
-            <platform:PlatformMultiSelector ui:field="platforms" header="{lang.siteFolderPlatform}" addStyleNames="form-group col-xs-12"/>
+            <platform:PlatformMultiSelector ui:field="platforms" header="{lang.siteFolderPlatform}" addStyleNames="form-group col-md-12"/>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label>
                     <ui:text from="{lang.siteFolderIP}"/>
                 </label>
-                <cleanablesearchbox:CleanableSearchBox ui:field="ip" styleName="form-group col-xs-12 m-b-0"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="ip"/>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label>
                     <ui:text from="{lang.siteFolderParams}"/>
                 </label>
-                <cleanablesearchbox:CleanableSearchBox ui:field="parameters" styleName="form-group col-xs-12 m-b-0"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="parameters"/>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label>
                     <ui:text from="{lang.siteFolderComment}"/>
                 </label>
-                <g:TextArea ui:field="comment" styleName="input-field description"/>
+                <g:TextArea ui:field="comment" styleName="form-control sf-comment"/>
             </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        <div class="card-footer">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
+    
 </ui:UiBinder>

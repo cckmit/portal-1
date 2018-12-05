@@ -133,9 +133,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void showFullScreen( boolean value ) {
         this.fullScreenBtn.setVisible( !value );
         if ( value ) {
-            this.preview.addStyleName( "col-xs-12 col-lg-6" );
+            this.preview.addStyleName( "col-md-12 col-lg-6" );
         } else {
-            this.preview.removeStyleName( "col-xs-12 col-lg-6" );
+            this.preview.removeStyleName( "col-md-12 col-lg-6" );
         }
     }
 

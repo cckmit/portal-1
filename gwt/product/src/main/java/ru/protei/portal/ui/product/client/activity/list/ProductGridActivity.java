@@ -46,7 +46,7 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
         boolean isListCurrent = currentViewType == ViewType.LIST;
         fireEvent(new ActionBarEvents.Add(
                 isListCurrent? lang.table(): lang.list(),
-                isListCurrent? UiConstants.ActionBarIcons.TABLE: UiConstants.ActionBarIcons.LIST,
+                null,
                 UiConstants.ActionBarIdentity.PRODUCT_TYPE_VIEW
         ));
 

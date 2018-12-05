@@ -76,7 +76,7 @@
                         <h5>
                             <ui:text from="{lang.projectState}"/>
                         </h5>
-                        <div class="col-xs-2 w-i fa-3x">
+                        <div class="col-md-2 w-i fa-3x">
                             <state:RegionStateIconSelector ui:field="projectState"/>
                         </div>
                     </div>

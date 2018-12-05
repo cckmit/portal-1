@@ -6,63 +6,64 @@
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:doctype='urn:import:ru.protei.portal.ui.common.client.widget.document.doctype'
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
-             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
->
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel">
-        <div class="body">
-            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.documentSearchNameOrProject}" styleName="form-group col-xs-12"/>
+    <g:HTMLPanel styleName="card card-default">
+        <div class="card-block">
+            <div class="row">
+                <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.documentSearchNameOrProject}" styleName="form-group col-md-12"/>
 
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.sortBy}"/></label>
-                <div class="control-group">
-                    <sortfield:SortFieldSelector ui:field="sortField" type="EQUIPMENT" hasNullValue="false"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.sortBy}"/></label>
+                    <div class="control-group">
+                        <sortfield:SortFieldSelector ui:field="sortField" type="EQUIPMENT" hasNullValue="false"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.created}"/></label>
+                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.equipmentManager}"/>
+                    </label>
+                    <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.equipmentOrganization}"/></label>
+                    <organization:OrganizationBtnGroupMulti ui:field="organizationCode" styleName="form-group btn-group btn-group-justified"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.documentType}"/>
+                    </label>
+                    <doctype:DocumentTypeSelector ui:field="documentType"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.documentContent}"/>
+                    </label>
+                    <g:TextArea ui:field="content" styleName="form-control description"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label>
+                        <ui:text from="{lang.documentKeywords}"/>
+                    </label>
+                    <keyword:StringSelectInput ui:field="keywords"/>
                 </div>
             </div>
-
-            <div class="col-xs-12">
-                <label class="bold"><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <label>
-                    <ui:text from="{lang.equipmentManager}"/>
-                </label>
-                <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <label><ui:text from="{lang.equipmentOrganization}"/></label>
-                <organization:OrganizationBtnGroupMulti ui:field="organizationCode" styleName="form-group btn-group btn-group-justified"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <label>
-                    <ui:text from="{lang.documentType}"/>
-                </label>
-                <doctype:DocumentTypeSelector ui:field="documentType"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <label>
-                    <ui:text from="{lang.documentContent}"/>
-                </label>
-                <g:TextArea ui:field="content" styleName="input-field description"/>
-            </div>
-
-            <div class="form-group col-xs-12">
-                <label>
-                    <ui:text from="{lang.documentKeywords}"/>
-                </label>
-                <keyword:StringSelectInput ui:field="keywords"/>
-            </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        <div class="card-footer">
+            <g:Button ui:field="resetBtn" styleName="btn btn-default pull-right" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
