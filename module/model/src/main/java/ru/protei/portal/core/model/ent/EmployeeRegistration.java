@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
-import ru.protei.portal.core.model.dict.En_EmploymentType;
-import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
@@ -65,6 +62,13 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcEnumerated(EnumType.ORDINAL)
     @JdbcColumnCollection(name = "resource_list", separator = ",")
     private Set<En_InternalResource> resourceList;
+
+    /**
+     * Доступ к офисной телефонии
+     */
+    @JdbcEnumerated(EnumType.ORDINAL)
+    @JdbcColumnCollection(name = "phone_office_type_list", separator = ",")
+    private Set<En_PhoneOfficeType> phoneOfficeTypeList;
 
     /**
      * Создатель анкеты
@@ -178,6 +182,14 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
         this.resourceList = resourceList;
     }
 
+    public void setPhoneOfficeTypeList( Set<En_PhoneOfficeType> phoneOfficeTypeList ) {
+        this.phoneOfficeTypeList = phoneOfficeTypeList;
+    }
+
+    public Set<En_PhoneOfficeType> getPhoneOfficeTypeList() {
+        return phoneOfficeTypeList;
+    }
+
     public PersonShortView getHeadOfDepartment() {
         if (headOfDepartmentId == null)
             return null;
@@ -279,6 +291,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", workplace='" + workplace + '\'' +
                 ", equipmentList=" + equipmentList +
                 ", resourceList=" + resourceList +
+                ", phoneOfficeTypeList=" + phoneOfficeTypeList +
                 ", creatorId=" + creatorId +
                 ", headOfDepartmentId=" + headOfDepartmentId +
                 ", headOfDepartmentShortName='" + headOfDepartmentShortName + '\'' +
@@ -288,4 +301,5 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", state=" + state +
                 '}';
     }
+
 }

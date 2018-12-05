@@ -1430,6 +1430,14 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectRemoveSucceeded();
 
+    String employeeEquipmentPhone();
+
+    String phoneOfficeTypeLongDistance();
+
+    String phoneOfficeTypeInternational();
+
+    String employeeRegistrationPhoneOfficeTypeList();
+
     String employeeRegistrationMainInfoTitle();
 
     String employeeRegistrationWorkplaceTitle();

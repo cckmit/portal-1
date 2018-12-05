@@ -89,6 +89,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
+    public void setPhoneOfficeTypeList( String phoneOfficeTypeList ) {
+        this.phoneOfficeTypeList.setInnerText(phoneOfficeTypeList);
+    }
+
+    @Override
     public void setWithRegistration(String withRegistration) {
         this.withRegistration.setInnerText(withRegistration);
     }
@@ -140,6 +145,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     SpanElement equipmentList;
     @UiField
     SpanElement resourcesList;
+    @UiField
+    SpanElement phoneOfficeTypeList;
     @UiField
     SpanElement withRegistration;
     @UiField

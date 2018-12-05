@@ -61,7 +61,7 @@
                 </div>
             </div>
         </div>
-        <div class="container-fluid padding-15  bg-white">
+        <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
                 <div class="card-header">
                     <div class="card-title">
@@ -79,11 +79,15 @@
 
                         <multiselector:EmployeeEquipmentOptionList ui:field="equipmentList"
                                                                    header="{lang.employeeRegistrationEquipmentList}"
-                                                                   addStyleNames="form-group col-md-6 inherit-color-checkbox-group"/>
+                                                                   addStyleNames="inherit-color-checkbox-group form-group col-md-5"/>
 
                         <multiselector:InternalResourceOptionList ui:field="resourcesList"
                                                                   header="{lang.employeeRegistrationResourceList}"
-                                                                  addStyleNames="form-group col-md-6 inherit-color-checkbox-group"/>
+                                                                  addStyleNames="form-group col-md-5 inherit-color-checkbox-group"/>
+
+                        <multiselector:PhoneOfficeTypeOptionList ui:field="phoneTypeList"
+                                                                 header="{lang.employeeRegistrationPhoneOfficeTypeList}"
+                                                                 addStyleNames="form-group col-md-2 inherit-color-checkbox-group"/>
 
                         <div class="form-group col-md-12">
                             <label>
