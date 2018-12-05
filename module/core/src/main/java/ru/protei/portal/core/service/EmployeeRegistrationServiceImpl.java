@@ -28,7 +28,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
-    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME,ACRM_PROJECT_NAME,PORTAL_URL;
+    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME, PHONE_PROJECT_NAME,PORTAL_URL;
     private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
@@ -53,7 +53,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
         EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
-        ACRM_PROJECT_NAME = portalConfig.data().youtrack().getAcrmProject();
+        PHONE_PROJECT_NAME = portalConfig.data().youtrack().getPhoneProject();
         PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
     }
 
@@ -106,7 +106,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
-            createAcrmYoutrackIssueIfNeeded(employeeRegistration);
+            createPhoneYoutrackIssueIfNeeded(employeeRegistration);
             createAdminYoutrackIssueIfNeeded(employeeRegistration);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
@@ -140,7 +140,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
-    private void createAcrmYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+    private void createPhoneYoutrackIssueIfNeeded( EmployeeRegistration employeeRegistration) {
         Set<En_PhoneOfficeType> resourceList = employeeRegistration.getPhoneOfficeTypeList();
         if (isEmpty(resourceList)) {
             return;
@@ -148,7 +148,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         String phoneString = "Необходима настройка офисной телефонии";
         if (!contains( employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )) {
-            phoneString = "Необходимо перенастройка телефонии";
+            phoneString = "Необходимо перенастройка офисной телефонии";
         }
 
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
@@ -160,7 +160,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         ).toString();
 
-        String issueId = youtrackService.createIssue(ACRM_PROJECT_NAME, summary, description);
+        String issueId = youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 

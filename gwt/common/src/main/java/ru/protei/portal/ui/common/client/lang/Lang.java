@@ -1402,7 +1402,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String projectRemoveSucceeded();
 
-    String employeeEquipmentTelepahne();
+    String employeeEquipmentPhone();
 
     String phoneOfficeTypeLongDistance();
 

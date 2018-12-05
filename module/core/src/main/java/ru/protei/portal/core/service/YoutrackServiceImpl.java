@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * Created by admin on 15/11/2017.
  */
 public class YoutrackServiceImpl implements YoutrackService {
-    private RestTemplate ytClient = new RestTemplate();
+    private RestTemplate ytClient;
 
     private HttpHeaders authHeaders;
     private String BASE_URL;
@@ -39,6 +39,9 @@ public class YoutrackServiceImpl implements YoutrackService {
         authHeaders = new HttpHeaders();
         authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         authHeaders.set("Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
+
+        ytClient = new RestTemplate();
+        ((DefaultUriTemplateHandler)ytClient.getUriTemplateHandler()).setStrictEncoding( true );
 
         BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
     }
@@ -77,9 +80,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .encode()
                 .toUriString();
 
-        RestTemplate restTemplate = new RestTemplate();
-        ((DefaultUriTemplateHandler)restTemplate.getUriTemplateHandler()).setStrictEncoding( true );
-        ResponseEntity<String> response = restTemplate.exchange(
+        ResponseEntity<String> response = ytClient.exchange(
                 uri,
                 HttpMethod.PUT,
                 new HttpEntity<>(authHeaders),
