@@ -97,11 +97,13 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistrationId == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
-        if(!sendNotifyEvent(employeeRegistrationId))
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
-
         // Заполнить связанные поля
         employeeRegistration = employeeRegistrationDAO.get( employeeRegistrationId );
+
+        if(employeeRegistration == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+
+        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
 
         if (YOUTRACK_INTEGRATION_ENABLED) {
             createAcrmYoutrackIssueIfNeeded(employeeRegistration);
@@ -126,16 +128,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return caseObject;
     }
 
-    private boolean sendNotifyEvent(Long employeeRegistrationId) {
-        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationId);
-        if (employeeRegistration == null)
-            return false;
-
-        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
-        return true;
-    }
-    
-    
     private void createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
         if (isEmpty(resourceList)) {
