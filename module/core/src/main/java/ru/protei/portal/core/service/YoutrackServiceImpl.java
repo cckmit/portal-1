@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -73,9 +74,12 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .queryParam("summary", summary)
                 .queryParam("description", StringUtils.emptyIfNull(description))
                 .build()
+                .encode()
                 .toUriString();
 
-        ResponseEntity<String> response = ytClient.exchange(
+        RestTemplate restTemplate = new RestTemplate();
+        ((DefaultUriTemplateHandler)restTemplate.getUriTemplateHandler()).setStrictEncoding( true );
+        ResponseEntity<String> response = restTemplate.exchange(
                 uri,
                 HttpMethod.PUT,
                 new HttpEntity<>(authHeaders),

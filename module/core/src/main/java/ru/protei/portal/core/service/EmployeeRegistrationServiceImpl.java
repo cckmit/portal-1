@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -23,9 +23,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
-    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
+    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME,ACRM_PROJECT_NAME,PORTAL_URL;
     private boolean YOUTRACK_INTEGRATION_ENABLED;
 
     @Autowired
@@ -50,6 +53,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         YOUTRACK_INTEGRATION_ENABLED = portalConfig.data().integrationConfig().isYoutrackEnabled();
         EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
+        ACRM_PROJECT_NAME = portalConfig.data().youtrack().getAcrmProject();
+        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
     }
 
     @Override
@@ -92,10 +97,16 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistrationId == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
-        if(!sendNotifyEvent(employeeRegistrationId))
+        // Заполнить связанные поля
+        employeeRegistration = employeeRegistrationDAO.get( employeeRegistrationId );
+
+        if(employeeRegistration == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
+        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+
         if (YOUTRACK_INTEGRATION_ENABLED) {
+            createAcrmYoutrackIssueIfNeeded(employeeRegistration);
             createAdminYoutrackIssueIfNeeded(employeeRegistration);
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
@@ -117,36 +128,52 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return caseObject;
     }
 
-    private boolean sendNotifyEvent(Long employeeRegistrationId) {
-        EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(employeeRegistrationId);
-        if (employeeRegistration == null)
-            return false;
-
-        publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
-        return true;
-    }
-    
-    
     private void createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
-        if (CollectionUtils.isEmpty(resourceList)) {
+        if (isEmpty(resourceList)) {
             return;
         }
         String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо открыть доступ к: " +
-                CollectionUtils.join(resourceList, r -> getResourceName(r),  ", ");
+                StringUtils.join(resourceList, r -> getResourceName(r),  ", ");
         String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
-    private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
-        Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
-        if (CollectionUtils.isEmpty(equipmentList)) {
+    private void createAcrmYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        Set<En_PhoneOfficeType> resourceList = employeeRegistration.getPhoneOfficeTypeList();
+        if (isEmpty(resourceList)) {
             return;
         }
+
+        String phoneString = "Необходима настройка офисной телефонии";
+        if (!contains( employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )) {
+            phoneString = "Необходимо перенастройка телефонии";
+        }
+
+        String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = StringUtils.join( phoneString,
+                "\n", "Анкета: ", makeYtLinkToCrmRegistration(employeeRegistration.getId(),  employeeRegistration.getEmployeeFullName()),
+                "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
+                "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
+                "\n", "Необходимо включить связь: ", StringUtils.join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
+
+        ).toString();
+
+        String issueId = youtrackService.createIssue(ACRM_PROJECT_NAME, summary, description);
+        saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private CharSequence makeYtLinkToCrmRegistration( Long employeeRegistrationId, String employeeFullName ) {
+        return StringUtils.join(
+                "[", PORTAL_URL, "#employee_registration_preview:id=" + employeeRegistrationId, " ", employeeFullName, "]");
+    }
+
+    private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
+        Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо: " +
-                CollectionUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
+                StringUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
         String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
@@ -195,7 +222,23 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 return "компьютер";
             case MONITOR:
                 return "монитор";
+            case TELEPHONE:
+                return "телефон";
         }
         return "";
     }
+
+    private static String getPhoneOfficeTypeName(En_PhoneOfficeType phoneOfficeType) {
+        if (phoneOfficeType == null)
+            return "";
+        switch (phoneOfficeType) {
+            case INTERNATIONAL:
+                return "международную";
+            case LONG_DISTANCE:
+                return "междугороднюю";
+
+        }
+        return "";
+    }
+
 }

@@ -105,6 +105,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
             q.setHeadOfDepartmentId(view.headOfDepartment().getValue().getId());
         q.setEquipmentList(view.equipmentList().getValue());
         q.setResourceList(view.resourcesList().getValue());
+        q.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
         q.setWithRegistration(view.withRegistration().getValue());
         q.setEmploymentType(view.employmentType().getValue());
         return q;
@@ -120,6 +121,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.equipmentList().setValue(new HashSet<>());
         HashSet<En_InternalResource> resources = new HashSet<>();
         resources.add(En_InternalResource.EMAIL);
+        view.phoneOfficeTypeList().setValue(new HashSet<>());
         view.resourcesList().setValue(resources);
         view.withRegistration().setValue(true);
         view.employmentType().setValue(En_EmploymentType.FULL_TIME);

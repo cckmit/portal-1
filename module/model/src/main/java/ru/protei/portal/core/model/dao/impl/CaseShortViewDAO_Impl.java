@@ -12,8 +12,8 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.length;
-import static ru.protei.portal.core.model.helper.CollectionUtils.trim;
+import static ru.protei.portal.core.model.helper.StringUtils.length;
+import static ru.protei.portal.core.model.helper.StringUtils.trim;
 
 /**
  * Created by michael on 19.05.16.

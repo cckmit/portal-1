@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
@@ -35,6 +36,8 @@ public interface AbstractEmployeeRegistrationEditView extends IsWidget {
     HasValue<Set<En_EmployeeEquipment>> equipmentList();
 
     HasValue<Set<En_InternalResource>> resourcesList();
+
+    HasValue<Set<En_PhoneOfficeType>> phoneOfficeTypeList();
 
     HasValidable fullNameValidation();
 

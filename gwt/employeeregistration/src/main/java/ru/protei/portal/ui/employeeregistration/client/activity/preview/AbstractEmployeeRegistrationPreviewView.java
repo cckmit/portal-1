@@ -37,4 +37,6 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setIssues(Set<CaseLink> issues);
     
     HasWidgets getCommentsContainer();
+
+    void setPhoneOfficeTypeList( String pnoneOfficeTypeList );
 }
