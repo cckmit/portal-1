@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -23,6 +22,9 @@ import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -52,8 +54,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         EQUIPMENT_PROJECT_NAME = portalConfig.data().youtrack().getEquipmentProject();
         ADMIN_PROJECT_NAME = portalConfig.data().youtrack().getAdminProject();
         ACRM_PROJECT_NAME = portalConfig.data().youtrack().getAcrmProject();
-        PORTAL_URL = portalConfig.data().getMailNotificationConfig().getCrmUrlInternal();//TODO
-//        PORTAL_URL = "http://127.0.0.1:9007/";
+        PORTAL_URL = portalConfig.data().getCommonConfig().getCrmUrlInternal();
     }
 
     @Override
@@ -137,7 +138,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     
     private void createAdminYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_InternalResource> resourceList = employeeRegistration.getResourceList();
-        if (CollectionUtils.isEmpty(resourceList)) {
+        if (isEmpty(resourceList)) {
             return;
         }
         String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
@@ -149,30 +150,35 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private void createAcrmYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_PhoneOfficeType> resourceList = employeeRegistration.getPhoneOfficeTypeList();
-        if (CollectionUtils.isEmpty(resourceList)) {
+        if (isEmpty(resourceList)) {
             return;
         }
 
-        String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
-        String description = "Необходимо включить связь: " +
-                StringUtils.join(resourceList, r -> getPhoneOfficeTypeName(r),  ", ");
+        String phoneString = "Необходима настройка офисной телефонии";
+        if (!contains( employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )) {
+            phoneString = "Необходимо перенастройка телефонии";
+        }
 
-        description = StringUtils.join( description,
+        String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
+        String description = StringUtils.join( phoneString,
+                "\n", "Анкета: ", makeYtLinkToCrmRegistration(employeeRegistration.getId(),  employeeRegistration.getEmployeeFullName()),
                 "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
                 "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
-                "\n", "Анкета: [", PORTAL_URL, HASH_SYMBOL, "employee_registration_preview:id="+employeeRegistration.getId(),
-                " ",employeeRegistration.getEmployeeFullName(), "]"//TODO ссылка на анкету
+                "\n", "Необходимо включить связь: ", StringUtils.join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
+
         ).toString();
 
         String issueId = youtrackService.createIssue(ACRM_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
+    private CharSequence makeYtLinkToCrmRegistration( Long employeeRegistrationId, String employeeFullName ) {
+        return StringUtils.join(
+                "[", PORTAL_URL, "#employee_registration_preview:id=" + employeeRegistrationId, " ", employeeFullName, "]");
+    }
+
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
-        if (CollectionUtils.isEmpty(equipmentList)) {
-            return;
-        }
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = "Необходимо: " +
                 StringUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
@@ -243,6 +249,4 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return "";
     }
 
-    private static final String HASH_SYMBOL = "#";
-//    private static final String HASH_SYMBOL = "%23";
 }
