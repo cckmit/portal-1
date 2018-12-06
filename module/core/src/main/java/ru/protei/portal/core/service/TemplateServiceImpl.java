@@ -120,21 +120,6 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    public static void main (String [] args  ) {
-        EmployeeRegistration er = new EmployeeRegistration();
-        er.setProbationPeriodMonth( 7 );
-        er.setAdditionalSoft( "additoinal soft" );
-        er.setResourceComment( "resource comment" );
-        er.setOperatingSystem( "Windows" );
-
-        TemplateServiceImpl templateService = new TemplateServiceImpl();
-        templateService.onInit();
-
-        PreparedTemplate tmlt = templateService.getEmployeeRegistrationEmailNotificationBody( er, "urlTemplate", Collections.EMPTY_LIST );
-        String text = tmlt.getText( "receiver", "ru", true );
-        int stopr = 0 ;
-    }
-
     @Override
     public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();

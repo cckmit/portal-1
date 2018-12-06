@@ -4,7 +4,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 
-    <changeSet id="add-columns-into-employee-registration" author="efremov">
+    <changeSet id="add-columns-into-employee-registration" author="eliseev">
         <addColumn tableName="employee_registration">
             <column name="probation_period" type="INT"/>
             <column name="resource_comment" type="VARCHAR(255)"/>
