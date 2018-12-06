@@ -34,6 +34,7 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         resourcesList.setMandatoryOptions(En_InternalResource.EMAIL);
+        probationPeriod.getElement().setAttribute("placeholder",  lang.employeeRegistrationProbationPeriodPlaceholder());
     }
     
     @Override
@@ -121,6 +122,23 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         return saveButton;
     }
 
+    @Override
+    public HasValue<Integer> probationPeriod() {
+        return probationPeriod;
+    }
+    @Override
+    public HasValue<String> resourceComment() {
+        return resourceComment;
+    }
+    @Override
+    public HasValue<String> operatingSystem() {
+        return operatingSystem;
+    }
+    @Override
+    public HasValue<String> additionalSoft() {
+        return additionalSoft;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -173,12 +191,20 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Inject
     @UiField(provided = true)
     EmployeeEquipmentOptionList equipmentList;
+    @UiField
+    IntegerBox probationPeriod;
+    @UiField
+    AutoResizeTextArea resourceComment;
 
     @Inject
     @UiField(provided = true)
     PhoneOfficeTypeOptionList phoneTypeList;
+    @UiField
+    ValidableTextBox operatingSystem;
+    @UiField
+    AutoResizeTextArea additionalSoft;
 
-    @Inject
+    @UiField
     Lang lang;
 
     private AbstractEmployeeRegistrationEditActivity activity;
