@@ -60,8 +60,8 @@
                         <label><!--Испытательный срок-->
                             <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
                         </label>
-                        <validatefield:ValidableTextBox ui:field="probationPeriod"
-                                                        placeholder="{lang.employeeRegistrationProbationPeriodPlaceholder}"
+                        <g:IntegerBox ui:field="probationPeriod"
+
                                                         styleName="input-field"/>
                     </div>
 
@@ -78,21 +78,21 @@
                         <multiselector:EmployeeEquipmentOptionList ui:field="equipmentList"
                                                                    styleName="inherit-color-checkbox-group"/>
                     </div>
-                    <div class="form-group col-xs-2">
+                    <div class="form-group col-xs-6">
                         <label><!--Требуемая ОС-->
                             <ui:text from="{lang.employeeRegistrationOS}"/>
                         </label>
-                        <validatefield:ValidableTextBox ui:field="operatingSystem"
+                        <validatefield:ValidableTextBox ui:field="operatingSystem" notNull="false"
                                                         placeholder="{lang.employeeRegistrationOSPlaceholder}"
                                                         styleName="input-field"/>
                     </div>
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-12">
                         <label><!--Дополнительное ПО-->
                             <ui:text from="{lang.employeeRegistrationAdditionalSoft}"/>
                         </label>
                         <textarea:AutoResizeTextArea ui:field="additionalSoft"
                                                      placeholder="{lang.employeeRegistrationAdditionalSoftPlaceholder}"
-                                                     minRows="1" maxRows="1" styleName="input-field"/>
+                                                     minRows="1" styleName="input-field"/>
                     </div>
                     <div class="form-group col-xs-8">
                         <label><!--Доступ к внутренним ресурсам-->
@@ -101,9 +101,9 @@
                         <multiselector:InternalResourceOptionList ui:field="resourcesList"
                                                                   styleName="inherit-color-checkbox-group"/>
                     </div>
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-xs-12">
                         <label><!--Прочие ресурсы-->
-                            <ui:text from="{lang.internalResourceOtherComment}"/>
+                            <ui:text from="{lang.employeeRegistrationResourceOtherComment}"/>
                         </label>
                         <textarea:AutoResizeTextArea ui:field="resourceComment" minRows="1"
                                                      placeholder="{lang.employeeRegistrationInternalResourceOtherCommentPlaceholder}"

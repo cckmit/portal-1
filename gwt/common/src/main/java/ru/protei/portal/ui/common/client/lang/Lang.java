@@ -1410,7 +1410,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationPhoneOfficeTypeList();
 
-    String internalResourceOtherComment();
+    String employeeRegistrationResourceOtherComment();
 
     String employeeRegistrationOS();
 

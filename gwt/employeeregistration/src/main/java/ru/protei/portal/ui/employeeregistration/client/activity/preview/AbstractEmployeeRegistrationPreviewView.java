@@ -39,4 +39,12 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     HasWidgets getCommentsContainer();
 
     void setPhoneOfficeTypeList( String pnoneOfficeTypeList );
+
+    void setProbationPeriodMonth( Integer probationPeriodMonth );
+
+    void setOperatingSystem( String operatingSystem );
+
+    void setResourceComment( String resourceComment );
+
+    void setAdditionalSoft( String additionalSoft );
 }

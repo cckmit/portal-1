@@ -25,6 +25,7 @@ import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.*;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -135,13 +136,11 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
         String summary = "Регистрация нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
-        String description = StringUtils.join(
-                "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
-                "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
-                "\n", "Анкета: ", makeYtLinkToCrmRegistration(employeeRegistration.getId(),  employeeRegistration.getEmployeeFullName()),
-                "\n", "Предоставить доступ к ресурсам: ", StringUtils.join(resourceList, r -> getResourceName(r),  ", "),//TODO комментарием
-                "\n", "Настройка рабочего места: ", StringUtils.join(resourceList, r -> getResourceName(r),  ", ")//TODO  Тип ОС: <ОС>, Дополнительное ПО: <ПО>.
-                ).toString();
+        String description = join( makeCommonDescriptionString( employeeRegistration ),
+                "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
+                (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
+                makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
+        ).toString();
 
         String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
@@ -153,36 +152,58 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
 
-        String phoneString = "Необходима настройка офисной телефонии";
-        if (!contains( employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )) {
-            phoneString = "Необходимо перенастройка офисной телефонии";
-        }
-
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
-        String description = StringUtils.join( phoneString,
-                "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
-                "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
-                "\n", "Необходимо включить связь: ", StringUtils.join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " ),
-                "\n", "Анкета: ", makeYtLinkToCrmRegistration(employeeRegistration.getId(),  employeeRegistration.getEmployeeFullName())
 
+        String configure = contains( employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )
+                ? "перенастройка": "настройка";
+
+        String description = join( makeCommonDescriptionString( employeeRegistration ),
+                "\n", "Необходима ", configure, " офисной телефонии",
+                "\n", "Необходимо включить связь: ", join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
         ).toString();
 
         String issueId = youtrackService.createIssue( PHONE_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
 
-    private CharSequence makeYtLinkToCrmRegistration( Long employeeRegistrationId, String employeeFullName ) {
-        return StringUtils.join(
-                "[", PORTAL_URL, "#employee_registration_preview:id=" + employeeRegistrationId, " ", employeeFullName, "]");
-    }
-
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
+
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
-        String description = "Необходимо: " +
-                StringUtils.join(equipmentList, e -> getEquipmentName(e), ", ");
+
+        String description = join( makeCommonDescriptionString( employeeRegistration ),
+                "\n", "Необходимо: ", join( equipmentList, e -> getEquipmentName( e ), ", " )
+        ).toString();
+
         String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
+        return join( "Анкета: ", makeYtLinkToCrmRegistration( er.getId(), er.getEmployeeFullName() ),
+                "\n", "Руководитель: ", er.getHeadOfDepartmentShortName(),
+                "\n", "Расположение рабочего места: ", er.getWorkplace()
+        );
+    }
+
+    private CharSequence makeWorkplaceConfigurationString( String operatingSystem, String additionalSoft ) {
+        if (isBlank( operatingSystem ) && isBlank( additionalSoft )) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder( "\nНастройка рабочего места: " );
+        if (!isBlank( operatingSystem )) {
+            sb.append( "\n   Тип ОС: " ).append( operatingSystem );
+        }
+
+        if (!isBlank( additionalSoft )) {
+            sb.append( "\n   Дополнительное ПО: " ).append( additionalSoft );
+        }
+        return sb;
+    }
+
+    private CharSequence makeYtLinkToCrmRegistration( Long employeeRegistrationId, String employeeFullName ) {
+        return join( "[", PORTAL_URL, "#employee_registration_preview:id=" + employeeRegistrationId, " ", employeeFullName, "]" );
     }
 
     private void saveCaseLink(Long employeeRegistrationId, String issueId) {
