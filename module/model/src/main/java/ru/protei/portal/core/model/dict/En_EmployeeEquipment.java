@@ -10,5 +10,7 @@ public enum En_EmployeeEquipment {
 
     COMPUTER,
 
-    MONITOR;
+    MONITOR,
+
+    TELEPHONE
 }

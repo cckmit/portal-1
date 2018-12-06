@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  * Created by admin on 15/11/2017.
  */
 public class YoutrackServiceImpl implements YoutrackService {
-    private RestTemplate ytClient = new RestTemplate();
+    private RestTemplate ytClient;
 
     private HttpHeaders authHeaders;
     private String BASE_URL;
@@ -38,6 +39,9 @@ public class YoutrackServiceImpl implements YoutrackService {
         authHeaders = new HttpHeaders();
         authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         authHeaders.set("Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
+
+        ytClient = new RestTemplate();
+        ((DefaultUriTemplateHandler)ytClient.getUriTemplateHandler()).setStrictEncoding( true );
 
         BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
     }
@@ -73,6 +77,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .queryParam("summary", summary)
                 .queryParam("description", StringUtils.emptyIfNull(description))
                 .build()
+                .encode()
                 .toUriString();
 
         ResponseEntity<String> response = ytClient.exchange(

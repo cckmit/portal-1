@@ -1401,4 +1401,12 @@ public interface Lang extends Messages, ContactItemLang {
     String projectRemoveConfirmMessage(String name);
 
     String projectRemoveSucceeded();
+
+    String employeeEquipmentPhone();
+
+    String phoneOfficeTypeLongDistance();
+
+    String phoneOfficeTypeInternational();
+
+    String employeeRegistrationPhoneOfficeTypeList();
 }

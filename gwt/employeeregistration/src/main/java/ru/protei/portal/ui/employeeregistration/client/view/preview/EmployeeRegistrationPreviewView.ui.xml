@@ -56,6 +56,10 @@
                     <span class="col-xs-7 col-md-7" ui:field="resourcesList"/>
                 </div>
                 <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="phoneOfficeTypeList"/>
+                </div>
+                <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationComment}"/></label>
                     <span class="col-xs-7 col-md-7" ui:field="comment"/>
                 </div>

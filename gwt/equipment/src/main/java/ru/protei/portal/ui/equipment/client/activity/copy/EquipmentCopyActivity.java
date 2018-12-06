@@ -36,7 +36,7 @@ public abstract class EquipmentCopyActivity
         }
         view.name().setValue( event.equipment.getName() + lang.copyPostfix() );
 
-        dialogView.getDialogAnimation().show();
+        dialogView.showPopup();
     }
 
     @Override
@@ -47,22 +47,25 @@ public abstract class EquipmentCopyActivity
             return;
         }
 
+        if(isSaving) return;
+        isSaving = true;
         equipmentService.copyEquipment( show.equipment.getId(), title, new RequestCallback<Long>() {
             @Override
-            public void onError( Throwable caught ) {}
+            public void onError( Throwable caught ) {isSaving = false;}
 
             @Override
             public void onSuccess( Long result ) {
+                dialogView.hidePopup();
+                isSaving = false;
                 fireEvent( new NotifyEvents.Show( lang.equpmentCopySuccess(), NotifyEvents.NotifyType.SUCCESS ) );
                 fireEvent( new EquipmentEvents.Show() );
-                dialogView.getDialogAnimation().hide();
             }
         } );
     }
 
     @Override
     public void onCancelClicked() {
-        dialogView.getDialogAnimation().hide();
+        dialogView.hidePopup();
     }
 
     EquipmentEvents.ShowCopyDialog show;
@@ -75,4 +78,6 @@ public abstract class EquipmentCopyActivity
     AbstractDialogDetailsView dialogView;
     @Inject
     EquipmentControllerAsync equipmentService;
+
+    private boolean isSaving;
 }
