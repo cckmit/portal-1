@@ -118,6 +118,30 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     })
     private Set<CaseLink> youtrackIssues;
 
+    /**
+     *  испытательный срок
+     */
+    @JdbcColumn(name ="probation_period")
+    Integer probationPeriodMonth;
+
+    /**
+     * комментраий к списку ресорсов
+     */
+    @JdbcColumn(name ="resource_comment")
+    String resourceComment;
+
+    /**
+     * Операционная система
+     */
+    @JdbcColumn(name ="operating_system")
+    String operatingSystem;
+
+    /**
+     * Дополнительное ПО
+     */
+    @JdbcColumn(name ="additional_soft")
+    String additionalSoft;
+
     public Long getId() {
         return id;
     }
@@ -260,6 +284,38 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
         this.youtrackIssues = youtrackIssues;
     }
 
+    public Integer getProbationPeriodMonth() {
+        return probationPeriodMonth;
+    }
+
+    public void setProbationPeriodMonth( Integer probationPeriodMonth ) {
+        this.probationPeriodMonth = probationPeriodMonth;
+    }
+
+    public String getResourceComment() {
+        return resourceComment;
+    }
+
+    public void setResourceComment( String resourceComment ) {
+        this.resourceComment = resourceComment;
+    }
+
+    public String getOperatingSystem() {
+        return operatingSystem;
+    }
+
+    public void setOperatingSystem( String operatingSystem ) {
+        this.operatingSystem = operatingSystem;
+    }
+
+    public String getAdditionalSoft() {
+        return additionalSoft;
+    }
+
+    public void setAdditionalSoft( String additionalSoft ) {
+        this.additionalSoft = additionalSoft;
+    }
+
     @Override
     public String getAuditType() {
         return "EmployeeRegistration";
@@ -299,7 +355,11 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +
                 ", state=" + state +
+                ", probationPeriodMonth=" + probationPeriodMonth +
+                ", resourceComment='" + resourceComment + '\'' +
+                ", operatingSystem='" + operatingSystem + '\'' +
+                ", additionalSoft='" + additionalSoft + '\'' +
+                ", youtrackIssues=" + youtrackIssues +
                 '}';
     }
-
 }
