@@ -133,9 +133,16 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (isEmpty(resourceList)) {
             return;
         }
-        String summary = "Открытие доступа к внутренним ресурсам для нового сотрудника " + employeeRegistration.getEmployeeFullName();
-        String description = "Необходимо открыть доступ к: " +
-                StringUtils.join(resourceList, r -> getResourceName(r),  ", ");
+        String summary = "Регистрация нового сотрудника " + employeeRegistration.getEmployeeFullName();
+
+        String description = StringUtils.join(
+                "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
+                "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
+                "\n", "Анкета: ", makeYtLinkToCrmRegistration(employeeRegistration.getId(),  employeeRegistration.getEmployeeFullName()),
+                "\n", "Предоставить доступ к ресурсам: ", StringUtils.join(resourceList, r -> getResourceName(r),  ", "),//TODO комментарием
+                "\n", "Настройка рабочего места: ", StringUtils.join(resourceList, r -> getResourceName(r),  ", ")//TODO  Тип ОС: <ОС>, Дополнительное ПО: <ПО>.
+                ).toString();
+
         String issueId = youtrackService.createIssue(ADMIN_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
     }
@@ -153,10 +160,10 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
         String description = StringUtils.join( phoneString,
-                "\n", "Анкета: ", makeYtLinkToCrmRegistration(employeeRegistration.getId(),  employeeRegistration.getEmployeeFullName()),
                 "\n", "Руководитель: ", employeeRegistration.getHeadOfDepartmentShortName(),
                 "\n", "Расположение рабочего места: ", employeeRegistration.getWorkplace(),
-                "\n", "Необходимо включить связь: ", StringUtils.join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
+                "\n", "Необходимо включить связь: ", StringUtils.join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " ),
+                "\n", "Анкета: ", makeYtLinkToCrmRegistration(employeeRegistration.getId(),  employeeRegistration.getEmployeeFullName())
 
         ).toString();
 

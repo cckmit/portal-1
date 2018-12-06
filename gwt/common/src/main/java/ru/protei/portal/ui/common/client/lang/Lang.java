@@ -1409,4 +1409,20 @@ public interface Lang extends Messages, ContactItemLang {
     String phoneOfficeTypeInternational();
 
     String employeeRegistrationPhoneOfficeTypeList();
+
+    String internalResourceOtherComment();
+
+    String employeeRegistrationOS();
+
+    String employeeRegistrationProbationPeriod();
+
+    String employeeRegistrationProbationPeriodPlaceholder();
+
+    String employeeRegistrationOSPlaceholder();
+
+    String employeeRegistrationAdditionalSoft();
+
+    String employeeRegistrationAdditionalSoftPlaceholder();
+
+    String employeeRegistrationInternalResourceOtherCommentPlaceholder();
 }

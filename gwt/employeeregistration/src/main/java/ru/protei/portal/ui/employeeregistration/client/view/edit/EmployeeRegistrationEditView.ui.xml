@@ -36,62 +36,93 @@
                         <label>
                             <ui:text from="{lang.employeeRegistrationEmploymentDate}"/>
                         </label>
-                        <datepicker:SinglePicker ui:field="employmentDate" type="DATE" formatValue="dd.MM.yyyy" mandatory="true"/>
+                        <datepicker:SinglePicker ui:field="employmentDate" type="DATE" formatValue="dd.MM.yyyy"
+                                                 mandatory="true"/>
                     </div>
-
-
 
                     <div class="form-group col-xs-3">
                         <label>
                             <ui:text from="{lang.employeeRegistrationEmploymentType}"/>
                         </label>
                         <selector:EmploymentTypeSelector ui:field="employmentType" hasNullValue="false"/>
-                        <option:OptionItem ui:field="withRegistration" styleName="toggle inherit-color" name="{lang.employeeRegistrationWithRegistration}"/>
+                        <option:OptionItem ui:field="withRegistration" styleName="toggle inherit-color"
+                                           name="{lang.employeeRegistrationWithRegistration}"/>
                     </div>
 
-                    <div class="form-group col-xs-9">
+                    <div class="form-group col-xs-6">
                         <label>
                             <ui:text from="{lang.employeeRegistrationPost}"/>
                         </label>
                         <validatefield:ValidableTextBox styleName="input-field" ui:field="position" notNull="true"/>
                     </div>
-                </div>
 
-                <div class="grid grid-indent">
+                    <div class="form-group col-xs-3">
+                        <label><!--Испытательный срок-->
+                            <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
+                        </label>
+                        <validatefield:ValidableTextBox ui:field="probationPeriod"
+                                                        placeholder="{lang.employeeRegistrationProbationPeriodPlaceholder}"
+                                                        styleName="input-field"/>
+                    </div>
+
                     <div class="form-group col-xs-12">
                         <label>
                             <ui:text from="{lang.employeeRegistrationWorkplace}"/>
                         </label>
                         <textarea:AutoResizeTextArea ui:field="workplace" minRows="1" styleName="input-field"/>
                     </div>
-
-                    <div class="form-group col-xs-5">
+                    <div class="form-group col-xs-6">
                         <label>
                             <ui:text from="{lang.employeeRegistrationEquipmentList}"/>
                         </label>
-                        <multiselector:EmployeeEquipmentOptionList ui:field="equipmentList" styleName="inherit-color-checkbox-group"/>
+                        <multiselector:EmployeeEquipmentOptionList ui:field="equipmentList"
+                                                                   styleName="inherit-color-checkbox-group"/>
                     </div>
-
-                    <div class="form-group col-xs-5">
-                        <label>
+                    <div class="form-group col-xs-2">
+                        <label><!--Требуемая ОС-->
+                            <ui:text from="{lang.employeeRegistrationOS}"/>
+                        </label>
+                        <validatefield:ValidableTextBox ui:field="operatingSystem"
+                                                        placeholder="{lang.employeeRegistrationOSPlaceholder}"
+                                                        styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label><!--Дополнительное ПО-->
+                            <ui:text from="{lang.employeeRegistrationAdditionalSoft}"/>
+                        </label>
+                        <textarea:AutoResizeTextArea ui:field="additionalSoft"
+                                                     placeholder="{lang.employeeRegistrationAdditionalSoftPlaceholder}"
+                                                     minRows="1" maxRows="1" styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-8">
+                        <label><!--Доступ к внутренним ресурсам-->
                             <ui:text from="{lang.employeeRegistrationResourceList}"/>
                         </label>
-                        <multiselector:InternalResourceOptionList ui:field="resourcesList" styleName="inherit-color-checkbox-group"/>
+                        <multiselector:InternalResourceOptionList ui:field="resourcesList"
+                                                                  styleName="inherit-color-checkbox-group"/>
                     </div>
-
-                    <div class="form-group col-xs-2">
-                        <label>
+                    <div class="form-group col-xs-4">
+                        <label><!--Прочие ресурсы-->
+                            <ui:text from="{lang.internalResourceOtherComment}"/>
+                        </label>
+                        <textarea:AutoResizeTextArea ui:field="resourceComment" minRows="1"
+                                                     placeholder="{lang.employeeRegistrationInternalResourceOtherCommentPlaceholder}"
+                                                     styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label><!--Необходимо подключить связь-->
                             <ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}"/>
                         </label>
-                        <multiselector:PhoneOfficeTypeOptionList ui:field="phoneTypeList" styleName="inherit-color-checkbox-group"/>
+                        <multiselector:PhoneOfficeTypeOptionList ui:field="phoneTypeList"
+                                                                 styleName="inherit-color-checkbox-group"/>
                     </div>
-
                     <div class="form-group col-xs-12">
                         <label>
                             <ui:text from="{lang.employeeRegistrationComment}"/>
                         </label>
                         <textarea:AutoResizeTextArea ui:field="comment" minRows="1" styleName="input-field"/>
                     </div>
+
                 </div>
             </div>
             <div class="footer">

@@ -173,10 +173,18 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Inject
     @UiField(provided = true)
     EmployeeEquipmentOptionList equipmentList;
+    @UiField
+    ValidableTextBox probationPeriod;
+    @UiField
+    AutoResizeTextArea resourceComment;
 
     @Inject
     @UiField(provided = true)
     PhoneOfficeTypeOptionList phoneTypeList;
+    @UiField
+    ValidableTextBox operatingSystem;
+    @UiField
+    AutoResizeTextArea additionalSoft;
 
     @Inject
     Lang lang;
