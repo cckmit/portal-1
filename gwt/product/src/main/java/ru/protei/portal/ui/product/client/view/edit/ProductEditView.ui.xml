@@ -95,7 +95,7 @@
             <div class="card-block">
                 <div class="text-right">
                     <g:Button ui:field="stateBtn" styleName="btn" text="{lang.productToArchive}"/>
-                    <g:Button ui:field="saveBtn" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                    <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                     <g:Button ui:field="cancelBtn" styleName="btn btn-white" text="{lang.buttonCancel}"/>
                 </div>
             </div>

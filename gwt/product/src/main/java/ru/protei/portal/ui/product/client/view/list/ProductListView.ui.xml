@@ -12,6 +12,6 @@
                                  createButtonStyleName="plate-list-create"
             />
         </div>
-        <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
+        <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
     </g:HTMLPanel>
 </ui:UiBinder>

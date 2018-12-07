@@ -20,11 +20,11 @@
                         <div class="message">
                             <autoresizetextarea:AutoResizeTextArea
                                     ui:field="comment"
-                                    styleName="input-field form-group message-input"
+                                    styleName="form-control form-group message-input"
                                     minRows="5" maxRows="20"/>
 
                             <div class="attachments">
-                                <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
+                                <g:Button styleName="btn btn-complete" ui:field="send" text="{lang.commentSendMessage}"/>
 
                                 <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
                                     <div class="btn btn-white attach-add-btn">
@@ -34,7 +34,7 @@
                                     </div>
                                 </fileuploader:AttachmentUploader>
 
-                                <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field inline-block time-elapsed" notNull="false"/>
+                                <timefield:TimeTextBox ui:field="timeElapsed" styleName="form-control inline-block time-elapsed" notNull="false"/>
 
                                 <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                             </div>

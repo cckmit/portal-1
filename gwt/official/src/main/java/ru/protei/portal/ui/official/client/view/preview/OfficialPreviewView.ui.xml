@@ -7,27 +7,27 @@
 
     <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
-        <div class="col-xs-12">
+        <div class="col-md-12">
             <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
         </div>
             <fieldset class="header">
                 <legend><ui:text from="{lang.officialGeneralInfo}"/></legend>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="creationDate"></span>
+                <div class="col-md-6">
+                    <label class="col-md-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>
+                    <span class="col-md-7 col-md-7" ui:field="creationDate"></span>
                 </div>
 
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.officialTableProduct}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="product"></span>
+                <div class="col-md-6">
+                    <label class="col-md-5 col-md-5"><ui:text from="{lang.officialTableProduct}"/></label>
+                    <span class="col-md-7 col-md-7" ui:field="product"></span>
                 </div>
 
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.officialRegion}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="region"></span>
+                <div class="col-md-6">
+                    <label class="col-md-5 col-md-5"><ui:text from="{lang.officialRegion}"/></label>
+                    <span class="col-md-7 col-md-7" ui:field="region"></span>
                 </div>
 
-                <div class="col-xs-11" ui:field="info"></div>
+                <div class="col-md-11" ui:field="info"></div>
             </fieldset>
 
             <fieldset class="header">
@@ -40,7 +40,7 @@
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.issueAttachments}"/></legend>
-                <div class="col-xs-12 col-md-12">
+                <div class="col-md-12 col-md-12">
                     <div class="panel">
                         <div class="body">
                             <div class="attach attach-add">
@@ -58,7 +58,7 @@
             </fieldset>
 
             <legend><ui:text from="{lang.comments}"/></legend>
-            <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
+            <g:HTMLPanel ui:field="commentsContainer" styleName="col-md-12 col-md-12"/>
         </g:HTMLPanel>
 
     </g:HTMLPanel>

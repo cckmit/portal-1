@@ -16,7 +16,7 @@
                 </g:HTMLPanel>
                 <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link m-t-10 pull-left" href="#"/>
 
-                <h4 class="col-md-12 no-margin" ui:field="displayName"/>
+                <h4 class="col-md-12 no-margin no-padding" ui:field="displayName"/>
                 <img ui:field="genderImage" src="" class="preview-title-image_right"/>
 
                 <p>

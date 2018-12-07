@@ -20,19 +20,19 @@
                     <small ui:field="created" class="pull-right document-creator-info"/>
                 </legend>
                 <div class="grid grid-indent">
-                    <g:HTMLPanel styleName="form-group col-xs-6" ui:field="nameContainer">
+                    <g:HTMLPanel styleName="form-group col-md-6" ui:field="nameContainer">
                         <label>
                             <ui:text from="{lang.documentName}"/>
                         </label>
-                        <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                        <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                     </g:HTMLPanel>
 
-                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="selectFileContainer">
+                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="selectFileContainer">
                         <label>
                             <ui:text from="{lang.uploadDocuments}"/>
                         </label>
                         <div class="input-group">
-                            <g:TextBox ui:field="fileName" styleName="input-field" enabled="false"/>
+                            <g:TextBox ui:field="fileName" styleName="form-control" enabled="false"/>
                             <div class="input-group-btn">
                                 <g:Button ui:field="selectFileButton" styleName="btn btn-white">
                                     <i class="ion-upload"/>
@@ -42,39 +42,39 @@
                         </div>
                     </g:HTMLPanel>
 
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label>
                             <ui:text from="{lang.documentVersion}"/>
                         </label>
-                        <g:TextBox ui:field="version" styleName="input-field"/>
+                        <g:TextBox ui:field="version" styleName="form-control"/>
                     </div>
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label>
                             <ui:text from="{lang.documentExecutionType}"/>
                         </label>
                         <execution:DocumentExecutionTypeSelector ui:field="executionType"   />
                     </div>
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label>
                             <ui:text from="{lang.documentCategory}"/>
                         </label>
                         <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
                     </div>
 
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label>
                             <ui:text from="{lang.documentType}"/>
                         </label>
                         <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
                         <project:ProjectButtonSelector ui:field="project"/>
                     </div>
 
-                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="equipmentSelectorContainer">
+                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="equipmentSelectorContainer">
                         <label>
                             <ui:text from="{lang.documentEquipment}"/>
                         </label>
@@ -82,14 +82,14 @@
                                                      printDecimalNumbers="false"
                                                      hasNullValue="false"/>
                     </g:HTMLPanel>
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label>
                             <ui:text from="{lang.documentRegistrar}"/>
                         </label>
                         <person:EmployeeButtonSelector ui:field="registrar"/>
                     </div>
 
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label>
                             <ui:text from="{lang.documentContractor}"/>
                         </label>
@@ -99,18 +99,18 @@
 
                 <div class="grid grid-indent">
 
-                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="inventoryNumberContainer">
+                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="inventoryNumberContainer">
                         <label>
                             <ui:text from="{lang.inventoryNumber}"/>
                         </label>
-                        <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
+                        <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
                     </g:HTMLPanel>
 
-                    <g:HTMLPanel styleName="form-group col-xs-9" ui:field="decimalNumberContainer">
+                    <g:HTMLPanel styleName="form-group col-md-9" ui:field="decimalNumberContainer">
                         <label>
                             <ui:text from="{lang.documentDecimalNumber}"/>
                         </label>
-                        <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="input-field"/>
+                        <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="form-control"/>
                     </g:HTMLPanel>
 
                 </div>
@@ -119,8 +119,8 @@
                     <ui:text from="{lang.annotation}"/>
                 </legend>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-12">
-                        <g:TextArea ui:field="annotation" styleName="input-field comment"/>
+                    <div class="form-group col-md-12">
+                        <g:TextArea ui:field="annotation" styleName="form-control comment"/>
                     </div>
                 </div>
 
@@ -128,13 +128,13 @@
                     <ui:text from="{lang.documentKeywords}"/>
                 </legend>
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-12">
+                    <div class="form-group col-md-12">
                         <keyword:StringSelectInput ui:field="keywords"/>
                     </div>
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
             </div>
         </div>

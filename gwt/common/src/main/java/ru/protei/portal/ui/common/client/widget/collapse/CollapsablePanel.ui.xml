@@ -3,6 +3,6 @@
 
     <g:HTMLPanel>
         <g:HTMLPanel tag="legend" ui:field="legend" styleName="collapsable-legend"/>
-        <g:HTMLPanel ui:field="container" styleName="collapsable-container form-group col-xs-12 " />
+        <g:HTMLPanel ui:field="container" styleName="collapsable-container form-group col-md-12 " />
     </g:HTMLPanel>
 </ui:UiBinder>

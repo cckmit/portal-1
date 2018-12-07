@@ -15,7 +15,7 @@
                 <span ui:field="ip"/>
             </div>
             <h5><ui:text from="{lang.employeePositionsHeader}"/></h5>
-            <g:HTMLPanel ui:field="positionsContainer" styleName="col-xs-12"/>
+            <g:HTMLPanel ui:field="positionsContainer" styleName="col-md-12"/>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

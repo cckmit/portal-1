@@ -5,7 +5,7 @@
 
 <g:HTMLPanel ui:field="rootWrapper" styleName="card card-default">
     <div class="card-block">
-        <h4 class="col-md-12 no-margin" ui:field="productName"/>
+        <h4 class="col-md-12 no-margin no-padding" ui:field="productName"/>
         <img ui:field="typeImage" src="" class="preview-title-image_right"/>
         <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
     </div>

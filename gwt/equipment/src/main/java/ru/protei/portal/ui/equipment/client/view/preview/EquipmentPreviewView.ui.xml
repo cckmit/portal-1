@@ -19,57 +19,57 @@
 
             <fieldset class="header">
                 <legend ui:field="header"></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.equipmentNameBySpecification}"/></label>
-                    <span class="col-xs-7" ui:field="name"></span>
+                <div class="col-md-12">
+                    <label class="col-md-5"><ui:text from="{lang.equipmentNameBySpecification}"/></label>
+                    <span class="col-md-7" ui:field="name"></span>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.created}"/></label>
-                    <span class="col-xs-7" ui:field="created"></span>
+                <div class="col-md-12">
+                    <label class="col-md-5"><ui:text from="{lang.created}"/></label>
+                    <span class="col-md-7" ui:field="created"></span>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.equipmentNameBySldWrks}"/></label>
-                    <span class="col-xs-7" ui:field="nameBySldWrks"></span>
+                <div class="col-md-12">
+                    <label class="col-md-5"><ui:text from="{lang.equipmentNameBySldWrks}"/></label>
+                    <span class="col-md-7" ui:field="nameBySldWrks"></span>
                 </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.equipmentType}"/></label>
-                    <span class="col-xs-7" ui:field="type"></span>
-                </div>
-
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.equipmentProject}"/></label>
-                    <span class="col-xs-7" ui:field="project"></span>
+                <div class="col-md-12">
+                    <label class="col-md-5"><ui:text from="{lang.equipmentType}"/></label>
+                    <span class="col-md-7" ui:field="type"></span>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.equipmentManager}"/></label>
-                    <span class="col-xs-7" ui:field="manager"></span>
+                <div class="col-md-12">
+                    <label class="col-md-5"><ui:text from="{lang.equipmentProject}"/></label>
+                    <span class="col-md-7" ui:field="project"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="col-md-5"><ui:text from="{lang.equipmentManager}"/></label>
+                    <span class="col-md-7" ui:field="manager"></span>
                 </div>
 
             </fieldset>
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
-                <div class="col-xs-12 decimal-number" ui:field="number"></div>
+                <div class="col-md-12 decimal-number" ui:field="number"></div>
             </fieldset>
 
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentPrimaryUse}"/></legend>
-                <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 decimal-number" ui:field="primaryUse"></span>
+                <div class="col-md-12">
+                    <span class="col-md-12 col-md-12 decimal-number" ui:field="primaryUse"></span>
                 </div>
             </fieldset>
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentComment}"/></legend>
-                <div class="col-xs-12">
-                    <span class="col-xs-12 col-md-12 pre-formatted-info" ui:field="comment"></span>
+                <div class="col-md-12">
+                    <span class="col-md-12 col-md-12 pre-formatted-info" ui:field="comment"></span>
                 </div>
             </fieldset>
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
-                <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12 main-content-padding-0 equipment-document-preview"/>
+                <g:HTMLPanel ui:field="documents" styleName="form-group col-md-12 main-content-padding-0 equipment-document-preview"/>
             </fieldset>
 
         </g:HTMLPanel>

@@ -19,7 +19,7 @@
                             <small ui:field="company"/>
                         </h4>
                         <div class="grid grid-indent">
-                            <div class="col-xs-12">
+                            <div class="col-md-12">
                                 <h4 class="title">
                                     <ui:text from="{lang.companySubscription}"/>
                                 </h4>
@@ -30,7 +30,7 @@
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
             </div>
         </div>
     </g:HTMLPanel>

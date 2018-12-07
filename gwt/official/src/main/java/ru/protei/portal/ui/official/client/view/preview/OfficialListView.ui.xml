@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel>
-        <div class="col-xs-12" style="padding-left: 10px">
+        <div class="col-md-12" style="padding-left: 10px">
             <div class="panel-group">
                 <div class="panel panel-default">
                     <g:HTMLPanel ui:field="itemContainer">

@@ -58,9 +58,11 @@
                 </div>
             </div>
             <div class="card-footer">
-                <option:OptionItem ui:field="sendWelcomeEmail" styleName="checkbox single" name="{lang.sendEmail}"/>
-                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-                <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
+                <div class="text-right">
+                    <option:OptionItem ui:field="sendWelcomeEmail" styleName="checkbox single" name="{lang.sendEmail}"/>
+                    <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                    <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
+                </div>
             </div>
         </div>
     </g:HTMLPanel>

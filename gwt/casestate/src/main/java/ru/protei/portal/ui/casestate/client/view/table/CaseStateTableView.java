@@ -129,7 +129,7 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
                         message = "<i class=\"fa fa-ban m-r-10\"></i>" + caseStateUsageInCompaniesLang.getStateName(NONE);
                         break;
                     case ALL:
-                        message = "<i class=\"fa fa-users m-r-10 text-success\"></i>" + caseStateUsageInCompaniesLang.getStateName(ALL);
+                        message = "<i class=\"fa fa-users m-r-10 text-complete\"></i>" + caseStateUsageInCompaniesLang.getStateName(ALL);
                         break;
                     case SELECTED:
                         message = "<i class=\"fa fa-user m-r-10 text-purple\"></i>" + caseStateUsageInCompaniesLang.getStateName(SELECTED);

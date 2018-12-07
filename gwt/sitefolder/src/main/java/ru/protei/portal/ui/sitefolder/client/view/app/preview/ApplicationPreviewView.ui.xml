@@ -9,29 +9,29 @@
             <fieldset class="header">
                 <legend><ui:text from="{lang.siteFolderApp}"/></legend>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderName}"/></label>
-                    <span class="col-xs-8" ui:field="name"/>
+                <div class="col-md-12">
+                    <label class="col-md-4"><ui:text from="{lang.siteFolderName}"/></label>
+                    <span class="col-md-8" ui:field="name"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.devUnitComponent}"/></label>
-                    <span class="col-xs-8" ui:field="component"/>
+                <div class="col-md-12">
+                    <label class="col-md-4"><ui:text from="{lang.devUnitComponent}"/></label>
+                    <span class="col-md-8" ui:field="component"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderServer}"/></label>
-                    <span class="col-xs-8" ui:field="server"/>
+                <div class="col-md-12">
+                    <label class="col-md-4"><ui:text from="{lang.siteFolderServer}"/></label>
+                    <span class="col-md-8" ui:field="server"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderComment}"/></label>
-                    <span class="col-xs-8 pre-formatted-info" ui:field="comment"/>
+                <div class="col-md-12">
+                    <label class="col-md-4"><ui:text from="{lang.siteFolderComment}"/></label>
+                    <span class="col-md-8 pre-formatted-info" ui:field="comment"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderPaths}"/></label>
-                    <span class="col-xs-8" ui:field="paths"/>
+                <div class="col-md-12">
+                    <label class="col-md-4"><ui:text from="{lang.siteFolderPaths}"/></label>
+                    <span class="col-md-8" ui:field="paths"/>
                 </div>
 
             </fieldset>

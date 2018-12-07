@@ -6,7 +6,7 @@
     <g:HTMLPanel>
 
         <div class="grid grid-indent">
-            <div class="form-group col-xs-12 m-b-0 case-links">
+            <div class="form-group col-md-12 m-b-0 case-links">
                 <label ui:field="linksLabel" class="case-links-label"><ui:text from="{lang.linkedWith}"/>: </label>
                 <g:HTMLPanel ui:field="linksContainer" tag="ul" styleName="case-links-container"/>
                 <g:Button ui:field="addLinkButton" styleName="btn btn-white pull-right case-links-button">
@@ -14,7 +14,7 @@
                     <i class="fa fa-chevron-down"/>
                 </g:Button>
             </div>
-            <small class="text-danger col-xs-12" ui:field="error"/>
+            <small class="text-danger col-md-12" ui:field="error"/>
         </div>
 
     </g:HTMLPanel>

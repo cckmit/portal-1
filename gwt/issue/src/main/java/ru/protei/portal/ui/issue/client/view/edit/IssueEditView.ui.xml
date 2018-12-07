@@ -19,89 +19,89 @@
         <div class="body">
             <div class="grid grid-indent">
 
-                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-12 m-b-0">
+                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-md-12 m-b-0">
                     <label ui:field="nameLabel"><ui:text from="{lang.issueName}"/></label>
                     <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="issue-main-info">
                             <g:ToggleButton ui:field="local" styleName="btn btn-danger private-btn"/>
-                            <g:IntegerBox ui:field="number" styleName="input-field issue-number" enabled="false"/>
-                            <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                            <g:IntegerBox ui:field="number" styleName="form-control issue-number" enabled="false"/>
+                            <validablefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
-                <list:IssueLinks ui:field="links" styleName="form-group col-xs-12 m-b-0"/>
+                <list:IssueLinks ui:field="links" styleName="form-group col-md-12 m-b-0"/>
             </div>
             <div class="grid grid-indent">
-                <div class="form-group col-xs-6">
+                <div class="form-group col-md-6">
                     <label ui:field="stateLabel">
                         <ui:text from="{lang.issueState}"/>
                     </label>
                     <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
                 </div>
-                <div class="form-group col-xs-6">
+                <div class="form-group col-md-6">
                     <label ui:field="importanceLabel">
                         <ui:text from="{lang.issueImportance}"/>
                     </label>
                     <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
                 </div>
-                <div class="form-group col-xs-3">
+                <div class="form-group col-md-3">
                     <label ui:field="companyLabel">
                         <ui:text from="{lang.issueCompany}"/>
                     </label>
                     <company:CompanySelector ui:field="company" validation="false"/>
                 </div>
-                <div class="form-group col-xs-3">
+                <div class="form-group col-md-3">
                     <label ui:field="initiatorLabel">
                         <ui:text from="{lang.issueInitiator}"/>
                     </label>
                     <person:PersonButtonSelector ui:field="initiator" fired="false" validation="false"/>
                 </div>
 
-                <div class="form-group col-xs-3">
+                <div class="form-group col-md-3">
                     <label ui:field="productLabel">
                         <ui:text from="{lang.issueProduct}"/>
                     </label>
                     <devunit:DevUnitButtonSelector ui:field="product" validation="false"/>
                 </div>
 
-                <div class="form-group col-xs-3">
+                <div class="form-group col-md-3">
                     <label ui:field="managerLabel">
                         <ui:text from="{lang.issueManager}"/>
                     </label>
                     <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
 
-                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group col-xs-12">
+                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group col-md-12">
                     <label ui:field="timeElapsedLabel">
                         <ui:text from="{lang.timeElapsed}"/>
                     </label>
                     <timefield:TimeLabel ui:field="timeElapsed" styleName="inline-block m-l-10"/>
-                    <timefield:TimeTextBox ui:field="timeElapsedInput" styleName="input-field time-elapsed" notNull="false"/>
+                    <timefield:TimeTextBox ui:field="timeElapsedInput" styleName="form-control time-elapsed" notNull="false"/>
                 </g:HTMLPanel>
 
-                <div class="form-group col-xs-12">
+                <div class="form-group col-md-12">
                     <label ui:field="descriptionLabel">
                         <ui:text from="{lang.description}"/>
                     </label>
-                    <g:TextArea ui:field="description" styleName="input-field description" />
+                    <g:TextArea ui:field="description" styleName="form-control description" />
                 </div>
 
 
-                <div class="form-group col-xs-12">
+                <div class="form-group col-md-12">
                     <label style="display:block" ui:field="subscriptionsLabel">
                         <ui:text from="{lang.companySubscription}"/>
                     </label>
                     <div ui:field="subscriptions"/>
                 </div>
 
-                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-xs-12">
+                <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-md-12">
                     <label ui:field="notifiersLabel">
                         <ui:text from="{lang.caseSubscription}"/>
                     </label>
                     <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="notifiers"/>
                 </g:HTMLPanel>
 
-                <div class="form-group col-xs-12">
+                <div class="form-group col-md-12">
                     <label ui:field="attachmentsLabel"><ui:text from="{lang.issueAttachments}"/></label>
-                    <div class="col-xs-12 col-md-12">
+                    <div class="col-md-12 col-md-12">
                         <div class="panel">
                             <div class="body">
                                 <div class="attach attach-add">
@@ -117,14 +117,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="form-group col-xs-12" ui:field="comments">
+                <div class="form-group col-md-12" ui:field="comments">
                     <label><ui:text from="{lang.comments}"/></label>
                     <g:HTMLPanel ui:field="commentsContainer"/>
                 </div>
             </div>
         </div>
         <div class="footer">
-            <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
             <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
         </div>
 

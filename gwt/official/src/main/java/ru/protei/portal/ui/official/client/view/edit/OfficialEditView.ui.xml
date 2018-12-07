@@ -9,24 +9,24 @@
         <div class="panel panel-default">
             <div class="body">
                 <div class="grid grid-indent">
-                    <div class="form-group col-xs-12 col-lg-6">
+                    <div class="form-group col-md-12 col-lg-6">
                         <regionselector:RegionButtonSelector ui:field="region" header="{lang.officialRegion}"/>
                     </div>
-                    <div class="form-group col-xs-12 col-xs-6">
+                    <div class="form-group col-md-12 col-md-6">
                         <productselector:devunit.DevUnitButtonSelector ui:field="product" header="{lang.officialTableProduct}"/>
                     </div>
-                    <div class="form-group col-xs-12">
+                    <div class="form-group col-md-12">
                         <label>
                             <ui:text from="{lang.officialTableInfo}"/>
                         </label>
                         <div class="panelField verifiable">
-                            <g:TextArea ui:field="info" styleName="input-field description"></g:TextArea>
+                            <g:TextArea ui:field="info" styleName="form-control description"></g:TextArea>
                         </div>
                     </div>
                 </div>
 
                 <div class="footer">
-                    <g:Button ui:field="saveButton" styleName="btn btn-success">
+                    <g:Button ui:field="saveButton" styleName="btn btn-complete">
                         <ui:text from="{lang.buttonSave}"/>
                     </g:Button>
                     <g:Button ui:field="cancelButton" styleName="btn btn-white">

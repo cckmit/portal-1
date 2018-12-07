@@ -2,6 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel>
         <label ui:field="label"/>
-        <g:TextBox ui:field="text" styleName="input-field"/>
+        <g:TextBox ui:field="text" styleName="form-control"/>
     </g:HTMLPanel>
 </ui:UiBinder>

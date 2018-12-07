@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="card-footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
             </div>
         </div>

@@ -33,13 +33,15 @@
 
             <div class="form-group col-md-12">
                 <label><ui:text from="{lang.accountAuthType}"/></label>
-                <authtype:AuthTypeBtnGroupMulti ui:field="types" title="{lang.accountAuthType}" addStyleNames="form-group"/>
+                <authtype:AuthTypeBtnGroupMulti ui:field="types" title="{lang.accountAuthType}" addStyleNames="btn-block"/>
             </div>
 
 
         </div>
         <div class="card-footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+            <div class="text-right">
+                <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+            </div>
         </div>
     </g:HTMLPanel>
 

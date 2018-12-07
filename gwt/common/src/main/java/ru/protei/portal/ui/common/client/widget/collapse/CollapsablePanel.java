@@ -17,14 +17,11 @@ public class CollapsablePanel extends Composite implements HasWidgets {
 
     public CollapsablePanel() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        legend.addDomHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                if (getElement().hasClassName("collapsed")) {
-                    getElement().removeClassName("collapsed");
-                } else {
-                    getElement().addClassName("collapsed");
-                }
+        legend.addDomHandler(event -> {
+            if (getElement().hasClassName("collapsed")) {
+                getElement().removeClassName("collapsed");
+            } else {
+                getElement().addClassName("collapsed");
             }
         }, ClickEvent.getType());
     }

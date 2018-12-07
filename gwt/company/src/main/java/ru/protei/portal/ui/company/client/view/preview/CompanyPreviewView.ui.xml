@@ -6,7 +6,7 @@
 <g:HTMLPanel ui:field="rootWrapper">
     <div class="card card-default">
         <div class="card-block">
-            <h4 class="col-md-12 no-margin" ui:field="companyName"/>
+            <h4 class="col-md-12 no-margin no-padding" ui:field="companyName"/>
             <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
             <div class="small hint-text no-margin">
                 <a class="col-md-7" ui:field="site" href="#" target="_blank"/>
@@ -44,7 +44,7 @@
             </div>
 
             <h5><ui:text from="{lang.contacts}"/></h5>
-            <g:HTMLPanel ui:field="contactsContainer" styleName="col-xs-12"/>
+            <g:HTMLPanel ui:field="contactsContainer" styleName="col-md-12"/>
         </div>
     </div>
 </g:HTMLPanel>

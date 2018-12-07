@@ -31,6 +31,7 @@ import java.util.Set;
  * Абстракция вида фильтра учетных записей
  */
 public class AccountFilterView extends Composite implements AbstractAccountFilterView {
+
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );

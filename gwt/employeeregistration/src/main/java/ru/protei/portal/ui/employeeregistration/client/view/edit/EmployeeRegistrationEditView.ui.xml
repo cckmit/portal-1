@@ -103,7 +103,7 @@
             <div class="card card-transparent no-margin">
                 <div class="card-block">
                     <div class="text-right">
-                        <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
+                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
                     </div>
                 </div>
