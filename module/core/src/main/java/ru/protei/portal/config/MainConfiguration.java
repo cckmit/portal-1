@@ -111,10 +111,16 @@ public class MainConfiguration {
         return new LDAPAuthProvider();
     }
 
+    /* DAO SQL builders */
 
     @Bean
     public CaseObjectSqlBuilder sqlDefaultBuilder() {
         return new CaseObjectSqlBuilder();
+    }
+
+    @Bean
+    public CaseCommentSqlBuilder getCaseCommentSqlBuilder() {
+        return new CaseCommentSqlBuilder();
     }
 
     @Bean
@@ -418,6 +424,11 @@ public class MainConfiguration {
     @Bean
     public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
         return new EmployeeRegistrationDAO_Impl();
+    }
+
+    @Bean
+    public CaseCommentCaseObjectDAO getCaseCommentCaseObjectDAO() {
+        return new CaseCommentCaseObjectDAO_Impl();
     }
 
     /**

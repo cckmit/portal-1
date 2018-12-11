@@ -103,7 +103,12 @@ public enum En_SortField {
     /**
      * person birthday
      */
-    birthday("date_format(birthday, '%m%d')");
+    birthday("date_format(birthday, '%m%d')"),
+
+    /**
+     * person id
+     */
+    person_id("person_id");
 
     private String fieldName;
     private String bundleKey;
