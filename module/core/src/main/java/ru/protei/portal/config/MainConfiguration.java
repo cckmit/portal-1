@@ -20,6 +20,10 @@ import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.service.report.caseobjects.ReportCrmCaseObjectsService;
+import ru.protei.portal.core.service.report.caseobjects.ReportCrmCaseObjectsServiceImpl;
+import ru.protei.portal.core.service.report.managertime.ReportCrmManagerTimeService;
+import ru.protei.portal.core.service.report.managertime.ReportCrmManagerTimeServiceImpl;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -622,6 +626,16 @@ public class MainConfiguration {
     @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
         return new EmployeeRegistrationServiceImpl();
+    }
+
+    @Bean
+    public ReportCrmCaseObjectsService getReportCrmCaseObjectsService() {
+        return new ReportCrmCaseObjectsServiceImpl();
+    }
+
+    @Bean
+    public ReportCrmManagerTimeService getReportCrmManagerTimeService() {
+        return new ReportCrmManagerTimeServiceImpl();
     }
 
     /**

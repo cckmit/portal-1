@@ -15,6 +15,7 @@ import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
@@ -295,6 +296,7 @@ public abstract class IssueTableActivity
         Report report = new Report();
         report.setCaseQuery(getQuery());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+        report.setReportType(En_ReportType.CRM_CASE_OBJECTS);
         if (!HelperFunc.isEmpty(filterView.filterName().getValue())) {
             report.setName(filterView.filterName().getValue());
         }
