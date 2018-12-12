@@ -165,7 +165,10 @@ public class ReportControlServiceImpl implements ReportControlService {
                         new WorkTimeFormatter()
                 );
             case CRM_MANAGER_TIME:
-                return reportCrmManagerTimeService.writeExport(buffer, report);
+                return reportCrmManagerTimeService.writeExport(
+                        buffer, report,
+                        new SimpleDateFormat("dd.MM.yyyy HH:mm")
+                );
         }
         return false;
     }

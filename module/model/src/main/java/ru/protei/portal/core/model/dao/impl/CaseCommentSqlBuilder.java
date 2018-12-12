@@ -24,6 +24,10 @@ public class CaseCommentSqlBuilder {
                 condition.append(" and case_comment.created <= ?");
                 args.add(query.getCreatedBefore());
             }
+
+            if (query.isTimeElapsedNotNull() != null && query.isTimeElapsedNotNull()) {
+                condition.append(" and case_comment.time_elapsed is not null");
+            }
         });
     }
 }

@@ -1,0 +1,12 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2018-12-12-add-case_comment_query-column-into-report" author="buchmastov">
+        <addColumn tableName="report">
+            <column name="case_comment_query" type="VARCHAR(8192)"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

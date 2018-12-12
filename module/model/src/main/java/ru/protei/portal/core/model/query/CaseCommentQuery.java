@@ -9,6 +9,7 @@ public class CaseCommentQuery extends BaseQuery {
 
     private Long caseId;
     private Date createdBefore;
+    private Boolean timeElapsedNotNull;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -42,5 +43,13 @@ public class CaseCommentQuery extends BaseQuery {
 
     public void setCreatedBefore(Date createdBefore) {
         this.createdBefore = createdBefore;
+    }
+
+    public Boolean isTimeElapsedNotNull() {
+        return timeElapsedNotNull;
+    }
+
+    public void setTimeElapsedNotNull(Boolean timeElapsedNotNull) {
+        this.timeElapsedNotNull = timeElapsedNotNull;
     }
 }
