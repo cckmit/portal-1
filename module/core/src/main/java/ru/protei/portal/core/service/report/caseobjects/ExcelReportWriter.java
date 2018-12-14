@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.service.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
-import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,13 +23,13 @@ public class ExcelReportWriter implements
     private final JXLSHelper.ReportBook<CaseObjectComments> book;
     private final Lang.LocalizedLang lang;
     private final DateFormat dateFormat;
-    private final WorkTimeFormatter workTimeFormatter;
+    private final TimeFormatter timeFormatter;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, WorkTimeFormatter workTimeFormatter) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
-        this.workTimeFormatter = workTimeFormatter;
+        this.timeFormatter = timeFormatter;
     }
 
     @Override
@@ -132,10 +132,10 @@ public class ExcelReportWriter implements
                 customerTest != null ? dateFormat.format(customerTest) : "",
                 done != null ? dateFormat.format(done) : "",
                 verified != null ? dateFormat.format(verified) : "",
-                solutionDurationFirst != null ? duration2string(solutionDurationFirst, lang) : "",
-                solutionDurationFull != null ? duration2string(solutionDurationFull, lang) : "",
+                solutionDurationFirst != null ? timeFormatter.formatHourMinutes(solutionDurationFirst) : "",
+                solutionDurationFull != null ? timeFormatter.formatHourMinutes(solutionDurationFull) : "",
                 issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ?
-                        workTimeFormatter.format(issue.getTimeElapsed(), lang.get("timeDayLiteral"), lang.get("timeHourLiteral"), lang.get("timeMinuteLiteral"))
+                        timeFormatter.formatHourMinutes(issue.getTimeElapsed())
                         : ""
         };
     }
@@ -161,25 +161,5 @@ public class ExcelReportWriter implements
             return minutes > 0 ? minutes : null;
         }
         return null;
-    }
-
-    private String duration2string(Long minutes, Lang.LocalizedLang lang) {
-        StringBuilder sb = new StringBuilder();
-        long days = minutes / (60 * 24);
-        minutes = minutes % (60 * 24);
-        long hours = minutes / 60;
-        minutes = minutes % 60;
-        if (days > 0) {
-            sb.append(days);
-            sb.append(" ");
-            sb.append(lang.get("days"));
-            if (hours > 0 || minutes > 0) {
-                sb.append(", ");
-            }
-        }
-        if (hours > 0 || minutes > 0) {
-            sb.append(String.format("%02d:%02d", hours, minutes));
-        }
-        return sb.toString();
     }
 }

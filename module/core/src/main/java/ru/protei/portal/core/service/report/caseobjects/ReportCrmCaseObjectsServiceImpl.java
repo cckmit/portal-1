@@ -12,7 +12,7 @@ import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.service.report.ReportWriter;
-import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class ReportCrmCaseObjectsServiceImpl implements ReportCrmCaseObjectsServ
     CaseCommentDAO caseCommentDAO;
 
     @Override
-    public boolean writeReport(ByteArrayOutputStream buffer, Report report, DateFormat dateFormat, WorkTimeFormatter workTimeFormatter) throws IOException {
+    public boolean writeReport(ByteArrayOutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
 
         Long count = caseObjectDAO.count(report.getCaseQuery());
 
@@ -53,7 +53,7 @@ public class ReportCrmCaseObjectsServiceImpl implements ReportCrmCaseObjectsServ
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
-        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, workTimeFormatter);
+        ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
         int sheetNumber = writer.createSheet();
 

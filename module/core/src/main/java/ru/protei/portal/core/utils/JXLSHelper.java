@@ -24,8 +24,8 @@ public final class JXLSHelper {
         private final Writer<T> writer;
         private final Lang.LocalizedLang lang;
         private final Map<Integer, SXSSFSheet> sheetMap;
+        private final Map<Integer, Integer> sheetRowIndexMap;
         private int sheetIndex = 0;
-        private int rowIndex = 0;
 
         public interface Writer<T> {
             int[] getColumnsWidth();
@@ -38,14 +38,16 @@ public final class JXLSHelper {
             this.workbook = new SXSSFWorkbook(/*-1 если надо отключить сброс в файл и хранить всё в памяти*/);
             this.writer = writer;
             this.sheetMap = new HashMap<>();
+            this.sheetRowIndexMap = new HashMap<>();
         }
 
         public int createSheet() {
             SXSSFSheet sheet = workbook.createSheet();
             CellStyle thStyle = getTableHeaderStyle(workbook, getDefaultFont(workbook));
             setColumnsWidth(sheet, writer.getColumnsWidth());
-            makeHeader(sheet.createRow(rowIndex++), thStyle, lang, writer.getColumnNames());
+            makeHeader(sheet.createRow(0), thStyle, lang, writer.getColumnNames());
             sheetMap.put(sheetIndex, sheet);
+            sheetRowIndexMap.put(sheetIndex, 1);
             return sheetIndex++;
         }
 
@@ -57,9 +59,11 @@ public final class JXLSHelper {
         public void write(int sheetNumber, List<T> objects) {
             CellStyle style = getDefaultStyle(workbook, getDefaultFont(workbook));
             for (T object : objects) {
-                Row row = sheetMap.get(sheetNumber).createRow(rowIndex++);
+                Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
+                Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
                 row.setRowStyle(style);
                 fillRow(row, writer.getColumnValues(object));
+                sheetRowIndexMap.put(sheetNumber, rowNumber);
             }
         }
 
@@ -72,8 +76,8 @@ public final class JXLSHelper {
             workbook.dispose();
             workbook.close();
             sheetMap.clear();
+            sheetRowIndexMap.clear();
             sheetIndex = 0;
-            rowIndex = 0;
         }
     }
 

@@ -427,8 +427,8 @@ public class MainConfiguration {
     }
 
     @Bean
-    public CaseCommentCaseObjectDAO getCaseCommentCaseObjectDAO() {
-        return new CaseCommentCaseObjectDAO_Impl();
+    public CaseCommentTimeElapsedSumDAO getCaseCommentCaseObjectDAO() {
+        return new CaseCommentTimeElapsedSumDAO_Impl();
     }
 
     /**

@@ -45,6 +45,16 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     }
 
     @Override
+    public List<CaseShortView> partialGetCases(CaseQuery query, String... columns) {
+        SqlCondition where = createSqlCondition(query);
+        if (where.isConditionDefined()) {
+            return partialGetListByCondition(where.condition, where.args, columns);
+        } else {
+            return partialGetAll(columns);
+        }
+    }
+
+    @Override
     public CaseShortView getCase(Long caseNo) {
         return getByCondition("case_object.caseno=?", caseNo);
     }

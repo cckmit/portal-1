@@ -1,12 +1,11 @@
 package ru.protei.portal.core.service.report.managertime;
 
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseCommentCaseObject;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
+import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,17 +13,19 @@ import java.text.DateFormat;
 import java.util.List;
 
 public class ExcelReportWriter implements
-        ReportWriter<CaseCommentCaseObject>,
-        JXLSHelper.ReportBook.Writer<CaseCommentCaseObject> {
+        ReportWriter<CaseCommentTimeElapsedSum>,
+        JXLSHelper.ReportBook.Writer<CaseCommentTimeElapsedSum> {
 
-    private final JXLSHelper.ReportBook<CaseCommentCaseObject> book;
+    private final JXLSHelper.ReportBook<CaseCommentTimeElapsedSum> book;
     private final Lang.LocalizedLang lang;
     private final DateFormat dateFormat;
+    private final TimeFormatter timeFormatter;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
+        this.timeFormatter = timeFormatter;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public void write(int sheetNumber, List<CaseCommentCaseObject> objects) {
+    public void write(int sheetNumber, List<CaseCommentTimeElapsedSum> objects) {
         book.write(sheetNumber, objects);
     }
 
@@ -73,23 +74,27 @@ public class ExcelReportWriter implements
     }
 
     @Override
-    public Object[] getColumnValues(CaseCommentCaseObject object) {
-        CaseObject caseObject = object.getCaseObject();
-        CaseComment caseComment = object.getCaseComment();
+    public Object[] getColumnValues(CaseCommentTimeElapsedSum object) {
+        if (object.getAuthorDisplayName() == null) {
+            // summary
+            return new Object[] {
+                    "", "", "",
+                    "", "", "",
+                    "", "", "",
+                    timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
+            };
+        }
         return new Object[] {
-                "CRM-" + caseObject.getCaseNumber(),
-                lang.get(caseObject.isPrivateCase() ? "yes" : "no"),
-                HelperFunc.isNotEmpty(caseObject.getName()) ? caseObject.getName() : "",
-                caseObject.getInitiatorCompany() != null && HelperFunc.isNotEmpty(caseObject.getInitiatorCompany().getCname()) ?
-                        caseObject.getInitiatorCompany().getCname() : "",
-                caseComment.getAuthor() != null && HelperFunc.isNotEmpty(caseComment.getAuthor().getDisplayName()) ?
-                        caseComment.getAuthor().getDisplayName() : "",
-                caseObject.getManager() != null && HelperFunc.isNotEmpty(caseObject.getManager().getDisplayShortName()) ?
-                        caseObject.getManager().getDisplayShortName() : "",
-                caseObject.getImpLevel() != null ? lang.get("importance_" + caseObject.getImpLevel()) : "",
-                caseObject.getState() != null ? lang.get("case_state_" + caseObject.getState().getId()) : "",
-                caseObject.getCreated() != null ? dateFormat.format(caseObject.getCreated()) : "",
-                ""
+                "CRM-" + object.getCaseNumber(),
+                lang.get(object.isCasePrivateCase() ? "yes" : "no"),
+                HelperFunc.isNotEmpty(object.getCaseName()) ? object.getCaseName() : "",
+                HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? object.getCaseCompanyName() : "",
+                HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? object.getAuthorDisplayName() : "",
+                HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? object.getCaseManagerDisplayName() : "",
+                object.getCaseImpLevel() != null ? lang.get("importance_" + object.getCaseImpLevel()) : "",
+                object.getCaseState() != null ? lang.get("case_state_" + object.getCaseState().getId()) : "",
+                object.getCaseCreated() != null ? dateFormat.format(object.getCaseCreated()) : "",
+                timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
         };
     }
 }

@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.report.caseobjects.ReportCrmCaseObjectsService;
 import ru.protei.portal.core.service.report.managertime.ReportCrmManagerTimeService;
-import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.core.utils.TimeFormatter;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
@@ -162,12 +162,13 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return reportCrmCaseObjectsService.writeReport(
                         buffer, report,
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                        new WorkTimeFormatter()
+                        new TimeFormatter()
                 );
             case CRM_MANAGER_TIME:
                 return reportCrmManagerTimeService.writeExport(
                         buffer, report,
-                        new SimpleDateFormat("dd.MM.yyyy HH:mm")
+                        new SimpleDateFormat("dd.MM.yyyy HH:mm"),
+                        new TimeFormatter()
                 );
         }
         return false;

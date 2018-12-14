@@ -5,20 +5,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dao.CaseCommentCaseObjectDAO;
+import ru.protei.portal.core.model.dao.CaseCommentTimeElapsedSumDAO;
+import ru.protei.portal.core.model.dao.CaseShortViewDAO;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseCommentCaseObject;
+import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.report.ReportWriter;
+import ru.protei.portal.core.utils.TimeFormatter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeService {
 
@@ -29,10 +32,12 @@ public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeServ
     @Autowired
     PortalConfig config;
     @Autowired
-    CaseCommentCaseObjectDAO caseCommentCaseObjectDAO;
+    CaseShortViewDAO caseShortViewDAO;
+    @Autowired
+    CaseCommentTimeElapsedSumDAO caseCommentTimeElapsedSumDAO;
 
     @Override
-    public boolean writeExport(ByteArrayOutputStream buffer, Report report, DateFormat dateFormat) throws IOException {
+    public boolean writeExport(ByteArrayOutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
 
         CaseQuery caseQuery = report.getCaseQuery();
         CaseCommentQuery caseCommentQuery = report.getCaseCommentQuery();
@@ -41,28 +46,21 @@ public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeServ
                     report.getId(), caseQuery, caseCommentQuery);
             return false;
         }
-        caseCommentQuery.useSort(En_SortField.person_id, En_SortDir.DESC);
+
+        List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
+
+        caseCommentQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
         caseCommentQuery.setTimeElapsedNotNull(true);
-
-        Long count = caseCommentCaseObjectDAO.count(caseQuery, caseCommentQuery);
-
-        if (count == null || count < 1) {
-            log.debug("writeReport : reportId={} has no corresponding case comments", report.getId());
-            return true;
-        }
-
-        if (count > Integer.MAX_VALUE) {
-            log.debug("writeReport : reportId={} has too many corresponding case comments: {}, aborting task", report.getId(), count);
-            return false;
-        }
-
-        log.debug("writeReport : reportId={} has {} case comments to procees", report.getId(), count);
+        caseCommentQuery.setCaseObjectIds(caseIds.stream()
+                .map(CaseShortView::getId)
+                .collect(Collectors.toList())
+        );
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
-        ReportWriter<CaseCommentCaseObject> writer = new ExcelReportWriter(localizedLang, dateFormat);
+        ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
-        if (writeReport(writer, report, count)) {
+        if (writeReport(writer, report, caseCommentQuery)) {
             writer.collect(buffer);
             return true;
         } else {
@@ -71,23 +69,27 @@ public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeServ
         }
     }
 
-    private boolean writeReport(ReportWriter<CaseCommentCaseObject> writer, Report report, Long count) {
+    private boolean writeReport(ReportWriter<CaseCommentTimeElapsedSum> writer, Report report, CaseCommentQuery query) {
 
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
-        final int limit = count.intValue();
         int offset = 0;
 
-        while (offset < limit) {
-            int amount = offset + step < limit ? step : limit - offset;
+        while (true) {
             try {
-                CaseCommentQuery query = report.getCaseCommentQuery();
                 query.setOffset(offset);
-                query.setLimit(amount);
-                processor.writeChunk(writer, report.getCaseQuery(), query);
+                query.setLimit(step);
+                List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery(query);
+                boolean isThisTheEnd = comments.size() < step;
+                processor.writeChunk(writer, comments, isThisTheEnd);
                 offset += step;
+                if (isThisTheEnd) {
+                    // fold ur breath
+                    break;
+                }
             } catch (Throwable th) {
-                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={} {}", offset, amount, report.getId(), th);
+                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={}", offset, offset + step, report.getId());
+                log.warn("writeReport : fail to process chunk", th);
                 return false;
             }
         }
@@ -98,37 +100,47 @@ public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeServ
     private class Processor {
 
         private Map<Long, Integer> author2sheet = new HashMap<>();
-        private List<CaseCommentCaseObject> data = new ArrayList<>();
+        private List<CaseCommentTimeElapsedSum> data = new ArrayList<>();
         private Integer sheetNumberForData = null;
+        private long summaryForSheetNumber = 0L;
 
-        public void writeChunk(ReportWriter<CaseCommentCaseObject> writer, CaseQuery caseQuery, CaseCommentQuery caseCommentQuery) {
-            List<CaseCommentCaseObject> comments = caseCommentCaseObjectDAO.getListByQueries(caseQuery, caseCommentQuery);
-            for (CaseCommentCaseObject comment : comments) {
-                CaseComment caseComment = comment.getCaseComment();
-                Long authorId = caseComment.getAuthorId();
+        public void writeChunk(ReportWriter<CaseCommentTimeElapsedSum> writer, List<CaseCommentTimeElapsedSum> comments, boolean isEndOfChain) {
+            for (CaseCommentTimeElapsedSum comment : comments) {
+                Long authorId = comment.getAuthorId();
                 Integer sheetNumberForAuthor = author2sheet.get(authorId);
                 if (sheetNumberForAuthor == null) {
                     writeDataIfNeeded(writer);
                     sheetNumberForAuthor = writer.createSheet();
-                    String name = caseComment.getAuthor() == null ?
-                            String.valueOf(authorId) :
-                            caseComment.getAuthor().getDisplayName();
-                    writer.setSheetName(sheetNumberForAuthor, name);
+                    writer.setSheetName(sheetNumberForAuthor, comment.getAuthorDisplayName());
                     author2sheet.put(authorId, sheetNumberForAuthor);
                 }
-                if (!Objects.equals(sheetNumberForData, sheetNumberForAuthor)) {
+                if (sheetNumberForData != null && !Objects.equals(sheetNumberForData, sheetNumberForAuthor)) {
+                    addSummaryIfNeeded();
                     writeDataIfNeeded(writer);
                 }
                 sheetNumberForData = sheetNumberForAuthor;
                 data.add(comment);
+                summaryForSheetNumber += comment.getTimeElapsedSum();
+            }
+            if (isEndOfChain) {
+                addSummaryIfNeeded();
             }
             writeDataIfNeeded(writer);
         }
 
-        private void writeDataIfNeeded(ReportWriter<CaseCommentCaseObject> writer) {
+        private void writeDataIfNeeded(ReportWriter<CaseCommentTimeElapsedSum> writer) {
             if (sheetNumberForData != null && data.size() > 0) {
                 writer.write(sheetNumberForData, data);
                 data.clear();
+            }
+        }
+
+        private void addSummaryIfNeeded() {
+            if (summaryForSheetNumber > 0) {
+                CaseCommentTimeElapsedSum summary = new CaseCommentTimeElapsedSum();
+                summary.setTimeElapsedSum(summaryForSheetNumber);
+                data.add(summary);
+                summaryForSheetNumber = 0;
             }
         }
     }
