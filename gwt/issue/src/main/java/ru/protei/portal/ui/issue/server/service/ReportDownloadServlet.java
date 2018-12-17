@@ -22,6 +22,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
+
 public class ReportDownloadServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(ReportDownloadServlet.class);
@@ -76,30 +78,15 @@ public class ReportDownloadServlet extends HttpServlet {
             name = reportStorageService.getFileName(String.valueOf(reportId)).getData();
         }
 
-        BufferedInputStream is = null;
-        BufferedOutputStream os = null;
         resp.setContentType("application/octet-stream");
-        resp.setHeader("Content-Disposition", "attachment; filename*=utf-8''" +
-                URLEncoder.encode(name, "UTF-8").replaceAll("\\+", "%20")
-        );
-        try {
-            is = new BufferedInputStream(response.getData().getContent());
-            os = new BufferedOutputStream(resp.getOutputStream());
-            int count;
-            byte[] buffer = new byte[512 * 16];
-            while ((count = is.read(buffer)) > 0) {
-                os.write(buffer, 0, count);
-            }
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (IOException e) {}
-            }
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {}
+        resp.setHeader("Content-Disposition", "attachment; filename*=utf-8''" + encodeToRFC2231(name));
+        try (BufferedInputStream is = new BufferedInputStream(response.getData().getContent())) {
+            try (BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream())) {
+                int count;
+                byte[] buffer = new byte[512 * 16];
+                while ((count = is.read(buffer)) > 0) {
+                    os.write(buffer, 0, count);
+                }
             }
         }
     }

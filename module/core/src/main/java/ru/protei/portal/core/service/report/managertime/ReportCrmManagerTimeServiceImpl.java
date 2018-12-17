@@ -49,6 +49,7 @@ public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeServ
 
         List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
 
+        caseCommentQuery = new CaseCommentQuery(caseCommentQuery);
         caseCommentQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
         caseCommentQuery.setTimeElapsedNotNull(true);
         caseCommentQuery.setCaseObjectIds(caseIds.stream()

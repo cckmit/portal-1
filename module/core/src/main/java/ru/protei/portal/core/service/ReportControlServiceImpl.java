@@ -120,7 +120,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             if (!writeReport(report, buffer)) {
-                mergeReport(report, En_ReportStatus.ERROR);
+                mergeErrorStatus(report);
                 return;
             }
 
@@ -128,7 +128,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             storageResult = reportStorageService.saveContent(reportContent);
 
             if (!storageResult.isOk()) {
-                mergeReport(report, En_ReportStatus.ERROR);
+                mergeErrorStatus(report);
                 return;
             }
 
@@ -139,7 +139,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             if (storageResult != null) {
                 reportStorageService.removeContent(report.getId());
             }
-            mergeReport(report, En_ReportStatus.ERROR);
+            mergeErrorStatus(report);
         } finally {
             reportsInProcess.remove(report.getId());
         }
@@ -150,6 +150,13 @@ public class ReportControlServiceImpl implements ReportControlService {
         report.setModified(new Date());
         reportDAO.merge(report);
         log.debug("process report : reportId={}, status={}", report.getId(), status.name());
+    }
+
+    private void mergeErrorStatus(Report report) {
+        report.setStatus(En_ReportStatus.ERROR);
+        report.setModified(new Date());
+        reportDAO.partialMerge(report, "status", "modified");
+        log.debug("process report : reportId={}, status={}", report.getId(), En_ReportStatus.ERROR);
     }
 
     private boolean writeReport(Report report, ByteArrayOutputStream buffer) throws IOException {

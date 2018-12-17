@@ -14,6 +14,13 @@ public class CaseCommentQuery extends BaseQuery {
     private List<Long> caseObjectIds;
     private List<Long> authorIds;
 
+    public CaseCommentQuery(CaseCommentQuery query) {
+        setCreatedBefore(query.getCreatedBefore());
+        setTimeElapsedNotNull(query.isTimeElapsedNotNull());
+        setCaseObjectIds(query.getCaseObjectIds());
+        setAuthorIds(query.getAuthorIds());
+    }
+
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
     }

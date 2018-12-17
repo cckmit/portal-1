@@ -1,6 +1,7 @@
 package ru.protei.portal.core.utils;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import ru.protei.portal.core.Lang;
@@ -53,6 +54,7 @@ public final class JXLSHelper {
 
         public void setSheetName(int sheetNumber, String name) {
             int sheetIndex = workbook.getSheetIndex(sheetMap.get(sheetNumber));
+            name = WorkbookUtil.createSafeSheetName(name);
             workbook.setSheetName(sheetIndex, name);
         }
 
