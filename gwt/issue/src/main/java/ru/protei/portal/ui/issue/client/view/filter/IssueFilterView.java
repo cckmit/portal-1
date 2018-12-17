@@ -254,29 +254,13 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
-            if (reportBtnVisible) {
-                reportBtn.removeStyleName( HIDE );
-            }
             saveBtn.removeStyleName( HIDE );
             resetBtn.removeStyleName( HIDE );
             removeBtn.removeStyleName( HIDE );
         } else {
-            if (reportBtnVisible) {
-                reportBtn.addStyleName( HIDE );
-            }
             saveBtn.addStyleName( HIDE );
             resetBtn.addStyleName( HIDE );
             removeBtn.addStyleName( HIDE );
-        }
-    }
-
-    @Override
-    public void setReportButtonVisibility(boolean hasVisible) {
-        reportBtnVisible = hasVisible;
-        if (reportBtnVisible) {
-            reportBtn.removeStyleName( HIDE );
-        } else {
-            reportBtn.addStyleName( HIDE );
         }
     }
 
@@ -350,15 +334,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
             return;
         }
         activity.onFilterRemoveClicked( userFilter.getValue().getId() );
-    }
-
-    @UiHandler("reportBtn")
-    public void onReportClicked(ClickEvent event) {
-        event.preventDefault();
-        if ( activity == null ) {
-            return;
-        }
-        activity.onCreateReportClicked();
     }
 
     @UiHandler( "companies" )
@@ -498,7 +473,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
         okBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_OK_BUTTON);
         cancelBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_CANCEL_BUTTON);
-        reportBtn.ensureDebugId(DebugIds.FILTER.REPORT_BUTTON);
         saveBtn.ensureDebugId(DebugIds.FILTER.SAVE_BUTTON);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
         removeBtn.ensureDebugId(DebugIds.FILTER.REMOVE_BUTTON);
@@ -585,9 +559,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     Button removeBtn;
 
     @UiField
-    Button reportBtn;
-
-    @UiField
     Anchor okBtn;
 
     @UiField
@@ -614,7 +585,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
 
     AbstractIssueFilterActivity activity;
-    private boolean reportBtnVisible = true;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
 

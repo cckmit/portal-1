@@ -22,7 +22,7 @@ public class UiConstants {
         String OFFICIAL = "fa fa-book";
         String DOCUMENT = "fa fa-server";
         String DOCUMENT_TYPE = "fa fa-server";
-        String ISSUE_REPORTS = "fa fa-tasks";
+        String ISSUE_REPORTS = "fa fa-cloud-download";
         String CASE_STATE = "fa fa-bookmark ";
         String SITE_FOLDER = "fa fa-folder";
         String EMPLOYEE = "fa fa-user-circle";
