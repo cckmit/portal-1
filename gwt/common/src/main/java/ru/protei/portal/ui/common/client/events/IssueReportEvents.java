@@ -8,4 +8,8 @@ public class IssueReportEvents {
     public static class Show {
         public Show () {}
     }
+
+    public static class Create {
+        public Create () {}
+    }
 }

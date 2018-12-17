@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -423,22 +424,12 @@ public abstract class IssueTableActivity
         String value = filterView.searchPattern().getValue();
         boolean searchByComments = filterView.searchByComments().getValue();
 
-        if (value == null || value.isEmpty()) {
+        if (StringUtils.isBlank(value)) {
             query.setSearchString( null );
         } else if (searchByComments) {
             query.setSearchString( value );
         } else {
-            MatchResult result = caseNumbersPattern.exec( value );
-
-            if (result != null && result.getGroup(0).equals( value )) {
-                query.setCaseNumbers(Arrays.stream(value.split(","))
-                        .map(cn -> Long.parseLong(cn.trim()))
-                        .collect(Collectors.toList())
-                );
-            }
-            else {
-                query.setSearchString( value );
-            }
+            IssueFilterUtils.applyQuerySearch(query, value);
         }
         setQueryFields(query);
         return query;
@@ -582,6 +573,4 @@ public abstract class IssueTableActivity
     private Long filterIdToRemove;
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
-
-    private final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
 }

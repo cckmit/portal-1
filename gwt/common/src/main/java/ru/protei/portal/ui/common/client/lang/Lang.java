@@ -1425,4 +1425,18 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationAdditionalSoftPlaceholder();
 
     String employeeRegistrationInternalResourceOtherCommentPlaceholder();
+
+    String issueReportNew();
+
+    String reportTypeCrmCaseObjects();
+
+    String reportTypeCrmManagerTime();
+
+    String issueReportsType();
+
+    String issueReportsCaseObjectFilters();
+
+    String issueReportsCaseCommentFilters();
+
+    String issueCommentAuthor();
 }

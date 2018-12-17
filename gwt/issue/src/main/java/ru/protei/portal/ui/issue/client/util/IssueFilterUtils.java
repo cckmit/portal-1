@@ -1,22 +1,24 @@
 package ru.protei.portal.ui.issue.client.util;
 
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Утилита по работе с пользовательскими фильтрами
  */
 public class IssueFilterUtils {
+
+    private static final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
 
     public static Set< En_ImportanceLevel > getImportances( List< Integer > importancesIdList ) {
         if ( importancesIdList == null || importancesIdList.isEmpty() ) {
@@ -157,5 +159,17 @@ public class IssueFilterUtils {
             initiators.add( person );
         }
         return initiators;
+    }
+
+    public static void applyQuerySearch(CaseQuery query, String search) {
+        MatchResult result = caseNumbersPattern.exec(search);
+        if (result != null && result.getGroup(0).equals(search)) {
+            query.setCaseNumbers(Arrays.stream(search.split(","))
+                    .map(cn -> Long.parseLong(cn.trim()))
+                    .collect(Collectors.toList())
+            );
+        } else {
+            query.setSearchString(search);
+        }
     }
 }
