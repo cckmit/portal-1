@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -89,5 +90,14 @@ public class CaseCommentQuery extends BaseQuery {
             authorIds = new ArrayList<>();
         }
         authorIds.add(authorId);
+    }
+
+    @Override
+    public boolean isAtLeastOneParameterSet() {
+        return super.isAtLeastOneParameterSet() ||
+                createdBefore != null ||
+                timeElapsedNotNull != null ||
+                CollectionUtils.isNotEmpty(caseObjectIds) ||
+                CollectionUtils.isNotEmpty(authorIds);
     }
 }

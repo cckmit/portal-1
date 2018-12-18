@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.user.AuthService;
@@ -43,6 +44,10 @@ public class ReportServiceImpl implements ReportService {
         }
 
         UserSessionDescriptor descriptor = authService.findSession(token);
+
+        if (isReportQueriesNotValid(report)) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         Date now = new Date();
         report.setCreatorId(descriptor.getPerson().getId());
@@ -180,5 +185,17 @@ public class ReportServiceImpl implements ReportService {
         messageSource.setBasenames("Lang");
         messageSource.setDefaultEncoding("UTF-8");
         return new Lang(messageSource);
+    }
+
+    private boolean isReportQueriesNotValid(Report report) {
+        switch (report.getReportType()) {
+            case CRM_CASE_OBJECTS: return isQueryNotValid(report.getCaseQuery());
+            case CRM_MANAGER_TIME: return isQueryNotValid(report.getCaseCommentQuery()) && isQueryNotValid(report.getCaseQuery());
+        }
+        return false;
+    }
+
+    private <T extends BaseQuery> boolean isQueryNotValid(T query) {
+        return query == null || !query.isAtLeastOneParameterSet();
     }
 }

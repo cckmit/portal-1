@@ -61,12 +61,7 @@ public abstract class IssueReportCreateActivity implements Activity, AbstractIss
         isSaving = true;
 
         reportController.createReport(report, new FluentCallback<Long>()
-                .withResult(() -> {
-                    isSaving = false;
-                })
-                .withError(throwable -> {
-                    fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-                })
+                .withResult(() -> isSaving = false)
                 .withSuccess(result -> {
                     dialogView.hidePopup();
                     fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));

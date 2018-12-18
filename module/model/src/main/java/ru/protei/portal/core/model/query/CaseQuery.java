@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -215,6 +217,23 @@ public class CaseQuery extends BaseQuery {
 
     public void setMemberIds(List<Long> memberIds) {
         this.memberIds = memberIds;
+    }
+
+    @Override
+    public boolean isAtLeastOneParameterSet() {
+        return super.isAtLeastOneParameterSet() ||
+                id != null ||
+                CollectionUtils.isNotEmpty(caseNumbers) ||
+                CollectionUtils.isNotEmpty(companyIds) ||
+                CollectionUtils.isNotEmpty(initiatorIds) ||
+                CollectionUtils.isNotEmpty(productIds) ||
+                CollectionUtils.isNotEmpty(managerIds) ||
+                CollectionUtils.isNotEmpty(stateIds) ||
+                CollectionUtils.isNotEmpty(importanceIds) ||
+                from != null ||
+                to != null ||
+                StringUtils.isNotBlank(searchCasenoString) ||
+                CollectionUtils.isNotEmpty(memberIds);
     }
 
     @Override
