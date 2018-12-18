@@ -3579,3 +3579,13 @@ div.select2-container {
     line-height: 1em !important;
   }
 }
+
+// fix datetimepicker popup z-index (position property required for z-index)
+.protei-datetimepicker-popup {
+  position: relative;
+  // fix arrow (different shifts because of relative position)
+  .arrow {
+    top: -11px !important;
+    margin-left: -4px !important;
+  }
+}
