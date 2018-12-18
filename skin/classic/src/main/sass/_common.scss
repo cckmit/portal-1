@@ -1344,6 +1344,9 @@ label.bordered:after{
     }
     .filter {
       width: 40%;
+      div {
+        overflow-y: auto;
+      }
     }
   }
 }
