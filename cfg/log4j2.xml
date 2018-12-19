@@ -14,8 +14,7 @@
     </Properties>
 
     <Loggers>
-        <Root level="DEBUG">
-        </Root>
+        <Root level="DEBUG"/>
 
         <Logger name="ru.protei" level="DEBUG">
             <AppenderRef ref="COMMON"/>
@@ -52,8 +51,7 @@
         </Logger>
 
         <Logger name="DefaultListableBeanFactory" level="INFO"/>
-        <Logger name="wire" level="INFO"/>
-        <Logger name="headers" level="INFO"/>
+        <Logger name="org.apache.http" level="INFO"/>
 
         <Logger name="org.springframework" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
         <Logger name="config" level="ERROR"> <AppenderRef ref="COMMON"/></Logger>
