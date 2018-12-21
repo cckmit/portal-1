@@ -5,7 +5,7 @@
 
     <changeSet id="2018-12-10-add-type-column-into-report" author="buchmastov">
         <addColumn tableName="report">
-            <column name="type" type="VARCHAR(32)" defaultValue="CRM_CASE_OBJECTS">
+            <column name="type" type="VARCHAR(32)" defaultValue="CASE_OBJECTS">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

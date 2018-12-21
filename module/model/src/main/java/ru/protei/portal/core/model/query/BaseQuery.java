@@ -103,7 +103,7 @@ public class BaseQuery implements Serializable, DataQuery {
                 '}';
     }
 
-    public boolean isAtLeastOneParameterSet() {
+    public boolean isParamsPresent() {
         return StringUtils.isNotBlank(searchString);
     }
 }

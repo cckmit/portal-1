@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.report.caseobjects;
+package ru.protei.portal.core.report.caseobjects;
 
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
-import ru.protei.portal.core.service.report.ReportWriter;
+import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.TimeFormatter;
 

@@ -15,8 +15,8 @@ public class En_ReportTypeLang {
             return lang.errUnknownResult();
         }
         switch (value) {
-            case CRM_CASE_OBJECTS: return lang.reportTypeCrmCaseObjects();
-            case CRM_MANAGER_TIME: return lang.reportTypeCrmManagerTime();
+            case CASE_OBJECTS: return lang.reportTypeCaseObjects();
+            case CASE_TIME_ELAPSED: return lang.reportTypeCaseTimeElapsed();
             default: return lang.unknownField();
         }
     }

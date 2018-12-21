@@ -8,10 +8,10 @@ public enum En_ReportType {
     /**
      * Отчет по задачам
      */
-    CRM_CASE_OBJECTS,
+    CASE_OBJECTS,
 
     /**
-     * Отчет затраченного времени менеджеров по задачам
+     * Отчет по затраченному времени
      */
-    CRM_MANAGER_TIME
+    CASE_TIME_ELAPSED
 }

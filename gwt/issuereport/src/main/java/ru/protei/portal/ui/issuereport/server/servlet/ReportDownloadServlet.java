@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issuereport.server.servlet;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
@@ -79,14 +78,7 @@ public class ReportDownloadServlet extends HttpServlet {
 
         resp.setContentType("application/octet-stream");
         resp.setHeader("Content-Disposition", "attachment; filename*=utf-8''" + encodeToRFC2231(name));
-        try (BufferedInputStream is = new BufferedInputStream(response.getData().getContent())) {
-            try (BufferedOutputStream os = new BufferedOutputStream(resp.getOutputStream())) {
-                int count;
-                byte[] buffer = new byte[512 * 16];
-                while ((count = is.read(buffer)) > 0) {
-                    os.write(buffer, 0, count);
-                }
-            }
-        }
+
+        IOUtils.copy(response.getData().getContent(), resp.getOutputStream());
     }
 }

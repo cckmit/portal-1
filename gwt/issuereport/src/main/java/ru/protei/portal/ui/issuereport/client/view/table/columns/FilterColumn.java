@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -50,16 +49,10 @@ public class FilterColumn extends StaticColumn<Report> {
             appendCaseQueryInfo(divElement, value.getCaseQuery());
         }
 
-        if (value.getCaseCommentQuery() != null) {
-            appendCaseCommentQueryInfo(divElement, value.getCaseCommentQuery());
-        }
-
         cell.appendChild(divElement);
     }
 
     private void appendCaseQueryInfo(Element element, CaseQuery caseQuery) {
-
-        element.appendChild(makeHeaderElement(lang.issueReportsCaseObjectFilters()));
 
         // search string
         if (StringUtils.isNotBlank(caseQuery.getSearchString())) {
@@ -135,22 +128,11 @@ public class FilterColumn extends StaticColumn<Report> {
         if (CollectionUtils.isNotEmpty(caseQuery.getManagerIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueManager(), caseQuery.getManagerIds()));
         }
-    }
-
-    private void appendCaseCommentQueryInfo(Element element, CaseCommentQuery caseCommentQuery) {
-
-        element.appendChild(makeHeaderElement(lang.issueReportsCaseCommentFilters()));
 
         // authors
-        if (CollectionUtils.isNotEmpty(caseCommentQuery.getAuthorIds())) {
-            element.appendChild(makeArraySelectedElement(lang.issueCommentAuthor(), caseCommentQuery.getAuthorIds()));
+        if (CollectionUtils.isNotEmpty(caseQuery.getCommentAuthorIds())) {
+            element.appendChild(makeArraySelectedElement(lang.issueCommentAuthor(), caseQuery.getCommentAuthorIds()));
         }
-    }
-
-    private Element makeHeaderElement(String text) {
-        Element element = DOM.createElement("b");
-        element.setInnerText(text);
-        return element;
     }
 
     private Element makeArraySelectedElement(String prefix, Collection<?> collection) {

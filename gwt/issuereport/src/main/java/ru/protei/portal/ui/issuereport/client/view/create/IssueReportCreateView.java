@@ -134,7 +134,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @Override
     public void resetFilter() {
-        reportType.setValue(En_ReportType.CRM_CASE_OBJECTS, true);
+        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
         name.setValue(null);
         companies.setValue(null);
         products.setValue(null);
@@ -152,7 +152,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @UiHandler("reportType")
     public void onInitiatorsSelected(ValueChangeEvent<En_ReportType> event) {
-        commentFiltersBlock.setVisible(En_ReportType.CRM_MANAGER_TIME.equals(reportType.getValue()));
+        commentAuthors.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(reportType.getValue()));
     }
 
     @Inject
@@ -193,9 +193,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;
-
-    @UiField
-    HTMLPanel commentFiltersBlock;
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;

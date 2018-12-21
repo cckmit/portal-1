@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.report.managertime;
+package ru.protei.portal.core.report.managertime;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,18 +14,18 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.report.ReportWriter;
+import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.TimeFormatter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeService {
+public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
-    private static Logger log = LoggerFactory.getLogger(ReportCrmManagerTimeServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(ReportCaseTimeElapsedImpl.class);
 
     @Autowired
     Lang lang;
@@ -37,25 +37,25 @@ public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeServ
     CaseCommentTimeElapsedSumDAO caseCommentTimeElapsedSumDAO;
 
     @Override
-    public boolean writeExport(ByteArrayOutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
+    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
 
         CaseQuery caseQuery = report.getCaseQuery();
-        CaseCommentQuery caseCommentQuery = report.getCaseCommentQuery();
-        if (caseQuery == null || caseCommentQuery == null) {
-            log.debug("writeReport : reportId={} has invalid queries: caseQuery={}, caseCommentQuery={}, aborting task",
-                    report.getId(), caseQuery, caseCommentQuery);
+        if (caseQuery == null) {
+            log.debug("writeReport : reportId={} has invalid queries: caseQuery={}, aborting task",
+                    report.getId(), caseQuery);
             return false;
         }
 
         List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
 
-        caseCommentQuery = new CaseCommentQuery(caseCommentQuery);
+        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
         caseCommentQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
         caseCommentQuery.setTimeElapsedNotNull(true);
         caseCommentQuery.setCaseObjectIds(caseIds.stream()
                 .map(CaseShortView::getId)
                 .collect(Collectors.toList())
         );
+        caseCommentQuery.setAuthorIds(caseQuery.getCommentAuthorIds());
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
@@ -85,7 +85,7 @@ public class ReportCrmManagerTimeServiceImpl implements ReportCrmManagerTimeServ
                 processor.writeChunk(writer, comments, isThisTheEnd);
                 offset += step;
                 if (isThisTheEnd) {
-                    // fold ur breath
+                    // hold ur breath
                     break;
                 }
             } catch (Throwable th) {

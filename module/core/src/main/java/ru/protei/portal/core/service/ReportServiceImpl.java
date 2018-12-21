@@ -45,7 +45,7 @@ public class ReportServiceImpl implements ReportService {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
 
-        if (isReportQueriesNotValid(report)) {
+        if (isQueryNotValid(report.getCaseQuery())) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -60,8 +60,8 @@ public class ReportServiceImpl implements ReportService {
         if (StringUtils.isBlank(report.getName())) {
             String langKey = "report_at";
             switch (report.getReportType()) {
-                case CRM_CASE_OBJECTS: langKey = "report_issues_at"; break;
-                case CRM_MANAGER_TIME: langKey = "report_managers_at"; break;
+                case CASE_OBJECTS: langKey = "report_case_objects_at"; break;
+                case CASE_TIME_ELAPSED: langKey = "report_case_time_elapsed_at"; break;
             }
             Lang.LocalizedLang localizedLang = getLang().getFor(Locale.forLanguageTag(report.getLocale()));
             report.setName(localizedLang.get(langKey) + " " + dateFormat.format(now));
@@ -187,15 +187,7 @@ public class ReportServiceImpl implements ReportService {
         return new Lang(messageSource);
     }
 
-    private boolean isReportQueriesNotValid(Report report) {
-        switch (report.getReportType()) {
-            case CRM_CASE_OBJECTS: return isQueryNotValid(report.getCaseQuery());
-            case CRM_MANAGER_TIME: return isQueryNotValid(report.getCaseCommentQuery()) && isQueryNotValid(report.getCaseQuery());
-        }
-        return false;
-    }
-
     private <T extends BaseQuery> boolean isQueryNotValid(T query) {
-        return query == null || !query.isAtLeastOneParameterSet();
+        return query == null || !query.isParamsPresent();
     }
 }

@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.query;
 
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,13 +13,6 @@ public class CaseCommentQuery extends BaseQuery {
     private Boolean timeElapsedNotNull;
     private List<Long> caseObjectIds;
     private List<Long> authorIds;
-
-    public CaseCommentQuery(CaseCommentQuery query) {
-        setCreatedBefore(query.getCreatedBefore());
-        setTimeElapsedNotNull(query.isTimeElapsedNotNull());
-        setCaseObjectIds(query.getCaseObjectIds());
-        setAuthorIds(query.getAuthorIds());
-    }
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -90,14 +82,5 @@ public class CaseCommentQuery extends BaseQuery {
             authorIds = new ArrayList<>();
         }
         authorIds.add(authorId);
-    }
-
-    @Override
-    public boolean isAtLeastOneParameterSet() {
-        return super.isAtLeastOneParameterSet() ||
-                createdBefore != null ||
-                timeElapsedNotNull != null ||
-                CollectionUtils.isNotEmpty(caseObjectIds) ||
-                CollectionUtils.isNotEmpty(authorIds);
     }
 }

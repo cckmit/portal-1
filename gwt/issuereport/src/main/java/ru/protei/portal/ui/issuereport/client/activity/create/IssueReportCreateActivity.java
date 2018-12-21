@@ -51,9 +51,6 @@ public abstract class IssueReportCreateActivity implements Activity, AbstractIss
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
         report.setCaseQuery(makeCaseQuery());
-        if (En_ReportType.CRM_MANAGER_TIME.equals(reportType)) {
-            report.setCaseCommentQuery(makeCaseCommentQuery());
-        }
 
         if (isSaving) {
             return;
@@ -94,6 +91,7 @@ public abstract class IssueReportCreateActivity implements Activity, AbstractIss
         query.setInitiatorIds(IssueFilterUtils.getManagersIdList(view.initiators().getValue()));
         query.setImportanceIds(IssueFilterUtils.getImportancesIdList(view.importances().getValue()));
         query.setStates(IssueFilterUtils.getStateList(view.states().getValue()));
+        query.setCommentAuthorIds(IssueFilterUtils.getManagersIdList(view.commentAuthors().getValue()));
         DateInterval interval = view.dateRange().getValue();
         if (interval != null) {
             query.setFrom(interval.from);
@@ -105,12 +103,6 @@ public abstract class IssueReportCreateActivity implements Activity, AbstractIss
         } else {
             IssueFilterUtils.applyQuerySearch(query, search);
         }
-        return query;
-    }
-
-    private CaseCommentQuery makeCaseCommentQuery() {
-        CaseCommentQuery query = new CaseCommentQuery();
-        query.setAuthorIds(IssueFilterUtils.getManagersIdList(view.commentAuthors().getValue()));
         return query;
     }
 

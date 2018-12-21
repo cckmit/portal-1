@@ -12,8 +12,8 @@ import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.struct.ReportContent;
-import ru.protei.portal.core.service.report.caseobjects.ReportCrmCaseObjectsService;
-import ru.protei.portal.core.service.report.managertime.ReportCrmManagerTimeService;
+import ru.protei.portal.core.report.caseobjects.ReportCase;
+import ru.protei.portal.core.report.managertime.ReportCaseTimeElapsed;
 import ru.protei.portal.core.utils.TimeFormatter;
 
 import javax.annotation.PostConstruct;
@@ -39,9 +39,9 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Autowired
     ReportStorageService reportStorageService;
     @Autowired
-    ReportCrmCaseObjectsService reportCrmCaseObjectsService;
+    ReportCase reportCase;
     @Autowired
-    ReportCrmManagerTimeService reportCrmManagerTimeService;
+    ReportCaseTimeElapsed reportCaseTimeElapsed;
 
     @PostConstruct
     public void init() {
@@ -165,14 +165,14 @@ public class ReportControlServiceImpl implements ReportControlService {
             return false;
         }
         switch (report.getReportType()) {
-            case CRM_CASE_OBJECTS:
-                return reportCrmCaseObjectsService.writeReport(
+            case CASE_OBJECTS:
+                return reportCase.writeReport(
                         buffer, report,
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
                         new TimeFormatter()
                 );
-            case CRM_MANAGER_TIME:
-                return reportCrmManagerTimeService.writeExport(
+            case CASE_TIME_ELAPSED:
+                return reportCaseTimeElapsed.writeReport(
                         buffer, report,
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
                         new TimeFormatter()

@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.report;
+package ru.protei.portal.core.report;
 
 import java.io.IOException;
 import java.io.OutputStream;

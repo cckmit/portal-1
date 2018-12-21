@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.report.caseobjects;
+package ru.protei.portal.core.report.caseobjects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,22 +8,22 @@ import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.service.report.ReportWriter;
+import ru.protei.portal.core.model.struct.CaseObjectComments;
+import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.TimeFormatter;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class ReportCrmCaseObjectsServiceImpl implements ReportCrmCaseObjectsService {
+public class ReportCaseImpl implements ReportCase {
 
-    private static Logger log = LoggerFactory.getLogger(ReportCrmCaseObjectsServiceImpl.class);
+    private static Logger log = LoggerFactory.getLogger(ReportCaseImpl.class);
 
     @Autowired
     Lang lang;
@@ -35,7 +35,7 @@ public class ReportCrmCaseObjectsServiceImpl implements ReportCrmCaseObjectsServ
     CaseCommentDAO caseCommentDAO;
 
     @Override
-    public boolean writeReport(ByteArrayOutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
+    public boolean writeReport(OutputStream buffer, Report report, DateFormat dateFormat, TimeFormatter timeFormatter) throws IOException {
 
         Long count = caseObjectDAO.count(report.getCaseQuery());
 

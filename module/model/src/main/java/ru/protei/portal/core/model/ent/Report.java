@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -44,12 +43,6 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
      */
     @JdbcColumn(name = "case_query", converterType = ConverterType.JSON)
     private CaseQuery caseQuery;
-
-    /**
-     * Фильтр по комментариям
-     */
-    @JdbcColumn(name = "case_comment_query", converterType = ConverterType.JSON)
-    private CaseCommentQuery caseCommentQuery;
 
     /**
      * Профиль пользователя, создавшего отчет
@@ -133,14 +126,6 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
         this.caseQuery = filter;
     }
 
-    public CaseCommentQuery getCaseCommentQuery() {
-        return caseCommentQuery;
-    }
-
-    public void setCaseCommentQuery(CaseCommentQuery caseCommentQuery) {
-        this.caseCommentQuery = caseCommentQuery;
-    }
-
     public Long getCreatorId() {
         return creatorId;
     }
@@ -189,7 +174,6 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
                 ", reportType=" + reportType +
                 ", status=" + status +
                 ", caseQuery=" + caseQuery +
-                ", caseCommentQuery=" + caseCommentQuery +
                 ", creatorId=" + creatorId +
                 ", creator=" + creator +
                 ", created=" + created +

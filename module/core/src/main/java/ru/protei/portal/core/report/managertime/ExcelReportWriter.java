@@ -1,9 +1,9 @@
-package ru.protei.portal.core.service.report.managertime;
+package ru.protei.portal.core.report.managertime;
 
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.service.report.ReportWriter;
+import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.JXLSHelper;
 import ru.protei.portal.core.utils.TimeFormatter;
 
@@ -80,7 +80,7 @@ public class ExcelReportWriter implements
             return new Object[] {
                     "", "", "",
                     "", "", "",
-                    "", "", "",
+                    "", "", lang.get("summary") + ":",
                     timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
             };
         }

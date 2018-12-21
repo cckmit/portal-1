@@ -1428,15 +1428,11 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueReportNew();
 
-    String reportTypeCrmCaseObjects();
+    String reportTypeCaseObjects();
 
-    String reportTypeCrmManagerTime();
+    String reportTypeCaseTimeElapsed();
 
     String issueReportsType();
-
-    String issueReportsCaseObjectFilters();
-
-    String issueReportsCaseCommentFilters();
 
     String issueCommentAuthor();
 
