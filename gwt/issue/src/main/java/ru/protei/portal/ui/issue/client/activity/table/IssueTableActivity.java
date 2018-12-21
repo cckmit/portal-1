@@ -1,7 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.table;
 
-import com.google.gwt.regexp.shared.MatchResult;
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -34,26 +32,24 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterActivity;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
-import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Активность таблицы обращений
  */
 public abstract class IssueTableActivity
-        implements AbstractIssueTableActivity, AbstractIssueFilterActivity,
+        implements AbstractIssueTableActivity, AbstractIssueFilterActivity, IssueFilterActivity,
         AbstractPagerActivity, Activity
 {
-
 
     @PostConstruct
     public void onInit() {
@@ -62,7 +58,7 @@ public abstract class IssueTableActivity
         view.setActivity( this );
         view.setAnimation( animation );
 
-        filterView.setActivity( this );
+        filterView.setActivity( this, this );
         view.getFilterContainer().add( filterView.asWidget() );
         filterView.setInitiatorCompaniesSupplier(() -> filterView.companies().getValue());
 
@@ -93,7 +89,7 @@ public abstract class IssueTableActivity
         );
 
         if (event.query != null) {
-            fillFilterFields(event.query);
+            filterView.fillFilterFields(event.query);
             event.query = null;
         }
 
@@ -289,7 +285,7 @@ public abstract class IssueTableActivity
     }
 
     @Override
-    public void onCompaniesChanged() {
+    public void onCompaniesFilterChanged() {
         onFilterChanged();
         updateInitiatorSelector();
     }
@@ -364,28 +360,9 @@ public abstract class IssueTableActivity
     }
 
     private void fillFilterFields( CaseFilter filter ) {
-
         filterView.removeFilterBtnVisibility().setVisible( true );
         filterView.filterName().setValue( filter.getName() );
-
-        fillFilterFields(filter.getParams());
-
-    }
-
-    private void fillFilterFields(CaseQuery params) {
-        filterView.searchPattern().setValue( params.getSearchString() );
-        filterView.searchByComments().setValue( params.isSearchStringAtComments() );
-        filterView.searchPrivate().setValue( params.isViewPrivate() );
-        filterView.sortDir().setValue( params.getSortDir().equals( En_SortDir.ASC ) );
-        filterView.sortField().setValue( params.getSortField() );
-        filterView.dateRange().setValue( new DateInterval( params.getFrom(), params.getTo() ) );
-        filterView.importances().setValue( IssueFilterUtils.getImportances( params.getImportanceIds() ) );
-        filterView.states().setValue( IssueFilterUtils.getStates( params.getStateIds() ) );
-        filterView.companies().setValue( IssueFilterUtils.getCompanies( params.getCompanyIds()) );
-        updateInitiatorSelector();
-        filterView.managers().setValue( IssueFilterUtils.getManagers(params.getManagerIds()) );
-        filterView.initiators().setValue(IssueFilterUtils.getInitiators(params.getInitiatorIds()));
-        filterView.products().setValue( IssueFilterUtils.getProducts(params.getProductIds()) );
+        filterView.fillFilterFields(filter.getParams());
     }
 
     private void requestIssuesCount() {

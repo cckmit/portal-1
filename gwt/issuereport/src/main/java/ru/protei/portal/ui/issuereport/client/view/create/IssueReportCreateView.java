@@ -7,24 +7,18 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
-import ru.protei.portal.ui.issue.client.widget.importance.btngroup.ImportanceBtnGroupMulti;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilter;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.ReportTypeButtonSelector;
@@ -39,7 +33,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public void setActivity(AbstractIssueReportCreateActivity activity) {
+    public void setActivity(AbstractIssueReportCreateActivity activity, IssueFilterActivity issueFilterActivity) {
+        this.activity = activity;
+        this.issueFilter.setActivity(issueFilterActivity);
     }
 
     @Override
@@ -53,106 +49,122 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
+    public HasValue<CaseFilterShortView> userFilter() {
+        return issueFilter.userFilter();
+    }
+
+    @Override
     public HasValue<Set<EntityOption>> companies() {
-        return companies;
+        return issueFilter.companies();
     }
 
     @Override
     public HasValue<Set<ProductShortView>> products() {
-        return products;
+        return issueFilter.products();
     }
 
     @Override
     public HasValue<Set<PersonShortView>> managers() {
-        return managers;
+        return issueFilter.managers();
     }
 
     @Override
     public HasValue<Set<PersonShortView>> initiators() {
-        return initiators;
+        return issueFilter.initiators();
     }
 
     @Override
     public HasValue<Set<En_CaseState>> states() {
-        return state;
+        return issueFilter.states();
     }
 
     @Override
     public HasValue<Set<En_ImportanceLevel>> importances() {
-        return importance;
+        return issueFilter.importances();
     }
 
     @Override
     public HasValue<DateInterval> dateRange() {
-        return dateRange;
+        return issueFilter.dateRange();
     }
 
     @Override
     public HasValue<En_SortField> sortField() {
-        return sortField;
+        return issueFilter.sortField();
     }
 
     @Override
     public HasValue<Boolean> sortDir() {
-        return sortDir;
+        return issueFilter.sortDir();
     }
 
     @Override
     public HasValue<String> searchPattern() {
-        return search;
+        return issueFilter.searchPattern();
     }
 
     @Override
     public HasValue<Boolean> searchPrivate() {
-        return searchPrivate;
+        return issueFilter.searchPrivate();
     }
 
     @Override
     public HasVisibility companiesVisibility() {
-        return companies;
+        return issueFilter.companiesVisibility();
     }
 
     @Override
     public HasVisibility productsVisibility() {
-        return products;
+        return issueFilter.productsVisibility();
     }
 
     @Override
     public HasVisibility managersVisibility() {
-        return managers;
+        return issueFilter.managersVisibility();
     }
 
     @Override
     public HasVisibility searchPrivateVisibility() {
-        return searchPrivateContainer;
+        return issueFilter.searchPrivateVisibility();
+    }
+
+    @Override
+    public HasVisibility searchByCommentsVisibility() {
+        return issueFilter.searchByCommentsVisibility();
+    }
+
+    @Override
+    public HasVisibility commentAuthorsVisibility() {
+        return issueFilter.commentAuthorsVisibility();
     }
 
     @Override
     public HasValue<Set<PersonShortView>> commentAuthors() {
-        return commentAuthors;
+        return issueFilter.commentAuthors();
     }
 
     @Override
     public void resetFilter() {
+        issueFilter.resetFilter();
         reportType.setValue(En_ReportType.CASE_OBJECTS, true);
         name.setValue(null);
-        companies.setValue(null);
-        products.setValue(null);
-        managers.setValue(null);
-        initiators.setValue(null);
-        importance.setValue(null);
-        state.setValue(null);
-        dateRange.setValue(null);
-        sortField.setValue(En_SortField.creation_date);
-        sortDir.setValue(false);
-        search.setValue("");
-        searchPrivate.setValue(null);
-        commentAuthors.setValue(null);
+    }
+
+    @Override
+    public void toggleMsgSearchThreshold() {
+        issueFilter.toggleMsgSearchThreshold();
+    }
+
+    @Override
+    public void fillFilterFields(CaseQuery caseQuery) {
+        issueFilter.fillFilterFields(caseQuery);
     }
 
     @UiHandler("reportType")
-    public void onInitiatorsSelected(ValueChangeEvent<En_ReportType> event) {
-        commentAuthors.setVisible(En_ReportType.CASE_TIME_ELAPSED.equals(reportType.getValue()));
+    public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
+        if (activity != null) {
+            activity.onReportTypeSelected();
+        }
     }
 
     @Inject
@@ -161,41 +173,11 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @UiField
     TextBox name;
 
-    @UiField
-    CleanableSearchBox search;
     @Inject
     @UiField(provided = true)
-    SortFieldSelector sortField;
-    @UiField
-    ToggleButton sortDir;
-    @Inject
-    @UiField(provided = true)
-    RangePicker dateRange;
-    @Inject
-    @UiField(provided = true)
-    CompanyMultiSelector companies;
-    @Inject
-    @UiField(provided = true)
-    DevUnitMultiSelector products;
-    @Inject
-    @UiField(provided = true)
-    EmployeeMultiSelector managers;
-    @Inject
-    @UiField(provided = true)
-    InitiatorMultiSelector initiators;
-    @UiField
-    HTMLPanel searchPrivateContainer;
-    @UiField
-    ThreeStateButton searchPrivate;
-    @Inject
-    @UiField(provided = true)
-    ImportanceBtnGroupMulti importance;
-    @Inject
-    @UiField(provided = true)
-    IssueStatesOptionList state;
-    @Inject
-    @UiField(provided = true)
-    EmployeeMultiSelector commentAuthors;
+    IssueFilter issueFilter;
+
+    private AbstractIssueReportCreateActivity activity;
 
     interface IssueReportCreateViewUiBinder extends UiBinder<Widget, IssueReportCreateView> {}
     private static IssueReportCreateViewUiBinder ourUiBinder = GWT.create(IssueReportCreateViewUiBinder.class);

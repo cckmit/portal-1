@@ -1,3 +1,5 @@
 package ru.protei.portal.ui.issuereport.client.activity.create;
 
-public interface AbstractIssueReportCreateActivity {}
+public interface AbstractIssueReportCreateActivity {
+    void onReportTypeSelected();
+}

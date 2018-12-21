@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.util;
+package ru.protei.portal.ui.common.client.util;
 
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;

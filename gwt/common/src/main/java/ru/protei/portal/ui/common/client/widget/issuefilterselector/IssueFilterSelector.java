@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.widget.filter;
+package ru.protei.portal.ui.common.client.widget.issuefilterselector;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-    public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements ModelSelector< CaseFilterShortView > {
+public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements ModelSelector< CaseFilterShortView > {
 
     @Inject
     public void init( IssueFilterModel model ) {

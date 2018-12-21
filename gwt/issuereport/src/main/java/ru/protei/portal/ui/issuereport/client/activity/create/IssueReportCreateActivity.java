@@ -10,25 +10,29 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.IssueReportEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterActivity;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.issue.client.util.IssueFilterUtils;
 
-public abstract class IssueReportCreateActivity implements Activity, AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity {
+public abstract class IssueReportCreateActivity implements Activity,
+        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, IssueFilterActivity {
 
     @PostConstruct
     public void onInit() {
-        view.setActivity(this);
+        view.setActivity(this, this);
         dialogView.setActivity(this);
         dialogView.setHeader(lang.issueReportNew());
         dialogView.getBodyContainer().add(view.asWidget());
@@ -70,6 +74,52 @@ public abstract class IssueReportCreateActivity implements Activity, AbstractIss
     @Override
     public void onCancelClicked() {
         dialogView.hidePopup();
+    }
+
+    @Override
+    public void onReportTypeSelected() {
+        if (view.reportType().getValue() == null) {
+            return;
+        }
+        switch (view.reportType().getValue()) {
+            case CASE_OBJECTS: {
+                view.commentAuthorsVisibility().setVisible(false);
+                view.searchByCommentsVisibility().setVisible(true);
+                break;
+            }
+            case CASE_TIME_ELAPSED: {
+                view.commentAuthorsVisibility().setVisible(true);
+                view.searchByCommentsVisibility().setVisible(false);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onFilterChanged() {}
+
+    @Override
+    public void onCompaniesFilterChanged() {}
+
+    @Override
+    public void onUserFilterChanged() {
+
+        CaseFilterShortView filter = view.userFilter().getValue();
+        if (filter == null || filter.getId() == null) {
+            view.resetFilter();
+            view.toggleMsgSearchThreshold();
+            return;
+        }
+
+        filterController.getIssueFilter(filter.getId(), new FluentCallback<CaseFilter>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(caseFilter -> {
+                    view.fillFilterFields(caseFilter.getParams());
+                    view.toggleMsgSearchThreshold();
+                })
+        );
     }
 
     private void applyFilterViewPrivileges() {
@@ -114,6 +164,8 @@ public abstract class IssueReportCreateActivity implements Activity, AbstractIss
     AbstractDialogDetailsView dialogView;
     @Inject
     ReportControllerAsync reportController;
+    @Inject
+    IssueFilterControllerAsync filterController;
     @Inject
     PolicyService policyService;
 
