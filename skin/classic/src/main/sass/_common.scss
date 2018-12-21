@@ -1082,6 +1082,7 @@ label.bordered:after{
       tr {
         td {
           height: 75px;
+          overflow: hidden;
 
           .decimal-numbers{
             height: 75px;
