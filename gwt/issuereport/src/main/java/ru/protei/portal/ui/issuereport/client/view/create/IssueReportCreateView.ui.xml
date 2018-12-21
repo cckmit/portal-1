@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div class="form-group grid grid-indent">
+        <div class="form-group grid grid-indent report-issue-filter">
 
             <div class="col-xs-12 m-b-10">
                 <label><ui:text from="{lang.filters}"/></label>

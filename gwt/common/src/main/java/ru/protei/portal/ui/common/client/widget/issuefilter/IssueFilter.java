@@ -240,6 +240,10 @@ public class IssueFilter extends Composite {
         userFilter.addDisplayOption(value);
     }
 
+    public void addBodyStyles(String styles) {
+        body.addStyleName(styles);
+    }
+
     @UiHandler("userFilter")
     public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
         if (activity != null) {
@@ -364,6 +368,8 @@ public class IssueFilter extends Composite {
     @Inject
     @UiField(provided = true)
     IssueFilterSelector userFilter;
+    @UiField
+    HTMLPanel body;
     @UiField
     CleanableSearchBox search;
     @UiField

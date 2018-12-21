@@ -30,6 +30,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        issueFilter.addBodyStyles("grid grid-indent");
     }
 
     @Override
