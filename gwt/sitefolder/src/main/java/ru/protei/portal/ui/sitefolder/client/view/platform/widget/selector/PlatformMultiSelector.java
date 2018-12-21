@@ -22,6 +22,7 @@ public class PlatformMultiSelector extends MultipleInputSelector<EntityOption> i
         for (EntityOption option : options) {
             addOption(option.getDisplayText(), option);
         }
+        reselectValuesIfNeeded();
     }
 
     @Override

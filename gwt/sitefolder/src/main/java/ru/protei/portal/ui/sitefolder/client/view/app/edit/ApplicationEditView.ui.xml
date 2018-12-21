@@ -27,7 +27,7 @@
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
-                    <g:TextArea ui:field="comment" styleName="input-field sf-comment"/>
+                    <g:TextArea ui:field="comment" styleName="input-field resize-vertical sf-comment"/>
                 </div>
 
                 <div class="form-group col-xs-12">

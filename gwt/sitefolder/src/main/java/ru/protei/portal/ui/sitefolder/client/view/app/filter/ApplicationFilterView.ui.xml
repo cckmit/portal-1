@@ -28,7 +28,7 @@
                 <label>
                     <ui:text from="{lang.siteFolderComment}"/>
                 </label>
-                <g:TextArea ui:field="comment" styleName="input-field description"/>
+                <g:TextArea ui:field="comment" styleName="input-field resize-vertical description"/>
             </div>
         </div>
         <div class="footer">

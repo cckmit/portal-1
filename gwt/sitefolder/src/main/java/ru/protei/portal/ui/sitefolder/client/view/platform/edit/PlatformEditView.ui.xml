@@ -28,12 +28,12 @@
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.siteFolderParams}"/></label>
-                    <g:TextArea ui:field="parameters" styleName="input-field sf-parameters"/>
+                    <g:TextArea ui:field="parameters" styleName="input-field resize-vertical sf-parameters"/>
                 </div>
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
-                    <g:TextArea ui:field="comment" styleName="input-field sf-comment"/>
+                    <g:TextArea ui:field="comment" styleName="input-field resize-vertical sf-comment"/>
                 </div>
 
                 <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable form-group col-xs-12 main-content-padding-0"

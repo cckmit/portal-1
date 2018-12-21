@@ -71,6 +71,7 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
     public void onSaveClicked() {
 
         if (!isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 

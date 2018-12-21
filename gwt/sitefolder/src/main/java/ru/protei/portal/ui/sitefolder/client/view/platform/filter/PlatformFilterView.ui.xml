@@ -35,7 +35,7 @@
                 <label>
                     <ui:text from="{lang.siteFolderComment}"/>
                 </label>
-                <g:TextArea ui:field="comment" styleName="input-field sf-comment"/>
+                <g:TextArea ui:field="comment" styleName="input-field resize-vertical sf-comment"/>
             </div>
         </div>
         <div class="footer">
