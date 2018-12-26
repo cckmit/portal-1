@@ -27,6 +27,10 @@ public class CaseCommentSqlBuilder {
                 condition.append(" and case_comment.time_elapsed is not null");
             }
 
+            if (query.isCaseStateNotNull() != null && query.isCaseStateNotNull()) {
+                condition.append(" and case_comment.cstate_id is not null");
+            }
+
             if (CollectionUtils.isNotEmpty(query.getCaseObjectIds())) {
                 condition.append(" and case_comment.case_id in (")
                         .append(query.getCaseObjectIds().stream()

@@ -11,6 +11,7 @@ public class CaseCommentQuery extends BaseQuery {
 
     private Date createdBefore;
     private Boolean timeElapsedNotNull;
+    private Boolean caseStateNotNull;
     private List<Long> caseObjectIds;
     private List<Long> authorIds;
 
@@ -46,6 +47,14 @@ public class CaseCommentQuery extends BaseQuery {
 
     public void setTimeElapsedNotNull(Boolean timeElapsedNotNull) {
         this.timeElapsedNotNull = timeElapsedNotNull;
+    }
+
+    public void setCaseStateNotNull(Boolean caseStateNotNull) {
+        this.caseStateNotNull = caseStateNotNull;
+    }
+
+    public Boolean isCaseStateNotNull() {
+        return caseStateNotNull;
     }
 
     public List<Long> getCaseObjectIds() {

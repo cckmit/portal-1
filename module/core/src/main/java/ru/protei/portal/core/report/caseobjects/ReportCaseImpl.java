@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectComments;
 import ru.protei.portal.core.report.ReportWriter;
@@ -92,7 +93,10 @@ public class ReportCaseImpl implements ReportCase {
     private void writeReportChunk(ReportWriter<CaseObjectComments> writer, int sheetNumber, CaseQuery query) {
         List<CaseObjectComments> data = new ArrayList<>();
         caseObjectDAO.getCases(query).forEach(caseObject -> {
-            List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseObject.getId());
+            CaseCommentQuery commentQuery = new CaseCommentQuery();
+            commentQuery.addCaseObjectId(caseObject.getId());
+            commentQuery.setCaseStateNotNull(true);
+            List<CaseComment> caseComments = caseCommentDAO.getCaseComments(commentQuery);
             data.add(new CaseObjectComments(caseObject, caseComments));
         });
         writer.write(sheetNumber, data);
