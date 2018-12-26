@@ -286,6 +286,8 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<List<En_CaseState>>().success(states);
     }
 
+    // -> Comments -> // TODO CaseCommentService?
+
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId ) {
         CaseObject caseObject = caseObjectDAO.get( caseId );
@@ -293,42 +295,12 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<List<CaseComment>>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
-        return getCaseCommentList(caseId);
-    }
-
-    @Override
-    public CoreResponse<List<CaseComment>> getEmployeeRegistrationCommentList(AuthToken token, long caseId) {
-        return getCaseCommentList(caseId);
-    }
-
-    private CoreResponse<List<CaseComment>> getCaseCommentList(long caseId) {
-        List<CaseComment> list = caseCommentDAO.getCaseComments( caseId );
-
-        if ( list == null )
-            return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        jdbcManyRelationsHelper.fill(list, "caseAttachments");
-
-        // RESET PRIVACY INFO
-        list.forEach(comment -> {
-            if ( comment.getAuthor() != null ) {
-                comment.getAuthor().resetPrivacyInfo();
-            }
-        });
-
-        return new CoreResponse<List<CaseComment>>().success(list);
+        return getCaseCommentListImpl(caseId);
     }
 
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, CaseCommentQuery query ) {
-        List<CaseComment> list = caseCommentDAO.getCaseComments( query );
-
-        if ( list == null )
-            return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        jdbcManyRelationsHelper.fill(list, "caseAttachments");
-
-        return new CoreResponse<List<CaseComment>>().success(list);
+        return getCaseCommentListImpl(query);
     }
 
     @Override
@@ -339,38 +311,11 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseComment>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
-        if ( comment == null )
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
-
-        Date now = new Date();
-        comment.setCreated(now);
-
-        Long commentId = caseCommentDAO.persist(comment);
-
-        if (commentId == null)
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
-
-        if(CollectionUtils.isNotEmpty(comment.getCaseAttachments())){
-            updateExistsAttachmentsFlag(comment.getCaseId(), true);
-            comment.getCaseAttachments().forEach(ca -> ca.setCommentId(commentId));
-            caseAttachmentDAO.persistBatch(comment.getCaseAttachments());
+        CoreResponse<CaseComment> response = addCaseCommentImpl(token, comment);
+        if (response.isError()) {
+            return response;
         }
-
-        boolean isCaseChanged = updateCaseModified ( token, comment.getCaseId(), comment.getCreated() ).getData();
-
-        if (!isCaseChanged)
-            throw new RuntimeException( "failed to update case modifiedDate " );
-
-        if (!updateTimeElapsed(token, comment.getCaseId())) {
-            throw new RuntimeException( "failed to update time elapsed on addCaseComment" );
-        }
-
-        // re-read data from db to get full-filled object
-        CaseComment result = caseCommentDAO.get( commentId );
-
-        // attachments won't read now from DAO
-        result.setCaseAttachments(comment.getCaseAttachments());
-
+        CaseComment result = response.getData();
 
         //below building event
 
@@ -403,44 +348,11 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseComment>().error( En_ResultStatus.PERMISSION_DENIED );
         }
 
-        if (comment == null || comment.getId() == null)
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
-
-        if (person == null) {
-            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
-        }
-
-        if (!person.getId().equals(comment.getAuthorId()) || !isChangeAvailable ( comment.getCreated() ))
-            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
-
-        CaseComment prevComment = caseCommentDAO.get( comment.getId() );
-        jdbcManyRelationsHelper.fill(prevComment, "caseAttachments");
-
-        boolean isCommentUpdated = caseCommentDAO.merge(comment);
-
-        if (!isCommentUpdated)
-            return new CoreResponse().error( En_ResultStatus.NOT_UPDATED );
-
-
-        Collection<CaseAttachment> removedCaseAttachments =
-                caseAttachmentDAO.calcDiffAndSynchronize(
-                        prevComment.getCaseAttachments(),
-                        comment.getCaseAttachments()
-                );
-
-        if (!removedCaseAttachments.isEmpty()) {
-            removeAttachments( token, removedCaseAttachments);
-        }
-
-        boolean isCaseChanged =
-                updateExistsAttachmentsFlag(comment.getCaseId()).getData()
-                && updateCaseModified ( token, comment.getCaseId(), new Date() ).getData();
-
-        if (!isCaseChanged)
-            throw new RuntimeException( "failed to update case modifiedDate " );
-
-        if (!updateTimeElapsed(token, comment.getCaseId())) {
-            throw new RuntimeException( "failed to update time elapsed on updateCaseComment" );
+        CaseComment prevComment = caseCommentDAO.get(comment.getId());
+        Collection<CaseAttachment> removedCaseAttachments = new ArrayList<>();
+        CoreResponse<CaseComment> response = updateCaseCommentImpl(token, comment, prevComment, person, removedCaseAttachments);
+        if (response.isError()) {
+            return response;
         }
 
         // below building event
@@ -460,7 +372,7 @@ public class CaseServiceImpl implements CaseService {
                 new CaseCommentEvent(this, newState, oldState, prevComment, removedAttachments, comment, addedAttachments, person)
         );
 
-        return new CoreResponse<CaseComment>().success( comment );
+        return response;
     }
 
     @Override
@@ -501,6 +413,134 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<Boolean>().success(isRemoved);
     }
+
+    @Override
+    public CoreResponse<List<CaseComment>> getEmployeeRegistrationCommentList(AuthToken token, long caseId) {
+        return getCaseCommentListImpl(caseId);
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<CaseComment> addEmployeeRegistrationComment(AuthToken token, CaseComment comment) {
+        return addCaseCommentImpl(token, comment);
+    }
+
+
+    private CoreResponse<List<CaseComment>> getCaseCommentListImpl(long caseId) {
+        List<CaseComment> comments = caseCommentDAO.getCaseComments(caseId);
+        return getCaseCommentListImpl(comments);
+    }
+
+    private CoreResponse<List<CaseComment>> getCaseCommentListImpl(CaseCommentQuery query) {
+        List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
+        return getCaseCommentListImpl(comments);
+    }
+
+    private CoreResponse<List<CaseComment>> getCaseCommentListImpl(List<CaseComment> comments) {
+        if (comments == null) {
+            return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        jdbcManyRelationsHelper.fill(comments, "caseAttachments");
+
+        // RESET PRIVACY INFO
+        comments.forEach(comment -> {
+            if (comment.getAuthor() != null) {
+                comment.getAuthor().resetPrivacyInfo();
+            }
+        });
+
+        return new CoreResponse<List<CaseComment>>().success(comments);
+    }
+
+    private CoreResponse<CaseComment> addCaseCommentImpl(AuthToken token, CaseComment comment) {
+
+        if (comment == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Date now = new Date();
+        comment.setCreated(now);
+
+        Long commentId = caseCommentDAO.persist(comment);
+
+        if (commentId == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+        }
+
+        if (CollectionUtils.isNotEmpty(comment.getCaseAttachments())) {
+            updateExistsAttachmentsFlag(comment.getCaseId(), true);
+            comment.getCaseAttachments().forEach(ca -> ca.setCommentId(commentId));
+            caseAttachmentDAO.persistBatch(comment.getCaseAttachments());
+        }
+
+        boolean isCaseChanged = updateCaseModified(token, comment.getCaseId(), comment.getCreated()).getData();
+
+        if (!isCaseChanged) {
+            throw new RuntimeException("failed to update case modifiedDate ");
+        }
+
+        if (!updateTimeElapsed(token, comment.getCaseId())) {
+            throw new RuntimeException("failed to update time elapsed on addCaseComment");
+        }
+
+        // re-read data from db to get full-filled object
+        CaseComment result = caseCommentDAO.get(commentId);
+
+        // attachments won't read now from DAO
+        result.setCaseAttachments(comment.getCaseAttachments());
+
+        return new CoreResponse<CaseComment>().success( result );
+    }
+
+    private CoreResponse<CaseComment> updateCaseCommentImpl(AuthToken token, CaseComment comment, CaseComment prevComment,
+                                                            Person person, Collection<CaseAttachment> removedCaseAttachments) {
+
+        if (comment == null || comment.getId() == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (person == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        if (!person.getId().equals(comment.getAuthorId()) || !isChangeAvailable(comment.getCreated())) {
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        jdbcManyRelationsHelper.fill(prevComment, "caseAttachments");
+
+        boolean isCommentUpdated = caseCommentDAO.merge(comment);
+
+        if (!isCommentUpdated) {
+            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+        }
+
+        removedCaseAttachments.addAll(caseAttachmentDAO.calcDiffAndSynchronize(
+                prevComment.getCaseAttachments(),
+                comment.getCaseAttachments()
+        ));
+
+        if (!removedCaseAttachments.isEmpty()) {
+            removeAttachments(token, removedCaseAttachments);
+        }
+
+        boolean isCaseChanged =
+                updateExistsAttachmentsFlag(comment.getCaseId()).getData()
+                        && updateCaseModified(token, comment.getCaseId(), new Date()).getData();
+
+        if (!isCaseChanged) {
+            throw new RuntimeException("failed to update case modifiedDate ");
+        }
+
+        if (!updateTimeElapsed(token, comment.getCaseId())) {
+            throw new RuntimeException("failed to update time elapsed on updateCaseComment");
+        }
+
+        return new CoreResponse<CaseComment>().success(comment);
+    }
+
+    // <- Comments <- //
 
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
