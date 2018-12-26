@@ -281,6 +281,7 @@ public abstract class IssueTableActivity
     public void onCancelSavingClicked() {
         showUserFilterControls();
         filterView.resetFilter();
+        onFilterChanged();
     }
 
     @Override
