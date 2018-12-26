@@ -106,8 +106,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     @Override
     @Transactional
     public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
-
-        if (StringUtils.isBlank(equipment.getName()) || StringUtils.isBlank(equipment.getNameSldWrks())) {
+        if (StringUtils.isBlank(equipment.getName())) {
             return new CoreResponse<Equipment>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
