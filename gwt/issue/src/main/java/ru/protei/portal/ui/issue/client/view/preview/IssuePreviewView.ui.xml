@@ -97,5 +97,10 @@
             <legend><ui:text from="{lang.comments}"/></legend>
             <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
         </g:HTMLPanel>
+        <div class="panel">
+            <div class="footer">
+                <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToIssues}"/>
+            </div>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

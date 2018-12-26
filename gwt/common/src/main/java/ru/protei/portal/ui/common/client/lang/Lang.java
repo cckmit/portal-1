@@ -1437,4 +1437,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentAuthor();
 
     String type();
+
+    String goToIssues();
 }

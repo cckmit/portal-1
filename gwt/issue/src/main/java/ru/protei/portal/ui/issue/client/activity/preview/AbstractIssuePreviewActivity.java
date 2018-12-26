@@ -8,4 +8,5 @@ import ru.protei.portal.core.model.ent.Attachment;
 public interface AbstractIssuePreviewActivity {
     void onFullScreenPreviewClicked ();
     void removeAttachment(Attachment attachment);
+    void onGoToIssuesClicked();
 }
