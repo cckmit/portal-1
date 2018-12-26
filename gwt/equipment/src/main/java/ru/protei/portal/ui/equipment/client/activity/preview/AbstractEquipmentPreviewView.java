@@ -1,7 +1,9 @@
 package ru.protei.portal.ui.equipment.client.activity.preview;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import javafx.scene.Node;
 
 /**
  * Абстракция вида превью контакта
@@ -37,4 +39,8 @@ public interface AbstractEquipmentPreviewView extends IsWidget {
     void showFullScreen( boolean value );
 
     HasWidgets documents();
+
+    void setLinkedEquipmentExternalLink(String s);
+
+    HasVisibility linkedEquipmentLinkVisibility();
 }
