@@ -24,18 +24,22 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterActivity;
+import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetActivity;
+import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, IssueFilterActivity {
+        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, AbstractIssueFilterWidgetActivity {
 
     @PostConstruct
     public void onInit() {
-        view.setActivity(this, this);
+        view.setActivity(this);
+        view.getIssueFilterWidget().setActivity(this);
         dialogView.setActivity(this);
         dialogView.setHeader(lang.issueReportNew());
         dialogView.getBodyContainer().add(view.asWidget());
+        filterWidgetView = view.getIssueFilterWidget();
+        filterWidgetView.setInitiatorCompaniesSupplier(() -> filterWidgetView.companies().getValue());
     }
 
     @Event
@@ -54,7 +58,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         report.setReportType(reportType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
-        report.setCaseQuery(makeCaseQuery());
+        report.setCaseQuery(IssueFilterUtils.makeCaseQuery(filterWidgetView, true));
 
         if (isSaving) {
             return;
@@ -83,31 +87,36 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
         switch (view.reportType().getValue()) {
             case CASE_OBJECTS: {
-                view.commentAuthorsVisibility().setVisible(false);
-                view.searchByCommentsVisibility().setVisible(true);
+                filterWidgetView.commentAuthorsVisibility().setVisible(false);
+                filterWidgetView.searchByCommentsVisibility().setVisible(true);
                 break;
             }
             case CASE_TIME_ELAPSED: {
-                view.commentAuthorsVisibility().setVisible(true);
-                view.searchByCommentsVisibility().setVisible(false);
+                filterWidgetView.commentAuthorsVisibility().setVisible(true);
+                filterWidgetView.searchByCommentsVisibility().setVisible(false);
                 break;
             }
         }
     }
 
     @Override
-    public void onFilterChanged() {}
+    public void onFilterChanged() {
+        filterWidgetView.toggleMsgSearchThreshold();
+    }
 
     @Override
-    public void onCompaniesFilterChanged() {}
+    public void onCompaniesFilterChanged() {
+        onFilterChanged();
+        filterWidgetView.updateInitiators();
+    }
 
     @Override
     public void onUserFilterChanged() {
 
-        CaseFilterShortView filter = view.userFilter().getValue();
+        CaseFilterShortView filter = filterWidgetView.userFilter().getValue();
         if (filter == null || filter.getId() == null) {
             view.resetFilter();
-            view.toggleMsgSearchThreshold();
+            filterWidgetView.toggleMsgSearchThreshold();
             return;
         }
 
@@ -116,44 +125,17 @@ public abstract class IssueReportCreateActivity implements Activity,
                     fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(caseFilter -> {
-                    view.fillFilterFields(caseFilter.getParams());
-                    view.toggleMsgSearchThreshold();
+                    filterWidgetView.fillFilterFields(caseFilter.getParams());
+                    filterWidgetView.toggleMsgSearchThreshold();
                 })
         );
     }
 
     private void applyFilterViewPrivileges() {
-        view.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
-        view.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-        view.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
-        view.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-    }
-
-    private CaseQuery makeCaseQuery() {
-        CaseQuery query = new CaseQuery();
-        query.setType(En_CaseType.CRM_SUPPORT);
-        query.setViewPrivate(view.searchPrivate().getValue());
-        query.setSortField(view.sortField().getValue());
-        query.setSortDir(view.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setCompanyIds(IssueFilterUtils.getCompaniesIdList(view.companies().getValue()));
-        query.setProductIds(IssueFilterUtils.getProductsIdList(view.products().getValue()));
-        query.setManagerIds(IssueFilterUtils.getManagersIdList(view.managers().getValue()));
-        query.setInitiatorIds(IssueFilterUtils.getManagersIdList(view.initiators().getValue()));
-        query.setImportanceIds(IssueFilterUtils.getImportancesIdList(view.importances().getValue()));
-        query.setStates(IssueFilterUtils.getStateList(view.states().getValue()));
-        query.setCommentAuthorIds(IssueFilterUtils.getManagersIdList(view.commentAuthors().getValue()));
-        DateInterval interval = view.dateRange().getValue();
-        if (interval != null) {
-            query.setFrom(interval.from);
-            query.setTo(interval.to);
-        }
-        String search = view.searchPattern().getValue();
-        if (StringUtils.isBlank(search)) {
-            query.setSearchString( null );
-        } else {
-            IssueFilterUtils.applyQuerySearch(query, search);
-        }
-        return query;
+        filterWidgetView.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
+        filterWidgetView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+        filterWidgetView.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
+        filterWidgetView.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
     }
 
     @Inject
@@ -169,5 +151,6 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Inject
     PolicyService policyService;
 
+    private AbstractIssueFilterWidgetView filterWidgetView;
     private boolean isSaving;
 }

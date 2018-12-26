@@ -1,6 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.issuefilter;
 
-public interface IssueFilterActivity {
+public interface AbstractIssueFilterWidgetActivity {
 
     void onFilterChanged();
 

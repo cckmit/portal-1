@@ -24,7 +24,7 @@
                 <label><ui:text from="{lang.filters}"/></label>
             </div>
 
-            <issuefilter:IssueFilter ui:field="issueFilter" styleName="col-xs-12 m-b-10"/>
+            <issuefilter:IssueFilterWidgetView ui:field="issueFilterWidgetView" styleName="col-xs-12 m-b-10"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

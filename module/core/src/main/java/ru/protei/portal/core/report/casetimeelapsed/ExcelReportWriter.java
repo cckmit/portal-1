@@ -1,4 +1,4 @@
-package ru.protei.portal.core.report.managertime;
+package ru.protei.portal.core.report.casetimeelapsed;
 
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;

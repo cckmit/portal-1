@@ -1,4 +1,4 @@
-package ru.protei.portal.core.report.managertime;
+package ru.protei.portal.core.report.casetimeelapsed;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

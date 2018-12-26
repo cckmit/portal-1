@@ -10,26 +10,14 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilter;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterActivity;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidgetView;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
-
-import java.util.Set;
-import java.util.function.Supplier;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
@@ -43,7 +31,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        issueFilter.commentAuthorsVisibility().setVisible(false);
+        issueFilterWidgetView.commentAuthorsVisibility().setVisible(false);
     }
 
     @Override
@@ -59,118 +47,31 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterActivity activity, IssueFilterActivity issueFilterActivity) {
+    public void setActivity(AbstractIssueFilterActivity activity) {
         this.activity = activity;
-        this.issueFilterActivity = issueFilterActivity;
-        this.issueFilter.setActivity(issueFilterActivity);
     }
 
     @Override
-    public HasValue<Set<EntityOption>> companies() {
-        return issueFilter.companies();
-    }
-
-    @Override
-    public HasValue<Set<ProductShortView>> products() {
-        return issueFilter.products();
-    }
-
-    @Override
-    public HasValue<Set<PersonShortView>> managers() {
-        return issueFilter.managers();
-    }
-
-    @Override
-    public HasValue<Set<PersonShortView>> initiators() {
-        return issueFilter.initiators();
-    }
-
-    @Override
-    public HasValue< Set <En_CaseState > > states() {
-        return issueFilter.states();
-    }
-
-    @Override
-    public HasValue< Set <En_ImportanceLevel> > importances() {
-        return issueFilter.importances();
-    }
-
-    @Override
-    public HasValue<DateInterval> dateRange() {
-        return issueFilter.dateRange();
-    }
-
-    @Override
-    public HasValue<En_SortField> sortField() {
-        return issueFilter.sortField();
-    }
-
-    @Override
-    public HasValue<Boolean> sortDir() {
-        return issueFilter.sortDir();
-    }
-
-    @Override
-    public HasValue<String> searchPattern() {
-        return issueFilter.searchPattern();
-    }
-
-    @Override
-    public HasValue<Boolean> searchByComments() {
-        return issueFilter.searchByComments();
-    }
-
-    @Override
-    public HasValue<Boolean> searchPrivate() {
-        return issueFilter.searchPrivate();
+    public AbstractIssueFilterWidgetView getIssueFilterWidget() {
+        return issueFilterWidgetView;
     }
 
     @Override
     public void resetFilter() {
-        issueFilter.resetFilter();
+        issueFilterWidgetView.resetFilter();
         removeBtn.setVisible(false);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
     }
 
     @Override
-    public void fillFilterFields(CaseQuery caseQuery) {
-        issueFilter.fillFilterFields(caseQuery);
-    }
-
-    @Override
-    public HasVisibility managersVisibility() {
-        return issueFilter.managersVisibility();
-    }
-
-    @Override
-    public HasVisibility searchPrivateVisibility() {
-        return issueFilter.searchPrivateVisibility();
-    }
-
-    @Override
-    public HasVisibility companiesVisibility() {
-        return issueFilter.companiesVisibility();
-    }
-
-    @Override
-    public HasVisibility productsVisibility() {
-        return issueFilter.productsVisibility();
-    }
-
-    @Override
-    public HasValue<CaseFilterShortView > userFilter() {
-        return issueFilter.userFilter();
-    }
-
-    @Override
     public void changeUserFilterValueName( CaseFilterShortView value ){
-        issueFilter.changeUserFilterValueName( value );
+        issueFilterWidgetView.changeUserFilterValueName( value );
     }
 
     @Override
     public void addUserFilterDisplayOption( CaseFilterShortView value ){
-        issueFilter.addUserFilterDisplayOption( value );
+        issueFilterWidgetView.addUserFilterDisplayOption( value );
     }
 
     @Override
@@ -207,26 +108,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     }
 
     @Override
-    public void setCompaniesErrorStyle( boolean hasError ) {
-        issueFilter.setCompaniesErrorStyle(hasError);
-    }
-
-    @Override
-    public void setProductsErrorStyle( boolean hasError ) {
-        issueFilter.setProductsErrorStyle(hasError);
-    }
-
-    @Override
-    public void setManagersErrorStyle( boolean hasError ) {
-        issueFilter.setManagersErrorStyle(hasError);
-    }
-
-    @Override
-    public void setInitiatorsErrorStyle( boolean hasError ) {
-        issueFilter.setInitiatorsErrorStyle(hasError);
-    }
-
-    @Override
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
             saveBtn.removeStyleName( HIDE );
@@ -239,31 +120,11 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         }
     }
 
-    @Override
-    public void toggleMsgSearchThreshold() {
-        issueFilter.toggleMsgSearchThreshold();
-    }
-
-    @Override
-    public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter){
-        issueFilter.setStateFilter(caseStateFilter);
-    }
-
-    @Override
-    public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
-        issueFilter.setInitiatorCompaniesSupplier(collectionSupplier);
-    }
-
-    @Override
-    public void updateInitiators() {
-        issueFilter.updateInitiators();
-    }
-
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
-        if ( issueFilterActivity != null ) {
+        if ( issueFilterWidgetView.getActivity() != null ) {
             resetFilter();
-            issueFilterActivity.onFilterChanged();
+            issueFilterWidgetView.getActivity().onFilterChanged();
         }
     }
 
@@ -298,7 +159,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         if (activity == null) {
             return;
         }
-        CaseFilterShortView value = issueFilter.userFilter().getValue();
+        CaseFilterShortView value = issueFilterWidgetView.userFilter().getValue();
         if (value == null || value.getId() == null) {
             return;
         }
@@ -349,7 +210,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField(provided = true)
-    IssueFilter issueFilter;
+    IssueFilterWidgetView issueFilterWidgetView;
 
     @UiField
     Button resetBtn;
@@ -382,7 +243,6 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     FixedPositioner positioner;
 
     private AbstractIssueFilterActivity activity;
-    private IssueFilterActivity issueFilterActivity;
 
     private static IssueFilterView.IssueFilterViewUiBinder ourUiBinder = GWT.create( IssueFilterView.IssueFilterViewUiBinder.class );
     interface IssueFilterViewUiBinder extends UiBinder<HTMLPanel, IssueFilterView > {}

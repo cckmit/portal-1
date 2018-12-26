@@ -43,7 +43,7 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
-public class IssueFilter extends Composite {
+public class IssueFilterWidgetView extends Composite implements AbstractIssueFilterWidgetView {
 
     @Inject
     public void init() {
@@ -55,90 +55,117 @@ public class IssueFilter extends Composite {
         dateRange.setPlaceholder(lang.selectDate());
     }
 
-    public void setActivity(IssueFilterActivity activity) {
+    @Override
+    public void setActivity(AbstractIssueFilterWidgetActivity activity) {
         this.activity = activity;
     }
 
+    @Override
+    public AbstractIssueFilterWidgetActivity getActivity() {
+        return activity;
+    }
+
+    @Override
     public HasValue<CaseFilterShortView> userFilter() {
         return userFilter;
     }
 
+    @Override
     public HasValue<String> searchPattern() {
         return search;
     }
 
+    @Override
     public HasValue<Boolean> searchByComments() {
         return searchByComments;
     }
 
+    @Override
     public HasValue<DateInterval> dateRange() {
         return dateRange;
     }
 
+    @Override
     public HasValue<En_SortField> sortField() {
         return sortField;
     }
 
+    @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
     }
 
+    @Override
     public HasValue<Set<ProductShortView>> products() {
         return products;
     }
 
+    @Override
     public HasValue<Set<EntityOption>> companies() {
         return companies;
     }
 
+    @Override
     public HasValue<Set<PersonShortView>> initiators() {
         return initiators;
     }
 
+    @Override
     public HasValue<Set<PersonShortView>> managers() {
         return managers;
     }
 
+    @Override
     public HasValue<Set<PersonShortView>> commentAuthors() {
         return commentAuthors;
     }
 
+    @Override
     public HasValue<Boolean> searchPrivate() {
         return searchPrivate;
     }
 
+    @Override
     public HasValue<Set<En_ImportanceLevel>> importances() {
         return importance;
     }
 
+    @Override
     public HasValue<Set<En_CaseState>> states() {
         return state;
     }
 
+    @Override
     public HasVisibility productsVisibility() {
         return products;
     }
 
+    @Override
     public HasVisibility companiesVisibility() {
         return companies;
     }
 
+    @Override
     public HasVisibility managersVisibility() {
         return managers;
     }
 
+    @Override
     public HasVisibility commentAuthorsVisibility() {
         return commentAuthors;
     }
 
+    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
     }
 
+    @Override
     public HasVisibility searchByCommentsVisibility() {
         return searchByCommentsContainer;
     }
 
+    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -157,23 +184,25 @@ public class IssueFilter extends Composite {
         toggleMsgSearchThreshold();
     }
 
-    public void fillFilterFields(CaseQuery params) {
-        searchPattern().setValue(params.getSearchString());
-        searchByComments().setValue(params.isSearchStringAtComments());
-        searchPrivate().setValue(params.isViewPrivate());
-        sortDir().setValue(params.getSortDir().equals(En_SortDir.ASC));
-        sortField().setValue(params.getSortField());
-        dateRange().setValue(new DateInterval(params.getFrom(), params.getTo()));
-        importances().setValue(IssueFilterUtils.getImportances(params.getImportanceIds()));
-        states().setValue(IssueFilterUtils.getStates(params.getStateIds()));
-        companies().setValue(IssueFilterUtils.getCompanies(params.getCompanyIds()));
+    @Override
+    public void fillFilterFields(CaseQuery caseQuery) {
+        searchPattern().setValue(caseQuery.getSearchString());
+        searchByComments().setValue(caseQuery.isSearchStringAtComments());
+        searchPrivate().setValue(caseQuery.isViewPrivate());
+        sortDir().setValue(caseQuery.getSortDir().equals(En_SortDir.ASC));
+        sortField().setValue(caseQuery.getSortField());
+        dateRange().setValue(new DateInterval(caseQuery.getFrom(), caseQuery.getTo()));
+        importances().setValue(IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
+        states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
+        companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
         updateInitiators();
-        managers().setValue(IssueFilterUtils.getManagers(params.getManagerIds()));
-        initiators().setValue(IssueFilterUtils.getInitiators(params.getInitiatorIds()));
-        products().setValue(IssueFilterUtils.getProducts(params.getProductIds()));
-        commentAuthors().setValue(IssueFilterUtils.getManagers(params.getCommentAuthorIds()));
+        managers().setValue(IssueFilterUtils.getPersons(caseQuery.getManagerIds()));
+        initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
+        products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
+        commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
     }
 
+    @Override
     public void toggleMsgSearchThreshold() {
         if (searchByComments.getValue()) {
             int actualLength = search.getValue().length();
@@ -188,6 +217,7 @@ public class IssueFilter extends Composite {
         }
     }
 
+    @Override
     public void setCompaniesErrorStyle(boolean hasError) {
         if (hasError) {
             companies.addStyleName(REQUIRED);
@@ -196,6 +226,7 @@ public class IssueFilter extends Composite {
         }
     }
 
+    @Override
     public void setProductsErrorStyle(boolean hasError) {
         if (hasError) {
             products.addStyleName(REQUIRED);
@@ -204,6 +235,7 @@ public class IssueFilter extends Composite {
         }
     }
 
+    @Override
     public void setManagersErrorStyle(boolean hasError) {
         if (hasError) {
             managers.addStyleName(REQUIRED);
@@ -212,6 +244,7 @@ public class IssueFilter extends Composite {
         }
     }
 
+    @Override
     public void setInitiatorsErrorStyle(boolean hasError) {
         if (hasError) {
             initiators.addStyleName(REQUIRED);
@@ -220,26 +253,32 @@ public class IssueFilter extends Composite {
         }
     }
 
+    @Override
     public void setStateFilter(Selector.SelectorFilter<En_CaseState> caseStateFilter) {
         state.setFilter(caseStateFilter);
     }
 
+    @Override
     public void setInitiatorCompaniesSupplier(Supplier<Set<EntityOption>> collectionSupplier) {
         initiators.setCompaniesSupplier(collectionSupplier);
     }
 
+    @Override
     public void updateInitiators() {
         initiators.updateCompanies();
     }
 
+    @Override
     public void changeUserFilterValueName(CaseFilterShortView value) {
         userFilter.changeValueName(value );
     }
 
+    @Override
     public void addUserFilterDisplayOption(CaseFilterShortView value) {
         userFilter.addDisplayOption(value);
     }
 
+    @Override
     public void addBodyStyles(String styles) {
         body.addStyleName(styles);
     }
@@ -413,8 +452,8 @@ public class IssueFilter extends Composite {
     IssueStatesOptionList state;
 
     private Timer timer = null;
-    private IssueFilterActivity activity = null;
+    private AbstractIssueFilterWidgetActivity activity = null;
 
-    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilter> {}
+    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterWidgetView> {}
     private static IssueFilterUiBinder ourUiBinder = GWT.create(IssueFilterUiBinder.class);
 }

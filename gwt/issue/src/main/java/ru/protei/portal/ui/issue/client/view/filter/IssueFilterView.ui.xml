@@ -22,7 +22,7 @@
                 </g:Anchor>
             </div>
 
-            <issuefilter:IssueFilter ui:field="issueFilter"/>
+            <issuefilter:IssueFilterWidgetView ui:field="issueFilterWidgetView"/>
 
             <div class="footer">
 
