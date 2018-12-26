@@ -314,12 +314,13 @@ public abstract class IssueCommentListActivity
         }
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
+        boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
 
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
         }
 
-        if ( HelperFunc.isEmpty( value.getText() ) && isStateChangeComment ) {
+        if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
             itemView.hideOptions();
         }
 
@@ -330,7 +331,7 @@ public abstract class IssueCommentListActivity
             itemView.setStatus( caseState );
         }
 
-        if (value.getCaseImpLevel() != null) {
+        if ( isImportanceChangeComment ) {
             En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
             itemView.setImportanceLevel(importance);
         }
