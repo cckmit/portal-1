@@ -22,7 +22,7 @@ import static java.util.stream.Collectors.toMap;
  */
 public class SubscriptionList
         extends Composite
-        implements HasValue<List<Subscription>>, HasValidable
+        implements HasValue<List<Subscription>>, HasValidable, HasEnabled
 {
     public SubscriptionList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -64,6 +64,19 @@ public class SubscriptionList
         container.clear();
         value.clear();
         modelToView.clear();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return container.getStyleName().contains("disabled");
+    }
+
+    @Override
+    public void setEnabled(boolean isEnabled) {
+        container.addStyleName(isEnabled ? "" : "disabled");
+        for (SubscriptionItem item : modelToView.keySet()) {
+            item.setEnabled(isEnabled);
+        }
     }
 
     @Override
