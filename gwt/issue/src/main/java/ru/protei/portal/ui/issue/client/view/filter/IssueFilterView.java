@@ -60,6 +60,8 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void resetFilter() {
         issueFilterWidgetView.resetFilter();
         removeBtn.setVisible(false);
+        saveBtn.setVisible(true);
+        setSaveBtnLabel( lang.buttonCreate() );
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
     }

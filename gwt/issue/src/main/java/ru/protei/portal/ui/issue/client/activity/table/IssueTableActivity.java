@@ -153,6 +153,7 @@ public abstract class IssueTableActivity
                 fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new IssueEvents.ChangeUserFilterModel());
                 filterView.resetFilter();
+                requestIssuesCount();
             }
         });
     }
