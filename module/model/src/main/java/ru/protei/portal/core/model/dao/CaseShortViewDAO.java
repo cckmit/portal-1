@@ -13,6 +13,8 @@ import java.util.List;
 public interface CaseShortViewDAO extends PortalBaseDAO<CaseShortView> {
     List<CaseShortView> getCases( CaseQuery query );
 
+    List<CaseShortView> partialGetCases(CaseQuery query, String... columns);
+
     CaseShortView getCase(Long caseNo);
 
     Long count(CaseQuery query);

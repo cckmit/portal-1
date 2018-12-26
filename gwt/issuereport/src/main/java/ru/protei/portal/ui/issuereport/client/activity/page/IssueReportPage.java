@@ -27,7 +27,7 @@ public abstract class IssueReportPage implements Activity {
 
     @Event
     public void onAuthSuccess(AuthEvents.Success event) {
-        if (event.profile.hasPrivilegeFor(En_Privilege.ISSUE_EXPORT)) {
+        if (event.profile.hasPrivilegeFor(En_Privilege.ISSUE_REPORT)) {
             fireEvent(new MenuEvents.Add(ТAB, UiConstants.TabIcons.ISSUE_REPORTS, DebugIds.SIDEBAR_MENU.ISSUE_REPORTS));
             fireEvent(new AppEvents.InitPage(show));
         }

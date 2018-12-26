@@ -23,7 +23,7 @@ public interface ReportService {
      * @param report    информация об отчете
      * @return идентификатор отчета
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse<Long> createReport(AuthToken authToken, Report report);
 
     /**
@@ -33,7 +33,7 @@ public interface ReportService {
      * @param id        идентификатор отчета
      * @return идентификатор отчета
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse recreateReport(AuthToken authToken, Long id);
 
     /**
@@ -43,7 +43,7 @@ public interface ReportService {
      * @param id        идентификатор отчета
      * @return отчёт
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse<Report> getReport(AuthToken authToken, Long id);
 
     /**
@@ -53,7 +53,7 @@ public interface ReportService {
      * @param query     фильтр для выборки отчетов
      * @return список отчетов
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse<List<Report>> getReportsByQuery(AuthToken authToken, ReportQuery query);
 
     /**
@@ -63,7 +63,7 @@ public interface ReportService {
      * @param query     фильтр для выборки отчетов
      * @return количество отчетов
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse<Long> countReportsByQuery(AuthToken authToken, ReportQuery query);
 
     /**
@@ -73,7 +73,7 @@ public interface ReportService {
      * @param id        идентификатор отчета
      * @return файловый контент
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse<ReportContent> downloadReport(AuthToken authToken, Long id);
 
     /**
@@ -83,7 +83,7 @@ public interface ReportService {
      * @param include   набор идентификаторов отчётов, включаемых в удаление
      * @param exclude   набор идентификаторов отчётов, исключаемых из удаления
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse removeReports(AuthToken authToken, Set<Long> include, Set<Long> exclude);
 
     /**
@@ -93,6 +93,6 @@ public interface ReportService {
      * @param query     фильтр для удаления
      * @param exclude   набор идентификаторов отчётов, исключаемых из удаления
      */
-    @Privileged({ En_Privilege.ISSUE_EXPORT })
+    @Privileged({ En_Privilege.ISSUE_REPORT })
     CoreResponse removeReports(AuthToken authToken, ReportQuery query, Set<Long> exclude);
 }

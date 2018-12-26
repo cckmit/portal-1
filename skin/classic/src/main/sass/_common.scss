@@ -457,7 +457,7 @@ div.checkbox {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000;
+  z-index: 2000;
   float: left;
   min-width: 160px;
   text-align: left;
@@ -1345,6 +1345,9 @@ label.bordered:after{
     }
     .filter {
       width: 40%;
+      div {
+        overflow-y: auto;
+      }
     }
   }
 }
@@ -3456,6 +3459,15 @@ div.select2-container {
   white-space: nowrap;
 }
 
+.report-issue-filter {
+  .user-filter {
+    padding-bottom: 15px;
+  }
+  .col-xs-12.resize-xs-6 {
+    width: 50% !important;
+  }
+}
+
 .resize-vertical {
   resize: vertical;
 }
@@ -3582,5 +3594,15 @@ div.select2-container {
   label {
     font-weight: initial !important;
     line-height: 1em !important;
+  }
+}
+
+// fix datetimepicker popup z-index (position property required for z-index)
+.protei-datetimepicker-popup {
+  position: relative;
+  // fix arrow (different shifts because of relative position)
+  .arrow {
+    top: -11px !important;
+    margin-left: -4px !important;
   }
 }

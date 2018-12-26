@@ -82,7 +82,7 @@ public class DebugIds {
         String PRIVACY_NO_BUTTON = "filter-privacy-no-button";
         String PRIVACY_NOT_DEFINED_BUTTON = "filter-privacy-not-defined-button";
 
-        String REPORT_BUTTON = "filter-report-button";
+        @Deprecated String REPORT_BUTTON = "filter-report-button";
         String SAVE_BUTTON = "filter-save-button";
         String RESET_BUTTON = "filter-reset-button";
         String REMOVE_BUTTON = "filter-remove-button";

@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.server.service;
+package ru.protei.portal.ui.issuereport.server.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

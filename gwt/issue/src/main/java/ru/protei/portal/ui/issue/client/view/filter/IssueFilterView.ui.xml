@@ -1,16 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
-             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
-             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:importance='urn:import:ru.protei.portal.ui.issue.client.widget.importance.btngroup'
-             xmlns:filter='urn:import:ru.protei.portal.ui.issue.client.widget.filter'
-             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
-             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
-             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
+             xmlns:issuefilter='urn:import:ru.protei.portal.ui.common.client.widget.issuefilter'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -32,62 +22,7 @@
                 </g:Anchor>
             </div>
 
-            <div class="user-filter">
-                <filter:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
-            </div>
-
-            <div class="body">
-
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
-                <div class="form-group col-xs-12 local-search-options-container">
-                    <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
-                    <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
-                </div>
-
-                <div class="col-xs-12">
-                    <label class="bold"><ui:text from="{lang.created}"/></label>
-                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-                </div>
-
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.sortBy}"/></label>
-                    <div class="control-group">
-                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
-                        <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
-                    </div>
-                </div>
-
-                <productselector:devunit.DevUnitMultiSelector ui:field="products"
-                                                              header="{lang.issueProduct}"
-                                                              addStyleNames="form-group col-xs-12"/>
-
-                <companyselector:CompanyMultiSelector ui:field="companies"
-                                                      header="{lang.issueCompany}"
-                                                      addStyleNames="form-group col-xs-12"/>
-
-                <person:InitiatorMultiSelector ui:field="initiators"
-                                               header="{lang.issueInitiator}"
-                                               addStyleNames="form-group col-xs-12"/>
-
-                <person:EmployeeMultiSelector ui:field="managers"
-                                              header="{lang.issueManager}"
-                                              addStyleNames="form-group col-xs-12"/>
-
-                <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12">
-                    <label><ui:text from="{lang.searchPrivate}"/></label>
-                    <threestate:ThreeStateButton ui:field="searchPrivate"/>
-                </g:HTMLPanel>
-
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.issueImportance}"/></label>
-                    <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
-                </div>
-
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.issueState}"/></label>
-                    <optionlist:IssueStatesOptionList ui:field="state"/>
-                </div>
-            </div>
+            <issuefilter:IssueFilterWidgetView ui:field="issueFilterWidgetView"/>
 
             <div class="footer">
 
@@ -106,7 +41,6 @@
                     </div>
                 </div>
 
-                <g:Button ui:field="reportBtn" styleName="btn btn-white" text="{lang.buttonReport}"/>
                 <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
                 <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
                 <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>

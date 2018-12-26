@@ -1,21 +1,17 @@
 package ru.protei.portal.core.utils;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class JXLSHelper {
 
@@ -23,177 +19,67 @@ public final class JXLSHelper {
     // Report book
     // -----------
 
-    public static class ReportBook {
+    public static class ReportBook<T> {
 
         private final SXSSFWorkbook workbook;
-        private final SXSSFSheet sheet;
-        private final Writer writer;
+        private final Writer<T> writer;
         private final Lang.LocalizedLang lang;
-        private int rowIndex = 1;
+        private final Map<Integer, SXSSFSheet> sheetMap;
+        private final Map<Integer, Integer> sheetRowIndexMap;
+        private int sheetIndex = 0;
 
-        public interface Writer {
+        public interface Writer<T> {
             int[] getColumnsWidth();
             String[] getColumnNames();
-            Object[] getColumnValues(List<CaseObject> issues, List<List<CaseComment>> comments, int index);
+            Object[] getColumnValues(T object);
         }
 
-        public ReportBook(DateFormat dateFormat, WorkTimeFormatter workTimeFormatter, Lang.LocalizedLang lang) {
+        public ReportBook(Lang.LocalizedLang lang, Writer<T> writer) {
             this.lang = lang;
             this.workbook = new SXSSFWorkbook(/*-1 если надо отключить сброс в файл и хранить всё в памяти*/);
-            this.sheet = workbook.createSheet();
-            this.writer = new Writer() {
-                @Override
-                public int[] getColumnsWidth() {
-                    return new int[] {
-                            3650, 3430, 8570,
-                            4590, 4200, 4200,
-                            6000, 3350, 4600,
-                            4200, 5800, 5800,
-                            5800, 5800, 5800,
-                            5800, 5800, 5800
-                    };
-                }
-                @Override
-                public String[] getColumnNames() {
-                    return new String[] {
-                            "ir_caseno", "ir_private", "ir_name",
-                            "ir_company", "ir_initiator", "ir_manager",
-                            "ir_product", "ir_importance", "ir_state",
-                            "ir_date_created", "ir_date_opened", "ir_date_workaround",
-                            "ir_date_customer_test", "ir_date_done", "ir_date_verify",
-                            "ir_time_solution_first", "ir_time_solution_full", "ir_time_elapsed"
-                    };
-                }
-                @Override
-                public Object[] getColumnValues(List<CaseObject> issues, List<List<CaseComment>> issueComments, int index) {
-
-                    CaseObject issue = issues.get(index);
-                    List<CaseComment> comments = issueComments.get(index);
-
-                    Date    created = null,
-                            opened = null,
-                            workaround = null,
-                            customerTest = null,
-                            done = null,
-                            verified = null;
-
-                    for (CaseComment comment : comments) {
-                        En_CaseState state = En_CaseState.getById(comment.getCaseStateId());
-                        if (state == null) {
-                            continue;
-                        }
-                        switch (state) {
-                            case CREATED: created = comment.getCreated(); break;
-                            case OPENED: opened = comment.getCreated(); break;
-                            case WORKAROUND: workaround = comment.getCreated(); break;
-                            case TEST_CUST: customerTest = comment.getCreated(); break;
-                            case DONE: done = comment.getCreated(); break;
-                            case VERIFIED: verified = comment.getCreated(); break;
-                        }
-                    }
-                    if (created == null) {
-                        created = issue.getCreated();
-                    }
-
-                    Long solutionDurationFirst = getDurationBetween(created, customerTest, workaround, done);
-                    Long solutionDurationFull = getDurationBetween(created, done, verified);
-
-                    return new Object[] {
-                            "CRM-" + issue.getCaseNumber(),
-                            lang.get(issue.isPrivateCase() ? "yes" : "no"),
-                            HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "",
-                            issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? issue.getInitiatorCompany().getCname() : "",
-                            issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? issue.getInitiator().getDisplayShortName() : "",
-                            issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? issue.getManager().getDisplayShortName() : "",
-                            issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "",
-                            issue.getImpLevel() != null ? lang.get("importance_" + String.valueOf(issue.getImpLevel())) : "",
-                            issue.getState() != null ? lang.get("case_state_" + String.valueOf(issue.getState().getId())) : "",
-                            created != null ? dateFormat.format(created) : "",
-                            opened != null ? dateFormat.format(opened) : "",
-                            workaround != null ? dateFormat.format(workaround) : "",
-                            customerTest != null ? dateFormat.format(customerTest) : "",
-                            done != null ? dateFormat.format(done) : "",
-                            verified != null ? dateFormat.format(verified) : "",
-                            solutionDurationFirst != null ? duration2string(solutionDurationFirst, lang) : "",
-                            solutionDurationFull != null ? duration2string(solutionDurationFull, lang) : "",
-                            issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ?
-                                    workTimeFormatter.format(issue.getTimeElapsed(), lang.get("timeDayLiteral"), lang.get("timeHourLiteral"), lang.get("timeMinuteLiteral"))
-                                    : ""
-                    };
-                }
-            };
-            init();
+            this.writer = writer;
+            this.sheetMap = new HashMap<>();
+            this.sheetRowIndexMap = new HashMap<>();
         }
 
-        public void write(List<CaseObject> issues, List<List<CaseComment>> comments) {
+        public int createSheet() {
+            SXSSFSheet sheet = workbook.createSheet();
+            CellStyle thStyle = getTableHeaderStyle(workbook, getDefaultFont(workbook));
+            setColumnsWidth(sheet, writer.getColumnsWidth());
+            makeHeader(sheet.createRow(0), thStyle, lang, writer.getColumnNames());
+            sheetMap.put(sheetIndex, sheet);
+            sheetRowIndexMap.put(sheetIndex, 1);
+            return sheetIndex++;
+        }
 
-            if (issues.size() != comments.size()) {
-                throw new IllegalArgumentException("Not equal size of issues and their comments");
-            }
+        public void setSheetName(int sheetNumber, String name) {
+            int sheetIndex = workbook.getSheetIndex(sheetMap.get(sheetNumber));
+            name = WorkbookUtil.createSafeSheetName(name);
+            workbook.setSheetName(sheetIndex, name);
+        }
 
+        public void write(int sheetNumber, List<T> objects) {
             CellStyle style = getDefaultStyle(workbook, getDefaultFont(workbook));
-
-            for (int index = 0; index < issues.size(); index++) {
-                Row row = sheet.createRow(rowIndex++);
+            for (T object : objects) {
+                Integer rowNumber = sheetRowIndexMap.get(sheetNumber);
+                Row row = sheetMap.get(sheetNumber).createRow(rowNumber++);
                 row.setRowStyle(style);
-                fillRow(row, writer.getColumnValues(issues, comments, index));
+                fillRow(row, writer.getColumnValues(object));
+                sheetRowIndexMap.put(sheetNumber, rowNumber);
             }
         }
 
         public void collect(OutputStream outputStream) throws IOException {
-            if (workbook != null) {
-                workbook.write(outputStream);
-                workbook.dispose();
-            }
+            workbook.write(outputStream);
+            close();
         }
 
-        private void init() {
-            CellStyle thStyle = getTableHeaderStyle(workbook, getDefaultFont(workbook));
-            setColumnsWidth(sheet, writer.getColumnsWidth());
-            makeHeader(sheet.createRow(rowIndex++), thStyle, lang, writer.getColumnNames());
-        }
-
-        private Long getDurationBetween(Date from, Date... toList) {
-            if (toList == null || from == null) {
-                return null;
-            }
-            Date to = null;
-            for (Date t : toList) {
-                if (t != null) {
-                    to = t;
-                    break;
-                }
-            }
-            if (to != null) {
-                for (Date t : toList) {
-                    if (t != null && t.after(to)) {
-                        to = t;
-                    }
-                }
-                Long minutes = to.getTime() / 60000L - from.getTime() / 60000L;
-                return minutes > 0 ? minutes : null;
-            }
-            return null;
-        }
-
-        private String duration2string(Long minutes, Lang.LocalizedLang lang) {
-            StringBuilder sb = new StringBuilder();
-            long days = minutes / (60 * 24);
-            minutes = minutes % (60 * 24);
-            long hours = minutes / 60;
-            minutes = minutes % 60;
-            if (days > 0) {
-                sb.append(days);
-                sb.append(" ");
-                sb.append(lang.get("days"));
-                if (hours > 0 || minutes > 0) {
-                    sb.append(", ");
-                }
-            }
-            if (hours > 0 || minutes > 0) {
-                sb.append(String.format("%02d:%02d", hours, minutes));
-            }
-            return sb.toString();
+        public void close() throws IOException {
+            workbook.dispose();
+            workbook.close();
+            sheetMap.clear();
+            sheetRowIndexMap.clear();
+            sheetIndex = 0;
         }
     }
 

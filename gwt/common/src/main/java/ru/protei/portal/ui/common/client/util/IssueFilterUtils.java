@@ -1,22 +1,30 @@
-package ru.protei.portal.ui.issue.client.util;
+package ru.protei.portal.ui.common.client.util;
 
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
+import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Утилита по работе с пользовательскими фильтрами
  */
 public class IssueFilterUtils {
+
+    private static final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
 
     public static Set< En_ImportanceLevel > getImportances( List< Integer > importancesIdList ) {
         if ( importancesIdList == null || importancesIdList.isEmpty() ) {
@@ -131,31 +139,56 @@ public class IssueFilterUtils {
                 .collect( Collectors.toList() );
     }
 
-    public static Set< PersonShortView > getManagers( List< Long > managerIds ) {
-
-        if ( managerIds == null || managerIds.isEmpty() ) {
+    public static Set<PersonShortView> getPersons(List<Long> personsIds) {
+        if (CollectionUtils.isEmpty(personsIds)) {
             return null;
         }
-        Set< PersonShortView > managers = new HashSet<>();
-        for ( Long id : managerIds ) {
+        Set<PersonShortView> persons = new HashSet<>();
+        for (Long id : personsIds) {
             PersonShortView person = new PersonShortView();
-            person.setId( id );
-            managers.add( person );
+            person.setId(id);
+            persons.add(person);
         }
-        return managers;
+        return persons;
     }
 
-    public static Set< PersonShortView > getInitiators( List< Long > initiatorsIds ) {
-
-        if ( initiatorsIds == null || initiatorsIds.isEmpty() ) {
-            return null;
+    public static CaseQuery makeCaseQuery(AbstractIssueFilterWidgetView filterWidgetView, boolean isFillSearchString) {
+        CaseQuery query = new CaseQuery();
+        query.setType(En_CaseType.CRM_SUPPORT);
+        if (isFillSearchString) {
+            String searchString = filterWidgetView.searchPattern().getValue();
+            boolean searchByComments = filterWidgetView.searchByComments().getValue();
+            if (StringUtils.isBlank(searchString)) {
+                query.setSearchString(null);
+            } else if (searchByComments) {
+                query.setSearchString(searchString);
+            } else {
+                MatchResult result = caseNumbersPattern.exec(searchString);
+                if (result != null && result.getGroup(0).equals(searchString)) {
+                    query.setCaseNumbers(Arrays.stream(searchString.split(","))
+                            .map(cn -> Long.parseLong(cn.trim()))
+                            .collect(Collectors.toList())
+                    );
+                } else {
+                    query.setSearchString(searchString);
+                }
+            }
         }
-        Set< PersonShortView > initiators = new HashSet<>();
-        for ( Long id : initiatorsIds ) {
-            PersonShortView person = new PersonShortView();
-            person.setId( id );
-            initiators.add( person );
+        query.setViewPrivate(filterWidgetView.searchPrivate().getValue());
+        query.setSortField(filterWidgetView.sortField().getValue());
+        query.setSortDir(filterWidgetView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setCompanyIds(getCompaniesIdList(filterWidgetView.companies().getValue()));
+        query.setProductIds(getProductsIdList(filterWidgetView.products().getValue()));
+        query.setManagerIds(getManagersIdList(filterWidgetView.managers().getValue()));
+        query.setInitiatorIds(getManagersIdList(filterWidgetView.initiators().getValue()));
+        query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
+        query.setStates(getStateList(filterWidgetView.states().getValue()));
+        query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
+        DateInterval interval = filterWidgetView.dateRange().getValue();
+        if (interval != null) {
+            query.setFrom(interval.from);
+            query.setTo(interval.to);
         }
-        return initiators;
+        return query;
     }
 }

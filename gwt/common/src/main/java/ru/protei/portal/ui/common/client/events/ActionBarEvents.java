@@ -2,6 +2,9 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+
+import java.util.Objects;
 
 /**
  * События для action bar'a
@@ -43,6 +46,13 @@ public class ActionBarEvents {
     public static class Clicked {
         public Clicked( String identity ) {
             this.identity = identity;
+        }
+
+        public boolean is(String identity) {
+            return Objects.equals(this.identity, identity);
+        }
+        public boolean isNot(String identity) {
+            return !is(identity);
         }
 
         public String identity;

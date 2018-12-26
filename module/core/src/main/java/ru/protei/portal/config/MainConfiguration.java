@@ -20,6 +20,10 @@ import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
+import ru.protei.portal.core.report.caseobjects.ReportCase;
+import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
@@ -107,10 +111,16 @@ public class MainConfiguration {
         return new LDAPAuthProvider();
     }
 
+    /* DAO SQL builders */
 
     @Bean
     public CaseObjectSqlBuilder sqlDefaultBuilder() {
         return new CaseObjectSqlBuilder();
+    }
+
+    @Bean
+    public CaseCommentSqlBuilder getCaseCommentSqlBuilder() {
+        return new CaseCommentSqlBuilder();
     }
 
     @Bean
@@ -416,6 +426,11 @@ public class MainConfiguration {
         return new EmployeeRegistrationDAO_Impl();
     }
 
+    @Bean
+    public CaseCommentTimeElapsedSumDAO getCaseCommentCaseObjectDAO() {
+        return new CaseCommentTimeElapsedSumDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -622,6 +637,16 @@ public class MainConfiguration {
     @Bean
     public EmployeeRegistrationService getEmployeeRegistrationService() {
         return new EmployeeRegistrationServiceImpl();
+    }
+
+    @Bean
+    public ReportCase getReportCase() {
+        return new ReportCaseImpl();
+    }
+
+    @Bean
+    public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
+        return new ReportCaseTimeElapsedImpl();
     }
 
     /**

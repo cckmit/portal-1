@@ -7,12 +7,15 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.IssueReportEvents;
@@ -32,6 +35,7 @@ public abstract class IssueReportTableActivity implements
 
     @PostConstruct
     public void onInit() {
+        CREATE_ACTION = lang.buttonCreate();
         view.setActivity(this);
         pagerView.setActivity(this);
     }
@@ -40,7 +44,8 @@ public abstract class IssueReportTableActivity implements
     public void onShow(IssueReportEvents.Show event) {
         fireEvent(new AppEvents.InitPanelName(lang.issueReports()));
 
-        fireEvent( new ActionBarEvents.Clear());
+        fireEvent(new ActionBarEvents.Clear());
+        fireEvent(new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE_REPORT));
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
@@ -52,6 +57,14 @@ public abstract class IssueReportTableActivity implements
     @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.initDetails = initDetails;
+    }
+
+    @Event
+    public void onCreateClicked(ActionBarEvents.Clicked event) {
+        if (event.isNot(UiConstants.ActionBarIdentity.ISSUE_REPORT)) {
+            return;
+        }
+        fireEvent(new IssueReportEvents.Create());
     }
 
     @Override
@@ -165,10 +178,14 @@ public abstract class IssueReportTableActivity implements
     ReportControllerAsync reportService;
 
     @Inject
+    PolicyService policyService;
+
+    @Inject
     Lang lang;
 
     @Inject
     AbstractPagerView pagerView;
 
     private AppEvents.InitDetails initDetails;
+    private static String CREATE_ACTION;
 }
