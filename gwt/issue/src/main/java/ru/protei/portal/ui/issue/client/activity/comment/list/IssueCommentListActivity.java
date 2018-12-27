@@ -196,9 +196,9 @@ public abstract class IssueCommentListActivity
             return;
         }
 
-        this.comment = null;
-        String quotedMessage = value.getText();
-        view.message().setValue( IssueCommentUtils.quoteMessage( quotedMessage ) );
+        comment = null;
+        String message = view.message().getValue() + IssueCommentUtils.quoteMessage( value.getText() );
+        view.message().setValue( message );
         view.focus();
     }
 
