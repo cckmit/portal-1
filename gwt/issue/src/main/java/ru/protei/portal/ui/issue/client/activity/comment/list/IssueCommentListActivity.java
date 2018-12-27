@@ -80,11 +80,13 @@ public abstract class IssueCommentListActivity
 
         this.caseId = caseId;
         this.isEditingEnabled = !isEmployeeRegistration;
-        
+
         comment = null;
         lastCommentView = null;
+        requesting = false;
         tempAttachments.clear();
 
+        view.sendEnabled().setEnabled(true);
         view.message().setValue(null);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
@@ -393,6 +395,12 @@ public abstract class IssueCommentListActivity
     }
 
     private void send(Long id, IssueEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
+        if ( requesting ) {
+            return;
+        }
+        requesting = true;
+        view.sendEnabled().setEnabled(false);
+
         if ( comment == null ) {
             comment = new CaseComment();
             comment.setAuthorId( profile.getId() );
@@ -420,6 +428,9 @@ public abstract class IssueCommentListActivity
         issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
             @Override
             public void onError( Throwable throwable ) {
+                view.sendEnabled().setEnabled(true);
+                requesting = false;
+
                 if(saveCommentCompleteHandler!=null){
                     saveCommentCompleteHandler.onError(throwable);
                     return;
@@ -430,6 +441,8 @@ public abstract class IssueCommentListActivity
 
             @Override
             public void onSuccess( CaseComment result ) {
+                requesting = false;
+                view.sendEnabled().setEnabled(true);
 
                 if(saveCommentCompleteHandler!=null){
                     saveCommentCompleteHandler.onSuccess();
@@ -504,6 +517,7 @@ public abstract class IssueCommentListActivity
 
     private Profile profile;
 
+    private boolean requesting = false;
     private boolean isEditingEnabled = true;
     private Long caseId;
 
