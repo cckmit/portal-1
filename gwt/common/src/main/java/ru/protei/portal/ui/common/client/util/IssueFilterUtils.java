@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 
 import java.util.*;
 import java.util.stream.Collectors;

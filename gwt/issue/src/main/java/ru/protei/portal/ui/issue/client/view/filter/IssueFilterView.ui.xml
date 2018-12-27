@@ -22,7 +22,7 @@
                 </g:Anchor>
             </div>
 
-            <issuefilter:IssueFilterWidgetView ui:field="issueFilterWidgetView"/>
+            <issuefilter:IssueFilterParamView ui:field="issueFilterParamView"/>
 
             <div class="footer">
 
@@ -30,7 +30,7 @@
                     <label class="bold">
                         <ui:text from="{lang.issueFilterName}"/>
                     </label>
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 form-group">
                         <g:TextBox ui:field="filterName" styleName="input-field"/>
                         <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
                             <span class="fa fa-check"/>
@@ -41,7 +41,8 @@
                     </div>
                 </div>
 
-                <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
+                <g:Button ui:field="createBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
+                <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonModify}"/>
                 <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
                 <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
             </div>

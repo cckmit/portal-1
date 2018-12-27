@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.issuefilter;
+package ru.protei.portal.ui.common.client.activity.issuefilter;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
@@ -19,10 +19,9 @@ import java.util.function.Supplier;
 
 public interface AbstractIssueFilterWidgetView extends IsWidget {
 
-    void setActivity(AbstractIssueFilterWidgetActivity activity);
+    void setActivity(AbstractIssueFilterParamActivity activity);
 
-    AbstractIssueFilterWidgetActivity getActivity();
-
+    AbstractIssueFilterParamActivity getActivity();
 
     HasValue<CaseFilterShortView> userFilter();
 
@@ -64,7 +63,6 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     HasVisibility searchPrivateVisibility();
 
     HasVisibility searchByCommentsVisibility();
-
 
     void resetFilter();
 

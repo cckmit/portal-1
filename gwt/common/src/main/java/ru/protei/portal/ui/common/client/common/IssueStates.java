@@ -37,6 +37,8 @@ public abstract class IssueStates implements Activity{
         activeStates.add(En_CaseState.TEST_LOCAL);
         activeStates.add(En_CaseState.WORKAROUND);
         activeStates.add(En_CaseState.INFO_REQUEST);
+        activeStates.add(En_CaseState.CUST_PENDING);
+        activeStates.add(En_CaseState.TEST_CUST);
 
         inactiveStates = new ArrayList<>(5);
         inactiveStates.add(En_CaseState.CUST_PENDING);

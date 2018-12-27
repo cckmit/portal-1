@@ -11,8 +11,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.ReportTypeButtonSelector;
@@ -22,7 +22,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        issueFilterWidgetView.addBodyStyles("grid grid-indent");
+        issueFilterParamView.addBodyStyles("grid grid-indent");
     }
 
     @Override
@@ -42,12 +42,12 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @Override
     public AbstractIssueFilterWidgetView getIssueFilterWidget() {
-        return issueFilterWidgetView;
+        return issueFilterParamView;
     }
 
     @Override
     public void resetFilter() {
-        issueFilterWidgetView.resetFilter();
+        issueFilterParamView.resetFilter();
         reportType.setValue(En_ReportType.CASE_OBJECTS, true);
         name.setValue(null);
     }
@@ -67,7 +67,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @Inject
     @UiField(provided = true)
-    IssueFilterWidgetView issueFilterWidgetView;
+    IssueFilterParamView issueFilterParamView;
 
     private AbstractIssueReportCreateActivity activity;
 

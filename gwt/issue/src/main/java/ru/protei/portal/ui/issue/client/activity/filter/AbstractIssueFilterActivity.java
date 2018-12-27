@@ -13,7 +13,9 @@ public interface AbstractIssueFilterActivity {
 
     void onFilterRemoveClicked( Long id );
 
-    void onOkSavingClicked();
+    void onOkSavingFilterClicked();
 
-    void onCancelSavingClicked();
+    void onCancelSavingFilterClicked();
+
+    void onCreateFilterClicked();
 }

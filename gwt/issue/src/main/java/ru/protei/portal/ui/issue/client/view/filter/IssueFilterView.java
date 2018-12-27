@@ -14,8 +14,8 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 
@@ -31,7 +31,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        issueFilterWidgetView.commentAuthorsVisibility().setVisible(false);
+        issueFilterParamView.commentAuthorsVisibility().setVisible(false);
     }
 
     @Override
@@ -53,37 +53,32 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Override
     public AbstractIssueFilterWidgetView getIssueFilterWidget() {
-        return issueFilterWidgetView;
+        return issueFilterParamView;
     }
 
     @Override
     public void resetFilter() {
-        issueFilterWidgetView.resetFilter();
+        issueFilterParamView.resetFilter();
         removeBtn.setVisible(false);
-        saveBtn.setVisible(true);
-        setSaveBtnLabel( lang.buttonCreate() );
+        saveBtn.setVisible(false);
+        createBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
     }
 
     @Override
     public void changeUserFilterValueName( CaseFilterShortView value ){
-        issueFilterWidgetView.changeUserFilterValueName( value );
+        issueFilterParamView.changeUserFilterValueName( value );
     }
 
     @Override
     public void addUserFilterDisplayOption( CaseFilterShortView value ){
-        issueFilterWidgetView.addUserFilterDisplayOption( value );
+        issueFilterParamView.addUserFilterDisplayOption( value );
     }
 
     @Override
     public HasVisibility removeFilterBtnVisibility(){
         return removeBtn;
-    }
-
-    @Override
-    public void setSaveBtnLabel( String label){
-        saveBtn.setText( label );
     }
 
     @Override
@@ -112,21 +107,28 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
     @Override
     public void setUserFilterControlsVisibility( boolean hasVisible ) {
         if ( hasVisible ) {
+            createBtn.removeStyleName( HIDE );
             saveBtn.removeStyleName( HIDE );
             resetBtn.removeStyleName( HIDE );
             removeBtn.removeStyleName( HIDE );
         } else {
             saveBtn.addStyleName( HIDE );
+            createBtn.addStyleName( HIDE );
             resetBtn.addStyleName( HIDE );
             removeBtn.addStyleName( HIDE );
         }
     }
 
+    @Override
+    public HasVisibility editBtnVisibility() {
+        return saveBtn;
+    }
+
     @UiHandler( "resetBtn" )
     public void onResetClicked ( ClickEvent event ) {
-        if ( issueFilterWidgetView.getActivity() != null ) {
+        if ( issueFilterParamView.getActivity() != null ) {
             resetFilter();
-            issueFilterWidgetView.getActivity().onFilterChanged();
+            issueFilterParamView.getActivity().onFilterChanged();
         }
     }
 
@@ -138,13 +140,21 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         activity.onSaveFilterClicked();
     }
 
+    @UiHandler( "createBtn" )
+    public void onCreateClicked ( ClickEvent event ) {
+        if ( activity == null ) {
+            return;
+        }
+        activity.onCreateFilterClicked();
+    }
+
     @UiHandler( "okBtn" )
     public void onOkBtnClicked ( ClickEvent event ) {
         event.preventDefault();
         if ( activity == null ) {
             return;
         }
-        activity.onOkSavingClicked();
+        activity.onOkSavingFilterClicked();
     }
 
     @UiHandler( "cancelBtn" )
@@ -153,7 +163,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         if ( activity == null ) {
             return;
         }
-        activity.onCancelSavingClicked();
+        activity.onCancelSavingFilterClicked();
     }
 
     @UiHandler( "removeBtn" )
@@ -161,7 +171,7 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
         if (activity == null) {
             return;
         }
-        CaseFilterShortView value = issueFilterWidgetView.userFilter().getValue();
+        CaseFilterShortView value = issueFilterParamView.userFilter().getValue();
         if (value == null || value.getId() == null) {
             return;
         }
@@ -212,34 +222,29 @@ public class IssueFilterView extends Composite implements AbstractIssueFilterVie
 
     @Inject
     @UiField(provided = true)
-    IssueFilterWidgetView issueFilterWidgetView;
+    IssueFilterParamView issueFilterParamView;
 
     @UiField
     Button resetBtn;
-
+    @UiField
+    Button createBtn;
     @UiField
     Button saveBtn;
-
     @UiField
     Button removeBtn;
-
     @UiField
     Anchor okBtn;
-
     @UiField
     Anchor cancelBtn;
-
     @UiField
     TextBox filterName;
-
     @UiField
     DivElement filterNameContainer;
-
     @UiField
     Anchor filterRestoreBtn;
-
     @UiField
     Anchor filterCollapseBtn;
+
 
     @Inject
     FixedPositioner positioner;

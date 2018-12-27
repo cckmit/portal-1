@@ -22,6 +22,8 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -43,7 +45,7 @@ import java.util.function.Supplier;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
-public class IssueFilterWidgetView extends Composite implements AbstractIssueFilterWidgetView {
+public class IssueFilterParamView extends Composite implements AbstractIssueFilterWidgetView {
 
     @Inject
     public void init() {
@@ -56,12 +58,12 @@ public class IssueFilterWidgetView extends Composite implements AbstractIssueFil
     }
 
     @Override
-    public void setActivity(AbstractIssueFilterWidgetActivity activity) {
+    public void setActivity(AbstractIssueFilterParamActivity activity) {
         this.activity = activity;
     }
 
     @Override
-    public AbstractIssueFilterWidgetActivity getActivity() {
+    public AbstractIssueFilterParamActivity getActivity() {
         return activity;
     }
 
@@ -452,8 +454,8 @@ public class IssueFilterWidgetView extends Composite implements AbstractIssueFil
     IssueStatesOptionList state;
 
     private Timer timer = null;
-    private AbstractIssueFilterWidgetActivity activity = null;
+    private AbstractIssueFilterParamActivity activity = null;
 
-    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterWidgetView> {}
+    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, IssueFilterParamView> {}
     private static IssueFilterUiBinder ourUiBinder = GWT.create(IssueFilterUiBinder.class);
 }

@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 
 /**
  * Абстракция вида фильтра обращений
@@ -25,11 +25,11 @@ public interface AbstractIssueFilterView extends IsWidget {
 
     void addUserFilterDisplayOption(CaseFilterShortView value);
 
-    void setSaveBtnLabel(String name);
-
     void setFilterNameContainerErrorStyle(boolean hasError);
 
     void setUserFilterNameVisibility(boolean hasVisible);
 
     void setUserFilterControlsVisibility(boolean hasVisible);
+
+    HasVisibility editBtnVisibility();
 }

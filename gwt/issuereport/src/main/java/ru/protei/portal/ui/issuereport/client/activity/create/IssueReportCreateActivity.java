@@ -2,18 +2,13 @@ package ru.protei.portal.ui.issuereport.client.activity.create;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -24,12 +19,12 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
-import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetActivity;
-import ru.protei.portal.ui.common.client.widget.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, AbstractIssueFilterWidgetActivity {
+        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, AbstractIssueFilterParamActivity {
 
     @PostConstruct
     public void onInit() {
