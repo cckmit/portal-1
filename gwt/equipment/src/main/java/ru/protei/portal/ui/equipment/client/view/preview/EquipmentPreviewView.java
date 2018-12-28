@@ -8,10 +8,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -112,6 +109,16 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     }
 
     @Override
+    public void setLinkedEquipmentExternalLink(String href) {
+        primaryUseLink.setHref(href);
+    }
+
+    @Override
+    public HasVisibility linkedEquipmentLinkVisibility() {
+        return primaryUseLink;
+    }
+
+    @Override
     public void setCopyBtnEnabledStyle( boolean isEnabled ){
         if (isEnabled) {
             copy.removeStyleName( "link-disabled" );
@@ -183,6 +190,8 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     SpanElement created;
     @UiField
     HTMLPanel documents;
+    @UiField
+    Anchor primaryUseLink;
 
     @Inject
     FixedPositioner positioner;

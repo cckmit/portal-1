@@ -119,12 +119,6 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     Image photo;
 
     @UiField
-    Anchor edit;
-
-    @UiField
-    Anchor favorite;
-
-    @UiField
     SpanElement company;
 
     @UiField

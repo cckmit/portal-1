@@ -10,6 +10,8 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.user.AuthService;
@@ -37,22 +39,32 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public CoreResponse<Long> createReport(AuthToken token, Report report) {
-        if (report == null) {
+        if (report == null || report.getReportType() == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         UserSessionDescriptor descriptor = authService.findSession(token);
+
+        if (isQueryNotValid(report.getCaseQuery())) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         Date now = new Date();
         report.setCreatorId(descriptor.getPerson().getId());
         report.setCreated(now);
         report.setModified(now);
         report.setStatus(En_ReportStatus.CREATED);
-        if (report.getLocale() == null) {
+        if (StringUtils.isBlank(report.getLocale())) {
             report.setLocale(LOCALE_RU);
         }
-        if (report.getName() == null) {
-            report.setName(getLang().getFor(Locale.forLanguageTag(report.getLocale())).get("report_at") + " " + dateFormat.format(new Date()));
+        if (StringUtils.isBlank(report.getName())) {
+            String langKey = "report_at";
+            switch (report.getReportType()) {
+                case CASE_OBJECTS: langKey = "report_case_objects_at"; break;
+                case CASE_TIME_ELAPSED: langKey = "report_case_time_elapsed_at"; break;
+            }
+            Lang.LocalizedLang localizedLang = getLang().getFor(Locale.forLanguageTag(report.getLocale()));
+            report.setName(localizedLang.get(langKey) + " " + dateFormat.format(now));
         }
 
         Long id = reportDAO.persist(report);
@@ -173,5 +185,9 @@ public class ReportServiceImpl implements ReportService {
         messageSource.setBasenames("Lang");
         messageSource.setDefaultEncoding("UTF-8");
         return new Lang(messageSource);
+    }
+
+    private <T extends BaseQuery> boolean isQueryNotValid(T query) {
+        return query == null || !query.isParamsPresent();
     }
 }

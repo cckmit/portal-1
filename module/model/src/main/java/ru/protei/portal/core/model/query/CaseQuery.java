@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,6 +56,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> memberIds;
 
+    private List<Long> commentAuthorIds;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -85,6 +89,7 @@ public class CaseQuery extends BaseQuery {
         setOrWithoutManager(query.isOrWithoutManager());
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
+        setCommentAuthorIds(query.getCommentAuthorIds());
     }
 
     public Long getId() {
@@ -217,6 +222,32 @@ public class CaseQuery extends BaseQuery {
         this.memberIds = memberIds;
     }
 
+    public List<Long> getCommentAuthorIds() {
+        return commentAuthorIds;
+    }
+
+    public void setCommentAuthorIds(List<Long> commentAuthorIds) {
+        this.commentAuthorIds = commentAuthorIds;
+    }
+
+    @Override
+    public boolean isParamsPresent() {
+        return super.isParamsPresent() ||
+                id != null ||
+                CollectionUtils.isNotEmpty(caseNumbers) ||
+                CollectionUtils.isNotEmpty(companyIds) ||
+                CollectionUtils.isNotEmpty(initiatorIds) ||
+                CollectionUtils.isNotEmpty(productIds) ||
+                CollectionUtils.isNotEmpty(managerIds) ||
+                CollectionUtils.isNotEmpty(stateIds) ||
+                CollectionUtils.isNotEmpty(importanceIds) ||
+                from != null ||
+                to != null ||
+                StringUtils.isNotBlank(searchCasenoString) ||
+                CollectionUtils.isNotEmpty(memberIds) ||
+                CollectionUtils.isNotEmpty(commentAuthorIds);
+    }
+
     @Override
     public String toString () {
         return "CaseQuery{" +
@@ -235,6 +266,7 @@ public class CaseQuery extends BaseQuery {
                 ", searchCasenoString=" + searchCasenoString +
                 ", viewPrivate=" + viewPrivate +
                 ", memberIds=" + memberIds +
+                ", commentAuthorIds=" + commentAuthorIds +
                 '}';
     }
 }

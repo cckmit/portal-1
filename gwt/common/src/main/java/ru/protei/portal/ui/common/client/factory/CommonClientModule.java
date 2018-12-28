@@ -57,7 +57,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( ActionBarActivity.class ).asEagerSingleton();
         bind( AbstractSectionItemView.class ).to( SectionItemView.class );
 
-        bind( AbstractDialogDetailsView.class ).to( DialogDetailsView.class ).in( Singleton.class );
+        bind( AbstractDialogDetailsView.class ).to( DialogDetailsView.class );
 
         bind( NotifyActivity.class ).asEagerSingleton();
         bind( AbstractNotifyView.class ).to( NotifyView.class );

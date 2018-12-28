@@ -6,7 +6,10 @@ import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.winter.jdbc.JdbcHelper;
+
+import java.util.stream.Collectors;
 
 public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements PlatformDAO {
 
@@ -27,8 +30,17 @@ public class PlatformDAO_Impl extends PortalBaseJdbcDAO<Platform> implements Pla
             }
 
             if (query.getManagerIds() != null && !query.getManagerIds().isEmpty()) {
-                condition.append(" and platform.manager_id in ")
-                         .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null));
+                if (query.getManagerIds().remove(CrmConstants.Employee.UNDEFINED)) {
+                    condition.append(" and (platform.manager_id is null");
+                    if (!query.getManagerIds().isEmpty()) {
+                        condition.append(" or platform.manager_id in ")
+                                .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null));
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and platform.manager_id in ")
+                            .append(JdbcHelper.makeSqlStringCollection(query.getManagerIds(), args, null));
+                }
             }
 
             if (query.getSearchString() != null && !query.getSearchString().isEmpty()) {

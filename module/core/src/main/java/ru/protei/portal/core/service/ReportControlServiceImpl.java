@@ -4,23 +4,17 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.Lang;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
-import ru.protei.portal.core.utils.JXLSHelper;
-import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.core.report.caseobjects.ReportCase;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.utils.TimeFormatter;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
@@ -30,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.stream.Collectors;
 
 public class ReportControlServiceImpl implements ReportControlService {
 
@@ -41,18 +34,14 @@ public class ReportControlServiceImpl implements ReportControlService {
 
     @Autowired
     PortalConfig config;
-
     @Autowired
     ReportDAO reportDAO;
-
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-
     @Autowired
     ReportStorageService reportStorageService;
+    @Autowired
+    ReportCase reportCase;
+    @Autowired
+    ReportCaseTimeElapsed reportCaseTimeElapsed;
 
     @PostConstruct
     public void init() {
@@ -130,8 +119,8 @@ public class ReportControlServiceImpl implements ReportControlService {
             log.debug("start process report : reportId={}", report.getId());
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-            if (!writeIssuesReport(report, buffer)) {
-                mergeReport(report, En_ReportStatus.ERROR);
+            if (!writeReport(report, buffer)) {
+                mergeErrorStatus(report);
                 return;
             }
 
@@ -139,7 +128,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             storageResult = reportStorageService.saveContent(reportContent);
 
             if (!storageResult.isOk()) {
-                mergeReport(report, En_ReportStatus.ERROR);
+                mergeErrorStatus(report);
                 return;
             }
 
@@ -150,7 +139,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             if (storageResult != null) {
                 reportStorageService.removeContent(report.getId());
             }
-            mergeReport(report, En_ReportStatus.ERROR);
+            mergeErrorStatus(report);
         } finally {
             reportsInProcess.remove(report.getId());
         }
@@ -163,73 +152,33 @@ public class ReportControlServiceImpl implements ReportControlService {
         log.debug("process report : reportId={}, status={}", report.getId(), status.name());
     }
 
-    private boolean writeIssuesReport(final Report report, ByteArrayOutputStream buffer) throws IOException {
+    private void mergeErrorStatus(Report report) {
+        report.setStatus(En_ReportStatus.ERROR);
+        report.setModified(new Date());
+        reportDAO.partialMerge(report, "status", "modified");
+        log.debug("process report : reportId={}, status={}", report.getId(), En_ReportStatus.ERROR);
+    }
 
-        Long count = caseObjectDAO.count(report.getCaseQuery());
-
-        if (count == null || count < 1) {
-            log.debug("report : reportId={} has no corresponding case objects", report.getId());
-            return true;
-        }
-
-        if (count > Integer.MAX_VALUE) {
-            log.debug("report : reportId={} has too many corresponding case objects: {}, aborting task", report.getId(), count);
+    private boolean writeReport(Report report, ByteArrayOutputStream buffer) throws IOException {
+        if (report.getReportType() == null) {
+            log.warn("write report : reportId={} - report type is null", report.getId());
             return false;
         }
-
-        log.debug("report : reportId={} has {} case objects to procees", report.getId(), count);
-
-        JXLSHelper.ReportBook book = new JXLSHelper.ReportBook(
-                new SimpleDateFormat("dd.MM.yyyy HH:mm"),
-                new WorkTimeFormatter(),
-                getLang().getFor(Locale.forLanguageTag(report.getLocale()))
-        );
-
-        if (writeIssuesReport(book, report, count)) {
-            book.collect(buffer);
-            return true;
-        } else {
-            return false;
+        switch (report.getReportType()) {
+            case CASE_OBJECTS:
+                return reportCase.writeReport(
+                        buffer, report,
+                        new SimpleDateFormat("dd.MM.yyyy HH:mm"),
+                        new TimeFormatter()
+                );
+            case CASE_TIME_ELAPSED:
+                return reportCaseTimeElapsed.writeReport(
+                        buffer, report,
+                        new SimpleDateFormat("dd.MM.yyyy HH:mm"),
+                        new TimeFormatter()
+                );
         }
-    }
-
-    private boolean writeIssuesReport(JXLSHelper.ReportBook book, Report report, Long count) {
-
-        final int step = config.data().reportConfig().getChunkSize();
-        final int limit = count.intValue();
-        int offset = 0;
-
-        while (offset < limit) {
-            int amount = offset + step < limit ? step : limit - offset;
-            try {
-                CaseQuery query = report.getCaseQuery();
-                query.setOffset(offset);
-                query.setLimit(amount);
-                writeIssuesReportChunk(book, query);
-                offset += step;
-            } catch (Throwable th) {
-                log.warn("fail to process chunk [{} - {}] : reportId={} {}", offset, amount, report.getId(), th);
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private void writeIssuesReportChunk(JXLSHelper.ReportBook book, CaseQuery query) {
-        List<CaseObject> issues = caseObjectDAO.getCases(query);
-        List<List<CaseComment>> comments = issues.stream()
-                .map(issue -> caseCommentDAO.getCaseComments(issue.getId()))
-                .collect(Collectors.toList());
-
-        book.write(issues, comments);
-    }
-
-    private Lang getLang() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasenames("Lang");
-        messageSource.setDefaultEncoding("UTF-8");
-        return new Lang(messageSource);
+        return false;
     }
 
     // -------------------

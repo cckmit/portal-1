@@ -1,9 +1,9 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
@@ -13,6 +13,9 @@ import java.util.List;
  * Created by michael on 20.05.16.
  */
 public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implements CaseCommentDAO {
+
+    @Autowired
+    CaseCommentSqlBuilder sqlBuilder;
 
     @Override
     public List<CaseComment> getCaseComments(long caseId) {
@@ -32,24 +35,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CaseCommentQuery query) {
-        return new SqlCondition().build((condition, args) -> {
-            condition.append("1=1");
-
-            if (query.getCaseId() != null) {
-                condition.append(" and case_comment.case_id=?");
-                args.add(query.getCaseId());
-            }
-
-            if (HelperFunc.isNotEmpty(query.getSearchString())) {
-                condition.append(" and case_comment.comment_text like ?");
-                args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
-            }
-
-            if (query.getCreatedBefore() != null) {
-                condition.append(" and case_comment.created <= ?");
-                args.add(query.getCreatedBefore());
-            }
-        });
+        return sqlBuilder.createSqlCondition(query);
     }
 
     @Override

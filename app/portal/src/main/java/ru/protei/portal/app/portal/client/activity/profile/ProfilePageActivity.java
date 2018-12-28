@@ -71,6 +71,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
             );
         }
 
+        view.companySubscriptionEnabled().setEnabled(policyService.hasPrivilegeFor( En_Privilege.COMMON_PROFILE_EDIT ));
         view.saveButtonVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.COMMON_PROFILE_EDIT ));
     }
 

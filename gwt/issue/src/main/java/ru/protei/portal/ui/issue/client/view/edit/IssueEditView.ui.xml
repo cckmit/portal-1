@@ -11,7 +11,8 @@
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list"
-             xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit">
+             xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
@@ -81,7 +82,7 @@
                     <label ui:field="descriptionLabel">
                         <ui:text from="{lang.description}"/>
                     </label>
-                    <g:TextArea ui:field="description" styleName="input-field description" />
+                    <autoresizetextarea:AutoResizeTextArea ui:field="description" styleName="input-field resize-vertical" minRows="5" maxRows="50"/>
                 </div>
 
 

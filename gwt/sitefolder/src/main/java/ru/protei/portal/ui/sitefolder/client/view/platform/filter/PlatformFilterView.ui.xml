@@ -22,7 +22,7 @@
 
             <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-xs-12"/>
 
-            <person:EmployeeMultiSelector ui:field="managers" header="{lang.siteFolderManager}" addStyleNames="form-group col-xs-12"/>
+            <person:EmployeeMultiSelector ui:field="managers" header="{lang.siteFolderManager}" hasWithoutValue="true" addStyleNames="form-group col-xs-12"/>
 
             <div class="form-group col-xs-12">
                 <label>

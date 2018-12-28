@@ -28,7 +28,7 @@ public class SubscriptionItem
         extends Composite
         implements TakesValue<Subscription>,
         HasCloseHandlers<SubscriptionItem>,
-        HasAddHandlers
+        HasAddHandlers, HasEnabled
 {
     @Inject
     public void onInit() {
@@ -52,6 +52,17 @@ public class SubscriptionItem
 
         email.setValue( value.getEmail() );
         locale.setValue( value.getLangCode() );
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return email.isEnabled() && locale.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean b) {
+        email.setEnabled(b);
+        locale.setEnabled(b);
     }
 
     @Override
@@ -98,6 +109,7 @@ public class SubscriptionItem
     LocaleButtonSelector locale;
 
     private Subscription value;
+
 
     interface PairItemUiBinder extends UiBinder< HTMLPanel, SubscriptionItem> {}
     private static PairItemUiBinder ourUiBinder = GWT.create( PairItemUiBinder.class );

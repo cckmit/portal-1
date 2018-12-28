@@ -3,12 +3,17 @@ package ru.protei.portal.core.model.query;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CaseCommentQuery extends BaseQuery {
 
-    private Long caseId;
     private Date createdBefore;
+    private Boolean timeElapsedNotNull;
+    private Boolean caseStateNotNull;
+    private List<Long> caseObjectIds;
+    private List<Long> authorIds;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -25,15 +30,7 @@ public class CaseCommentQuery extends BaseQuery {
 
     public CaseCommentQuery(Long id, String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
-        setCaseId(id);
-    }
-
-    public Long getCaseId() {
-        return caseId;
-    }
-
-    public void setCaseId(Long caseId) {
-        this.caseId = caseId;
+        addCaseObjectId(id);
     }
 
     public Date getCreatedBefore() {
@@ -42,5 +39,57 @@ public class CaseCommentQuery extends BaseQuery {
 
     public void setCreatedBefore(Date createdBefore) {
         this.createdBefore = createdBefore;
+    }
+
+    public Boolean isTimeElapsedNotNull() {
+        return timeElapsedNotNull;
+    }
+
+    public void setTimeElapsedNotNull(Boolean timeElapsedNotNull) {
+        this.timeElapsedNotNull = timeElapsedNotNull;
+    }
+
+    public void setCaseStateNotNull(Boolean caseStateNotNull) {
+        this.caseStateNotNull = caseStateNotNull;
+    }
+
+    public Boolean isCaseStateNotNull() {
+        return caseStateNotNull;
+    }
+
+    public List<Long> getCaseObjectIds() {
+        return caseObjectIds;
+    }
+
+    public void setCaseObjectIds(List<Long> caseObjectIds) {
+        this.caseObjectIds = caseObjectIds;
+    }
+
+    public void addCaseObjectId(Long caseObjectId) {
+        if (caseObjectId == null) {
+            return;
+        }
+        if (caseObjectIds == null) {
+            caseObjectIds = new ArrayList<>();
+        }
+        caseObjectIds.add(caseObjectId);
+    }
+
+    public List<Long> getAuthorIds() {
+        return authorIds;
+    }
+
+    public void setAuthorIds(List<Long> authorIds) {
+        this.authorIds = authorIds;
+    }
+
+    public void addAuthorId(Long authorId) {
+        if (authorId == null) {
+            return;
+        }
+        if (authorIds == null) {
+            authorIds = new ArrayList<>();
+        }
+        authorIds.add(authorId);
     }
 }
