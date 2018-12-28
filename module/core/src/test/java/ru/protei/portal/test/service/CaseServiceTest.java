@@ -8,9 +8,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -26,10 +28,12 @@ import java.util.Set;
 public class CaseServiceTest {
 
     static ApplicationContext ctx;
+    static En_CaseType caseType;
 
     @BeforeClass
     public static void init () {
          ctx = new AnnotationConfigApplicationContext (CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
+         caseType = En_CaseType.CRM_SUPPORT;
     }
 
     @Test
@@ -41,9 +45,9 @@ public class CaseServiceTest {
         Assert.assertNotNull(comments);
         System.out.println( "case " + testCaseId + " comment list size = " +  comments.size() );
 
-        CaseService service = ctx.getBean(CaseService.class);
+        CaseCommentService service = ctx.getBean(CaseCommentService.class);
         Assert.assertNotNull(service);
-        CoreResponse<List<CaseComment>> result = service.getCaseCommentList(null, testCaseId);
+        CoreResponse<List<CaseComment>> result = service.getCaseCommentList(null, caseType, testCaseId);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
@@ -74,16 +78,16 @@ public class CaseServiceTest {
         comment.setCreated( new Date() );
         comment.setText( "Unit-test - тестовый комментарий" );
 
-        CaseService service = ctx.getBean(CaseService.class);
+        CaseCommentService service = ctx.getBean(CaseCommentService.class);
 
-        CoreResponse<CaseComment> result = service.addCaseComment( null, comment, null );
+        CoreResponse<CaseComment> result = service.addCaseComment( null, caseType, comment, null );
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
 
         System.out.println( result.getData() );
 
-        CoreResponse<List<CaseComment>> resultList = service.getCaseCommentList(null, testCaseId);
+        CoreResponse<List<CaseComment>> resultList = service.getCaseCommentList(null, caseType, testCaseId);
         System.out.println(" size after add = " + resultList.getData().size());
 
         // update
@@ -92,26 +96,25 @@ public class CaseServiceTest {
         if (comment != null) {
             comment.setText( "Unit-test - тестовый комментарий (update)" );
 
-            result = service.updateCaseComment( null, comment, null );
+            result = service.updateCaseComment( null, caseType, comment, null );
             Assert.assertNotNull( result );
             Assert.assertTrue( result.isOk() );
             Assert.assertNotNull( result.getData() );
 
             System.out.println( result.getData() );
         }
-        resultList = service.getCaseCommentList(null, testCaseId);
+        resultList = service.getCaseCommentList(null, caseType, testCaseId);
         System.out.println(" size after update = " + resultList.getData().size());
 
         // delete
         if (comment != null) {
-            result = service.removeCaseComment( null, comment, personId );
-            Assert.assertNotNull( result );
-            Assert.assertTrue( result.isOk() );
-            Assert.assertNotNull( result.getData() );
+            CoreResponse<Boolean> result2 = service.removeCaseComment(null, caseType, comment, personId);
+            Assert.assertNotNull( result2 );
+            Assert.assertTrue( result2.isOk() );
 
-            System.out.println( result.getData() );
+            System.out.println( result2.getData() );
         }
-        resultList = service.getCaseCommentList(null, testCaseId);
+        resultList = service.getCaseCommentList(null, caseType, testCaseId);
         System.out.println(" size after remove = " + resultList.getData().size());
 
     }

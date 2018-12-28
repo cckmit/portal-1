@@ -101,7 +101,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.setInfo(official.getInfo());
 
         fillMembers(OfficialUtils.createMembersByRegionsMap(official));
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), official.getId()) );
+        fireEvent( new OfficialMemberEvents.ShowComments( view.getCommentsContainer(), official.getId()) );
 
     }
 
@@ -156,7 +156,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
                 view.attachmentsContainer().remove(attachment);
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(officialId));
-                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), officialId ) );
+                fireEvent( new OfficialMemberEvents.ShowComments( view.getCommentsContainer(), officialId ) );
             }
         });
     }

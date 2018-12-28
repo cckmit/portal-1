@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.activity.comment.item;
+package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -10,9 +10,9 @@ import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 /**
  * Представление одного комментария
  */
-public interface AbstractIssueCommentItemView extends IsWidget {
+public interface AbstractCaseCommentItemView extends IsWidget {
 
-    void setActivity( AbstractIssueCommentItemActivity activity );
+    void setActivity( AbstractCaseCommentItemActivity activity );
 
     void setDate( String value );
 

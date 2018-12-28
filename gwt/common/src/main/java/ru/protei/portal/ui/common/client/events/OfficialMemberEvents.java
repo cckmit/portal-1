@@ -47,4 +47,17 @@ public class OfficialMemberEvents {
 
     public static class ReloadPage {
     }
+
+    /**
+     * Показать комментарии
+     */
+    public static class ShowComments {
+        public ShowComments(HasWidgets parent, Long caseId) {
+            this.parent = parent;
+            this.caseId = caseId;
+        }
+
+        public Long caseId;
+        public HasWidgets parent;
+    }
 }

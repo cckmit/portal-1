@@ -11,7 +11,10 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.ConfirmDialogEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -147,8 +150,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         view.removeBtnVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE));
 
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), false ) );
-
+        fireEvent( new ProjectEvents.ShowComments( view.getCommentsContainer(), value.getId() ) );
     }
 
     private void readView() {

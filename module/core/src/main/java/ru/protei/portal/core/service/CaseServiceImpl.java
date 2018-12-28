@@ -10,7 +10,6 @@ import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
@@ -276,41 +275,6 @@ public class CaseServiceImpl implements CaseService {
 
         return new CoreResponse<List<En_CaseState>>().success(states);
     }
-
-
-    @Override
-    public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId ) {
-        return caseCommentService.getCaseCommentList(token, En_CaseType.CRM_SUPPORT, caseId);
-    }
-
-    @Override
-    public CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, CaseCommentQuery query ) {
-        return caseCommentService.getCaseCommentList(token, En_CaseType.CRM_SUPPORT, query);
-    }
-
-    @Override
-    @Transactional
-    public CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment comment, Person currentPerson ) {
-        return caseCommentService.addCaseComment(token, En_CaseType.CRM_SUPPORT, comment, currentPerson);
-    }
-
-    @Override
-    @Transactional
-    public CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment comment, Person person ) {
-        return caseCommentService.updateCaseComment(token, En_CaseType.CRM_SUPPORT, comment, person);
-    }
-
-    @Override
-    @Transactional
-    public CoreResponse removeCaseComment( AuthToken token, CaseComment caseComment, Long personId ) {
-        return caseCommentService.removeCaseComment(token, En_CaseType.CRM_SUPPORT, caseComment, personId);
-    }
-
-    @Override
-    public CoreResponse<List<CaseComment>> getEmployeeRegistrationCommentList(AuthToken token, long caseId) {
-        return caseCommentService.getCaseCommentList(token, En_CaseType.EMPLOYEE_REGISTRATION, caseId);
-    }
-
 
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {

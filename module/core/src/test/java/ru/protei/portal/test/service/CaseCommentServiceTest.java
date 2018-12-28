@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -32,6 +33,7 @@ import static org.junit.Assert.*;
 public class CaseCommentServiceTest {
 
     public static final AuthToken TEST_AUTH_TOKEN = new AuthToken("TEST_SID", "127.0.0.1");
+    private En_CaseType caseType = En_CaseType.CRM_SUPPORT;
 
     @Inject
     private CaseCommentDAO caseCommentDAO;
@@ -41,6 +43,8 @@ public class CaseCommentServiceTest {
     PersonDAO personDAO;
     @Inject
     private CaseService caseService;
+    @Inject
+    CaseCommentService caseCommentService;
 
     @Inject
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -77,7 +81,7 @@ public class CaseCommentServiceTest {
         Long timeElapsed1 = 4 * MINUTE;
         comment1.setTimeElapsed(timeElapsed1);
 
-        CaseComment saved = checkResultAndGetData(caseService.addCaseComment(TEST_AUTH_TOKEN, comment1, person));
+        CaseComment saved = checkResultAndGetData(caseCommentService.addCaseComment(TEST_AUTH_TOKEN, caseType, comment1, person));
         CaseComment fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1, fromDb.getTimeElapsed());
@@ -90,7 +94,7 @@ public class CaseCommentServiceTest {
         Long timeElapsed2 = 5 * MINUTE;
         comment2.setTimeElapsed(timeElapsed2);
 
-        saved = checkResultAndGetData(caseService.addCaseComment(TEST_AUTH_TOKEN, comment2, person));
+        saved = checkResultAndGetData(caseCommentService.addCaseComment(TEST_AUTH_TOKEN, caseType, comment2, person));
         fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment2.getText(), timeElapsed2, fromDb.getTimeElapsed());
@@ -101,7 +105,7 @@ public class CaseCommentServiceTest {
         //  Change comment 1
         Long timeElapsed1Changed = 18 * MINUTE;
         comment1.setTimeElapsed(timeElapsed1Changed);
-        saved = checkResultAndGetData(caseService.updateCaseComment(TEST_AUTH_TOKEN, comment1, person));
+        saved = checkResultAndGetData(caseCommentService.updateCaseComment(TEST_AUTH_TOKEN, caseType, comment1, person));
         fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1Changed, fromDb.getTimeElapsed());

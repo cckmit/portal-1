@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.view.comment.item;
+package ru.protei.portal.ui.common.client.view.casecomment.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -23,8 +23,8 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
-import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
-import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,9 +32,9 @@ import java.util.Set;
 /**
  * Один комментарий
  */
-public class IssueCommentItemView
+public class CaseCommentItemView
         extends Composite
-        implements AbstractIssueCommentItemView {
+        implements AbstractCaseCommentItemView {
 
     @Inject
     public void onInit() {
@@ -42,7 +42,7 @@ public class IssueCommentItemView
     }
 
     @Override
-    public void setActivity( AbstractIssueCommentItemActivity activity ) {
+    public void setActivity( AbstractCaseCommentItemActivity activity ) {
         this.activity = activity;
     }
 
@@ -240,8 +240,8 @@ public class IssueCommentItemView
     @Inject
     En_CaseImportanceLang importanceLang;
 
-    private AbstractIssueCommentItemActivity activity;
+    private AbstractCaseCommentItemActivity activity;
 
-    interface IssueCommentUiBinder extends UiBinder<Widget, IssueCommentItemView> {}
-    private static IssueCommentUiBinder ourUiBinder = GWT.create( IssueCommentUiBinder.class );
+    interface CaseCommentUiBinder extends UiBinder<Widget, CaseCommentItemView> {}
+    private static CaseCommentUiBinder ourUiBinder = GWT.create( CaseCommentUiBinder.class );
 }
