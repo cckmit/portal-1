@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
@@ -21,8 +20,8 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.LongAuditableObject;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
-import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.service.AuditService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -32,7 +31,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -113,22 +111,13 @@ public class ServiceLayerInterceptor {
         if ( token == null ) {
             return;
         }
-        UserSessionDescriptor descriptor = authService.findSession( token );
 
         AuditableObject auditableObject = findAuditableObject( pjp );
         if ( auditableObject == null ) {
             return;
         }
 
-        AuditObject auditObject = new AuditObject();
-        auditObject.setCreated( new Date() );
-        auditObject.setTypeId( auditable.value().getId() );
-        auditObject.setCreatorId( descriptor.getPerson().getId() );
-        auditObject.setCreatorIp( descriptor.getPerson().getIpAddress() );
-        auditObject.setCreatorShortName( descriptor.getPerson().getDisplayShortName() );
-        auditObject.setEntryInfo( auditableObject );
-
-        publisherService.publishEvent(new CreateAuditObjectEvent( this, auditObject ));
+        auditService.publishAuditObject(token, auditable.value(), auditableObject);
     }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
@@ -231,10 +220,10 @@ public class ServiceLayerInterceptor {
 
     @Autowired
     AuthService authService;
-
+    @Autowired
+    AuditService auditService;
     @Autowired
     PolicyService policyService;
-
     @Autowired
     EventPublisherService publisherService;
 }

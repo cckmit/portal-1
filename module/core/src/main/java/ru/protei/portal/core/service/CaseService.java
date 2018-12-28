@@ -42,7 +42,6 @@ public interface CaseService {
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 
-    // -> Comments -> //
 
     @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })
     CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId );
@@ -65,10 +64,6 @@ public interface CaseService {
     @Privileged( En_Privilege.EMPLOYEE_REGISTRATION_VIEW )
     CoreResponse<List<CaseComment>> getEmployeeRegistrationCommentList( AuthToken token, long caseId );
 
-    @Privileged( En_Privilege.EMPLOYEE_REGISTRATION_VIEW )
-    CoreResponse<CaseComment> addEmployeeRegistrationComment( AuthToken token, CaseComment comment );
-
-    // <- Comments <- //
 
     @Privileged( En_Privilege.ISSUE_EDIT )
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
@@ -87,4 +82,6 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber);
+
+    boolean hasAccessForCaseObject(AuthToken token, En_Privilege privilege, CaseObject caseObject);
 }
