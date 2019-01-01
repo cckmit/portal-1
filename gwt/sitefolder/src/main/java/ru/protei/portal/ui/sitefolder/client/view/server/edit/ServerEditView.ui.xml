@@ -25,12 +25,12 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.siteFolderParamsLocal}"/></label>
-                    <g:TextArea ui:field="parameters" styleName="form-control sf-parameters"/>
+                    <g:TextArea ui:field="parameters" styleName="form-control sf-parameters resize-vertical"/>
                 </div>
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
-                    <g:TextArea ui:field="comment" styleName="form-control sf-comment"/>
+                    <g:TextArea ui:field="comment" styleName="form-control sf-comment resize-vertical"/>
                 </div>
 
                 <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-md-12">

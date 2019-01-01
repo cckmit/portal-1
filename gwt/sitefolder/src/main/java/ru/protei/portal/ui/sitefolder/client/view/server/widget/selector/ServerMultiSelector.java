@@ -22,6 +22,7 @@ public class ServerMultiSelector extends MultipleInputSelector<EntityOption> imp
         for (EntityOption option : options) {
             addOption(option.getDisplayText(), option);
         }
+        reselectValuesIfNeeded();
     }
 
     @Override

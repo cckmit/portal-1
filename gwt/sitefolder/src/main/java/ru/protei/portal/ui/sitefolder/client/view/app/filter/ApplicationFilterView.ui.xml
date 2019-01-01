@@ -27,7 +27,7 @@
                 <label>
                     <ui:text from="{lang.siteFolderComment}"/>
                 </label>
-                <g:TextArea ui:field="comment" styleName="form-control sf-comment"/>
+                <g:TextArea ui:field="comment" styleName="form-control resize-vertical sf-comment"/>
             </div>
         </div>
         <div class="card-footer">
@@ -36,5 +36,5 @@
             </div>
         </div>
     </g:HTMLPanel>
-   
+
 </ui:UiBinder>

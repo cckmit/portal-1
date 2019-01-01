@@ -56,7 +56,10 @@
             <fieldset class="header">
                 <legend><ui:text from="{lang.equipmentPrimaryUse}"/></legend>
                 <div class="col-md-12">
-                    <span class="col-md-12 col-md-12 decimal-number" ui:field="primaryUse"></span>
+                    <g:Anchor styleName="m-r-5" ui:field="primaryUseLink" target="_blank" href="">
+                        <i class="fa fa-external-link"/>
+                    </g:Anchor>
+                    <span class="decimal-number" ui:field="primaryUse"></span>
                 </div>
             </fieldset>
 

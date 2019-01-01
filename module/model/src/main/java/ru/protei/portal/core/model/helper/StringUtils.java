@@ -21,6 +21,13 @@ public class StringUtils {
     }
 
     /**
+     * Checks if a String is not empty ("") and not null.
+     */
+    public static boolean isNotEmpty(String string) {
+        return !isEmpty(string);
+    }
+
+    /**
      * Checks if a String is not empty (""), not null and not whitespace only.
      */
     public static boolean isNotBlank( String string ) {

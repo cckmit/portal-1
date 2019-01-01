@@ -1438,7 +1438,45 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationPhoneOfficeTypeList();
 
+    String employeeRegistrationResourceOtherComment();
+
+    String employeeRegistrationOS();
+
+    String employeeRegistrationProbationPeriod();
+
+    String employeeRegistrationProbationPeriodPlaceholder();
+
+    String employeeRegistrationOSPlaceholder();
+
+    String employeeRegistrationAdditionalSoft();
+
+    String employeeRegistrationAdditionalSoftPlaceholder();
+
+    String employeeRegistrationInternalResourceOtherCommentPlaceholder();
+
+    String issueReportNew();
+
+    String reportTypeCaseObjects();
+
+    String reportTypeCaseTimeElapsed();
+
+    String issueReportsType();
+
+    String issueCommentAuthor();
+
+    String type();
+
+    String goToIssues();
+
+    String employeeWithoutManager();
+
     String employeeRegistrationMainInfoTitle();
 
     String employeeRegistrationWorkplaceTitle();
+
+    String employeeRegistrationResourceTitle();
+
+    String employeeRegistrationResourceHint();
+
+    String employeeRegistrationWorkplaceHint();
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -22,6 +23,13 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
      */
     @JdbcColumn(name = "name")
     private String name;
+
+    /**
+     * Тип отчета
+     */
+    @JdbcColumn(name = "type")
+    @JdbcEnumerated(EnumType.STRING)
+    private En_ReportType reportType;
 
     /**
      * Текущее состояние отчета
@@ -94,6 +102,14 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
         this.name = name;
     }
 
+    public En_ReportType getReportType() {
+        return reportType;
+    }
+
+    public void setReportType(En_ReportType reportType) {
+        this.reportType = reportType;
+    }
+
     public En_ReportStatus getStatus() {
         return status;
     }
@@ -155,12 +171,13 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
         return "Report{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", status='" + status + '\'' +
-                ", caseQuery='" + caseQuery + '\'' +
+                ", reportType=" + reportType +
+                ", status=" + status +
+                ", caseQuery=" + caseQuery +
                 ", creatorId=" + creatorId +
-                ", creator='" + creator + '\'' +
-                ", created='" + created + '\'' +
-                ", modified='" + modified + '\'' +
+                ", creator=" + creator +
+                ", created=" + created +
+                ", modified=" + modified +
                 ", locale='" + locale + '\'' +
                 '}';
     }

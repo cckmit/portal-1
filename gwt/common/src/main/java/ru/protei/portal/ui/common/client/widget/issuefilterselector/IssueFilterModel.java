@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.widget.filter;
+package ru.protei.portal.ui.common.client.widget.issuefilterselector;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;

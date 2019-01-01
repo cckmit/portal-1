@@ -22,7 +22,7 @@
 
             <companyselector:CompanyMultiSelector ui:field="companies" header="{lang.issueCompany}" addStyleNames="form-group col-md-12"/>
 
-            <person:EmployeeMultiSelector ui:field="managers" header="{lang.siteFolderManager}" addStyleNames="form-group col-md-12"/>
+            <person:EmployeeMultiSelector ui:field="managers" header="{lang.siteFolderManager}" addStyleNames="form-group col-md-12" hasWithoutValue="true"/>
 
             <div class="form-group col-md-12">
                 <label>
@@ -35,7 +35,7 @@
                 <label>
                     <ui:text from="{lang.siteFolderComment}"/>
                 </label>
-                <g:TextArea ui:field="comment" styleName="form-control sf-comment"/>
+                <g:TextArea ui:field="comment" styleName="form-control sf-comment resize-vertical"/>
             </div>
         </div>
         <div class="card-footer">

@@ -79,7 +79,7 @@ public abstract class EquipmentEditActivity
 
         fillDTO(equipment);
 
-        if (StringUtils.isBlank(equipment.getName()) || StringUtils.isBlank(equipment.getNameSldWrks())) {
+        if (StringUtils.isBlank(equipment.getName())) {
             fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
@@ -221,10 +221,6 @@ public abstract class EquipmentEditActivity
             equipment.setProjectId(view.project().getValue().getId());
             equipment.setProjectName(view.project().getValue().getName());
         }
-    }
-
-    private boolean isNew(Equipment equipment) {
-        return equipment.getId() == null;
     }
 
     @Inject

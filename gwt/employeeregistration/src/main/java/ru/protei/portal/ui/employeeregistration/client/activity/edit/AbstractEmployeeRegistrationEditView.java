@@ -48,4 +48,12 @@ public interface AbstractEmployeeRegistrationEditView extends IsWidget {
     void setEmploymentDateValid(boolean isValid);
 
     HasEnabled saveEnabled();
+
+    HasValue<Integer> probationPeriod();
+
+    HasValue<String> resourceComment();
+
+    HasValue<String> operatingSystem();
+
+    HasValue<String> additionalSoft();
 }

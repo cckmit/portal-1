@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.comment.list;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -39,4 +40,6 @@ public interface AbstractIssueCommentListView extends IsWidget {
     HasVisibility timeElapsedVisibility();
 
     void setUserIcon(String icon);
+
+    HasEnabled sendEnabled();
 }

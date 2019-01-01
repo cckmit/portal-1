@@ -22,7 +22,7 @@ public class UiConstants {
         String OFFICIAL = "fa fa-book";
         String DOCUMENT = "fa fa-file-text";
         String DOCUMENT_TYPE = "fa fa-list-alt";
-        String ISSUE_REPORTS = "fa fa-file";
+        String ISSUE_REPORTS = "fa fa-cloud-download";
         String CASE_STATE = "fa fa-bookmark ";
         String SITE_FOLDER = "fa fa-folder";
         String EMPLOYEE = "fa fa-user-circle";
@@ -51,7 +51,7 @@ public class UiConstants {
         String OFFICIAL = "official";
         String DOCUMENT = "document";
         String DOCUMENT_TYPE = "document_type";
-        String ISSUE_REPORTS = "issue_reports";
+        String ISSUE_REPORT = "issue_report";
         String SITE_FOLDER_PLATFORM = "site_folder_platform";
         String SITE_FOLDER_SERVER = "site_folder_server";
         String SITE_FOLDER_APP = "site_folder_app";

@@ -254,6 +254,13 @@ public abstract class Selector<T>
         showPopup();
     }
 
+    protected void reselectValueIfNeeded() {
+        T value = getValue();
+        if (value != null) {
+            setValue(value, false);
+        }
+    }
+
     private void showPopup() {
         popup.setSearchVisible(searchEnabled);
         popup.setSearchAutoFocus(searchAutoFocusEnabled);

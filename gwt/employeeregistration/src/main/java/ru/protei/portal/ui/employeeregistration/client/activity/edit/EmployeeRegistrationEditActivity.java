@@ -108,6 +108,12 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         q.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
         q.setWithRegistration(view.withRegistration().getValue());
         q.setEmploymentType(view.employmentType().getValue());
+
+        q.setProbationPeriodMonth( view.probationPeriod().getValue() );
+        q.setResourceComment( view.resourceComment().getValue() );
+        q.setOperatingSystem( view.operatingSystem().getValue() );
+        q.setAdditionalSoft( view.additionalSoft().getValue() );
+
         return q;
     }
 
@@ -116,6 +122,10 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.comment().setValue("");
         view.workplace().setValue("");
         view.position().setValue("");
+        view.probationPeriod().setValue(null);
+        view.resourceComment().setValue(null);
+        view.operatingSystem().setValue(null);
+        view.additionalSoft().setValue(null);
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.equipmentList().setValue(new HashSet<>());

@@ -80,11 +80,13 @@ public abstract class IssueCommentListActivity
 
         this.caseId = caseId;
         this.isEditingEnabled = !isEmployeeRegistration;
-        
+
         comment = null;
         lastCommentView = null;
+        requesting = false;
         tempAttachments.clear();
 
+        view.sendEnabled().setEnabled(true);
         view.message().setValue(null);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
@@ -196,9 +198,9 @@ public abstract class IssueCommentListActivity
             return;
         }
 
-        this.comment = null;
-        String quotedMessage = value.getText();
-        view.message().setValue( IssueCommentUtils.quoteMessage( quotedMessage ) );
+        comment = null;
+        String message = view.message().getValue() + IssueCommentUtils.quoteMessage( value.getText() );
+        view.message().setValue( message );
         view.focus();
     }
 
@@ -314,12 +316,13 @@ public abstract class IssueCommentListActivity
         }
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
+        boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
 
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
             itemView.setMessage( value.getText() );
         }
 
-        if ( HelperFunc.isEmpty( value.getText() ) && isStateChangeComment ) {
+        if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
             itemView.hideOptions();
         }
 
@@ -330,7 +333,7 @@ public abstract class IssueCommentListActivity
             itemView.setStatus( caseState );
         }
 
-        if (value.getCaseImpLevel() != null) {
+        if ( isImportanceChangeComment ) {
             En_ImportanceLevel importance = En_ImportanceLevel.getById(value.getCaseImpLevel());
             itemView.setImportanceLevel(importance);
         }
@@ -392,6 +395,12 @@ public abstract class IssueCommentListActivity
     }
 
     private void send(Long id, IssueEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
+        if ( requesting ) {
+            return;
+        }
+        requesting = true;
+        view.sendEnabled().setEnabled(false);
+
         if ( comment == null ) {
             comment = new CaseComment();
             comment.setAuthorId( profile.getId() );
@@ -419,6 +428,9 @@ public abstract class IssueCommentListActivity
         issueService.editIssueComment( comment, new RequestCallback<CaseComment>() {
             @Override
             public void onError( Throwable throwable ) {
+                view.sendEnabled().setEnabled(true);
+                requesting = false;
+
                 if(saveCommentCompleteHandler!=null){
                     saveCommentCompleteHandler.onError(throwable);
                     return;
@@ -429,6 +441,8 @@ public abstract class IssueCommentListActivity
 
             @Override
             public void onSuccess( CaseComment result ) {
+                requesting = false;
+                view.sendEnabled().setEnabled(true);
 
                 if(saveCommentCompleteHandler!=null){
                     saveCommentCompleteHandler.onSuccess();
@@ -503,6 +517,7 @@ public abstract class IssueCommentListActivity
 
     private Profile profile;
 
+    private boolean requesting = false;
     private boolean isEditingEnabled = true;
     private Long caseId;
 

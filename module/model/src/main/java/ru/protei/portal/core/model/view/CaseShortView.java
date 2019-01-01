@@ -73,14 +73,13 @@ public class CaseShortView implements Serializable {
     @JdbcJoinedColumn( table = "Person", localColumn = "MANAGER", remoteColumn = "ID", mappedColumn = "displayShortName")
     private String managerShortName;
 
+    @JdbcColumn(name = "ATTACHMENT_EXISTS")
+    private boolean isAttachmentExists;
+
     @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
             @JdbcJoinPath( table = "Person", localColumn = "MANAGER", remoteColumn = "id" ),
             @JdbcJoinPath( table = "Company", localColumn = "company_id", remoteColumn = "id" )
     })
-
-    @JdbcColumn(name = "ATTACHMENT_EXISTS")
-    private boolean isAttachmentExists;
-
     private String managerCompanyName;
 
     public CaseShortView() {

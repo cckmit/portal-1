@@ -77,7 +77,7 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
 
     private void initTable() {
         numberColumn = new NumberColumn(lang, reportStatusLang);
-        infoColumn = new InfoColumn(lang);
+        infoColumn = new InfoColumn(lang, reportTypeLang);
         filterColumn = new FilterColumn(lang, sortFieldLang, sortDirLang, caseImportanceLang, caseStateLang);
 
         table.addColumn(numberColumn.header, numberColumn.values);
@@ -113,6 +113,8 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     private En_CaseImportanceLang caseImportanceLang;
     @Inject
     private En_CaseStateLang caseStateLang;
+    @Inject
+    private En_ReportTypeLang reportTypeLang;
 
     @Inject
     private NumberColumn numberColumn;

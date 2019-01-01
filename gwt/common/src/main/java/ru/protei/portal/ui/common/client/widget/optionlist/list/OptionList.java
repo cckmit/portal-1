@@ -49,6 +49,7 @@ public class OptionList<T>
 
     public void setHeader( String header ) {
         this.header.setInnerText( header == null ? "" : header );
+        this.header.removeClassName("hide");
     }
 
 

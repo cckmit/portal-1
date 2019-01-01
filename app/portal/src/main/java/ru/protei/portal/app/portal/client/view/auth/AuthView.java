@@ -30,6 +30,9 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         ensureDebugIds();
         initHandlers();
         initPlaceholders();
+
+        login.getElement().setAttribute("autocapitalize", "off");
+        password.getElement().setAttribute("autocapitalize", "off");
     }
 
     public void setActivity(AbstractAuthActivity activity) {

@@ -23,6 +23,7 @@ public class PlatformButtonSelector extends ButtonSelector<EntityOption> impleme
     public void fillOptions(List<EntityOption> options) {
         clearOptions();
         options.forEach(this::addOption);
+        reselectValueIfNeeded();
     }
 
     @Inject

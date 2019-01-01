@@ -23,6 +23,7 @@ public class ServerButtonSelector extends ButtonSelector<EntityOption> implement
     public void fillOptions(List<EntityOption> options) {
         clearOptions();
         options.forEach(this::addOption);
+        reselectValueIfNeeded();
     }
 
     @Inject

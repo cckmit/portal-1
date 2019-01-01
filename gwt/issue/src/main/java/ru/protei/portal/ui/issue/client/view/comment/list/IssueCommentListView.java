@@ -95,6 +95,11 @@ public class IssueCommentListView
     }
 
     @Override
+    public HasEnabled sendEnabled() {
+        return send;
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );

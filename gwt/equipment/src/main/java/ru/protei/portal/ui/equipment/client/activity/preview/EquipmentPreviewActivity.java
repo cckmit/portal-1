@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.equipment.client.activity.preview;
 
+import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -103,7 +104,7 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
     private void fillView( Equipment value ) {
         this.equipment = value;
 
-        view.setHeader( lang.equipmentDescription() + " #" + value.getId() );
+        view.setHeader( "#" + value.getId() );
         view.setName( value.getName() );
         view.setCreatedDate(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
         view.setNameBySldWrks( value.getNameSldWrks() );
@@ -114,6 +115,11 @@ public abstract class EquipmentPreviewActivity implements Activity, AbstractEqui
         view.setCopyBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_CREATE ) );
         view.setRemoveBtnEnabledStyle( policyService.hasPrivilegeFor( En_Privilege.EQUIPMENT_REMOVE ) );
 
+        boolean isLinkedEqPresent = value.getLinkedEquipmentId() != null;
+        view.linkedEquipmentLinkVisibility().setVisible(isLinkedEqPresent);
+        if ( isLinkedEqPresent ) {
+            view.setLinkedEquipmentExternalLink(GWT.getHostPageBaseURL() + "#equipment_preview:id=" + value.getLinkedEquipmentId() );
+        }
 
         if( value.getDecimalNumbers() != null ) {
             view.setDecimalNumbers( value.getDecimalNumbers().stream().map( DecimalNumberFormatter::formatNumber ).collect( Collectors.joining(", ")) );

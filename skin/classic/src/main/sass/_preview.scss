@@ -45,6 +45,10 @@
             vertical-align: baseline;
 
             color: #636363;
+
+            p {
+                margin: 0;
+            }
         }
 
         &.header {
@@ -122,4 +126,8 @@
         }
     }
 
+}
+
+.issue-fullscreen .preview {
+    padding: 0 !important;
 }
