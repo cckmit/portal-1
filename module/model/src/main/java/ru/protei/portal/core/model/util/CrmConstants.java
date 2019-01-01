@@ -14,6 +14,11 @@ public class CrmConstants {
         Long UNDEFINED = -1L;
     }
 
+    public interface Employee {
+        Long UNDEFINED = -1L;
+    }
+
+
     public interface Issue {
         String CREATE_CONTACT_IDENTITY = "issue-edit";
         int MIN_LENGTH_FOR_SEARCH_BY_COMMENTS = 3;

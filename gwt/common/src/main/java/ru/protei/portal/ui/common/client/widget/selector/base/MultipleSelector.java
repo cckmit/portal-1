@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
@@ -198,6 +199,13 @@ public abstract class MultipleSelector<T>
         selected.clear();
         for ( Map.Entry< SelectableItem, T > entry : itemViewToModel.entrySet() ) {
             entry.getKey().setValue( false );
+        }
+    }
+
+    protected void reselectValuesIfNeeded() {
+        Set<T> value = getValue();
+        if (CollectionUtils.isNotEmpty(value)) {
+            setValue(value, false);
         }
     }
 

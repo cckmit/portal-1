@@ -41,6 +41,10 @@ abstract class ValidableTextBoxBase extends TextBoxBase implements HasValidable{
         return regexp.test( getValue() );
     }
 
+    public void setPlaceholder(String placeholder ) {
+        getElement().setAttribute("placeholder", placeholder);
+    }
+
     public void setRegexp( String regexp ){
         this.regexp = RegExp.compile(regexp);
     }

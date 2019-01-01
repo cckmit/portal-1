@@ -70,6 +70,11 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         this.icon.setSrc( iconSrc );
     }
 
+    @Override
+    public HasEnabled companySubscriptionEnabled() {
+        return subscriptions;
+    }
+
     @UiHandler( "saveButton" )
     public void onButtonClicked( ClickEvent event ) {
         if ( activity != null ) {

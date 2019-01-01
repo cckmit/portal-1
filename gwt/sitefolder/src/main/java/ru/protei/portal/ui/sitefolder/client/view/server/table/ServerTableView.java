@@ -178,7 +178,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref("#");
             a.addClassName("fa fa-share cell-inline-icon");
-            a.setTitle(lang.siteFolderServers());
+            a.setTitle(lang.siteFolderApps());
             cell.appendChild(a);
         }
     };

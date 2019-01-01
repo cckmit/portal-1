@@ -11,7 +11,8 @@
             <div class="grid grid-indent">
                 <div class="form-group col-xs-4">
                     <label><ui:text from="{lang.devUnitComponent}"/></label>
-                    <component:ComponentButtonSelector ui:field="component" validation="false" defaultValue="{lang.selectComponent}"/>
+                    <component:ComponentButtonSelector ui:field="component" searchEnabled="true"
+                                                       validation="false" defaultValue="{lang.selectComponent}"/>
                 </div>
 
                 <div class="form-group col-xs-4">
@@ -26,7 +27,7 @@
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
-                    <g:TextArea ui:field="comment" styleName="input-field sf-comment"/>
+                    <g:TextArea ui:field="comment" styleName="input-field resize-vertical sf-comment"/>
                 </div>
 
                 <div class="form-group col-xs-12">

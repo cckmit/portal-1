@@ -7,17 +7,16 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.lang.En_EmployeeEquipmentLang;
-import ru.protei.portal.ui.common.client.lang.En_EmploymentTypeLang;
-import ru.protei.portal.ui.common.client.lang.En_InternalResourceLang;
-import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+
+import static ru.protei.portal.core.model.helper.StringUtils.*;
 
 public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmployeeRegistrationPreviewActivity, Activity {
 
@@ -74,9 +73,14 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
         view.setCreated(DateFormatter.formatDateTime(value.getCreated()));
-        view.setEquipmentList(CollectionUtils.join(value.getEquipmentList(), equipmentLang::getName, ", "));
-        view.setResourceList(CollectionUtils.join(value.getResourceList(), resourceLang::getName, ", "));
+        view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
+        view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
+        view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
         view.setPosition(value.getPosition());
+        view.setProbationPeriodMonth(value.getProbationPeriodMonth());
+        view.setOperatingSystem(value.getOperatingSystem());
+        view.setResourceComment(value.getResourceComment());
+        view.setAdditionalSoft(value.getAdditionalSoft());
         if (value.getHeadOfDepartment() != null)
             view.setHeadOfDepartment(value.getHeadOfDepartment().getDisplayShortName());
         else
@@ -111,6 +115,8 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     private En_EmployeeEquipmentLang equipmentLang;
     @Inject
     private En_InternalResourceLang resourceLang;
+    @Inject
+    private En_PhoneOfficeTypeLang phoneOfficeTypeLang;
     @Inject
     private En_EmploymentTypeLang employmentTypeLang;
     @Inject

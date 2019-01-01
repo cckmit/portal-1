@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
-import ru.protei.portal.core.model.dict.En_EmploymentType;
-import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
@@ -67,6 +64,13 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     private Set<En_InternalResource> resourceList;
 
     /**
+     * Доступ к офисной телефонии
+     */
+    @JdbcEnumerated(EnumType.ORDINAL)
+    @JdbcColumnCollection(name = "phone_office_type_list", separator = ",")
+    private Set<En_PhoneOfficeType> phoneOfficeTypeList;
+
+    /**
      * Создатель анкеты
      */
     @JdbcJoinedColumn(localColumn = "id", remoteColumn = "id", mappedColumn = "CREATOR", table = "case_object", sqlTableAlias = "CO")
@@ -113,6 +117,30 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
             @JdbcManyJoinData(remoteColumn = "link_type", value = "YT", valueClass = String.class)
     })
     private Set<CaseLink> youtrackIssues;
+
+    /**
+     *  испытательный срок
+     */
+    @JdbcColumn(name ="probation_period")
+    Integer probationPeriodMonth;
+
+    /**
+     * комментраий к списку ресорсов
+     */
+    @JdbcColumn(name ="resource_comment")
+    String resourceComment;
+
+    /**
+     * Операционная система
+     */
+    @JdbcColumn(name ="operating_system")
+    String operatingSystem;
+
+    /**
+     * Дополнительное ПО
+     */
+    @JdbcColumn(name ="additional_soft")
+    String additionalSoft;
 
     public Long getId() {
         return id;
@@ -176,6 +204,14 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     public void setResourceList(Set<En_InternalResource> resourceList) {
         this.resourceList = resourceList;
+    }
+
+    public void setPhoneOfficeTypeList( Set<En_PhoneOfficeType> phoneOfficeTypeList ) {
+        this.phoneOfficeTypeList = phoneOfficeTypeList;
+    }
+
+    public Set<En_PhoneOfficeType> getPhoneOfficeTypeList() {
+        return phoneOfficeTypeList;
     }
 
     public PersonShortView getHeadOfDepartment() {
@@ -248,6 +284,38 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
         this.youtrackIssues = youtrackIssues;
     }
 
+    public Integer getProbationPeriodMonth() {
+        return probationPeriodMonth;
+    }
+
+    public void setProbationPeriodMonth( Integer probationPeriodMonth ) {
+        this.probationPeriodMonth = probationPeriodMonth;
+    }
+
+    public String getResourceComment() {
+        return resourceComment;
+    }
+
+    public void setResourceComment( String resourceComment ) {
+        this.resourceComment = resourceComment;
+    }
+
+    public String getOperatingSystem() {
+        return operatingSystem;
+    }
+
+    public void setOperatingSystem( String operatingSystem ) {
+        this.operatingSystem = operatingSystem;
+    }
+
+    public String getAdditionalSoft() {
+        return additionalSoft;
+    }
+
+    public void setAdditionalSoft( String additionalSoft ) {
+        this.additionalSoft = additionalSoft;
+    }
+
     @Override
     public String getAuditType() {
         return "EmployeeRegistration";
@@ -279,6 +347,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", workplace='" + workplace + '\'' +
                 ", equipmentList=" + equipmentList +
                 ", resourceList=" + resourceList +
+                ", phoneOfficeTypeList=" + phoneOfficeTypeList +
                 ", creatorId=" + creatorId +
                 ", headOfDepartmentId=" + headOfDepartmentId +
                 ", headOfDepartmentShortName='" + headOfDepartmentShortName + '\'' +
@@ -286,6 +355,11 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +
                 ", state=" + state +
+                ", probationPeriodMonth=" + probationPeriodMonth +
+                ", resourceComment='" + resourceComment + '\'' +
+                ", operatingSystem='" + operatingSystem + '\'' +
+                ", additionalSoft='" + additionalSoft + '\'' +
+                ", youtrackIssues=" + youtrackIssues +
                 '}';
     }
 }

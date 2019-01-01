@@ -1,9 +1,11 @@
 package ru.protei.portal.ui.sitefolder.client.view.app.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -60,10 +62,14 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
 
     @Override
     public void setPaths(PathInfo value) {
-        paths.setInnerHTML(value.getPaths().stream()
+        paths.removeAllChildren();
+        value.getPaths().stream()
                 .map(pathItem -> pathItem.getPath() + (HelperFunc.isNotEmpty(pathItem.getDesc()) ? " (" + pathItem.getDesc() + ")" : ""))
-                .collect(Collectors.joining("<br>"))
-        );
+                .forEach(text -> {
+                    Element p = DOM.createElement("p");
+                    p.setInnerText(text);
+                    paths.appendChild(p);
+                });
     }
 
     @UiField

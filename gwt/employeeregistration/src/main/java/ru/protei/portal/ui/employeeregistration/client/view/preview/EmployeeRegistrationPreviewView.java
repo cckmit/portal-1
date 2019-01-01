@@ -89,6 +89,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
+    public void setPhoneOfficeTypeList( String phoneOfficeTypeList ) {
+        this.phoneOfficeTypeList.setInnerText(phoneOfficeTypeList);
+    }
+
+    @Override
     public void setWithRegistration(String withRegistration) {
         this.withRegistration.setInnerText(withRegistration);
     }
@@ -119,6 +124,26 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         return commentContainer;
     }
 
+    @Override
+    public void setProbationPeriodMonth( Integer probationPeriodMonth ) {
+        probationPeriod.setInnerText( String.valueOf( probationPeriodMonth ));
+    }
+
+    @Override
+    public void setOperatingSystem( String operatingSystem ) {
+        this.operatingSystem.setInnerText( operatingSystem );
+    }
+
+    @Override
+    public void setResourceComment( String resourceComment ) {
+        this.resourceComment.setInnerText( resourceComment );
+    }
+
+    @Override
+    public void setAdditionalSoft( String additionalSoft ) {
+        this.additionalSoft.setInnerText( additionalSoft );
+    }
+
     @Inject
     @UiField(provided = true)
     IssueLinks issues;
@@ -141,9 +166,19 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @UiField
     SpanElement resourcesList;
     @UiField
+    SpanElement phoneOfficeTypeList;
+    @UiField
     SpanElement withRegistration;
     @UiField
     SpanElement created;
+    @UiField
+    SpanElement probationPeriod;
+    @UiField
+    SpanElement resourceComment;
+    @UiField
+    SpanElement operatingSystem;
+    @UiField
+    SpanElement additionalSoft;
     @UiField
     DivElement caseState;
     @UiField

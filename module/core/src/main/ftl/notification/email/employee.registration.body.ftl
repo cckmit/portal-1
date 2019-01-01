@@ -38,6 +38,14 @@
 <@set name="_employee_resource_store_delivery" value="${employee_resource_store_delivery}"/>
 <@set name="_employee_resource_email" value="${employee_resource_email}"/>
 
+<@set name="_phone_type_text" value="${phone_type_text}"/>
+<@set name="_phone_type_international" value="${phone_type_international}"/>
+<@set name="_phone_type_long_distance" value="${phone_type_long_distance}"/>
+
+<@set name="_additional_resource" value="${additional_resource}"/>
+<@set name="_operating_system" value="${operating_system}"/>
+<@set name="_additional_soft" value="${additional_soft}"/>
+
 <#noparse>
 <html>
 <head>
@@ -155,6 +163,21 @@
                 </#if><#rt>
             </td>
         </tr>
+
+    <#if (er.operatingSystem)??><#rt>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_operating_system}</td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.operatingSystem)!}</td>
+        </tr>
+    </#if><#rt>
+
+    <#if (er.additionalSoft)??><#rt>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_additional_soft}</td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.additionalSoft)!}</td>
+        </tr>
+    </#if><#rt>
+
         <tr>
             <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                 ${_resources_list}
@@ -171,6 +194,29 @@
                             <#case "CRM">${_employee_resource_crm}<#break>
                             <#case "STORE_DELIVERY">${_employee_resource_store_delivery}<#break>
                             <#case "EMAIL">${_employee_resource_email}<#break>
+                        </#switch><#sep>, </#sep><#rt>
+                    </#list><#rt>
+                </#if><#rt>
+            </td>
+        </tr>
+
+    <#if (er.resourceComment)??><#rt>
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">${_additional_resource}</td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;">${(er.resourceComment)!}</td>
+        </tr>
+    </#if><#rt>
+
+        <tr>
+            <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
+                ${_phone_type_text}
+            </td>
+            <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;"><#rt>
+                <#if (er.phoneOfficeTypeList)??><#rt>
+                    <#list er.phoneOfficeTypeList as eq><#rt>
+                        <#switch (eq.name())!''>
+                            <#case "LONG_DISTANCE">${_phone_type_long_distance}<#break>
+                            <#case "INTERNATIONAL">${_phone_type_international}<#break>
                         </#switch><#sep>, </#sep><#rt>
                     </#list><#rt>
                 </#if><#rt>

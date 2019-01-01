@@ -1,5 +1,6 @@
 package ru.protei.portal.app.portal.client.activity.profile;
 
+import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -23,4 +24,6 @@ public interface AbstractProfilePageView extends IsWidget {
     HasVisibility saveButtonVisibility();
 
     void setIcon( String iconSrc );
+
+    HasEnabled companySubscriptionEnabled();
 }

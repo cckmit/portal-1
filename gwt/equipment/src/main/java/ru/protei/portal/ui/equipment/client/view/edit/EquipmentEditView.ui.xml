@@ -24,7 +24,7 @@
                         <label>
                             <ui:text from="{lang.equipmentNameBySldWrks}"/>
                         </label>
-                        <validatefield:ValidableTextBox ui:field="nameSldWrks" styleName="input-field" notNull="true"/>
+                        <validatefield:ValidableTextBox ui:field="nameSldWrks" styleName="input-field" notNull="false"/>
                     </div>
                     <div class="form-group form-group col-md-6 col-xs-12 eq-type-details">
                         <type:EquipmentTypeBtnGroup ui:field="type"/>

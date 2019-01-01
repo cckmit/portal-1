@@ -105,8 +105,15 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
             q.setHeadOfDepartmentId(view.headOfDepartment().getValue().getId());
         q.setEquipmentList(view.equipmentList().getValue());
         q.setResourceList(view.resourcesList().getValue());
+        q.setPhoneOfficeTypeList(view.phoneOfficeTypeList().getValue());
         q.setWithRegistration(view.withRegistration().getValue());
         q.setEmploymentType(view.employmentType().getValue());
+
+        q.setProbationPeriodMonth( view.probationPeriod().getValue() );
+        q.setResourceComment( view.resourceComment().getValue() );
+        q.setOperatingSystem( view.operatingSystem().getValue() );
+        q.setAdditionalSoft( view.additionalSoft().getValue() );
+
         return q;
     }
 
@@ -115,11 +122,16 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.comment().setValue("");
         view.workplace().setValue("");
         view.position().setValue("");
+        view.probationPeriod().setValue(null);
+        view.resourceComment().setValue(null);
+        view.operatingSystem().setValue(null);
+        view.additionalSoft().setValue(null);
         view.employmentDate().setValue(new Date());
         view.headOfDepartment().setValue(null);
         view.equipmentList().setValue(new HashSet<>());
         HashSet<En_InternalResource> resources = new HashSet<>();
         resources.add(En_InternalResource.EMAIL);
+        view.phoneOfficeTypeList().setValue(new HashSet<>());
         view.resourcesList().setValue(resources);
         view.withRegistration().setValue(true);
         view.employmentType().setValue(En_EmploymentType.FULL_TIME);

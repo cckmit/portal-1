@@ -63,6 +63,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     public void onSaveClicked() {
 
         if (!isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 

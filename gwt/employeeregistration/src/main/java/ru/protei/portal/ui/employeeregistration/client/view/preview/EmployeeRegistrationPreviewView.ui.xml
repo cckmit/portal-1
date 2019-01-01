@@ -41,6 +41,10 @@
                     <label class="col-xs-5 col-md-2"><ui:text from="{lang.employeeRegistrationCreated}"/></label>
                     <span class="col-xs-7 col-md-5" ui:field="created"/>
                 </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationProbationPeriod}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="probationPeriod"></span>
+                </div>
             </fieldset>
             <fieldset class="header">
                 <div class="col-xs-12">
@@ -52,8 +56,24 @@
                     <span class="col-xs-7 col-md-7" ui:field="equipmentList"/>
                 </div>
                 <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationOS}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="operatingSystem"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationAdditionalSoft}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="additionalSoft"/>
+                </div>
+                <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationResourceList}"/></label>
                     <span class="col-xs-7 col-md-7" ui:field="resourcesList"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationResourceOtherComment}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="resourceComment"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="phoneOfficeTypeList"/>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationComment}"/></label>

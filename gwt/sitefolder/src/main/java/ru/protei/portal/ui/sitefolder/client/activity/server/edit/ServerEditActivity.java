@@ -65,6 +65,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     public void onSaveClicked() {
 
         if (!isValid()) {
+            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 

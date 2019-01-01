@@ -457,7 +457,7 @@ div.checkbox {
   position: absolute;
   top: 100%;
   left: 0;
-  z-index: 1000;
+  z-index: 2000;
   float: left;
   min-width: 160px;
   text-align: left;
@@ -1082,6 +1082,7 @@ label.bordered:after{
       tr {
         td {
           height: 75px;
+          overflow: hidden;
 
           .decimal-numbers{
             height: 75px;
@@ -1344,6 +1345,9 @@ label.bordered:after{
     }
     .filter {
       width: 40%;
+      div {
+        overflow-y: auto;
+      }
     }
   }
 }
@@ -1433,13 +1437,13 @@ label.bordered:after{
 .filter-container .panel{
   overflow-y: auto;
   box-sizing: border-box;
-  max-height: calc(100vh - 80px); // 80px = main-header (50px) + top offset (15px) + bottom offset (15px)
+  max-height: calc(100vh - 100px); // 80px = main-header (50px) + top offset (15px) + bottom offset (35px)
   position: relative;
   z-index: 0;
 }
 .filter-container .panel.fixed{
   position: fixed !important;
-  max-height: calc(100vh - 30px) !important; // 30px = top offset (15px) + bottom offset (15px)
+  max-height: calc(100vh - 50px) !important; // 30px = top offset (15px) + bottom offset (35px)
 }
 
 /**** Collapsable filter ****/
@@ -2105,7 +2109,7 @@ a {
 }
 .dashboard-importance-filter-btn:hover,
 .dashboard-importance-filter-btn.active{
-  background: linear-gradient(to top, #f1f1f1, #ffffff);
+  background: linear-gradient(to top, #b9b8b8, #c5bebe);
 }
 
 .dashboard-importance-filter-btn:not(.active) .importance{
@@ -3455,6 +3459,19 @@ div.select2-container {
   white-space: nowrap;
 }
 
+.report-issue-filter {
+  .user-filter {
+    padding-bottom: 15px;
+  }
+  .col-xs-12.resize-xs-6 {
+    width: 50% !important;
+  }
+}
+
+.resize-vertical {
+  resize: vertical;
+}
+
 
 /**
    Схлопыватие раздела
@@ -3577,5 +3594,15 @@ div.select2-container {
   label {
     font-weight: initial !important;
     line-height: 1em !important;
+  }
+}
+
+// fix datetimepicker popup z-index (position property required for z-index)
+.protei-datetimepicker-popup {
+  position: relative;
+  // fix arrow (different shifts because of relative position)
+  .arrow {
+    top: -11px !important;
+    margin-left: -4px !important;
   }
 }

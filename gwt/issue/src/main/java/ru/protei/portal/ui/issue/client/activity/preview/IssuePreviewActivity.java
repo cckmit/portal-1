@@ -121,6 +121,11 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
+    public void onGoToIssuesClicked() {
+        fireEvent(new IssueEvents.Show());
+    }
+
+    @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }

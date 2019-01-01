@@ -14,7 +14,7 @@
     <!-- Сервлет для проброса запросов из GWT в спринговые сервисы-->
     <servlet>
         <servlet-name>springGwtRemoteServiceServlet</servlet-name>
-        <servlet-class>org.spring4gwt.server.SpringGwtRemoteServiceServlet</servlet-class>
+        <servlet-class>ru.protei.portal.app.portal.server.SpringGwtRemoteServiceServlet</servlet-class>
     </servlet>
 
     <servlet>
@@ -24,7 +24,7 @@
 
     <servlet>
         <servlet-name>reportDownloadServlet</servlet-name>
-        <servlet-class>ru.protei.portal.ui.issue.server.service.ReportDownloadServlet</servlet-class>
+        <servlet-class>ru.protei.portal.ui.issuereport.server.servlet.ReportDownloadServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>

@@ -84,6 +84,10 @@ public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAdd
         requestResize();
     }
 
+    public void setPlaceholder(String placeholder ) {
+        getElement().setAttribute("placeholder", placeholder);
+    }
+
     private void requestResize() {
         setVisibleLines(countLines());
     }

@@ -145,11 +145,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void showFullScreen( boolean value ) {
-        this.fullScreen.setVisible( !value );
+        fullScreen.setVisible( !value );
+        backButton.setVisible( value );
         if ( value ) {
-            this.preview.addStyleName( "col-xs-12 col-lg-6" );
+            preview.addStyleName( "issue-fullscreen col-md-12 m-t-10" );
         } else {
-            this.preview.setStyleName( "preview" );
+            preview.setStyleName( "preview" );
         }
     }
 
@@ -190,6 +191,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
         if ( activity != null ) {
             activity.onFullScreenPreviewClicked();
+        }
+    }
+
+    @UiHandler( "backButton" )
+    public void onGoToIssuesClicked ( ClickEvent event) {
+        if ( activity != null ) {
+            activity.onGoToIssuesClicked();
         }
     }
 
@@ -274,6 +282,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Inject
     @UiField(provided = true)
     IssueLinks links;
+    @UiField
+    Button backButton;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
     @Inject

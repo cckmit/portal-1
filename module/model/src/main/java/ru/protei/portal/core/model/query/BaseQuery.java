@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.query;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.io.Serializable;
 
@@ -100,5 +101,9 @@ public class BaseQuery implements Serializable, DataQuery {
                 ", limit=" + limit +
                 ", offset=" + offset +
                 '}';
+    }
+
+    public boolean isParamsPresent() {
+        return StringUtils.isNotBlank(searchString);
     }
 }

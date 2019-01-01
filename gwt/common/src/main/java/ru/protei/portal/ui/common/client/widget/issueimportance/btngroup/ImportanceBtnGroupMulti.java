@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.widget.importance.btngroup;
+package ru.protei.portal.ui.common.client.widget.issueimportance.btngroup;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;

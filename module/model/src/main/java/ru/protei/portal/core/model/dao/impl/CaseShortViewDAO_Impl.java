@@ -12,8 +12,8 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.length;
-import static ru.protei.portal.core.model.helper.CollectionUtils.trim;
+import static ru.protei.portal.core.model.helper.StringUtils.length;
+import static ru.protei.portal.core.model.helper.StringUtils.trim;
 
 /**
  * Created by michael on 19.05.16.
@@ -42,6 +42,16 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         }
 
         return getList(parameters);
+    }
+
+    @Override
+    public List<CaseShortView> partialGetCases(CaseQuery query, String... columns) {
+        SqlCondition where = createSqlCondition(query);
+        if (where.isConditionDefined()) {
+            return partialGetListByCondition(where.condition, where.args, columns);
+        } else {
+            return partialGetAll(columns);
+        }
     }
 
     @Override

@@ -11,6 +11,7 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_EmployeeEquipment;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
+import ru.protei.portal.core.model.dict.En_PhoneOfficeType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -22,6 +23,7 @@ import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmp
 import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmployeeRegistrationEditView;
 import ru.protei.portal.ui.employeeregistration.client.widget.optionlist.EmployeeEquipmentOptionList;
 import ru.protei.portal.ui.employeeregistration.client.widget.optionlist.InternalResourceOptionList;
+import ru.protei.portal.ui.employeeregistration.client.widget.optionlist.PhoneOfficeTypeOptionList;
 import ru.protei.portal.ui.employeeregistration.client.widget.selector.EmploymentTypeSelector;
 
 import java.util.Date;
@@ -32,6 +34,7 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         resourcesList.setMandatoryOptions(En_InternalResource.EMAIL);
+        probationPeriod.getElement().setAttribute("placeholder",  lang.employeeRegistrationProbationPeriodPlaceholder());
     }
     
     @Override
@@ -90,6 +93,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     }
 
     @Override
+    public HasValue<Set<En_PhoneOfficeType>> phoneOfficeTypeList() {
+        return phoneTypeList;
+    }
+
+    @Override
     public HasValidable fullNameValidation() {
         return fullName;
     }
@@ -112,6 +120,23 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Override
     public HasEnabled saveEnabled() {
         return saveButton;
+    }
+
+    @Override
+    public HasValue<Integer> probationPeriod() {
+        return probationPeriod;
+    }
+    @Override
+    public HasValue<String> resourceComment() {
+        return resourceComment;
+    }
+    @Override
+    public HasValue<String> operatingSystem() {
+        return operatingSystem;
+    }
+    @Override
+    public HasValue<String> additionalSoft() {
+        return additionalSoft;
     }
 
     @UiHandler("saveButton")
@@ -166,8 +191,20 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     @Inject
     @UiField(provided = true)
     EmployeeEquipmentOptionList equipmentList;
+    @UiField
+    IntegerBox probationPeriod;
+    @UiField
+    AutoResizeTextArea resourceComment;
 
     @Inject
+    @UiField(provided = true)
+    PhoneOfficeTypeOptionList phoneTypeList;
+    @UiField
+    ValidableTextBox operatingSystem;
+    @UiField
+    AutoResizeTextArea additionalSoft;
+
+    @UiField
     Lang lang;
 
     private AbstractEmployeeRegistrationEditActivity activity;
