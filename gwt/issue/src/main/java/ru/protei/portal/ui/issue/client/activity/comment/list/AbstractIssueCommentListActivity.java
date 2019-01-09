@@ -14,4 +14,6 @@ public interface AbstractIssueCommentListActivity {
     void removeTempAttachment(Attachment attachment);
 
     void onDetachView();
+
+    void onPreviewChanged(String text);
 }

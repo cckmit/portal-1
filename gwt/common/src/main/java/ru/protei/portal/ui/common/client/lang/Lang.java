@@ -1441,4 +1441,6 @@ public interface Lang extends Messages, ContactItemLang {
     String goToIssues();
 
     String employeeWithoutManager();
+
+    String commentPreview();
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.issue.client.view.comment.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
@@ -18,7 +19,8 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.markdown.textarea.MarkdownTextArea;
+import ru.protei.portal.ui.common.client.widget.markdown.textarea.event.ChangedPreviewEvent;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -100,6 +102,20 @@ public class IssueCommentListView
     }
 
     @Override
+    public void setPreviewText(String text) {
+        commentPreview.setInnerHTML(text);
+    }
+
+    @Override
+    public void setPreviewVisible(boolean isVisible) {
+        if (isVisible) {
+            commentPreviewContainer.removeClassName("hide");
+        } else {
+            commentPreviewContainer.addClassName("hide");
+        }
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );
@@ -145,6 +161,13 @@ public class IssueCommentListView
         }
     }
 
+    @UiHandler("comment")
+    public void onPreviewChanged(ChangedPreviewEvent event) {
+        if (activity != null) {
+            activity.onPreviewChanged(event.getPreviewText());
+        }
+    }
+
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
@@ -162,7 +185,7 @@ public class IssueCommentListView
     @UiField
     HTMLPanel root;
     @UiField
-    AutoResizeTextArea comment;
+    MarkdownTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @UiField
@@ -182,6 +205,10 @@ public class IssueCommentListView
     TimeTextBox timeElapsed;
     @UiField
     ImageElement icon;
+    @UiField
+    DivElement commentPreviewContainer;
+    @UiField
+    DivElement commentPreview;
 
     private AbstractIssueCommentListActivity activity;
 

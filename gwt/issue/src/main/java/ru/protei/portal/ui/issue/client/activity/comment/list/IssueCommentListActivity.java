@@ -199,7 +199,7 @@ public abstract class IssueCommentListActivity
         }
 
         comment = null;
-        String message = view.message().getValue() + IssueCommentUtils.quoteMessage( value.getText() );
+        String message = IssueCommentUtils.appendQuote(view.message().getValue(), value.getText());
         view.message().setValue( message );
         view.focus();
     }
@@ -243,6 +243,16 @@ public abstract class IssueCommentListActivity
             @Override
             public void onSuccess(Void aVoid) {}
         });
+    }
+
+    @Override
+    public void onPreviewChanged(String text) {
+        if (StringUtils.isBlank(text)) {
+            view.setPreviewVisible(false);
+        } else {
+            view.setPreviewText(text);
+            view.setPreviewVisible(true);
+        }
     }
 
     @Override
@@ -473,7 +483,7 @@ public abstract class IssueCommentListActivity
                 }
 
                 comment = null;
-                view.message().setValue( null );
+                view.message().setValue( null, true );
                 view.attachmentContainer().clear();
                 view.clearTimeElapsed();
                 tempAttachments.clear();

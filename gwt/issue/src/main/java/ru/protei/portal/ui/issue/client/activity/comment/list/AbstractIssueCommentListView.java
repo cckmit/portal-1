@@ -42,4 +42,8 @@ public interface AbstractIssueCommentListView extends IsWidget {
     void setUserIcon(String icon);
 
     HasEnabled sendEnabled();
+
+    void setPreviewText(String text);
+
+    void setPreviewVisible(boolean isVisible);
 }
