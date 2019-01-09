@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -119,7 +120,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         requestRecords(model);
     }
 
-
+    private static final Logger log = Logger.getLogger( DashboardTableActivity.class.getName() );
     private void requestRecords(DashboardTableModel model) {
         if(model.isLoaderShow)
             model.view.showLoader(true);
@@ -132,6 +133,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
 
             @Override
             public void onSuccess( List<CaseShortView> caseObjects ) {
+                log.info( "onSuccess(): requestRecords" );
                 model.view.putRecords(caseObjects);
                 model.view.putPersons(caseObjects.stream()
                         .filter(caseObject -> caseObject.getInitiatorId() != null && caseObject.getInitiatorShortName() != null)
@@ -141,6 +143,7 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
                 );
                 if(model.isLoaderShow)
                     model.view.showLoader(false);
+                log.info( "onSuccess(): requestRecords done" );
             }
         } );
     }

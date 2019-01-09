@@ -23,6 +23,8 @@ import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+import java.util.logging.Logger;
+
 /**
  * Активность приложения
  */
@@ -47,8 +49,10 @@ public abstract class AppActivity
         fireEvent( new AuthEvents.Show() );
     }
 
+    private static final Logger log = Logger.getLogger( AppActivity.class.getName() );
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
+        log.info( "onAuthSuccess():" );
         init.parent.clear();
         init.parent.add( view.asWidget() );
 

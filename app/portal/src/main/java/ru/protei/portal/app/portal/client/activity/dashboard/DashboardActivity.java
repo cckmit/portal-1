@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Активити Дашборда
@@ -42,9 +43,10 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         fireEvent(new IssueEvents.Edit());
     }
 
-
+    private static final Logger log = Logger.getLogger( DashboardActivity.class.getName() );
     @Event
     public void onShow( DashboardEvents.Show event ) {
+        log.info( "onShow():" );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 

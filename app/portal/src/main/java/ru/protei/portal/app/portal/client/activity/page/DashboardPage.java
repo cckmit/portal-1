@@ -15,6 +15,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 import ru.protei.winter.web.common.client.events.SectionEvents;
 
+import java.util.logging.Logger;
+
 /**
  * Активность по работе с вкладкой "Dashboard"
  */
@@ -25,8 +27,10 @@ public abstract class DashboardPage implements Activity {
         TAB = lang.dashboard();
     }
 
+    private static final Logger log = Logger.getLogger( DashboardPage.class.getName() );
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
+        log.info( "onAuthSuccess():" );
         if ( event.profile.hasPrivilegeFor( En_Privilege.DASHBOARD_VIEW) ) {
             fireEvent( new MenuEvents.Add(TAB, UiConstants.TabIcons.DASHBOARD, DebugIds.SIDEBAR_MENU.DASHBOARD ) );
             fireEvent( new AppEvents.InitPage( show ) );

@@ -25,6 +25,7 @@ public abstract class CaseStateFilterProvider implements Activity
 
     @Event
     public void onAuth(AuthEvents.Success event) {
+        log.info( "onAuth():" );
         updateCaseStates();
     }
 
