@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -21,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeVal
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +37,15 @@ public abstract class Selector<T>
         HasSelectorChangeValHandlers,
         HasAddHandlers {
 
+    public Collection<T> getValues() {
+        return itemToDisplayOptionModel.keySet();
+    }
+
+    private SelectorModel<T> selectorModel;
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
+    }
     public interface SelectorFilter<T> {
         boolean isDisplayed( T value );
     }
@@ -228,6 +239,9 @@ public abstract class Selector<T>
     @Override
     protected void onLoad() {
         scrollRegistration = Window.addWindowScrollHandler(this);
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorLoad(this);
+        }
     }
 
     @Override
@@ -299,7 +313,7 @@ public abstract class Selector<T>
     private void addEmptyListGhostOption(String name) {
         SelectorItem itemView = itemFactory.get();
         itemView.setName(name);
-        itemView.addStyleName("search-no-result");
+        itemView.addStyleName( UiConstants.Styles.SEARCH_NO_RESULT );
         popup.getChildContainer().add(itemView.asWidget());
     }
 

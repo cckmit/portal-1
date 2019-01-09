@@ -10,6 +10,8 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
@@ -25,6 +27,7 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
     public void init( CompanyModel companyModel ) {
         model = companyModel;
         model.subscribe(this, categories);
+        setSelectorModel(model);
 
         setSearchEnabled( true );
         setSearchAutoFocus( true );

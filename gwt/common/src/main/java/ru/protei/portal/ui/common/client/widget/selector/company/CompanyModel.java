@@ -12,6 +12,8 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -20,15 +22,35 @@ import java.util.stream.Collectors;
 /**
  * Модель селектора компаний
  */
-public abstract class CompanyModel implements Activity {
+public abstract class CompanyModel implements Activity, SelectorModel<EntityOption> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshHomeCompanies(this::refreshOptions);
+//        loadOptions();
+        for (ModelSelector< EntityOption > subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
     }
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
+        loadOptions();
+        for (ModelSelector< EntityOption > subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
+    }
+
+    @Override
+    public void onSelectorLoad( Selector<EntityOption> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
+            loadOptions();
+        }
+    }
+
+    private void loadOptions() {
         refreshHomeCompanies(this::refreshOptions);
     }
 

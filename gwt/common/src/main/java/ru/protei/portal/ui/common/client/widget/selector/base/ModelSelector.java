@@ -10,4 +10,6 @@ public interface ModelSelector<T> {
     void fillOptions(List<T> options);
 
     void refreshValue();
+
+    void clearOptions();
 }

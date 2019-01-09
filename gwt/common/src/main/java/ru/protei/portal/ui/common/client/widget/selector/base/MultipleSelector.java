@@ -29,6 +29,16 @@ public abstract class MultipleSelector<T>
         setValue( values, false );
     }
 
+    public Collection<T> getValues() {
+        return itemToDisplayOptionModel.keySet();
+    }
+
+    private SelectorModel<T> selectorModel;
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
+    }
+
     @Override
     public void setValue( Set<T> values, boolean fireEvents ) {
         selected = values == null ? new HashSet< T >() : values;

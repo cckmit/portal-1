@@ -6,6 +6,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Домашние компании
@@ -24,4 +25,12 @@ public class HomeCompanyBtnGroupMulti extends ToggleBtnGroupMulti< EntityOption 
             addBtn( entityOption.getDisplayText(), entityOption );
         } );
     }
+
+    @Override
+    public void clearOptions() {
+        log.warning( "clearOptions(): Not implemented." );//TODO NotImplemented
+
+    }
+
+    private static final Logger log = Logger.getLogger( HomeCompanyBtnGroupMulti.class.getName() );
 }
