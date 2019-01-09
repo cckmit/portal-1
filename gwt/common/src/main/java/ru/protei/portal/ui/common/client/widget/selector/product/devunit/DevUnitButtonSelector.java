@@ -19,6 +19,7 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
         devUnitModel.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
+        setSelectorModel(devUnitModel);
 
         setDisplayOptionCreator( value -> {
             if ( value == null ) {

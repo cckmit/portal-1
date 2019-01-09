@@ -2,16 +2,30 @@ package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseModel {
+public abstract class BaseModel implements SelectorModel<ProductShortView> {
+
+    @Override
+    public void onSelectorLoad( HasSelectableValues<ProductShortView> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
+            refreshOptions();
+        }
+    }
 
     protected abstract void failedToLoad();
 

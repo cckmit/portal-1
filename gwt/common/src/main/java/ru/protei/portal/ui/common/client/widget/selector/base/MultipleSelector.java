@@ -20,7 +20,8 @@ import java.util.*;
  */
 public abstract class MultipleSelector<T>
         extends Composite
-        implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>
+        implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>,
+             HasSelectableValues<T>
 {
 
     protected abstract void onUserCanAddMoreItems(boolean isCanAdd);
@@ -142,6 +143,9 @@ public abstract class MultipleSelector<T>
     @Override
     protected void onLoad() {
         scrollRegistration = Window.addWindowScrollHandler( this );
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorLoad(this);
+        }
     }
 
     @Override

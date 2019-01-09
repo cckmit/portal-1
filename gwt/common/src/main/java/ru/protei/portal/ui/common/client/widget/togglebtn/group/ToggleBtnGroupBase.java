@@ -6,24 +6,42 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Вид группы кнопок-переключателей
  */
 public class ToggleBtnGroupBase<T>
-        extends Composite implements ValueChangeHandler< Boolean >, HasEnabled {
+        extends Composite implements ValueChangeHandler< Boolean >, HasEnabled, HasSelectableValues<T> {
 
     public ToggleBtnGroupBase() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+    }
+
+    @Override
+    public Collection<T> getValues() {
+        return modelToItemView.keySet();
+    }
+
+    private SelectorModel<T> selectorModel;
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
+    }
+
+    @Override
+    protected void onLoad() {
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorLoad(this);
+        }
     }
 
     @Override

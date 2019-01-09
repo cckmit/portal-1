@@ -16,6 +16,7 @@ public class HomeCompanyBtnGroupMulti extends ToggleBtnGroupMulti< EntityOption 
     @Inject
     public void init( HomeCompanyModel homeCompanyModel ) {
         homeCompanyModel.subscribe( this );
+        setSelectorModel(homeCompanyModel);
     }
 
     @Override

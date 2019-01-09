@@ -21,6 +21,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         model.subscribe( this );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
+        setSelectorModel(model);
     }
 
     public void fillOptions(List<ProductShortView> o) {

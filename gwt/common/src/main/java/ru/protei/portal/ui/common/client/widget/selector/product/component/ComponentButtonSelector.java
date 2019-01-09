@@ -16,6 +16,7 @@ public class ComponentButtonSelector extends ButtonSelector<ProductShortView> im
         setHasNullValue(true);
         setSearchAutoFocus(true);
         setDisplayOptionCreator(value -> new DisplayOption(value == null ? defaultValue : value.getName()));
+        setSelectorModel(componentModel);
     }
 
     @Override

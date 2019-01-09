@@ -6,9 +6,12 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.BaseModel;
 
 /**
@@ -25,7 +28,7 @@ public abstract class DevUnitModel extends BaseModel implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        refreshOptions();
+//        refreshOptions();
     }
 
     @Event

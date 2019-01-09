@@ -38,7 +38,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentModel;
-import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductModel;
+
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
@@ -94,7 +94,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( PrivilegeModel.class ).asEagerSingleton();
         bind( DevUnitModel.class ).asEagerSingleton();
         bind( ComponentModel.class ).asEagerSingleton();
-        bind( ProductModel.class ).asEagerSingleton();
+//        bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);

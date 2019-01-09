@@ -35,7 +35,9 @@ public abstract class Selector<T>
         ClickHandler, ValueChangeHandler<String>,
         Window.ScrollHandler,
         HasSelectorChangeValHandlers,
-        HasAddHandlers {
+        HasAddHandlers,
+         HasSelectableValues<T>
+{
 
     public Collection<T> getValues() {
         return itemToDisplayOptionModel.keySet();

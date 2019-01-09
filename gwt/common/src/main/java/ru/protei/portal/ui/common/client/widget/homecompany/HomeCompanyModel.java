@@ -7,7 +7,10 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
 import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -16,11 +19,24 @@ import java.util.List;
 /**
  * Модель домашних компаний
  */
-public abstract class HomeCompanyModel implements Activity {
+public abstract class HomeCompanyModel implements Activity, SelectorModel<EntityOption> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshOptions();
+//        refreshOptions();
+        for (ModelSelector< EntityOption > subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
+    }
+
+    @Override
+    public void onSelectorLoad( HasSelectableValues<EntityOption> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
+            refreshOptions();
+        }
     }
 
     public void subscribe( ModelSelector< EntityOption > selector ) {

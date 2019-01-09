@@ -21,6 +21,7 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
         setSelectorModel(model);
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
+        setSelectorModel( model );
     }
 
     public void fillOptions( List< EntityOption > options ) {
