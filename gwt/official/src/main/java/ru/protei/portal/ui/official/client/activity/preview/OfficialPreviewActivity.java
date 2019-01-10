@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Official;
@@ -101,7 +102,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.setInfo(official.getInfo());
 
         fillMembers(OfficialUtils.createMembersByRegionsMap(official));
-        fireEvent( new OfficialMemberEvents.ShowComments( view.getCommentsContainer(), official.getId()) );
+        fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.OFFICIAL, official.getId()) );
 
     }
 
@@ -156,7 +157,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
                 view.attachmentsContainer().remove(attachment);
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(officialId));
-                fireEvent( new OfficialMemberEvents.ShowComments( view.getCommentsContainer(), officialId ) );
+                fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.OFFICIAL, officialId ) );
             }
         });
     }

@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -41,7 +42,7 @@ public class CaseServiceTest {
 
         long testCaseId = 377321;
 
-        List<CaseComment> comments = ctx.getBean(CaseCommentDAO.class).getCaseComments(testCaseId);
+        List<CaseComment> comments = ctx.getBean(CaseCommentDAO.class).getCaseComments(new CaseCommentQuery(testCaseId));
         Assert.assertNotNull(comments);
         System.out.println( "case " + testCaseId + " comment list size = " +  comments.size() );
 

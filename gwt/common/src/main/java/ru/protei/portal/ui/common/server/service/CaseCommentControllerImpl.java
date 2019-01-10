@@ -8,7 +8,6 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.ui.common.client.service.CaseCommentController;
@@ -40,9 +39,9 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         CoreResponse<CaseComment> response;
         if (comment.getId() == null) {
-            response = caseCommentService.addCaseComment(descriptor.makeAuthToken(), caseType, comment, getCurrentPerson());
+            response = caseCommentService.addCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson());
         } else {
-            response = caseCommentService.updateCaseComment(descriptor.makeAuthToken(), caseType, comment, getCurrentPerson());
+            response = caseCommentService.updateCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson());
         }
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -56,7 +55,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.debug("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Boolean> response = caseCommentService.removeCaseComment(descriptor.makeAuthToken(), caseType, comment, getCurrentPerson().getId());
+        CoreResponse<Boolean> response = caseCommentService.removeCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson().getId());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }
@@ -70,18 +69,12 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         return descriptor;
     }
 
-    private Person getCurrentPerson() {
-        return sessionService.getUserSessionDescriptor(request).getPerson();
-    }
-
     @Autowired
     CaseCommentService caseCommentService;
     @Autowired
     SessionService sessionService;
     @Autowired
     HttpServletRequest httpServletRequest;
-    @Autowired
-    HttpServletRequest request;
 
     private static final Logger log = LoggerFactory.getLogger(CaseCommentControllerImpl.class);
 }

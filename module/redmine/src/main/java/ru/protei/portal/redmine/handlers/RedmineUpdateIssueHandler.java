@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.redmine.enums.RedmineChangeType;
 import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.service.CommonService;
@@ -66,7 +67,7 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         final long companyId = endpoint.getCompanyId();
         //Finding latest synchronized comment in our system
         logger.debug("Trying to get latest synchronized comment");
-        final CaseComment comment = caseCommentDAO.getCaseComments(object.getId())
+        final CaseComment comment = caseCommentDAO.getCaseComments(new CaseCommentQuery(object.getId()))
                 .stream()
                 .filter(x -> x.getAuthor().getCreator().equals("redmine"))
                 .sorted(Comparator.comparing(CaseComment::getCreated))

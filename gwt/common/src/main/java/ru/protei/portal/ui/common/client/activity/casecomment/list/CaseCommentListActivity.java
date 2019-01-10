@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -15,6 +14,8 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
@@ -23,13 +24,11 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseCommentUtils;
+import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
-import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -65,31 +64,12 @@ public abstract class CaseCommentListActivity
     }
 
     @Event
-    public void onShowIssue(IssueEvents.ShowComments event) {
-        onShow(event.parent, En_CaseType.CRM_SUPPORT, event.caseId, event.isElapsedTimeEnabled);
-    }
+    public void onShow(CaseCommentEvents.Show event) {
+        event.parent.clear();
+        event.parent.add(view.asWidget());
 
-    @Event
-    public void onShow(ProjectEvents.ShowComments event) {
-        onShow(event.parent, En_CaseType.PROJECT, event.caseId, false);
-    }
-
-    @Event
-    public void onShow(OfficialMemberEvents.ShowComments event) {
-        onShow(event.parent, En_CaseType.OFFICIAL, event.caseId, false);
-    }
-
-    @Event
-    public void onShow(EmployeeRegistrationEvents.ShowComments event) {
-        onShow(event.parent, En_CaseType.EMPLOYEE_REGISTRATION, event.id, false);
-    }
-
-    private void onShow(HasWidgets parent, En_CaseType caseType, long caseId, boolean isElapsedTimeEnabled) {
-        parent.clear();
-        parent.add(view.asWidget());
-
-        this.caseType = caseType;
-        this.caseId = caseId;
+        this.caseType = event.caseType;
+        this.caseId = event.caseId;
         this.isEditingEnabled = true;
 
         comment = null;
@@ -102,7 +82,7 @@ public abstract class CaseCommentListActivity
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
-        view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
+        view.timeElapsedVisibility().setVisible(event.isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
         view.enabledNewComment(isEditingEnabled);
         view.setEnabledAttachAndComment(isEditingEnabled);

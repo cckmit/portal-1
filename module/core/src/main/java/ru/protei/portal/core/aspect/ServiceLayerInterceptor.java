@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
@@ -20,8 +21,8 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.LongAuditableObject;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.service.AuditService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -117,7 +118,11 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        auditService.publishAuditObject(token, auditable.value(), auditableObject);
+        UserSessionDescriptor descriptor = authService.findSession(token);
+
+        AuditObject auditObject = new AuditObject(auditable.value().getId(), descriptor, auditableObject);
+
+        publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
     }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
@@ -220,8 +225,6 @@ public class ServiceLayerInterceptor {
 
     @Autowired
     AuthService authService;
-    @Autowired
-    AuditService auditService;
     @Autowired
     PolicyService policyService;
     @Autowired

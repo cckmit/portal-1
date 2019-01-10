@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
-import ru.protei.portal.core.model.ent.OfficialMember;
 
 /**
  * Created by serebryakov on 21/08/17.
@@ -46,18 +45,5 @@ public class OfficialMemberEvents {
     }
 
     public static class ReloadPage {
-    }
-
-    /**
-     * Показать комментарии
-     */
-    public static class ShowComments {
-        public ShowComments(HasWidgets parent, Long caseId) {
-            this.parent = parent;
-            this.caseId = caseId;
-        }
-
-        public Long caseId;
-        public HasWidgets parent;
     }
 }

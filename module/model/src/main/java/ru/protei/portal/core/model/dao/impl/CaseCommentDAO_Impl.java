@@ -18,11 +18,6 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     CaseCommentSqlBuilder sqlBuilder;
 
     @Override
-    public List<CaseComment> getCaseComments(long caseId) {
-        return getCaseComments(new CaseCommentQuery(caseId));
-    }
-
-    @Override
     public List<CaseComment> getCaseComments(CaseCommentQuery query) {
         return listByQuery(query);
     }

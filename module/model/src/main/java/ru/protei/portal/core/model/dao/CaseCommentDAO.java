@@ -12,8 +12,6 @@ import java.util.List;
  */
 public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
-    List<CaseComment> getCaseComments( long caseId );
-
     List<CaseComment> getCaseComments( CaseCommentQuery query );
 
     /**
