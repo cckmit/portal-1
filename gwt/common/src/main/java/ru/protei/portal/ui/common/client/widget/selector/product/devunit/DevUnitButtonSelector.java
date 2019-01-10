@@ -16,10 +16,10 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
 
     @Inject
     public void init( DevUnitModel devUnitModel) {
-        devUnitModel.subscribe( this );
+//        devUnitModel.subscribe( this );
+        setSelectorModel(devUnitModel);
         setSearchEnabled( true );
         setSearchAutoFocus( true );
-        setSelectorModel(devUnitModel);
 
         setDisplayOptionCreator( value -> {
             if ( value == null ) {

@@ -116,7 +116,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
                 list.clear();
                 list.addAll( options );
                 notifySubscribers();
-                sp.check( "fillOptions refreshValue" );
                 sp.stop( "done" );
             }
         } );
