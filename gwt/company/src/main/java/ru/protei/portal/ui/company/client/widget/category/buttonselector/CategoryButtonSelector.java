@@ -5,8 +5,7 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreator;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.company.client.widget.category.CategoryModel;
 
@@ -15,7 +14,7 @@ import java.util.List;
 /**
  * Селектор списка категорий компаний
  */
-public class CategoryButtonSelector extends ButtonSelector< EntityOption > implements ModelSelector< EntityOption > {
+public class CategoryButtonSelector extends ButtonSelector< EntityOption > implements SelectorWithModel< EntityOption > {
 
     @Inject
     public void init( CategoryModel categoryModel ) {

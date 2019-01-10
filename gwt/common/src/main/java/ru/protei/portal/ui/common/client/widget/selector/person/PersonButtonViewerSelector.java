@@ -10,12 +10,12 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.List;
 
-public class PersonButtonViewerSelector extends Selector<PersonShortView> implements ModelSelector<PersonShortView> {
+public class PersonButtonViewerSelector extends Selector<PersonShortView> implements SelectorWithModel<PersonShortView> {
 
     public PersonButtonViewerSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Интерфейс селектора с моделью
  */
-public interface ModelSelector<T> {
+public interface SelectorWithModel<T> {
 
     void fillOptions(List<T> options);
 

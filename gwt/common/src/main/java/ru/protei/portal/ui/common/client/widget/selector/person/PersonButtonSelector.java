@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Селектор person
  */
-public class PersonButtonSelector extends ButtonSelector< PersonShortView > implements ModelSelector<PersonShortView> {
+public class PersonButtonSelector extends ButtonSelector< PersonShortView > implements SelectorWithModel<PersonShortView> {
 
     @Inject
     public void init(InitiatorModel model) {

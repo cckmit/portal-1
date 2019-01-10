@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
@@ -24,7 +24,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
  */
 public class InitiatorMultiSelector
         extends MultipleInputSelector<PersonShortView>
-        implements ModelSelector<PersonShortView>
+        implements SelectorWithModel<PersonShortView>
 {
     @Inject
     public void init(InitiatorModel model, Lang lang) {

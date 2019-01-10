@@ -8,8 +8,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -24,7 +23,7 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
     @Event
     public void onInit( AuthEvents.Success event ) {
 //        refreshOptions();
-        for (ModelSelector< EntityOption > subscriber : subscribers) {
+        for (SelectorWithModel< EntityOption > subscriber : subscribers) {
             subscriber.clearOptions();
         }
     }
@@ -39,13 +38,13 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
         }
     }
 
-    public void subscribe( ModelSelector< EntityOption > selector ) {
+    public void subscribe( SelectorWithModel< EntityOption > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector selector : subscribers ) {
+        for ( SelectorWithModel selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -73,5 +72,5 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
 
     private List< EntityOption > list = new ArrayList<>();
 
-    List< ModelSelector > subscribers = new ArrayList< ModelSelector >();
+    List<SelectorWithModel> subscribers = new ArrayList<SelectorWithModel>();
 }

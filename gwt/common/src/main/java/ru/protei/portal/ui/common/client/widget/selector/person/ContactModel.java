@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
  */
 public abstract class ContactModel implements Activity {
 
-    public void subscribe( ModelSelector selector) {
+    public void subscribe( SelectorWithModel selector) {
         subscribers.add( selector );
     }
 
@@ -54,5 +54,5 @@ public abstract class ContactModel implements Activity {
     Lang lang;
 
     private boolean isPushing;
-    private List<ModelSelector> subscribers = new ArrayList<>();
+    private List<SelectorWithModel> subscribers = new ArrayList<>();
 }

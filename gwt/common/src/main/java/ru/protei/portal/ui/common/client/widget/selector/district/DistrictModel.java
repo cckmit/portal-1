@@ -4,12 +4,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -41,13 +40,13 @@ public abstract class DistrictModel implements Activity, SelectorModel<DistrictI
         }
     }
 
-    public void subscribe( ModelSelector<DistrictInfo> selector ) {
+    public void subscribe( SelectorWithModel<DistrictInfo> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< DistrictInfo > selector : subscribers ) {
+        for ( SelectorWithModel< DistrictInfo > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -76,5 +75,5 @@ public abstract class DistrictModel implements Activity, SelectorModel<DistrictI
 
     private List<DistrictInfo> list = new ArrayList<>();
 
-    List<ModelSelector<DistrictInfo>> subscribers = new ArrayList<>();
+    List<SelectorWithModel<DistrictInfo>> subscribers = new ArrayList<>();
 }

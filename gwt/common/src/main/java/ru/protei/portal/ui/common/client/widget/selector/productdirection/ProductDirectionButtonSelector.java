@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.productdirection;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ProductDirectionButtonSelector
         extends ButtonSelector<ProductDirectionInfo>
-        implements ModelSelector<ProductDirectionInfo>
+        implements SelectorWithModel<ProductDirectionInfo>
 {
 
     @Inject

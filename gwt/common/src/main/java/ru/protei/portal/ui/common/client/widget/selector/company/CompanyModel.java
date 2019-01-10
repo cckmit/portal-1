@@ -12,8 +12,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -29,7 +28,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     @Event
     public void onInit( AuthEvents.Success event ) {
 //        loadOptions();
-        for (ModelSelector< EntityOption > subscriber : subscribers) {
+        for (SelectorWithModel< EntityOption > subscriber : subscribers) {
             subscriber.clearOptions();
         }
     }
@@ -37,7 +36,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
         loadOptions();
-        for (ModelSelector< EntityOption > subscriber : subscribers) {
+        for (SelectorWithModel< EntityOption > subscriber : subscribers) {
             subscriber.clearOptions();
         }
     }
@@ -48,7 +47,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
             return;
         }
         if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-            requestOptions( (ModelSelector<EntityOption>) selector, selectorToQuery.get(selector));//TODO remove cast
+            requestOptions( (SelectorWithModel<EntityOption>) selector, selectorToQuery.get(selector));//TODO remove cast
         }
     }
 
@@ -56,24 +55,24 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         refreshHomeCompanies(this::refreshOptions);
     }
 
-    public void subscribe( ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories ) {
+    public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
         subscribers.add( selector );
         updateQuery( selector, categories );
     }
 
-    public void updateQuery( ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories ) {
+    public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
         CompanyQuery query = makeQuery( categories );
         selectorToQuery.put(selector, query);
 //        requestOptions(selector, query);//TODO lazy load
     }
 
     private void refreshOptions() {
-        for ( ModelSelector< EntityOption > selector : subscribers ) {
+        for ( SelectorWithModel< EntityOption > selector : subscribers ) {
             requestOptions(selector, selectorToQuery.get(selector));
         }
     }
 
-    private void requestOptions( ModelSelector<EntityOption> selector, CompanyQuery query ) {
+    private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
         log.info( "requestOptions(): CompanyModel" );
         companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override
@@ -136,7 +135,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     @Inject
     Lang lang;
 
-    private Map<ModelSelector< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
-    private List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
+    private Map<SelectorWithModel< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
+    private List<SelectorWithModel< EntityOption >> subscribers = new ArrayList<>();
     private List< EntityOption > homeCompanies = new ArrayList<>();
 }

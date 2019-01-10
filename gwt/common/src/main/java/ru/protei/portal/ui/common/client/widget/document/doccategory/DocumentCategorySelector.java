@@ -4,13 +4,13 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.ui.common.client.lang.En_DocumentCategoryLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class DocumentCategorySelector extends ButtonSelector<En_DocumentCategory> implements ModelSelector<En_DocumentCategory> {
+public class DocumentCategorySelector extends ButtonSelector<En_DocumentCategory> implements SelectorWithModel<En_DocumentCategory> {
 
     @Inject
     void init() {

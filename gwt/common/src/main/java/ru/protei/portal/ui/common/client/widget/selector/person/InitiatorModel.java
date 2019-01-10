@@ -12,7 +12,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -27,7 +27,7 @@ public abstract class InitiatorModel implements Activity {
         myId = event.profile.getId();
     }
 
-    public void subscribe(ModelSelector<PersonShortView> selector) {
+    public void subscribe( SelectorWithModel<PersonShortView> selector) {
         subscribers.add(selector);
         selector.fillOptions(list);
     }
@@ -41,7 +41,7 @@ public abstract class InitiatorModel implements Activity {
     }
 
     private void notifySubscribers() {
-        for (ModelSelector<PersonShortView> selector : subscribers) {
+        for (SelectorWithModel<PersonShortView> selector : subscribers) {
             selector.fillOptions(list);
             selector.refreshValue();
         }
@@ -94,7 +94,7 @@ public abstract class InitiatorModel implements Activity {
 
     private List<PersonShortView> list = new ArrayList<>();
 
-    List<ModelSelector<PersonShortView>> subscribers = new ArrayList<>();
+    List<SelectorWithModel<PersonShortView>> subscribers = new ArrayList<>();
 
     private Long myId;
 

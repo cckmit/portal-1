@@ -2,13 +2,11 @@ package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.query.ProductQuery;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -32,7 +30,7 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
 
     protected abstract ProductQuery getQuery();
 
-    public void subscribe(ModelSelector<ProductShortView> selector) {
+    public void subscribe( SelectorWithModel<ProductShortView> selector) {
         subscribers.add(selector);
         selector.fillOptions(list);
     }
@@ -59,13 +57,13 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
     }
 
     protected void clearSubscribersOptions() {
-        for (ModelSelector<ProductShortView> subscriber : subscribers) {
+        for (SelectorWithModel<ProductShortView> subscriber : subscribers) {
             subscriber.clearOptions();
         }
     }
 
     private void notifySubscribers() {
-        for (ModelSelector<ProductShortView> selector : subscribers) {
+        for (SelectorWithModel<ProductShortView> selector : subscribers) {
             selector.fillOptions(list);
             selector.refreshValue();
         }
@@ -76,6 +74,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
     @Inject
     ProductControllerAsync productService;
 
-    private List<ModelSelector<ProductShortView>> subscribers = new ArrayList<>();
+    private List<SelectorWithModel<ProductShortView>> subscribers = new ArrayList<>();
     private List<ProductShortView> list = new ArrayList<>();
 }

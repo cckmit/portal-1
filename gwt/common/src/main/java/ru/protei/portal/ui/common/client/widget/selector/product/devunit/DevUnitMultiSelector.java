@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.Objects;
 /**
  * Мультиселектор продуктов
  */
-public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements ModelSelector< ProductShortView > {
+public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements SelectorWithModel< ProductShortView > {
 
     @Inject
     public void init(DevUnitModel model, Lang lang ) {
