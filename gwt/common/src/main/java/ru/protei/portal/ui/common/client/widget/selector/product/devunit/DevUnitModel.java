@@ -29,6 +29,7 @@ public abstract class DevUnitModel extends BaseModel implements Activity {
     @Event
     public void onInit(AuthEvents.Success event) {
 //        refreshOptions();
+        clearSubscribersOptions();
     }
 
     @Event

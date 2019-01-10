@@ -18,6 +18,7 @@ public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> imp
     @Inject
     public void init( DistrictModel model ) {
         model.subscribe( this );
+        setSelectorModel(model);
     }
 
     @PostConstruct
@@ -38,11 +39,4 @@ public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> imp
         }
     }
 
-    @Override
-    public void clearOptions() {
-        log.warning( "clearOptions(): Not implemented." );//TODO NotImplemented
-
-    }
-
-    private static final Logger log = Logger.getLogger( DistrictBtnGroupMulti.class.getName() );
 }

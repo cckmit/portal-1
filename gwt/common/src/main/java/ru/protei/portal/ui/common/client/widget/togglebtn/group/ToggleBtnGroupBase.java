@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
+import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
@@ -42,6 +43,11 @@ public class ToggleBtnGroupBase<T>
         if ( selectorModel != null ) {
             selectorModel.onSelectorLoad(this);
         }
+    }
+
+    public void clearOptions(){
+        modelToItemView.clear();
+        itemViewToModel.clear();
     }
 
     @Override

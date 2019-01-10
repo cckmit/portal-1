@@ -26,6 +26,7 @@ public class EmployeeMultiSelector
         model.subscribe( this );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
+        setSelectorModel( model );
     }
 
     @Override

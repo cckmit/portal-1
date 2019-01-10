@@ -18,6 +18,7 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
         employeeModel.subscribe(this);
         setSearchEnabled( true );
         setSearchAutoFocus( true );
+        setSelectorModel( employeeModel );
 
         setDisplayOptionCreator( value -> {
             if ( value == null ) {

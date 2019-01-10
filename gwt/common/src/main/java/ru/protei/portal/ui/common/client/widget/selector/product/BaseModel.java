@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public abstract class BaseModel implements SelectorModel<ProductShortView> {
 
@@ -36,7 +37,10 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
         selector.fillOptions(list);
     }
 
+    private static final Logger log = Logger.getLogger( BaseModel.class.getName() );
     protected void refreshOptions() {
+        long start = System.currentTimeMillis();
+        log.info( "refreshOptions(): BaseModel start " );
         productService.getProductViewList(getQuery(), new RequestCallback<List<ProductShortView>>() {
             @Override
             public void onError(Throwable throwable) {
@@ -45,11 +49,19 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
 
             @Override
             public void onSuccess(List<ProductShortView> result) {
+                log.info( "refreshOptions(): BaseModel success " + (start - System.currentTimeMillis() ) );
                 list.clear();
                 list.addAll(result);
                 notifySubscribers();
+                log.info( "refreshOptions(): BaseModel done " + (start - System.currentTimeMillis() ) );
             }
         });
+    }
+
+    protected void clearSubscribersOptions() {
+        for (ModelSelector<ProductShortView> subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
     }
 
     private void notifySubscribers() {

@@ -8,9 +8,12 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProductQuery;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.BaseModel;
 
 public abstract class ComponentModel extends BaseModel implements Activity {
@@ -26,7 +29,8 @@ public abstract class ComponentModel extends BaseModel implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        refreshOptions();
+//        refreshOptions();
+        clearSubscribersOptions();
     }
 
     @Event

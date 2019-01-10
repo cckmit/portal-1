@@ -29,7 +29,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     @Event
     public void onInit( AuthEvents.Success event ) {
 //        loadOptions();
-        log.info( "onInit(): CompanyModel" );
         for (ModelSelector< EntityOption > subscriber : subscribers) {
             subscriber.clearOptions();
         }
@@ -45,7 +44,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
     @Override
     public void onSelectorLoad( HasSelectableValues<EntityOption> selector ) {
-        log.info( "onSelectorLoad(): CompanyModel" );
         if ( selector == null ) {
             return;
         }

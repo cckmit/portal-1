@@ -37,12 +37,4 @@ public class CategoryBtnGroupMulti extends ToggleBtnGroupMulti< EntityOption > i
             setEnsureDebugId(option, DebugIdsHelper.COMPANY_CATEGORY_BUTTON.byId(option.getId()));
         }
     }
-
-    @Override
-    public void clearOptions() {
-        log.warning( "clearOptions(): Not implemented." );//TODO NotImplemented
-
-    }
-
-    private static final Logger log = Logger.getLogger( CategoryBtnGroupMulti.class.getName() );
 }

@@ -4,11 +4,13 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.HasValue;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Вид группы кнопок-переключателей

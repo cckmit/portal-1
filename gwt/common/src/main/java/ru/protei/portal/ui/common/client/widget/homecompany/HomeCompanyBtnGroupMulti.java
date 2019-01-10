@@ -27,11 +27,4 @@ public class HomeCompanyBtnGroupMulti extends ToggleBtnGroupMulti< EntityOption 
         } );
     }
 
-    @Override
-    public void clearOptions() {
-        log.warning( "clearOptions(): Not implemented." );//TODO NotImplemented
-
-    }
-
-    private static final Logger log = Logger.getLogger( HomeCompanyBtnGroupMulti.class.getName() );
 }
