@@ -12,6 +12,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
@@ -24,6 +26,7 @@ import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +39,7 @@ public abstract class Selector<T>
         Window.ScrollHandler,
         HasSelectorChangeValHandlers,
         HasAddHandlers,
-         HasSelectableValues<T>
+         SelectorWithModel<T>
 {
 
     public Collection<T> getValues() {
@@ -109,6 +112,15 @@ public abstract class Selector<T>
 
     public void setAddButtonText(String addButtonText) {
         this.addButtonText = addButtonText;
+    }
+
+    @Override
+    public void fillOptions( List<T> options ) {
+        clearOptions();
+
+        for ( T option : options ) {
+            addOption( option );
+        }
     }
 
     public void addOption( T value ) {
@@ -249,6 +261,9 @@ public abstract class Selector<T>
     @Override
     protected void onUnload() {
         scrollRegistration.removeHandler();
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorUnload(this);
+        }
     }
 
 

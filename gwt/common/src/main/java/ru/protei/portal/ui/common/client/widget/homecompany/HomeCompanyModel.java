@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -29,7 +28,7 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
     }
 
     @Override
-    public void onSelectorLoad( HasSelectableValues<EntityOption> selector ) {
+    public void onSelectorLoad( SelectorWithModel<EntityOption> selector ) {
         if ( selector == null ) {
             return;
         }

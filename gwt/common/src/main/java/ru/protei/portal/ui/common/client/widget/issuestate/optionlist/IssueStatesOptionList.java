@@ -6,8 +6,10 @@ import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.optionlist.list.OptionList;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
+import java.util.Collection;
 import java.util.List;
 
 /**

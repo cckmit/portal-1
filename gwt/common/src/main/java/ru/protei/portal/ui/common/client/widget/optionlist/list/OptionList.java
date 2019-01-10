@@ -10,8 +10,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 
 import java.util.*;
 
@@ -45,6 +47,16 @@ public class OptionList<T>
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, selected );
         }
+    }
+
+    public Collection<T> getValues() {
+        return itemViewToModel.values();
+    }
+
+    private SelectorModel<T> selectorModel;
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
     }
 
     public void setHeader( String header ) {

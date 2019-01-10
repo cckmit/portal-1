@@ -19,6 +19,7 @@ public class ProductDirectionButtonSelector
     @Inject
     public void init( ProductDirectionModel productDirectionModel ) {
         productDirectionModel.subscribe( this );
+        setSelectorModel( productDirectionModel );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 

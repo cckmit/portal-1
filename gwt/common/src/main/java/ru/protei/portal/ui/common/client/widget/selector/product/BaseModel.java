@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -17,7 +16,7 @@ import java.util.logging.Logger;
 public abstract class BaseModel implements SelectorModel<ProductShortView> {
 
     @Override
-    public void onSelectorLoad( HasSelectableValues<ProductShortView> selector ) {
+    public void onSelectorLoad( SelectorWithModel<ProductShortView> selector ) {
         if ( selector == null ) {
             return;
         }

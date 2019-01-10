@@ -21,7 +21,7 @@ import java.util.*;
 public abstract class MultipleSelector<T>
         extends Composite
         implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>,
-             HasSelectableValues<T>
+        SelectorWithModel<T>
 {
 
     protected abstract void onUserCanAddMoreItems(boolean isCanAdd);
@@ -151,6 +151,9 @@ public abstract class MultipleSelector<T>
     @Override
     protected void onUnload() {
         scrollRegistration.removeHandler();
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorUnload(this);
+        }
     }
 
     protected void showPopup( IsWidget relative ) {
@@ -159,7 +162,10 @@ public abstract class MultipleSelector<T>
         popup.setSearchVisible( true );
         popup.setSearchAutoFocus( true );
         popup.clearSearchField();
-        popup.addValueChangeHandler( event -> {
+        if (popupValueChangeHandlerRegistration != null) {
+            popupValueChangeHandlerRegistration.removeHandler();
+        }
+        popupValueChangeHandlerRegistration = popup.addValueChangeHandler( event -> {
             String searchText = event.getValue().toLowerCase();
             onSearchChanged( searchText );
         } );
@@ -293,6 +299,7 @@ public abstract class MultipleSelector<T>
     private Set<T> selected = new HashSet<>();
     private HandlerRegistration scrollRegistration;
     private SelectableItem anyItemView;
+    private HandlerRegistration popupValueChangeHandlerRegistration;
 
     private Map<T, String> itemToNameModel = new HashMap<T, String>();
 

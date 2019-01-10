@@ -21,10 +21,10 @@ public class EmployeeMultiSelector
     public void init(EmployeeModel model, Lang lang ) {
         this.lang = lang;
 
-        model.subscribe( this );
+//        model.subscribe( this );
+        setSelectorModel( model );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
-        setSelectorModel( model );
     }
 
     @Override

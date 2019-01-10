@@ -8,8 +8,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
 import java.util.*;
@@ -18,7 +18,7 @@ import java.util.*;
  * Вид группы кнопок-переключателей
  */
 public class ToggleBtnGroupBase<T>
-        extends Composite implements ValueChangeHandler< Boolean >, HasEnabled, HasSelectableValues<T> {
+        extends Composite implements ValueChangeHandler< Boolean >, HasEnabled, SelectorWithModel<T> {
 
     public ToggleBtnGroupBase() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -45,6 +45,18 @@ public class ToggleBtnGroupBase<T>
     public void clearOptions(){
         modelToItemView.clear();
         itemViewToModel.clear();
+    }
+
+    @Override
+    public void fillOptions( List<T> options ) {
+        clear();
+        for (T option : options) {
+            addBtn( String.valueOf( option ), option );
+        }
+    }
+
+    @Override
+    public void refreshValue() {
     }
 
     @Override

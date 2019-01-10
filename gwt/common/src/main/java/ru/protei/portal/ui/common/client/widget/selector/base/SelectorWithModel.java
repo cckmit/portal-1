@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -12,4 +13,8 @@ public interface SelectorWithModel<T> {
     void refreshValue();
 
     void clearOptions();
+
+    Collection<T> getValues();
+
+    void setSelectorModel( SelectorModel<T> selectorModel );
 }

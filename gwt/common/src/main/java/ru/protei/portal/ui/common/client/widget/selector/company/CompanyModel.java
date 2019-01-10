@@ -11,7 +11,6 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -42,7 +41,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     }
 
     @Override
-    public void onSelectorLoad( HasSelectableValues<EntityOption> selector ) {
+    public void onSelectorLoad( SelectorWithModel<EntityOption> selector ) {
         if ( selector == null ) {
             return;
         }

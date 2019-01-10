@@ -12,7 +12,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.app.portal.client.service.AuthControllerAsync;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
-import java.util.logging.Logger;
 
 /**
  * Активность окна авторизации
@@ -56,9 +55,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
             public void onSuccess( Profile profile ) {
                 view.hideError();
                 fireAuthSuccess(profile);
-                log.info( "onSuccess(): Before notify" );
                 fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
-                log.info( "onSuccess(): After notify" );
             }
         } );
     }
@@ -93,9 +90,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         view.setFocus();
     }
 
-    private static final Logger log = Logger.getLogger( AuthActivity.class.getName() );
     private void fireAuthSuccess(Profile profile) {
-        log.info( "fireAuthSuccess():" );
         fireEvent(new MenuEvents.Clear());
         fireEvent(new AuthEvents.Success(profile));
     }

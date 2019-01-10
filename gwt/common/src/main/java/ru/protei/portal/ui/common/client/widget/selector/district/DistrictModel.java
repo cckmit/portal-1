@@ -7,7 +7,6 @@ import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.HasSelectableValues;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -31,7 +30,7 @@ public abstract class DistrictModel implements Activity, SelectorModel<DistrictI
     }
 
     @Override
-    public void onSelectorLoad( HasSelectableValues<DistrictInfo> selector ) {
+    public void onSelectorLoad( SelectorWithModel<DistrictInfo> selector ) {
         if ( selector == null ) {
             return;
         }
