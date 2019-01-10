@@ -4,8 +4,10 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -26,18 +28,12 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     private static final Logger log = Logger.getLogger( CompanyModel.class.getName() );
     @Event
     public void onInit( AuthEvents.Success event ) {
-//        loadOptions();
-        for (SelectorWithModel< EntityOption > subscriber : subscribers) {
-            subscriber.clearOptions();
-        }
+        refreshHomeCompanies();
     }
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
-        loadOptions();
-        for (SelectorWithModel< EntityOption > subscriber : subscribers) {
-            subscriber.clearOptions();
-        }
+        refreshHomeCompanies();
     }
 
     @Override
@@ -45,17 +41,23 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         if ( selector == null ) {
             return;
         }
+        subscribers.add( selector );
         if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-            requestOptions( (SelectorWithModel<EntityOption>) selector, selectorToQuery.get(selector));//TODO remove cast
+            requestOptions(selector, selectorToQuery.get(selector));
         }
     }
 
-    private void loadOptions() {
-        refreshHomeCompanies(this::refreshOptions);
+    @Override
+    public void onSelectorUnload( SelectorWithModel<EntityOption> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        selector.clearOptions();
+        subscribers.remove( selector );
     }
 
     public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
-        subscribers.add( selector );
+//        subscribers.add( selector );
         updateQuery( selector, categories );
     }
 
@@ -65,11 +67,11 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 //        requestOptions(selector, query);//TODO lazy load
     }
 
-    private void refreshOptions() {
-        for ( SelectorWithModel< EntityOption > selector : subscribers ) {
-            requestOptions(selector, selectorToQuery.get(selector));
-        }
-    }
+//    private void refreshOptions() {
+//        for ( SelectorWithModel< EntityOption > selector : subscribers ) {
+//            requestOptions(selector, selectorToQuery.get(selector));
+//        }
+//    }
 
     private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
         log.info( "requestOptions(): CompanyModel" );
@@ -99,7 +101,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         return query;
     }
 
-    private void refreshHomeCompanies(Runnable andThen) {
+    private void refreshHomeCompanies() {
         log.info( "refreshHomeCompanies():  CompanyModel" );
         companyService.getCompanyOptionList(
                 makeQuery(Collections.singletonList(En_CompanyCategory.HOME)),
@@ -107,13 +109,13 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
                     @Override
                     public void onError(Throwable throwable) {
                         homeCompanies.clear();
-                        andThen.run();
+//                        andThen.run();
                     }
                     @Override
                     public void onSuccess(List<EntityOption> result) {
                         homeCompanies.clear();
                         homeCompanies.addAll(result);
-                        andThen.run();
+//                        andThen.run();
                     }
                 }
         );

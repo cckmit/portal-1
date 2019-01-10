@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
@@ -272,7 +273,7 @@ public abstract class MultipleSelector<T>
 
     private SelectableItem makeAnySelectorItem( String name ) {
         anyItemView = itemFactory.get();
-        anyItemView.addStyleName( "multiple-any" );
+        anyItemView.addStyleName( UiConstants.Styles.MULTIPLE_ANY );
         anyItemView.setName( name );
         anyItemView.addValueChangeHandler( this );
         itemToNameModel.put( null, name );
