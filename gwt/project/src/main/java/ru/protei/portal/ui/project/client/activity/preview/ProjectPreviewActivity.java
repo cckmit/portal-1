@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -147,8 +148,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         view.removeBtnVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE));
 
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), false ) );
-
+        fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.PROJECT, value.getId() ) );
     }
 
     private void readView() {

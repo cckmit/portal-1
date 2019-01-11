@@ -29,22 +29,22 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private final long timeCreated;
     private long lastUpdated;
 
-    public AssembledCaseEvent(CaseService caseService, CaseObject lastState, Person initiator) {
-        this(ServiceModule.GENERAL, caseService, lastState, lastState, initiator);
+    public AssembledCaseEvent(Object source, CaseObject lastState, Person initiator) {
+        this(ServiceModule.GENERAL, source, lastState, lastState, initiator);
     }
 
-    public AssembledCaseEvent(CaseService caseService, CaseObject initState, CaseObject lastState,
+    public AssembledCaseEvent(Object source, CaseObject initState, CaseObject lastState,
                               Person currentPerson) {
-        this(ServiceModule.GENERAL, caseService, initState, lastState, currentPerson);
+        this(ServiceModule.GENERAL, source, initState, lastState, currentPerson);
     }
 
     public AssembledCaseEvent(CaseObjectEvent objectEvent) {
-        this(objectEvent.getServiceModule(), objectEvent.getCaseService(), objectEvent.getOldState(),
+        this(objectEvent.getServiceModule(), objectEvent.getSource(), objectEvent.getOldState(),
                 objectEvent.getNewState(), objectEvent.getPerson());
     }
 
     public AssembledCaseEvent(CaseCommentEvent commentEvent) {
-        this(commentEvent.getServiceModule(), commentEvent.getCaseService(), commentEvent.getOldState(), commentEvent.getNewState(),
+        this(commentEvent.getServiceModule(), commentEvent.getSource(), commentEvent.getOldState(), commentEvent.getNewState(),
                 commentEvent.getPerson());
         oldComment = commentEvent.getOldCaseComment();
         comment = commentEvent.getCaseComment();
@@ -53,15 +53,15 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
-        this(attachmentEvent.getCaseService(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
+        this(attachmentEvent.getSource(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
         addedAttachments.addAll(attachmentEvent.getAddedAttachments());
         removedAttachments.addAll(attachmentEvent.getRemovedAttachments());
         serviceModule = attachmentEvent.getServiceModule();
     }
 
-    public AssembledCaseEvent(ServiceModule module, CaseService caseService,
+    public AssembledCaseEvent(ServiceModule module, Object source,
                               CaseObject state, CaseObject lastState, Person currentPerson) {
-        super(caseService);
+        super(source);
         this.initState = state;
         this.lastState = lastState;
         this.initiator = currentPerson;
@@ -205,10 +205,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public CaseObject getInitState() {
         return initState;
-    }
-
-    public CaseService getCaseService() {
-        return (CaseService) getSource();
     }
 
     public Person getInitiator() {

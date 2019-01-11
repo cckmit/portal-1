@@ -29,22 +29,5 @@ public interface IssueControllerAsync {
 
     void getIssuesCount( CaseQuery query, AsyncCallback<Long> callback );
 
-    /**
-     * Получение списка комментариев по обращению
-     * @param caseId
-     * @param async
-     */
-    void getIssueComments( Long caseId, AsyncCallback<List<CaseComment>> async );
-
-    /**
-     * Удаление комментария обращения
-     */
-    void removeIssueComment(CaseComment value, AsyncCallback<Void> async);
-
-    /**
-     * Редактирование комментария обращения
-     */
-    void editIssueComment(CaseComment comment, AsyncCallback<CaseComment> async);
-
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
 }

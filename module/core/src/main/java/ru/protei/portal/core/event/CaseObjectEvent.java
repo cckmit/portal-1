@@ -19,16 +19,16 @@ public class CaseObjectEvent extends ApplicationEvent {
     private Person person;
     private ServiceModule serviceModule;
 
-    public CaseObjectEvent( CaseService caseService, CaseObject newState, Person initiator ) {
-        this (ServiceModule.GENERAL, caseService, newState, null, initiator);
+    public CaseObjectEvent( Object source, CaseObject newState, Person initiator ) {
+        this (ServiceModule.GENERAL, source, newState, null, initiator);
     }
 
-    public CaseObjectEvent( CaseService caseService, CaseObject newState, CaseObject oldState, Person currentPerson ){
-        this (ServiceModule.GENERAL, caseService, newState, oldState, currentPerson);
+    public CaseObjectEvent( Object source, CaseObject newState, CaseObject oldState, Person currentPerson ){
+        this (ServiceModule.GENERAL, source, newState, oldState, currentPerson);
     }
 
-    public CaseObjectEvent( ServiceModule module, CaseService caseService, CaseObject newState, CaseObject oldState, Person currentPerson ) {
-        super( caseService );
+    public CaseObjectEvent( ServiceModule module, Object source, CaseObject newState, CaseObject oldState, Person currentPerson ) {
+        super( source );
         this.newState = newState;
         this.oldState = oldState;
         this.person = currentPerson;
@@ -97,10 +97,6 @@ public class CaseObjectEvent extends ApplicationEvent {
 
     public CaseObject getOldState() {
         return oldState;
-    }
-
-    public CaseService getCaseService () {
-        return (CaseService) getSource();
     }
 
     public Person getPerson() {

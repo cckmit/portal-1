@@ -2,9 +2,6 @@ package ru.protei.portal.ui.issue.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemView;
-import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
-import ru.protei.portal.ui.issue.client.activity.comment.list.IssueCommentListActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
@@ -15,8 +12,6 @@ import ru.protei.portal.ui.issue.client.activity.preview.AbstractIssuePreviewVie
 import ru.protei.portal.ui.issue.client.activity.preview.IssuePreviewActivity;
 import ru.protei.portal.ui.issue.client.activity.table.AbstractIssueTableView;
 import ru.protei.portal.ui.issue.client.activity.table.IssueTableActivity;
-import ru.protei.portal.ui.issue.client.view.comment.item.IssueCommentItemView;
-import ru.protei.portal.ui.issue.client.view.comment.list.IssueCommentListView;
 import ru.protei.portal.ui.issue.client.view.edit.IssueEditView;
 import ru.protei.portal.ui.issue.client.view.filter.IssueFilterView;
 import ru.protei.portal.ui.issue.client.view.preview.IssuePreviewView;
@@ -43,10 +38,6 @@ public class IssueClientModule extends AbstractGinModule {
         bind(AbstractIssueEditView.class).to(IssueEditView.class);
 
         bind( AbstractIssueFilterView.class ).to(IssueFilterView.class).in(Singleton.class);
-
-        bind( IssueCommentListActivity.class ).asEagerSingleton();
-        bind( AbstractIssueCommentListView.class ).to( IssueCommentListView.class ).in( Singleton.class );
-        bind( AbstractIssueCommentItemView.class ).to( IssueCommentItemView.class );
     }
 }
 

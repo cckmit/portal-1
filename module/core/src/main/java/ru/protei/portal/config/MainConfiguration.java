@@ -640,6 +640,12 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseCommentService getCaseCommentService() {
+        return new CaseCommentServiceImpl();
+    }
+
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }

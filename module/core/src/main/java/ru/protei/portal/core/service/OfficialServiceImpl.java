@@ -7,6 +7,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.OfficialQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -221,7 +222,7 @@ public class OfficialServiceImpl implements OfficialService {
             personDAO.removeByKey(memberId);
         }
 
-        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(caseObject.getId());
+        List<CaseComment> caseComments = caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()));
         for (CaseComment comment: caseComments) {
             caseCommentDAO.remove(comment);
         }
