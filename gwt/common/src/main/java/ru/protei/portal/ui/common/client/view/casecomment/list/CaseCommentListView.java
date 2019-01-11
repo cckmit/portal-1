@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.view.comment.list;
+package ru.protei.portal.ui.common.client.view.casecomment.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
@@ -22,15 +22,15 @@ import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTex
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListActivity;
-import ru.protei.portal.ui.issue.client.activity.comment.list.AbstractIssueCommentListView;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 
 /**
  * Контейнер для комментариев
  */
-public class IssueCommentListView
+public class CaseCommentListView
         extends Composite
-        implements AbstractIssueCommentListView, HasAttachmentListHandlers {
+        implements AbstractCaseCommentListView, HasAttachmentListHandlers {
 
     @Inject
     public void onInit() {
@@ -39,7 +39,7 @@ public class IssueCommentListView
     }
 
     @Override
-    public void setActivity(AbstractIssueCommentListActivity activity) {
+    public void setActivity(AbstractCaseCommentListActivity activity) {
         this.activity = activity;
     }
 
@@ -183,8 +183,8 @@ public class IssueCommentListView
     @UiField
     ImageElement icon;
 
-    private AbstractIssueCommentListActivity activity;
+    private AbstractCaseCommentListActivity activity;
 
-    private static IssueListUiBinder ourUiBinder = GWT.create(IssueListUiBinder.class);
-    interface IssueListUiBinder extends UiBinder<HTMLPanel, IssueCommentListView> {}
+    private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);
+    interface CaseCommentListUiBinder extends UiBinder<HTMLPanel, CaseCommentListView> {}
 }

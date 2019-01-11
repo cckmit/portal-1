@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.util;
+package ru.protei.portal.ui.common.client.util;
 
 import ru.protei.portal.core.model.ent.CaseComment;
 
@@ -7,7 +7,7 @@ import java.util.Date;
 /**
  * Утилита по работе с комментариями
  */
-public class IssueCommentUtils {
+public class CaseCommentUtils {
 
     public static boolean isEnableEdit( CaseComment value, Long personId ) {
         if ( value == null || value.getCreated() == null ) {

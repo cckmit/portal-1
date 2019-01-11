@@ -4,14 +4,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AttachmentEvents;
-import ru.protei.portal.ui.common.client.events.IssueEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
@@ -115,7 +113,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(issueId));
 
-                fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issueId, true) );
+                fireEvent(new CaseCommentEvents.Show(
+                        view.getCommentsContainer(),
+                        En_CaseType.CRM_SUPPORT,
+                        issueId,
+                        policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
+                ));
             }
         });
     }
@@ -160,7 +163,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
 
-        fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), true ) );
+        fireEvent(new CaseCommentEvents.Show(
+                view.getCommentsContainer(),
+                En_CaseType.CRM_SUPPORT,
+                value.getId(),
+                policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
+        ));
     }
 
     private void fillView( Long number ) {

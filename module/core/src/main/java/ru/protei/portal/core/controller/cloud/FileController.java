@@ -184,7 +184,6 @@ public class FileController {
 
         publisherService.publishEvent(new CaseAttachmentEvent(
                 ServiceModule.GENERAL,
-                caseService,
                 this,
                 issue.getData(),
                 Collections.singletonList(attachment),

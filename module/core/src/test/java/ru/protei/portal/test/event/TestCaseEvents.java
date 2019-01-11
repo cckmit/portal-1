@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 
@@ -24,10 +25,12 @@ public class TestCaseEvents {
 
     public static final String JUNIT_EVENT_PUB_01 = "junit-event-pub-01";
     static ApplicationContext ctx;
+    static En_CaseType caseType;
 
     @BeforeClass
     public static void init () {
         ctx = new AnnotationConfigApplicationContext(TestEventConfiguration.class);
+        caseType = En_CaseType.CRM_SUPPORT;
     }
 
     @Test
@@ -36,9 +39,10 @@ public class TestCaseEvents {
         EventHandlerRegistry evRegistry = ctx.getBean(EventHandlerRegistry.class);
 
         CaseService service = ctx.getBean(CaseService.class);
+        CaseCommentService caseCommentService = ctx.getBean(CaseCommentService.class);
 
         CaseObject object = new CaseObject();
-        object.setCaseType(En_CaseType.CRM_SUPPORT);
+        object.setCaseType(caseType);
         object.setInitiatorCompanyId(1L);
         object.setInitiatorId(1L);
         object.setState(En_CaseState.CREATED);
@@ -60,7 +64,7 @@ public class TestCaseEvents {
         comment.setAuthorId(response.getData().getInitiatorId());
         comment.setText("A new comment, publishing test");
 
-        CoreResponse<CaseComment> r2 = service.addCaseComment( null, comment, null );
+        CoreResponse<CaseComment> r2 = caseCommentService.addCaseComment( null, caseType, comment, null );
 
         Assert.assertTrue(r2.isOk());
 

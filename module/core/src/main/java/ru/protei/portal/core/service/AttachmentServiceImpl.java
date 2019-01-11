@@ -77,7 +77,6 @@ public class AttachmentServiceImpl implements AttachmentService {
                 jdbcManyRelationsHelper.fill(issue, "attachments");
                 publisherService.publishEvent(new CaseAttachmentEvent(
                         ServiceModule.GENERAL,
-                        caseService,
                         this,
                         issue,
                         null,
