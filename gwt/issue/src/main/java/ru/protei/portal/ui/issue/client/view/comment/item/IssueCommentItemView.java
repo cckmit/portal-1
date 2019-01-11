@@ -20,7 +20,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
-import ru.protei.portal.ui.common.client.widget.markdown.Markdown;
+import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.issue.client.activity.comment.item.AbstractIssueCommentItemActivity;
@@ -71,7 +71,7 @@ public class IssueCommentItemView
             return;
         }
 
-        this.message.getElement().setInnerHTML(Markdown.plain2escaped2markdown(value));
+        this.message.getElement().setInnerHTML(MarkdownClient.plain2escaped2markdown(value));
         this.messageBlock.removeClassName( "hide" );
     }
 

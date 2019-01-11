@@ -36,6 +36,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style><#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false></style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
@@ -233,9 +234,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap"><@diff old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em"><@diff old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
-                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap">${caseComment.text}</div>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em">${caseComment.text}</div>
                         </#if>
                     </#if>
                 </div>

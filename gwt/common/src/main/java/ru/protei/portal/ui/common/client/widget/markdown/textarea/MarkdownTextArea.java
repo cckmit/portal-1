@@ -7,7 +7,7 @@ import com.google.gwt.user.client.Timer;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
-import ru.protei.portal.ui.common.client.widget.markdown.Markdown;
+import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.common.client.widget.markdown.textarea.event.*;
 
 public class MarkdownTextArea extends AutoResizeTextArea implements HasAddHandlers, HasChangedPreviewHandlers {
@@ -55,7 +55,7 @@ public class MarkdownTextArea extends AutoResizeTextArea implements HasAddHandle
             ChangedPreviewEvent.fire(MarkdownTextArea.this, "");
             return;
         }
-        String formatted = Markdown.plain2escaped2markdown(value);
+        String formatted = MarkdownClient.plain2escaped2markdown(value);
         ChangedPreviewEvent.fire(MarkdownTextArea.this, formatted);
     }
 
