@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
  * Модель селектора компаний
  */
 public abstract class CompanyModel implements Activity, SelectorModel<EntityOption> {
-    private static final Logger log = Logger.getLogger( CompanyModel.class.getName() );
     @Event
     public void onInit( AuthEvents.Success event ) {
         refreshHomeCompanies();
@@ -56,7 +55,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
             return;
         }
         selector.clearOptions();
-        subscribers.remove( selector );
     }
 
     public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
@@ -97,7 +95,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     }
 
     private void refreshHomeCompanies() {
-        log.info( "refreshHomeCompanies():  CompanyModel" );
         companyService.getCompanyOptionList(
                 makeQuery(Collections.singletonList(En_CompanyCategory.HOME)),
                 new RequestCallback<List<EntityOption>>() {

@@ -12,7 +12,6 @@ public class ComponentButtonSelector extends ButtonSelector<ProductShortView> im
 
     @Inject
     public void init(ComponentModel componentModel) {
-        componentModel.subscribe(this);
         setSelectorModel(componentModel);
         setHasNullValue(true);
         setSearchAutoFocus(true);

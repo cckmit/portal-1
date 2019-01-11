@@ -47,12 +47,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
 
     protected abstract ProductQuery getQuery();
 
-    public void subscribe( SelectorWithModel<ProductShortView> selector) {
-        subscribers.add(selector);
-        selector.fillOptions(list);
-    }
-
-    private static final Logger log = Logger.getLogger( BaseModel.class.getName() );
     protected void refreshOptions() {
         if(requested) return;
         requested = true;

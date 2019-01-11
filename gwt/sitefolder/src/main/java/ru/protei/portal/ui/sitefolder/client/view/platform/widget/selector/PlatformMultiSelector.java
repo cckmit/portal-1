@@ -25,9 +25,6 @@ public class PlatformMultiSelector extends MultipleInputSelector<EntityOption> i
         reselectValuesIfNeeded();
     }
 
-    @Override
-    public void refreshValue() {}
-
     @Inject
     PlatformModel platformModel;
     @Inject

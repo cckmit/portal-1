@@ -57,10 +57,10 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
         subscribers.remove( selector );
     }
 
-    public void subscribe( SelectorWithModel< PersonShortView > selector ) {
-        subscribers.add( selector );
-        selector.fillOptions( list );
-    }
+//    public void subscribe( SelectorWithModel< PersonShortView > selector ) {
+//        subscribers.add( selector );
+//        selector.fillOptions( list );
+//    }
 
     private void notifySubscribers() {
         for ( SelectorWithModel< PersonShortView > selector : subscribers ) {

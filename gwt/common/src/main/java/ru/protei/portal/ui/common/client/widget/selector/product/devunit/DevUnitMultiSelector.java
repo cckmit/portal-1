@@ -29,9 +29,6 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         fillOptions();
     }
 
-    @Override
-    public void refreshValue() {}
-
     public void setHasNullValue(boolean hasNullValue) {
         this.hasNullValue = hasNullValue;
     }

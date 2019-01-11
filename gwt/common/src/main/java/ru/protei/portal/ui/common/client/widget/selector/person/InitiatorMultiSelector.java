@@ -57,11 +57,6 @@ public class InitiatorMultiSelector
         }
     }
 
-    @Override
-    public void refreshValue() {
-
-    }
-
     public void setFired ( boolean value ) { this.fired = value; }
 
     public void updateCompanies() {

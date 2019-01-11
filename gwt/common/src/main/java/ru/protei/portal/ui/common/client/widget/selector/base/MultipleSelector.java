@@ -161,6 +161,7 @@ public abstract class MultipleSelector<T>
         popup.setSearchVisible( true );
         popup.setSearchAutoFocus( true );
         popup.clearSearchField();
+        onSearchChanged( "" );
         if (popupValueChangeHandlerRegistration != null) {
             popupValueChangeHandlerRegistration.removeHandler();
         }
@@ -171,14 +172,7 @@ public abstract class MultipleSelector<T>
     }
 
     protected void onSearchChanged( String searchText ) {
-        boolean isEmptyResult = true;
-        boolean exactMatch = false;
-
         popup.getChildContainer().clear();
-
-//        if ( searchText.isEmpty() && nullItemView != null ) {
-//            popup.getChildContainer().add( nullItemView );
-//        }
 
         for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
             String entryText = entry.getValue().getName().toLowerCase();
@@ -187,22 +181,8 @@ public abstract class MultipleSelector<T>
                 if ( itemView != null ) {
                     popup.getChildContainer().add( itemView );
                 }
-                if(entryText.equals(searchText))
-                    exactMatch = true;
-
-                isEmptyResult = false;
             }
         }
-
-//        if(exactMatch){
-//            SelectorChangeValEvent.fire( this, null );
-//        }else {
-//            SelectorChangeValEvent.fire(this, event.getValue());
-//        }
-//
-//        if ( isEmptyResult ) {
-//            addEmptyListGhostOption( lang.errNoMatchesFound() );
-//        }
     }
 
     protected void setItemChecked(T item, boolean isChecked) {

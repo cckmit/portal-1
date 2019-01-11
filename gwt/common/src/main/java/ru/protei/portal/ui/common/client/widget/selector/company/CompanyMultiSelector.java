@@ -38,9 +38,6 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
         super.showPopup( relative );
     }
 
-    @Override
-    public void refreshValue() {}
-
     private List<En_CompanyCategory > categories = Arrays.asList(
             En_CompanyCategory.CUSTOMER,
             En_CompanyCategory.PARTNER,

@@ -25,9 +25,6 @@ public class ServerMultiSelector extends MultipleInputSelector<EntityOption> imp
         reselectValuesIfNeeded();
     }
 
-    @Override
-    public void refreshValue() {}
-
     @Inject
     ServerModel serverModel;
     @Inject

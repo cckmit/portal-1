@@ -38,10 +38,6 @@ public class EmployeeMultiSelector
         }
     }
 
-    @Override
-    public void refreshValue() {
-    }
-
     public void setHasWithoutValue(boolean hasWithoutValue) {
         this.hasWithoutValue = hasWithoutValue;
     }
