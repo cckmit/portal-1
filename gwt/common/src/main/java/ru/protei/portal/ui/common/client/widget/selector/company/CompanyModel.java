@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.company;
 
+import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,6 +14,7 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -29,11 +31,17 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     @Event
     public void onInit( AuthEvents.Success event ) {
         refreshHomeCompanies();
+        for (SelectorWithModel<EntityOption> subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
     }
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
         refreshHomeCompanies();
+        for (SelectorWithModel<EntityOption> subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
     }
 
     @Override
@@ -41,7 +49,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         if ( selector == null ) {
             return;
         }
-        subscribers.add( selector );
         if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
             requestOptions(selector, selectorToQuery.get(selector));
         }
@@ -57,7 +64,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     }
 
     public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
-//        subscribers.add( selector );
+        subscribers.add( selector );
         updateQuery( selector, categories );
     }
 
@@ -73,8 +80,11 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 //        }
 //    }
 
+    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, ( message, currentTime ) -> {
+        GWT.log("CompanyModel "+ getClass().getSimpleName() +" " + message+ " t: " + currentTime);});
+
     private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
-        log.info( "requestOptions(): CompanyModel" );
+        sp.start( "start" );
         companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -83,9 +93,13 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
             @Override
             public void onSuccess( List<EntityOption> options ) {
+                sp.check( "success" );
                 putHomeCompaniesAtTheTop( options );
+                sp.check( "putHomeCompaniesAtTheTop" );
                 selector.fillOptions( options );
                 selector.refreshValue();
+                sp.check( "fillOptions " + selector.getClass().getSimpleName() );
+                sp.stop( "done" );
             }
         } );
     }

@@ -187,7 +187,11 @@ public abstract class Selector<T>
 
     @Override
     public void onValueChange(ValueChangeEvent<String> event) {
-        String searchText = event.getValue().toLowerCase();
+        onSearchChanged(event.getValue());
+    }
+
+    protected void onSearchChanged( String searchString ) {
+        String searchText = searchString.toLowerCase();
 
         boolean isEmptyResult = true;
         boolean exactMatch = false;
@@ -219,7 +223,7 @@ public abstract class Selector<T>
         if (exactMatch) {
             SelectorChangeValEvent.fire(this, null);
         } else {
-            SelectorChangeValEvent.fire(this, event.getValue());
+            SelectorChangeValEvent.fire(this, searchString);
         }
 
         if (isEmptyResult) {
@@ -302,6 +306,7 @@ public abstract class Selector<T>
         }
         popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
+        onSearchChanged("");
 
         if (!searchEnabled && autoSelectFirst) {
             selectFirstElement();

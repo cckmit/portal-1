@@ -171,7 +171,7 @@ public class SelectorPopup
 
     public void clearSearchField() {
         search.setValue( "" );
-        ValueChangeEvent.fire( SelectorPopup.this, search.getValue() );
+//        ValueChangeEvent.fire( SelectorPopup.this, search.getValue() );
     }
 
     private void fireChangeValueTimer() {
