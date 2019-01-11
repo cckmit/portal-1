@@ -17,22 +17,16 @@ public class CaseAttachmentEvent extends ApplicationEvent {
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
     private Person person;
-    private CaseService caseService;
 
-    public CaseAttachmentEvent(ServiceModule module, CaseService service, Object source, CaseObject caseObject,
+    public CaseAttachmentEvent(ServiceModule module, Object source, CaseObject caseObject,
                                Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments,
                                Person person) {
         super(source);
         this.serviceModule = module;
-        this.caseService = service;
         this.caseObject = caseObject;
         this.addedAttachments = addedAttachments;
         this.removedAttachments = removedAttachments;
         this.person = person;
-    }
-
-    public CaseService getCaseService() {
-        return caseService;
     }
 
     public CaseObject getCaseObject() {

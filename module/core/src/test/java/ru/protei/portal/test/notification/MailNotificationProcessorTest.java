@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.CompanyService;
@@ -30,9 +31,13 @@ import java.util.Set;
 public class MailNotificationProcessorTest {
 
     public static final String JUNIT_EVENT_PUB_01 = "junit-event-pub-02";
+    private En_CaseType caseType = En_CaseType.CRM_SUPPORT;
 
     @Autowired
     CaseService caseService;
+
+    @Autowired
+    CaseCommentService caseCommentService;
 
     @Autowired
     CompanyService companyService;
@@ -64,7 +69,7 @@ public class MailNotificationProcessorTest {
 //        initiator.setDisplayName(  );
 
         CaseObject object = new CaseObject();
-        object.setCaseType( En_CaseType.CRM_SUPPORT );
+        object.setCaseType( caseType );
         object.setInitiatorCompanyId( 1L );
         object.setInitiatorId( 1L );
         object.setCreatorId( 1L );
@@ -93,7 +98,7 @@ public class MailNotificationProcessorTest {
         comment.setAuthorId(response.getData().getInitiatorId());
         comment.setText("A new comment, publishing test");
 
-        CoreResponse<CaseComment> r2 = caseService.addCaseComment( null, comment, initiator );
+        CoreResponse<CaseComment> r2 = caseCommentService.addCaseComment( null, caseType, comment, initiator );
 
         Assert.assertTrue(r2.isOk());
 

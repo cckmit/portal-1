@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -113,22 +112,17 @@ public class ServiceLayerInterceptor {
         if ( token == null ) {
             return;
         }
-        UserSessionDescriptor descriptor = authService.findSession( token );
 
         AuditableObject auditableObject = findAuditableObject( pjp );
         if ( auditableObject == null ) {
             return;
         }
 
-        AuditObject auditObject = new AuditObject();
-        auditObject.setCreated( new Date() );
-        auditObject.setTypeId( auditable.value().getId() );
-        auditObject.setCreatorId( descriptor.getPerson().getId() );
-        auditObject.setCreatorIp( descriptor.getPerson().getIpAddress() );
-        auditObject.setCreatorShortName( descriptor.getPerson().getDisplayShortName() );
-        auditObject.setEntryInfo( auditableObject );
+        UserSessionDescriptor descriptor = authService.findSession(token);
 
-        publisherService.publishEvent(new CreateAuditObjectEvent( this, auditObject ));
+        AuditObject auditObject = new AuditObject(auditable.value().getId(), descriptor, auditableObject);
+
+        publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
     }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
@@ -231,10 +225,8 @@ public class ServiceLayerInterceptor {
 
     @Autowired
     AuthService authService;
-
     @Autowired
     PolicyService policyService;
-
     @Autowired
     EventPublisherService publisherService;
 }

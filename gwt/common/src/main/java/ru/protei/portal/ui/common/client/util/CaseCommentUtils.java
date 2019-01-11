@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.util;
+package ru.protei.portal.ui.common.client.util;
 
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Утилита по работе с комментариями
  */
-public class IssueCommentUtils {
+public class CaseCommentUtils {
 
     private final static String NEW_LINE_SYMBOL = "\n";
 

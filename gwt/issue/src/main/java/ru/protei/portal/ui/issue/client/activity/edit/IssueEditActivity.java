@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
@@ -176,8 +177,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
                 if(!isNew(issue))
-                    fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) );
-
+                    fireEvent(new CaseCommentEvents.Show(
+                            view.getCommentsContainer(),
+                            En_CaseType.CRM_SUPPORT,
+                            issue.getId(),
+                            policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
+                    ));
             }
         });
     }
@@ -271,7 +276,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)));
+            fireEvent(new CaseCommentEvents.Show(
+                    view.getCommentsContainer(),
+                    En_CaseType.CRM_SUPPORT,
+                    issue.getId(),
+                    policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
+            ));
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule

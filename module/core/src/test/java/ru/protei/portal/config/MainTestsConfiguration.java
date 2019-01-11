@@ -453,6 +453,11 @@ public class MainTestsConfiguration {
         return new SiteFolderServiceImpl();
     }
 
+    @Bean
+    public CaseCommentService getCaseCommentService() {
+        return new CaseCommentServiceImpl();
+    }
+
     /** ASPECT/INTERCEPTORS **/
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {

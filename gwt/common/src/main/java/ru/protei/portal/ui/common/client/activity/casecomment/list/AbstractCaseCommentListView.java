@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issue.client.activity.comment.list;
+package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
@@ -11,9 +11,9 @@ import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 /**
  * Представление списка комментариев
  */
-public interface AbstractIssueCommentListView extends IsWidget {
+public interface AbstractCaseCommentListView extends IsWidget {
 
-    void setActivity( AbstractIssueCommentListActivity activity );
+    void setActivity( AbstractCaseCommentListActivity activity );
 
     void clearCommentsContainer();
 

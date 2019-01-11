@@ -6,17 +6,18 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.*;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import static ru.protei.portal.core.model.helper.StringUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmployeeRegistrationPreviewActivity, Activity {
 
@@ -101,7 +102,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setState(value.getState());
         view.setIssues(value.getYoutrackIssues());
 
-        fireEvent( new EmployeeRegistrationEvents.ShowComments( view.getCommentsContainer(), value.getId()) );
+        fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.EMPLOYEE_REGISTRATION, value.getId()) );
     }
 
     private HasWidgets fullScreenContainer;

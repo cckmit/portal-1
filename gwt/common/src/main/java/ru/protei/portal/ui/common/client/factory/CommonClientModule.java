@@ -4,6 +4,9 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
@@ -23,6 +26,8 @@ import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
+import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
+import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
@@ -86,6 +91,10 @@ public class CommonClientModule extends AbstractGinModule {
         bind( PathItemActivity.class ).asEagerSingleton();
         bind( AbstractPathItemListView.class ).to( PathItemListView.class );
         bind( AbstractPathItemView.class ).to( PathItemView.class );
+
+        bind( CaseCommentListActivity.class ).asEagerSingleton();
+        bind( AbstractCaseCommentListView.class ).to( CaseCommentListView.class ).in( Singleton.class );
+        bind( AbstractCaseCommentItemView.class ).to( CaseCommentItemView.class );
 
         // Models
         bind( CompanyModel.class ).asEagerSingleton();

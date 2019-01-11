@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.hpsm.api.HpsmStatus;
@@ -279,7 +280,7 @@ public class LiveSampleTest {
         Assert.assertEquals(En_CaseState.OPENED, resultCase.getState());
         Assert.assertEquals(En_ImportanceLevel.IMPORTANT, resultCase.importanceLevel());
 
-        List<CaseComment> commentList = commentDAO.getCaseComments(resultCase.getId());
+        List<CaseComment> commentList = commentDAO.getCaseComments(new CaseCommentQuery(resultCase.getId()));
 
         Assert.assertFalse(commentList.isEmpty());
 
