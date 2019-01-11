@@ -16,8 +16,6 @@ public class PersonEvents {
         }
     }
 
-//    public static class ChangeEmployeeModel {}
-
     public static class PersonCreated {
         public Person person;
         public String origin;

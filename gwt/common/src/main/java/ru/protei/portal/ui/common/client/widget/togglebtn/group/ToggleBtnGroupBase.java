@@ -29,8 +29,6 @@ public class ToggleBtnGroupBase<T>
         return modelToItemView.keySet();
     }
 
-    private SelectorModel<T> selectorModel;
-
     public void setSelectorModel( SelectorModel<T> selectorModel ) {
         this.selectorModel = selectorModel;
     }
@@ -138,4 +136,6 @@ public class ToggleBtnGroupBase<T>
 
     interface ToggleButtonUiBinder extends UiBinder<HTMLPanel, ToggleBtnGroupBase > {}
     private static ToggleButtonUiBinder ourUiBinder = GWT.create( ToggleButtonUiBinder.class );
+
+    private SelectorModel<T> selectorModel;
 }

@@ -15,9 +15,9 @@ public class ComponentMultiSelector extends MultipleInputSelector<ProductShortVi
     @Inject
     public void init(ComponentModel model, Lang lang) {
         model.subscribe(this);
+        setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
-        setSelectorModel(model);
     }
 
     @Override

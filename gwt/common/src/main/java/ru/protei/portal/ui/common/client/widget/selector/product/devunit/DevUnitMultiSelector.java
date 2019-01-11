@@ -18,7 +18,6 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
 
     @Inject
     public void init(DevUnitModel model, Lang lang ) {
-//        model.subscribe( this );
         setSelectorModel(model);
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );

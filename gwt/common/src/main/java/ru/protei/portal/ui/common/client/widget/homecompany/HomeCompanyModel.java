@@ -21,7 +21,6 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-//        refreshOptions();
         for (SelectorWithModel< EntityOption > subscriber : subscribers) {
             subscriber.clearOptions();
         }

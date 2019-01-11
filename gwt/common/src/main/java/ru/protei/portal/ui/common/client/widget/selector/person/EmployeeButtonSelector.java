@@ -15,7 +15,6 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
 
     @Inject
     public void init( EmployeeModel employeeModel ) {
-//        employeeModel.subscribe(this);
         setSelectorModel( employeeModel );
         setSearchEnabled( true );
         setSearchAutoFocus( true );

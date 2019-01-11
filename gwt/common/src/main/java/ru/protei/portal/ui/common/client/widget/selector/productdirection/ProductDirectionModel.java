@@ -24,11 +24,6 @@ import java.util.List;
  */
 public abstract class ProductDirectionModel implements Activity, SelectorModel<ProductDirectionInfo> {
 
-    @Event
-    public void onInit( AuthEvents.Success event ) {
-//        refreshOptions();
-    }
-
     @Override
     public void onSelectorLoad( SelectorWithModel<ProductDirectionInfo> selector ) {
         if ( selector == null ) {

@@ -53,8 +53,6 @@ public class OptionList<T>
         return itemViewToModel.values();
     }
 
-    private SelectorModel<T> selectorModel;
-
     public void setSelectorModel( SelectorModel<T> selectorModel ) {
         this.selectorModel = selectorModel;
     }
@@ -186,6 +184,7 @@ public class OptionList<T>
     private boolean isEnabled = true;
     protected Selector.SelectorFilter<T> filter = null;
     private List<T> mandatoryOptions;
+    private SelectorModel<T> selectorModel;
 
     interface OptionListUiBinder extends UiBinder< HTMLPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );

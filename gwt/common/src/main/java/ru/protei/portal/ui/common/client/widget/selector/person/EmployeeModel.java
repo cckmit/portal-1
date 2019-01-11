@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -13,9 +12,8 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.ui.common.client.util.SimpleProfiler;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -32,23 +30,13 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
     @Event
     public void onInit( AuthEvents.Success event ) {
         myId = event.profile.getId();
-
-//        refreshOptions( );
     }
-//
-//    @Event
-//    public void onEmployeeListChanged( PersonEvents.ChangeEmployeeModel event ) {
-//        log.info( "onEmployeeListChanged(): EmployeeModel " );
-//        refreshOptions();
-//    }
 
     @Override
     public void onSelectorLoad( SelectorWithModel<PersonShortView> selector ) {
-        log.info( "onSelectorLoad(): EmployeeModel" );
         if ( selector == null ) {
             return;
         }
-        log.info( "onSelectorLoad(): subscribers count="+CollectionUtils.size(subscribers) );
         subscribers.add( selector );
         if(!CollectionUtils.isEmpty( list )){
             selector.clearOptions();
@@ -67,7 +55,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
         }
         selector.clearOptions();
         subscribers.remove( selector );
-        log.info( "onSelectorUnload(): subscribers count="+CollectionUtils.size(subscribers) );
     }
 
     public void subscribe( SelectorWithModel< PersonShortView > selector ) {
@@ -76,26 +63,18 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
     }
 
     private void notifySubscribers() {
-        sp.push();
         for ( SelectorWithModel< PersonShortView > selector : subscribers ) {
             selector.fillOptions( list );
-//            sp.check( "fillOptions" );
             selector.refreshValue();
-            sp.check( "fillOptions refreshValue" );
         }
-        sp.pop();
-        sp.check( "notifySubscribers" );
     }
 
-    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, ( message, currentTime ) -> {
-    GWT.log("EmployeeModel "+ message+ " t: " + currentTime);});
     private boolean requested;
 
     private static final Logger log = Logger.getLogger( EmployeeModel.class.getName() );
     private void refreshOptions() {
         if(requested) return;
         requested = true;
-        sp.start( "start" );
         employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, null, null, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
@@ -107,7 +86,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
             @Override
             public void onSuccess( List< PersonShortView > options ) {
                 requested = false;
-                sp.check( "success" );
                 int value = options.indexOf( new PersonShortView("", myId, false ) );
                 if ( value > 0 ) {
                     options.add(0, options.remove(value));
@@ -116,7 +94,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
                 list.clear();
                 list.addAll( options );
                 notifySubscribers();
-                sp.stop( "done" );
             }
         } );
     }

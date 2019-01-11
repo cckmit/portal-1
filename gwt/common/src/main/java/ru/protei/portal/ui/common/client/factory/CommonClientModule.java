@@ -88,13 +88,10 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractPathItemView.class ).to( PathItemView.class );
 
         // Models
-//        bind( CompanyModel.class ).asEagerSingleton();
-//        bind( EmployeeModel.class ).asEagerSingleton();
         bind( InitiatorModel.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
         bind( DevUnitModel.class ).asEagerSingleton();
         bind( ComponentModel.class ).asEagerSingleton();
-//        bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);

@@ -39,20 +39,19 @@ public abstract class Selector<T>
         Window.ScrollHandler,
         HasSelectorChangeValHandlers,
         HasAddHandlers,
-         SelectorWithModel<T>
+        SelectorWithModel<T>
 {
+
+    public interface SelectorFilter<T> {
+        boolean isDisplayed( T value );
+    }
 
     public Collection<T> getValues() {
         return itemToDisplayOptionModel.keySet();
     }
 
-    private SelectorModel<T> selectorModel;
-
     public void setSelectorModel( SelectorModel<T> selectorModel ) {
         this.selectorModel = selectorModel;
-    }
-    public interface SelectorFilter<T> {
-        boolean isDisplayed( T value );
     }
 
     public void setValue(T value) {
@@ -389,6 +388,8 @@ public abstract class Selector<T>
     private SelectorItem nullItemView;
     protected DisplayOptionCreator<T> displayOptionCreator;
     private HandlerRegistration popupValueChangeHandlerRegistration;
+
+    private SelectorModel<T> selectorModel;
 
     private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();

@@ -1,15 +1,13 @@
 package ru.protei.portal.ui.common.client.widget.selector.product;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
-import ru.protei.portal.ui.common.client.util.SimpleProfiler;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -25,7 +23,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
         if ( selector == null ) {
             return;
         }
-        log.info( "onSelectorLoad(): BaseModel subscribers count="+CollectionUtils.size(subscribers) );
         subscribers.add( selector );
         if(!CollectionUtils.isEmpty( list )){
             selector.clearOptions();
@@ -44,11 +41,8 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
         }
         selector.clearOptions();
         subscribers.remove( selector );
-        log.info( "onSelectorUnload(): BaseModel subscribers count="+CollectionUtils.size(subscribers) );
 
     }
-    SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, ( message, currentTime ) -> {
-        GWT.log("BaseModel " + getClass().getSimpleName() +" "+ message+ " t: " + currentTime);});
     protected abstract void failedToLoad();
 
     protected abstract ProductQuery getQuery();
@@ -62,7 +56,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
     protected void refreshOptions() {
         if(requested) return;
         requested = true;
-        sp.start( "start" );
         productService.getProductViewList(getQuery(), new RequestCallback<List<ProductShortView>>() {
             @Override
             public void onError(Throwable throwable) {
@@ -72,11 +65,9 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
             @Override
             public void onSuccess(List<ProductShortView> result) {
                 requested = false;
-                sp.check( "success" );
                 list.clear();
                 list.addAll(result);
                 notifySubscribers();
-                sp.stop( "done" );
             }
         });
     }
@@ -88,14 +79,10 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
     }
 
     private void notifySubscribers() {
-        sp.push();
         for (SelectorWithModel<ProductShortView> selector : subscribers) {
             selector.fillOptions(list);
             selector.refreshValue();
-            sp.check( "fillOptions refreshValue " + selector.getClass().getSimpleName() );
         }
-        sp.pop();
-        sp.check( "notifySubscribers" );
     }
 
     @Inject

@@ -35,8 +35,6 @@ public abstract class MultipleSelector<T>
         return itemToDisplayOptionModel.keySet();
     }
 
-    private SelectorModel<T> selectorModel;
-
     public void setSelectorModel( SelectorModel<T> selectorModel ) {
         this.selectorModel = selectorModel;
     }
@@ -301,6 +299,8 @@ public abstract class MultipleSelector<T>
     private HandlerRegistration scrollRegistration;
     private SelectableItem anyItemView;
     private HandlerRegistration popupValueChangeHandlerRegistration;
+
+    private SelectorModel<T> selectorModel;
 
     private Map<T, String> itemToNameModel = new HashMap<T, String>();
 

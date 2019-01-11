@@ -13,10 +13,10 @@ public class ComponentButtonSelector extends ButtonSelector<ProductShortView> im
     @Inject
     public void init(ComponentModel componentModel) {
         componentModel.subscribe(this);
+        setSelectorModel(componentModel);
         setHasNullValue(true);
         setSearchAutoFocus(true);
         setDisplayOptionCreator(value -> new DisplayOption(value == null ? defaultValue : value.getName()));
-        setSelectorModel(componentModel);
     }
 
     @Override
