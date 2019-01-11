@@ -3,19 +3,15 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel>
-
-        <div class="grid grid-indent">
-            <div class="form-group col-md-12 m-b-0 case-links">
-                <label ui:field="linksLabel" class="case-links-label"><ui:text from="{lang.linkedWith}"/>: </label>
-                <g:HTMLPanel ui:field="linksContainer" tag="ul" styleName="case-links-container"/>
-                <g:Button ui:field="addLinkButton" styleName="btn btn-white pull-right case-links-button">
-                    <i class="fa fa-link"/>
-                    <i class="fa fa-chevron-down"/>
-                </g:Button>
-            </div>
-            <small class="text-danger col-md-12" ui:field="error"/>
+    <g:HTMLPanel styleName="row">
+        <div class="col-md-12 case-links">
+            <small ui:field="linksLabel" class="case-links-label m-t-5"><ui:text from="{lang.linkedWith}"/>:</small>
+            <g:HTMLPanel ui:field="linksContainer" tag="ul" styleName="case-links-container"/>
+            <g:Button ui:field="addLinkButton" styleName="btn-warning btn btn-xs pull-right case-links-button">
+                <i class="fa fa-link"/>
+                <i class="fa fa-caret-down m-l-10"/>
+            </g:Button>
         </div>
-
+        <small class="text-danger col-md-12" ui:field="error"/>
     </g:HTMLPanel>
 </ui:UiBinder>

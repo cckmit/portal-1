@@ -42,7 +42,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         this.projectId = event.issueId;
 
-        fillView( projectId );
+        showView( projectId );
         view.watchForScroll( true );
         view.showFullScreen( false );
     }
@@ -54,7 +54,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         this.projectId = event.issueId;
 
-        fillView( projectId );
+        showView( projectId );
         view.showFullScreen( true );
     }
 
@@ -110,7 +110,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         });
     }
 
-    private void fillView( Long id ) {
+    private void showView(Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -130,7 +130,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         } );
     }
 
-    private void fillView( ProjectInfo value ) {
+    private void fillView(ProjectInfo value ) {
         this.project = value;
         view.setName( value.getName() );
         view.setInitiatorShortName( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
@@ -148,7 +148,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.removeBtnVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE));
 
         fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), value.getId(), false ) );
-
     }
 
     private void readView() {

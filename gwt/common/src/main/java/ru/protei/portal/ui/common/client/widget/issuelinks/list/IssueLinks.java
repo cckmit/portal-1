@@ -250,7 +250,7 @@ public class IssueLinks extends Composite implements HasValue<Set<CaseLink>>, Ha
     CreateLinkPopup popup;
 
     @UiField
-    LabelElement linksLabel;
+    Element linksLabel;
     @UiField
     HTMLPanel linksContainer;
     @UiField

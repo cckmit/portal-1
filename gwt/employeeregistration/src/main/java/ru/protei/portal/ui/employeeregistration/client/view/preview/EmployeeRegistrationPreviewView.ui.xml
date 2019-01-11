@@ -2,88 +2,130 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list"
 >
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <div class="preview">
-            <fieldset class="header">
-                <legend><ui:text from="{lang.employeeRegistrationCommonHeader}"/></legend>
-                <list:IssueLinks ui:field="issues" styleName="form-group col-md-12" enabled="false"/>
+    <g:HTMLPanel styleName="card card-default">
+        <div class="card-block">
+            <div class="row">
+                <h4 class="col-md-12 m-t-0 m-b-0" ui:field="fullName"/>
+            </div>
 
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationEmployeeFullName}"/></label>
-                    <span class="col-md-7" ui:field="fullName"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationHeadOfDepartment}"/></label>
-                    <span class="col-md-7" ui:field="headOfDepartment"/>
-                </div>
+            <div class="row">
+                <list:IssueLinks ui:field="issues" styleName="form-group" enabled="false"/>
+            </div>
 
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationEmploymentType}"/></label>
-                    <span class="col-md-7" ui:field="employmentType"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationWithRegistration}"/></label>
-                    <span class="col-md-7" ui:field="withRegistration"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationPost}"/></label>
-                    <span class="col-md-7" ui:field="position"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationState}"/></label>
-                    <span class="col-md-7"><div ui:field="caseState"/></span>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
-                    <span class="col-md-7" ui:field="employmentDate"/>
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationCreated}"/></label>
-                    <span class="col-md-7" ui:field="created"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationProbationPeriod}"/></label>
-                    <span class="col-md-7" ui:field="probationPeriod"/>
-                </div>
-            </fieldset>
-            <fieldset class="header">
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationWorkplace}"/></label>
-                    <span class="col-md-7" ui:field="workplace"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationEquipmentListPreview}"/></label>
-                    <span class="col-md-7" ui:field="equipmentList"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationOS}"/></label>
-                    <span class="col-md-7" ui:field="operatingSystem"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationAdditionalSoft}"/></label>
-                    <span class="col-md-7" ui:field="additionalSoft"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationResourceList}"/></label>
-                    <span class="col-md-7" ui:field="resourcesList"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationResourceOtherComment}"/></label>
-                    <span class="col-md-7" ui:field="resourceComment"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}"/></label>
-                    <span class="col-md-7" ui:field="phoneOfficeTypeList"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.employeeRegistrationComment}"/></label>
-                    <span class="col-md-7" ui:field="comment"/>
-                </div>
-            </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <g:HTMLPanel ui:field="commentContainer" />
-            </fieldset>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationState}: "/>
+                </b>
+                <span >
+                    <div ui:field="caseState"/>
+                </span>
+            </div>
+
+            <h5><ui:text from="{lang.employeeRegistrationMainInfoTitle}"/></h5>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationHeadOfDepartment}: "/>
+                </b>
+                <span ui:field="headOfDepartment"/>
+            </div>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationEmploymentType}: "/>
+                </b>
+                <span ui:field="employmentType"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationWithRegistration}: "/>
+                </b>
+                <span ui:field="withRegistration"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationPost}: "/>
+                </b>
+                <span ui:field="position"/>
+            </div>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationEmploymentDate}: "/>
+                </b>
+                <span ui:field="employmentDate"/>
+                <b>
+                    <ui:text from="{lang.employeeRegistrationCreated}: "/>
+                </b>
+                <span ui:field="created"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationProbationPeriod}: "/>
+                </b>
+                <span ui:field="probationPeriod"/>
+            </div>
+
+            <h5><ui:text from="{lang.employeeRegistrationWorkplaceTitle}"/></h5>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationWorkplace}: "/>
+                </b>
+                <span ui:field="workplace"/>
+            </div>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationEquipmentListPreview}: "/>
+                </b>
+                <span ui:field="equipmentList"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationOS}: "/>
+                </b>
+                <span ui:field="operatingSystem"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationAdditionalSoft}: "/>
+                </b>
+                <span ui:field="additionalSoft"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationPhoneOfficeTypeList}: "/>
+                </b>
+                <span ui:field="phoneOfficeTypeList"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationComment}: "/>
+                </b>
+                <span ui:field="comment"/>
+            </div>
+
+            <h5><ui:text from="{lang.employeeRegistrationResourceTitle}"/></h5>
+
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationResourceList}: "/>
+                </b>
+                <span ui:field="resourcesList"/>
+            </div>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationResourceOtherComment}: "/>
+                </b>
+                <span ui:field="resourceComment"/>
+            </div>
+
+            <h5><ui:text from="{lang.comments}"/></h5>
+
+            <g:HTMLPanel ui:field="commentContainer"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

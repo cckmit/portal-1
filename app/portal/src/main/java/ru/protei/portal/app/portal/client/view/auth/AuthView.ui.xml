@@ -15,7 +15,7 @@
                     <ui:text from="{lang.authTitle}"/>
                 </h2>
                 <p class="small">
-                    © 2018 НТЦ ПРОТЕЙ. All rights reserved
+                    © 2019 НТЦ ПРОТЕЙ. All rights reserved
                 </p>
             </div>
 

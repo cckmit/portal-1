@@ -1479,4 +1479,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationResourceHint();
 
     String employeeRegistrationWorkplaceHint();
+
+    String createBy();
 }

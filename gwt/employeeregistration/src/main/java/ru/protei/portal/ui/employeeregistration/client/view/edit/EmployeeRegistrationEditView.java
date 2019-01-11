@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.Set;
 
 public class EmployeeRegistrationEditView extends Composite implements AbstractEmployeeRegistrationEditView {
+
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));

@@ -122,25 +122,25 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
      *  испытательный срок
      */
     @JdbcColumn(name ="probation_period")
-    Integer probationPeriodMonth;
+    private Integer probationPeriodMonth;
 
     /**
      * комментраий к списку ресорсов
      */
     @JdbcColumn(name ="resource_comment")
-    String resourceComment;
+    private String resourceComment;
 
     /**
      * Операционная система
      */
     @JdbcColumn(name ="operating_system")
-    String operatingSystem;
+    private String operatingSystem;
 
     /**
      * Дополнительное ПО
      */
     @JdbcColumn(name ="additional_soft")
-    String additionalSoft;
+    private String additionalSoft;
 
     public Long getId() {
         return id;

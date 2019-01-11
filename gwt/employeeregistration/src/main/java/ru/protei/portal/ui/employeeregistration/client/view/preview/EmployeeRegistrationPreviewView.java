@@ -2,6 +2,8 @@ package ru.protei.portal.ui.employeeregistration.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -21,6 +23,7 @@ import ru.protei.portal.ui.employeeregistration.client.activity.preview.Abstract
 import java.util.Set;
 
 public class EmployeeRegistrationPreviewView extends Composite implements AbstractEmployeeRegistrationPreviewView {
+
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -99,7 +102,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setCreated(String created) {
+    public void setCreationDate(String created) {
         this.created.setInnerText(created);
     }
 
@@ -148,7 +151,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     @UiField(provided = true)
     IssueLinks issues;
     @UiField
-    SpanElement fullName;
+    HeadingElement fullName;
     @UiField
     SpanElement headOfDepartment;
     @UiField
@@ -183,7 +186,6 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     DivElement caseState;
     @UiField
     HTMLPanel commentContainer;
-
 
     @Inject
     @UiField

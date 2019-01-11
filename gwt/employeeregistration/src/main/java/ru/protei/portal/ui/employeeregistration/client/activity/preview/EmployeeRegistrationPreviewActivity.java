@@ -7,7 +7,6 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
@@ -72,7 +71,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setComment(value.getComment());
         view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));
-        view.setCreated(DateFormatter.formatDateTime(value.getCreated()));
+        view.setCreationDate(DateFormatter.formatDateTime(value.getCreated()));
         view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
         view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
         view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
