@@ -11,7 +11,7 @@ import ru.protei.portal.ui.common.client.events.EquipmentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -31,13 +31,13 @@ public abstract class EquipmentModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector< EquipmentShortView > selector ) {
+    public void subscribe( SelectorWithModel< EquipmentShortView > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< EquipmentShortView > selector : subscribers ) {
+        for ( SelectorWithModel< EquipmentShortView > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -82,5 +82,5 @@ public abstract class EquipmentModel implements Activity {
     };
 
     private List< EquipmentShortView > list = new ArrayList<>();
-    List< ModelSelector< EquipmentShortView > > subscribers = new ArrayList<>();
+    List<SelectorWithModel< EquipmentShortView >> subscribers = new ArrayList<>();
 }

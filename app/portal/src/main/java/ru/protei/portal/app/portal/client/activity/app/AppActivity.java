@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+
 /**
  * Активность приложения
  */

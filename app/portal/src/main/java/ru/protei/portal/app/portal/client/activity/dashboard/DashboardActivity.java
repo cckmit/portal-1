@@ -42,7 +42,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         fireEvent(new IssueEvents.Edit());
     }
 
-
     @Event
     public void onShow( DashboardEvents.Show event ) {
         initDetails.parent.clear();

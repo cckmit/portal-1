@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.district;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroupMulti;
 
 import java.util.List;
@@ -11,11 +11,12 @@ import java.util.List;
 /**
  * Селектор состояния региона
  */
-public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> implements ModelSelector<DistrictInfo> {
+public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> implements SelectorWithModel<DistrictInfo> {
 
     @Inject
     public void init( DistrictModel model ) {
         model.subscribe( this );
+        setSelectorModel(model);
     }
 
     @PostConstruct

@@ -5,58 +5,81 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.PersonEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Модель контактов домашней компании
  */
-public abstract class EmployeeModel implements Activity {
+public abstract class EmployeeModel implements Activity, SelectorModel<PersonShortView> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
         myId = event.profile.getId();
-
-        refreshOptions( );
     }
 
-    @Event
-    public void onEmployeeListChanged( PersonEvents.ChangeEmployeeModel event ) {
-        refreshOptions();
-    }
-
-    public void subscribe( ModelSelector< PersonShortView > selector ) {
+    @Override
+    public void onSelectorLoad( SelectorWithModel<PersonShortView> selector ) {
+        if ( selector == null ) {
+            return;
+        }
         subscribers.add( selector );
-        selector.fillOptions( list );
+        if(!CollectionUtils.isEmpty( list )){
+            selector.clearOptions();
+            selector.fillOptions( list );
+            return;
+        }
+        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
+            refreshOptions();
+        }
+    }
+
+    @Override
+    public void onSelectorUnload( SelectorWithModel<PersonShortView> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        selector.clearOptions();
+        subscribers.remove( selector );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< PersonShortView > selector : subscribers ) {
+        for ( SelectorWithModel< PersonShortView > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
     }
 
+    private boolean requested;
+
     private void refreshOptions() {
+        if(requested) return;
+        requested = true;
         employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, null, null, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
+                requested = false;
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
             public void onSuccess( List< PersonShortView > options ) {
+                requested = false;
                 int value = options.indexOf( new PersonShortView("", myId, false ) );
                 if ( value > 0 ) {
                     options.add(0, options.remove(value));
@@ -77,7 +100,7 @@ public abstract class EmployeeModel implements Activity {
 
     private List< PersonShortView > list = new ArrayList<>();
 
-    List< ModelSelector< PersonShortView > > subscribers = new ArrayList<>();
+    Set<SelectorWithModel< PersonShortView >> subscribers = new HashSet<>();
 
     Long myId;
 }

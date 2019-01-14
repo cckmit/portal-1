@@ -9,7 +9,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
@@ -19,12 +19,13 @@ import java.util.stream.Collectors;
 /**
  * Селектор списка компаний
  */
-public class CompanySelector extends ButtonSelector< EntityOption > implements ModelSelector <EntityOption> {
+public class CompanySelector extends ButtonSelector< EntityOption > implements SelectorWithModel<EntityOption> {
 
     @Inject
     public void init( CompanyModel companyModel ) {
         model = companyModel;
         model.subscribe(this, categories);
+        setSelectorModel(model);
 
         setSearchEnabled( true );
         setSearchAutoFocus( true );

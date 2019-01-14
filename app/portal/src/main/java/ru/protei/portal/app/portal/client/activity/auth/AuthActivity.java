@@ -12,6 +12,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.app.portal.client.service.AuthControllerAsync;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
+
 /**
  * Активность окна авторизации
  */

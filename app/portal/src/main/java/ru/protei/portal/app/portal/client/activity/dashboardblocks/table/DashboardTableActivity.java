@@ -119,7 +119,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         requestRecords(model);
     }
 
-
     private void requestRecords(DashboardTableModel model) {
         if(model.isLoaderShow)
             model.view.showLoader(true);

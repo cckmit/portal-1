@@ -3,14 +3,14 @@ package ru.protei.portal.ui.common.client.widget.selector.project;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
 public class ProjectButtonSelector
         extends ButtonSelector<ProjectInfo>
-        implements ModelSelector<ProjectInfo> {
+        implements SelectorWithModel<ProjectInfo> {
 
     @Inject
     public void init(ProjectModel model) {

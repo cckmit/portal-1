@@ -3,7 +3,7 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -11,11 +11,11 @@ import java.util.List;
 /**
  * Селектор сотрудников домашней компании
  */
-public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> implements ModelSelector<PersonShortView> {
+public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> implements SelectorWithModel<PersonShortView> {
 
     @Inject
     public void init( EmployeeModel employeeModel ) {
-        employeeModel.subscribe(this);
+        setSelectorModel( employeeModel );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 

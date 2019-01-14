@@ -8,7 +8,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -31,19 +31,19 @@ public abstract class StateModel implements Activity {
 
     @Event
     public void onUpdateSelectorOptions(CaseStateEvents.UpdateSelectorOptions event) {
-        for ( ModelSelector<En_CaseState > selector : subscribers ) {
+        for ( SelectorWithModel<En_CaseState > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
     }
 
-    public void subscribe( ModelSelector<En_CaseState> selector ) {
+    public void subscribe( SelectorWithModel<En_CaseState> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector<En_CaseState > selector : subscribers ) {
+        for ( SelectorWithModel<En_CaseState > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -73,5 +73,5 @@ public abstract class StateModel implements Activity {
 
     private List< En_CaseState > list = new ArrayList<>();
 
-    List<ModelSelector<En_CaseState>> subscribers = new ArrayList<>();
+    List<SelectorWithModel<En_CaseState>> subscribers = new ArrayList<>();
 }

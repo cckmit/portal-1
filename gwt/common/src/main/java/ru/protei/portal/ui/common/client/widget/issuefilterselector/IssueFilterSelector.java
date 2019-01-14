@@ -5,12 +5,12 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements ModelSelector< CaseFilterShortView > {
+public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > implements SelectorWithModel< CaseFilterShortView > {
 
     @Inject
     public void init( IssueFilterModel model ) {

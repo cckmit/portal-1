@@ -8,7 +8,7 @@ import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -21,12 +21,12 @@ public abstract class IssueFilterModel implements Activity {
         requestFilters( null );
     }
 
-    public void subscribe( ModelSelector< CaseFilterShortView > selector ) {
+    public void subscribe( SelectorWithModel< CaseFilterShortView > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
-    public void requestFilters( ModelSelector< CaseFilterShortView > selector ) {
+    public void requestFilters( SelectorWithModel< CaseFilterShortView > selector ) {
 
         filterService.getIssueFilterShortViewListByCurrentUser( new RequestCallback< List< CaseFilterShortView > >() {
             @Override
@@ -49,7 +49,7 @@ public abstract class IssueFilterModel implements Activity {
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< CaseFilterShortView > selector : subscribers ) {
+        for ( SelectorWithModel< CaseFilterShortView > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -63,5 +63,5 @@ public abstract class IssueFilterModel implements Activity {
 
     private List< CaseFilterShortView > list = new ArrayList<>();
 
-    List< ModelSelector< CaseFilterShortView > > subscribers = new ArrayList<>();
+    List<SelectorWithModel< CaseFilterShortView >> subscribers = new ArrayList<>();
 }
