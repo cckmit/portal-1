@@ -17,6 +17,7 @@ import ru.protei.portal.core.utils.WorkTimeFormatter;
 import ru.protei.portal.util.MarkdownServer;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -28,6 +29,9 @@ public class TemplateServiceImpl implements TemplateService {
     private static Logger log = LoggerFactory.getLogger(TemplateServiceImpl.class);
 
     Configuration templateConfiguration;
+
+    @Inject
+    MarkdownServer markdownServer;
 
     @PostConstruct
     public void onInit() {
@@ -197,7 +201,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        text = MarkdownServer.plain2escaped2markdown( text );
+        text = markdownServer.plain2escaped2markdown( text );
         return text;
     }
 

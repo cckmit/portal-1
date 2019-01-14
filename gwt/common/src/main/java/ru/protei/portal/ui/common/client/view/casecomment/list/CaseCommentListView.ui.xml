@@ -3,7 +3,7 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
-             xmlns:markdown="urn:import:ru.protei.portal.ui.common.client.widget.markdown.textarea">
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -18,7 +18,7 @@
                         </div>
 
                         <div class="message">
-                            <markdown:MarkdownTextArea
+                            <autoresizetextarea:AutoResizeTextArea
                                     ui:field="comment"
                                     styleName="input-field form-group message-input resize-vertical"
                                     minRows="5" maxRows="20"/>

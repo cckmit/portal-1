@@ -10,8 +10,6 @@ import java.util.Date;
  */
 public class CaseCommentUtils {
 
-    private final static String NEW_LINE_SYMBOL = "\n";
-
     public static boolean isEnableEdit( CaseComment value, Long personId ) {
         if ( value == null || value.getCreated() == null ) {
             return false;
@@ -43,5 +41,6 @@ public class CaseCommentUtils {
     }
 
     private static final long EDIT_PERIOD = 300000;
+    private final static String NEW_LINE_SYMBOL = "\n";
 
 }

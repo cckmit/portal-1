@@ -15,5 +15,5 @@ public interface AbstractCaseCommentListActivity {
 
     void onDetachView();
 
-    void onPreviewChanged(String text);
+    void onCommentChanged(String text);
 }

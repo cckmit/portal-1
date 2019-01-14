@@ -6,12 +6,15 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
@@ -19,13 +22,10 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.markdown.textarea.MarkdownTextArea;
-import ru.protei.portal.ui.common.client.widget.markdown.textarea.event.ChangedPreviewEvent;
+import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 
 /**
  * Контейнер для комментариев
@@ -162,9 +162,9 @@ public class CaseCommentListView
     }
 
     @UiHandler("comment")
-    public void onPreviewChanged(ChangedPreviewEvent event) {
+    public void onCommentChanged(ValueChangeEvent<String> event) {
         if (activity != null) {
-            activity.onPreviewChanged(event.getPreviewText());
+            activity.onCommentChanged(event.getValue());
         }
     }
 
@@ -185,7 +185,7 @@ public class CaseCommentListView
     @UiField
     HTMLPanel root;
     @UiField
-    MarkdownTextArea comment;
+    AutoResizeTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @UiField

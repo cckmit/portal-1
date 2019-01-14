@@ -71,7 +71,7 @@ public class CaseCommentItemView
             return;
         }
 
-        this.message.getElement().setInnerHTML(MarkdownClient.plain2escaped2markdown(value));
+        this.message.getElement().setInnerHTML(markdownClient.plain2escaped2markdown(value));
         this.messageBlock.removeClassName( "hide" );
     }
 
@@ -239,6 +239,8 @@ public class CaseCommentItemView
     En_CaseStateLang stateLang;
     @Inject
     En_CaseImportanceLang importanceLang;
+    @Inject
+    MarkdownClient markdownClient;
 
     private AbstractCaseCommentItemActivity activity;
 

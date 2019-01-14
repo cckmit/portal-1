@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
+import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -24,13 +25,19 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseCommentUtils;
+import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -78,7 +85,7 @@ public abstract class CaseCommentListActivity
         tempAttachments.clear();
 
         view.sendEnabled().setEnabled(true);
-        view.message().setValue(null);
+        view.message().setValue(null, true);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
@@ -165,7 +172,7 @@ public abstract class CaseCommentListActivity
         }
 
         String editedMessage = caseComment.getText();
-        view.message().setValue( editedMessage );
+        view.message().setValue( editedMessage, true );
         if (comment.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
         }
@@ -182,7 +189,7 @@ public abstract class CaseCommentListActivity
         comment = null;
 
         String message = CaseCommentUtils.appendQuote(view.message().getValue(), value.getText());
-        view.message().setValue( message );
+        view.message().setValue( message, true );
         view.focus();
     }
 
@@ -198,7 +205,7 @@ public abstract class CaseCommentListActivity
             return;
         }
 
-        view.message().setValue( value.getText() );
+        view.message().setValue( value.getText(), true );
     }
 
     @Override
@@ -228,13 +235,8 @@ public abstract class CaseCommentListActivity
     }
 
     @Override
-    public void onPreviewChanged(String text) {
-        if (StringUtils.isBlank(text)) {
-            view.setPreviewVisible(false);
-        } else {
-            view.setPreviewText(text);
-            view.setPreviewVisible(true);
-        }
+    public void onCommentChanged(String text) {
+        scheduleChangedPreview();
     }
 
     @Override
@@ -462,7 +464,7 @@ public abstract class CaseCommentListActivity
                     }
 
                     comment = null;
-                    view.message().setValue(null);
+                    view.message().setValue(null, true);
                     view.attachmentContainer().clear();
                     view.clearTimeElapsed();
                     tempAttachments.clear();
@@ -486,6 +488,31 @@ public abstract class CaseCommentListActivity
         return "Unknown";
     }
 
+    private void scheduleChangedPreview() {
+        changedPreviewTimer.cancel();
+        changedPreviewTimer.schedule(PREVIEW_CHANGE_DELAY_MS);
+    }
+
+    private void fireChangedPreview() {
+        String value = view.message().getValue();
+        if (StringUtils.isNotBlank(value)) {
+            value = markdownClient.plain2escaped2markdown(value);
+        }
+        if (StringUtils.isBlank(value)) {
+            view.setPreviewVisible(false);
+        } else {
+            view.setPreviewText(value);
+            view.setPreviewVisible(true);
+        }
+    }
+
+    private final Timer changedPreviewTimer = new Timer() {
+        @Override
+        public void run() {
+            fireChangedPreview();
+        }
+    };
+
     @Inject
     Lang lang;
     @Inject
@@ -498,6 +525,8 @@ public abstract class CaseCommentListActivity
     AttachmentServiceAsync attachmentService;
     @Inject
     PolicyService policyService;
+    @Inject
+    MarkdownClient markdownClient;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;
@@ -511,4 +540,6 @@ public abstract class CaseCommentListActivity
     
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
+
+    private final static int PREVIEW_CHANGE_DELAY_MS = 200;
 }

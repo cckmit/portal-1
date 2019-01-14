@@ -7,8 +7,6 @@ import org.commonmark.ext.gfm.tables.TablesExtension;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import ru.protei.portal.core.model.helper.HTMLHelper;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.util.MarkdownCore;
 
 import java.util.ArrayList;
@@ -19,28 +17,10 @@ import java.util.List;
  * @see ru.protei.portal.core.model.util.MarkdownCore
  * @see ru.protei.portal.ui.common.client.util.MarkdownClient
  */
-public class MarkdownServer {
+public class MarkdownServer extends MarkdownCore {
 
-    public static String plain2escaped2markdown(String text) {
-        if (StringUtils.isBlank(text)) {
-            return text;
-        }
-        text = HTMLHelper.htmlEscape(text);
-        text = plain2markdown(text);
-        return text;
-    }
-
-    public static String plain2markdown(String text) {
-        if (StringUtils.isBlank(text)) {
-            return text;
-        }
-        text = commonmark(text);
-        text = MarkdownCore.replaceAllowedTags(text);
-        return text;
-    }
-
-    private static String commonmark(String text) {
-
+    @Override
+    protected String doConvert(String text) {
         List<Extension> extensions = new ArrayList<>();
         extensions.add(TablesExtension.create());
         extensions.add(AutolinkExtension.create());

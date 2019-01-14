@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.widget.autoresizetextarea;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
@@ -63,6 +65,7 @@ public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAdd
         super.onBrowserEvent(event);
         if ((DOM.eventGetType(event) & TEXTAREA_VALUE_CHANGE_EVENTS) != 0) {
             requestResize();
+            fireValueChanged();
         }
     }
 
@@ -76,6 +79,9 @@ public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAdd
     public void setValue(String value, boolean fireEvents) {
         super.setValue(value, fireEvents);
         requestResize();
+        if (fireEvents) {
+            fireValueChanged();
+        }
     }
 
     @Override
@@ -106,6 +112,10 @@ public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAdd
         return lines;
     }
 
+    private void fireValueChanged() {
+        ValueChangeEvent.fire(this, getValue());
+    }
+
     @Override
     public void setVisibleLines(int lines) {
         if (lines < minRows) {
@@ -128,5 +138,10 @@ public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAdd
     @Override
     public HandlerRegistration addAddHandler(AddHandler handler) {
         return addHandler(handler, AddEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 }
