@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
+import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -12,6 +13,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
+import ru.protei.portal.ui.common.client.util.SimpleProfiler;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -41,15 +43,20 @@ public abstract class InitiatorModel implements Activity {
     }
 
     private void notifySubscribers() {
+        sp.push();
         for (SelectorWithModel<PersonShortView> selector : subscribers) {
             selector.fillOptions(list);
+            sp.check( " fillOptions " + selector.getClass().getSimpleName() );
             selector.refreshValue();
+            sp.check( " refreshValue " );
         }
+        sp.pop();
     }
-
+SimpleProfiler sp = new SimpleProfiler( SimpleProfiler.ON, ( message, currentTime ) -> GWT.log("InitiatorModel "+getClass().getSimpleName()+ " "+message + " t="+currentTime));
     private void refreshOptions(Set<Long> companyIds, boolean fired) {
 
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+        sp.start( " start ");
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
             @Override
             public void onError(Throwable throwable) {
@@ -58,14 +65,17 @@ public abstract class InitiatorModel implements Activity {
 
             @Override
             public void onSuccess(List<PersonShortView> options) {
+                sp.check( " success ");
                 int value = options.indexOf(new PersonShortView("", myId, false));
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
-
+                sp.check( " options ");
                 list.clear();
                 list.addAll(options);
+                sp.check( " add options ");
                 notifySubscribers();
+                sp.stop( " notifySubscribers ");
             }
         });
     }

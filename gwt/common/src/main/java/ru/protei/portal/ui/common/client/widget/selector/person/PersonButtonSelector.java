@@ -38,13 +38,7 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
 
     public void fillOptions( List< PersonShortView > persons ){
         clearOptions();
-
-        if (defaultValue != null) {
-            addOption(null);
-        }
-
-        persons.forEach(this::addOption);
-
+        this.persons = persons;
     }
 
     public void setDefaultValue( String value ) {
@@ -56,6 +50,15 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
 
     @Override
     protected void showPopup(IsWidget relative) {
+        if(persons != null){
+            if (defaultValue != null) {
+                addOption(null);
+            }
+
+            persons.forEach(this::addOption);
+            persons = null;
+        }
+
         super.showPopup(relative);
         if(companyIds==null){
             SelectorItem item = new SelectorItem();
@@ -80,4 +83,5 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
     private String defaultValue;
     private boolean fired = false;
     private Set<Long> companyIds;
+    private List<PersonShortView> persons;
 }

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -38,10 +39,7 @@ public class InitiatorMultiSelector
     @Override
     public void fillOptions( List< PersonShortView > options ) {
         clearOptions();
-
-        for ( PersonShortView type : options ) {
-            addOption( type.getDisplayShortName(), type );
-        }
+        this.persons = options;
     }
 
     @Override
@@ -55,6 +53,17 @@ public class InitiatorMultiSelector
             item.getElement().addClassName(UiConstants.Styles.TEXT_CENTER);
             popup.getChildContainer().add(item);
         }
+    }
+
+    @Override
+    protected void showPopup( IsWidget relative ) {
+        if(persons != null){
+            for ( PersonShortView type : persons ) {
+                addOption( type.getDisplayShortName(), type );
+            }
+            persons = null;
+        }
+        super.showPopup( relative );
     }
 
     public void setFired ( boolean value ) { this.fired = value; }
@@ -83,6 +92,7 @@ public class InitiatorMultiSelector
     Lang lang;
     private InitiatorModel model;
     private boolean fired;
+    private List<PersonShortView> persons;
 
 
 
