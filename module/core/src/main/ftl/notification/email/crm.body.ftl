@@ -33,6 +33,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     <span style="color:#11731d;background:#dff7e2;padding:2px 4px">${new}</span>
 </#macro>
 <#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
+<#macro diffHTML old, new>${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -234,7 +235,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div class="markdown" style="margin-top:4px;line-height:1.5em"><@diff old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
                             <div class="markdown" style="margin-top:4px;line-height:1.5em">${caseComment.text}</div>
                         </#if>
