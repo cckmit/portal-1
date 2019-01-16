@@ -222,9 +222,9 @@ public class WorkerController {
                     persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        ActiveWorkers activeWorkers = new ActiveWorkers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : activeWorkers.requireWorkers().getDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : activeWorkers.getPosition(position.getName());
+                        Workers workers = new Workers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
@@ -286,21 +286,24 @@ public class WorkerController {
                             person.setFired(rec.isFired());
                             person.setDeleted(rec.isDeleted());
                             person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
+
+                            if(userLogin != null) {
+                                if (person.isDeleted()) {
+                                    removeAccount(userLogin);
+                                } else {
+                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                    saveAccount(userLogin);
+                                }
+                            }
                         }
 
                         mergePerson(person);
 
-                        if(userLogin != null) {
-                            if (person.isDeleted()) {
-                                removeAccount(userLogin);
-                            } else {
-                                userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                saveAccount(userLogin);
-                            }
-                        }
-
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.saveExternalEmployee(person, "", "");
+                            Workers workers = new Workers(person.getId());
+                            String departmentName = workers.requireWorkers().getAnyDepartment("");
+                            String positionName = workers.requireWorkers().getAnyPosition("");
+                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
                         }
 
                         logger.debug("success result, workerRowId={}", worker.getId());
@@ -326,9 +329,9 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        ActiveWorkers activeWorkers = new ActiveWorkers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : activeWorkers.requireWorkers().getDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : activeWorkers.getPosition(position.getName());
+                        Workers workers = new Workers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
@@ -1146,30 +1149,52 @@ public class WorkerController {
         }
     }
 
-    public class ActiveWorkers {
+    public class Workers {
 
-        List<WorkerEntry> activeWorkers;
+        List<WorkerEntry> workers;
         Long personId;
 
-        public ActiveWorkers(Long personId) {
+        public Workers(Long personId) {
             this.personId = personId;
         }
 
-        public ActiveWorkers requireWorkers() {
-            if (activeWorkers == null)
-                activeWorkers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId, 1));
+        public Workers requireWorkers() {
+            if (workers == null)
+                workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
 
             return this;
         }
 
-        public String getDepartment(String def) {
-            if (activeWorkers == null || activeWorkers.isEmpty()) return def;
-            return activeWorkers.get(0).getDepartmentName();
+        public String getActiveDepartment(String def) {
+            WorkerEntry activeEntry = getActiveEntry();
+            return activeEntry == null ? def : activeEntry.getDepartmentName();
         }
 
-        public String getPosition(String def) {
-            if (activeWorkers == null || activeWorkers.isEmpty()) return def;
-            return activeWorkers.get(0).getPositionName();
+        public String getActivePosition(String def) {
+            WorkerEntry activeEntry = getActiveEntry();
+            return activeEntry == null ? def : activeEntry.getPositionName();
+        }
+
+        public String getAnyDepartment(String def) {
+            WorkerEntry anyEntry = getAnyEntry();
+            return anyEntry == null ? def : anyEntry.getDepartmentName();
+        }
+
+        public String getAnyPosition(String def) {
+            WorkerEntry anyEntry = getAnyEntry();
+            return anyEntry == null ? def : anyEntry.getPositionName();
+        }
+
+        private WorkerEntry getActiveEntry() {
+            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
+        }
+
+        private WorkerEntry getAnyEntry() {
+            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(getFirstEntry());
+        }
+
+        private WorkerEntry getFirstEntry() {
+            return workers == null ? null : workers.stream().findFirst().orElse(null);
         }
     }
 }
