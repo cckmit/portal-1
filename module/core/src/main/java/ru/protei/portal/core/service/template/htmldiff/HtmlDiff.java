@@ -22,30 +22,6 @@ public class HtmlDiff {
     private final StringBuilder _content;
     private String _newText;
     private String _oldText;
-
-    private static Map<String, Integer> _specialCaseClosingTags = new HashMap<String, Integer>() {{
-        put("</strong>", 0);
-        put("</em>", 0);
-        put("</b>", 0);
-        put("</i>", 0);
-        put("</big>", 0);
-        put("</small>", 0);
-        put("</u>", 0);
-        put("</sub>", 0);
-        put("</sup>", 0);
-        put("</strike>", 0);
-        put("</s>", 0);
-    }};
-
-    private final static Pattern _specialCaseOpeningTagRegex = 
-            Pattern.compile("<((strong)|(b)|(i)|(em)|(big)|(small)|(u)|(sub)|(sup)|(strike)|(s))[\\>\\s]+",
-                    Pattern.CASE_INSENSITIVE);
-
-    /**
-     * Tracks opening and closing formatting tags to ensure that we don't inadvertently generate invalid html during the diff process.
-     */
-    private Stack<String> _specialTagDiffStack;
-
     private String[] _newWords;
     private String[] _oldWords;
     private int _matchGranularity;
@@ -121,7 +97,6 @@ public class HtmlDiff {
         _oldText = oldText;
         _newText = newText;
         _content = new StringBuilder();
-        _specialTagDiffStack = new Stack<>();
         _blockExpressions = new ArrayList<>();
     }
 
@@ -252,60 +227,16 @@ public class HtmlDiff {
             if (words.size() == 0) {
                 break;
             }
-
             String[] nonTags = extractConsecutiveWords(words, x -> !Utils.isTag(x));
-
-            String specialCaseTagInjection = "";
-            boolean specialCaseTagInjectionIsBefore = false;
-
             if (nonTags.length != 0) {
-                String text = Utils.wrapText(String.join("", nonTags), tag, style);
-                _content.append(text);
-            } else {
-                // Check if the tag is a special case
-                if (_specialCaseOpeningTagRegex.matcher(words.get(0)).matches()) {
-                    _specialTagDiffStack.add(words.get(0));
-                    specialCaseTagInjection = "<ins class='mod'>";
-                    if ("del".equals(tag)) {
-                        words.remove(0);
-                        // following tags may be formatting tags as well, follow through
-                        while (words.size() > 0 && _specialCaseOpeningTagRegex.matcher(words.get(0)).matches()) {
-                            words.remove(0);
-                        }
-                    }
-                } else if (_specialCaseClosingTags.containsKey(words.get(0))) {
-                    String openingTag = _specialTagDiffStack.size() == 0 ? null : _specialTagDiffStack.pop();
-
-                    // If we didn't have an opening tag, and we don't have a match with the previous tag used 
-                    if (openingTag == null || !Objects.equals(openingTag, words.get(words.size() - 1).replace("/", ""))) {
-                        // do nothing
-                    } else {
-                        specialCaseTagInjection = "</ins>";
-                        specialCaseTagInjectionIsBefore = true;
-                    }
-
-                    if ("del".equals(tag)) {
-                        words.remove(0);
-
-                        // following tags may be formatting tags as well, follow through
-                        while (words.size() > 0 && _specialCaseClosingTags.containsKey(words.get(0))) {
-                            words.remove(0);
-                        }
-                    }
-                }
+                String plainText = String.join("", nonTags);
+                String wrappedPlainText = Utils.wrapText(plainText, tag, style);
+                _content.append(wrappedPlainText);
             }
-
-            if (words.size() == 0 && specialCaseTagInjection.length() == 0) {
+            if (words.size() == 0) {
                 break;
             }
-
-            if (specialCaseTagInjectionIsBefore) {
-                _content//.append(specialCaseTagInjection)
-                        .append(String.join("", extractConsecutiveWords(words, Utils::isTag)));
-            } else {
-                _content.append(String.join("", extractConsecutiveWords(words, Utils::isTag)));
-                        //.append(specialCaseTagInjection);
-            }
+            _content.append(String.join("", extractConsecutiveWords(words, Utils::isTag)));
         }
     }
 
@@ -316,7 +247,7 @@ public class HtmlDiff {
             String word = words.get(i);
 
             if (i == 0 && " ".equals(word)) {
-                words.add(i, "&nbsp;");
+                words.set(i, "&nbsp;");
             }
 
             if (!condition.apply(word)) {

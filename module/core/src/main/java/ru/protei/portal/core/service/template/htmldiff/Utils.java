@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service.template.htmldiff;
 
+import ru.protei.portal.core.model.helper.StringUtils;
+
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,7 +42,11 @@ public class Utils {
     }
 
     public static String wrapText(String text, String tagName, String style) {
-        return String.format("<%s style=\"%s\">%s</%s>", tagName, style, text, tagName);
+        if (StringUtils.isBlank(style)) {
+            return String.format("<%s>%s</%s>", tagName, text, tagName);
+        } else {
+            return String.format("<%s style=\"%s\">%s</%s>", tagName, style, text, tagName);
+        }
     }
 
     public static boolean isStartOfTag(char val) {
