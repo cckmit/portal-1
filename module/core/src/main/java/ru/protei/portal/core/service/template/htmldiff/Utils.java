@@ -7,12 +7,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
-    
-    private static Pattern openingTagRegex = Pattern.compile("^\\s*<[^>]+>\\s*$");
-    private static Pattern closingTagTexRegex = Pattern.compile("^\\s*</[^>]+>\\s*$");
-    private static Pattern tagWordRegex = Pattern.compile("<[^\\s>]+");
-    private static Pattern whitespaceRegex = Pattern.compile("^(\\s|&nbsp;)+$");
-    private static Pattern wordRegex = Pattern.compile("[\\w#@]+");
+
+    public static Pattern openingTagRegex = Pattern.compile("^\\s*<[^/>]+>\\s*$");
+    public static Pattern closingTagRegex = Pattern.compile("^\\s*</[^>]+>\\s*$");
+    public static Pattern selfClosingTagRegex = Pattern.compile("^\\s*<[^/>]+/>\\s*$");
+    public static Pattern whitespaceRegex = Pattern.compile("^(\\s|&nbsp;)+$");
+    public static Pattern tagWordRegex = Pattern.compile("<[^\\s>]+");
+    public static Pattern wordRegex = Pattern.compile("[a-zA-Zа-яА-ЯёЁ0-9_#@]+");
 
     private static String[] specialCaseWordTags = { "<img" };
 
@@ -20,7 +21,7 @@ public class Utils {
         if (Arrays.stream(specialCaseWordTags).anyMatch(re -> item != null && item.startsWith(re))) {
             return false;
         }
-        return isOpeningTag(item) || isClosingTag(item);
+        return isOpeningTag(item) || isClosingTag(item) || isSelfClosingTag(item);
     }
 
     private static boolean isOpeningTag(String item) {
@@ -28,7 +29,11 @@ public class Utils {
     }
 
     private static boolean isClosingTag(String item) {
-        return closingTagTexRegex.matcher(item).matches();
+        return closingTagRegex.matcher(item).matches();
+    }
+
+    private static boolean isSelfClosingTag(String item) {
+        return selfClosingTagRegex.matcher(item).matches();
     }
 
     public static String stripTagAttributes(String word) {

@@ -3,6 +3,7 @@ package ru.protei.portal.test.utils;
 import org.junit.Assert;
 import org.junit.Test;
 import ru.protei.portal.core.service.template.htmldiff.HtmlDiff;
+import ru.protei.portal.core.service.template.htmldiff.Utils;
 
 public class HtmlDiffTest {
 
@@ -34,7 +35,7 @@ public class HtmlDiffTest {
     public void testPlainTextOneLineChangeWord() {
         String input1 = "Один два три четыре";
         String input2 = "Один две три четыре";
-        String expected = "Один дв<del>а</del><ins>е</ins> три четыре";
+        String expected = "Один <del>два</del><ins>две</ins> три четыре";
         doTest(input1, input2, expected);
     }
 
@@ -42,7 +43,7 @@ public class HtmlDiffTest {
     public void testPlainTextTwoLines() {
         String input1 = "Первая строка.\nСтрока.";
         String input2 = "Первая строка.\nВторая строка.";
-        String expected = "Первая строка.\n<del>С</del><ins>Вторая с</ins>трока.";
+        String expected = "Первая строка.\n<del>Строка</del><ins>Вторая строка</ins>.";
         doTest(input1, input2, expected);
     }
 
@@ -139,11 +140,95 @@ public class HtmlDiffTest {
 
     @Test
     public void testStyleAttribute() {
-        String input1 = "а";
+        String input1 = "";
         String input2 = "аб";
         String style = "color:black;";
-        String expected = "а<ins style=\"" + style + "\">б</ins>";
+        String expected = "<ins style=\"" + style + "\">аб</ins>";
         doTest(input1, input2, expected, style);
+    }
+
+    @Test
+    public void testRegexOpeningTag() {
+        Assert.assertTrue(Utils.openingTagRegex.matcher("<a>").matches());
+        Assert.assertTrue(Utils.openingTagRegex.matcher("<a class='foo'>").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher("</a>").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher("<a").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher("</a").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher("a>").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher("/a>").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher("Здесь нет тегов").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher(" ").matches());
+        Assert.assertFalse(Utils.openingTagRegex.matcher("").matches());
+    }
+
+    @Test
+    public void testRegexClosingTag() {
+        Assert.assertTrue(Utils.closingTagRegex.matcher("</a>").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher("<a>").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher("<a").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher("</a").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher("a>").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher("/a>").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher("Здесь нет тегов").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher(" ").matches());
+        Assert.assertFalse(Utils.closingTagRegex.matcher("").matches());
+    }
+
+    @Test
+    public void testRegexSelfClosingTag() {
+        Assert.assertTrue(Utils.selfClosingTagRegex.matcher("<a/>").matches());
+        Assert.assertTrue(Utils.selfClosingTagRegex.matcher("<br/>").matches());
+        Assert.assertTrue(Utils.selfClosingTagRegex.matcher("<a class='foo'/>").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher("<a>").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher("<a").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher("</a").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher("a>").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher("/a>").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher("Здесь нет тегов").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher(" ").matches());
+        Assert.assertFalse(Utils.selfClosingTagRegex.matcher("").matches());
+    }
+
+    @Test
+    public void testRegexWhitespace() {
+        Assert.assertTrue(Utils.whitespaceRegex.matcher(" ").matches());
+        Assert.assertTrue(Utils.whitespaceRegex.matcher("      ").matches());
+        Assert.assertTrue(Utils.whitespaceRegex.matcher("&nbsp;").matches());
+        Assert.assertTrue(Utils.whitespaceRegex.matcher("&nbsp;&nbsp;").matches());
+        Assert.assertTrue(Utils.whitespaceRegex.matcher("  &nbsp; ").matches());
+        Assert.assertFalse(Utils.whitespaceRegex.matcher("От топота копыт пыль по полу летит").matches());
+        Assert.assertFalse(Utils.whitespaceRegex.matcher("").matches());
+    }
+
+    @Test
+    public void testRegexTagWord() {
+        Assert.assertTrue(Utils.tagWordRegex.matcher("<a></a>").find());
+        Assert.assertTrue(Utils.tagWordRegex.matcher("<a class='foo'></a>").find());
+        Assert.assertTrue(Utils.tagWordRegex.matcher("<a").find());
+        Assert.assertTrue(Utils.tagWordRegex.matcher("</a>").find());
+        Assert.assertFalse(Utils.tagWordRegex.matcher("Здесь нет тегов").find());
+        Assert.assertFalse(Utils.tagWordRegex.matcher(" ").find());
+        Assert.assertFalse(Utils.tagWordRegex.matcher("").find());
+    }
+
+    @Test
+    public void testRegexWord() {
+        Assert.assertTrue(Utils.wordRegex.matcher("Слово").matches());
+        Assert.assertTrue(Utils.wordRegex.matcher("Word").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("А это предложение").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher(" ").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("<").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher(">").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("/").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("=").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("'").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("\"").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("</a>").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("<a>").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("<a").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("</a").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("a>").matches());
+        Assert.assertFalse(Utils.wordRegex.matcher("/a>").matches());
     }
 
     private void doTest(String input1, String input2, String expected) {
