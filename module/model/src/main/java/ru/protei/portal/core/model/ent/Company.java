@@ -28,7 +28,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
     private CompanyGroup companyGroup;
 
-    @JdbcColumn(name = "parent_company_id")
+    @JdbcColumn(name = Columns.parent_company_id)
     private Long parentCompanyId;
 
     // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
@@ -213,5 +213,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", oldID=" + String.valueOf(oldId) +
                 ", caseStates=" + caseStates +
                 '}';
+    }
+
+    public interface Columns {
+        String parent_company_id = "parent_company_id";
     }
 }

@@ -22,6 +22,8 @@ public class CompanyQuery extends BaseQuery {
 
     private boolean onlyHome;
 
+    private boolean parentIdIsNull;
+
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
     }
@@ -57,6 +59,14 @@ public class CompanyQuery extends BaseQuery {
 
     public void setOnlyHome(boolean onlyHome) {
         this.onlyHome = onlyHome;
+    }
+
+    public void setParentIdIsNull( boolean parentIdIsNull ) {
+        this.parentIdIsNull = parentIdIsNull;
+    }
+
+    public boolean isParentIdIsNull() {
+        return parentIdIsNull;
     }
 }
 

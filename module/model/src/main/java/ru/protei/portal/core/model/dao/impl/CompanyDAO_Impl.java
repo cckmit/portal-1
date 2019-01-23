@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.ent.Company.Columns.parent_company_id;
+
 /**
  * Created by michael on 01.04.16.
  */
@@ -69,6 +71,10 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                 condition.append(" and category_id in (")
                         .append(query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")))
                         .append(")");
+            }
+
+            if(query.isParentIdIsNull()){
+                condition.append( parent_company_id + " IS NULL" );
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {

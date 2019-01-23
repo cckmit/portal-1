@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyParentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -169,7 +170,7 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     
     @Inject
     @UiField( provided = true )
-    CompanySelector parentCompany;
+    CompanyParentSelector parentCompany;
 
     @UiField
     HTMLPanel phonesContainer;

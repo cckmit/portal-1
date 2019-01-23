@@ -130,17 +130,17 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
     @Inject
     private Provider<SelectorPopup> popupProvider;
 
-    private String defaultValue = null;
+    protected String defaultValue = null;
 
     private List< EntityOption > options;
     private HandlerRegistration regHandler;
     private HandlerRegistration vcHandler;
 
-    private List<En_CompanyCategory> categories = Arrays.asList(
+    protected List<En_CompanyCategory> categories = Arrays.asList(
             En_CompanyCategory.CUSTOMER,
             En_CompanyCategory.PARTNER,
             En_CompanyCategory.SUBCONTRACTOR,
             En_CompanyCategory.HOME);
 
-    private CompanyModel model;
+    protected CompanyModel model;
 }

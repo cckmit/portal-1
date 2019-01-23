@@ -56,6 +56,11 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         selector.clearOptions();
     }
 
+    public void subscribe( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
+        subscribers.add( selector );
+        selectorToQuery.put(selector, query);
+    }
+
     public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
         subscribers.add( selector );
         updateQuery( selector, categories );
@@ -82,7 +87,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         } );
     }
 
-    private CompanyQuery makeQuery( List<En_CompanyCategory> categories ) {
+    public CompanyQuery makeQuery( List<En_CompanyCategory> categories ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
             query.setCategoryIds(

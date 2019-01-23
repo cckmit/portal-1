@@ -28,7 +28,7 @@
                         <label>
                             <ui:text from="{lang.companyParentCompany}"/>
                         </label>
-                        <company:CompanySelector ui:field="parentCompany" defaultValue="{lang.selectAccountCompany}"/>
+                        <company:CompanyParentSelector ui:field="parentCompany" defaultValue="{lang.selectAccountCompany}"/>
                     </div>
                     <div class="form-group col-xs-12 col-lg-6">
                         <label>
