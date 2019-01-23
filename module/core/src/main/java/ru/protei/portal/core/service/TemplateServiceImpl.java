@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
@@ -15,8 +14,10 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
+import ru.protei.portal.util.MarkdownServer;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -28,6 +29,9 @@ public class TemplateServiceImpl implements TemplateService {
     private static Logger log = LoggerFactory.getLogger(TemplateServiceImpl.class);
 
     Configuration templateConfiguration;
+
+    @Inject
+    MarkdownServer markdownServer;
 
     @PostConstruct
     public void onInit() {
@@ -193,6 +197,14 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
+    private String escapeTextComment(String text) {
+        if (text == null) {
+            return null;
+        }
+        text = markdownServer.plain2escaped2markdown( text );
+        return text;
+    }
+
     private String escapeText(String text) {
         if (text == null) {
             return null;
@@ -202,28 +214,11 @@ public class TemplateServiceImpl implements TemplateService {
         return text;
     }
 
-    private String escapeTextComment(String text) {
-        if (text == null) {
-            return null;
-        }
-        text = escapeText( text );
-        text = prewrapBlockquote( text ); // HTMLHelper.prewrapBlockquote( text );
-        return text;
-    }
-
     private String replaceLineBreaks(String text) {
         if (text == null) {
             return null;
         }
         return text.replaceAll("(\r\n|\n|\r)", "<br/>");
-    }
-
-    private String prewrapBlockquote(String text) {
-        if (text == null) {
-            return null;
-        }
-        return text.replaceAll("\\[quote\\]", "<blockquote style=\"margin-left: 0;border-left: 2px solid #015d5d;padding-left: 5px;color: #015d5d;\">")
-                .replaceAll("\\[/quote\\]", "</blockquote>");
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){

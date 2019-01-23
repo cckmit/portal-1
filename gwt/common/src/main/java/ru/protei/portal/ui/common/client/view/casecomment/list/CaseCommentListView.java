@@ -1,16 +1,20 @@
 package ru.protei.portal.ui.common.client.view.casecomment.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
@@ -22,8 +26,6 @@ import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTex
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
-import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 
 /**
  * Контейнер для комментариев
@@ -100,6 +102,20 @@ public class CaseCommentListView
     }
 
     @Override
+    public void setPreviewText(String text) {
+        commentPreview.setInnerHTML(text);
+    }
+
+    @Override
+    public void setPreviewVisible(boolean isVisible) {
+        if (isVisible) {
+            commentPreviewContainer.removeClassName("hide");
+        } else {
+            commentPreviewContainer.addClassName("hide");
+        }
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );
@@ -145,6 +161,13 @@ public class CaseCommentListView
         }
     }
 
+    @UiHandler("comment")
+    public void onCommentChanged(ValueChangeEvent<String> event) {
+        if (activity != null) {
+            activity.onCommentChanged(event.getValue());
+        }
+    }
+
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
@@ -182,6 +205,10 @@ public class CaseCommentListView
     TimeTextBox timeElapsed;
     @UiField
     ImageElement icon;
+    @UiField
+    DivElement commentPreviewContainer;
+    @UiField
+    DivElement commentPreview;
 
     private AbstractCaseCommentListActivity activity;
 

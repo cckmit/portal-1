@@ -13,7 +13,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -21,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
+import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
@@ -71,7 +71,7 @@ public class CaseCommentItemView
             return;
         }
 
-        this.message.getElement().setInnerHTML( HTMLHelper.prewrapBlockquote( HTMLHelper.htmlEscape( value ) ) );
+        this.message.getElement().setInnerHTML(markdownClient.plain2escaped2markdown(value));
         this.messageBlock.removeClassName( "hide" );
     }
 
@@ -201,7 +201,7 @@ public class CaseCommentItemView
     @UiField(provided = true)
     IssueLinks remoteLink;
     @UiField
-    InlineLabel message;
+    HTMLPanel message;
     @UiField
     Anchor remove;
     @UiField
@@ -239,6 +239,8 @@ public class CaseCommentItemView
     En_CaseStateLang stateLang;
     @Inject
     En_CaseImportanceLang importanceLang;
+    @Inject
+    MarkdownClient markdownClient;
 
     private AbstractCaseCommentItemActivity activity;
 

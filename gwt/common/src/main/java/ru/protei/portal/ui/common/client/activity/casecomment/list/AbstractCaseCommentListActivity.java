@@ -14,4 +14,6 @@ public interface AbstractCaseCommentListActivity {
     void removeTempAttachment(Attachment attachment);
 
     void onDetachView();
+
+    void onCommentChanged(String text);
 }

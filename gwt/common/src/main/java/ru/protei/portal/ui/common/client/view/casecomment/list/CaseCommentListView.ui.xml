@@ -43,6 +43,12 @@
                                 <span class="icon fa fa-info-circle"/>
                                 <span class="hint"><ui:text from='{lang.sendOnCtrlEnter}'/></span>
                             </div>
+
+                            <div ui:field="commentPreviewContainer" class="message-preview hide">
+                                <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/></div>
+                                <div ui:field="commentPreview" class="message-preview-content markdown"/>
+                            </div>
+
                         </div>
                     </div>
                 </g:HTMLPanel>
