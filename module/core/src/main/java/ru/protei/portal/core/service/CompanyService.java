@@ -55,4 +55,5 @@ public interface CompanyService {
      */
     CoreResponse<CompanyGroup> createGroup(String name, String info);
 
+    CoreResponse<String> getCompanyName( Long companyId );
 }

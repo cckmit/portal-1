@@ -30,7 +30,8 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasText webSite();
     HasText comment();
-    HasValue<EntityOption> companyGroup();
+    HasValue<EntityOption> parentCompany();
+
     HasValue<EntityOption> companyCategory();
 
     HasValue<List<Subscription> > companySubscriptions();

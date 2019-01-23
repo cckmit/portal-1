@@ -151,7 +151,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
-        view.companyGroup().setValue(EntityOption.fromCompanyGroup(company.getCompanyGroup()));
+        view.parentCompany().setValue( new EntityOption( company.getParentCompanyName(),  company.getParentCompanyId() ) );
         view.companySubscriptions().setValue(
                 company.getSubscriptions().stream()
                         .map( Subscription::fromCompanySubscription )
@@ -173,12 +173,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
-        if(view.companyGroup().getValue() != null) {
-            company.setGroupId(view.companyGroup().getValue().getId());
-        }
-        else {
-            company.setGroupId(null);
-        }
+        company.setParentCompanyId( view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId() );
         company.setSubscriptions(view.companySubscriptions().getValue().stream()
                 .map( Subscription::toCompanySubscription )
                 .collect(Collectors.toList())

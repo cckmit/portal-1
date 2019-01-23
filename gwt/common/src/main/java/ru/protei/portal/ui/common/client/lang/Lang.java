@@ -229,7 +229,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String noCompanyGroup();
 
-    String companyGroupLabel();
+    String companyParentLabel();
 
     String issues();
 
@@ -1441,4 +1441,6 @@ public interface Lang extends Messages, ContactItemLang {
     String goToIssues();
 
     String employeeWithoutManager();
+
+    String companyParentCompany();
 }

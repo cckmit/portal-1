@@ -19,6 +19,19 @@ import java.util.stream.Collectors;
 public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements CompanyDAO {
 
     @Override
+    public Company get( Long id ) {
+        Company company = super.get( id );
+        if (company == null) return null;
+        if (company.getParentCompanyId() == null) return company;
+
+        Company parentCompany = partialGet( company.getParentCompanyId(), "cname" );
+        if (parentCompany == null) return company;
+        company.setParentCompanyName( parentCompany.getCname() );
+
+        return company;
+    }
+
+    @Override
     public List<Company> getListByQuery(CompanyQuery query) {
         return listByQuery(query);
     }

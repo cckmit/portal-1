@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.List;
 
@@ -101,4 +102,6 @@ public interface CompanyControllerAsync {
      * Получить список доступных статусов обращения
      */
     void getCompanyCaseStates(Long id, AsyncCallback<List<CaseState>> async);
+
+    void getCompanyName( Long parentCompanyId, AsyncCallback<String> setOnSuccess );
 }
