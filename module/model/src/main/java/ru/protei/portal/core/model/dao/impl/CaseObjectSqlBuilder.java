@@ -43,7 +43,10 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
-                condition.append(" and initiator_company in (" + query.getCompanyIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                String idsString = query.getCompanyIds().stream().map( Object::toString ).collect( Collectors.joining( "," ) );
+                condition.append( " and initiator_company in (" +
+                        "SELECT id FROM company WHERE id in (" + idsString + ") or parent_company_id in (" + idsString + ") " +
+                        ")" );
             }
 
             if ( query.getInitiatorIds() != null && !query.getInitiatorIds().isEmpty() ) {
