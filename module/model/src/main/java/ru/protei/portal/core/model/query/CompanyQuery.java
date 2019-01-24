@@ -24,6 +24,8 @@ public class CompanyQuery extends BaseQuery {
 
     private boolean parentIdIsNull;
 
+    private boolean sortHomeCompaniesAtBegin;
+
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
     }
@@ -67,6 +69,14 @@ public class CompanyQuery extends BaseQuery {
 
     public boolean isParentIdIsNull() {
         return parentIdIsNull;
+    }
+
+    public boolean isSortHomeCompaniesAtBegin() {
+        return sortHomeCompaniesAtBegin;
+    }
+
+    public void setSortHomeCompaniesAtBegin( boolean sortHomeCompaniesAtBegin ) {
+        this.sortHomeCompaniesAtBegin = sortHomeCompaniesAtBegin;
     }
 
     @Override

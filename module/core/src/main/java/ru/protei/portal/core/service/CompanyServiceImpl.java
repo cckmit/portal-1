@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
@@ -80,7 +77,9 @@ public class CompanyServiceImpl implements CompanyService {
         if (list == null)
             return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<EntityOption> result = list.stream().map(Company::toEntityOption).collect(Collectors.toList());
+        List<EntityOption> result = list.stream()
+                .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
+                .map(Company::toEntityOption).collect(Collectors.toList());
 
         return new CoreResponse<List<EntityOption>>().success(result,result.size());
     }
@@ -357,5 +356,10 @@ public class CompanyServiceImpl implements CompanyService {
             return false;
 
         return true;
+    }
+
+    private int placeHomeCompaniesAtBegin( CompanyQuery query, Company o1,  Company o2 )  {
+        if (!query.isSortHomeCompaniesAtBegin()) return 0;
+        return Objects.equals( En_CompanyCategory.HOME.getId(), o1.getCategoryId() ) ? -1 : Objects.equals( En_CompanyCategory.HOME.getId(), o2.getCategoryId() ) ? 1 : 0;
     }
 }

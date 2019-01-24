@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 public abstract class CompanyModel implements Activity, SelectorModel<EntityOption> {
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshHomeCompanies();
         for (SelectorWithModel<EntityOption> subscriber : subscribers) {
             subscriber.clearOptions();
         }
@@ -33,7 +33,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
-        refreshHomeCompanies();
         for (SelectorWithModel<EntityOption> subscriber : subscribers) {
             subscriber.clearOptions();
         }
@@ -73,7 +72,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     }
 
     private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
-        int stop = 0;
         companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -82,15 +80,12 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
             @Override
             public void onSuccess( List<EntityOption> options ) {
-                log.config( "onSuccess(): query: " + query );//TODO DEBUG
-                putHomeCompaniesAtTheTop( options );
                 selector.fillOptions( options );
                 selector.refreshValue();
             }
         } );
     }
 
-    private static final Logger log = Logger.getLogger( CompanyModel.class.getName() );
     public CompanyQuery makeQuery( List<En_CompanyCategory> categories ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
@@ -99,33 +94,8 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
                             .map( En_CompanyCategory:: getId )
                             .collect( Collectors.toList() ) );
         }
+        query.setSortHomeCompaniesAtBegin( true );
         return query;
-    }
-
-    private void refreshHomeCompanies() {
-        companyService.getCompanyOptionList(
-                makeQuery(Collections.singletonList(En_CompanyCategory.HOME)),
-                new RequestCallback<List<EntityOption>>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        homeCompanies.clear();
-                    }
-                    @Override
-                    public void onSuccess(List<EntityOption> result) {
-                        homeCompanies.clear();
-                        homeCompanies.addAll(result);
-                    }
-                }
-        );
-    }
-
-    private void putHomeCompaniesAtTheTop(List<EntityOption> companies) {
-        homeCompanies.forEach(homeCompany -> {
-            int value = companies.indexOf(homeCompany);
-            if (value > 0) {
-                companies.add(0, companies.remove(value));
-            }
-        });
     }
 
     @Inject
@@ -136,5 +106,4 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
     private Map<SelectorWithModel< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
     private List<SelectorWithModel< EntityOption >> subscribers = new ArrayList<>();
-    private List< EntityOption > homeCompanies = new ArrayList<>();
 }

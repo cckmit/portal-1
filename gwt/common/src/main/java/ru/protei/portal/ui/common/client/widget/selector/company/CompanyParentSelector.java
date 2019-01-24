@@ -18,12 +18,7 @@ public class CompanyParentSelector extends ButtonSelector<EntityOption> implemen
 
     @Inject
     public void init( CompanyParentModel model ) {
-
-//        CompanyQuery companyQuery = model.makeQuery( categories );
-//        companyQuery.setParentIdIsNull( true );
-//        model.subscribe( this, companyQuery );
         setSelectorModel( model );
-
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 
@@ -35,30 +30,14 @@ public class CompanyParentSelector extends ButtonSelector<EntityOption> implemen
         if (defaultValue != null) {
             options.add( 0, new EntityOption( defaultValue, null ) );
         }
-//        this.options = options;
-        super.fillOptions(options);
+        for ( EntityOption option : options ) {
+            addOption( option );
+        }
     }
-//
-//    @Override
-//    protected void showPopup( IsWidget relative ) {
-//        if ( defaultValue != null ) {
-//            addOption( new EntityOption( defaultValue, null ) );
-//        }
-//        for ( EntityOption option : emptyIfNull( options) ) {
-//            addOption( option );
-//        }
-//
-//        options = null; // обнулить, так как clear() очистит для всех экземпляров селектора
-//        super.showPopup( relative );
-//    }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
 
     protected String defaultValue = null;
-
-
-
-    private List<EntityOption> options;
 }
