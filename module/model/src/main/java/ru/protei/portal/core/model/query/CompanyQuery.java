@@ -68,5 +68,15 @@ public class CompanyQuery extends BaseQuery {
     public boolean isParentIdIsNull() {
         return parentIdIsNull;
     }
+
+    @Override
+    public String toString() {
+        return "CompanyQuery{" +
+                "groupId=" + groupId +
+                ", categoryIds=" + categoryIds +
+                ", onlyHome=" + onlyHome +
+                ", parentIdIsNull=" + parentIdIsNull +
+                '}';
+    }
 }
 

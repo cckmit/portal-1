@@ -39,6 +39,7 @@ import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyParentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitModel;
@@ -72,6 +73,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractContactItemView.class ).to( ContactItemView.class );
 
         bind( CompanyModel.class ).asEagerSingleton();
+        bind( CompanyParentModel.class ).asEagerSingleton();
         bind( HomeCompanyModel.class ).asEagerSingleton();
         bind( EmployeeModel.class ).asEagerSingleton();
 
