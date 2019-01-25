@@ -10,6 +10,14 @@ import java.util.List;
  */
 public class CompanyQuery extends BaseQuery {
 
+    public void allowedCompany( Long allowedCompany ) {
+        this.allowedCompany = allowedCompany;
+    }
+
+    public Long getAllowedCompany() {
+        return allowedCompany;
+    }
+
     /**
      * request for companies that a members of group with id=groupId
      */
@@ -88,5 +96,7 @@ public class CompanyQuery extends BaseQuery {
                 ", isOnlyParentCompanies=" + isOnlyParentCompanies +
                 '}';
     }
+
+    private Long allowedCompany;
 }
 

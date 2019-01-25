@@ -67,7 +67,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
 
-        applyFilterByScope( token, query );
+//        applyFilterByScope( token, query );
 
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
@@ -279,7 +279,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
 
-        applyFilterByScope( token, query );
+//        applyFilterByScope( token, query );
 
         Long count = caseShortViewDAO.count(query);
 

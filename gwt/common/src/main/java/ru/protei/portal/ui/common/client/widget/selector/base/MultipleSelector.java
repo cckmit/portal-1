@@ -282,7 +282,7 @@ public abstract class MultipleSelector<T>
 
     private SelectorModel<T> selectorModel;
 
-    private Map<T, String> itemToNameModel = new HashMap<T, String>();
+    protected Map<T, String> itemToNameModel = new HashMap<T, String>();
 
     private Map<SelectableItem, T> itemViewToModel = new HashMap< SelectableItem, T >();
 

@@ -29,14 +29,21 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
         this.options = options;
+        for ( EntityOption option : emptyIfNull( options) ) {
+            itemToNameModel.put( option, option.getDisplayText() );
+        }
+        setValue( getValue() );
     }
 
     @Override
     protected void showPopup( IsWidget relative ) {
-        for ( EntityOption option : emptyIfNull( options) ) {
-            addOption( option.getDisplayText(), option );
+        if (options != null) {
+            itemToNameModel.clear();
+            for (EntityOption option : options) {
+                addOption( option.getDisplayText(), option );
+            }
+            options = null; // обнулить, так как clear() очистит для всех экземпляров селектора
         }
-        options = null; // обнулить, так как clear() очистит для всех экземпляров селектора
         super.showPopup( relative );
     }
 

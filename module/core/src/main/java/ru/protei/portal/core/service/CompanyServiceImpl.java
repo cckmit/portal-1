@@ -53,8 +53,13 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public CoreResponse<Long> countCompanies(AuthToken token, CompanyQuery query) {
         Set< UserRole > roles = authService.findSession(token).getLogin().getRoles();
-        if(!policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) //if customer then only one company
-            return new CoreResponse<Long>().success(1L);
+        if(!policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {//if customer then only one company
+//            return new CoreResponse<Long>().success(1L);
+            UserSessionDescriptor descriptor = authService.findSession( token );
+            Long id = descriptor.getCompany().getId();
+            query.allowedCompany(id);
+        }
+
 
         Long count = companyDAO.count(query);
         if (count == null)
@@ -331,12 +336,14 @@ public class CompanyServiceImpl implements CompanyService {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            Company company = companyDAO.get( descriptor.getCompany().getId() );
+            Long id = descriptor.getCompany().getId();
+            query.allowedCompany(id);
+//            List<Company> companies = companyDAO.getListByCondition( "company.id=? or parent_company_id=?", id, id );
             // TODO: need filter by query?
-            return Arrays.asList( company );
-        } else {
-            return companyDAO.getListByQuery(query);
+//            return companies;
         }
+            return companyDAO.getListByQuery(query);
+
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {

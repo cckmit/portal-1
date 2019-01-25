@@ -50,6 +50,11 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
 
             condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null )");
 
+            if (query.getAllowedCompany() != null) {
+                condition.append( " and company.id=" ).append( query.getAllowedCompany() )
+                        .append( " or parent_company_id=" ).append( query.getAllowedCompany() );
+            }
+
             if (query.getGroupId() != null && query.getGroupId()> 0) {
                 condition.append(" and groupId = ?");
                 args.add(query.getGroupId());
