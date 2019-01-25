@@ -14,11 +14,13 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -152,6 +154,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
         view.parentCompany().setValue( new EntityOption( company.getParentCompanyName(),  company.getParentCompanyId() ) );
+        view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
         view.companySubscriptions().setValue(
                 company.getSubscriptions().stream()
                         .map( Subscription::fromCompanySubscription )
@@ -179,6 +182,16 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 .collect(Collectors.toList())
         );
         infoFacade.setWebSite(view.webSite().getText());
+    }
+
+    private Selector.SelectorFilter<EntityOption> makeCompanyFilter( Long companyId ) {
+        return new Selector.SelectorFilter<EntityOption>() {
+            @Override
+            public boolean isDisplayed( EntityOption value ) {
+                if (companyId == null) return true;
+                return !companyId.equals( value.getId() );
+            }
+        };
     }
 
     @Inject

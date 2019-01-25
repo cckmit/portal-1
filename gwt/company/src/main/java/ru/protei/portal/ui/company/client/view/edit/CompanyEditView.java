@@ -13,8 +13,8 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyParentSelector;
-import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
@@ -22,7 +22,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
-import ru.protei.portal.ui.company.client.widget.group.buttonselector.GroupButtonSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 
 import java.util.List;
@@ -121,6 +120,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Override
     public HasWidgets tableContainer() {
         return tableContainer;
+    }
+
+    @Override
+    public void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter ) {
+        parentCompany.setFilter( companyFilter );
     }
 
     @UiHandler( "saveButton" )
