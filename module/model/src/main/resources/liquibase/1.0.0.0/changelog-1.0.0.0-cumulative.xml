@@ -84,4 +84,5 @@
   <include file="2018-11-03-add-phone-office-type-list.xml" relativeToChangelogFile="true"/>
   <include file="2018-12-06-add-column-into-employer-registration.xml" relativeToChangelogFile="true"/>
   <include file="2018-12-10-add-type-column-into-report.xml" relativeToChangelogFile="true"/>
+  <include file="2019-01-25-add-parent-company-column.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
