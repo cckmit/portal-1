@@ -22,7 +22,7 @@ public class CompanyQuery extends BaseQuery {
 
     private boolean onlyHome;
 
-    private boolean parentIdIsNull;
+    private boolean isOnlyParentCompanies;
 
     private boolean sortHomeCompaniesAtBegin;
 
@@ -63,12 +63,12 @@ public class CompanyQuery extends BaseQuery {
         this.onlyHome = onlyHome;
     }
 
-    public void setParentIdIsNull( boolean parentIdIsNull ) {
-        this.parentIdIsNull = parentIdIsNull;
+    public void setOnlyParentCompanies( boolean parentIdIsNull ) {
+        this.isOnlyParentCompanies = parentIdIsNull;
     }
 
-    public boolean isParentIdIsNull() {
-        return parentIdIsNull;
+    public boolean isOnlyParentCompanies() {
+        return isOnlyParentCompanies;
     }
 
     public boolean isSortHomeCompaniesAtBegin() {
@@ -85,7 +85,7 @@ public class CompanyQuery extends BaseQuery {
                 "groupId=" + groupId +
                 ", categoryIds=" + categoryIds +
                 ", onlyHome=" + onlyHome +
-                ", parentIdIsNull=" + parentIdIsNull +
+                ", isOnlyParentCompanies=" + isOnlyParentCompanies +
                 '}';
     }
 }

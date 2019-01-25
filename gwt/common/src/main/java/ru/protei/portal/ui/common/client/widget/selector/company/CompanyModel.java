@@ -4,7 +4,6 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -17,7 +16,6 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -56,18 +54,18 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         selector.clearOptions();
     }
 
-    public void subscribe( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
-        subscribers.add( selector );
-        selectorToQuery.put(selector, query);
-    }
-
     public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
         subscribers.add( selector );
         updateQuery( selector, categories );
     }
 
     public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
-        CompanyQuery query = makeQuery( categories );
+        CompanyQuery query = makeQuery( categories, false );
+        selectorToQuery.put(selector, query);
+    }
+
+    public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories, boolean isOnlyParentCompanies ) {
+        CompanyQuery query = makeQuery( categories, isOnlyParentCompanies );
         selectorToQuery.put(selector, query);
     }
 
@@ -86,7 +84,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
         } );
     }
 
-    public CompanyQuery makeQuery( List<En_CompanyCategory> categories ) {
+    public CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
             query.setCategoryIds(
@@ -94,6 +92,7 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
                             .map( En_CompanyCategory:: getId )
                             .collect( Collectors.toList() ) );
         }
+        query.setOnlyParentCompanies( isParentIdIsNull );
         query.setSortHomeCompaniesAtBegin( true );
         return query;
     }

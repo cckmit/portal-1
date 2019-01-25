@@ -77,7 +77,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                         .append(")");
             }
 
-            if(query.isParentIdIsNull()){
+            if(query.isOnlyParentCompanies()){
                 condition.append( " and " + parent_company_id + " IS NULL" );
             }
 

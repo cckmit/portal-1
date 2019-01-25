@@ -119,6 +119,12 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
         }
     }
 
+    public void showOnlyParentCompanies( boolean isOnlyParentCompanies ) {
+        if (model != null) {
+            model.updateQuery( this, categories, isOnlyParentCompanies );
+        }
+    }
+
     public void applyValueIfOneOption() {
         if (options != null && options.size() == 1) {
             setValue(options.get(0));
