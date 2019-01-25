@@ -153,7 +153,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
-        view.parentCompany().setValue( new EntityOption( company.getParentCompanyName(),  company.getParentCompanyId() ) );
+        view.parentCompany().setValue( makeCompanyOption( company ) );
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
         view.companySubscriptions().setValue(
                 company.getSubscriptions().stream()
@@ -165,6 +165,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES));
         fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
+    }
+
+    private EntityOption makeCompanyOption( Company company ) {
+        if(company.getParentCompanyId()==null) return new EntityOption( lang.selectIssueCompany(), null );
+        return new EntityOption( company.getParentCompanyName(),  company.getParentCompanyId() );
     }
 
     private void fillDto(Company company){
