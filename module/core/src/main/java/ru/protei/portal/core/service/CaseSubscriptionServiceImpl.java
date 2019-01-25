@@ -106,13 +106,14 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     private void appendCompanySubscriptions(Long companyId, Set<NotificationEntry> result) {
         List<CompanySubscription> companySubscriptions = safeGetByCompany( companyId );
-        log.info( "appendCompanySubscriptions(): {}", companySubscriptions.stream().map(smsc->smsc.getEmail()).collect( Collectors.joining( "," ) ) );
+        log.info( "companySubscriptions: {}", companySubscriptions.stream().map(smsc->smsc.getEmail()).collect( Collectors.joining( "," ) ) );
         companySubscriptions.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
     }
 
-    private static final Logger log = LoggerFactory.getLogger( CaseSubscriptionServiceImpl.class );
     private void appendProductSubscriptions( Long devUnitId, Set<NotificationEntry> result ) {
         safeGetByDevUnit(devUnitId)
                 .forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
     }
+
+    private static final Logger log = LoggerFactory.getLogger( CaseSubscriptionServiceImpl.class );
 }

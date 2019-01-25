@@ -15,25 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.ent.Company.Columns.parent_company_id;
-
 /**
  * Created by michael on 01.04.16.
  */
 public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements CompanyDAO {
-
-    @Override
-    public Company get( Long id ) {
-        Company company = super.get( id );
-        if (company == null) return null;
-        if (company.getParentCompanyId() == null) return company;
-
-        Company parentCompany = partialGet( company.getParentCompanyId(), "cname" );
-        if (parentCompany == null) return company;
-        company.setParentCompanyName( parentCompany.getCname() );
-
-        return company;
-    }
 
     @Override
     public List<Company> getListByQuery(CompanyQuery query) {
@@ -58,7 +43,6 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
         return result;
     }
 
-    private static final Logger log = LoggerFactory.getLogger( CompanyDAO_Impl.class );
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
         log.info( "createSqlCondition(): query={}", query );
@@ -78,7 +62,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if(query.isOnlyParentCompanies()){
-                condition.append( " and " + parent_company_id + " IS NULL" );
+                condition.append( " and parent_company_id IS NULL" );
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
@@ -87,5 +71,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
         });
     }
+
+    private static final Logger log = LoggerFactory.getLogger( CompanyDAO_Impl.class );
 
 }

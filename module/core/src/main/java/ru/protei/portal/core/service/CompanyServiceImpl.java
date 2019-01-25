@@ -200,6 +200,13 @@ public class CompanyServiceImpl implements CompanyService {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
 
+        if (company.getParentCompanyId() != null) {
+            Company parentCompany = companyDAO.partialGet( company.getParentCompanyId(), "cname" );
+            if (parentCompany != null) {
+                company.setParentCompanyName( parentCompany.getCname() );
+            }
+        }
+
         return new CoreResponse<Company>().success(company);
     }
 

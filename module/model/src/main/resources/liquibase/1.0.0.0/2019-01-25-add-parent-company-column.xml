@@ -5,7 +5,7 @@
 
     <changeSet id="add-parent-company-id-in-company" author="eliseev">
         <addColumn tableName="company">
-            <column name="parent_company_id" type="bigint(20)"  defaultValue="NULL"/>
+            <column name="parent_company_id" type="BIGINT"  defaultValue="NULL"/>
         </addColumn>
     </changeSet>
 

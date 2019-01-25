@@ -43,15 +43,12 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
             vcHandler.removeHandler();
         }
 
-        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( options.stream()
-                .filter( op -> op.getDisplayText().toLowerCase().contains( popup.search.getValue().toLowerCase() ) )
-                .collect( Collectors.toList() )
-        ) );
+        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( filter( options ) ) );
 
         popup.getChildContainer().clear();
         popup.showNear( relative );
 
-        fillFilteredItems( options );
+        fillFilteredItems( filter(options) );
     }
 
     private void fillFilteredItems( List<EntityOption> options ) {
@@ -131,6 +128,19 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
         } else {
             setValue(null);
         }
+    }
+
+    private List<EntityOption> filter( List<EntityOption> options ) {
+        return options.stream()
+                .filter( this::applyPredicate )
+                .collect( Collectors.toList() );
+    }
+
+    private boolean applyPredicate( EntityOption op ) {
+        if(filter!=null) {
+            if(!filter.isDisplayed( op )) return false;
+        }
+        return op.getDisplayText().toLowerCase().contains( popup.search.getValue().toLowerCase() );
     }
 
     @Inject

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.dao.impl;
 
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -9,7 +8,6 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.dao.impl.CaseShortViewDAO_Impl.isSearchAtComments;
-import static ru.protei.portal.core.model.ent.Company.Columns.parent_company_id;
 
 public class CaseObjectSqlBuilder {
 
@@ -47,7 +45,7 @@ public class CaseObjectSqlBuilder {
             if ( query.getCompanyIds() != null && !query.getCompanyIds().isEmpty() ) {
                 String idsString = query.getCompanyIds().stream().map( Object::toString ).collect( Collectors.joining( "," ) );
                 condition.append( " and initiator_company in (" +
-                        "SELECT id FROM company WHERE id in (" + idsString + ") or "+ parent_company_id+" in (" + idsString + ") " +
+                        "SELECT id FROM company WHERE id in (" + idsString + ") or parent_company_id in (" + idsString + ") " +
                         ")" );
             }
 
