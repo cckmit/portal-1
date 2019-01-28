@@ -54,14 +54,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CoreResponse<Long> countCompanies(AuthToken token, CompanyQuery query) {
-        Set< UserRole > roles = authService.findSession(token).getLogin().getRoles();
-        if(!policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {//if customer then only one company
-//            return new CoreResponse<Long>().success(1L);
-            UserSessionDescriptor descriptor = authService.findSession( token );
-            Long id = descriptor.getCompany().getId();
-            query.allowedCompany(id);
-        }
 
+        applyFilterByScope(token, query);
 
         Long count = companyDAO.count(query);
         if (count == null)
@@ -322,18 +316,10 @@ public class CompanyServiceImpl implements CompanyService {
                 !checkGroupExists(group.getName(), group.getId());
     }
 
-    private List<Company> getCompanyList(AuthToken token, CompanyQuery query) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            Long id = descriptor.getCompany().getId();
-            query.allowedCompany(id);
-//            List<Company> companies = companyDAO.getListByCondition( "company.id=? or parent_company_id=?", id, id );
-            // TODO: need filter by query?
-//            return companies;
-        }
-            return companyDAO.getListByQuery(query);
+    private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {
+        applyFilterByScope( token, query );
 
+        return companyDAO.getListByQuery( query );
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {
@@ -366,4 +352,20 @@ public class CompanyServiceImpl implements CompanyService {
         if (!query.isSortHomeCompaniesAtBegin()) return 0;
         return Objects.equals( En_CompanyCategory.HOME.getId(), o1.getCategoryId() ) ? -1 : Objects.equals( En_CompanyCategory.HOME.getId(), o2.getCategoryId() ) ? 1 : 0;
     }
+
+    private void applyFilterByScope( AuthToken token, CompanyQuery query ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
+            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
+        }
+    }
+
+    private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
+        if(companyIds==null) return new ArrayList(allowedCompaniesIds);
+        ArrayList allowedCompanies = new ArrayList( companyIds );
+        allowedCompanies.retainAll( allowedCompaniesIds );
+        return allowedCompanies;
+    }
+
 }

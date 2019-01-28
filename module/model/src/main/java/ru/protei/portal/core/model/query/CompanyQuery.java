@@ -10,14 +10,6 @@ import java.util.List;
  */
 public class CompanyQuery extends BaseQuery {
 
-    public void allowedCompany( Long allowedCompany ) {
-        this.allowedCompany = allowedCompany;
-    }
-
-    public Long getAllowedCompany() {
-        return allowedCompany;
-    }
-
     /**
      * list of company category (a partner, dealer, customer, etc)
      */
@@ -28,6 +20,8 @@ public class CompanyQuery extends BaseQuery {
     private boolean isOnlyParentCompanies;
 
     private boolean sortHomeCompaniesAtBegin;
+
+    private List<Long> companyIds;
 
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
@@ -74,15 +68,23 @@ public class CompanyQuery extends BaseQuery {
         this.sortHomeCompaniesAtBegin = sortHomeCompaniesAtBegin;
     }
 
+    public void setCompanyIds( List<Long> companyIds) {
+        this.companyIds = companyIds;
+    }
+
+    public List<Long> getCompanyIds() {
+        return companyIds;
+    }
+
     @Override
     public String toString() {
         return "CompanyQuery{" +
-                ", categoryIds=" + categoryIds +
                 ", onlyHome=" + onlyHome +
                 ", isOnlyParentCompanies=" + isOnlyParentCompanies +
+                ", categoryIds=" + categoryIds +
+                ", companyIds=" + companyIds +
                 '}';
     }
 
-    private Long allowedCompany;
 }
 
