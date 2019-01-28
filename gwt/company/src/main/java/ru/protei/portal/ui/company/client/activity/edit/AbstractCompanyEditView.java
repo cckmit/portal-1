@@ -43,4 +43,7 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasWidgets tableContainer();
 
     void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter );
+
+    void setParentCompanyEnabled( boolean isEnabled );
+
 }

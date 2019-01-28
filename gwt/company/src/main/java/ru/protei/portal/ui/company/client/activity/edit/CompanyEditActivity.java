@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
 /**
  * Активность создания и редактирования компании
  */
@@ -154,6 +156,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
         view.parentCompany().setValue( makeCompanyOption( company ) );
+        view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
         view.companySubscriptions().setValue(
                 company.getSubscriptions().stream()

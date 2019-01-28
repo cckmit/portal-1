@@ -128,6 +128,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         parentCompany.setFilter( companyFilter );
     }
 
+    @Override
+    public void setParentCompanyEnabled( boolean isEnabled ) {
+        parentCompany.setEnabled( isEnabled );
+    }
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {

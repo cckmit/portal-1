@@ -22,6 +22,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
 /**
  * Реализация сервиса управления компаниями
  */
@@ -302,6 +304,7 @@ public class CompanyServiceImpl implements CompanyService {
         return company != null
                 && company.getCname() != null
                 && !company.getCname().trim().isEmpty()
+                && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
                 /*&& isValidContactInfo(company)*/
                 && !checkCompanyExists(company.getCname(), company.getId());
     }
