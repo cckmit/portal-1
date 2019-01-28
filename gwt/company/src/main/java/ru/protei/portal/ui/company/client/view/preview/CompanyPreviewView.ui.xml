@@ -20,6 +20,11 @@
                     <label><ui:text from="{lang.companyParentLabel}"/></label>
                     <span ui:field="parentCompany"></span>
                 </div>
+                <div class="col-xs-12">
+                    <label><ui:text from="{lang.companyChildrenLabel}"/>
+                    </label>
+                    <span ui:field="childrenCompanies"></span>
+                </div>
             </g:HTMLPanel>
 
             <fieldset ui:field="contacts" class="contacts">

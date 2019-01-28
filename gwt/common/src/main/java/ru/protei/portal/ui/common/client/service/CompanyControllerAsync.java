@@ -103,5 +103,4 @@ public interface CompanyControllerAsync {
      */
     void getCompanyCaseStates(Long id, AsyncCallback<List<CaseState>> async);
 
-    void getCompanyName( Long parentCompanyId, AsyncCallback<String> setOnSuccess );
 }

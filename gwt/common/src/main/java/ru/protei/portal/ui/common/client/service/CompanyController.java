@@ -105,5 +105,4 @@ public interface CompanyController extends RemoteService {
      */
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
 
-    String getCompanyName( Long parentCompanyId ) throws RequestFailedException;
 }

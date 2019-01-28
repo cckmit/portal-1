@@ -228,12 +228,6 @@ public class CompanyControllerImpl implements CompanyController {
         return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
     }
 
-    @Override
-    public String getCompanyName( Long companyId ) throws RequestFailedException {
-        AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
-        return checkResultAndGetData( companyService.getCompanyName(companyId));
-    }
-
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

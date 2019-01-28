@@ -231,6 +231,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String companyParentLabel();
 
+    String companyChildrenLabel();
+
     String issues();
 
     String issueNumber();

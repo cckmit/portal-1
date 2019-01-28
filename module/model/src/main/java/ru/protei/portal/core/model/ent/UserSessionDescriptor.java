@@ -1,11 +1,8 @@
 package ru.protei.portal.core.model.ent;
 
 
-import ru.protei.portal.core.model.dict.En_Scope;
-
 import java.util.*;
-
-import static java.util.stream.Collectors.toSet;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 23.06.16.
@@ -81,8 +78,8 @@ public class UserSessionDescriptor {
         if (company == null) return Collections.EMPTY_LIST;
         ArrayList<Long> ids = new ArrayList<>();
         ids.add( company.getId() );
-        if (company.getChildCompaniesIds() != null)
-            ids.addAll( company.getChildCompaniesIds() );
+        if (company.getChildCompanies() != null)
+            ids.addAll( company.getChildCompanies().stream().map( Company::getId ).collect( Collectors.toList()) );
         return ids;
     }
 }

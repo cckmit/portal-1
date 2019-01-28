@@ -116,19 +116,6 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<String> getCompanyName( Long companyId ) {
-        if ( companyId == null ) {
-            return new CoreResponse<String>().error( En_ResultStatus.INCORRECT_PARAMS);
-        }
-        Company company = companyDAO.partialGet( companyId, "cname" );
-        if (company == null)
-            return new CoreResponse<String>().error(En_ResultStatus.GET_DATA_ERROR);
-
-
-        return new CoreResponse<String>().success( company.getCname() );
-    }
-
-    @Override
     public CoreResponse< Boolean > updateCompanySubscriptions( Long companyId, List< CompanySubscription > subscriptions ) {
         if ( companyId == null ) {
             return new CoreResponse<Boolean>().error( En_ResultStatus.INCORRECT_PARAMS);
@@ -199,11 +186,11 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Company company = companyDAO.get(id);
-        jdbcManyRelationsHelper.fillAll( company );
 
         if (company == null) {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
+        jdbcManyRelationsHelper.fillAll( company );
 
         if (company.getParentCompanyId() != null) {
             Company parentCompany = companyDAO.partialGet( company.getParentCompanyId(), "cname" );

@@ -88,6 +88,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public void setChildrenCompanies( String value ) {
+        this.childrenCompanies.setInnerText( value );
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerText( value );
     }
@@ -133,6 +138,8 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     SpanElement category;
     @UiField
     SpanElement parentCompany;
+    @UiField
+    SpanElement childrenCompanies;
     @UiField
     SpanElement addressDejure;
     @UiField

@@ -33,7 +33,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
     private String parentCompanyName;
 
-    private List<Long> childCompaniesIds;
+    @JdbcOneToMany(table = "company", localColumn = "id", remoteColumn = "parent_company_id" )
+    private List<Company> childCompanies;
 
     @JdbcColumn(name = "cname")
     private String cname;
@@ -197,12 +198,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.parentCompanyName = parentCompany;
     }
 
-    public List<Long> getChildCompaniesIds() {
-        return childCompaniesIds;
+    public List<Company> getChildCompanies() {
+        return childCompanies;
     }
 
-    public void setChildCompaniesIds( List<Long> childCompaniesIds ) {
-        this.childCompaniesIds = childCompaniesIds;
+    public void setChildCompanies( List<Company> childCompanies ) {
+        this.childCompanies = childCompanies;
     }
 
     @Override
@@ -221,7 +222,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", subscriptions=" + subscriptions +
                 ", oldID=" + String.valueOf(oldId) +
                 ", caseStates=" + caseStates +
-                ", childCompaniesIds=" + childCompaniesIds +
+                ", childCompanies=" + childCompanies +
                 '}';
     }
 

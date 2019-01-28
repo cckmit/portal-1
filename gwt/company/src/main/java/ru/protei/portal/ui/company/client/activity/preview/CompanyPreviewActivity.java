@@ -48,8 +48,6 @@ public abstract class CompanyPreviewActivity
 
         view.setCategory( value.getCategory() == null ? "" : value.getCategory().getName() );
         view.setParentCompany(  value.getParentCompanyName() );
-        if(value.getParentCompanyId()!=null)
-        requestParentCompanynamr(value.getParentCompanyId());
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
@@ -63,13 +61,17 @@ public abstract class CompanyPreviewActivity
         view.setInfo( value.getInfo() );
 
         requestSubscriptionEmails(value.getId());
+        requestParentAndChildCompanies(value.getId());
 
         fireEvent( new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()).readOnly() );
     }
 
-    private void requestParentCompanynamr( Long parentCompanyId ) {
-        companyController.getCompanyName( parentCompanyId, new ShortRequestCallback<String>()
-                .setOnSuccess( view::setParentCompany ) );
+    private void requestParentAndChildCompanies( Long parentCompanyId ) {
+        companyController.getCompany( parentCompanyId, new ShortRequestCallback<Company>()
+                .setOnSuccess( company-> {
+                    view.setParentCompany( company.getParentCompanyName() );
+                    view.setChildrenCompanies(  CollectionUtils.stream( company.getChildCompanies() ).map( Company::getCname).collect( Collectors.joining(", ")) );
+                } ) );
 
     }
 
