@@ -91,9 +91,6 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
                             .map( EntityOption::getId )
                             .collect( Collectors.toList() ));
 
-        if(filterView.group().getValue() != null)
-            cq.setGroupId(filterView.group().getValue().getId());
-
         return cq;
     }
 

@@ -19,11 +19,6 @@ public class CompanyQuery extends BaseQuery {
     }
 
     /**
-     * request for companies that a members of group with id=groupId
-     */
-    private Long groupId;
-
-    /**
      * list of company category (a partner, dealer, customer, etc)
      */
     private List<Long> categoryIds;
@@ -45,14 +40,6 @@ public class CompanyQuery extends BaseQuery {
 
     public CompanyQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
-    }
-
-    public Long getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(Long groupId) {
-        this.groupId = groupId;
     }
 
     public List<Long> getCategoryIds() {
@@ -90,7 +77,6 @@ public class CompanyQuery extends BaseQuery {
     @Override
     public String toString() {
         return "CompanyQuery{" +
-                "groupId=" + groupId +
                 ", categoryIds=" + categoryIds +
                 ", onlyHome=" + onlyHome +
                 ", isOnlyParentCompanies=" + isOnlyParentCompanies +

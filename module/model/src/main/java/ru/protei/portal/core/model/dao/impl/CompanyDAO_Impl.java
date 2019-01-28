@@ -55,11 +55,6 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                         .append( " or parent_company_id=" ).append( query.getAllowedCompany() );
             }
 
-            if (query.getGroupId() != null && query.getGroupId()> 0) {
-                condition.append(" and groupId = ?");
-                args.add(query.getGroupId());
-            }
-
             if (!CollectionUtils.isEmpty(query.getCategoryIds())) {
                 condition.append(" and category_id in (")
                         .append(query.getCategoryIds().stream().map(Object::toString).collect(Collectors.joining(",")))
