@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +32,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
     private String parentCompanyName;
+
+    private List<Long> childCompaniesIds;
 
     @JdbcColumn(name = "cname")
     private String cname;
@@ -196,6 +197,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         this.parentCompanyName = parentCompany;
     }
 
+    public List<Long> getChildCompaniesIds() {
+        return childCompaniesIds;
+    }
+
+    public void setChildCompaniesIds( List<Long> childCompaniesIds ) {
+        this.childCompaniesIds = childCompaniesIds;
+    }
+
     @Override
     public String toString() {
         return "Company{" +
@@ -212,6 +221,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", subscriptions=" + subscriptions +
                 ", oldID=" + String.valueOf(oldId) +
                 ", caseStates=" + caseStates +
+                ", childCompaniesIds=" + childCompaniesIds +
                 '}';
     }
 

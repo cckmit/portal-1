@@ -3,10 +3,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_Scope;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 
@@ -78,5 +75,14 @@ public class UserSessionDescriptor {
 
     public AuthToken makeAuthToken() {
         return new AuthToken( getSessionId(), session.getClientIp() );
+    }
+
+    public Collection<Long> getAllowedCompaniesIds() {
+        if (company == null) return Collections.EMPTY_LIST;
+        ArrayList<Long> ids = new ArrayList<>();
+        ids.add( company.getId() );
+        if (company.getChildCompaniesIds() != null)
+            ids.addAll( company.getChildCompaniesIds() );
+        return ids;
     }
 }

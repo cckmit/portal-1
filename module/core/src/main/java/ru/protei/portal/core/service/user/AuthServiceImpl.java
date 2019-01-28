@@ -16,9 +16,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -194,6 +192,10 @@ public class AuthServiceImpl implements AuthService {
 
         Company company = companyDAO.get(person.getCompanyId());
         jdbcManyRelationsHelper.fillAll( company );
+
+        List<Company> companies = companyDAO.partialGetListByCondition( "parent_company_id=?", Arrays.asList( company.getId() ), "id" );
+        List<Long> ids = companies.stream().map( Company::getId ).collect( Collectors.toList() );
+        company.setChildCompaniesIds( ids );
 
         logger.debug("Auth success for " + ulogin + " / " + ( login.getRoles() == null ? "null" : login.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining("," ) ) ) + "/" + person.toDebugString());
 

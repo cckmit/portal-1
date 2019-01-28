@@ -67,7 +67,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
 
-//        applyFilterByScope( token, query );
+        applyFilterByScope( token, query );
 
         List<CaseShortView> list = caseShortViewDAO.getCases( query );
 
@@ -279,7 +279,7 @@ public class CaseServiceImpl implements CaseService {
     @Override
     public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
 
-//        applyFilterByScope( token, query );
+        applyFilterByScope( token, query );
 
         Long count = caseShortViewDAO.count(query);
 
@@ -439,19 +439,16 @@ public class CaseServiceImpl implements CaseService {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyIds( getDescriptorCompany(descriptor) );
+            query.setCompanyIds( retainAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
             query.setAllowViewPrivate( false );
         }
     }
 
-    private List<Long> getDescriptorCompany( UserSessionDescriptor descriptor ){
-        if (descriptor.getCompany() == null){
-            return null;
-        } else {
-            List<Long> companies = new ArrayList<>(  );
-            companies.add( descriptor.getCompany().getId() );
-            return companies;
-        }
+    private List<Long> retainAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
+        if(companyIds==null) return new ArrayList(allowedCompaniesIds);
+        ArrayList allowedCompanies = new ArrayList( companyIds );
+        allowedCompanies.retainAll( allowedCompaniesIds );
+        return allowedCompanies;
     }
 
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
@@ -488,7 +485,7 @@ public class CaseServiceImpl implements CaseService {
                 return false;
             }
 
-            List<Long> companyIds = getDescriptorCompany( descriptor );
+            Collection<Long> companyIds = descriptor.getAllowedCompaniesIds();
             if ( !companyIds.contains( caseObject.getInitiatorCompanyId() ) ) {
                 return false;
             }
