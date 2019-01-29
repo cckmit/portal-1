@@ -43,15 +43,12 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
             vcHandler.removeHandler();
         }
 
-        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( options.stream()
-                .filter( op -> op.getDisplayText().toLowerCase().contains( popup.search.getValue().toLowerCase() ) )
-                .collect( Collectors.toList() )
-        ) );
+        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( filter( options ) ) );
 
         popup.getChildContainer().clear();
         popup.showNear( relative );
 
-        fillFilteredItems( options );
+        fillFilteredItems( filter(options) );
     }
 
     private void fillFilteredItems( List<EntityOption> options ) {
@@ -119,6 +116,12 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
         }
     }
 
+    public void showOnlyParentCompanies( boolean isOnlyParentCompanies ) {
+        if (model != null) {
+            model.updateQuery( this, categories, isOnlyParentCompanies );
+        }
+    }
+
     public void applyValueIfOneOption() {
         if (options != null && options.size() == 1) {
             setValue(options.get(0));
@@ -127,20 +130,33 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
         }
     }
 
+    private List<EntityOption> filter( List<EntityOption> options ) {
+        return options.stream()
+                .filter( this::applyPredicate )
+                .collect( Collectors.toList() );
+    }
+
+    private boolean applyPredicate( EntityOption op ) {
+        if(filter!=null) {
+            if(!filter.isDisplayed( op )) return false;
+        }
+        return op.getDisplayText().toLowerCase().contains( popup.search.getValue().toLowerCase() );
+    }
+
     @Inject
     private Provider<SelectorPopup> popupProvider;
 
-    private String defaultValue = null;
+    protected String defaultValue = null;
 
     private List< EntityOption > options;
     private HandlerRegistration regHandler;
     private HandlerRegistration vcHandler;
 
-    private List<En_CompanyCategory> categories = Arrays.asList(
+    protected List<En_CompanyCategory> categories = Arrays.asList(
             En_CompanyCategory.CUSTOMER,
             En_CompanyCategory.PARTNER,
             En_CompanyCategory.SUBCONTRACTOR,
             En_CompanyCategory.HOME);
 
-    private CompanyModel model;
+    protected CompanyModel model;
 }

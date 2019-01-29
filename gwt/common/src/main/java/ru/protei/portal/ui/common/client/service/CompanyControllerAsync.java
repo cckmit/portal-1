@@ -101,4 +101,5 @@ public interface CompanyControllerAsync {
      * Получить список доступных статусов обращения
      */
     void getCompanyCaseStates(Long id, AsyncCallback<List<CaseState>> async);
+
 }

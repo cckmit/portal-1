@@ -37,8 +37,8 @@ public class CompanyControllerImpl implements CompanyController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | sortDir={}",
-                companyQuery.getSearchString(), categoryIds, companyQuery.getGroupId(),
+        log.debug( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
+                companyQuery.getSearchString(), categoryIds,
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
         CoreResponse< List<Company>> result = companyService.companyList( descriptor.makeAuthToken(), companyQuery );

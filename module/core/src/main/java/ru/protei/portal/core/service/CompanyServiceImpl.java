@@ -8,10 +8,7 @@ import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
@@ -24,6 +21,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Реализация сервиса управления компаниями
@@ -55,9 +54,8 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public CoreResponse<Long> countCompanies(AuthToken token, CompanyQuery query) {
-        Set< UserRole > roles = authService.findSession(token).getLogin().getRoles();
-        if(!policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) //if customer then only one company
-            return new CoreResponse<Long>().success(1L);
+
+        applyFilterByScope(token, query);
 
         Long count = companyDAO.count(query);
         if (count == null)
@@ -80,7 +78,9 @@ public class CompanyServiceImpl implements CompanyService {
         if (list == null)
             return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR);
 
-        List<EntityOption> result = list.stream().map(Company::toEntityOption).collect(Collectors.toList());
+        List<EntityOption> result = list.stream()
+                .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
+                .map(Company::toEntityOption).collect(Collectors.toList());
 
         return new CoreResponse<List<EntityOption>>().success(result,result.size());
     }
@@ -182,10 +182,17 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Company company = companyDAO.get(id);
-        jdbcManyRelationsHelper.fillAll( company );
 
         if (company == null) {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+        jdbcManyRelationsHelper.fillAll( company );
+
+        if (company.getParentCompanyId() != null) {
+            Company parentCompany = companyDAO.partialGet( company.getParentCompanyId(), "cname" );
+            if (parentCompany != null) {
+                company.setParentCompanyName( parentCompany.getCname() );
+            }
         }
 
         return new CoreResponse<Company>().success(company);
@@ -291,6 +298,7 @@ public class CompanyServiceImpl implements CompanyService {
         return company != null
                 && company.getCname() != null
                 && !company.getCname().trim().isEmpty()
+                && (company.getParentCompanyId() == null || isEmpty(company.getChildCompanies()) )
                 /*&& isValidContactInfo(company)*/
                 && !checkCompanyExists(company.getCname(), company.getId());
     }
@@ -308,16 +316,10 @@ public class CompanyServiceImpl implements CompanyService {
                 !checkGroupExists(group.getName(), group.getId());
     }
 
-    private List<Company> getCompanyList(AuthToken token, CompanyQuery query) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            Company company = companyDAO.get( descriptor.getCompany().getId() );
-            // TODO: need filter by query?
-            return Arrays.asList( company );
-        } else {
-            return companyDAO.getListByQuery(query);
-        }
+    private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {
+        applyFilterByScope( token, query );
+
+        return companyDAO.getListByQuery( query );
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {
@@ -345,4 +347,25 @@ public class CompanyServiceImpl implements CompanyService {
 
         return true;
     }
+
+    private int placeHomeCompaniesAtBegin( CompanyQuery query, Company o1,  Company o2 )  {
+        if (!query.isSortHomeCompaniesAtBegin()) return 0;
+        return Objects.equals( En_CompanyCategory.HOME.getId(), o1.getCategoryId() ) ? -1 : Objects.equals( En_CompanyCategory.HOME.getId(), o2.getCategoryId() ) ? 1 : 0;
+    }
+
+    private void applyFilterByScope( AuthToken token, CompanyQuery query ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
+            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
+        }
+    }
+
+    private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
+        if(companyIds==null) return new ArrayList<Long>(allowedCompaniesIds);
+        ArrayList allowedCompanies = new ArrayList( companyIds );
+        allowedCompanies.retainAll( allowedCompaniesIds );
+        return allowedCompanies;
+    }
+
 }

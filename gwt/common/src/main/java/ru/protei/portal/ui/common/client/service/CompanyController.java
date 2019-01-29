@@ -104,4 +104,5 @@ public interface CompanyController extends RemoteService {
      * Получить список доступных статусов обращения
      */
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
+
 }

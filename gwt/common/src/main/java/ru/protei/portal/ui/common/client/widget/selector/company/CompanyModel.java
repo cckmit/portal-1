@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 public abstract class CompanyModel implements Activity, SelectorModel<EntityOption> {
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshHomeCompanies();
         for (SelectorWithModel<EntityOption> subscriber : subscribers) {
             subscriber.clearOptions();
         }
@@ -32,7 +31,6 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
-        refreshHomeCompanies();
         for (SelectorWithModel<EntityOption> subscriber : subscribers) {
             subscriber.clearOptions();
         }
@@ -62,7 +60,12 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
     }
 
     public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
-        CompanyQuery query = makeQuery( categories );
+        CompanyQuery query = makeQuery( categories, false );
+        selectorToQuery.put(selector, query);
+    }
+
+    public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories, boolean isOnlyParentCompanies ) {
+        CompanyQuery query = makeQuery( categories, isOnlyParentCompanies );
         selectorToQuery.put(selector, query);
     }
 
@@ -75,14 +78,13 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
             @Override
             public void onSuccess( List<EntityOption> options ) {
-                putHomeCompaniesAtTheTop( options );
                 selector.fillOptions( options );
                 selector.refreshValue();
             }
         } );
     }
 
-    private CompanyQuery makeQuery( List<En_CompanyCategory> categories ) {
+    public CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
             query.setCategoryIds(
@@ -90,33 +92,9 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
                             .map( En_CompanyCategory:: getId )
                             .collect( Collectors.toList() ) );
         }
+        query.setOnlyParentCompanies( isParentIdIsNull );
+        query.setSortHomeCompaniesAtBegin( true );
         return query;
-    }
-
-    private void refreshHomeCompanies() {
-        companyService.getCompanyOptionList(
-                makeQuery(Collections.singletonList(En_CompanyCategory.HOME)),
-                new RequestCallback<List<EntityOption>>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        homeCompanies.clear();
-                    }
-                    @Override
-                    public void onSuccess(List<EntityOption> result) {
-                        homeCompanies.clear();
-                        homeCompanies.addAll(result);
-                    }
-                }
-        );
-    }
-
-    private void putHomeCompaniesAtTheTop(List<EntityOption> companies) {
-        homeCompanies.forEach(homeCompany -> {
-            int value = companies.indexOf(homeCompany);
-            if (value > 0) {
-                companies.add(0, companies.remove(value));
-            }
-        });
     }
 
     @Inject
@@ -127,5 +105,4 @@ public abstract class CompanyModel implements Activity, SelectorModel<EntityOpti
 
     private Map<SelectorWithModel< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
     private List<SelectorWithModel< EntityOption >> subscribers = new ArrayList<>();
-    private List< EntityOption > homeCompanies = new ArrayList<>();
 }
