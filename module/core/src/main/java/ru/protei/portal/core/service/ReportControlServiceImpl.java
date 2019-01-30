@@ -7,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
-import ru.protei.portal.core.report.casetimeelapsed.CaseCompletionTimeReport;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.utils.TimeFormatter;
 
@@ -37,6 +38,9 @@ public class ReportControlServiceImpl implements ReportControlService {
     PortalConfig config;
     @Autowired
     ReportDAO reportDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+
     @Autowired
     ReportStorageService reportStorageService;
     @Autowired
@@ -179,8 +183,8 @@ public class ReportControlServiceImpl implements ReportControlService {
                         new TimeFormatter()
                 );
             case CASE_COMPLETION_TIME:
-                CaseCompletionTimeReport caseComletionTimeReport = new CaseCompletionTimeReport( report, buffer );
-                return caseComletionTimeReport.writeReport( );
+                ReportCaseCompletionTime caseComletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO  );
+                return caseComletionTimeReport.writeReport(  buffer );
         }
         return false;
     }
