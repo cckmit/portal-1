@@ -17,6 +17,7 @@ public class En_ReportTypeLang {
         switch (value) {
             case CASE_OBJECTS: return lang.reportTypeCaseObjects();
             case CASE_TIME_ELAPSED: return lang.reportTypeCaseTimeElapsed();
+            case CASE_COMPLETION_TIME: return "Время завершения (управление уровнем обслуживания)";
             default: return lang.unknownField();
         }
     }
