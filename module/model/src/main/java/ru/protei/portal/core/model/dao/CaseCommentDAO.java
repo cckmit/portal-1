@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -28,5 +29,5 @@ public interface CaseCommentDAO extends PortalBaseDAO<CaseComment> {
 
     boolean checkExistsByRemoteIdAndRemoteLinkId(String remoteId, Long remoteLinkId);
 
-    List<CaseComment> reportCaseCompletionTime( Long aLong );
+    List<CaseComment> reportCaseCompletionTime( Long aLong, Date from, Date to );
 }

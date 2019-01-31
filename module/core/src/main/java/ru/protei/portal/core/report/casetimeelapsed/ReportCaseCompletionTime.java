@@ -22,7 +22,13 @@ public class ReportCaseCompletionTime {
 
     public boolean writeReport( ByteArrayOutputStream buffer ) {
 
-        List<CaseComment> list = caseCommentDAO.reportCaseCompletionTime( caseQuery.getProductIds().get( 0 ) );
+        List<CaseComment> list = caseCommentDAO.reportCaseCompletionTime(
+                caseQuery.getProductIds().get( 0 ) ,
+                caseQuery.getFrom(),
+                caseQuery.getTo()
+
+
+        );
 
         for (CaseComment comment : list) {
             Case aCase = map.get( comment.getCaseId() );
@@ -33,9 +39,6 @@ public class ReportCaseCompletionTime {
             }
             mapCase( aCase, comment );
         }
-
-
-
 
         return false;
     }

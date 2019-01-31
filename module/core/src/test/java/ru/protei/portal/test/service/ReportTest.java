@@ -1,69 +1,97 @@
 package ru.protei.portal.test.service;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.MainTestsConfiguration;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime;
-import ru.protei.portal.core.service.CaseService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
-import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import javax.inject.Inject;
 import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.util.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
-public class ReportTest {
+public class ReportTest extends BaseTest {
 
-    public static final AuthToken TEST_AUTH_TOKEN = new AuthToken("TEST_SID", "127.0.0.1");
+    Long productId;
+    Long caseId;
+    Person person;
+    Date date = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
+    List<Long> commentsIds = new ArrayList<>();
 
-    @Inject
-    private CaseCommentDAO caseCommentDAO;
-    @Inject
-    CompanyDAO companyDAO;
+    @Before
+    public void beforeEachTest() {
+        init();
+    }
 
-    @Inject
-    private CaseService caseService;
+    @After
+    public void afterEachTest() {
+        clean();
+    }
 
-    @Inject
-    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    private void init() {
+        if (productId == null) {
+
+            DevUnit product = devUnitDAO.getByCondition( "UNIT_NAME=?", PRODUCT_NAME );
+            if (product == null)
+                productId = makeProduct( PRODUCT_NAME );
+            else {
+                productId = product.getId();
+            }
+        }
+        Company company = makeCompany( new CompanyCategory( 2L ) );
+        person = makePerson( company );
+
+        CaseObject caseObject = createNewCaseObject( person );
+        caseObject.setProductId( productId );
+        caseObject.setCreated( date );
+        caseId =  caseObjectDAO.insertCase( caseObject );
+
+        CaseComment comment1 = createNewComment( person, caseId, "Test_Comment" );
+        commentsIds.add( comment1.getId() );
+
+        comment1.setCaseStateId( CREATED );
+        comment1.setCreated( date );
+        comment1.setId( null );
+        commentsIds.add( caseCommentDAO.persist( comment1 ) );
+
+        comment1.setCaseStateId( OPENED );
+        comment1.setCreated( addHours( date, 1 ) );//Date.from( date.plus( 1, ChronoUnit.HOURS ) ) );
+        comment1.setId( null );
+        commentsIds.add( caseCommentDAO.persist( comment1 ) );
+
+        comment1.setCaseStateId( DONE );
+        comment1.setCreated( addHours( date, 2 ) );
+        comment1.setId( null );
+        commentsIds.add( caseCommentDAO.persist( comment1 ) );
+
+
+    }
 
     @Test
     public void getCaseObjectsTest() throws Exception {
-        assertNotNull(caseService);
-        Report report = makeReport();
+        Report report = makeReport( productId ); //TODO add test product 18572L
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
         ReportCaseCompletionTime caseComletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO );
-        caseComletionTimeReport.writeReport(buffer);
+        caseComletionTimeReport.writeReport( buffer );
     }
 
-    private Report makeReport() {
+    private Report makeReport( Long productId ) {
 
         CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setProductIds( Arrays.asList( 18572L ) ); //TODO add test product
-        caseQuery.setStateIds( Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33) ); //TODO add test product
+        caseQuery.setProductIds( Arrays.asList( productId ) );
+        caseQuery.setStateIds( Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33 ) ); //TODO add test product
+        caseQuery.setFrom( date );
+        caseQuery.setTo( addHours( date, 12 ) );
 
         Report report = new Report();
         report.setReportType( En_ReportType.CASE_COMPLETION_TIME );
@@ -71,65 +99,29 @@ public class ReportTest {
         return report;
     }
 
-
-    public static CaseComment createNewComment(Person person, CaseObject caseObject, String text) {
-        CaseComment comment = new CaseComment(text);
-        comment.setCreated(new Date());
-        comment.setCaseId(caseObject.getId());
-        comment.setAuthorId(person.getId());
-        comment.setText(text);
-        comment.setCaseAttachments(Collections.emptyList());
-        return comment;
+    private Date addHours( Date date, int hours ) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime( date );
+        cal.add( Calendar.HOUR_OF_DAY, hours );
+        return cal.getTime();
     }
 
-    public static CaseObject createNewCaseObject(Person person) {
-        CaseObject caseObject = new CaseObject();
-        caseObject.setCaseType(En_CaseType.TASK);
-        caseObject.setName("Test_Case_Name");
-        caseObject.setState(En_CaseState.CREATED);
-        caseObject.setCaseType(En_CaseType.CRM_SUPPORT);
-        return caseObject;
+    private void clean() {
+        if(true) return; //TODO TURN ON
+        if (caseId == null) return;//
+        if (!commentsIds.isEmpty()) {
+            caseCommentDAO.removeByCondition( "CASE_ID=?", caseId );
+            commentsIds.clear();
+        }
+        caseObjectDAO.removeByKey( caseId );
+        personDAO.remove( person );
+        companyDAO.removeByKey( person.getCompanyId() );
+
+        caseId = null;
     }
 
-    private CaseObject makeCaseObject(Person person) {
-        return checkResultAndGetData(
-                caseService.saveCaseObject(TEST_AUTH_TOKEN, createNewCaseObject(person), person)
-        );
-    }
-
-    public static Person createNewPerson(Company company) {
-        Person person = new Person();
-        person.setCreated(new Date());
-        person.setCreator("TEST");
-        person.setCompanyId(company.getId());
-        person.setDisplayName("Test_Person");
-        person.setGender(En_Gender.MALE);
-        return person;
-    }
-
-
-    public static Company createNewCompany(CompanyCategory category) {
-        Company company = new Company();
-        company.setCname("Test_Company");
-        company.setCategory(category);
-        return company;
-    }
-
-    private Company makeCompany(CompanyCategory category) {
-        Company company = createNewCompany(category);
-        company.setId(companyDAO.persist(company));
-        return company;
-    }
-
-    public static void checkResult(CoreResponse result) {
-        assertNotNull("Expected result", result);
-        assertTrue("Expected ok result", result.isOk());
-    }
-
-    public static <T> T checkResultAndGetData(CoreResponse<T> result) {
-        checkResult(result);
-        return result.getData();
-    }
-
-    long MINUTE = 1L;
+    public static final String PRODUCT_NAME = "TestProduct";
+    private static final Long CREATED = 1L;
+    private static final Long OPENED = 2L;
+    private static final Long DONE = 17L;
 }
