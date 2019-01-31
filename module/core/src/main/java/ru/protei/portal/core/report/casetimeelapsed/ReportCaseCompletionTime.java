@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 
 import java.io.ByteArrayOutputStream;
@@ -17,81 +18,170 @@ public class ReportCaseCompletionTime {
         this.report = report;
         this.caseCommentDAO = caseCommentDAO;
         caseQuery = report.getCaseQuery();
-
-    }
-
-    public void run() {
-        List<CaseComment> list = caseCommentDAO.reportCaseCompletionTime(
-                caseQuery.getProductIds().get( 0 ) ,
-                caseQuery.getFrom(),
-                caseQuery.getTo(),
-                caseQuery.getStateIds()
-        );
-
-        for (CaseComment comment : list) {
-            Case aCase = map.get( comment.getCaseId() );
-            if (aCase == null) {
-                aCase = new Case();
-                map.put( comment.getCaseId(), aCase );
-                cases.add( aCase);
-            }
-            mapCase( aCase, comment );
-        }
-
-        int stop = 0;
     }
 
     public boolean writeReport( ByteArrayOutputStream buffer ) {
         return false;
     }
 
+    public void run() {
+
+        intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
+
+        if (CollectionUtils.size( intervals ) > 100) {
+            //TODO splitе requests
+        }
+
+        List<CaseComment> comments = caseCommentDAO.reportCaseCompletionTime(
+                caseQuery.getProductIds().get( 0 ),
+                caseQuery.getFrom(),
+                caseQuery.getTo(),
+                caseQuery.getStateIds()
+        );
+
+        cases = groupBayIssues( comments );
+
+        Set<Integer> ignoredStates = new HashSet<Integer>( caseQuery.getStateIds() );
+        for (Interval interval : intervals) {
+            interval.fill( cases, ignoredStates );
+        }
+
+
+        int stop = 0;
+    }
+
     public List<Case> getCases() {
         return cases;
     }
 
-    private Case mapCase( Case aCase, CaseComment comment ) {
-        aCase.add( comment.getCreated(), comment.getCaseStateId() );
+    public static List<Interval> makeIntervals( Date fromdate, Date toDate, long step ) {
+//        long from = fromdate.getTime() - fromdate.getTime() % step; //Timezone
+//        long deltaTo = toDate.getTime() % step;
+//        long to = toDate.getTime() - deltaTo + step;
+
+        long from = fromdate.getTime();
+        long to = toDate.getTime();
+        ArrayList<Interval> intervals = new ArrayList<Interval>();
+        for (; from < to; from = from + step) {
+            intervals.add( new Interval( from, from + step ) );
+        }
+
+        return intervals;
+    }
+
+    public static List<Case> groupBayIssues( List<CaseComment> comments ) {
+        List<Case> cases = new ArrayList<>();
+        Map<Long, Case> map = new HashMap<>();
+        for (CaseComment comment : comments) {
+            Case aCase = map.get( comment.getCaseId() );
+            if (aCase == null) {
+                aCase = new Case();
+                map.put( comment.getCaseId(), aCase );
+                cases.add( aCase );
+            }
+            mapCase( aCase, comment );
+        }
+        return cases;
+    }
+
+    public List<Interval> getIntervals() {
+        return intervals;
+
+    }
+
+    private static Case mapCase( Case aCase, CaseComment comment ) {
+        aCase.add( comment.getCreated(), comment.getCaseStateId().intValue() );
         aCase.caseId = comment.getCaseId();//TODO DEBUG
         return aCase;
     }
 
-    Map<Long, Case> map = new HashMap<>();
-    List<Case> cases = new ArrayList<>();//TODO DEBUG
 
+    List<Case> cases = new ArrayList<>();//TODO DEBUG
+    List<Interval> intervals;
+    public static final long SEC = 1000L;
+    public static final long MINUTE = 60 * SEC;
+    public static final long HOUR = 60 * MINUTE;
+    public static final long DAY = 24 * HOUR;
     private Report report;
     private CaseCommentDAO caseCommentDAO;
     private CaseQuery caseQuery;
     private static Logger log = LoggerFactory.getLogger( ReportCaseCompletionTime.class );
 
-    public class Case {
-        public Long caseId;//TODO DEBUG
-        Status lastStatus;
+    public static class Interval {
 
-        public void add( Date created, Long caseStateId ) {
-            if (lastStatus != null) {
-                lastStatus.setStop( created );
+        public Interval( long from, long to ) {
+            this.from = from;
+            this.to = to;
+        }
+
+        public void fill( List<Case> cases, Set<Integer> ignoredStates ) {
+            for (Case aCase : cases) {
+                long time = aCase.getTime( this, ignoredStates );
+                if (time <= 0) {
+                    continue;
+                }
+                casesCount++;
+                summTime += time;
+                if (time < minTime || minTime == 0) minTime = time;
+                if (time > maxTime || maxTime == 0) maxTime = time;
             }
-            lastStatus = new Status( created, caseStateId );
+        }
+
+        public long from;
+
+        public long to;
+
+        public int casesCount;
+        public long summTime;
+        public long maxTime;
+        public long minTime;
+    }
+
+    public static class Case {
+        public long getTime( Interval interval, Set<Integer> ignoredStateIds ) {
+            long time = 0;
+            for (Status status : statuses) {
+                if (ignoredStateIds.contains( status.caseStateId )) continue;
+                if (status.to != null && status.to < interval.from) continue;
+                if (interval.to < status.from) continue;
+
+                long delta = interval.to - interval.from;
+                if (status.from > interval.from) delta = delta - (interval.from - status.from);
+                if (status.to != null && status.to < interval.to) delta = delta - (interval.to - status.to);
+
+                time = time + delta;
+            }
+
+            log.warn( "getTime(): " + time );//TODO NotImplemented
+            return time;
+        }
+
+        public void add( Date created, int caseStateId ) {
+            if (lastStatus != null) {
+                lastStatus.setStop( created.getTime() );
+            }
+            lastStatus = new Status( created.getTime(), caseStateId );
             statuses.add( lastStatus );
         }
 
-      public  List<Status> statuses = new ArrayList<>();
+        public Long caseId;//TODO DEBUG
+        public List<Status> statuses = new ArrayList<>();
+        Status lastStatus;
     }
 
-    class Status {
+    static class Status {
 
-        public Status( Date created, Long caseStateId ) {
-            this.created = created;
+        public Status( Long created, int caseStateId ) {
+            this.from = created;
             this.caseStateId = caseStateId;
         }
 
-        public void setStop( Date stop ) {
-            this.stop = stop;
+        public void setStop( Long stop ) {
+            this.to = stop;
         }
 
-        private Date stop;
-        private Date created;
-        private Long caseStateId;
+        Long to;
+        long from;
+        int caseStateId;
     }
-
 }

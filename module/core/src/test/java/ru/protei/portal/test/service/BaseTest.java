@@ -79,13 +79,17 @@ public class BaseTest {
         return company;
     }
 
-
     protected static CaseComment createNewComment( Person person, Long caseObjectId, String text ) {
+        return createNewComment( person, caseObjectId, text, null );
+    }
+
+    protected static CaseComment createNewComment( Person person, Long caseObjectId, String text, Long caseStateId ) {
         CaseComment comment = new CaseComment( text );
         comment.setCreated( new Date() );
         comment.setCaseId( caseObjectId );
         comment.setAuthorId( person.getId() );
         comment.setText( text );
+        if (caseStateId != null) comment.setCaseStateId( caseStateId );
         comment.setCaseAttachments( Collections.emptyList() );
         return comment;
     }
