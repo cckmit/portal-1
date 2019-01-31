@@ -14,18 +14,21 @@ import ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import java.io.ByteArrayOutputStream;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertEquals;
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
 public class ReportTest extends BaseTest {
 
     Long productId;
-    Long caseId;
     Person person;
     Date date = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
     List<Long> commentsIds = new ArrayList<>();
+    List<Long> caseIds = new ArrayList<>();
 
     @Before
     public void beforeEachTest() {
@@ -50,48 +53,68 @@ public class ReportTest extends BaseTest {
         Company company = makeCompany( new CompanyCategory( 2L ) );
         person = makePerson( company );
 
+        //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+        //                                ^
+        Long caseId = makeCaseObject( person, productId, date );
+        CaseComment c1 = createNewComment( person, caseId, "One day" );
+        makeComment( c1, CREATED, addHours( date, 2 * DAY ) );              //2050-01-11 00:00:00
+        makeComment( c1, OPENED, addHours( c1.getCreated(), 2 ) );          //2050-01-11 02:00:00
+        makeComment( c1, DONE, addHours( c1.getCreated(), 4 ) );            //2050-01-11 06:00:00
+
+        //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+        //                          ^--------^---------- ^
+        Long caseId2 = makeCaseObject( person, productId, date );
+        CaseComment c2 = createNewComment( person, caseId2, "Week" );
+        makeComment( c2, CREATED, date );                                      //2050-01-09 00:00:00
+        makeComment( c2, OPENED, addHours( c2.getCreated(), 3 * DAY + 2 ) );   //2050-01-12 02:00:00
+        makeComment( c2, DONE, addHours( c2.getCreated(), 4 * DAY + 3 ) );     //2050-01-16 05:00:00
+
+        //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+        //                                      ^--------------^----------------^
+        Long caseId3 = makeCaseObject( person, productId, date );
+        CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
+        makeComment( c3, CREATED, addHours( date, 4 * DAY ) );                 //2050-01-13 00:00:00
+        makeComment( c3, OPENED, addHours( c3.getCreated(), 5 * DAY + 5 ) );   //2050-01-18 05:00:00
+        makeComment( c3, DONE, addHours( c3.getCreated(), 6 * DAY + 6 ) );     //2050-01-24 11:00:00
+
+    }
+
+    private Long makeCaseObject( Person person, Long productId, Date date ) {
         CaseObject caseObject = createNewCaseObject( person );
         caseObject.setProductId( productId );
         caseObject.setCreated( date );
-        caseId =  caseObjectDAO.insertCase( caseObject );
+        Long caseId = caseObjectDAO.insertCase( caseObject );
+        caseIds.add( caseId );
+        return caseId;
+    }
 
-        CaseComment comment1 = createNewComment( person, caseId, "Test_Comment" );
-        commentsIds.add( comment1.getId() );
-
-        comment1.setCaseStateId( CREATED );
-        comment1.setCreated( date );
+    private void makeComment( CaseComment comment1, Long status, Date created ) {
+        comment1.setCaseStateId( status );
+        comment1.setCreated( created );
         comment1.setId( null );
         commentsIds.add( caseCommentDAO.persist( comment1 ) );
-
-        comment1.setCaseStateId( OPENED );
-        comment1.setCreated( addHours( date, 1 ) );//Date.from( date.plus( 1, ChronoUnit.HOURS ) ) );
-        comment1.setId( null );
-        commentsIds.add( caseCommentDAO.persist( comment1 ) );
-
-        comment1.setCaseStateId( DONE );
-        comment1.setCreated( addHours( date, 2 ) );
-        comment1.setId( null );
-        commentsIds.add( caseCommentDAO.persist( comment1 ) );
-
-
     }
 
     @Test
     public void getCaseObjectsTest() throws Exception {
-        Report report = makeReport( productId ); //TODO add test product 18572L
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        Report report = makeReport( productId, date );
 
         ReportCaseCompletionTime caseComletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO );
-        caseComletionTimeReport.writeReport( buffer );
+        caseComletionTimeReport.run();
+
+        List<ReportCaseCompletionTime.Case> cases = caseComletionTimeReport.getCases();
+        assertEquals( caseIds.size(), size( cases ) );
+        assertEquals( commentsIds.size(), cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
+
     }
 
-    private Report makeReport( Long productId ) {
+    private Report makeReport( Long productId, Date date ) {
 
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setProductIds( Arrays.asList( productId ) );
         caseQuery.setStateIds( Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33 ) ); //TODO add test product
         caseQuery.setFrom( date );
-        caseQuery.setTo( addHours( date, 12 ) );
+        caseQuery.setTo( addHours( date, 10 * DAY ) );
 
         Report report = new Report();
         report.setReportType( En_ReportType.CASE_COMPLETION_TIME );
@@ -107,21 +130,23 @@ public class ReportTest extends BaseTest {
     }
 
     private void clean() {
-        if(true) return; //TODO TURN ON
-        if (caseId == null) return;//
+//        if (true) return; //TODO TURN ON
+        if (caseIds == null) return;//
         if (!commentsIds.isEmpty()) {
-            caseCommentDAO.removeByCondition( "CASE_ID=?", caseId );
+            String caseIdsString = caseIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+            caseCommentDAO.removeByCondition( "CASE_ID in (" + caseIdsString + ")" );
             commentsIds.clear();
         }
-        caseObjectDAO.removeByKey( caseId );
+        caseObjectDAO.removeByKeys( caseIds );
         personDAO.remove( person );
         companyDAO.removeByKey( person.getCompanyId() );
 
-        caseId = null;
+        caseIds = null;
     }
 
     public static final String PRODUCT_NAME = "TestProduct";
     private static final Long CREATED = 1L;
     private static final Long OPENED = 2L;
     private static final Long DONE = 17L;
+    int DAY = 24;
 }

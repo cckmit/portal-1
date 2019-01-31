@@ -20,14 +20,12 @@ public class ReportCaseCompletionTime {
 
     }
 
-    public boolean writeReport( ByteArrayOutputStream buffer ) {
-
+    public void run() {
         List<CaseComment> list = caseCommentDAO.reportCaseCompletionTime(
                 caseQuery.getProductIds().get( 0 ) ,
                 caseQuery.getFrom(),
-                caseQuery.getTo()
-
-
+                caseQuery.getTo(),
+                caseQuery.getStateIds()
         );
 
         for (CaseComment comment : list) {
@@ -40,7 +38,15 @@ public class ReportCaseCompletionTime {
             mapCase( aCase, comment );
         }
 
+        int stop = 0;
+    }
+
+    public boolean writeReport( ByteArrayOutputStream buffer ) {
         return false;
+    }
+
+    public List<Case> getCases() {
+        return cases;
     }
 
     private Case mapCase( Case aCase, CaseComment comment ) {
@@ -57,7 +63,7 @@ public class ReportCaseCompletionTime {
     private CaseQuery caseQuery;
     private static Logger log = LoggerFactory.getLogger( ReportCaseCompletionTime.class );
 
-    class Case {
+    public class Case {
         public Long caseId;//TODO DEBUG
         Status lastStatus;
 
@@ -69,7 +75,7 @@ public class ReportCaseCompletionTime {
             statuses.add( lastStatus );
         }
 
-        List<Status> statuses = new ArrayList<>();
+      public  List<Status> statuses = new ArrayList<>();
     }
 
     class Status {

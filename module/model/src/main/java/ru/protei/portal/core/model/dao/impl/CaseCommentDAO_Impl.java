@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 20.05.16.
@@ -50,27 +51,25 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<CaseComment> reportCaseCompletionTime( Long productId, Date from, Date to ) {
+    public List<CaseComment> reportCaseCompletionTime( Long productId, Date from, Date to, List<Integer> terminatedStates ) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
+        String terminates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
 
-
-        String query = "SELECT " +
-                "       ob.ID      caseID," +
+        String query = "SELECT ob.ID   caseID," +
                 "       cc.CSTATE_ID   csId," +
                 "       cc.CREATED ccCreated" +
                 " FROM case_comment cc" +
                 "       LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                "       JOIN dev_unit product on ob.product_id = product.id" +
-                " WHERE product.id = ?" +
+                " WHERE ob.product_id = ?" +
                 "  and ob.id not in (" +
                 "  SELECT DISTINCT cc.CASE_ID" +
                 "  FROM case_comment cc" +
                 "  WHERE " +
-                "(cc.CSTATE_ID in (3, 5, 7, 8, 9, 10, 17, 32, 33) and cc.CREATED < '" + fromTime + "') " +
-                "     or (cc.CSTATE_ID not in (3, 5, 7, 8, 9, 10, 17, 32, 33) and cc.CREATED > '" + toTime + "')" +
+                "(cc.CSTATE_ID in (" + terminates + ") and cc.CREATED < '" + fromTime + "') " +
+                "     or (cc.CSTATE_ID not in (" + terminates + ") and cc.CREATED > '" + toTime + "')" +
                 ")" +
-                "ORDER BY ccCreated ASC;";
+                " ORDER BY ccCreated ASC;";
         int stop = 0;
         try {
             return jdbcTemplate.query( query, rm, productId );
@@ -78,12 +77,6 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
             return null;
         }
     }
-
-//    reportCaseCompletionTimeQuerySelect +
-//            "(cc.CSTATE_ID in (3, 5, 7, 8, 9, 10, 17, 32, 33) and cc.CREATED < '" + fromTime + "') " +
-//            "     or (cc.CSTATE_ID not in (3, 5, 7, 8, 9, 10, 17, 32, 33) and cc.CREATED > '" + toTime + "')" +
-//            ")" +
-//            "ORDER BY ccCreated ASC;"
 
     RowMapper<CaseComment> rm = new RowMapper<CaseComment>() {
         @Override
@@ -97,47 +90,6 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
             return comment;
         }
     };
-
-    private static final String reportCaseCompletionTimeQuerySelect =
-            "SELECT " +
-                    "       ob.ID      caseID," +
-                    "       cc.CSTATE_ID   csId," +
-                    "       cc.CREATED ccCreated" +
-                    " FROM case_comment cc" +
-                    "       LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                    "       JOIN dev_unit product on ob.product_id = product.id" +
-                    " WHERE product.id = ?" +
-                    "  and ob.id not in (" +
-                    "  SELECT DISTINCT cc.CASE_ID" +
-                    "  FROM case_comment cc" +
-                    "  WHERE ";
-
-
-    private static final String reportCaseCompletionTimeQuery =
-            "SELECT " +
-//                    "product.UNIT_NAME," +
-//            "       ob.product_id," +
-                    "       ob.ID      caseID," +
-//            "       ob.CASE_NAME," +
-                    "       cc.CSTATE_ID   csId," +
-//            "       state.state," +
-//            "       cc.id      case_comment_id," +
-//            "       ob.CREATED obCreated," +
-                    "       cc.CREATED ccCreated" +
-//            "     ,  COMMENT_TEXT" +
-                    " FROM case_comment cc" +
-                    "       LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                    "       JOIN dev_unit product on ob.product_id = product.id" +
-//            "       JOIN case_state state on cc.CSTATE_ID = state.ID" +
-                    " WHERE product.id = ?" +
-                    "  and ob.id not in (" +
-                    "  SELECT DISTINCT cc.CASE_ID" +
-                    "  FROM case_comment cc" +
-                    "  WHERE (cc.CSTATE_ID in (3, 5, 7, 8, 9, 10, 17, 32, 33) and cc.CREATED < '2017-05-24 10:00:00') " +
-                    "     or (cc.CSTATE_ID not in (3, 5, 7, 8, 9, 10, 17, 32, 33) and cc.CREATED > '2017-05-24 18:00:00')" +
-                    ")" +
-                    "ORDER BY ccCreated ASC;";
-
 
 
 }
