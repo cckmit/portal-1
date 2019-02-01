@@ -58,7 +58,7 @@ public class ReportTest extends BaseTest {
         //                                ^
         Long caseId = makeCaseObject( person, productId, date );
         CaseComment c1 = createNewComment( person, caseId, "One day" );
-        makeComment( c1, CREATED, addHours( date, 2 * DAYS ) );              //2050-01-11 00:00:00
+        makeComment( c1, CREATED, addHours( date, 2 * H_DAY ) );              //2050-01-11 00:00:00
         makeComment( c1, OPENED, addHours( c1.getCreated(), 2 ) );          //2050-01-11 02:00:00
         makeComment( c1, DONE, addHours( c1.getCreated(), 4 ) );            //2050-01-11 06:00:00
 
@@ -67,16 +67,16 @@ public class ReportTest extends BaseTest {
         Long caseId2 = makeCaseObject( person, productId, date );
         CaseComment c2 = createNewComment( person, caseId2, "Week" );
         makeComment( c2, CREATED, date );                                      //2050-01-09 00:00:00
-        makeComment( c2, OPENED, addHours( c2.getCreated(), 3 * DAYS + 2 ) );   //2050-01-12 02:00:00
-        makeComment( c2, DONE, addHours( c2.getCreated(), 4 * DAYS + 3 ) );     //2050-01-16 05:00:00
+        makeComment( c2, OPENED, addHours( c2.getCreated(), 3 * H_DAY + 2 ) );   //2050-01-12 02:00:00
+        makeComment( c2, DONE, addHours( c2.getCreated(), 4 * H_DAY + 3 ) );     //2050-01-16 05:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                                      ^--------------^----------------^
         Long caseId3 = makeCaseObject( person, productId, date );
         CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
-        makeComment( c3, CREATED, addHours( date, 4 * DAYS ) );                 //2050-01-13 00:00:00
-        makeComment( c3, OPENED, addHours( c3.getCreated(), 5 * DAYS + 5 ) );   //2050-01-18 05:00:00
-        makeComment( c3, DONE, addHours( c3.getCreated(), 6 * DAYS + 6 ) );     //2050-01-24 11:00:00
+        makeComment( c3, CREATED, addHours( date, 4 * H_DAY ) );                 //2050-01-13 00:00:00
+        makeComment( c3, OPENED, addHours( c3.getCreated(), 5 * H_DAY + 5 ) );   //2050-01-18 05:00:00
+        makeComment( c3, DONE, addHours( c3.getCreated(), 6 * H_DAY + 6 ) );     //2050-01-24 11:00:00
 
     }
 
@@ -90,10 +90,15 @@ public class ReportTest extends BaseTest {
     }
 
     private void makeComment( CaseComment comment1, Long status, Date created ) {
-        comment1.setCaseStateId( status );
-        comment1.setCreated( created );
+        comment1 = fillComment( comment1, status, created );
         comment1.setId( null );
         commentsIds.add( caseCommentDAO.persist( comment1 ) );
+    }
+
+    private CaseComment fillComment( CaseComment comment1, Long status, Date created ) {
+        comment1.setCreated( created );
+        comment1.setCaseStateId( status );
+        return comment1;
     }
 
     @Test
@@ -101,7 +106,7 @@ public class ReportTest extends BaseTest {
         int numberOfDays = 12;
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                          ^----------------------------------^
-        Report report = createReport( productId, date, addHours( date, numberOfDays * DAYS ) );
+        Report report = createReport( productId, date, addHours( date, numberOfDays * H_DAY ) );
 
         ReportCaseCompletionTime caseCompletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO );
         caseCompletionTimeReport.run();
@@ -130,7 +135,7 @@ public class ReportTest extends BaseTest {
     private Report createReport( Long productId, Date from, Date to ) {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setProductIds( Arrays.asList( productId ) );
-        caseQuery.setStateIds( Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33 ) ); //TODO add test product
+        caseQuery.setStateIds( ignoredStates ); //TODO add test product
 
 
         caseQuery.setFrom( from );
@@ -167,10 +172,48 @@ public class ReportTest extends BaseTest {
     @Test
     public void intervalsTest() {
         int numberOfDays = 12;
-        List<ReportCaseCompletionTime.Interval> intervals = ReportCaseCompletionTime.makeIntervals( date, addHours( date, numberOfDays * DAYS ), DAY );
+        List<ReportCaseCompletionTime.Interval> intervals = ReportCaseCompletionTime.makeIntervals( date, addHours( date, numberOfDays * H_DAY ), DAY );
         assertEquals( numberOfDays, intervals.size() );
         assertEquals( date.getTime(), intervals.get( 0 ).from );
+        assertEquals( addHours( date, 1 * H_DAY ).getTime(), intervals.get( 0 ).to );
     }
+
+    @Test
+    public void caseInIntervalTest() {
+        int numberOfDays = 12;
+        List<ReportCaseCompletionTime.Interval> intervals = ReportCaseCompletionTime.makeIntervals( date, addHours( date, numberOfDays * H_DAY ), DAY );
+
+        List<CaseComment> comments = new ArrayList<>();
+        //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|12|
+        //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+        //                            ^--^--^--^
+        //                               ^-----^-----^
+        comments.add( fillComment( createNewComment( person, 1L, "1 case 1 comment" ), CREATED, addHours( date, 1 * H_DAY ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case 2 comment" ), OPENED, addHours( date, 2 * H_DAY ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case 3 comment" ), DONE, addHours( date, 3 * H_DAY ) ) );
+
+        comments.add( fillComment( createNewComment( person, 2L, "2 case 1 comment" ), CREATED, addHours( date, 2 * H_DAY ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case 2 comment" ), CREATED, addHours( date, 4 * H_DAY ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case 3 comment" ), CREATED, addHours( date, 6 * H_DAY ) ) );
+
+        List<ReportCaseCompletionTime.Case> cases = ReportCaseCompletionTime.groupBayIssues( comments );
+
+        for (ReportCaseCompletionTime.Interval interval : intervals) {
+            interval.fill( cases, new HashSet<>( ignoredStates ) );
+        }
+
+        assertEquals( 0, intervals.get(0).summTime );
+        assertEquals( 1*DAY, intervals.get(1).summTime );
+        assertEquals( 2*DAY, intervals.get(2).summTime );
+        assertEquals( 2*DAY, intervals.get(3).summTime );
+        assertEquals( 1*DAY, intervals.get(4).summTime );
+        assertEquals( 1*DAY, intervals.get(5).summTime );
+        assertEquals( 0, intervals.get(6).summTime );
+
+        int stop = 0;
+
+    }
+
 
     @Test
     public void casesGroupingTest() {
@@ -195,5 +238,6 @@ public class ReportTest extends BaseTest {
     private static final Long CREATED = 1L;
     private static final Long OPENED = 2L;
     private static final Long DONE = 17L;
-    int DAYS = 24;
+    int H_DAY = 24;
+    List<Integer> ignoredStates = Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33 );
 }

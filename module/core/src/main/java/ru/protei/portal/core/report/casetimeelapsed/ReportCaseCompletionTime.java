@@ -135,6 +135,18 @@ public class ReportCaseCompletionTime {
         public long summTime;
         public long maxTime;
         public long minTime;
+
+        @Override
+        public String toString() {
+            return "Interval{" +
+                    "from=" + new Date(from) +
+                    ", to=" + new Date(to) +
+                    ", casesCount=" + casesCount +
+                    ", summTime=" + summTime +
+                    ", maxTime=" + maxTime +
+                    ", minTime=" + minTime +
+                    '}';
+        }
     }
 
     public static class Case {
@@ -143,7 +155,7 @@ public class ReportCaseCompletionTime {
             for (Status status : statuses) {
                 if (ignoredStateIds.contains( status.caseStateId )) continue;
                 if (status.to != null && status.to < interval.from) continue;
-                if (interval.to < status.from) continue;
+                if (interval.to <= status.from) continue;//исключить пересечение по концу интервала
 
                 long delta = interval.to - interval.from;
                 if (status.from > interval.from) delta = delta - (interval.from - status.from);
@@ -183,5 +195,14 @@ public class ReportCaseCompletionTime {
         Long to;
         long from;
         int caseStateId;
+
+        @Override
+        public String toString() {
+            return "Status{" +
+                    "from=" + new Date(from) +
+                    ", to=" + (to==null?"null":new Date(to)) +
+                    ", caseStateId=" + caseStateId +
+                    '}';
+        }
     }
 }
