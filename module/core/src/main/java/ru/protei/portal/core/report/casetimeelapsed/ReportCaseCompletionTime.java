@@ -125,6 +125,7 @@ public class ReportCaseCompletionTime {
                 if (time < minTime || minTime == 0) minTime = time;
                 if (time > maxTime || maxTime == 0) maxTime = time;
             }
+            int stop = 0;
         }
 
         public long from;
@@ -153,15 +154,35 @@ public class ReportCaseCompletionTime {
         public long getTime( Interval interval, Set<Integer> ignoredStateIds ) {
             long time = 0;
             for (Status status : statuses) {
+                // Чтобы определить являтся ли задача активной на данном интервале?
+                // нужно найти активный статус попадающий в интервал
                 if (ignoredStateIds.contains( status.caseStateId )) continue;
-                if (status.to != null && status.to < interval.from) continue;
+                // статусы после интервала не нужны
                 if (interval.to <= status.from) continue;//исключить пересечение по концу интервала
 
-                long delta = interval.to - interval.from;
-                if (status.from > interval.from) delta = delta - (interval.from - status.from);
-                if (status.to != null && status.to < interval.to) delta = delta - (interval.to - status.to);
+                // статусы до интервала суммируем
+                if (status.to != null && status.to <= interval.from){
+                    time += status.to - status.from;
+                }
+   //TODO далее...
 
-                time = time + delta;
+                // еcли есть активнй статус в этом интервале
+                // следует посчитать суммарное время всех активных статусов
+                // лежащих до окончания интервала не зависимо от начала интервала
+
+                if (status.to == null || interval.to < status.to)
+                    time += interval.to - status.from;
+                else
+                    time += status.to - status.from;
+
+//
+//                long delta = interval.to - interval.from;
+//                if (status.from > interval.from) delta = delta - (interval.from - status.from);
+//                if (status.to != null && status.to < interval.to) delta = delta - (interval.to - status.to);
+//                long delta = status.to - status.from;
+//                time = time + delta;
+
+
             }
 
             log.warn( "getTime(): " + time );//TODO NotImplemented
