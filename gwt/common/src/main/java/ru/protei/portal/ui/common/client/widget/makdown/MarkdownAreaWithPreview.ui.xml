@@ -8,7 +8,7 @@
         <autoresizetextarea:AutoResizeTextArea
                 ui:field="text"
                 styleName="input-field form-group message-input resize-vertical"
-                minRows="5" maxRows="20"/>
+                maxRows="20"/>
 
         <g:HTMLPanel ui:field="previewContainer" styleName="message-preview">
             <div class="message-preview-label"><ui:text from='{lang.markdownPreview}'/></div>

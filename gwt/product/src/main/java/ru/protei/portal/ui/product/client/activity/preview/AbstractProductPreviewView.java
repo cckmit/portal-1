@@ -13,6 +13,15 @@ public interface AbstractProductPreviewView extends IsWidget {
     void setActivity( AbstractProductPreviewActivity activity );
     void watchForScroll(boolean isWatch);
     void setInfo( String value );
+
+    void setWikiLink(String value);
+
+    void setConfiguration(String value);
+
+    void setHistoryVersion(String value);
+
+    void setCdrDescription(String value);
+
     Widget asWidget(boolean isForTableView);
 
 }

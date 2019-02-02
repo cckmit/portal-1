@@ -24,7 +24,7 @@ public class MarkdownAreaWithPreview
 
     @Override
     public String getValue() {
-        return null;
+        return text.getValue();
     }
 
     @Override
@@ -35,6 +35,7 @@ public class MarkdownAreaWithPreview
     @Override
     public void setValue(String value, boolean fireEvent) {
         text.setValue(value);
+        previewChanged();
         if ( fireEvent ) {
             ValueChangeEvent.fire(this, text.getValue());
         }
@@ -57,7 +58,7 @@ public class MarkdownAreaWithPreview
         changedPreviewTimer.schedule(PREVIEW_CHANGE_DELAY_MS);
     }
 
-    private void fireChangedPreview() {
+    private void previewChanged() {
         String value = text.getValue();
         if (StringUtils.isNotBlank(value)) {
             value = markdownClient.plain2escaped2markdown(value);
@@ -82,7 +83,7 @@ public class MarkdownAreaWithPreview
     private final Timer changedPreviewTimer = new Timer() {
         @Override
         public void run() {
-            fireChangedPreview();
+            previewChanged();
         }
     };
 
