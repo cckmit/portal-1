@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 
 import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
@@ -99,7 +100,27 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public HasVisibility state() { return stateBtn; }
 
     @Override
-    public HasEnabled save() { return saveBtn; }
+    public HasValue<String> wikiLink() {
+        return wikiLink;
+    }
+
+    @Override
+    public HasValue<String> historyVersion() {
+        return historyVersion;
+    }
+
+    @Override
+    public HasValue<String> configuration() {
+        return configuration;
+    }
+
+    @Override
+    public HasValue<String> cdrDescription() {
+        return cdrDescription;
+    }
+
+    @Override
+    public HasEnabled saveEnabled() { return saveBtn; }
 
     @Override
     public void setNameStatus (NameStatus status)
@@ -203,6 +224,14 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Inject
     @UiField( provided = true )
     SubscriptionList subscriptions;
+    @UiField
+    MarkdownAreaWithPreview historyVersion;
+    @UiField
+    MarkdownAreaWithPreview configuration;
+    @UiField
+    MarkdownAreaWithPreview cdrDescription;
+    @UiField
+    TextBox wikiLink;
 
 
     AbstractProductEditActivity activity;

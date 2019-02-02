@@ -1445,5 +1445,18 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeWithoutManager();
 
     String commentPreview();
+
     String companyParentCompany();
+
+    String productSubscription();
+
+    String productWikiLink();
+
+    String productCDRDescription();
+
+    String productHistoryVersion();
+
+    String productConfiguration();
+
+    String markdownPreview();
 }
