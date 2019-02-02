@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <autoresizetextarea:AutoResizeTextArea
+                ui:field="text"
+                styleName="input-field form-group message-input resize-vertical"
+                minRows="5" maxRows="20"/>
+
+        <g:HTMLPanel ui:field="previewContainer" styleName="message-preview">
+            <div class="message-preview-label"><ui:text from='{lang.markdownPreview}'/></div>
+            <div ui:field="preview" class="message-preview-content markdown"/>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+
+</ui:UiBinder>
