@@ -7,7 +7,7 @@
 
     <g:HTMLPanel ui:field="root" styleName="panel">
         <div class="body">
-            <div class="grid grid-indent">
+            <div class="row">
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderServerName}"/></label>
                     <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>

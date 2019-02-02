@@ -1,26 +1,25 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel ui:field="root">
         <div class="col-md-6">
             <div class="dn-add-button">
-            <g:Button ui:field="addPamr" styleName="btn btn-primary">
-                <ui:text from="{lang.buttonAddPamr}"/>
-            </g:Button>
+                <g:Button ui:field="addPamr" styleName="btn btn-xs btn-info">
+                    <ui:text from="{lang.buttonAddPamr}"/>
+                </g:Button>
             </div>
-            <g:HTMLPanel ui:field="pamrList"></g:HTMLPanel>
+            <g:HTMLPanel ui:field="pamrList"/>
         </div>
 
         <div class="col-md-6">
             <div class="dn-add-button">
-            <g:Button ui:field="addPdra" styleName="btn btn-primary">
-                <ui:text from="{lang.buttonAddPdra}"/>
-            </g:Button>
+                <g:Button ui:field="addPdra" styleName="btn btn-xs btn-info">
+                    <ui:text from="{lang.buttonAddPdra}"/>
+                </g:Button>
             </div>
-            <g:HTMLPanel ui:field="pdraList">
-            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="pdraList"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

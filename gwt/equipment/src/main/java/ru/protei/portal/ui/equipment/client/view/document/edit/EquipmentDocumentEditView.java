@@ -121,10 +121,10 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     @Override
     public void setApprovedMode(boolean off) {
         if (off) {
-            nameContainer.setStyleName("form-group col-xs-6");
+            nameContainer.setStyleName("form-group col-md-6");
             documentUploaderContainer.setVisible(true);
         } else {
-            nameContainer.setStyleName("form-group col-xs-9");
+            nameContainer.setStyleName("form-group col-md-9");
             documentUploaderContainer.setVisible(false);
         }
     }

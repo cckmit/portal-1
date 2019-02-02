@@ -35,11 +35,11 @@
                             <validatefield:ValidableTextBox ui:field="nameSldWrks" styleName="form-control"
                                                             notNull="false"/>
                         </div>
-                        <div class="form-group col-md-6 eq-type-details">
+                        <div class="form-group col-md-4 eq-type-details">
                             <type:EquipmentTypeBtnGroup ui:field="type"/>
                         </div>
 
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-8">
                             <label>
                                 <ui:text from="{lang.equipmentPrimaryUse}"/>
                             </label>
@@ -88,12 +88,7 @@
                     </div>
                 </div>
                 <div class="card-block">
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            <list:MultipleDecimalNumberInput ui:field="numbers"/>
-                        </div>
-
-                    </div>
+                    <list:MultipleDecimalNumberInput ui:field="numbers" styleName="row"/>
                 </div>
             </div>
         </div>

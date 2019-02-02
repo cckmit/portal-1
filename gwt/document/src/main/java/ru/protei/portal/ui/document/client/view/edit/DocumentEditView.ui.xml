@@ -19,7 +19,7 @@
                     <ui:text from="{lang.documentCommonHeader}"/>
                     <small ui:field="created" class="pull-right document-creator-info"/>
                 </legend>
-                <div class="grid grid-indent">
+                <div class="row">
                     <g:HTMLPanel styleName="form-group col-md-6" ui:field="nameContainer">
                         <label>
                             <ui:text from="{lang.documentName}"/>
@@ -97,7 +97,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-indent">
+                <div class="row">
 
                     <g:HTMLPanel styleName="form-group col-md-3" ui:field="inventoryNumberContainer">
                         <label>
@@ -118,7 +118,7 @@
                 <legend class="header">
                     <ui:text from="{lang.annotation}"/>
                 </legend>
-                <div class="grid grid-indent">
+                <div class="row">
                     <div class="form-group col-md-12">
                         <g:TextArea ui:field="annotation" styleName="form-control comment"/>
                     </div>
@@ -127,7 +127,7 @@
                 <legend class="header">
                     <ui:text from="{lang.documentKeywords}"/>
                 </legend>
-                <div class="grid grid-indent">
+                <div class="row">
                     <div class="form-group col-md-12">
                         <keyword:StringSelectInput ui:field="keywords"/>
                     </div>

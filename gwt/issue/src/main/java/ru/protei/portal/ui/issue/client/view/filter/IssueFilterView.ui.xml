@@ -30,8 +30,8 @@
                     <label class="bold">
                         <ui:text from="{lang.issueFilterName}"/>
                     </label>
-                    <div class="col-xs-12 form-group">
-                        <g:TextBox ui:field="filterName" styleName="input-field"/>
+                    <div class="col-md-12 form-group">
+                        <g:TextBox ui:field="filterName" styleName="form-control"/>
                         <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
                             <span class="fa fa-check"/>
                         </g:Anchor>

@@ -78,16 +78,16 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     public void hideElements() {
         filterContainer.setVisible( false );
         //hideColumn.setVisibility( false );
-        tableContainer.removeStyleName( "col-xs-9" );
-        tableContainer.addStyleName( "col-xs-12" );
+        tableContainer.removeStyleName( "col-md-9" );
+        tableContainer.addStyleName( "col-md-12" );
     }
 
     @Override
     public void showElements() {
         filterContainer.setVisible( true );
         //hideColumn.setVisibility( true );
-        tableContainer.removeStyleName( "col-xs-12" );
-        tableContainer.addStyleName( "col-xs-9" );
+        tableContainer.removeStyleName( "col-md-12" );
+        tableContainer.addStyleName( "col-md-9" );
     }
 
     @Override

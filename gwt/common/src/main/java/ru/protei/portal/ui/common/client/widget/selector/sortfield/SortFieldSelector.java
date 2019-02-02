@@ -78,8 +78,8 @@ public class SortFieldSelector extends ButtonSelector< En_SortField > {
         }
     }
 
-    private ModuleType type;
-
     @Inject
     private En_SortFieldLang sortFieldLang;
+
+    private ModuleType type;
 }

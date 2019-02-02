@@ -9,8 +9,8 @@
     <g:HTMLPanel styleName="dn col-md-12 m-b-15">
         <div class="dn-container" ui:field="container">
             <g:ToggleButton ui:field="isReserve" styleName="btn dn-reserve" title="{lang.equipmentReserve}"/>
-            <label class="dn-separator"></label>
-            <org:OrganizationButtonSelector ui:field="organizationCode" styleName="form-control" enabled="false"/>
+            <label class="dn-separator"/>
+            <org:OrganizationButtonSelector ui:field="organizationCode" enabled="false"/>
             <label class="dn-separator">.</label>
             <mask:MaskedTextBox ui:field="classifierCode" styleName="form-control dn-classifier-code" mask="999999"/>
             <label class="dn-separator">.</label>
@@ -20,18 +20,18 @@
                 <mask:MaskedTextBox ui:field="regNumModification" styleName="form-control dn-register-number-modifier"
                                     mask="99"/>
                 <label ui:field="getNextModificationMessage" class="text text-info">
-                    <i class="fa fa-info-circle m-r-5 "></i>
-                    <ui:text from="{lang.equipmentGetNextModification}"></ui:text>
+                    <i class="fa fa-info-circle m-r-5 "/>
+                    <ui:text from="{lang.equipmentGetNextModification}"/>
                 </label>
             </div>
-            <label class="dn-separator"></label>
-            <g:Button ui:field="next" styleName="btn btn-white" title="{lang.formNextMod}">
-                <i class="fa fa-arrow-right"></i>
+            <label class="dn-separator"/>
+            <g:Button ui:field="next" styleName="btn btn-sm btn-white m-r-5" title="{lang.formNextMod}">
+                <i class="fa fa-arrow-right"/>
             </g:Button>
-            <g:Button ui:field="remove" styleName="btn btn-primary" title="{lang.equipmentRemove}">
+            <g:Button ui:field="remove" styleName="btn btn-sm btn-danger" title="{lang.equipmentRemove}">
                 <i class="fa fa-trash fa-lg"/>
             </g:Button>
-            <label class="dn-separator"></label>
+            <label class="dn-separator"/>
         </div>
 
         <small class="dn-msg">

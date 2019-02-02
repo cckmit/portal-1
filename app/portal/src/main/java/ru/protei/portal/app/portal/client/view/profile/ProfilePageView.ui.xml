@@ -18,7 +18,7 @@
                             <g:InlineLabel ui:field="name"/>
                             <small ui:field="company"/>
                         </h4>
-                        <div class="grid grid-indent">
+                        <div class="row ">
                             <div class="col-md-12">
                                 <h4 class="title">
                                     <ui:text from="{lang.companySubscription}"/>

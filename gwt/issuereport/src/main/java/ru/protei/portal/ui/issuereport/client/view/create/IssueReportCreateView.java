@@ -22,7 +22,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        issueFilterParamView.addBodyStyles("grid grid-indent");
+        issueFilterParamView.addBodyStyles("row");
     }
 
     @Override

@@ -21,18 +21,18 @@
 
         <g:HTMLPanel ui:field="body" styleName="body">
 
-            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
-            <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-xs-12 local-search-options-container">
+            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12 m-b-0"/>
+            <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-md-12 local-search-options-container">
                 <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
                 <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
             </g:HTMLPanel>
 
-            <div class="col-xs-12 resize-xs-6">
+            <div class="col-md-12 resize-md-6">
                 <label class="bold"><ui:text from="{lang.created}"/></label>
                 <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
 
-            <div class="form-group col-xs-12 resize-xs-6">
+            <div class="form-group col-md-12 resize-md-6">
                 <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
@@ -42,35 +42,35 @@
 
             <productselector:devunit.DevUnitMultiSelector ui:field="products"
                                                           header="{lang.issueProduct}"
-                                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+                                                          addStyleNames="form-group col-md-12 resize-md-6"/>
 
             <companyselector:CompanyMultiSelector ui:field="companies"
                                                   header="{lang.issueCompany}"
-                                                  addStyleNames="form-group col-xs-12 resize-xs-6"/>
+                                                  addStyleNames="form-group col-md-12 resize-md-6"/>
 
             <person:InitiatorMultiSelector ui:field="initiators"
                                            header="{lang.issueInitiator}"
-                                           addStyleNames="form-group col-xs-12 resize-xs-6"/>
+                                           addStyleNames="form-group col-md-12 resize-md-6"/>
 
             <person:EmployeeMultiSelector ui:field="managers"
                                           header="{lang.issueManager}"
-                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+                                          addStyleNames="form-group col-md-12 resize-md-6"/>
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.issueCommentAuthor}"
-                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+                                          addStyleNames="form-group col-md-12 resize-md-6"/>
 
-            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12 resize-xs-6">
+            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-12 resize-md-6">
                 <label><ui:text from="{lang.searchPrivate}"/></label>
                 <threestate:ThreeStateButton ui:field="searchPrivate"/>
             </g:HTMLPanel>
 
-            <div class="form-group col-xs-12 resize-xs-6">
+            <div class="form-group col-md-12 resize-md-6">
                 <label><ui:text from="{lang.issueImportance}"/></label>
                 <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.issueState}"/></label>
                 <optionlist:IssueStatesOptionList ui:field="state"/>
             </div>

@@ -8,7 +8,7 @@
     <g:HTMLPanel>
         <div class="panel panel-default">
             <div class="body">
-                <div class="grid grid-indent">
+                <div class="row">
                     <div class="form-group col-md-12 col-lg-6">
                         <regionselector:RegionButtonSelector ui:field="region" header="{lang.officialRegion}"/>
                     </div>

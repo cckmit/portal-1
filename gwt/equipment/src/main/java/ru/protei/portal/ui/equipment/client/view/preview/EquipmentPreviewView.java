@@ -97,7 +97,7 @@ public class EquipmentPreviewView extends Composite implements AbstractEquipment
     public void showFullScreen(boolean value) {
         fullScreen.setVisible( !value );
         if (value) {
-            preview.addStyleName("full-screen col-xs-12");
+            preview.addStyleName("full-screen col-md-12");
         } else {
             preview.setStyleName("preview");
         }

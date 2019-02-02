@@ -19,7 +19,7 @@ public class EmployeeRegistrationStateOptionList extends OptionList<En_CaseState
         clearOptions();
         states.forEach(state ->
                 addOption( lang.getStateName( state ), state,
-                        "form-group col-xs-4 option-" + state.toString().toLowerCase() ));
+                        "form-group col-md-4 option-" + state.toString().toLowerCase() ));
     }
 
     @Inject

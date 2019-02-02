@@ -1,6 +1,9 @@
-
+.gwt-PopupPanel {
+  z-index: 1050 !important;
+}
 
 .modal {
+  display: block;
   position: fixed;
   top: 0;
   right: 0;

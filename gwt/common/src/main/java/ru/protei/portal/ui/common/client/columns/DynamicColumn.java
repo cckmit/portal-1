@@ -17,16 +17,23 @@ public class DynamicColumn<T> extends ClickColumn<T>{
     }
     @Override
     protected void fillColumnHeader( Element columnHeader ) {
-        columnHeader.addClassName(className);
+        if ( className != null ) {
+            columnHeader.addClassName(className);
+        }
         columnHeader.setInnerText( headerName );
     }
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
-        cell.addClassName(className);
+        if ( className != null ) {
+            cell.addClassName(className);
+        }
 
         com.google.gwt.dom.client.Element divElement = DOM.createDiv();
-        divElement.setInnerHTML( valueGenerator.apply(value) );
+        String htmlVal = valueGenerator.apply(value);
+        if ( htmlVal != null ) {
+            divElement.setInnerHTML(htmlVal);
+        }
 
         cell.appendChild( divElement );
     }

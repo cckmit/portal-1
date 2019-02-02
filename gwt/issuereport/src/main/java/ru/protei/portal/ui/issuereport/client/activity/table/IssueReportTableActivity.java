@@ -45,7 +45,7 @@ public abstract class IssueReportTableActivity implements
         fireEvent(new AppEvents.InitPanelName(lang.issueReports()));
 
         fireEvent(new ActionBarEvents.Clear());
-        fireEvent(new ActionBarEvents.Add(CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE_REPORT));
+        fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE_REPORT));
 
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());

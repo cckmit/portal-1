@@ -18,7 +18,7 @@
     <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
 
         <div class="body">
-            <div class="grid grid-indent">
+            <div class="row">
 
                 <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-md-12 m-b-0">
                     <label ui:field="nameLabel"><ui:text from="{lang.issueName}"/></label>
@@ -30,7 +30,7 @@
                 </g:HTMLPanel>
                 <list:IssueLinks ui:field="links" styleName="form-group col-md-12 m-b-0"/>
             </div>
-            <div class="grid grid-indent">
+            <div class="row">
                 <div class="form-group col-md-6">
                     <label ui:field="stateLabel">
                         <ui:text from="{lang.issueState}"/>

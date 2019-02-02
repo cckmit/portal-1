@@ -498,7 +498,7 @@ label.bordered:after {
   margin: 0;
 }
 
-.input-field.required,
+.form-control.required,
 .btn.required {
   border: 1px solid $error_color !important;
 }
@@ -2271,7 +2271,7 @@ td.info {
     .dn-reserve.btn {
       padding: 0;
       min-width: 30px;
-      border-left: 0;
+      border: 0;
       height: 28px;
 
       &.btn-down:after,
@@ -2722,7 +2722,7 @@ div.select2-container {
   vertical-align: middle;
 }
 
-.input-field-col {
+.form-control-col {
   padding: 0 10px !important;
 }
 
@@ -2949,4 +2949,9 @@ div.select2-container {
     top: -11px !important;
     margin-left: -4px !important;
   }
+}
+
+
+label {
+  margin-bottom: 0.1rem !important;
 }
