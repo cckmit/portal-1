@@ -28,10 +28,6 @@ public class ReportCaseCompletionTime {
 
         intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
 
-        if (CollectionUtils.size( intervals ) > 100) {
-            //TODO splitе requests
-        }
-
         List<CaseComment> comments = caseCommentDAO.reportCaseCompletionTime(
                 caseQuery.getProductIds().get( 0 ),
                 caseQuery.getFrom(),
@@ -45,9 +41,6 @@ public class ReportCaseCompletionTime {
         for (Interval interval : intervals) {
             interval.fill( cases, ignoredStates );
         }
-
-
-        int stop = 0;
     }
 
     public List<Case> getCases() {
@@ -55,10 +48,6 @@ public class ReportCaseCompletionTime {
     }
 
     public static List<Interval> makeIntervals( Date fromdate, Date toDate, long step ) {
-//        long from = fromdate.getTime() - fromdate.getTime() % step; //Timezone
-//        long deltaTo = toDate.getTime() % step;
-//        long to = toDate.getTime() - deltaTo + step;
-
         long from = fromdate.getTime();
         long to = toDate.getTime();
         ArrayList<Interval> intervals = new ArrayList<Interval>();
@@ -154,11 +143,6 @@ public class ReportCaseCompletionTime {
     public static class Case {
         public long getTime( Interval interval, Set<Integer> ignoredStateIds ) {
 
-//            if (!hasCaseIntersection( interval, this )) {
-//                log.info( "getTime(): Сase ignored by no intersection {}", this );
-//                return 0;
-//            }
-
             log.info( "getTime(): Сase {}", this );
             boolean hasIntersectionOnActiveInterval = false;
             long activeTime = 0;
@@ -179,15 +163,8 @@ public class ReportCaseCompletionTime {
                 if (hasStatusIntersection( interval, status )) {// учитывает null - когда статус длится
                     hasIntersectionOnActiveInterval = true;
                 }
-//                    activeTime += calcIntersectionTime( interval, status );
-//                } else {
-//                    activeTime += status.to - status.from;
-//            }
 
-                if (status.to == null || interval.to < status.to)
-                    activeTime += interval.to - status.from;
-                else
-                    activeTime += status.to - status.from;
+                activeTime += calcStatusTime( interval, status );
 
 
                 log.warn( "getTime(): {} {} {}", activeTime, hasIntersectionOnActiveInterval, status );//TODO NotImplemented
@@ -201,69 +178,19 @@ public class ReportCaseCompletionTime {
 
             log.warn( "getTime(): Time: {} {}", activeTime, this );//TODO NotImplemented
             return activeTime;
-//
-//            long time = 0;
-//            for (Status status : statuses) {
-//                // Чтобы определить являтся ли задача активной на данном интервале?
-//                // нужно найти активный статус попадающий в интервал
-//                if (ignoredStateIds.contains( status.caseStateId )) previousStatus.to == null.;
-//                // статусы после интервала не нужны
-//                if (interval.to <= status.from) continue;//исключить пересечение по концу интервала
-//
-//                // статусы до интервала суммируем
-//                if (status.to != null && status.to <= interval.from) {
-//                    time += status.to - status.from;
-//                }
-//                //TODO далее...
-//
-//                // еcли есть активнй статус в этом интервале
-//                // следует посчитать суммарное время всех активных статусов
-//                // лежащих до окончания интервала не зависимо от начала интервала
-//
-//                if (status.to == null || interval.to < status.to)
-//                    time += interval.to - status.from;
-//                else
-//                    time += status.to - status.from;
-//
-//
-//            }
-//
-//            log.warn( "getTime(): " + time );//TODO NotImplemented
-//            return time;
+
         }
 
-//        private long calcIntersectionTime( Interval interval, Status status ) {
-//            return calcIntersectionTime( interval.from, interval.to, status.from, status.to );
-//        }
-
-        public static long calcIntersectionTime( long iFrom, long iTo, long sFrom, Long sTo ) {
-            // пересечение это разница между мешьшим максимумом и большим минимумом.
-            long max = 0, min = 0, intersection = 0;
-
-            if (sTo == null || iTo < sTo) {
-                max = iTo;
-            } else {
-                max = sTo;
-            }
-
-            if (iFrom < sFrom) {
-                min = sFrom;
-            } else {
-                min = iFrom;
-            }
-
-            intersection = max - min;
-            if (intersection < 0) return 0;
-            return intersection;
+        private long calcStatusTime( Interval interval, Status status ) {
+            return calcStatusTime( interval.to, status.from, status.to );
         }
 
-//        private boolean hasCaseIntersection( Interval interval, Case aCase ) {
-//            if (interval == null || aCase.previousStatus == null || aCase.statuses == null || aCase.statuses.isEmpty())
-//                return false;
-//
-//            //TODO  Учитываьт пересечение только по активному статусу !!!
-//            return hasIntersection( interval.from, interval.to, aCase.statuses.get( 0 ).from, aCase.previousStatus.to );
-//        }
+        public static long calcStatusTime( long iTo, long sFrom, Long sTo ) {
+            if (sTo == null || iTo < sTo)
+                return iTo - sFrom;
+            else
+                return sTo - sFrom;
+        }
 
         private boolean hasStatusIntersection( Interval interval, Status status ) {
             if (interval == null || status == null)

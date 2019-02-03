@@ -1,7 +1,6 @@
 package ru.protei.portal.test.service;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -35,15 +34,11 @@ public class ReportTest extends BaseTest {
     List<Long> commentsIds = new ArrayList<>();
     List<Long> caseIds = new ArrayList<>();
 
-//    @Before
-//    public void beforeEachTest() {
-//        init();
-//    }
-//
-//    @After
-//    public void afterEachTest() {
-//        clean();
-//    }
+
+    @After
+    public void afterEachTest() {
+        clean();
+    }
 
     private void init() {
         if (productId == null) {
@@ -59,28 +54,29 @@ public class ReportTest extends BaseTest {
         person = makePerson( company );
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                                ^
-        Long caseId = makeCaseObject( person, productId, date9 );
+        //                               ^x
+        Long caseId = makeCaseObject( person, productId, day( 9 ) );
         CaseComment c1 = createNewComment( person, caseId, "One day" );
-        makeComment( c1, CREATED, addHours( date9, 2 * H_DAY ) );              //2050-01-11 00:00:00
-        makeComment( c1, OPENED, addHours( c1.getCreated(), 2 ) );          //2050-01-11 02:00:00
-        makeComment( c1, DONE, addHours( c1.getCreated(), 4 ) );            //2050-01-11 06:00:00
+        makeComment( c1, CREATED, day( 11 ) );                              //2050-01-11 00:00:00
+        makeComment( c1, OPENED, addHours( day( 11 ), 2 ) );                //2050-01-11 02:00:00
+        makeComment( c1, DONE, addHours( day( 11 ), 6 ) );                  //2050-01-11 06:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                          ^--------^---------- ^
-        Long caseId2 = makeCaseObject( person, productId, date9 );
+        //                          ^-------^-----------^
+        Long caseId2 = makeCaseObject( person, productId, day( 9 ) );
         CaseComment c2 = createNewComment( person, caseId2, "Week" );
-        makeComment( c2, CREATED, date9 );                                      //2050-01-09 00:00:00
-        makeComment( c2, OPENED, addHours( c2.getCreated(), 3 * H_DAY + 2 ) );   //2050-01-12 02:00:00
-        makeComment( c2, DONE, addHours( c2.getCreated(), 4 * H_DAY + 3 ) );     //2050-01-16 05:00:00
+        makeComment( c2, CREATED, day( 9 ) );                               //2050-01-09 00:00:00
+        makeComment( c2, OPENED, addHours( day( 12 ), 2 ) );                //2050-01-12 02:00:00
+        makeComment( c2, DONE, addHours( day( 15 ), 5 ) );                  //2050-01-16 05:00:00
+        makeComment( c2, REOPENED, addHours( day( 17 ), 11 ) );
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                                      ^--------------^----------------^
-        Long caseId3 = makeCaseObject( person, productId, date9 );
+        //                                     ^--------------^----------------^
+        Long caseId3 = makeCaseObject( person, productId, day( 9 ) );
         CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
-        makeComment( c3, CREATED, addHours( date9, 4 * H_DAY ) );                 //2050-01-13 00:00:00
-        makeComment( c3, OPENED, addHours( c3.getCreated(), 5 * H_DAY + 5 ) );   //2050-01-18 05:00:00
-        makeComment( c3, DONE, addHours( c3.getCreated(), 6 * H_DAY + 6 ) );     //2050-01-24 11:00:00
+        makeComment( c3, CREATED, day( 13 ) );                              //2050-01-13 00:00:00
+        makeComment( c3, OPENED, addHours( day( 18 ), 5 ) );                //2050-01-18 05:00:00
+        makeComment( c3, DONE, addHours( day( 24 ), 11 ) );                  //2050-01-24 11:00:00
 
     }
 
@@ -89,33 +85,60 @@ public class ReportTest extends BaseTest {
         init();
 
         int numberOfDays = 12;
+        //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                          ^----------------------------------^
+        //                         |----------------------------------|
+        //                               ^x
+        //                          ^-------^-----------x  ^-------------------
+        //                                     ^--------------^----------------^
         Report report = createReport( productId, date9, addHours( date9, numberOfDays * H_DAY ) );
 
         ReportCaseCompletionTime caseCompletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO );
         caseCompletionTimeReport.run();
 
         List<Case> cases = caseCompletionTimeReport.getCases();
-        assertEquals( caseIds.size(), size( cases ) );
+        assertEquals( "grouping comments not worked", caseIds.size(), size( cases ) );
         assertEquals( commentsIds.size(), cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
 
         List<Interval> intervals = caseCompletionTimeReport.getIntervals();
         assertEquals( numberOfDays, intervals.size() );
 
-        int dayNumber = 0;
-        assertEquals( 1, intervals.get( dayNumber ).casesCount );
-        assertEquals( DAY, intervals.get( dayNumber ).minTime );
-        assertEquals( DAY, intervals.get( dayNumber ).maxTime );
-        assertEquals( DAY, intervals.get( dayNumber ).summTime );
+        assertEquals( 1, intervals.get( 0 ).casesCount );
+        assertEquals( DAY, intervals.get( 0 ).minTime );
+        assertEquals( DAY, intervals.get( 0 ).maxTime );
+        assertEquals( DAY, intervals.get( 0 ).summTime );
 
-        dayNumber = 1;
-        assertEquals( 1, intervals.get( dayNumber ).casesCount );
-        assertEquals( dayNumber * DAY, intervals.get( dayNumber ).minTime );
-        assertEquals( dayNumber * DAY, intervals.get( dayNumber ).maxTime );
-        assertEquals( dayNumber * DAY, intervals.get( dayNumber ).summTime );
+        assertEquals( 1, intervals.get( 1 ).casesCount );
+        assertEquals( 2 * DAY, intervals.get( 1 ).minTime );
+        assertEquals( 2 * DAY, intervals.get( 1 ).maxTime );
+        assertEquals( 2 * DAY, intervals.get( 1 ).summTime );
 
-        clean();
+        assertEquals( 2, intervals.get( 2 ).casesCount );
+        assertEquals( 6 * HOUR, intervals.get( 2 ).minTime );
+        assertEquals( 3 * DAY, intervals.get( 2 ).maxTime );
+        assertEquals( 3 * DAY + 6 * HOUR, intervals.get( 2 ).summTime );
+
+        assertEquals( 1, intervals.get( 3 ).casesCount );
+        assertEquals( 4 * DAY, intervals.get( 3 ).minTime );
+        assertEquals( 4 * DAY, intervals.get( 3 ).maxTime );
+        assertEquals( 4 * DAY, intervals.get( 3 ).summTime );
+
+        assertEquals( 2, intervals.get( 4 ).casesCount );
+        assertEquals( 1 * DAY, intervals.get( 4 ).minTime );
+        assertEquals( 5 * DAY, intervals.get( 4 ).maxTime );
+        assertEquals( 6 * DAY, intervals.get( 4 ).summTime );
+
+        assertEquals( 1, intervals.get( 7 ).casesCount );
+        assertEquals( 4 * DAY, intervals.get( 7 ).minTime );
+        assertEquals( 4 * DAY, intervals.get( 7 ).maxTime );
+        assertEquals( 4 * DAY, intervals.get( 7 ).summTime );
+
+        assertEquals( 2, intervals.get( 8 ).casesCount );
+        long case3Time = 5 * DAY;
+        assertEquals( case3Time, intervals.get( 8 ).minTime );
+        long case2Time = 6 * DAY + 5 * HOUR + DAY - 11 * HOUR;
+        assertEquals( case2Time, intervals.get( 8 ).maxTime );
+        assertEquals( case2Time + case3Time, intervals.get( 8 ).summTime );
     }
 
     @Test
@@ -162,14 +185,14 @@ public class ReportTest extends BaseTest {
         comments.add( fillComment( createNewComment( person, 1L, "1 case CREATED" ), CREATED, day( 10 ) ) );
         comments.add( fillComment( createNewComment( person, 1L, "1 case OPENED" ), OPENED, day( 11 ) ) );
         comments.add( fillComment( createNewComment( person, 1L, "1 case DONE" ), DONE, day( 12 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case REOPENED" ), REOPENED , day( 16 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case VERIFIED" ), VERIFIED , day( 19 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case REOPENED" ), REOPENED, day( 16 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case VERIFIED" ), VERIFIED, day( 19 ) ) );
 
         comments.add( fillComment( createNewComment( person, 2L, "2 case CREATED" ), CREATED, day( 11 ) ) );
         comments.add( fillComment( createNewComment( person, 2L, "2 case OPENED" ), OPENED, day( 13 ) ) );
         comments.add( fillComment( createNewComment( person, 2L, "2 case DONE" ), DONE, day( 15 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case REOPENED" ), REOPENED , day( 17 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED , day( 18 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case REOPENED" ), REOPENED, day( 17 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED, day( 18 ) ) );
 
         List<Case> cases = groupBayIssues( comments );
 
@@ -181,30 +204,47 @@ public class ReportTest extends BaseTest {
         }
 
         assertEquals( 0, intervals.get( 0 ).summTime );
-        assertEquals( 1 * DAY, intervals.get( 1 ).maxTime );
-        assertEquals( 1 * DAY, intervals.get( 1 ).minTime );
         assertEquals( 1 * DAY, intervals.get( 1 ).summTime );
+        assertEquals( 1 * DAY, intervals.get( 1 ).minTime );
+        assertEquals( 1 * DAY, intervals.get( 1 ).maxTime );
 
+        assertEquals( 2, intervals.get( 2 ).casesCount );
         assertEquals( 3 * DAY, intervals.get( 2 ).summTime );
         assertEquals( 1 * DAY, intervals.get( 2 ).minTime );
         assertEquals( 2 * DAY, intervals.get( 2 ).maxTime );
 
-        assertEquals( 2 * DAY, intervals.get( 3 ).maxTime );
         assertEquals( 2 * DAY, intervals.get( 3 ).summTime );
         assertEquals( 2 * DAY, intervals.get( 3 ).minTime );
+        assertEquals( 2 * DAY, intervals.get( 3 ).maxTime );
 
         assertEquals( 3 * DAY, intervals.get( 4 ).summTime );
+        assertEquals( 3 * DAY, intervals.get( 4 ).minTime );
+        assertEquals( 3 * DAY, intervals.get( 4 ).maxTime );
 
         assertEquals( 4 * DAY, intervals.get( 5 ).summTime );
+        assertEquals( 4 * DAY, intervals.get( 5 ).minTime );
+        assertEquals( 4 * DAY, intervals.get( 5 ).maxTime );
+
         assertEquals( 0, intervals.get( 6 ).summTime );
+        assertEquals( 0, intervals.get( 6 ).minTime );
+        assertEquals( 0, intervals.get( 6 ).maxTime );
 
         assertEquals( 3 * DAY, intervals.get( 7 ).summTime );
+        assertEquals( 3 * DAY, intervals.get( 7 ).minTime );
+        assertEquals( 3 * DAY, intervals.get( 7 ).maxTime );
+
+        assertEquals( 2, intervals.get( 8 ).casesCount );
         assertEquals( 9 * DAY, intervals.get( 8 ).summTime );
+        assertEquals( 4 * DAY, intervals.get( 8 ).minTime );
+        assertEquals( 5 * DAY, intervals.get( 8 ).maxTime );
+
         assertEquals( 5 * DAY, intervals.get( 9 ).summTime );
+        assertEquals( 5 * DAY, intervals.get( 9 ).minTime );
+        assertEquals( 5 * DAY, intervals.get( 9 ).maxTime );
 
         assertEquals( 0, intervals.get( 10 ).summTime );
-
-        int stop = 0;
+        assertEquals( 0, intervals.get( 10 ).minTime );
+        assertEquals( 0, intervals.get( 10 ).maxTime );
 
     }
 
@@ -233,19 +273,18 @@ public class ReportTest extends BaseTest {
     @Test
     public void calcIntersectionTime() {
 
-        assertEquals( "Expected an intersection by continuing status", 10L, Case.calcIntersectionTime( 10L, 20L, 0L, null ) );
-        assertEquals( "Expected an intersection", 0L, Case.calcIntersectionTime( 10L, 20L, 20L, 20L ) );
-        assertEquals( "Expected an intersection", 0L, Case.calcIntersectionTime( 10L, 20L, 10L, 10L ) );
-        assertEquals( "Expected an intersection", 10L, Case.calcIntersectionTime( 10L, 20L, 10L, 20L ) );
-        assertEquals( "Expected an intersection", 10L, Case.calcIntersectionTime( 10L, 20L, 10L, 21L ) );
-        assertEquals( "Expected an intersection", 10L, Case.calcIntersectionTime( 10L, 20L, 9L, 20L ) );
-        assertEquals( "Expected an intersection", 1L, Case.calcIntersectionTime( 10L, 20L, 19L, 20L ) );
-        assertEquals( "Expected an intersection", 1L, Case.calcIntersectionTime( 10L, 20L, 10L, 11L ) );
-        assertEquals( "Expected an intersection", 9L, Case.calcIntersectionTime( 10L, 20L, 10L, 19L ) );
-        assertEquals( "Expected an intersection", 9L, Case.calcIntersectionTime( 10L, 20L, 11L, 20L ) );
-        assertEquals( "Expected an intersection", 8L, Case.calcIntersectionTime( 10L, 20L, 11L, 19L ) );
-        assertEquals( "Expected an intersection", 4L, Case.calcIntersectionTime( 10L, 20L, 4L, 14L ) );
-        assertEquals( "Expected an intersection", 4l, Case.calcIntersectionTime( 10L, 20L, 16L, 26L ) );
+        assertEquals( "Expected an intersection by continuing status", 20L, Case.calcStatusTime( 20L, 0L, null ) );
+        assertEquals( "Expected an intersection", 0L, Case.calcStatusTime( 20L, 20L, 20L ) );
+        assertEquals( "Expected an intersection", 0L, Case.calcStatusTime( 20L, 10L, 10L ) );
+        assertEquals( "Expected an intersection", 20L, Case.calcStatusTime( 20L, 0L, 20L ) );
+        assertEquals( "Expected an intersection", 10L, Case.calcStatusTime( 20L, 10L, 21L ) );
+        assertEquals( "Expected an intersection", 11L, Case.calcStatusTime( 20L, 9L, 20L ) );
+        assertEquals( "Expected an intersection", 1L, Case.calcStatusTime( 20L, 19L, 20L ) );
+        assertEquals( "Expected an intersection", 1L, Case.calcStatusTime( 20L, 10L, 11L ) );
+        assertEquals( "Expected an intersection", 9L, Case.calcStatusTime( 20L, 10L, 19L ) );
+        assertEquals( "Expected an intersection", 9L, Case.calcStatusTime( 20L, 11L, 20L ) );
+        assertEquals( "Expected an intersection", 8L, Case.calcStatusTime( 20L, 11L, 19L ) );
+        assertEquals( "Expected an intersection", 4l, Case.calcStatusTime( 20L, 16L, 26L ) );
 
     }
 
@@ -293,16 +332,18 @@ public class ReportTest extends BaseTest {
     }
 
     private void clean() {
-//        if (true) return; //TODO TURN ON
-        if (caseIds == null) return;//
+
+        if (caseIds == null) return;
         if (!commentsIds.isEmpty()) {
             String caseIdsString = caseIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
             caseCommentDAO.removeByCondition( "CASE_ID in (" + caseIdsString + ")" );
             commentsIds.clear();
         }
         caseObjectDAO.removeByKeys( caseIds );
-        personDAO.remove( person );
-        companyDAO.removeByKey( person.getCompanyId() );
+        if (person != null) {
+            personDAO.remove( person );
+            companyDAO.removeByKey( person.getCompanyId() );
+        }
 
         caseIds = null;
     }
