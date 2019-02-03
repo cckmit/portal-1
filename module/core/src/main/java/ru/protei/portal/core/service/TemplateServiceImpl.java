@@ -5,7 +5,7 @@ import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
@@ -149,10 +149,11 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getUserLoginNotificationBody(UserLoginCreatedEvent event, String url) {
+    public PreparedTemplate getUserLoginNotificationBody(UserLoginUpdateEvent event, String url) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("url", url);
         templateModel.put("hasDisplayName", HelperFunc.isNotEmpty(event.getDisplayName()));
+        templateModel.put("isNewAccount", event.isNewAccount());
         templateModel.put("displayName", event.getDisplayName());
         templateModel.put("login", event.getLogin());
         templateModel.put("password", event.getPasswordRaw());

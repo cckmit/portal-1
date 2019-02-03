@@ -9,7 +9,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -239,13 +239,13 @@ public class MailNotificationProcessor {
     // -----------------------
 
     @EventListener
-    public void onUserLoginCreated(UserLoginCreatedEvent event) {
+    public void onUserLoginCreated(UserLoginUpdateEvent event) {
         if (event.getNotificationEntry() != null) {
             performUserLoginNotification(event, event.getNotificationEntry());
         }
     }
 
-    private void performUserLoginNotification(UserLoginCreatedEvent event, NotificationEntry notificationEntry) {
+    private void performUserLoginNotification(UserLoginUpdateEvent event, NotificationEntry notificationEntry) {
 
         if (event.getLogin() == null || event.getLogin().isEmpty()) {
             log.info("Failed send notification to userLogin with login={}: login is empty", event.getLogin());
