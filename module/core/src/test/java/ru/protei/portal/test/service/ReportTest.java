@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.MainTestsConfiguration;
@@ -155,20 +157,27 @@ public class ReportTest extends BaseTest {
         List<CaseComment> comments = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                            ^--^--x
-        //                               ^-----^-----x
-        comments.add( fillComment( createNewComment( person, 1L, "1 case 1 comment" ), CREATED, day( 10 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case 2 comment" ), OPENED, day( 11 ) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case 3 comment" ), DONE, day( 12 ) ) );
+        //                            ^--^--x           ^--------x
+        //                               ^-----^-----x     ^--x
+        comments.add( fillComment( createNewComment( person, 1L, "1 case CREATED" ), CREATED, day( 10 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case OPENED" ), OPENED, day( 11 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case DONE" ), DONE, day( 12 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case REOPENED" ), REOPENED , day( 16 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case VERIFIED" ), VERIFIED , day( 19 ) ) );
 
-        comments.add( fillComment( createNewComment( person, 2L, "2 case 1 comment" ), CREATED, day( 11 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case 2 comment" ), OPENED, day( 13 ) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case 3 comment" ), DONE, day( 15 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case CREATED" ), CREATED, day( 11 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case OPENED" ), OPENED, day( 13 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case DONE" ), DONE, day( 15 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case REOPENED" ), REOPENED , day( 17 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED , day( 18 ) ) );
 
         List<Case> cases = groupBayIssues( comments );
 
         for (Interval interval : intervals) {
+            log.info( "\n" );
+            log.info( "caseInIntervalTest(): interval {} - {}", new Date( interval.from ), new Date( interval.to ) );
             interval.fill( cases, new HashSet<>( ignoredStates ) );
+            log.info( "caseInIntervalTest(): {}", interval );
         }
 
         assertEquals( 0, intervals.get( 0 ).summTime );
@@ -184,10 +193,16 @@ public class ReportTest extends BaseTest {
         assertEquals( 2 * DAY, intervals.get( 3 ).summTime );
         assertEquals( 2 * DAY, intervals.get( 3 ).minTime );
 
-        assertEquals( 1 * DAY, intervals.get( 4 ).summTime );
+        assertEquals( 3 * DAY, intervals.get( 4 ).summTime );
 
-        assertEquals( 1 * DAY, intervals.get( 5 ).summTime );
+        assertEquals( 4 * DAY, intervals.get( 5 ).summTime );
         assertEquals( 0, intervals.get( 6 ).summTime );
+
+        assertEquals( 3 * DAY, intervals.get( 7 ).summTime );
+        assertEquals( 9 * DAY, intervals.get( 8 ).summTime );
+        assertEquals( 5 * DAY, intervals.get( 9 ).summTime );
+
+        assertEquals( 0, intervals.get( 10 ).summTime );
 
         int stop = 0;
 
@@ -202,6 +217,7 @@ public class ReportTest extends BaseTest {
         assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 9L, 1L ) );
         assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 10L, 0L ) );
         assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 21L, 30L ) );
+        assertFalse( "Unexpected intersection by continuing status", Case.hasIntersection( 10L, 20L, 20L, null ) );
 
         assertFalse( "Unexpected intersection by boundary", Case.hasIntersection( 10L, 20L, 0L, 10L ) );
         assertFalse( "Unexpected intersection by boundary", Case.hasIntersection( 10L, 20L, 20L, 30L ) );
@@ -299,7 +315,10 @@ public class ReportTest extends BaseTest {
     public static final String PRODUCT_NAME = "TestProduct";
     private static final Long CREATED = 1L;
     private static final Long OPENED = 2L;
+    private static final Long REOPENED = 6L;
+    private static final Long VERIFIED = 5L;
     private static final Long DONE = 17L;
     int H_DAY = 24;
     List<Integer> ignoredStates = Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33 );
+    private static final Logger log = LoggerFactory.getLogger( ReportTest.class );
 }
