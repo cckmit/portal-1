@@ -140,8 +140,8 @@ public class ReportCaseCompletionTime {
         @Override
         public String toString() {
             return "Interval{" +
-                    "from=" + new Date(from) +
-                    ", to=" + new Date(to) +
+                    "from=" + new Date( from ) +
+                    ", to=" + new Date( to ) +
                     ", casesCount=" + casesCount +
                     ", summTime=" + summTime +
                     ", maxTime=" + maxTime +
@@ -152,54 +152,114 @@ public class ReportCaseCompletionTime {
 
     public static class Case {
         public long getTime( Interval interval, Set<Integer> ignoredStateIds ) {
-            long time = 0;
-            for (Status status : statuses) {
-                // Чтобы определить являтся ли задача активной на данном интервале?
-                // нужно найти активный статус попадающий в интервал
-                if (ignoredStateIds.contains( status.caseStateId )) continue;
-                // статусы после интервала не нужны
-                if (interval.to <= status.from) continue;//исключить пересечение по концу интервала
 
-                // статусы до интервала суммируем
-                if (status.to != null && status.to <= interval.from){
-                    time += status.to - status.from;
-                }
-   //TODO далее...
-
-                // еcли есть активнй статус в этом интервале
-                // следует посчитать суммарное время всех активных статусов
-                // лежащих до окончания интервала не зависимо от начала интервала
-
-                if (status.to == null || interval.to < status.to)
-                    time += interval.to - status.from;
-                else
-                    time += status.to - status.from;
-
-//
-//                long delta = interval.to - interval.from;
-//                if (status.from > interval.from) delta = delta - (interval.from - status.from);
-//                if (status.to != null && status.to < interval.to) delta = delta - (interval.to - status.to);
-//                long delta = status.to - status.from;
-//                time = time + delta;
-
-
+            if (!hasIntersection( interval, this )) {
+                return 0;
             }
 
-            log.warn( "getTime(): " + time );//TODO NotImplemented
-            return time;
+            boolean hasIntersectionOnActiveInterval = false;
+            long activeTime = 0;
+
+            for (Status status : statuses) {
+                // статусы после интервала не нужны
+                if (interval.to <= status.from) continue;// (=) исключить пересечение по концу интервала
+
+                // Если статус не активный
+                if (ignoredStateIds.contains( status.caseStateId )) continue;
+
+                if (hasIntersection( interval, this )) {
+                    hasIntersectionOnActiveInterval = true;
+                }
+
+                activeTime += calcIntersectionTime( interval, status );
+            }
+
+            // Задача в интервале была не активна - время задачи не учитывается
+            if (!hasIntersectionOnActiveInterval) {
+                return 0; //
+            }
+
+            log.warn( "getTime(): " + activeTime );//TODO NotImplemented
+            return activeTime;
+//
+//            long time = 0;
+//            for (Status status : statuses) {
+//                // Чтобы определить являтся ли задача активной на данном интервале?
+//                // нужно найти активный статус попадающий в интервал
+//                if (ignoredStateIds.contains( status.caseStateId )) previousStatus.to == null.;
+//                // статусы после интервала не нужны
+//                if (interval.to <= status.from) continue;//исключить пересечение по концу интервала
+//
+//                // статусы до интервала суммируем
+//                if (status.to != null && status.to <= interval.from) {
+//                    time += status.to - status.from;
+//                }
+//                //TODO далее...
+//
+//                // еcли есть активнй статус в этом интервале
+//                // следует посчитать суммарное время всех активных статусов
+//                // лежащих до окончания интервала не зависимо от начала интервала
+//
+//                if (status.to == null || interval.to < status.to)
+//                    time += interval.to - status.from;
+//                else
+//                    time += status.to - status.from;
+//
+//
+//            }
+//
+//            log.warn( "getTime(): " + time );//TODO NotImplemented
+//            return time;
+        }
+
+        private long calcIntersectionTime( Interval interval, Status status ) {
+            return calcIntersectionTime( interval.from, interval.to, status.from, status.to );
+        }
+
+        public static long calcIntersectionTime( long iFrom, long iTo, long sFrom, Long sTo ) {
+            // пересечение это разница между мешьшим максимумом и большим минимумом.
+            long max = 0, min = 0, intersection = 0;
+
+            if (sTo == null || iTo < sTo) {
+                max = iTo;
+            } else {
+                max = sTo;
+            }
+
+            if (iFrom < sFrom) {
+                min = sFrom;
+            } else {
+                min = iFrom;
+            }
+
+            intersection = max - min;
+            if (intersection < 0) return 0;
+            return intersection;
+        }
+
+        private boolean hasIntersection( Interval interval, Case aCase ) {
+            if (interval == null || aCase.previousStatus == null || aCase.statuses == null || aCase.statuses.isEmpty())
+                return false;
+            return hasIntersection( interval.from, interval.to, aCase.statuses.get( 0 ).from, aCase.previousStatus.to );
+        }
+
+        public static boolean hasIntersection( long iFrom, long iTo, long sFrom, Long sTo ) {
+            if (iTo <= sFrom
+                    || (sTo != null && sTo <= iFrom)) return false;
+            return true;
         }
 
         public void add( Date created, int caseStateId ) {
-            if (lastStatus != null) {
-                lastStatus.setStop( created.getTime() );
+            if (previousStatus != null) {
+                previousStatus.setStop( created.getTime() );
             }
-            lastStatus = new Status( created.getTime(), caseStateId );
-            statuses.add( lastStatus );
+            previousStatus = new Status( created.getTime(), caseStateId );
+            statuses.add( previousStatus );
         }
 
         public Long caseId;//TODO DEBUG
         public List<Status> statuses = new ArrayList<>();
-        Status lastStatus;
+        Status previousStatus;
     }
 
     static class Status {
@@ -213,15 +273,15 @@ public class ReportCaseCompletionTime {
             this.to = stop;
         }
 
-        Long to;
+        Long to; // null - значит статус ещё длится (время завершения статуса окончательное или изменится в будущем)
         long from;
         int caseStateId;
 
         @Override
         public String toString() {
             return "Status{" +
-                    "from=" + new Date(from) +
-                    ", to=" + (to==null?"null":new Date(to)) +
+                    "from=" + new Date( from ) +
+                    ", to=" + (to == null ? "null" : new Date( to )) +
                     ", caseStateId=" + caseStateId +
                     '}';
         }

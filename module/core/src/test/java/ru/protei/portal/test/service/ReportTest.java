@@ -17,8 +17,9 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime.*;
 import static ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime.DAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -93,11 +94,11 @@ public class ReportTest extends BaseTest {
         ReportCaseCompletionTime caseCompletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO );
         caseCompletionTimeReport.run();
 
-        List<ReportCaseCompletionTime.Case> cases = caseCompletionTimeReport.getCases();
+        List<Case> cases = caseCompletionTimeReport.getCases();
         assertEquals( caseIds.size(), size( cases ) );
         assertEquals( commentsIds.size(), cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
 
-        List<ReportCaseCompletionTime.Interval> intervals = caseCompletionTimeReport.getIntervals();
+        List<Interval> intervals = caseCompletionTimeReport.getIntervals();
         assertEquals( numberOfDays, intervals.size() );
 
         int dayNumber = 0;
@@ -118,7 +119,7 @@ public class ReportTest extends BaseTest {
     @Test
     public void intervalsTest() {
         int numberOfDays = 12;
-        List<ReportCaseCompletionTime.Interval> intervals = ReportCaseCompletionTime.makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
         assertEquals( numberOfDays, intervals.size() );
         assertEquals( date9.getTime(), intervals.get( 0 ).from );
         assertEquals( addHours( date9, 1 * H_DAY ).getTime(), intervals.get( 0 ).to );
@@ -139,7 +140,7 @@ public class ReportTest extends BaseTest {
         comments.add( createNewComment( person, 3L, "3 case 2 comment", OPENED ) );
         comments.add( createNewComment( person, 3L, "3 case 3 comment", DONE ) );
 
-        List<ReportCaseCompletionTime.Case> cases = ReportCaseCompletionTime.groupBayIssues( comments );
+        List<Case> cases = groupBayIssues( comments );
 
         assertEquals( 3, cases.size() );
     }
@@ -149,46 +150,86 @@ public class ReportTest extends BaseTest {
         Person person = new Person( 1L );
 
         int numberOfDays = 12;
-        List<ReportCaseCompletionTime.Interval> intervals = ReportCaseCompletionTime.makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
 
         List<CaseComment> comments = new ArrayList<>();
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                            ^--^--x
         //                               ^-----^-----x
-        comments.add( fillComment( createNewComment( person, 1L, "1 case 1 comment" ), CREATED, day(10) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case 2 comment" ), OPENED, day(11) ) );
-        comments.add( fillComment( createNewComment( person, 1L, "1 case 3 comment" ), DONE, day(12) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case 1 comment" ), CREATED, day( 10 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case 2 comment" ), OPENED, day( 11 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case 3 comment" ), DONE, day( 12 ) ) );
 
-        comments.add( fillComment( createNewComment( person, 2L, "2 case 1 comment" ), CREATED, day(11) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case 2 comment" ), OPENED, day(13) ) );
-        comments.add( fillComment( createNewComment( person, 2L, "2 case 3 comment" ), DONE, day(15) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case 1 comment" ), CREATED, day( 11 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case 2 comment" ), OPENED, day( 13 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case 3 comment" ), DONE, day( 15 ) ) );
 
-        List<ReportCaseCompletionTime.Case> cases = ReportCaseCompletionTime.groupBayIssues( comments );
+        List<Case> cases = groupBayIssues( comments );
 
-        for (ReportCaseCompletionTime.Interval interval : intervals) {
+        for (Interval interval : intervals) {
             interval.fill( cases, new HashSet<>( ignoredStates ) );
         }
 
-        assertEquals( 0, intervals.get(0).summTime );
-        assertEquals( 1*DAY, intervals.get(1).maxTime );
-        assertEquals( 1*DAY, intervals.get(1).minTime );
-        assertEquals( 1*DAY, intervals.get(1).summTime );
+        assertEquals( 0, intervals.get( 0 ).summTime );
+        assertEquals( 1 * DAY, intervals.get( 1 ).maxTime );
+        assertEquals( 1 * DAY, intervals.get( 1 ).minTime );
+        assertEquals( 1 * DAY, intervals.get( 1 ).summTime );
 
-        assertEquals( 2*DAY, intervals.get(2).maxTime );
-        assertEquals( 1*DAY, intervals.get(2).minTime );
-        assertEquals( 3*DAY, intervals.get(2).summTime );
+        assertEquals( 3 * DAY, intervals.get( 2 ).summTime );
+        assertEquals( 1 * DAY, intervals.get( 2 ).minTime );
+        assertEquals( 2 * DAY, intervals.get( 2 ).maxTime );
 
-        assertEquals( 2*DAY, intervals.get(3).maxTime );
-        assertEquals( 2*DAY, intervals.get(3).summTime );
-        assertEquals( 2*DAY, intervals.get(3).minTime );
+        assertEquals( 2 * DAY, intervals.get( 3 ).maxTime );
+        assertEquals( 2 * DAY, intervals.get( 3 ).summTime );
+        assertEquals( 2 * DAY, intervals.get( 3 ).minTime );
 
-        assertEquals( 1*DAY, intervals.get(4).summTime );
+        assertEquals( 1 * DAY, intervals.get( 4 ).summTime );
 
-        assertEquals( 1*DAY, intervals.get(5).summTime );
-        assertEquals( 0, intervals.get(6).summTime );
+        assertEquals( 1 * DAY, intervals.get( 5 ).summTime );
+        assertEquals( 0, intervals.get( 6 ).summTime );
 
         int stop = 0;
+
+    }
+
+    @Test
+    public void hasIntersection() {
+
+        assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, -1L, -2L ) );
+        assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 0L, 0L ) );
+        assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 1L, 9L ) );
+        assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 9L, 1L ) );
+        assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 10L, 0L ) );
+        assertFalse( "Unexpected intersection", Case.hasIntersection( 10L, 20L, 21L, 30L ) );
+
+        assertFalse( "Unexpected intersection by boundary", Case.hasIntersection( 10L, 20L, 0L, 10L ) );
+        assertFalse( "Unexpected intersection by boundary", Case.hasIntersection( 10L, 20L, 20L, 30L ) );
+
+        assertTrue( "Expected an intersection by continuing status", Case.hasIntersection( 10L, 20L, 0L, null ) );
+        assertTrue( "Expected an intersection", Case.hasIntersection( 10L, 20L, 10L, 20L ) );
+        assertTrue( "Expected an intersection", Case.hasIntersection( 10L, 20L, 11L, 19L ) );
+        assertTrue( "Expected an intersection", Case.hasIntersection( 10L, 20L, 4L, 14L ) );
+        assertTrue( "Expected an intersection", Case.hasIntersection( 10L, 20L, 16L, 26L ) );
+
+    }
+
+    @Test
+    public void calcIntersectionTime() {
+
+        assertEquals( "Expected an intersection by continuing status", 10L, Case.calcIntersectionTime( 10L, 20L, 0L, null ) );
+        assertEquals( "Expected an intersection", 0L, Case.calcIntersectionTime( 10L, 20L, 20L, 20L ) );
+        assertEquals( "Expected an intersection", 0L, Case.calcIntersectionTime( 10L, 20L, 10L, 10L ) );
+        assertEquals( "Expected an intersection", 10L, Case.calcIntersectionTime( 10L, 20L, 10L, 20L ) );
+        assertEquals( "Expected an intersection", 10L, Case.calcIntersectionTime( 10L, 20L, 10L, 21L ) );
+        assertEquals( "Expected an intersection", 10L, Case.calcIntersectionTime( 10L, 20L, 9L, 20L ) );
+        assertEquals( "Expected an intersection", 1L, Case.calcIntersectionTime( 10L, 20L, 19L, 20L ) );
+        assertEquals( "Expected an intersection", 1L, Case.calcIntersectionTime( 10L, 20L, 10L, 11L ) );
+        assertEquals( "Expected an intersection", 9L, Case.calcIntersectionTime( 10L, 20L, 10L, 19L ) );
+        assertEquals( "Expected an intersection", 9L, Case.calcIntersectionTime( 10L, 20L, 11L, 20L ) );
+        assertEquals( "Expected an intersection", 8L, Case.calcIntersectionTime( 10L, 20L, 11L, 19L ) );
+        assertEquals( "Expected an intersection", 4L, Case.calcIntersectionTime( 10L, 20L, 4L, 14L ) );
+        assertEquals( "Expected an intersection", 4l, Case.calcIntersectionTime( 10L, 20L, 16L, 26L ) );
 
     }
 
@@ -251,7 +292,7 @@ public class ReportTest extends BaseTest {
     }
 
     private Date day( int day_of_month ) {
-        return addHours( date1, (day_of_month-1)*H_DAY);
+        return addHours( date1, (day_of_month - 1) * H_DAY );
     }
 
 
