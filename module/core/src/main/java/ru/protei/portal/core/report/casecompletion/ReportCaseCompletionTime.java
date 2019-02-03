@@ -1,31 +1,37 @@
-package ru.protei.portal.core.report.casetimeelapsed;
+package ru.protei.portal.core.report.casecompletion;
 
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ReportCaseCompletionTime {
-
-
     public ReportCaseCompletionTime( Report report, CaseCommentDAO caseCommentDAO ) {
         this.report = report;
         this.caseCommentDAO = caseCommentDAO;
         caseQuery = report.getCaseQuery();
     }
 
-    public boolean writeReport( ByteArrayOutputStream buffer ) {
-        return false;
+    public boolean writeReport( ByteArrayOutputStream out ) throws IOException {
+        XSSFWorkbook workbook = createWorkBook( intervals );
+
+        workbook.write( out );
+        workbook.close();
+
+        return true;
     }
 
     public void run() {
-
         intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
 
         List<CaseComment> comments = caseCommentDAO.reportCaseCompletionTime(
@@ -41,6 +47,23 @@ public class ReportCaseCompletionTime {
         for (Interval interval : intervals) {
             interval.fill( cases, ignoredStates );
         }
+    }
+
+    public static XSSFWorkbook createWorkBook( List<Interval> intervals ) {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet();
+        int rowid = 0;
+        int cellIndex = 0;
+        for (Interval interval : intervals) {
+
+            XSSFRow row = sheet.createRow( rowid++ );
+            cellIndex = 0;
+            row.createCell( cellIndex++ ).setCellValue( dateFormat.format( interval.from ) );
+            row.createCell( cellIndex++ ).setCellValue( calcAverage( interval ) );
+            row.createCell( cellIndex++ ).setCellValue( calcHours( interval.minTime ) );
+            row.createCell( cellIndex ).setCellValue( calcHours( interval.minTime ) );
+        }
+        return workbook;
     }
 
     public List<Case> getCases() {
@@ -78,19 +101,28 @@ public class ReportCaseCompletionTime {
 
     }
 
+    private static String calcHours( Long value ) {
+        if (value == 0) return String.valueOf( 0 );
+        return String.valueOf( (int) (value / HOUR) );
+    }
+
+    private static String calcAverage( Interval interval ) {
+        if (interval == null || interval.casesCount == 0) return String.valueOf( 0 );
+        return String.valueOf( (int) ((interval.summTime / interval.casesCount) / HOUR) );
+    }
+
     private static Case mapCase( Case aCase, CaseComment comment ) {
         aCase.add( comment.getCreated(), comment.getCaseStateId().intValue() );
         aCase.caseId = comment.getCaseId();//TODO DEBUG
         return aCase;
     }
-
-
-    List<Case> cases = new ArrayList<>();//TODO DEBUG
-    List<Interval> intervals;
     public static final long SEC = 1000L;
     public static final long MINUTE = 60 * SEC;
     public static final long HOUR = 60 * MINUTE;
     public static final long DAY = 24 * HOUR;
+    static SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+    List<Case> cases = new ArrayList<>();//TODO DEBUG
+    List<Interval> intervals;
     private Report report;
     private CaseCommentDAO caseCommentDAO;
     private CaseQuery caseQuery;
@@ -118,15 +150,6 @@ public class ReportCaseCompletionTime {
             int stop = 0;
         }
 
-        public long from;
-
-        public long to;
-
-        public int casesCount;
-        public long summTime;
-        public long maxTime;
-        public long minTime;
-
         @Override
         public String toString() {
             return "Interval{" +
@@ -138,6 +161,12 @@ public class ReportCaseCompletionTime {
                     ", minTime=" + minTime +
                     '}';
         }
+        public long from;
+        public long to;
+        public int casesCount;
+        public long summTime;
+        public long maxTime;
+        public long minTime;
     }
 
     public static class Case {
@@ -181,21 +210,11 @@ public class ReportCaseCompletionTime {
 
         }
 
-        private long calcStatusTime( Interval interval, Status status ) {
-            return calcStatusTime( interval.to, status.from, status.to );
-        }
-
         public static long calcStatusTime( long iTo, long sFrom, Long sTo ) {
             if (sTo == null || iTo < sTo)
                 return iTo - sFrom;
             else
                 return sTo - sFrom;
-        }
-
-        private boolean hasStatusIntersection( Interval interval, Status status ) {
-            if (interval == null || status == null)
-                return false;
-            return hasIntersection( interval.from, interval.to, status.from, status.to );
         }
 
         public static boolean hasIntersection( long iFrom, long iTo, long sFrom, Long sTo ) {
@@ -212,16 +231,25 @@ public class ReportCaseCompletionTime {
             statuses.add( previousStatus );
         }
 
-        public Long caseId;//TODO DEBUG
-        public List<Status> statuses = new ArrayList<>();
-        Status previousStatus;
-
         @Override
         public String toString() {
             return "Case{" +
                     "caseId=" + caseId +
                     '}';
         }
+
+        private long calcStatusTime( Interval interval, Status status ) {
+            return calcStatusTime( interval.to, status.from, status.to );
+        }
+
+        private boolean hasStatusIntersection( Interval interval, Status status ) {
+            if (interval == null || status == null)
+                return false;
+            return hasIntersection( interval.from, interval.to, status.from, status.to );
+        }
+        public Long caseId;//TODO DEBUG
+        public List<Status> statuses = new ArrayList<>();
+        Status previousStatus;
     }
 
     static class Status {
@@ -235,10 +263,6 @@ public class ReportCaseCompletionTime {
             this.to = stop;
         }
 
-        Long to; // null - значит статус ещё длится (время завершения статуса окончательное или изменится в будущем)
-        long from;
-        int caseStateId;
-
         @Override
         public String toString() {
             return "Status{" +
@@ -247,5 +271,8 @@ public class ReportCaseCompletionTime {
                     ", caseStateId=" + caseStateId +
                     '}';
         }
+        Long to; // null - значит статус ещё длится (время завершения статуса окончательное или изменится в будущем)
+        long from;
+        int caseStateId;
     }
 }

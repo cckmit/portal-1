@@ -1,5 +1,6 @@
 package ru.protei.portal.test.service;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +12,7 @@ import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime;
+import ru.protei.portal.core.report.casecompletion.ReportCaseCompletionTime;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -20,8 +21,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-import static ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime.*;
-import static ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime.DAY;
+import static ru.protei.portal.core.report.casecompletion.ReportCaseCompletionTime.*;
+import static ru.protei.portal.core.report.casecompletion.ReportCaseCompletionTime.DAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
@@ -286,6 +287,44 @@ public class ReportTest extends BaseTest {
         assertEquals( "Expected an intersection", 8L, Case.calcStatusTime( 20L, 11L, 19L ) );
         assertEquals( "Expected an intersection", 4l, Case.calcStatusTime( 20L, 16L, 26L ) );
 
+    }
+
+    @Test
+    public void makeWorkBook(  ) {
+        Person person = new Person( 1L );
+        int numberOfDays = 12;
+        List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
+
+        List<CaseComment> comments = new ArrayList<>();
+        //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
+        //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+        //                            ^--^--x           ^--------x
+        //                               ^-----^-----x     ^--x
+        comments.add( fillComment( createNewComment( person, 1L, "1 case CREATED" ), CREATED, day( 10 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case OPENED" ), OPENED, day( 11 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case DONE" ), DONE, day( 12 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case REOPENED" ), REOPENED, day( 16 ) ) );
+        comments.add( fillComment( createNewComment( person, 1L, "1 case VERIFIED" ), VERIFIED, day( 19 ) ) );
+
+        comments.add( fillComment( createNewComment( person, 2L, "2 case CREATED" ), CREATED, day( 11 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case OPENED" ), OPENED, day( 13 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case DONE" ), DONE, day( 15 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case REOPENED" ), REOPENED, day( 17 ) ) );
+        comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED, day( 18 ) ) );
+
+
+        List<Case> cases = groupBayIssues( comments );
+
+        for (Interval interval : intervals) {
+            interval.fill( cases, new HashSet<>( ignoredStates ) );
+        }
+
+        XSSFWorkbook workBook = createWorkBook( intervals );
+
+        assertNotNull( workBook );
+        assertEquals(1,  workBook.getNumberOfSheets() );
+        assertNotNull( workBook.getSheetAt( 0 ) ) ;
+        assertEquals( intervals.size()+1, workBook.getSheetAt( 0 ).getLastRowNum() ) ;
     }
 
     private Long makeCaseObject( Person person, Long productId, Date date ) {

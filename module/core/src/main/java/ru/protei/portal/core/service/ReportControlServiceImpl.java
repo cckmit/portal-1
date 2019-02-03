@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
-import ru.protei.portal.core.report.casetimeelapsed.ReportCaseCompletionTime;
+import ru.protei.portal.core.report.casecompletion.ReportCaseCompletionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.utils.TimeFormatter;
 
