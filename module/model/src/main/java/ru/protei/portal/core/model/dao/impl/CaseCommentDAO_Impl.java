@@ -55,24 +55,49 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
         String terminates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+        String productIdStr = String.valueOf( productId );
 
-        String query = "SELECT ob.ID   caseID," +
-                "       cc.CSTATE_ID   csId," +
-                "       cc.CREATED ccCreated" +
-                " FROM case_comment cc" +
-                "       LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                " WHERE ob.product_id = ?" +
-                "  and ob.id not in (" +
-                "  SELECT DISTINCT cc.CASE_ID" +
-                "  FROM case_comment cc" +
-                "  WHERE " +
-                "(cc.CSTATE_ID in (" + terminates + ") and cc.CREATED < '" + fromTime + "') " +
-                "     or (cc.CSTATE_ID not in (" + terminates + ") and cc.CREATED > '" + toTime + "')" +
-                ")" +
-                " ORDER BY ccCreated ASC;";
+        // Активные задачи на момент начала интервала запроса
+        String activeCasesAtIntervalStart =
+                "SELECT case_id, cc.created, CSTATE_ID" +
+                        " FROM case_comment cc" +
+                        "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
+                        " WHERE ob.product_id = " + productIdStr +
+                        "   and cc.created = (" +
+                        "   SELECT max(created) last" +
+                        "   FROM case_comment" +
+                        "   WHERE case_id = cc.CASE_ID" +
+                        "     and created < '" + fromTime + "'" +  // # левая граница
+                        " )" +
+                        "   and CSTATE_ID not in (" + terminates + ")";
+
+        // Задачи переходящие в активное состояние в интервале запроса
+        String activeCasesInInterval =
+                "SELECT case_id, cc.created, CSTATE_ID" +
+                        " FROM case_comment cc" +
+                        "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
+                        " WHERE ob.product_id = " + productIdStr +
+                        "   and cc.created > '" + fromTime + "'" +  // # левая граница
+                        "   and cc.created < '" + toTime + "' " +  //# правая граница
+                        "   and CSTATE_ID not in (" + terminates + ")";
+
+
+        String query =
+                "SELECT case_id, created, CSTATE_ID" +
+                        " FROM case_comment outerComment" +
+                        " WHERE outerComment.case_id in (" +
+                        "   SELECT DISTINCT case_id" +
+                        "   from (" +
+                        activeCasesAtIntervalStart +
+                        " union " +
+                        activeCasesInInterval +
+                        "        ) as beforeAndInInterval " +
+                        " )" +
+                        " and created < '" + toTime + "' " + //# правая граница
+                        "  ORDER BY created ASC;";
         int stop = 0;
         try {
-            return jdbcTemplate.query( query, rm, productId );
+            return jdbcTemplate.query( query, rm );
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -83,9 +108,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         public CaseComment mapRow( ResultSet r, int i ) throws SQLException {
             CaseComment comment = new CaseComment();
 
-            comment.setCaseId( r.getLong( "caseID" ) );
-            comment.setCaseStateId( r.getLong( "csId" ) );
-            comment.setCreated( new Date( r.getTimestamp( "ccCreated" ).getTime() ) );
+            comment.setCaseId( r.getLong( "case_id" ) );
+            comment.setCaseStateId( r.getLong( "CSTATE_ID" ) );
+            comment.setCreated( new Date( r.getTimestamp( "created" ).getTime() ) );
 
             return comment;
         }

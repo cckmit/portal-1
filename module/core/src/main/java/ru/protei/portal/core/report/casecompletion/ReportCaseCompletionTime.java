@@ -34,19 +34,23 @@ public class ReportCaseCompletionTime {
     public void run() {
         intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
 
+        long startQuery = System.currentTimeMillis();
         List<CaseComment> comments = caseCommentDAO.reportCaseCompletionTime(
                 caseQuery.getProductIds().get( 0 ),
                 caseQuery.getFrom(),
                 caseQuery.getTo(),
                 caseQuery.getStateIds()
         );
+        log.info( "run(): Case comments request time: {}", System.currentTimeMillis() - startQuery  );
 
+        long startProcessing = System.currentTimeMillis();
         cases = groupBayIssues( comments );
 
         Set<Integer> ignoredStates = new HashSet<Integer>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {
             interval.fill( cases, ignoredStates );
         }
+        log.info( "run(): Case comments processing time: {}", System.currentTimeMillis() - startProcessing  );
     }
 
     public static XSSFWorkbook createWorkBook( List<Interval> intervals ) {

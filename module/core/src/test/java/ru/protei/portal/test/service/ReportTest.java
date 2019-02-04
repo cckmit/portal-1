@@ -84,14 +84,13 @@ public class ReportTest extends BaseTest {
     @Test
     public void getCaseObjectsTest() throws Exception {
         init();
-
         int numberOfDays = 12;
         //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                         |----------------------------------|
+        //                         |-----------------------------------|
         //                               ^x
-        //                          ^-------^-----------x  ^-------------------
-        //                                     ^--------------^----------------^
+        //                          ^-------^-----------x  ^----------------------------------------
+        //                                     ^--------------^-----------------х
         Report report = createReport( productId, date9, addHours( date9, numberOfDays * H_DAY ) );
 
         ReportCaseCompletionTime caseCompletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO );
@@ -99,7 +98,7 @@ public class ReportTest extends BaseTest {
 
         List<Case> cases = caseCompletionTimeReport.getCases();
         assertEquals( "grouping comments not worked", caseIds.size(), size( cases ) );
-        assertEquals( commentsIds.size(), cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
+        assertEquals( 9, cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
 
         List<Interval> intervals = caseCompletionTimeReport.getIntervals();
         assertEquals( numberOfDays, intervals.size() );
@@ -290,7 +289,7 @@ public class ReportTest extends BaseTest {
     }
 
     @Test
-    public void makeWorkBook(  ) {
+    public void makeWorkBook() {
         Person person = new Person( 1L );
         int numberOfDays = 12;
         List<Interval> intervals = makeIntervals( date9, addHours( date9, numberOfDays * H_DAY ), DAY );
@@ -322,9 +321,9 @@ public class ReportTest extends BaseTest {
         XSSFWorkbook workBook = createWorkBook( intervals );
 
         assertNotNull( workBook );
-        assertEquals(1,  workBook.getNumberOfSheets() );
-        assertNotNull( workBook.getSheetAt( 0 ) ) ;
-        assertEquals( intervals.size()+1, workBook.getSheetAt( 0 ).getLastRowNum() ) ;
+        assertEquals( 1, workBook.getNumberOfSheets() );
+        assertNotNull( workBook.getSheetAt( 0 ) );
+        assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() + 1 );
     }
 
     private Long makeCaseObject( Person person, Long productId, Date date ) {
@@ -372,19 +371,22 @@ public class ReportTest extends BaseTest {
 
     private void clean() {
 
-        if (caseIds == null) return;
-        if (!commentsIds.isEmpty()) {
+        if (!commentsIds.isEmpty() && caseIds != null) {
             String caseIdsString = caseIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
             caseCommentDAO.removeByCondition( "CASE_ID in (" + caseIdsString + ")" );
             commentsIds.clear();
         }
-        caseObjectDAO.removeByKeys( caseIds );
+        if (caseIds != null) {
+            caseObjectDAO.removeByKeys( caseIds );
+            caseIds = null;
+        }
+
         if (person != null) {
             personDAO.remove( person );
             companyDAO.removeByKey( person.getCompanyId() );
         }
 
-        caseIds = null;
+
     }
 
     private Date day( int day_of_month ) {
