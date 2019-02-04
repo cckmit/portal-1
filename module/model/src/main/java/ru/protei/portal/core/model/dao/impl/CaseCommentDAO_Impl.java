@@ -54,7 +54,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     public List<CaseComment> reportCaseCompletionTime( Long productId, Date from, Date to, List<Integer> terminatedStates ) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
-        String terminates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+        String acceptableStates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
         String productIdStr = String.valueOf( productId );
 
         // Активные задачи на момент начала интервала запроса
@@ -69,7 +69,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "   WHERE case_id = cc.CASE_ID" +
                         "     and created < '" + fromTime + "'" +  // # левая граница
                         " )" +
-                        "   and CSTATE_ID not in (" + terminates + ")";
+                        "   and CSTATE_ID in (" + acceptableStates + ")";
 
         // Задачи переходящие в активное состояние в интервале запроса
         String activeCasesInInterval =
@@ -79,8 +79,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         " WHERE ob.product_id = " + productIdStr +
                         "   and cc.created > '" + fromTime + "'" +  // # левая граница
                         "   and cc.created < '" + toTime + "' " +  //# правая граница
-                        "   and CSTATE_ID not in (" + terminates + ")";
-
+                        "   and CSTATE_ID in (" + acceptableStates + ")";
 
         String query =
                 "SELECT case_id, created, CSTATE_ID" +
@@ -95,7 +94,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         " )" +
                         " and created < '" + toTime + "' " + //# правая граница
                         "  ORDER BY created ASC;";
-        int stop = 0;
+
         try {
             return jdbcTemplate.query( query, rm );
         } catch (EmptyResultDataAccessException e) {

@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class ReportCaseCompletionTime {
+
     public ReportCaseCompletionTime( Report report, CaseCommentDAO caseCommentDAO ) {
         this.report = report;
         this.caseCommentDAO = caseCommentDAO;
@@ -41,16 +42,17 @@ public class ReportCaseCompletionTime {
                 caseQuery.getTo(),
                 caseQuery.getStateIds()
         );
-        log.info( "run(): Case comments request time: {}", System.currentTimeMillis() - startQuery  );
-
+        log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery  );
         long startProcessing = System.currentTimeMillis();
+
         cases = groupBayIssues( comments );
 
         Set<Integer> ignoredStates = new HashSet<Integer>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {
             interval.fill( cases, ignoredStates );
         }
-        log.info( "run(): Case comments processing time: {}", System.currentTimeMillis() - startProcessing  );
+
+        log.info( "run(): Case comments processing time: {} ms", System.currentTimeMillis() - startProcessing  );
     }
 
     public static XSSFWorkbook createWorkBook( List<Interval> intervals ) {
@@ -117,19 +119,23 @@ public class ReportCaseCompletionTime {
 
     private static Case mapCase( Case aCase, CaseComment comment ) {
         aCase.add( comment.getCreated(), comment.getCaseStateId().intValue() );
-        aCase.caseId = comment.getCaseId();//TODO DEBUG
+        aCase.caseId = comment.getCaseId();
         return aCase;
     }
+
     public static final long SEC = 1000L;
     public static final long MINUTE = 60 * SEC;
     public static final long HOUR = 60 * MINUTE;
     public static final long DAY = 24 * HOUR;
+
     static SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-    List<Case> cases = new ArrayList<>();//TODO DEBUG
-    List<Interval> intervals;
+
+    private List<Case> cases = new ArrayList<>();
+    private List<Interval> intervals;
     private Report report;
     private CaseCommentDAO caseCommentDAO;
     private CaseQuery caseQuery;
+
     private static Logger log = LoggerFactory.getLogger( ReportCaseCompletionTime.class );
 
     public static class Interval {
@@ -139,19 +145,18 @@ public class ReportCaseCompletionTime {
             this.to = to;
         }
 
-        public void fill( List<Case> cases, Set<Integer> ignoredStates ) {
+        public void fill( List<Case> cases, Set<Integer> acceptableStates ) {
             for (Case aCase : cases) {
-                long time = aCase.getTime( this, ignoredStates );
+                long time = aCase.getTime( this, acceptableStates );
                 if (time <= 0) {
                     continue;
                 }
-                log.info( "fill(): {}", time );
+
                 casesCount++;
                 summTime += time;
                 if (time < minTime || minTime == 0) minTime = time;
                 if (time > maxTime || maxTime == 0) maxTime = time;
             }
-            int stop = 0;
         }
 
         @Override
@@ -174,7 +179,7 @@ public class ReportCaseCompletionTime {
     }
 
     public static class Case {
-        public long getTime( Interval interval, Set<Integer> ignoredStateIds ) {
+        public long getTime( Interval interval, Set<Integer> acceptableStates ) {
 
             log.info( "getTime(): Сase {}", this );
             boolean hasIntersectionOnActiveInterval = false;
@@ -188,7 +193,7 @@ public class ReportCaseCompletionTime {
                 }
 
                 // Если статус не активный
-                if (ignoredStateIds.contains( status.caseStateId )) {
+                if (!acceptableStates.contains( status.caseStateId )) {
                     log.info( "getTime(): Ignored by status {}", status );
                     continue;
                 }
@@ -200,16 +205,16 @@ public class ReportCaseCompletionTime {
                 activeTime += calcStatusTime( interval, status );
 
 
-                log.warn( "getTime(): {} {} {}", activeTime, hasIntersectionOnActiveInterval, status );//TODO NotImplemented
+                log.warn( "getTime(): {} {} {}", activeTime, hasIntersectionOnActiveInterval, status );
             }
 
             // Задача в интервале была не активна - время задачи не учитывается
             if (!hasIntersectionOnActiveInterval) {
-                log.info( "getTime(): Time: hasIntersectionOnActiveInterval  = {} {}", hasIntersectionOnActiveInterval, this );
-                return 0; //
+                log.info( "getTime(): Time: 0 hasIntersectionOnActiveInterval={} {}", hasIntersectionOnActiveInterval, this );
+                return 0;
             }
 
-            log.warn( "getTime(): Time: {} {}", activeTime, this );//TODO NotImplemented
+            log.warn( "getTime(): Time: {} {}", activeTime, this );
             return activeTime;
 
         }
@@ -251,7 +256,7 @@ public class ReportCaseCompletionTime {
                 return false;
             return hasIntersection( interval.from, interval.to, status.from, status.to );
         }
-        public Long caseId;//TODO DEBUG
+        public Long caseId;
         public List<Status> statuses = new ArrayList<>();
         Status previousStatus;
     }

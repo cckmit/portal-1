@@ -199,7 +199,7 @@ public class ReportTest extends BaseTest {
         for (Interval interval : intervals) {
             log.info( "\n" );
             log.info( "caseInIntervalTest(): interval {} - {}", new Date( interval.from ), new Date( interval.to ) );
-            interval.fill( cases, new HashSet<>( ignoredStates ) );
+            interval.fill( cases, new HashSet<>( activeStatesShort ) );
             log.info( "caseInIntervalTest(): {}", interval );
         }
 
@@ -315,7 +315,7 @@ public class ReportTest extends BaseTest {
         List<Case> cases = groupBayIssues( comments );
 
         for (Interval interval : intervals) {
-            interval.fill( cases, new HashSet<>( ignoredStates ) );
+            interval.fill( cases, new HashSet<>( activeStatesShort ) );
         }
 
         XSSFWorkbook workBook = createWorkBook( intervals );
@@ -350,7 +350,7 @@ public class ReportTest extends BaseTest {
     private Report createReport( Long productId, Date from, Date to ) {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setProductIds( Arrays.asList( productId ) );
-        caseQuery.setStateIds( ignoredStates ); //TODO add test product
+        caseQuery.setStateIds( activeStatesShort );
 
 
         caseQuery.setFrom( from );
@@ -386,7 +386,6 @@ public class ReportTest extends BaseTest {
             companyDAO.removeByKey( person.getCompanyId() );
         }
 
-
     }
 
     private Date day( int day_of_month ) {
@@ -401,6 +400,8 @@ public class ReportTest extends BaseTest {
     private static final Long VERIFIED = 5L;
     private static final Long DONE = 17L;
     int H_DAY = 24;
-    List<Integer> ignoredStates = Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33 );
+//    List<Integer> ignoredStates = Arrays.asList( 3, 5, 7, 8, 9, 10, 17, 32, 33 );
+//    List<Integer> activeStates = Arrays.asList( 1, 2, 4, 6, 11, 14, 16, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 );
+    List<Integer> activeStatesShort = Arrays.asList( 1, 2, 6, 16,19, 30 );
     private static final Logger log = LoggerFactory.getLogger( ReportTest.class );
 }
