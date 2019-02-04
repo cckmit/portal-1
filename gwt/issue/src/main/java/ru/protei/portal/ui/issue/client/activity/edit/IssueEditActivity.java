@@ -331,9 +331,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             if ( initiatorCompany == null ) {
                 initiatorCompany = policyService.getUserCompany();
             }
-            view.company().setValue(EntityOption.fromCompany(initiatorCompany));
+            view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
         }
-        onCompanyChanged();
 
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );

@@ -51,24 +51,30 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
         fillFilteredItems( filter(options) );
     }
 
-    private void fillFilteredItems( List<EntityOption> options ) {
+    @Override
+    public void clearOptions() {
+        super.clearOptions();
+        this.options = null;
+    }
+
+    private void fillFilteredItems(List<EntityOption> options ) {
         StringBuilder result = new StringBuilder();
 
         Map< String, EntityOption > optionMap = new HashMap<>();
-        String prefixId = getClass().getName()+":"+( new Date().getTime())+":";
+        String companyId = getClass().getName()+":"+( new Date().getTime())+":";
 
-        if ( defaultValue != null ) {
+        if ( defaultValue != null && hasNullValue ) {
             result
                     .append( "<li><a href='#'><span id='" )
-                    .append( prefixId+"null" )
+                    .append( companyId+"null" )
                     .append( "'>" )
                     .append( defaultValue )
                     .append( "</span><link rel=\"icon\"/></a></li>" );
-            optionMap.put( prefixId, null );
+            optionMap.put( companyId, null );
         }
 
         options.forEach( item -> {
-            String id = prefixId+item.getId();
+            String id = companyId+item.getId();
             result
                     .append( "<li><a href='#'><span id='" )
                     .append( id ).append( "'>" )
@@ -103,6 +109,9 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
         this.options = options;
+        if (deferedApplyValueIfOneOption) {
+            applyValueIfOneOption();
+        }
     }
 
     public void setDefaultValue( String value ) {
@@ -123,10 +132,16 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
     }
 
     public void applyValueIfOneOption() {
-        if (options != null && options.size() == 1) {
-            setValue(options.get(0));
+        if ( options == null ) {
+            deferedApplyValueIfOneOption = true;
+            return;
+        }
+
+        deferedApplyValueIfOneOption = false;
+        if (options.size() == 1) {
+            setValue(options.get(0), true);
         } else {
-            setValue(null);
+            setValue(null, true);
         }
     }
 
@@ -136,17 +151,13 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
                 .collect( Collectors.toList() );
     }
 
-    private boolean applyPredicate( EntityOption op ) {
-        if(filter!=null) {
-            if(!filter.isDisplayed( op )) return false;
-        }
-        return op.getDisplayText().toLowerCase().contains( popup.search.getValue().toLowerCase() );
+    private boolean applyPredicate(EntityOption op) {
+        if (filter != null && !filter.isDisplayed(op)) return false;
+        return op.getDisplayText().toLowerCase().contains(popup.search.getValue().toLowerCase());
     }
 
     @Inject
     private Provider<SelectorPopup> popupProvider;
-
-    protected String defaultValue = null;
 
     private List< EntityOption > options;
     private HandlerRegistration regHandler;
@@ -159,4 +170,7 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements S
             En_CompanyCategory.HOME);
 
     protected CompanyModel model;
+
+    protected String defaultValue = null;
+    private boolean deferedApplyValueIfOneOption = false;
 }
