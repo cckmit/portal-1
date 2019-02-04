@@ -1446,4 +1446,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String commentPreview();
     String companyParentCompany();
+
+    String period();
 }

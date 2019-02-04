@@ -1,0 +1,28 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel>
+
+        <g:HTMLPanel ui:field="body" styleName="body grid grid-indent">
+
+            <div class="col-xs-12 resize-xs-12">
+                <label class="bold"><ui:text from="{lang.period}"/></label>
+                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" placeholder="{lang.selectDate}"/>
+            </div>
+
+            <productselector:devunit.DevUnitButtonSelector ui:field="products"
+                                                          header="{lang.issueProduct}"
+                                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.issueState}"/></label>
+                <optionlist:IssueStatesOptionList ui:field="state"/>
+            </div>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

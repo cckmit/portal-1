@@ -183,8 +183,9 @@ public class ReportControlServiceImpl implements ReportControlService {
                         new TimeFormatter()
                 );
             case CASE_COMPLETION_TIME:
-                ReportCaseCompletionTime caseComletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO  );
-                return caseComletionTimeReport.writeReport(  buffer );
+                ReportCaseCompletionTime caseCompletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO  );
+                caseCompletionTimeReport.run();
+                return caseCompletionTimeReport.writeReport(  buffer );
         }
         return false;
     }

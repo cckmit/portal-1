@@ -33,6 +33,7 @@ public class ReportCaseCompletionTime {
     }
 
     public void run() {
+        log.info( "run(): Start report. caseQuery: {}", caseQuery );
         intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
 
         long startQuery = System.currentTimeMillis();
@@ -42,7 +43,7 @@ public class ReportCaseCompletionTime {
                 caseQuery.getTo(),
                 caseQuery.getStateIds()
         );
-        log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery  );
+        log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();
 
         cases = groupBayIssues( comments );
@@ -52,7 +53,7 @@ public class ReportCaseCompletionTime {
             interval.fill( cases, ignoredStates );
         }
 
-        log.info( "run(): Case comments processing time: {} ms", System.currentTimeMillis() - startProcessing  );
+        log.info( "run(): Case comments processing time: {} ms", System.currentTimeMillis() - startProcessing );
     }
 
     public static XSSFWorkbook createWorkBook( List<Interval> intervals ) {
@@ -66,7 +67,7 @@ public class ReportCaseCompletionTime {
             cellIndex = 0;
             row.createCell( cellIndex++ ).setCellValue( dateFormat.format( interval.from ) );
             row.createCell( cellIndex++ ).setCellValue( calcAverage( interval ) );
-            row.createCell( cellIndex++ ).setCellValue( calcHours( interval.minTime ) );
+            row.createCell( cellIndex++ ).setCellValue( calcHours( interval.maxTime ) );
             row.createCell( cellIndex ).setCellValue( calcHours( interval.minTime ) );
         }
         return workbook;
@@ -107,14 +108,13 @@ public class ReportCaseCompletionTime {
 
     }
 
-    private static String calcHours( Long value ) {
-        if (value == 0) return String.valueOf( 0 );
-        return String.valueOf( (int) (value / HOUR) );
+    private static Integer calcHours( Long value ) {
+        return (int) (value / HOUR);
     }
 
-    private static String calcAverage( Interval interval ) {
-        if (interval == null || interval.casesCount == 0) return String.valueOf( 0 );
-        return String.valueOf( (int) ((interval.summTime / interval.casesCount) / HOUR) );
+    private static Integer calcAverage( Interval interval ) {
+        if (interval == null || interval.casesCount == 0) return 0;
+        return (int) ((interval.summTime / interval.casesCount) / HOUR);
     }
 
     private static Case mapCase( Case aCase, CaseComment comment ) {
@@ -131,7 +131,7 @@ public class ReportCaseCompletionTime {
     static SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
 
     private List<Case> cases = new ArrayList<>();
-    private List<Interval> intervals;
+    private List<Interval> intervals = new ArrayList<>();
     private Report report;
     private CaseCommentDAO caseCommentDAO;
     private CaseQuery caseQuery;
@@ -170,6 +170,7 @@ public class ReportCaseCompletionTime {
                     ", minTime=" + minTime +
                     '}';
         }
+
         public long from;
         public long to;
         public int casesCount;
@@ -256,6 +257,7 @@ public class ReportCaseCompletionTime {
                 return false;
             return hasIntersection( interval.from, interval.to, status.from, status.to );
         }
+
         public Long caseId;
         public List<Status> statuses = new ArrayList<>();
         Status previousStatus;
@@ -280,6 +282,7 @@ public class ReportCaseCompletionTime {
                     ", caseStateId=" + caseStateId +
                     '}';
         }
+
         Long to; // null - значит статус ещё длится (время завершения статуса окончательное или изменится в будущем)
         long from;
         int caseStateId;
