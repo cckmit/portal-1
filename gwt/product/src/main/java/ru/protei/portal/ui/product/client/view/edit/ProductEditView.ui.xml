@@ -15,7 +15,7 @@
                 <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-10">
                     <label ui:field="nameLabel"><ui:text from="{lang.productName}"/></label>
                     <div class="panelField verifiable">
-                        <i ui:field="verifiableIcon"></i>
+                        <i ui:field="verifiableIcon"/>
                         <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </div>
                 </g:HTMLPanel>
@@ -52,7 +52,7 @@
 
                 <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-xs-12">
                     <label><ui:text from="{lang.belongsTo}"/></label>
-                    <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits"/>
+                    <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits" hasNullValue="false"/>
                 </g:HTMLPanel>
 
                 <g:HTMLPanel styleName="form-group col-xs-12">
