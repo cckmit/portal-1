@@ -312,12 +312,12 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             interval.fill( cases, new HashSet<>( activeStatesShort ) );
         }
 
-        XSSFWorkbook workBook = createWorkBook( intervals );
+        XSSFWorkbook workBook = createWorkBook( intervals, DEFAULT_COLUMN_NAMES );
 
         assertNotNull( workBook );
         assertEquals( 1, workBook.getNumberOfSheets() );
         assertNotNull( workBook.getSheetAt( 0 ) );
-        assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() + 1 );
+        assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() ); // учтена строка с заголовком
     }
 
     private Long makeCaseObject( Person person, Long productId, Date date ) {

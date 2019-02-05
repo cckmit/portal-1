@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
@@ -34,6 +35,8 @@ public class ReportControlServiceImpl implements ReportControlService {
     private final Object sync = new Object();
     private final Set<Long> reportsInProcess = new HashSet<>();
 
+    @Autowired
+    Lang lang;
     @Autowired
     PortalConfig config;
     @Autowired
@@ -186,7 +189,8 @@ public class ReportControlServiceImpl implements ReportControlService {
                 log.info( "writeReport(): Start report {}", report.getName() );
                 ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO  );
                 caseCompletionTimeReport.run();
-                return caseCompletionTimeReport.writeReport(  buffer );
+                Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+                return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
         }
         return false;
     }

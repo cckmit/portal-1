@@ -1,10 +1,10 @@
 package ru.protei.portal.core.report.casecompletion;
 
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.xssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Report;
@@ -23,8 +23,18 @@ public class ReportCaseResolutionTime {
         caseQuery = report.getCaseQuery();
     }
 
-    public boolean writeReport( ByteArrayOutputStream out ) throws IOException {
-        XSSFWorkbook workbook = createWorkBook( intervals );
+    public boolean writeReport( ByteArrayOutputStream out, Lang.LocalizedLang localizedLang ) throws IOException {
+        List<String> columnNames = new ArrayList<>();
+        if (localizedLang != null) {
+            columnNames.add( localizedLang.get( "dateColumn" ) );
+            columnNames.add( localizedLang.get( "averageColumn" ) );
+            columnNames.add( localizedLang.get( "maximumColumn" ) );
+            columnNames.add( localizedLang.get( "minimumColumn" ) );
+        } else {
+            columnNames.addAll( DEFAULT_COLUMN_NAMES );
+        }
+
+        XSSFWorkbook workbook = createWorkBook( intervals, columnNames );
 
         workbook.write( out );
         workbook.close();
@@ -56,16 +66,25 @@ public class ReportCaseResolutionTime {
         log.info( "run(): Case comments processing time: {} ms", System.currentTimeMillis() - startProcessing );
     }
 
-    public static XSSFWorkbook createWorkBook( List<Interval> intervals ) {
+    public static XSSFWorkbook createWorkBook( List<Interval> intervals, List<String> columnNames ) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet();
+        XSSFCellStyle dateStyle = workbook.createCellStyle();
+        dateStyle.setDataFormat( HSSFDataFormat.getBuiltinFormat( "yy-m-d" ) );
         int rowid = 0;
         int cellIndex = 0;
-        for (Interval interval : intervals) {
 
+        XSSFRow headersRow = sheet.createRow( rowid++ );
+        for (String columnName : columnNames) {
+            headersRow.createCell( cellIndex++ ).setCellValue( columnName );
+        }
+
+        for (Interval interval : intervals) {
             XSSFRow row = sheet.createRow( rowid++ );
             cellIndex = 0;
-            row.createCell( cellIndex++ ).setCellValue( dateFormat.format( interval.from ) );
+            XSSFCell dateCell = row.createCell( cellIndex++ );
+            dateCell.setCellValue( dateFormat.format( interval.from ) );
+            dateCell.setCellStyle( dateStyle );
             row.createCell( cellIndex++ ).setCellValue( calcAverage( interval ) );
             row.createCell( cellIndex++ ).setCellValue( calcHours( interval.maxTime ) );
             row.createCell( cellIndex ).setCellValue( calcHours( interval.minTime ) );
@@ -128,7 +147,8 @@ public class ReportCaseResolutionTime {
     public static final long HOUR = 60 * MINUTE;
     public static final long DAY = 24 * HOUR;
 
-    static SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
+    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum" );
 
     private List<Case> cases = new ArrayList<>();
     private List<Interval> intervals = new ArrayList<>();
