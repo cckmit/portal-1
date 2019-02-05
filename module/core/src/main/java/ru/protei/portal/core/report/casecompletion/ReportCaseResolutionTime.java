@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class ReportCaseCompletionTime {
+public class ReportCaseResolutionTime {
 
-    public ReportCaseCompletionTime( Report report, CaseCommentDAO caseCommentDAO ) {
+    public ReportCaseResolutionTime( Report report, CaseCommentDAO caseCommentDAO ) {
         this.report = report;
         this.caseCommentDAO = caseCommentDAO;
         caseQuery = report.getCaseQuery();
@@ -136,7 +136,7 @@ public class ReportCaseCompletionTime {
     private CaseCommentDAO caseCommentDAO;
     private CaseQuery caseQuery;
 
-    private static Logger log = LoggerFactory.getLogger( ReportCaseCompletionTime.class );
+    private static Logger log = LoggerFactory.getLogger( ReportCaseResolutionTime.class );
 
     public static class Interval {
 
@@ -182,20 +182,17 @@ public class ReportCaseCompletionTime {
     public static class Case {
         public long getTime( Interval interval, Set<Integer> acceptableStates ) {
 
-            log.info( "getTime(): Сase {}", this );
             boolean hasIntersectionOnActiveInterval = false;
             long activeTime = 0;
 
             for (Status status : statuses) {
                 // статусы после интервала не подходят
                 if (interval.to <= status.from) {
-                    log.info( "getTime(): Ignored by from: {}", status );
                     continue;// (=) исключить пересечение по концу интервала
                 }
 
                 // Если статус не активный
                 if (!acceptableStates.contains( status.caseStateId )) {
-                    log.info( "getTime(): Ignored by status {}", status );
                     continue;
                 }
 
@@ -204,20 +201,14 @@ public class ReportCaseCompletionTime {
                 }
 
                 activeTime += calcStatusTime( interval, status );
-
-
-                log.warn( "getTime(): {} {} {}", activeTime, hasIntersectionOnActiveInterval, status );
             }
 
             // Задача в интервале была не активна - время задачи не учитывается
             if (!hasIntersectionOnActiveInterval) {
-                log.info( "getTime(): Time: 0 hasIntersectionOnActiveInterval={} {}", hasIntersectionOnActiveInterval, this );
                 return 0;
             }
 
-            log.warn( "getTime(): Time: {} {}", activeTime, this );
             return activeTime;
-
         }
 
         public static long calcStatusTime( long iTo, long sFrom, Long sTo ) {

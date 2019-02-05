@@ -14,7 +14,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
-import ru.protei.portal.core.report.casecompletion.ReportCaseCompletionTime;
+import ru.protei.portal.core.report.casecompletion.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.utils.TimeFormatter;
 
@@ -183,7 +183,8 @@ public class ReportControlServiceImpl implements ReportControlService {
                         new TimeFormatter()
                 );
             case CASE_COMPLETION_TIME:
-                ReportCaseCompletionTime caseCompletionTimeReport = new ReportCaseCompletionTime( report, caseCommentDAO  );
+                log.info( "writeReport(): Start report {}", report.getName() );
+                ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO  );
                 caseCompletionTimeReport.run();
                 return caseCompletionTimeReport.writeReport(  buffer );
         }
