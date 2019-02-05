@@ -1448,4 +1448,8 @@ public interface Lang extends Messages, ContactItemLang {
     String companyParentCompany();
 
     String period();
+
+    String reportMissingProduct();
+
+    String reportMissingPeriod();
 }

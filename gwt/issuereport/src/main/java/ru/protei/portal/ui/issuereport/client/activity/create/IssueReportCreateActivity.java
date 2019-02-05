@@ -162,14 +162,14 @@ public abstract class IssueReportCreateActivity implements Activity,
         CaseQuery query = new CaseQuery();
         ProductShortView product = caseCompletionTimeReportView.products().getValue();
         if (product == null || product.getId() == null) {
-            fireEvent( new NotifyEvents.Show( "Не выбран продукт", NotifyEvents.NotifyType.ERROR ) );
+            fireEvent( new NotifyEvents.Show( lang.reportMissingProduct(), NotifyEvents.NotifyType.ERROR ) );
             return null;
         }
         query.setProductIds( Arrays.asList( product.getId() ) );
         query.setStates( IssueFilterUtils.getStateList( caseCompletionTimeReportView.states().getValue() ) );
         DateInterval interval = caseCompletionTimeReportView.dateRange().getValue();
         if (interval == null) {
-            fireEvent( new NotifyEvents.Show( "Не выбран период", NotifyEvents.NotifyType.ERROR ) );
+            fireEvent( new NotifyEvents.Show( lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR ) );
             return null;
         }
         query.setFrom( interval.from );
