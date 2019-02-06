@@ -1459,4 +1459,12 @@ public interface Lang extends Messages, ContactItemLang {
     String productConfiguration();
 
     String markdownPreview();
+
+    String period();
+
+    String reportMissingProduct();
+
+    String reportMissingPeriod();
+
+    String reportTypeCaseResolutionTime();
 }
