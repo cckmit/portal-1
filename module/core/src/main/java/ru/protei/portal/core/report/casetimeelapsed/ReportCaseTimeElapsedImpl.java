@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -46,7 +47,17 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
             return false;
         }
 
+        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+
         List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
+
+        if (CollectionUtils.isEmpty(caseIds)) {
+            log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
+            ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
+            writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
+            writer.collect(buffer);
+            return true;
+        }
 
         CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
         caseCommentQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
@@ -56,8 +67,6 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
                 .collect(Collectors.toList())
         );
         caseCommentQuery.setAuthorIds(caseQuery.getCommentAuthorIds());
-
-        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
         ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
