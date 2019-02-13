@@ -422,6 +422,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         ) {
             return true;
         }
+
+        if (isNew( issue )) return true;
+
         return subscriptionsList == null || subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .allMatch(CompanySubscription::isProteiRecipient);
