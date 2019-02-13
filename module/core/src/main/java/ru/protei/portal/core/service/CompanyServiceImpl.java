@@ -131,6 +131,19 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<List<CompanySubscription>>().success( result );
     }
 
+    @Override
+    public CoreResponse<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId ) {
+        if ( companyId == null ) {
+            return new CoreResponse<List<CompanySubscription>>().error( En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Company company = companyDAO.get( companyId );
+        if (company == null || company.getParentCompanyId() == null) return getCompanySubscriptions( companyId );
+
+        List<CompanySubscription> result = companySubscriptionDAO.listByCompanyIds( new HashSet<>( Arrays.asList( companyId, company.getParentCompanyId() ) ) );
+        return new CoreResponse<List<CompanySubscription>>().success( result );
+    }
+
     private <T> CoreResponse<T> createUndefinedError() {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }

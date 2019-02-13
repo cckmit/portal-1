@@ -96,6 +96,7 @@ public interface CompanyControllerAsync {
      * @param companyId
      */
     void getCompanySubscription( Long companyId, AsyncCallback< List< CompanySubscription > > async );
+    void getCompanyWithParentCompanySubscriptions( Long companyId, AsyncCallback<List<CompanySubscription>> async );
 
     /**
      * Получить список доступных статусов обращения
