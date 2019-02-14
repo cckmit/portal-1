@@ -7,12 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
+import ru.protei.portal.core.report.casecompletion.ReportCaseResolutionTime;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.utils.TimeFormatter;
 
@@ -33,9 +36,14 @@ public class ReportControlServiceImpl implements ReportControlService {
     private final Set<Long> reportsInProcess = new HashSet<>();
 
     @Autowired
+    Lang lang;
+    @Autowired
     PortalConfig config;
     @Autowired
     ReportDAO reportDAO;
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+
     @Autowired
     ReportStorageService reportStorageService;
     @Autowired
@@ -177,6 +185,12 @@ public class ReportControlServiceImpl implements ReportControlService {
                         new SimpleDateFormat("dd.MM.yyyy HH:mm"),
                         new TimeFormatter()
                 );
+            case CASE_RESOLUTION_TIME:
+                log.info( "writeReport(): Start report {}", report.getName() );
+                ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO  );
+                caseCompletionTimeReport.run();
+                Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+                return caseCompletionTimeReport.writeReport(  buffer, localizedLang );
         }
         return false;
     }

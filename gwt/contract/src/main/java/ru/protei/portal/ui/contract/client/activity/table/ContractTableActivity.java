@@ -55,7 +55,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         init.parent.clear();
         init.parent.add(view.asWidget());
 
-        fireEvent(policyService.hasPrivilegeFor(En_Privilege.CONTACT_CREATE) ?
+        fireEvent(policyService.hasPrivilegeFor(En_Privilege.CONTRACT_CREATE) ?
                 new ActionBarEvents.Add(lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.CONTRACT) :
                 new ActionBarEvents.Clear()
         );

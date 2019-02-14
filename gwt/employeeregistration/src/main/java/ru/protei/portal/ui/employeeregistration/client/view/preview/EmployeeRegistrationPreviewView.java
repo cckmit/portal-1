@@ -125,8 +125,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setProbationPeriodMonth( Integer probationPeriodMonth ) {
-        probationPeriod.setInnerText( String.valueOf( probationPeriodMonth ));
+    public void setProbationPeriodMonth( String probationPeriodMonth ) {
+        probationPeriod.setInnerText(probationPeriodMonth);
     }
 
     @Override

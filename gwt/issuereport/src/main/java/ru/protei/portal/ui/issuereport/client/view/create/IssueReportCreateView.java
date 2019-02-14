@@ -5,10 +5,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
@@ -52,6 +49,16 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         name.setValue(null);
     }
 
+    @Override
+    public HasWidgets getReportContainer() {
+        return reportContainer;
+    }
+
+    @Override
+    public HasVisibility filterWidgetView() {
+        return issueFilterParamView;
+    }
+
     @UiHandler("reportType")
     public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
         if (activity != null) {
@@ -68,6 +75,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     @UiField(provided = true)
     IssueFilterParamView issueFilterParamView;
+
+    @UiField
+    HTMLPanel reportContainer;
 
     private AbstractIssueReportCreateActivity activity;
 

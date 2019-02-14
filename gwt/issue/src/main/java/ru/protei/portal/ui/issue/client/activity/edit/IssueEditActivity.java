@@ -199,7 +199,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.initiator().setValue(null);
         } else {
             Long selectedCompanyId = companyOption.getId();
-            companyService.getCompanySubscription(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
+            companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
                     .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
 
             companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
@@ -422,6 +422,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         ) {
             return true;
         }
+
+        if (isNew( issue )) return true;
+
         return subscriptionsList == null || subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .allMatch(CompanySubscription::isProteiRecipient);

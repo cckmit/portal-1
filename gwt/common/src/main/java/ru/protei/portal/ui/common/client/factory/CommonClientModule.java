@@ -38,6 +38,8 @@ import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
+import ru.protei.portal.ui.common.client.widget.report.AbstractCaseCompletionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.report.CaseCompletionTimeReportView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -108,6 +110,8 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(RequestCallback.class);
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
+
+        bind( AbstractCaseCompletionTimeReportView.class ).to( CaseCompletionTimeReportView.class ).in( Singleton.class );
     }
 }
 
