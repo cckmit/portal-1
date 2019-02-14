@@ -82,6 +82,41 @@
             <version>4.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-api</artifactId>
+            <version>7.6.1</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.atlassian.jira/jira-rest-java-client-api -->
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client-api</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.atlassian.jira/jira-rest-java-client-core -->
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-rest-java-client-core</artifactId>
+            <version>5.1.0-476bd700</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.atlassian.fugue</groupId>
+            <artifactId>fugue</artifactId>
+            <version>
+                RELEASE
+            </version>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.plugin</groupId>
+            <artifactId>atlassian-spring-scanner-annotation</artifactId>
+            <version>RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+
+
     </dependencies>
 
 </project>
