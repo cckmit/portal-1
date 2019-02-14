@@ -53,7 +53,7 @@
                     <label ui:field="initiatorLabel">
                         <ui:text from="{lang.issueInitiator}"/>
                     </label>
-                    <person:PersonButtonSelector ui:field="initiator" fired="false" validation="false" hasNullValue="false"/>
+                    <person:PersonButtonSelector ui:field="initiator" fired="false" validation="false"/>
                 </div>
 
                 <div class="form-group col-xs-3">

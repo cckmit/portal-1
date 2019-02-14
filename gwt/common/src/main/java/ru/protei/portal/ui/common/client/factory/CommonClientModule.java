@@ -37,6 +37,7 @@ import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
 import ru.protei.portal.ui.common.client.widget.report.AbstractCaseCompletionTimeReportView;
 import ru.protei.portal.ui.common.client.widget.report.CaseCompletionTimeReportView;
@@ -76,6 +77,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( CompanyModel.class ).asEagerSingleton();
         bind( HomeCompanyModel.class ).asEagerSingleton();
         bind( EmployeeModel.class ).asEagerSingleton();
+        bind( StateModel.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 
