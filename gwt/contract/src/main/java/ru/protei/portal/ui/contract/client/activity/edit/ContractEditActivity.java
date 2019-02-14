@@ -7,11 +7,13 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -36,6 +38,10 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     @Event
     public void onShow(ContractEvents.Edit event) {
         initDetails.parent.clear();
+
+        if ( policyService.hasAnyPrivilegeOf( En_Privilege.CONTRACT_CREATE, En_Privilege.CONTRACT_EDIT )) {
+            return;
+        }
         initDetails.parent.add(view.asWidget());
 
         if(event.id == null) {
@@ -188,6 +194,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private ContractControllerAsync contractService;
     @Inject
     private DefaultErrorHandler errorHandler;
+    @Inject
+    PolicyService policyService;
 
     private Contract contract;
     private AppEvents.InitDetails initDetails;
