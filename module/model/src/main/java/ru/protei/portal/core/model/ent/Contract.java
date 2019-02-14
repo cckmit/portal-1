@@ -1,8 +1,9 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ContractState;
+import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.struct.ContractDates;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -41,11 +42,35 @@ public class Contract extends AuditableObject implements Serializable {
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "MANAGER", sqlTableAlias = "CO")
     private Long managerId;
 
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "MANAGER", remoteColumn = "id", table = "Person")
+    }, mappedColumn = "displayShortName")
+    private String managerShortName;
+
     /**
      * Куратор договора
      */
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "INITIATOR", sqlTableAlias = "CO")
     private Long curatorId;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "INITIATOR", remoteColumn = "id", table = "Person")
+    }, mappedColumn = "displayShortName")
+    private String curatorShortName;
+
+    /**
+     * Контрагент (компания)
+     */
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "initiator_company", sqlTableAlias = "CO")
+    private Long contragentId;
+
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "initiator_company", remoteColumn = "id", table = "Company")
+    }, mappedColumn = "cname")
+    private String contragentName;
 
     /**
      * Направление
@@ -53,10 +78,11 @@ public class Contract extends AuditableObject implements Serializable {
     @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "product_id", sqlTableAlias = "CO")
     private Long directionId;
 
-    /**
-     * Сумма
-     */
-    private Long cost;
+    @JdbcJoinedColumn(joinPath = {
+            @JdbcJoinPath(localColumn = "id", remoteColumn = "id", table = "case_object"),
+            @JdbcJoinPath(localColumn = "product_id", remoteColumn = "id", table = "dev_unit")
+    }, mappedColumn = "UNIT_NAME")
+    private String directionName;
 
     /**
      * Текущее состояние договора
@@ -65,10 +91,38 @@ public class Contract extends AuditableObject implements Serializable {
     private Integer stateId;
 
     /**
+     * Предмет договора
+     */
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "INFO", sqlTableAlias = "CO")
+    private String description;
+
+    /**
      * Номер
      */
-    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "CASENO", sqlTableAlias = "CO")
+    @JdbcJoinedColumn(localColumn = "id", table = "case_object", remoteColumn = "id", mappedColumn = "CASE_NAME", sqlTableAlias = "CO")
     private String number;
+
+    /**
+     * Сумма
+     */
+    @JdbcColumn
+    private Long cost;
+
+    /**
+     * Тип
+     */
+    @JdbcColumn(name = "contract_type")
+    @JdbcEnumerated(EnumType.ORDINAL)
+    private En_ContractType contractType;
+
+    @JdbcColumn(name = "date_signing")
+    private Date dateSigning;
+
+    @JdbcColumn(name = "date_valid")
+    private Date dateValid;
+
+    @JdbcColumn(name = "contract_dates", converterType = ConverterType.JSON)
+    private ContractDates contractDates;
 
     @Override
     public String getAuditType() {
@@ -92,13 +146,139 @@ public class Contract extends AuditableObject implements Serializable {
         this.stateId = state.getId();
     }
 
-}
+    public Long getCreatorId() {
+        return creatorId;
+    }
 
-//        - дата подписания договора
-//        - срок действия договора
-//        - тип договора
-//        - номер (case_object#caseno)
-//        - Контрагент (селектор на компании)
-//        - предмет договора  (case_object#des)
-//        - сроки поставки и оплаты (тут срок может быть не один)
-//        - куратор договора (селектор на сотрудников отдела договоров) - пока ограничений по должностям нет
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
+    public Long getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(Long managerId) {
+        this.managerId = managerId;
+    }
+
+    public Long getCuratorId() {
+        return curatorId;
+    }
+
+    public void setCuratorId(Long curatorId) {
+        this.curatorId = curatorId;
+    }
+
+    public Long getContragentId() {
+        return contragentId;
+    }
+
+    public void setContragentId(Long contragentId) {
+        this.contragentId = contragentId;
+    }
+
+    public Long getDirectionId() {
+        return directionId;
+    }
+
+    public void setDirectionId(Long directionId) {
+        this.directionId = directionId;
+    }
+
+    public Integer getStateId() {
+        return stateId;
+    }
+
+    public void setStateId(Integer stateId) {
+        this.stateId = stateId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getCost() {
+        return cost;
+    }
+
+    public void setCost(Long cost) {
+        this.cost = cost;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public En_ContractType getContractType() {
+        return contractType;
+    }
+
+    public void setContractType(En_ContractType contractType) {
+        this.contractType = contractType;
+    }
+
+    public String getManagerShortName() {
+        return managerShortName;
+    }
+
+    public String getCuratorShortName() {
+        return curatorShortName;
+    }
+
+    public String getContragentName() {
+        return contragentName;
+    }
+
+    public String getDirectionName() {
+        return directionName;
+    }
+
+    public Date getDateSigning() {
+        return dateSigning;
+    }
+
+    public void setDateSigning(Date dateSigning) {
+        this.dateSigning = dateSigning;
+    }
+
+    public Date getDateValid() {
+        return dateValid;
+    }
+
+    public void setDateValid(Date dateValid) {
+        this.dateValid = dateValid;
+    }
+
+    public ContractDates getContractDates() {
+        return contractDates;
+    }
+
+    public void setContractDates(ContractDates contractDates) {
+        this.contractDates = contractDates;
+    }
+}

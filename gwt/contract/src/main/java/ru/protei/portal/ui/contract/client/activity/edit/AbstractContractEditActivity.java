@@ -5,4 +5,6 @@ public interface AbstractContractEditActivity {
     void onSaveClicked();
 
     void onCancelClicked();
+
+    void onTypeChanged();
 }

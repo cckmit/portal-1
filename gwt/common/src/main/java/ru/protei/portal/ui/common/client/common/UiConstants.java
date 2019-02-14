@@ -27,7 +27,7 @@ public class UiConstants {
         String SITE_FOLDER = "fa fa-folder";
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
-        String CONTRACT = "fa-file-text";
+        String CONTRACT = "fa fa-file-text";
     }
 
     public interface ActionBarIcons {

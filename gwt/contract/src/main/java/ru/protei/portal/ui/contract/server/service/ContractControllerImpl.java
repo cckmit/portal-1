@@ -24,7 +24,7 @@ import java.util.List;
 public class ContractControllerImpl implements ContractController {
     @Override
     public List<Contract> getContracts(ContractQuery query) throws RequestFailedException {
-        log.debug(" get employee registrations: offset={} | limit={}", query.getOffset(), query.getLimit());
+        log.debug(" get contracts: offset={} | limit={}", query.getOffset(), query.getLimit());
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse<List<Contract>> response = contractService.contractList(descriptor.makeAuthToken(), query);
@@ -39,18 +39,18 @@ public class ContractControllerImpl implements ContractController {
     public Integer getContractCount(ContractQuery query) throws RequestFailedException {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug(" get employee registration count(): query={}", query);
+        log.debug(" get contract count(): query={}", query);
         return contractService.count(descriptor.makeAuthToken(), query).getData();
     }
 
     @Override
     public Contract getContract(Long id) throws RequestFailedException {
-        log.debug(" get employee registration, id: {}", id);
+        log.debug(" get contract, id: {}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse<Contract> response = contractService.getContract(descriptor.makeAuthToken(), id);
-        log.debug(" get employee registration, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
+        log.debug(" get contract, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
@@ -59,22 +59,28 @@ public class ContractControllerImpl implements ContractController {
     }
 
     @Override
-    public Long createContract(Contract contract) throws RequestFailedException {
+    public Long saveContract(Contract contract) throws RequestFailedException {
         if (contract == null) {
-            log.warn("null employee registration in request");
+            log.warn("null contract in request");
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        log.debug("create employee registration, id: {}", HelperFunc.nvlt(contract.getId(), "new"));
+        log.debug("create contract, id: {}", HelperFunc.nvlt(contract.getId(), "new"));
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        contract.setCreatorId(descriptor.getPerson().getId());
 
-        CoreResponse<Long> response = contractService.createContract(descriptor.makeAuthToken(), contract);
+        CoreResponse<Long> response;
+        if ( contract.getId() == null ) {
+            response = contractService.createContract(descriptor.makeAuthToken(), contract);
+        } else {
+            response = contractService.updateContract(descriptor.makeAuthToken(), contract);
+        }
 
-        log.debug("create employee registration, result: {}", response.isOk() ? "ok" : response.getStatus());
+        log.debug("create contract, result: {}", response.isOk() ? "ok" : response.getStatus());
 
         if (response.isOk()) {
-            log.debug("create employee registration, applied id: {}", response.getData());
+            log.debug("create contract, applied id: {}", response.getData());
             return response.getData();
         }
 

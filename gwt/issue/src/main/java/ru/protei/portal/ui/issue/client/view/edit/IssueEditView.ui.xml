@@ -1,7 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
-             xmlns:product='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
              xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.buttonselector'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
@@ -9,7 +8,6 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
-             xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list"
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">

@@ -3606,3 +3606,34 @@ div.select2-container {
     margin-left: -4px !important;
   }
 }
+
+.height-40 {
+  height: 40px;
+  max-height: 40px;
+}
+
+.contracts {
+  .num-column {
+    width: 20%;
+  }
+
+  .work-group-column {
+    width: 25%;
+  }
+}
+
+.short-table-view {
+  .contracts {
+    .work-group-column {
+      display: none;
+    }
+
+    .cost-column {
+      display: none;
+    }
+  }
+}
+
+.preview-value-label {
+  margin-top: 4px !important;
+}

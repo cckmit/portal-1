@@ -13,5 +13,5 @@ public interface ContractControllerAsync {
 
     void getContract(Long id, AsyncCallback<Contract> callback);
 
-    void createContract(Contract Contract, AsyncCallback<Long> callback);
+    void saveContract(Contract Contract, AsyncCallback<Long> callback);
 }

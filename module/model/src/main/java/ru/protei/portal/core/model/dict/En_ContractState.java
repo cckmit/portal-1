@@ -29,7 +29,7 @@ public enum En_ContractState {
      */
     WAIT_ORIGINAL(5);
 
-    public static En_ContractState getById(Long id) {
+    public static En_ContractState getById(Integer id) {
         if(id == null)
             return null;
 

@@ -16,5 +16,5 @@ public interface ContractController extends RemoteService {
 
     Contract getContract(Long id) throws RequestFailedException;
 
-    Long createContract(Contract Contract) throws RequestFailedException;
+    Long saveContract(Contract Contract) throws RequestFailedException;
 }

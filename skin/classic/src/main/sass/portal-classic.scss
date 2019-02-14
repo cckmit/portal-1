@@ -70,7 +70,14 @@
     text-align: center;
     background-color: #eee;
     border: 1px solid #ccc;
+  }
+
+  .input-group-addon:first-child {
     border-right: 0;
+  }
+
+  .input-group-addon:last-child {
+    border-left: 0;
   }
 }
 

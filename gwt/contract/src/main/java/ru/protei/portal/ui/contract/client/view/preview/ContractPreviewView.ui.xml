@@ -1,13 +1,86 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
 >
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="preview-wrapper grid">
         <div class="preview">
+
             <fieldset class="header">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <g:HTMLPanel ui:field="commentContainer" />
+                <legend>
+                    <label ui:field="header"/>
+                </legend>
+
+                <div class="col-xs-6">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contractDateSigning}"/></label>
+                    <span class="col-xs-7 col-md-7 preview-value-label" ui:field="dateSigning"/>
+                </div>
+                <div class="col-xs-6">
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.contractDateValid}"/></label>
+                    <span class="col-xs-7 preview-value-label" ui:field="dateValid"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractType}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="type"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractState}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="state"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractDirection}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="direction"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractDescription}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="description"/>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend>
+                    <ui:text from="{lang.contractWorkGroup}"/>
+                </legend>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractManager}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="manager"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractCurator}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="curator"/>
+                </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractContragent}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="contragent"/>
+                </div>
+            </fieldset>
+            <fieldset class="header">
+                <legend>
+                    <ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/>
+                </legend>
+                <label class="col-xs-12" ui:field="dates"/>
+            </fieldset>
+            <fieldset class="header">
+                <legend>
+                    <ui:text from="{lang.comments}"/>
+                </legend>
+                <g:HTMLPanel ui:field="commentContainer"/>
             </fieldset>
         </div>
     </g:HTMLPanel>

@@ -20,7 +20,7 @@ public abstract class ContractPage
 
     @PostConstruct
     public void onInit() {
-        ТAB = lang.employeeRegistrations();
+        ТAB = lang.contracts();
     }
 
     @Event

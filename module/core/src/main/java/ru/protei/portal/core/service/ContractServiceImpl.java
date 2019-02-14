@@ -49,7 +49,6 @@ public class ContractServiceImpl implements ContractService {
         Contract contract = contractDAO.get(id);
         if (contract == null)
             return new CoreResponse<Contract>().error(En_ResultStatus.NOT_FOUND);
-        jdbcManyRelationsHelper.fillAll(contract);
         return new CoreResponse<Contract>().success(contract);
     }
 
@@ -59,7 +58,8 @@ public class ContractServiceImpl implements ContractService {
         if (contract == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        CaseObject caseObject = createCaseObjectFromContract(contract);
+
+        CaseObject caseObject = fillCaseObjectFromContract(null, contract);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
             return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
@@ -70,22 +70,44 @@ public class ContractServiceImpl implements ContractService {
         if (contractId == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
 
-        // Заполнить связанные поля
-        contract = contractDAO.get( contractId );
-
-        if(contract == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
-
-
         return new CoreResponse<Long>().success(id);
     }
 
-    private CaseObject createCaseObjectFromContract(Contract contract) {
-        CaseObject caseObject = new CaseObject();
-        caseObject.setCaseType(En_CaseType.CONTRACT);
-        caseObject.setState(En_CaseState.CREATED);
-        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CONTRACT));
-        caseObject.setCreated(new Date());
+    @Override
+    @Transactional
+    public CoreResponse<Long> updateContract(AuthToken token, Contract contract) {
+        if (contract == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = caseObjectDAO.get(contract.getId());
+        if ( caseObject == null ) {
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_FOUND);
+        }
+        fillCaseObjectFromContract(caseObject, contract);
+        caseObjectDAO.merge(caseObject);
+        contractDAO.merge(contract);
+
+        return new CoreResponse<Long>().success(contract.getId());
+    }
+
+    private CaseObject fillCaseObjectFromContract(CaseObject caseObject, Contract contract) {
+        if ( caseObject == null ) {
+            caseObject = new CaseObject();
+            caseObject.setCaseType(En_CaseType.CONTRACT);
+            caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.CONTRACT));
+            caseObject.setCreated(new Date());
+        } else {
+            caseObject.setModified(new Date());
+        }
+
+        caseObject.setInfo(contract.getDescription());
+        caseObject.setName(contract.getNumber());
+        caseObject.setStateId(contract.getState().getId());
+        caseObject.setManagerId(contract.getManagerId());
+        caseObject.setInitiatorId(contract.getCuratorId());
+        caseObject.setInitiatorCompanyId(contract.getContragentId());
+        caseObject.setProductId(contract.getDirectionId());
+
         return caseObject;
     }
 

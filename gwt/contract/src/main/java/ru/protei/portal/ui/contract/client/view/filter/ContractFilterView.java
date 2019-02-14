@@ -12,28 +12,36 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.inject.Inject;
-import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
-import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ContractState;
+import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.employeeregstate.EmployeeRegistrationStateOptionList;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
+import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector;
+import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+
 
 public class ContractFilterView extends Composite implements AbstractContractFilterView {
 
     @Inject
     public void onInit() {
         initWidget(outUiBinder.createAndBindUi(this));
-        sortField.setType(ModuleType.EMPLOYEE_REGISTRATION);
+        sortField.setType(ModuleType.CONTRACT);
     }
 
     @Override
@@ -46,6 +54,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         name.setValue(null);
         sortField.setValue(En_SortField.creation_date);
         sortDir.setValue(false);
+        contragents.setValue(null);
+        managers.setValue(null);
+        direction.setValue(null);
+        state.setValue(null);
+        type.setValue(null);
     }
 
     @Override
@@ -62,6 +75,31 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
+    }
+
+    @Override
+    public HasValue<Set<PersonShortView>> managers() {
+        return managers;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> contragents() {
+        return contragents;
+    }
+
+    @Override
+    public HasValue<En_ContractType> type() {
+        return type;
+    }
+
+    @Override
+    public HasValue<En_ContractState> state() {
+        return state;
+    }
+
+    @Override
+    public HasValue<ProductDirectionInfo> direction() {
+        return direction;
     }
 
     @UiHandler("resetBtn")
@@ -93,6 +131,31 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     protected void onAttach() {
         super.onAttach();
         positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
+    }
+
+    @UiHandler("managers")
+    public void onManagersChanged(ValueChangeEvent<Set<PersonShortView>> event) {
+        restartChangeTimer();
+    }
+
+    @UiHandler("contragents")
+    public void onContragentsChanged(ValueChangeEvent<Set<EntityOption>> event) {
+        restartChangeTimer();
+    }
+
+    @UiHandler("state")
+    public void onStateChanged(ValueChangeEvent<En_ContractState> event) {
+        restartChangeTimer();
+    }
+
+    @UiHandler("type")
+    public void onTypeChanged(ValueChangeEvent<En_ContractType> event) {
+        restartChangeTimer();
+    }
+
+    @UiHandler("direction")
+    public void onDirectionChanged(ValueChangeEvent<ProductDirectionInfo> event) {
+        restartChangeTimer();
     }
 
     @Override
@@ -127,6 +190,21 @@ public class ContractFilterView extends Composite implements AbstractContractFil
 
     @UiField
     ToggleButton sortDir;
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector managers;
+    @Inject
+    @UiField(provided = true)
+    CompanyMultiSelector contragents;
+    @Inject
+    @UiField(provided = true)
+    ContractStateSelector state;
+    @Inject
+    @UiField(provided = true)
+    ProductDirectionButtonSelector direction;
+    @Inject
+    @UiField(provided = true)
+    ContractTypeSelector type;
 
     @Inject
     FixedPositioner positioner;

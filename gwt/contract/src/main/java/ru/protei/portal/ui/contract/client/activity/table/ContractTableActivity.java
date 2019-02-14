@@ -10,20 +10,24 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.ActionBarEvents;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.ContractEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
+import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
 
 import java.util.List;
+
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getCompaniesIdList;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getManagersIdList;
 
 public abstract class ContractTableActivity implements AbstractContractTableActivity,
         AbstractContractFilterActivity, Activity {
@@ -34,6 +38,11 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         view.setAnimation(animation);
         filterView.setActivity(this);
         view.getFilterContainer().add(filterView.asWidget());
+    }
+
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        filterView.resetFilter();
     }
 
     @Event
@@ -57,7 +66,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
     @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
-        if (!UiConstants.ActionBarIdentity.EMPLOYEE_REGISTRATION.equals(event.identity)) {
+        if (!UiConstants.ActionBarIdentity.CONTRACT.equals(event.identity)) {
             return;
         }
         fireEvent(new ContractEvents.Edit());
@@ -66,6 +75,11 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     @Override
     public void onItemClicked(Contract value) {
         showPreview(value);
+    }
+
+    @Override
+    public void onEditClicked(Contract value) {
+        fireEvent(new ContractEvents.Edit(value.getId()));
     }
 
     @Override
@@ -79,18 +93,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setOffset(offset);
         query.setLimit(limit);
 
-        contractService.getContracts(query, new RequestCallback<List<Contract>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(List<Contract> contracts) {
-                asyncCallback.onSuccess(contracts);
-            }
-        });
-
+        contractService.getContracts(query, new FluentCallback<List<Contract>>()
+                .withError(throwable -> errorHandler.accept(throwable))
+                .withSuccess(asyncCallback::onSuccess));
     }
 
     private ContractQuery makeQuery() {
@@ -98,6 +103,12 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.searchString = filterView.searchString().getValue();
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
+        query.setContragentIds(getCompaniesIdList(filterView.contragents().getValue()));
+        query.setManagerIds(getManagersIdList(filterView.managers().getValue()));
+        query.setType(filterView.type().getValue());
+        query.setState(filterView.state().getValue());
+        ProductDirectionInfo value = filterView.direction().getValue();
+        query.setDirectionId(value == null ? null : value.id);
         return query;
     }
 
@@ -114,17 +125,9 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         view.clearRecords();
         animation.closeDetails();
 
-        contractService.getContractCount(query, new RequestCallback<Integer>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Integer count) {
-                view.setRecordCount(count);
-            }
-        });
+        contractService.getContractCount(query, new FluentCallback<Integer>()
+                .withError(throwable -> errorHandler.accept(throwable))
+                .withSuccess(count -> view.setRecordCount(count)));
     }
 
 
@@ -140,6 +143,8 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
     private AbstractContractFilterView filterView;
     @Inject
     private ContractControllerAsync contractService;
+    @Inject
+    private DefaultErrorHandler errorHandler;
 
     private AppEvents.InitDetails init;
 }

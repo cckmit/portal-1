@@ -11,15 +11,18 @@ import java.util.List;
 
 public interface ContractService {
 
-    @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
+    @Privileged(En_Privilege.CONTRACT_VIEW)
     CoreResponse<Integer> count(AuthToken token, ContractQuery query);
 
-    @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
+    @Privileged(En_Privilege.CONTRACT_VIEW)
     CoreResponse<List<Contract>> contractList(AuthToken token, ContractQuery query);
 
-    @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
+    @Privileged(En_Privilege.CONTRACT_VIEW)
     CoreResponse<Contract> getContract(AuthToken token, Long id);
 
-    @Privileged(requireAny = En_Privilege.EMPLOYEE_REGISTRATION_CREATE)
+    @Privileged(requireAny = En_Privilege.CONTRACT_CREATE)
     CoreResponse<Long> createContract(AuthToken token, Contract contract);
+
+    @Privileged(requireAny = En_Privilege.CONTRACT_EDIT)
+    CoreResponse<Long> updateContract(AuthToken token, Contract contract);
 }
