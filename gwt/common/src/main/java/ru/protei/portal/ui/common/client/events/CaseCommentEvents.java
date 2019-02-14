@@ -23,13 +23,12 @@ public class CaseCommentEvents {
                 event.caseId = caseId;
                 return this;
             }
-            public Builder withNewCommentEnabled(boolean isNewCommentEnabled) {
-                event.isNewCommentEnabled = isNewCommentEnabled;
-                event.isEditAndReplyEnabled = isNewCommentEnabled;
+            public Builder withModifyEnabled(boolean isModifyEnabled) {
+                event.isModifyEnabled = isModifyEnabled;
                 return this;
             }
             public Builder withElapsedTimeEnabled(boolean isElapsedTimeEnabled) {
-                event.isNewCommentEnabled = isElapsedTimeEnabled;
+                event.isElapsedTimeEnabled = isElapsedTimeEnabled;
                 return this;
             }
             public Show build() {
@@ -47,7 +46,6 @@ public class CaseCommentEvents {
         public En_CaseType caseType;
         public Long caseId;
         public boolean isElapsedTimeEnabled = false;
-        public boolean isNewCommentEnabled = false;
-        public boolean isEditAndReplyEnabled = false;
+        public boolean isModifyEnabled = false;
     }
 }

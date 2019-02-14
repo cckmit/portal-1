@@ -110,7 +110,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
                 .withCaseId(value.getId())
-                .withNewCommentEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW))
+                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW))
                 .build());
     }
 

@@ -76,8 +76,7 @@ public abstract class CaseCommentListActivity
         this.caseType = event.caseType;
         this.caseId = event.caseId;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
-        this.isNewCommentEnabled = event.isNewCommentEnabled;
-        this.isEditAndReplyEnabled = event.isEditAndReplyEnabled;
+        this.isModifyEnabled = event.isModifyEnabled;
 
         comment = null;
         lastCommentView = null;
@@ -91,7 +90,7 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
-        view.enabledNewComment(isNewCommentEnabled);
+        view.enabledNewComment(isModifyEnabled);
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
@@ -282,7 +281,7 @@ public abstract class CaseCommentListActivity
     private void fillView(List<CaseComment> comments){
         itemViewToModel.clear();
         view.clearCommentsContainer();
-        view.enabledNewComment(isNewCommentEnabled);
+        view.enabledNewComment(isModifyEnabled);
 
         for (CaseComment value : comments) {
             AbstractCaseCommentItemView itemView = makeCommentView( value );
@@ -319,7 +318,7 @@ public abstract class CaseCommentListActivity
             itemView.hideOptions();
         }
 
-        itemView.enabledEdit(isEditAndReplyEnabled && isNewCommentEnabled);
+        itemView.enabledEdit(isModifyEnabled && isModifyEnabled);
 
         if ( isStateChangeComment ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
@@ -333,8 +332,8 @@ public abstract class CaseCommentListActivity
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
 
-        itemView.enabledEdit( isEditAndReplyEnabled && CaseCommentUtils.isEnableEdit( value, profile.getId() ) );
-        itemView.enableReply(isEditAndReplyEnabled);
+        itemView.enabledEdit( isModifyEnabled && CaseCommentUtils.isEnableEdit( value, profile.getId() ) );
+        itemView.enableReply(isModifyEnabled);
         itemViewToModel.put( itemView, value );
 
         return itemView;
@@ -533,8 +532,7 @@ public abstract class CaseCommentListActivity
     private En_CaseType caseType;
     private boolean requesting = false;
     private boolean isElapsedTimeEnabled = false;
-    private boolean isNewCommentEnabled = true;
-    private boolean isEditAndReplyEnabled = true;
+    private boolean isModifyEnabled = true;
     private Long caseId;
     
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();

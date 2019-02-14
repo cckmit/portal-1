@@ -106,7 +106,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.OFFICIAL)
                 .withCaseId(official.getId())
-                .withNewCommentEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT))
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT))
                 .build());
 
     }
@@ -166,7 +166,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
                 fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                         .withCaseType(En_CaseType.OFFICIAL)
                         .withCaseId(officialId)
-                        .withNewCommentEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT))
+                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT))
                         .build());
             }
         });

@@ -116,7 +116,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                         .withCaseType(En_CaseType.CRM_SUPPORT)
                         .withCaseId(issueId)
-                        .withNewCommentEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                         .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                         .build());
             }
@@ -166,7 +166,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CRM_SUPPORT)
                 .withCaseId(value.getId())
-                .withNewCommentEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                 .build());
     }
