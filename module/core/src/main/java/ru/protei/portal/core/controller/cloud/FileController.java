@@ -21,6 +21,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.FileStream;
@@ -76,16 +77,21 @@ public class FileController {
     )
     @ResponseBody
     public String uploadFile(HttpServletRequest request, HttpServletResponse response){
-        return uploadFileToCase(request, null, response);
+        return uploadFileToCase(request, null, null, response);
     }
 
     @RequestMapping(
-            value = "/uploadFileToCase{caseNumber:[0-9]+}",
+            value = "/uploadFileToCase/{caseTypeId:[0-9]+}/{caseNumber:[0-9]+}",
             method = RequestMethod.POST,
             produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8"
     )
     @ResponseBody
-    public String uploadFileToCase (HttpServletRequest request, @PathVariable("caseNumber") Long caseNumber, HttpServletResponse response){
+    public String uploadFileToCase(
+            HttpServletRequest request,
+            @PathVariable("caseTypeId") Integer caseTypeId,
+            @PathVariable("caseNumber") Long caseNumber,
+            HttpServletResponse response
+    ) {
 
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
@@ -104,7 +110,8 @@ public class FileController {
                     Attachment attachment = saveAttachment(item, creator.getId());
 
                     if(caseNumber != null) {
-                        CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), attachment, caseNumber);
+                        En_CaseType caseType = En_CaseType.find(caseTypeId);
+                        CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
                         if(caseAttachId.isError()) {
                             logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
                             break;

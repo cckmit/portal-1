@@ -13,6 +13,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.test.client.DebugIds;
@@ -166,7 +167,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setCaseNumber(Long caseNumber) {
-        fileUploader.autoBindingToCase(caseNumber);
+        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
     @Override

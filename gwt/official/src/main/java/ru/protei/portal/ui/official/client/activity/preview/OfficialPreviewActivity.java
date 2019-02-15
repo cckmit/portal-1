@@ -147,7 +147,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+        attachmentService.removeAttachmentEverywhere(En_CaseType.OFFICIAL, attachment.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));

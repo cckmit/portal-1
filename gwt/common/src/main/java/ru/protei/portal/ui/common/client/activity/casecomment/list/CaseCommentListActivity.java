@@ -256,7 +256,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void removeAttachment(Long id, Runnable successAction){
-        attachmentService.removeAttachmentEverywhere(id, new RequestCallback<Boolean>() {
+        attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
@@ -352,7 +352,7 @@ public abstract class CaseCommentListActivity
 
     private void requestAttachments(List<Long> ids, Consumer<Collection<Attachment>> addAction){
 
-        attachmentService.getAttachments(ids, new RequestCallback<List<Attachment>>() {
+        attachmentService.getAttachments(caseType, ids, new RequestCallback<List<Attachment>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
