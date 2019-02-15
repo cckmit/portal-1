@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.uploader;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -25,14 +26,7 @@ public class AttachmentUploader extends FileUploader{
         form.removeStyleName("attachment-uploading");
         form.reset();
         fileUpload.setEnabled(true);
-        if(uploadHandler == null)
-            return;
-
-        Attachment attachment = createAttachment(event.getResults());
-        if(attachment == null)
-            uploadHandler.onError();
-        else
-            uploadHandler.onSuccess(attachment);
+        onUploaded(event.getResults());
     }
 
     @Override
@@ -49,6 +43,21 @@ public class AttachmentUploader extends FileUploader{
         }
     }
 
+    public void uploadBase64File(String json) {
+        try {
+            RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(UPLOAD_BASE_64_FILE_URL));
+            builder.setHeader("Content-type", "application/json");
+            builder.sendRequest(json, new RequestCallback() {
+                @Override
+                public void onResponseReceived(Request request, Response response) {
+                    onUploaded(response.getText());
+                }
+                @Override
+                public void onError(Request request, Throwable exception) {}
+            });
+        } catch (RequestException e) {}
+    }
+
     /**
      * При успешной загрузке файла автоматически делает связку с кейсом
      * @param caseNumber номер кейса
@@ -60,6 +69,18 @@ public class AttachmentUploader extends FileUploader{
 
     public void setUploadHandler(FileUploadHandler fileUploadHandler){
         this.uploadHandler = fileUploadHandler;
+    }
+
+    private void onUploaded(String response) {
+        if (uploadHandler == null) {
+            return;
+        }
+        Attachment attachment = createAttachment(response);
+        if (attachment == null) {
+            uploadHandler.onError();
+        } else {
+            uploadHandler.onSuccess(attachment);
+        }
     }
 
     private Attachment createAttachment(String json){
@@ -81,6 +102,7 @@ public class AttachmentUploader extends FileUploader{
 
     private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFile";
     private static final String UPLOAD_WITH_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFileToCase";
+    private static final String UPLOAD_BASE_64_FILE_URL = GWT.getModuleBaseURL() + "springApi/uploadBase64File";
     private FileUploadHandler uploadHandler;
     private En_CaseType caseType;
     private Long caseNumber;

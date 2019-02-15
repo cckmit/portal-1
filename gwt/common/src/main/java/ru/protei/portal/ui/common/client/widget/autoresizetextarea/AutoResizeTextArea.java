@@ -8,12 +8,12 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.TextArea;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.widget.imagepastetextarea.ImagePasteTextArea;
 
-public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAddHandlers {
+public class AutoResizeTextArea extends ImagePasteTextArea implements KeyUpHandler, HasAddHandlers {
 
     private final static String NEW_LINE_SYMBOL = "\n";
     private final static int INDEX_NOT_FOUND = -1;
@@ -23,6 +23,7 @@ public class AutoResizeTextArea extends TextArea implements KeyUpHandler, HasAdd
     private int extraRows = 2;
 
     public AutoResizeTextArea() {
+        super();
         addKeyUpHandler(this);
     }
 
