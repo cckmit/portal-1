@@ -67,13 +67,7 @@ public class CaseCommentListView
 
     @Override
     public void enabledNewComment( boolean value ) {
-        comment.setVisible( value );
-        send.setVisible( value );
-    }
-
-    @Override
-    public void setEnabledAttachAndComment(boolean isEnabled) {
-        newMessage.setVisible(isEnabled);
+        newMessage.setVisible(value);
     }
 
     @Override

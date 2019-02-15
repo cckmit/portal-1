@@ -176,13 +176,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.attachmentsContainer().remove(attachment);
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                if(!isNew(issue))
-                    fireEvent(new CaseCommentEvents.Show(
-                            view.getCommentsContainer(),
-                            En_CaseType.CRM_SUPPORT,
-                            issue.getId(),
-                            policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-                    ));
+                if (!isNew(issue)) {
+                    fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                            .withCaseType(En_CaseType.CRM_SUPPORT)
+                            .withCaseId(issue.getId())
+                            .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                            .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                            .build());
+                }
             }
         });
     }
@@ -276,12 +277,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            fireEvent(new CaseCommentEvents.Show(
-                    view.getCommentsContainer(),
-                    En_CaseType.CRM_SUPPORT,
-                    issue.getId(),
-                    policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-            ));
+            fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .withCaseId(issue.getId())
+                    .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                    .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                    .build());
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule

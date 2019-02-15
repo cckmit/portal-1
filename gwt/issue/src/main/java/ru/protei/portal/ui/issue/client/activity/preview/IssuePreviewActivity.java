@@ -112,12 +112,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(issueId));
 
-                fireEvent(new CaseCommentEvents.Show(
-                        view.getCommentsContainer(),
-                        En_CaseType.CRM_SUPPORT,
-                        issueId,
-                        policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-                ));
+                fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                        .withCaseType(En_CaseType.CRM_SUPPORT)
+                        .withCaseId(issueId)
+                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                        .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                        .build());
             }
         });
     }
@@ -162,12 +162,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
 
-        fireEvent(new CaseCommentEvents.Show(
-                view.getCommentsContainer(),
-                En_CaseType.CRM_SUPPORT,
-                value.getId(),
-                policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-        ));
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withCaseId(value.getId())
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                .build());
     }
 
     private void fillSubscriptions( CaseObject value ) {
