@@ -466,6 +466,7 @@ public abstract class CaseCommentListActivity
                     view.attachmentContainer().clear();
                     view.clearTimeElapsed();
                     tempAttachments.clear();
+                    // FIXME зачем IssueEvents.ChangeModel здесь \/
                     fireEvent(new IssueEvents.ChangeModel());
                     updateTimeElapsedInIssue(itemViewToModel.values());
                 })
