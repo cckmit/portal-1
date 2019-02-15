@@ -17,6 +17,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
@@ -218,7 +219,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setCaseNumber(Long caseNumber) {
-        fileUploader.autoBindingToCase(caseNumber);
+        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
     @Override

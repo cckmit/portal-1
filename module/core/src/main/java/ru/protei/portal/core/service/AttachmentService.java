@@ -2,9 +2,8 @@ package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
-import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseAttachment;
@@ -13,7 +12,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by bondarenko on 23.01.17.
+ * Service to get/save/remove attachments {@link ru.protei.portal.core.model.ent.Attachment}
+ * of types {@link ru.protei.portal.core.model.dict.En_CaseType}
+ * Privileges are checked manually
  */
 public interface AttachmentService {
 
@@ -23,23 +24,17 @@ public interface AttachmentService {
      * {@link ru.protei.portal.core.model.ent.CaseAttachment}
      * и из облака
      */
-    @Privileged( En_Privilege.ISSUE_EDIT )
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    CoreResponse<Boolean> removeAttachmentEverywhere( AuthToken token, Long attachmentId);
+    CoreResponse<Boolean> removeAttachmentEverywhere(AuthToken token, En_CaseType caseType, Long attachmentId);
 
-    @Privileged( En_Privilege.ISSUE_EDIT )
     @Auditable( En_AuditType.ATTACHMENT_REMOVE )
-    CoreResponse<Boolean> removeAttachment( AuthToken token, Long id);
+    CoreResponse<Boolean> removeAttachment(AuthToken token, En_CaseType caseType, Long id);
 
-    @Privileged( En_Privilege.ISSUE_VIEW )
-    CoreResponse<List<Attachment>> getAttachmentsByCaseId( AuthToken token, Long caseId);
+    CoreResponse<List<Attachment>> getAttachmentsByCaseId(AuthToken token, En_CaseType caseType, Long caseId);
 
-    @Privileged( En_Privilege.ISSUE_VIEW )
-    CoreResponse<List<Attachment>> getAttachments( AuthToken token, List<Long> ids);
+    CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, List<Long> ids);
 
-    @Privileged( En_Privilege.ISSUE_VIEW )
-    CoreResponse<List<Attachment>> getAttachments( AuthToken token, Collection<CaseAttachment> caseAttachments);
+    CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments);
 
     CoreResponse<Long> saveAttachment(Attachment attachment);
-
 }

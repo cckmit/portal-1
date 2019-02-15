@@ -5,6 +5,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.FormPanel;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Attachment;
 
 import java.util.Date;
@@ -40,7 +41,7 @@ public class AttachmentUploader extends FileUploader{
         if (filename.length() != 0 && !form.getElement().hasClassName("attachment-uploading")) {
             form.addStyleName("attachment-uploading");
             if(caseNumber != null){
-                form.setAction(UPLOAD_WITH_AUTOBINDING_URL + caseNumber);
+                form.setAction(UPLOAD_WITH_AUTOBINDING_URL + "/" + caseType.getId() + "/" + caseNumber);
             }else
                 form.setAction(UPLOAD_WITHOUT_AUTOBINDING_URL);
             form.submit();
@@ -52,7 +53,8 @@ public class AttachmentUploader extends FileUploader{
      * При успешной загрузке файла автоматически делает связку с кейсом
      * @param caseNumber номер кейса
      */
-    public void autoBindingToCase(Long caseNumber){
+    public void autoBindingToCase(En_CaseType caseType, Long caseNumber){
+        this.caseType = caseType;
         this.caseNumber = caseNumber;
     }
 
@@ -80,5 +82,6 @@ public class AttachmentUploader extends FileUploader{
     private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFile";
     private static final String UPLOAD_WITH_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFileToCase";
     private FileUploadHandler uploadHandler;
+    private En_CaseType caseType;
     private Long caseNumber;
 }

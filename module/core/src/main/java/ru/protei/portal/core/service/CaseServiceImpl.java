@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -63,6 +64,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseCommentService caseCommentService;
+
+    @Autowired
+    CasePrivilegeValidator casePrivilegeValidator;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
@@ -377,8 +381,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, Attachment attachment, long caseNumber) {
-        CaseObject caseObject = caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber);
+    public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
+        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
+
+        CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return new CoreResponse<Long>().error( En_ResultStatus.PERMISSION_DENIED );
         }
