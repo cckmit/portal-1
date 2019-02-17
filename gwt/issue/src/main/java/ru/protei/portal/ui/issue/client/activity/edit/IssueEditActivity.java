@@ -313,7 +313,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             if (isNew(issue) && !isRestoredIssue) {
                 boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
                 view.timeElapsedLabel().setTime(null);
-                view.timeElapsedInput().setTime(0L);
+                if ( !isRestoredIssue ) {
+                    view.timeElapsedInput().setTime(0L);
+                }
                 view.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
                 view.timeElapsedInputVisibility().setVisible(timeElapsedEditAllowed);
             } else {
