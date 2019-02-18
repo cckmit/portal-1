@@ -3,22 +3,21 @@ package ru.protei.portal.ui.common.client.widget.imagepastetextarea;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.TextArea;
-import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.Base64Facade;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.HasPasteHandlers;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteHandler;
 
-import java.util.HashMap;
-
 public class ImagePasteTextArea extends TextArea implements HasPasteHandlers {
 
-    public ImagePasteTextArea() {
+    public ImagePasteTextArea() {}
+
+    public void setEnablePasteImage(boolean isEnabled){
+        if ( !isEnabled ) {
+            return;
+        }
+
         addPasteHandler(this.getElement(), this);
     }
 

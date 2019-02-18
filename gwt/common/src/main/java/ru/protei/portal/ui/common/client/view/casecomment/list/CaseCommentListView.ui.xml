@@ -21,6 +21,7 @@
                             <autoresizetextarea:AutoResizeTextArea
                                     ui:field="comment"
                                     styleName="input-field form-group message-input resize-vertical"
+                                    enablePasteImage="true"
                                     minRows="5" maxRows="20"/>
 
                             <div class="attachments">
