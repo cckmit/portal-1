@@ -405,6 +405,7 @@ public abstract class CaseCommentListActivity
             if ( id == null ) {
                 fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
             }
+            requesting = false;
             view.sendEnabled().setEnabled(true);
             return;
         }
