@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.CommentTimeElapsedQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.TimeFormatter;
@@ -49,24 +50,20 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
-        List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
+//        List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
+//
+//        if (CollectionUtils.isEmpty(caseIds)) {
+//            log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
+//            ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
+//            writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
+//            writer.collect(buffer);
+//            return true;
+//        }
 
-        if (CollectionUtils.isEmpty(caseIds)) {
-            log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
-            writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
-            writer.collect(buffer);
-            return true;
-        }
-
-        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
+        CommentTimeElapsedQuery caseCommentQuery = new CommentTimeElapsedQuery(caseQuery);
         caseCommentQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
         caseCommentQuery.setTimeElapsedNotNull(true);
-        caseCommentQuery.setCaseObjectIds(caseIds.stream()
-                .map(CaseShortView::getId)
-                .collect(Collectors.toList())
-        );
-        caseCommentQuery.setAuthorIds(caseQuery.getCommentAuthorIds());
+
 
         ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
@@ -79,7 +76,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         }
     }
 
-    private boolean writeReport(ReportWriter<CaseCommentTimeElapsedSum> writer, Report report, CaseCommentQuery query) {
+    private boolean writeReport(ReportWriter<CaseCommentTimeElapsedSum> writer, Report report, CommentTimeElapsedQuery query) {
 
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
