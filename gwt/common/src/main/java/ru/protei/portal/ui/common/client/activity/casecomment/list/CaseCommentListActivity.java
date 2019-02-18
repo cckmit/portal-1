@@ -405,6 +405,7 @@ public abstract class CaseCommentListActivity
             if ( id == null ) {
                 fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
             }
+            view.sendEnabled().setEnabled(true);
             return;
         }
 
@@ -419,8 +420,8 @@ public abstract class CaseCommentListActivity
 
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
                 .withError(throwable -> {
-                    view.sendEnabled().setEnabled(true);
                     requesting = false;
+                    view.sendEnabled().setEnabled(true);
 
                     if (saveCommentCompleteHandler != null) {
                         saveCommentCompleteHandler.onError(throwable);
