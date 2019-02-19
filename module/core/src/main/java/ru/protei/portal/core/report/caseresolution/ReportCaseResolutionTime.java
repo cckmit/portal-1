@@ -1,4 +1,4 @@
-package ru.protei.portal.core.report.casecompletion;
+package ru.protei.portal.core.report.caseresolution;
 
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.xssf.usermodel.*;
@@ -47,7 +47,7 @@ public class ReportCaseResolutionTime {
         intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
 
         long startQuery = System.currentTimeMillis();
-        List<CaseComment> comments = caseCommentDAO.reportCaseCompletionTime(
+        List<CaseComment> comments = caseCommentDAO.reportCaseResolutionTime(
                 caseQuery.getProductIds().get( 0 ),
                 caseQuery.getFrom(),
                 caseQuery.getTo(),

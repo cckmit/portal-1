@@ -51,7 +51,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<CaseComment> reportCaseCompletionTime( Long productId, Date from, Date to, List<Integer> terminatedStates ) {
+    public List<CaseComment> reportCaseResolutionTime( Long productId, Date from, Date to, List<Integer> terminatedStates ) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
         String acceptableStates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );

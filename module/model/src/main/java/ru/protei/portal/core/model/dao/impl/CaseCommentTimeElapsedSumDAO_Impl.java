@@ -21,9 +21,8 @@ public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCom
     private static final Logger log = LoggerFactory.getLogger( CaseCommentTimeElapsedSumDAO_Impl.class );
 
     private JdbcQueryParameters makeJdbcQueryParameters( CommentTimeElapsedQuery query ) {
-        SqlConditionBuilder condition = SqlConditionBuilder.init();
+        SqlConditionBuilder condition = SqlConditionBuilder.init()
 
-        condition
                 .and( "case_object.id" ).equal( query.getId() )
                 .and( "case_object.caseno" ).in( query.getCaseNumbers() )
                 .and( "case_object.initiator" ).in( query.getInitiatorIds() )
