@@ -109,13 +109,25 @@
                 RELEASE
             </version>
         </dependency>
+
         <dependency>
             <groupId>com.atlassian.plugin</groupId>
             <artifactId>atlassian-spring-scanner-annotation</artifactId>
             <version>RELEASE</version>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>jta</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.0.1b</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/webwork/pell-multipart-request -->
+        <dependency>
+            <groupId>webwork</groupId>
+            <artifactId>pell-multipart-request</artifactId>
+            <version>1.31.1</version>
+        </dependency>
 
     </dependencies>
 

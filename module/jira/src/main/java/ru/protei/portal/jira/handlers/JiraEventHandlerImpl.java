@@ -83,7 +83,6 @@ public class JiraEventHandlerImpl {
 
     private void changeAssignee(GenericValue changetemp, Issue issue, ApplicationUser user) {
         String currentAssignee = issue.getAssigneeId();
-        issue.getC
         String componentName = null;
         String componentLead = null;
         Collection<ProjectComponent> components = issue.getComponentObjects();

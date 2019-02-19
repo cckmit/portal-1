@@ -1,21 +1,23 @@
 package ru.protei.portal.test.jira;
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.comments.CommentManager;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.api.domain.BasicProject;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.SearchResult;
-import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.SearchRestClient;
+import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import io.atlassian.util.concurrent.Promise;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.stream.StreamSupport;
 
 public class SimpleTest {
-    @Test
-    public void simpleTest() throws URISyntaxException {
+
+    public static void main(String[] args) throws URISyntaxException {
         JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
         URI uri = new URI("https://jira.billing.ru/");
         JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, "protei_tech_user", "FAut>WxJ9q");
@@ -28,17 +30,17 @@ public class SimpleTest {
             System.out.println(project.getKey() + ": " + project.getName());
         }
 
-        client.getProjectClient().getProject("PRT").claim()
+        ComponentAccessor accessor = new ComponentAccessor();
+        final CommentManager manager = accessor.getCommentManager();
+        String jql = "project = PRT";
+        SearchRestClient searchRestClient = client.getSearchClient();
+        Promise<SearchResult> resultPromise = searchRestClient.searchJql(jql);
+        Iterable<Issue> result = resultPromise.claim().getIssues();
 
-        StreamSupport.stream(client.getProjectClient().getProject("PRT").claim().getIssueTypes().spliterator(), false)
 
-
-        Promise<SearchResult> searchJqlPromise = client.getSearchClient().searchJql("project = PRT AND status in (Active, Resolved) ORDER BY assignee, resolutiondate");
-
-        for (Issue issue : searchJqlPromise.claim().getIssues()) {
-            System.out.println(issue.getSummary());
-        }
-
+        final Project project = client.getProjectClient().getProject("PRT").claim();
+        final Iterable<BasicComponent> components = project.getComponents();
+        StreamSupport.stream(client.getProjectClient().getProject("PRT").claim().getIssueTypes().spliterator(), false);
         // Print the result
         System.out.println(String.format("Your admin user's email address is: %s\r\n", user.getEmailAddress()));
 
@@ -47,4 +49,3 @@ public class SimpleTest {
         System.exit(0);
     }
 }
-
