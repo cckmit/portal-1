@@ -26,68 +26,70 @@ public class SqlOperator {
 
     public SqlConditionBuilder equal( Object attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().attribute( attr ).not( "!" );
-        return condition.condition( "=?" );
+        operator().column().not( "!" ).condition( " = ?" ).attribute( attr );
+        return condition;
     }
-
 
     public SqlConditionBuilder lt( Object attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().attribute( attr );
-        return condition.condition( "<?" );
+        operator().column().condition( " < ?" ).attribute( attr );
+        return condition;
     }
 
     public SqlConditionBuilder gt( Object attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().attribute( attr );
-        return condition.condition( ">?" );
+        operator().column().condition( " > ?" ).attribute( attr );
+        return condition;
     }
 
     public SqlConditionBuilder le( Object attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().attribute( attr );
-        return condition.condition( "<=?" );
+        operator().column().condition( " <= ?" ).attribute( attr );
+        return condition;
     }
 
     public SqlConditionBuilder ge( Object attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().attribute( attr );
-        return condition.condition( ">=?" );
-    }
-
-
-    private SqlOperator attribute( Object attr ) {
-        condition.attribute( attr );
-        return this;
+        operator().column().condition( " >= ?" ).attribute( attr );
+        return condition;
     }
 
     public SqlConditionBuilder like( String attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().not( " NOT" );
-        return condition.condition( " LIKE %" ).condition( attr ).condition( "%" );
+        operator().column().not( " NOT" ).condition( " LIKE %" ).condition( attr ).condition( "%" );
+        return condition;
     }
 
-
     public SqlConditionBuilder isNull( Object attr ) {
-        if (columnName == null || attr != null) return condition;
-        operator().column().not( " NOT" );
-        return condition.condition( " NULL" );
+        if (columnName == null || attr == null) return condition;
+        operator().column().condition( " IS" ).not( " NOT" ).condition( " NULL" );
+        return condition;
     }
 
     public SqlConditionBuilder in( Collection attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().not( " NOT" );
-        return condition.condition( " IN (" + attr.stream()
+        operator().column().not( " NOT" ).condition( " IN (" + attr.stream()
                 .filter( o -> o != null )
                 .map( this::inString )
                 .collect( Collectors.joining( "," ) ) + ")" );
+        return condition;
+    }
+
+
+    private SqlOperator attribute( Object attribute ) {
+        condition.attribute( attribute );
+        return this;
+    }
+
+    private SqlOperator condition( String condition ) {
+        this.condition.condition( condition );
+        return this;
     }
 
     private SqlOperator not( String s ) {
         if (not) condition.condition( s );
         return this;
     }
-
 
     private Object inString( Object o ) {
         if (o instanceof String) return "'" + o.toString() + "'";

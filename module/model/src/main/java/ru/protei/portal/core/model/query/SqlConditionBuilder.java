@@ -1,21 +1,33 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
+import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 /**
+ *
  */
 public class SqlConditionBuilder {
 
     public static SqlConditionBuilder init() {
-       return new SqlConditionBuilder();
+        return new SqlConditionBuilder();
     }
+
+    public SqlConditionBuilder groupBy( String... groupBy ) {
+        this.groupBy = asList( groupBy );
+        return this;
+    }
+
 
     StringBuilder where = new StringBuilder();
     List<Object> args = new ArrayList<>();
-    
+
     public List<Object> getSqlParameters() {
         return args;
     }
@@ -28,29 +40,72 @@ public class SqlConditionBuilder {
         return new SqlOperator( " OR ", name, this );
     }
 
-    public SqlConditionBuilder condition( String s ) {
-        where.append( s );
+    public SqlConditionBuilder condition( String condition ) {
+        where.append( condition );
         return this;
     }
 
-    public SqlConditionBuilder or(SqlConditionBuilder inCondition) {
+    public SqlConditionBuilder attribute( Object attr ) {
+        args.add( attr );
+        return this;
+    }
+
+    public SqlConditionBuilder or( SqlConditionBuilder inCondition ) {
         if (inCondition == null || inCondition.isEmpty()) return this;
         or().sqlCondition( inCondition );
         return this;
     }
 
-    public SqlConditionBuilder and(SqlConditionBuilder inCondition) {
+    public SqlConditionBuilder and( SqlConditionBuilder inCondition ) {
         if (inCondition == null || inCondition.isEmpty()) return this;
         and().sqlCondition( inCondition );
         return this;
     }
 
+    public SqlCondition build() {
+        if (isEmpty()) {
+            return new SqlCondition();
+        }
+        return new SqlCondition( getSqlCondition(), getSqlParameters() );
+    }
+
     public JdbcQueryParameters asJdbcQueryParameters() {
         JdbcQueryParameters jdbcQueryParameters = new JdbcQueryParameters();
-        if(!isEmpty()){
+        if (!isEmpty()) {
             jdbcQueryParameters.withCondition( getSqlCondition(), getSqlParameters() );
         }
+        if (offset != null) jdbcQueryParameters.withOffset( offset );
+        if (limit != null) jdbcQueryParameters.withLimit( limit );
+        if (groupBy != null) jdbcQueryParameters.withGroupBy( groupBy );
+        if (jdbcSort != null) jdbcQueryParameters.withSort( jdbcSort );
         return jdbcQueryParameters;
+    }
+
+    public boolean isEmpty() {
+        return where == null || where.length() < 1;
+    }
+
+    private String getSqlCondition() {
+        if (isEmpty()) where.append( "TRUE" );
+        return where.toString();
+    }
+
+    public SqlConditionBuilder offset( int offset ) {
+        this.offset = offset;
+        return this;
+    }
+
+    public SqlConditionBuilder limit( int limit ) {
+        this.limit = limit;
+        return this;
+    }
+
+    public SqlConditionBuilder sort( En_SortDir direction, String... sortFields ) {
+        if (sortFields == null) return this;
+        jdbcSort = new JdbcSort( TypeConverters.toWinter( direction, JdbcSort.Direction.ASC ),
+                sortFields
+        );
+        return this;
     }
 
     private void sqlCondition( SqlConditionBuilder condition ) {
@@ -61,36 +116,30 @@ public class SqlConditionBuilder {
     }
 
     private SqlConditionBuilder and() {
-        if (!isEmpty( )) where.append( " AND " );
+        if (!isEmpty()) where.append( " AND " );
         return this;
     }
 
     private SqlConditionBuilder or() {
-        if (!isEmpty( )) where.append( " OR " );
+        if (!isEmpty()) where.append( " OR " );
         return this;
     }
 
     @Override
     public String toString() {
-        return "SqlCondition{" +
+        return "SqlConditionBuilder{" +
                 "where=" + where +
                 ", args=" + args +
-//                ", sortOrder=" + sortOrder +
+                ", offset=" + offset +
+                ", limit=" + limit +
+                ", groupBy=" + groupBy +
+                ", jdbcSort=" + (jdbcSort == null ? "null" : jdbcSort.getParams()) +
                 '}';
     }
 
-    public SqlConditionBuilder attribute( Object attr ) {
-        args.add( attr );
-        return this;
-    }
-
-    public boolean isEmpty() {
-        return where == null || where.length() < 1;
-    }
-
-    public String getSqlCondition() {
-        if (isEmpty( )) where.append( "TRUE" );
-        return where.toString();
-    }
+    private Integer offset;
+    private Integer limit;
+    private List<String> groupBy;
+    JdbcSort jdbcSort = null;
 }
 
