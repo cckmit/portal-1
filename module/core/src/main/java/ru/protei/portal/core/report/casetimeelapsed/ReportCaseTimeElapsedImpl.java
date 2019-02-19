@@ -25,6 +25,8 @@ import java.text.DateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
     private static Logger log = LoggerFactory.getLogger(ReportCaseTimeElapsedImpl.class);
@@ -50,6 +52,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
+        //TODO headers
 //        List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
 //
 //        if (CollectionUtils.isEmpty(caseIds)) {
@@ -60,47 +63,52 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 //            return true;
 //        }
 
-        CommentTimeElapsedQuery caseCommentQuery = new CommentTimeElapsedQuery(caseQuery);
-        caseCommentQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
-        caseCommentQuery.setTimeElapsedNotNull(true);
-
+        CommentTimeElapsedQuery query = new CommentTimeElapsedQuery(caseQuery);
+        query.useSort(En_SortField.author_id, En_SortDir.DESC);
+        query.setTimeElapsedNotNull(true);
 
         ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
-        if (writeReport(writer, report, caseCommentQuery)) {
-            writer.collect(buffer);
-            return true;
-        } else {
-            writer.close();
-            return false;
-        }
-    }
 
-    private boolean writeReport(ReportWriter<CaseCommentTimeElapsedSum> writer, Report report, CommentTimeElapsedQuery query) {
+        log.info( "writeReport(): Start report {}", report );
+//        if (writeReport(processor, caseCommentQuery)) {
+//            processor.collect(buffer);
+//            return true;
+//        } else {
+//            writer.close();
+//            return false;
+//        }
+//    }
+//
+//    private boolean writeReport(Processor processor, CommentTimeElapsedQuery query) {
 
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
         int offset = 0;
 
-        while (true) {
-            try {
-                query.setOffset(offset);
-                query.setLimit(step);
-                List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery(query);
+        try {
+            while (true) {
+                query.setOffset( offset );
+                query.setLimit( step );
+                List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( query );
                 boolean isThisTheEnd = comments.size() < step;
                 processor.writeChunk(writer, comments, isThisTheEnd);
                 offset += step;
+                if(isEmpty(comments)){
+                    writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
+                }
                 if (isThisTheEnd) {
                     // hold ur breath
                     break;
                 }
-            } catch (Throwable th) {
-                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={}", offset, offset + step, report.getId());
-                log.warn("writeReport : fail to process chunk", th);
-                return false;
             }
+        } catch (Throwable th) {
+            writer.close();
+            log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} e: ", offset, offset + step, report.getId(), th );
+            return false;
         }
 
+        writer.collect( buffer );
         return true;
     }
 
