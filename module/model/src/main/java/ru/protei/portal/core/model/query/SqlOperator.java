@@ -26,7 +26,7 @@ public class SqlOperator {
 
     public SqlConditionBuilder equal( Object attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().not( "!" ).condition( " = ?" ).attribute( attr );
+        operator().column().condition( " " ).not( "!" ).condition( "= ?" ).attribute( attr );
         return condition;
     }
 
@@ -56,7 +56,7 @@ public class SqlOperator {
 
     public SqlConditionBuilder like( String attr ) {
         if (columnName == null || attr == null) return condition;
-        operator().column().not( " NOT" ).condition( " LIKE %" ).condition( attr ).condition( "%" );
+        operator().column().not( " NOT" ).condition( " LIKE ?" ).attribute( "%" + attr + "%" );
         return condition;
     }
 

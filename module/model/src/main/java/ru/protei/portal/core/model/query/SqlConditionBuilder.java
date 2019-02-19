@@ -19,19 +19,6 @@ public class SqlConditionBuilder {
         return new SqlConditionBuilder();
     }
 
-    public SqlConditionBuilder groupBy( String... groupBy ) {
-        this.groupBy = asList( groupBy );
-        return this;
-    }
-
-
-    StringBuilder where = new StringBuilder();
-    List<Object> args = new ArrayList<>();
-
-    public List<Object> getSqlParameters() {
-        return args;
-    }
-
     public SqlOperator and( String name ) {
         return new SqlOperator( " AND ", name, this );
     }
@@ -81,15 +68,6 @@ public class SqlConditionBuilder {
         return jdbcQueryParameters;
     }
 
-    public boolean isEmpty() {
-        return where == null || where.length() < 1;
-    }
-
-    private String getSqlCondition() {
-        if (isEmpty()) where.append( "TRUE" );
-        return where.toString();
-    }
-
     public SqlConditionBuilder offset( int offset ) {
         this.offset = offset;
         return this;
@@ -106,6 +84,28 @@ public class SqlConditionBuilder {
                 sortFields
         );
         return this;
+    }
+
+    public SqlConditionBuilder groupBy( String... groupBy ) {
+        this.groupBy = asList( groupBy );
+        return this;
+    }
+
+    public JdbcSort getSort() {
+        return jdbcSort;
+    }
+
+    public boolean isEmpty() {
+        return where == null || where.length() < 1;
+    }
+
+    public String getSqlCondition() {
+        if (isEmpty()) where.append( "TRUE" );
+        return where.toString();
+    }
+
+    public List<Object> getSqlParameters() {
+        return args;
     }
 
     private void sqlCondition( SqlConditionBuilder condition ) {
@@ -137,9 +137,12 @@ public class SqlConditionBuilder {
                 '}';
     }
 
+
+    private StringBuilder where = new StringBuilder();
+    private List<Object> args = new ArrayList<>();
     private Integer offset;
     private Integer limit;
     private List<String> groupBy;
-    JdbcSort jdbcSort = null;
+    private JdbcSort jdbcSort = null;
 }
 
