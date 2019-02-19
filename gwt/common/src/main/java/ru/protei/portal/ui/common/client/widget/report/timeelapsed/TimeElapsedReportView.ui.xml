@@ -1,0 +1,52 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
+>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel>
+
+
+        <g:HTMLPanel ui:field="body" styleName="body grid grid-indent">
+
+            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
+            <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-xs-12 local-search-options-container">
+                <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
+                <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
+            </g:HTMLPanel>
+
+            <div class="col-xs-12 resize-xs-6">
+                <label class="bold"><ui:text from="{lang.created}"/></label>
+                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            </div>
+
+
+
+            <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                                                          header="{lang.issueProduct}"
+                                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <companyselector:CompanyMultiSelector ui:field="companies"
+                                                  header="{lang.issueCompany}"
+                                                  addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+
+            <person:EmployeeMultiSelector ui:field="managers"
+                                          header="{lang.issueManager}"
+                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <person:EmployeeMultiSelector ui:field="commentAuthors"
+                                          header="{lang.issueCommentAuthor}"
+                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

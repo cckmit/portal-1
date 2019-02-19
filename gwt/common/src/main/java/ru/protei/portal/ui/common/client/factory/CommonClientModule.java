@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -37,10 +38,15 @@ import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
-import ru.protei.portal.ui.common.client.widget.report.AbstractCaseCompletionTimeReportView;
-import ru.protei.portal.ui.common.client.widget.report.CaseCompletionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.report.caseobjects.AbstractCaseObjectsReportView;
+import ru.protei.portal.ui.common.client.widget.report.caseobjects.CaseObjectsReportView;
+import ru.protei.portal.ui.common.client.widget.report.timeelapsed.AbstractTimeElapsedReportView;
+import ru.protei.portal.ui.common.client.widget.report.timeelapsed.TimeElapsedReportView;
+import ru.protei.portal.ui.common.client.widget.report.timeresolution.AbstractCaseCompletionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.report.timeresolution.CaseCompletionTimeReportView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -114,6 +120,9 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(DecimalNumberFormatter.class);
 
         bind( AbstractCaseCompletionTimeReportView.class ).to( CaseCompletionTimeReportView.class ).in( Singleton.class );
+        bind( AbstractTimeElapsedReportView.class ).to( TimeElapsedReportView.class ).in( Singleton.class );
+        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
+        bind( AbstractCaseObjectsReportView.class ).to( CaseObjectsReportView.class ).in( Singleton.class );
     }
 }
 

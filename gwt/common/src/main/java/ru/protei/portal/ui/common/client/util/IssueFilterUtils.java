@@ -19,12 +19,14 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+
 /**
  * Утилита по работе с пользовательскими фильтрами
  */
 public class IssueFilterUtils {
 
-    private static final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
+    public static final RegExp caseNumbersPattern = RegExp.compile("(\\d+,?\\s?)+");
 
     public static Set< En_ImportanceLevel > getImportances( List< Integer > importancesIdList ) {
         if ( importancesIdList == null || importancesIdList.isEmpty() ) {
@@ -157,21 +159,9 @@ public class IssueFilterUtils {
         query.setType(En_CaseType.CRM_SUPPORT);
         if (isFillSearchString) {
             String searchString = filterWidgetView.searchPattern().getValue();
-            boolean searchByComments = filterWidgetView.searchByComments().getValue();
-            if (StringUtils.isBlank(searchString)) {
-                query.setSearchString(null);
-            } else if (searchByComments) {
-                query.setSearchString(searchString);
-            } else {
-                MatchResult result = caseNumbersPattern.exec(searchString);
-                if (result != null && result.getGroup(0).equals(searchString)) {
-                    query.setCaseNumbers(Arrays.stream(searchString.split(","))
-                            .map(cn -> Long.parseLong(cn.trim()))
-                            .collect(Collectors.toList())
-                    );
-                } else {
-                    query.setSearchString(searchString);
-                }
+            query.setCaseNumbers( searchCaseNumber( searchString, filterWidgetView.searchByComments().getValue() ) );
+            if (query.getCaseNumbers() == null) {
+                query.setSearchString( isBlank( searchString ) ? null : searchString );
             }
         }
         query.setViewPrivate(filterWidgetView.searchPrivate().getValue());
@@ -190,5 +180,21 @@ public class IssueFilterUtils {
             query.setTo(interval.to);
         }
         return query;
+    }
+
+    public static List<Long> searchCaseNumber( String searchString, boolean searchByComments ) {
+        if (isBlank( searchString ) || searchByComments) {
+            return null;
+        }
+
+        MatchResult result = caseNumbersPattern.exec( searchString );
+        if (result != null && result.getGroup( 0 ).equals( searchString )) {
+            return Arrays.stream( searchString.split( "," ) )
+                    .map( cn -> Long.parseLong( cn.trim() ) )
+                    .collect( Collectors.toList() );
+        }
+
+        return null;
+
     }
 }

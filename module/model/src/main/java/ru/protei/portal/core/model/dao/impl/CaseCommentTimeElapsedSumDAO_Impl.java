@@ -25,7 +25,7 @@ public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCom
 
                 .and( "case_object.id" ).equal( query.getId() )
                 .and( "case_object.caseno" ).in( query.getCaseNumbers() )
-                .and( "case_object.initiator" ).in( query.getInitiatorIds() )
+                .and( "case_object.initiator" ).in( query.getInitiatorIds() )//TODO remove
                 .and( "case_object.product_id" ).in( query.getProductIds() )
                 .and( "case_object.initiator_company" ).in( query.getCompanyIds() )
                 .and( "case_object.manager" ).in( query.getManagerIds() )

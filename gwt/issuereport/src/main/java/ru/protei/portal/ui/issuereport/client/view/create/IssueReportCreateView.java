@@ -8,8 +8,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
+import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.ReportTypeButtonSelector;
@@ -19,7 +22,8 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        issueFilterParamView.addBodyStyles("grid grid-indent");
+//        issueFilterParamView.addBodyStyles("grid grid-indent");
+        userFilter.setEnsureDebugId( DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON );
     }
 
     @Override
@@ -38,25 +42,20 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public AbstractIssueFilterWidgetView getIssueFilterWidget() {
-        return issueFilterParamView;
+    public void resetFilter() {
+        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
+        name.setValue(null);
+//        userFilter.setValue( null );
     }
 
     @Override
-    public void resetFilter() {
-        issueFilterParamView.resetFilter();
-        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
-        name.setValue(null);
+    public HasValue<CaseFilterShortView> userFilter() {
+        return userFilter;
     }
 
     @Override
     public HasWidgets getReportContainer() {
         return reportContainer;
-    }
-
-    @Override
-    public HasVisibility filterWidgetView() {
-        return issueFilterParamView;
     }
 
     @UiHandler("reportType")
@@ -66,15 +65,32 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         }
     }
 
+    @Override
+    public void changeUserFilterValueName( CaseFilterShortView value ) {
+        userFilter.changeValueName( value );
+    }
+
+    @Override
+    public void addUserFilterDisplayOption( CaseFilterShortView value ) {
+        userFilter.addDisplayOption( value );
+    }
+
+
+    @UiHandler("userFilter")
+    public void onKeyUpSearch( ValueChangeEvent<CaseFilterShortView> event ) {
+        if (activity != null) {
+            activity.onUserFilterChanged();
+        }
+    }
+
     @Inject
     @UiField(provided = true)
     ReportTypeButtonSelector reportType;
     @UiField
     TextBox name;
-
     @Inject
     @UiField(provided = true)
-    IssueFilterParamView issueFilterParamView;
+    IssueFilterSelector userFilter;
 
     @UiField
     HTMLPanel reportContainer;

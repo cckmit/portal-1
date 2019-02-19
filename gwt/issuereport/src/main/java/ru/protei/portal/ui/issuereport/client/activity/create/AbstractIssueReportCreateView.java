@@ -5,6 +5,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 
 public interface AbstractIssueReportCreateView extends IsWidget {
@@ -15,11 +16,14 @@ public interface AbstractIssueReportCreateView extends IsWidget {
 
     HasValue<String> name();
 
-    AbstractIssueFilterWidgetView getIssueFilterWidget();
+    HasValue<CaseFilterShortView> userFilter();
 
     void resetFilter();
 
     HasWidgets getReportContainer();
 
-    HasVisibility filterWidgetView();
+    void changeUserFilterValueName( CaseFilterShortView value );
+
+    void addUserFilterDisplayOption( CaseFilterShortView value );
+
 }

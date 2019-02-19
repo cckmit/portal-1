@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.report;
+package ru.protei.portal.ui.common.client.widget.report.timeresolution;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -12,10 +12,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
 
@@ -62,6 +65,13 @@ public class CaseCompletionTimeReportView extends Composite implements AbstractC
         products.setValue( null );
         state.setValue( null );
         dateRange.setValue( null );
+    }
+
+    @Override
+    public void fillFilterFields( CaseQuery caseQuery ) {
+        dateRange().setValue( new DateInterval( caseQuery.getFrom(), caseQuery.getTo() ) );
+        Set<ProductShortView> products = IssueFilterUtils.getProducts( caseQuery.getProductIds() );
+        products().setValue( CollectionUtils.getFirst( products) );
     }
 
     @UiHandler("dateRange")

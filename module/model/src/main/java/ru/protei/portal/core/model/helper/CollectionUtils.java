@@ -22,6 +22,10 @@ public class CollectionUtils {
         return (null == iterable || !iterable.iterator().hasNext());
     }
 
+    public static <T> T getFirst( Iterable<T> iterable ) {
+        return isEmpty( iterable ) ? null : iterable.iterator().next();
+    }
+
     public static <T> Stream<T> stream(Collection<T> collection) {
         return null == collection ? Stream.empty() : collection.stream();
     }
