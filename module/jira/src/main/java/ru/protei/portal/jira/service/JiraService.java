@@ -1,6 +1,6 @@
 package ru.protei.portal.jira.service;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.rest.client.api.domain.User;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.core.event.AssembledCaseEvent;
