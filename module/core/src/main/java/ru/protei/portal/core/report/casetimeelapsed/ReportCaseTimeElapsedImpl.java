@@ -51,41 +51,17 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         }
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-
-        //TODO headers
-//        List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
-//
-//        if (CollectionUtils.isEmpty(caseIds)) {
-//            log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-//            ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
-//            writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
-//            writer.collect(buffer);
-//            return true;
-//        }
+        ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
         CommentTimeElapsedQuery query = new CommentTimeElapsedQuery(caseQuery);
         query.useSort(En_SortField.author_id, En_SortDir.DESC);
         query.setTimeElapsedNotNull(true);
 
-        ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
-
-
-        log.info( "writeReport(): Start report {}", report );
-//        if (writeReport(processor, caseCommentQuery)) {
-//            processor.collect(buffer);
-//            return true;
-//        } else {
-//            writer.close();
-//            return false;
-//        }
-//    }
-//
-//    private boolean writeReport(Processor processor, CommentTimeElapsedQuery query) {
-
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
         int offset = 0;
 
+        log.info( "writeReport(): Start report {}", report );
         try {
             while (true) {
                 query.setOffset( offset );

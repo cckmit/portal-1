@@ -22,7 +22,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-
     }
 
     @Override
@@ -57,7 +56,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
             activity.onReportTypeSelected();
         }
     }
-
 
     @Inject
     @UiField(provided = true)

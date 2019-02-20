@@ -20,10 +20,6 @@
         </div>
 
         <div class="form-group grid grid-indent report-issue-filter">
-
-
-
-
             <g:HTMLPanel ui:field="reportContainer" styleName="col-xs-12 m-b-10" />
         </div>
 
