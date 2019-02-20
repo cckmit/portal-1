@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 
-@JdbcEntity(table = "redmine_status_map_entry")
+@JdbcEntity(table = "JIRA_status_map_entry")
 public final class JiraStatusMapEntry {
 
     @JdbcColumn(name = "id")
@@ -13,8 +13,8 @@ public final class JiraStatusMapEntry {
     @JdbcColumn(name = "MAP_ID")
     private long mapId;
 
-    @JdbcColumn(name = "RM_status_id")
-    private int redmineStatusId;
+    @JdbcColumn(name = "JIRA_status_id")
+    private int jiraStatusId;
 
     @JdbcColumn(name = "LOCAL_status_id")
     private int localStatusId;
@@ -45,12 +45,12 @@ public final class JiraStatusMapEntry {
         this.mapId = mapId;
     }
 
-    public int getRedmineStatusId() {
-        return redmineStatusId;
+    public int getJiraStatusId() {
+        return jiraStatusId;
     }
 
-    public void setRedmineStatusId(int redmineStatusId) {
-        this.redmineStatusId = redmineStatusId;
+    public void setJiraStatusId(int jiraStatusId) {
+        this.jiraStatusId = jiraStatusId;
     }
 
     public int getLocalStatusId() {

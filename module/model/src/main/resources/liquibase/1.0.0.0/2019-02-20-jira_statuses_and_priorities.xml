@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet author="svitkov" id="2018-03-02-redmine-002">
+    <changeSet author="svitkov" id="2019-02-20-jira-002">
 
         <createTable tableName="jira_status_map">
             <column name="id" autoIncrement="true" type="BIGINT">

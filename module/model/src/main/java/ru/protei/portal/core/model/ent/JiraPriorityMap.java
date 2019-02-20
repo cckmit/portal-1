@@ -4,7 +4,7 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
-@JdbcEntity(table = "redmine_priority_map")
+@JdbcEntity(table = "jira_priority_map")
 public class JiraPriorityMap {
     @JdbcId(name = "id")
     private long id;

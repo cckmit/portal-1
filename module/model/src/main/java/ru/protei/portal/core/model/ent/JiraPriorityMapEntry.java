@@ -3,7 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 
-@JdbcEntity(table = "redmine_priority_map_entry")
+@JdbcEntity(table = "jira_priority_map_entry")
 public final class JiraPriorityMapEntry {
 
     @JdbcColumn(name = "id")
@@ -12,8 +12,8 @@ public final class JiraPriorityMapEntry {
     @JdbcColumn(name = "MAP_ID")
     private long mapId;
 
-    @JdbcColumn(name = "RM_priority_id")
-    private int redminePriorityId;
+    @JdbcColumn(name = "JIRA_priority_id")
+    private int jiraPriorityId;
 
     @JdbcColumn(name = "LOCAL_priority_id")
     private int localPriorityId;
@@ -21,15 +21,15 @@ public final class JiraPriorityMapEntry {
     @JdbcColumn(name = "LOCAL_priority_name")
     private String localPriorityName;
 
-    @JdbcColumn(name = "RM_priority_name")
-    private String redminePriorityName;
+    @JdbcColumn(name = "JIRA_priority_name")
+    private String jiraPriorityName;
 
-    public String getRedminePriorityName() {
-        return redminePriorityName;
+    public String getJiraPriorityName() {
+        return jiraPriorityName;
     }
 
-    public void setRedminePriorityName(String redminePriorityName) {
-        this.redminePriorityName = redminePriorityName;
+    public void setJiraPriorityName(String jiraPriorityName) {
+        this.jiraPriorityName = jiraPriorityName;
     }
 
     public long getId() {
@@ -44,12 +44,12 @@ public final class JiraPriorityMapEntry {
         this.mapId = mapId;
     }
 
-    public int getRedminePriorityId() {
-        return redminePriorityId;
+    public int getJiraPriorityId() {
+        return jiraPriorityId;
     }
 
-    public void setRedminePriorityId(int redminePriorityId) {
-        this.redminePriorityId = redminePriorityId;
+    public void setJiraPriorityId(int jiraPriorityId) {
+        this.jiraPriorityId = jiraPriorityId;
     }
 
     public int getLocalPriorityId() {

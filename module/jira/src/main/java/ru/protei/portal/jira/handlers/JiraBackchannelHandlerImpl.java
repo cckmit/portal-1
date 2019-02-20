@@ -1,7 +1,6 @@
 package ru.protei.portal.jira.handlers;
 
 import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.bc.user.UserService;
 import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueInputParameters;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.jira.service.JiraService;
 
@@ -72,7 +70,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 .setSummary(object.getName())
                 .setDescription(object.getInfo())
                 .setStatusId(statusMapEntryDAO.getJiraStatus(object.getStateId()))
-                .setPriorityId(priorityMapEntryDAO.getJiraPriority(object.getImpLevel()));
+                .setPriorityId(priorityMapEntryDAO.getByPortalPriorityId(object.getImpLevel(), endpoint.getId()).getJiraPriorityName());
 
         IssueService.UpdateValidationResult updateValidationResult = issueService
                 .validateUpdate(user, issueId, issueInputParameters);
@@ -102,9 +100,9 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
        /* final JiraPriorityMapEntry jiraPriorityMapEntry =
                 priorityMapEntryDAO.getByPortalPriorityId(newObj.getImpLevel(), priorityMapId);
         if (jiraPriorityMapEntry != null) {
-            logger.debug("Found redmine priority level name: {}", jiraPriorityMapEntry.getRedminePriorityName());
+            logger.debug("Found redmine priority level name: {}", jiraPriorityMapEntry.getJiraPriorityName());
             issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID)
-                    .setValue(jiraPriorityMapEntry.getRedminePriorityName());
+                    .setValue(jiraPriorityMapEntry.getJiraPriorityName());
         } else
             logger.debug("Redmine priority level not found");
 
@@ -112,8 +110,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         final JiraStatusMapEntry jiraStatusMapEntry =
                 statusMapEntryDAO.getRedmineStatus(oldObj.getState(), newObj.getState(), statusMapId);
         if (jiraStatusMapEntry != null && newObj.getState() != En_CaseState.VERIFIED) {
-            logger.debug("Found redmine status id: {}", jiraStatusMapEntry.getRedmineStatusId());
-            issue.setStatusId(jiraStatusMapEntry.getRedmineStatusId());
+            logger.debug("Found redmine status id: {}", jiraStatusMapEntry.getJiraStatusId());
+            issue.setStatusId(jiraStatusMapEntry.getJiraStatusId());
         } else
             logger.debug("Redmine status not found");
 

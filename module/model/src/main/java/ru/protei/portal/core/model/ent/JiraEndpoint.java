@@ -1,11 +1,13 @@
 package ru.protei.portal.core.model.ent;
 
+import protei.sql.Table;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.util.Date;
 
+@Table(name = "nexign_endpoint")
 public class JiraEndpoint {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;

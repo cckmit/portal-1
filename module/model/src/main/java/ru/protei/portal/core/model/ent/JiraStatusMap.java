@@ -4,7 +4,7 @@ import ru.protei.winter.jdbc.annotations.JdbcColumn;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
 
-@JdbcEntity(table = "redmine_status_map")
+@JdbcEntity(table = "jira_status_map")
 public class JiraStatusMap {
     @JdbcId(name = "id")
     private long id;
