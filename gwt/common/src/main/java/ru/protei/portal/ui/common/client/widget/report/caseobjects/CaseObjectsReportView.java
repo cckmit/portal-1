@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -25,10 +26,10 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
@@ -39,8 +40,6 @@ import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
 import java.util.Set;
 import java.util.function.Supplier;
-
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class CaseObjectsReportView extends Composite implements AbstractCaseObjectsReportView {
 
@@ -155,8 +154,8 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
-    public HasVisibility searchByCommentsVisibility() {
-        return searchByCommentsContainer;
+    public HasValue<CaseFilterShortView> userFilter() {
+        return userFilter;
     }
 
     @Override
@@ -175,6 +174,8 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         searchByComments.setValue(false);
         searchPrivate.setValue(null);
         toggleMsgSearchThreshold();
+
+        userFilter.setValue( null );
     }
 
     @Override
@@ -211,47 +212,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
-    public void setCompaniesErrorStyle(boolean hasError) {
-        if (hasError) {
-            companies.addStyleName(REQUIRED);
-        } else {
-            companies.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
-    public void setProductsErrorStyle(boolean hasError) {
-        if (hasError) {
-            products.addStyleName(REQUIRED);
-        } else {
-            products.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
-    public void setManagersErrorStyle(boolean hasError) {
-        if (hasError) {
-            managers.addStyleName(REQUIRED);
-        } else {
-            managers.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
-    public void setInitiatorsErrorStyle(boolean hasError) {
-        if (hasError) {
-            initiators.addStyleName(REQUIRED);
-        } else {
-            initiators.removeStyleName(REQUIRED);
-        }
-    }
-
-    @Override
-    public void setStateFilter( Selector.SelectorFilter<En_CaseState> caseStateFilter) {
-        state.setFilter(caseStateFilter);
-    }
-
-    @Override
     public void setInitiatorCompaniesSupplier( Supplier<Set<EntityOption>> collectionSupplier) {
         initiators.setCompaniesSupplier(collectionSupplier);
     }
@@ -259,11 +219,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @Override
     public void updateInitiators() {
         initiators.updateCompanies();
-    }
-
-    @Override
-    public void addBodyStyles(String styles) {
-        body.addStyleName(styles);
     }
 
     @UiHandler("search")
@@ -334,6 +289,14 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         onFilterChanged();
     }
 
+    @UiHandler("userFilter")
+    public void onKeyUpSearch( ValueChangeEvent<CaseFilterShortView> event ) {
+        if (activity != null) {
+            activity.onUserFilterChanged();
+        }
+    }
+
+
     private void ensureDebugIds() {
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
@@ -352,6 +315,7 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
+        userFilter.setEnsureDebugId( DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON );
     }
 
     private void onFilterChanged() {
@@ -379,6 +343,9 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @UiField
     Lang lang;
 
+    @Inject
+    @UiField(provided = true)
+    IssueFilterSelector userFilter;
     @UiField
     HTMLPanel body;
     @UiField

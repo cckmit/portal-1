@@ -24,7 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 
 import java.util.Set;
 
-public class CaseCompletionTimeReportView extends Composite implements AbstractCaseCompletionTimeReportView {
+public class ResolutionTimeReportView extends Composite implements AbstractResolutionTimeReportView {
 
     @Inject
     public void init() {
@@ -37,13 +37,7 @@ public class CaseCompletionTimeReportView extends Composite implements AbstractC
         this.activity = activity;
     }
 
-    @Override
-    public AbstractIssueFilterParamActivity getActivity() {
-        return activity;
-    }
-
-
-    @Override
+     @Override
     public HasValue<DateInterval> dateRange() {
         return dateRange;
     }
@@ -65,13 +59,6 @@ public class CaseCompletionTimeReportView extends Composite implements AbstractC
         products.setValue( null );
         state.setValue( null );
         dateRange.setValue( null );
-    }
-
-    @Override
-    public void fillFilterFields( CaseQuery caseQuery ) {
-        dateRange().setValue( new DateInterval( caseQuery.getFrom(), caseQuery.getTo() ) );
-        Set<ProductShortView> products = IssueFilterUtils.getProducts( caseQuery.getProductIds() );
-        products().setValue( CollectionUtils.getFirst( products) );
     }
 
     @UiHandler("dateRange")
@@ -119,7 +106,7 @@ public class CaseCompletionTimeReportView extends Composite implements AbstractC
 
     private AbstractIssueFilterParamActivity activity = null;
 
-    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, CaseCompletionTimeReportView> {
+    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, ResolutionTimeReportView> {
     }
 
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );

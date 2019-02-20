@@ -16,14 +16,9 @@ public interface AbstractIssueReportCreateView extends IsWidget {
 
     HasValue<String> name();
 
-    HasValue<CaseFilterShortView> userFilter();
-
     void resetFilter();
 
     HasWidgets getReportContainer();
 
-    void changeUserFilterValueName( CaseFilterShortView value );
-
-    void addUserFilterDisplayOption( CaseFilterShortView value );
 
 }

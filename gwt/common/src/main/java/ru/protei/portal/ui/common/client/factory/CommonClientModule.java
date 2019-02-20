@@ -45,8 +45,8 @@ import ru.protei.portal.ui.common.client.widget.report.caseobjects.AbstractCaseO
 import ru.protei.portal.ui.common.client.widget.report.caseobjects.CaseObjectsReportView;
 import ru.protei.portal.ui.common.client.widget.report.timeelapsed.AbstractTimeElapsedReportView;
 import ru.protei.portal.ui.common.client.widget.report.timeelapsed.TimeElapsedReportView;
-import ru.protei.portal.ui.common.client.widget.report.timeresolution.AbstractCaseCompletionTimeReportView;
-import ru.protei.portal.ui.common.client.widget.report.timeresolution.CaseCompletionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.report.timeresolution.AbstractResolutionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.report.timeresolution.ResolutionTimeReportView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -119,7 +119,7 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
 
-        bind( AbstractCaseCompletionTimeReportView.class ).to( CaseCompletionTimeReportView.class ).in( Singleton.class );
+        bind( AbstractResolutionTimeReportView.class ).to( ResolutionTimeReportView.class ).in( Singleton.class );
         bind( AbstractTimeElapsedReportView.class ).to( TimeElapsedReportView.class ).in( Singleton.class );
         bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
         bind( AbstractCaseObjectsReportView.class ).to( CaseObjectsReportView.class ).in( Singleton.class );

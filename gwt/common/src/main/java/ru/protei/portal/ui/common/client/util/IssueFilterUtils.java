@@ -182,6 +182,15 @@ public class IssueFilterUtils {
         return query;
     }
 
+    public static CaseQuery fillInterval( CaseQuery query, DateInterval interval ) {
+        if (interval != null) {
+            query.setFrom(interval.from);
+            query.setTo(interval.to);
+        }
+        return query;
+    }
+
+
     public static List<Long> searchCaseNumber( String searchString, boolean searchByComments ) {
         if (isBlank( searchString ) || searchByComments) {
             return null;

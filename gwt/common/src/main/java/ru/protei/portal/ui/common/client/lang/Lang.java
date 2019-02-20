@@ -1467,4 +1467,8 @@ public interface Lang extends Messages, ContactItemLang {
     String reportMissingPeriod();
 
     String reportTypeCaseResolutionTime();
+
+    String reportTypeCaseTimeElapsedWorkAutor();
+
+    String reportTypeCaseTimeElapsedPeriod();
 }

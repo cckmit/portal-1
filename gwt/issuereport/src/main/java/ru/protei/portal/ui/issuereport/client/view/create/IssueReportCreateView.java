@@ -22,8 +22,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-//        issueFilterParamView.addBodyStyles("grid grid-indent");
-        userFilter.setEnsureDebugId( DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON );
+
     }
 
     @Override
@@ -45,12 +44,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     public void resetFilter() {
         reportType.setValue(En_ReportType.CASE_OBJECTS, true);
         name.setValue(null);
-//        userFilter.setValue( null );
-    }
-
-    @Override
-    public HasValue<CaseFilterShortView> userFilter() {
-        return userFilter;
     }
 
     @Override
@@ -65,32 +58,12 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         }
     }
 
-    @Override
-    public void changeUserFilterValueName( CaseFilterShortView value ) {
-        userFilter.changeValueName( value );
-    }
-
-    @Override
-    public void addUserFilterDisplayOption( CaseFilterShortView value ) {
-        userFilter.addDisplayOption( value );
-    }
-
-
-    @UiHandler("userFilter")
-    public void onKeyUpSearch( ValueChangeEvent<CaseFilterShortView> event ) {
-        if (activity != null) {
-            activity.onUserFilterChanged();
-        }
-    }
 
     @Inject
     @UiField(provided = true)
     ReportTypeButtonSelector reportType;
     @UiField
     TextBox name;
-    @Inject
-    @UiField(provided = true)
-    IssueFilterSelector userFilter;
 
     @UiField
     HTMLPanel reportContainer;
