@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class ActionBarEvents {
     /**
-     * Событие init
+     * Событие condition
      */
     public static class Init {
         public Init( HasWidgets parent ) {

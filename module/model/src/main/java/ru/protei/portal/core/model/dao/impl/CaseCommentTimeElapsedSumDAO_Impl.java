@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dao.CaseCommentTimeElapsedSumDAO;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.query.CommentTimeElapsedQuery;
-import ru.protei.portal.core.model.query.SqlConditionBuilder;
-import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public class CaseCommentTimeElapsedSumDAO_Impl extends PortalBaseJdbcDAO<CaseCom
     private static final Logger log = LoggerFactory.getLogger( CaseCommentTimeElapsedSumDAO_Impl.class );
 
     private JdbcQueryParameters makeJdbcQueryParameters( CommentTimeElapsedQuery query ) {
-        SqlConditionBuilder condition = SqlConditionBuilder.init()
+        Condition condition = SqlConditionBuilder.condition()
 
                 .and( "case_object.id" ).equal( query.getId() )
                 .and( "case_object.caseno" ).in( query.getCaseNumbers() )

@@ -9,7 +9,7 @@ public interface ImportDataService {
     void runIncrementalImport ();
 
 
-    /* Only at manual import stage (init)
+    /* Only at manual import stage (condition)
      *
      *
      * DON'T CALL IT
