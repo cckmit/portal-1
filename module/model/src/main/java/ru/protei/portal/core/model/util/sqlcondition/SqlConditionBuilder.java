@@ -14,18 +14,18 @@ import java.util.stream.Collectors;
 import static java.util.Arrays.asList;
 
 /**
- * Обертка на StringBuilder с утилитарными метададми формирования sql
+ * Обертка над StringBuilder с утилитарными метададми формирования sql
  */
-public class SqlConditionBuilder implements Operator, Query {
+public class SqlConditionBuilder implements Operator, Condition, Query {
 
     private SqlConditionBuilder() {
     }
 
-    public static Condition condition() {
+    public static Query query() {
         return new SqlConditionBuilder();
     }
 
-    public static Query query() {
+    public static Condition condition() {
         return new SqlConditionBuilder();
     }
 
@@ -36,13 +36,26 @@ public class SqlConditionBuilder implements Operator, Query {
     }
 
     @Override
-    public Condition from( String fromExpression ) {
+    public Query from( String fromExpression ) {
         this.fromExpression = fromExpression.replace( "FROM", "" ).replace( "from", "" ).replace( " WHERE", "" ).replace( " where", "" ).trim();
         return this;
     }
 
     @Override
-    public Condition where( String where ) {
+    public Query whereExpression( String whereSqlExpression ) {
+        if (whereSqlExpression == null) return this;
+        this.where.append( whereSqlExpression );
+        return this;
+    }
+
+    @Override
+    public Operator where( String column ) {
+        return sqlOperator( " AND ", column );
+    }
+
+    @Override
+    public Condition condition( String where ) {
+        if (where == null) return this;
         this.where.append( where );
         return this;
     }
@@ -51,16 +64,6 @@ public class SqlConditionBuilder implements Operator, Query {
     public Condition attribute( Object attr ) {
         args.add( attr );
         return this;
-    }
-
-    @Override
-    public Operator and( String name ) {
-        return sqlOperator( " AND ", name );
-    }
-
-    @Override
-    public Operator or( String name ) {
-        return sqlOperator( " OR ", name );
     }
 
     @Override
@@ -76,6 +79,18 @@ public class SqlConditionBuilder implements Operator, Query {
         or().sqlCondition( inCondition );
         return this;
     }
+
+    @Override
+    public Operator and( String column ) {
+        return sqlOperator( " AND ", column );
+    }
+
+    @Override
+    public Operator or( String name ) {
+        return sqlOperator( " OR ", name );
+    }
+
+
 
     @Override
     public SqlCondition build() {
@@ -99,19 +114,19 @@ public class SqlConditionBuilder implements Operator, Query {
     }
 
     @Override
-    public Condition offset( int offset ) {
+    public Query offset( int offset ) {
         this.offset = offset;
         return this;
     }
 
     @Override
-    public Condition limit( int limit ) {
+    public Query limit( int limit ) {
         this.limit = limit;
         return this;
     }
 
     @Override
-    public Condition sort( En_SortDir direction, String... sortFields ) {
+    public Query sort( En_SortDir direction, String... sortFields ) {
         if (sortFields == null) return this;
         jdbcSort = new JdbcSort( TypeConverters.toWinter( direction, JdbcSort.Direction.ASC ),
                 sortFields
@@ -120,7 +135,7 @@ public class SqlConditionBuilder implements Operator, Query {
     }
 
     @Override
-    public Condition groupBy( String... groupBy ) {
+    public Query groupBy( String... groupBy ) {
         this.groupBy = asList( groupBy );
         return this;
     }
@@ -148,6 +163,11 @@ public class SqlConditionBuilder implements Operator, Query {
     @Override
     public List<Object> getSqlParameters() {
         return args;
+    }
+
+    @Override
+    public Query asQuery(){
+        return this;
     }
 
     private SqlConditionBuilder sqlCondition( Condition condition ) {

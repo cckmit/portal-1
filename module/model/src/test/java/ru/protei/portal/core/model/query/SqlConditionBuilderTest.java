@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.query;
 
 import org.junit.Test;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
-import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Arrays;
@@ -31,10 +30,10 @@ public class SqlConditionBuilderTest {
 
         condition.and( "Person.name" ).equal( "Vasya" )
                 .or( "Person.id" ).in( query()
-                    .select( "SELECT id" ).from( "FROM Person WHERE").and( "Person.age" ).not().equal( 7 ) )
+                    .select( "SELECT id" ).from( "FROM Person WHERE").where( "Person.age" ).not().equal( 7 ) )
                 .or( condition().and( "Person.city").equal( null ) ) // ignore
                 .or( "Person.id" ).in( query()
-                        .select( "id" ).from( "Person").and( "Person.city").equal( null ) ) 
+                        .select( "id" ).from( "Person").where( "Person.city").equal( null ) )
         ;
 
         Object[] args = new Object[]{"Vasya", 7};
@@ -222,7 +221,7 @@ public class SqlConditionBuilderTest {
         Object[] args = new Object[]{arg1};
         assertEquals( sql, condition.getSqlCondition() );
         assertArrayEquals( args, condition.getSqlParameters().toArray() );
-        assertTrue( compareJdbcSort( expectedSort, condition.getSort() ) );
+        assertTrue( compareJdbcSort( expectedSort, condition.asQuery().getSort() ) );
     }
 
     private boolean compareJdbcSort( JdbcSort expectedSort, JdbcSort sortOrder ) {
