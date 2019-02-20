@@ -72,7 +72,7 @@ public abstract class CaseCommentListActivity
     public void onShow(CaseCommentEvents.Show event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-//        markdownClient.setOptions( markdownClient.options.build() );
+        markdownClient.setOptions( markdownClient.options.build() );
 
         this.caseType = event.caseType;
         this.caseId = event.caseId;
