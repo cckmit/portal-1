@@ -100,12 +100,6 @@
             <name>spring-releases</name>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
-
-        <repository>
-            <id>atlassian-old</id>
-            <name>3rdparty</name>
-            <url>https://maven.atlassian.com/3rdparty/</url>
-        </repository>
     </repositories>
 
     <distributionManagement>

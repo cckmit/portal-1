@@ -1,6 +1,12 @@
 package ru.protei.portal.jira.handlers;
 
+import com.atlassian.jira.bc.issue.IssueService;
+import com.atlassian.jira.bc.user.UserService;
+import com.atlassian.jira.component.ComponentAccessor;
 import com.atlassian.jira.issue.Issue;
+import com.atlassian.jira.issue.IssueInputParameters;
+import com.atlassian.jira.user.ApplicationUser;
+import com.atlassian.jira.user.util.UserManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +18,11 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.jira.service.JiraService;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
+    private final IssueService issueService = ComponentAccessor.getIssueService();
+    private final UserManager userService = ComponentAccessor.getUserManager();
+    @Autowired
+    PersonDAO personDAO;
+
     @Override
     public void handle(AssembledCaseEvent event) {
         logger.debug("Handling action on jira-related issue in Portal-CRM");
@@ -19,6 +30,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             logger.debug("Jira integration is disabled, nothing happens");
             return;
         }
+
+        final CaseObject object = event.getCaseObject();
 
         final long caseId = event.getCaseObject().getId();
 
@@ -30,18 +43,15 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             return;
         }
 
-        final String[] issueAndCompanyIds = extAppId.split("_");
+        final String[] issueAndProjectIds = extAppId.split("_");
 
-        if (issueAndCompanyIds.length != 2
-                || !issueAndCompanyIds[0].matches("^[0-9]+$")
-                || !issueAndCompanyIds[1].matches("^[0-9]+$")) {
-
+        if (issueAndProjectIds.length != 2) {
             logger.debug("case {} has invalid ext-app-id : {}", caseId, extAppId);
             return;
         }
 
-        final int issueId = Integer.parseInt(issueAndCompanyIds[0]);
-        final String projectId = externalCaseAppDAO.get(caseId).getExtAppData();
+        final long issueId = Long.parseLong(issueAndProjectIds[0]);
+        final String projectId = issueAndProjectIds[1];
 
         final JiraEndpoint endpoint = endpointDAO.getByProjectId(Long.parseLong(projectId));
         if (endpoint == null) {
@@ -50,21 +60,35 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         }
 
         logger.debug("Using endpoint for server: {}", endpoint.getServerAddress());
-
-        final Issue issue = service.getIssueById(issueId, endpoint);
+        final ApplicationUser user = userService.getUserByName("protei_tech_user");
+        final Issue issue = issueService.getIssue(user, issueId).getIssue();
         if (issue == null) {
             logger.debug("Issue with id {} was not found", issueId);
             return;
         }
 
-        logger.debug("Updating comments");
-        updateComments(issue, event.getCaseComment(), endpoint);
-        logger.debug("Finished updating of comments");
+        final IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+        issueInputParameters
+                .setSummary(object.getName())
+                .setDescription(object.getInfo())
+                .setStatusId(statusMapEntryDAO.getJiraStatus(object.getStateId()))
+                .setPriorityId(priorityMapEntryDAO.getJiraPriority(object.getImpLevel()));
+
+        IssueService.UpdateValidationResult updateValidationResult = issueService
+                .validateUpdate(user, issueId, issueInputParameters);
+
+        if (updateValidationResult.isValid())
+        {
+            IssueService.IssueResult updateResult = issueService.update(user, updateValidationResult);
+            if (!updateResult.isValid())
+            {
+                logger.debug("Something is wrong, Jira issue couldn't be updated");
+            }
+        }
+
+//        updateComments(issue, event.getCaseComment(), endpoint);
 
         logger.debug("Copying case object changes to redmine issue");
-        updateIssueProps(issue, event, endpoint);
-
-        service.updateIssue(issue, endpoint);
     }
 
     private void updateIssueProps(Issue issue, AssembledCaseEvent event, JiraEndpoint endpoint) {
@@ -75,7 +99,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         final CaseObject newObj = event.getLastState();
 
         logger.debug("Trying to get redmine priority level id matching with portal: {}", newObj.getImpLevel());
-        final JiraPriorityMapEntry jiraPriorityMapEntry =
+       /* final JiraPriorityMapEntry jiraPriorityMapEntry =
                 priorityMapEntryDAO.getByPortalPriorityId(newObj.getImpLevel(), priorityMapId);
         if (jiraPriorityMapEntry != null) {
             logger.debug("Found redmine priority level name: {}", jiraPriorityMapEntry.getRedminePriorityName());
@@ -94,7 +118,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             logger.debug("Redmine status not found");
 
         issue.setDescription(newObj.getInfo());
-        issue.setSubject(newObj.getName());
+        issue.setSubject(newObj.getName());*/
     }
 
     private void updateComments(Issue issue, CaseComment comment, JiraEndpoint endpoint) {

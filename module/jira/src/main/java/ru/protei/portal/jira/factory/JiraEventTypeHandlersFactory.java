@@ -11,10 +11,10 @@ import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.PersonService;
 import ru.protei.portal.jira.utils.CommonUtils;
 
 import java.util.HashMap;
@@ -55,6 +55,11 @@ public class JiraEventTypeHandlersFactory {
             final Person person = personDAO.get(jiraEndpointDAO.getCompanyUser(event.getProject().getId()));
             final CaseObject newCaseObject = CommonUtils.convertJiraIssueToPortalIssue(newJiraIssue, person, endpoint);
             caseObjectDAO.insertCase(newCaseObject);
+            final ExternalCaseAppData appData = new ExternalCaseAppData(newCaseObject);
+            appData.setExtAppCaseId(newJiraIssue.getId() + "_" + event.getProject().getId());
+            appData.setExtAppData(String.valueOf(newJiraIssue.getProjectId()));
+            logger.debug("create jira-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
+            externalCaseAppDAO.merge(appData);
             return newCaseObject;
         }
     }
