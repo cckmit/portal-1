@@ -63,15 +63,15 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setMessage( String value ) {
-        if ( value == null ) {
+    public void setMessage( String html ) {
+        if ( html == null ) {
             this.message.getElement().setInnerText("");
             this.messageBlock.addClassName( "hide" );
             this.hideOptions();
             return;
         }
 
-        this.message.getElement().setInnerHTML(markdownClient.plain2escaped2markdown(value));
+        this.message.getElement().setInnerHTML(html);
         this.messageBlock.removeClassName( "hide" );
     }
 
@@ -239,8 +239,8 @@ public class CaseCommentItemView
     En_CaseStateLang stateLang;
     @Inject
     En_CaseImportanceLang importanceLang;
-    @Inject
-    MarkdownClient markdownClient;
+//    @Inject
+//    MarkdownClient markdownClient;
 
     private AbstractCaseCommentItemActivity activity;
 

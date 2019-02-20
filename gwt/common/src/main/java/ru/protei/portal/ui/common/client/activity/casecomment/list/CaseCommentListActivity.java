@@ -72,6 +72,7 @@ public abstract class CaseCommentListActivity
     public void onShow(CaseCommentEvents.Show event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+//        markdownClient.setOptions( markdownClient.options.build() );
 
         this.caseType = event.caseType;
         this.caseId = event.caseId;
@@ -311,7 +312,7 @@ public abstract class CaseCommentListActivity
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
 
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
-            itemView.setMessage( value.getText() );
+            itemView.setMessage( markdownClient.plain2escaped2markdown(value.getText()) );
         }
 
         if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
@@ -441,7 +442,7 @@ public abstract class CaseCommentListActivity
                     result.setCaseAttachments(comment.getCaseAttachments());
 
                     if (isEdit) {
-                        lastCommentView.setMessage(result.getText());
+                        lastCommentView.setMessage(markdownClient.plain2escaped2markdown(result.getText()));
                         lastCommentView.clearElapsedTime();
                         if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
                             lastCommentView.timeElapsed().setTime(comment.getTimeElapsed());
