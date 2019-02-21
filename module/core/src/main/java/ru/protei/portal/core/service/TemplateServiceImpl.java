@@ -30,7 +30,8 @@ public class TemplateServiceImpl implements TemplateService {
 
     Configuration templateConfiguration;
 
-    static MarkdownServer markdownServer = new MarkdownServer();
+    @Inject
+    MarkdownServer markdownServer;
 
     @PostConstruct
     public void onInit() {
@@ -197,7 +198,7 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    public static String escapeTextComment( String text) {
+    String escapeTextComment( String text) {
         if (text == null) {
             return null;
         }

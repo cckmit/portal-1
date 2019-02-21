@@ -1,4 +1,4 @@
-package ru.protei.portal.test.service;
+package ru.protei.portal.core.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +15,7 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.TemplateService;
 import ru.protei.portal.core.service.TemplateServiceImpl;
 import ru.protei.portal.core.service.template.PreparedTemplate;
+import ru.protei.portal.test.service.CaseCommentServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 

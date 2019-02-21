@@ -658,6 +658,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public MarkdownServer getMarkdownServer() {
+        return new MarkdownServer();
+    }
+
+    @Bean
     public CasePrivilegeValidator getCasePrivilegeValidator() {
         return new CasePrivilegeValidator();
     }
