@@ -13,6 +13,8 @@ public interface Query {
 
     Operator where( String columnName );
 
+    Query attributes( Object... attrs );
+
     Query offset( int offset );
 
     Query limit( int limit );
@@ -25,4 +27,5 @@ public interface Query {
 
     JdbcQueryParameters asJdbcQueryParameters();
 
+    Condition asCondition();
 }

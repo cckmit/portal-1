@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
-import ru.protei.portal.core.model.view.PersonShortView;
-
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 

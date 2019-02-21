@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 
 import java.util.Objects;
 
@@ -11,7 +10,7 @@ import java.util.Objects;
  */
 public class ActionBarEvents {
     /**
-     * Событие condition
+     * Событие init
      */
     public static class Init {
         public Init( HasWidgets parent ) {

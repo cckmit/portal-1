@@ -5,7 +5,7 @@ import java.util.Collection;
 public interface Operator {
     Operator not();
 
-    SqlConditionBuilder equal( Object attr );
+    Condition equal( Object attr );
 
     Condition lt( Object attr );
 

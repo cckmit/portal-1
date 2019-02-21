@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import org.junit.Test;
 import ru.protei.portal.core.model.util.sqlcondition.Condition;
+import ru.protei.portal.core.model.util.sqlcondition.Query;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Arrays;
@@ -24,24 +25,16 @@ public class SqlConditionBuilderTest {
     }
 
     @Test
-    public void subQuery() throws Exception {
-        String sql = "Person.name = ? OR Person.id IN (SELECT id FROM Person WHERE Person.age != ?) OR Person.id IN (SELECT id FROM Person WHERE TRUE)";
-        Condition condition = condition();
+    public void whereExpression() throws Exception {
+        String sql = "Person.name = ? AND Person.age != ? AND Person.city = ?";
+        Query query = query();
+        query.whereExpression( "Person.name = ? AND Person.age != ?" ).attributes("Vasya", 2)
+                .where( "Person.city").equal( "Moscow" );
 
-        condition.and( "Person.name" ).equal( "Vasya" )
-                .or( "Person.id" ).in( query()
-                    .select( "SELECT id" ).from( "FROM Person WHERE").where( "Person.age" ).not().equal( 7 ) )
-                .or( condition().and( "Person.city").equal( null ) ) // ignore
-                .or( "Person.id" ).in( query()
-                        .select( "id" ).from( "Person").where( "Person.city").equal( null ) )
-        ;
-
-        Object[] args = new Object[]{"Vasya", 7};
-
-        assertEquals( sql, condition.getSqlCondition() );
-        assertArrayEquals( args, condition.getSqlParameters().toArray() );
+        Object[] args = new Object[]{"Vasya", 2, "Moscow"};
+        assertEquals( sql, query.asCondition().getSqlCondition() );
+        assertArrayEquals( args,  query.asCondition().getSqlParameters().toArray() );
     }
-
 
     @Test
     public void equalNotEqual() throws Exception {
@@ -207,6 +200,25 @@ public class SqlConditionBuilderTest {
     }
 
     @Test
+    public void subQuery() throws Exception {
+        String sql = "Person.name = ? OR Person.id IN (SELECT id FROM Person WHERE Person.age != ?) OR Person.id IN (SELECT id FROM Person WHERE TRUE)";
+        Condition condition = condition();
+
+        condition.and( "Person.name" ).equal( "Vasya" )
+                .or( "Person.id" ).in( query()
+                .select( "SELECT id" ).from( "FROM Person WHERE").where( "Person.age" ).not().equal( 7 ) )
+                .or( condition().and( "Person.city").equal( null ) ) // ignore
+                .or( "Person.id" ).in( query()
+                .select( "id" ).from( "Person").where( "Person.city").equal( null ) )
+        ;
+
+        Object[] args = new Object[]{"Vasya", 7};
+
+        assertEquals( sql, condition.getSqlCondition() );
+        assertArrayEquals( args, condition.getSqlParameters().toArray() );
+    }
+
+    @Test
     public void sortOrderTest() throws Exception {
         String sql = "Person.name = ?";
         String arg1 = "Vasya";
@@ -216,7 +228,7 @@ public class SqlConditionBuilderTest {
 
         Condition condition = condition();
         condition.and( "Person.name" ).equal( arg1 )
-                .sort( DESC, field );
+                .asQuery().sort( DESC, field );
 
         Object[] args = new Object[]{arg1};
         assertEquals( sql, condition.getSqlCondition() );
