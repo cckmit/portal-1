@@ -7,6 +7,7 @@ import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +46,12 @@ public class SqlConditionBuilder implements Operator, Condition, Query {
     public Query whereExpression( String whereSqlExpression ) {
         if (whereSqlExpression == null) return this;
         this.where.append( whereSqlExpression );
+        return this;
+    }
+
+    @Override
+    public Query attributes( Object... attrs ) {
+        if (attrs != null) this.args.addAll( Arrays.asList( attrs ) );
         return this;
     }
 
@@ -114,6 +121,11 @@ public class SqlConditionBuilder implements Operator, Condition, Query {
     }
 
     @Override
+    public Condition asCondition() {
+        return this;
+    }
+
+    @Override
     public Query offset( int offset ) {
         this.offset = offset;
         return this;
@@ -179,12 +191,12 @@ public class SqlConditionBuilder implements Operator, Condition, Query {
     }
 
     private SqlConditionBuilder and() {
-        if (!isEmpty()) where.append( " AND " );
+        if (!isEmpty()) append( " AND " );
         return this;
     }
 
     private SqlConditionBuilder or() {
-        if (!isEmpty()) where.append( " OR " );
+        if (!isEmpty()) append( " OR " );
         return this;
     }
 

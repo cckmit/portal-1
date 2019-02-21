@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.report.caseobjects;
+package ru.protei.portal.ui.common.client.view.report.caseobjects;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

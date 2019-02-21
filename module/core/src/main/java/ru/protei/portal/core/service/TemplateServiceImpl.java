@@ -41,7 +41,7 @@ public class TemplateServiceImpl implements TemplateService {
             templateConfiguration.setDefaultEncoding( "UTF-8" );
             templateConfiguration.setTemplateExceptionHandler( TemplateExceptionHandler.HTML_DEBUG_HANDLER );
         } catch ( Exception e ) {
-            log.error( "Freemarker Configuration condition failure", e );
+            log.error( "Freemarker Configuration init failure", e );
             e.printStackTrace();
         }
     }

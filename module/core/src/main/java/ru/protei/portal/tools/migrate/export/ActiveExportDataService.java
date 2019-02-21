@@ -68,9 +68,9 @@ public class ActiveExportDataService implements ExportDataService {
 
     @PostConstruct
     private void __init () {
-        logger.debug("condition export data service");
+        logger.debug("init export data service");
 
-        /* condition supported types handlers */
+        /* init supported types handlers */
         handlerMap.put(DevUnit.class, object -> exportProduct((DevUnit) object));
         handlerMap.put(Company.class, object -> exportCompany((Company)object));
         handlerMap.put(Person.class, object -> exportPerson((Person) object));

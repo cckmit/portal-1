@@ -53,9 +53,7 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
         ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
-        CommentTimeElapsedQuery query = new CommentTimeElapsedQuery(caseQuery);
-        query.useSort(En_SortField.author_id, En_SortDir.DESC);
-        query.setTimeElapsedNotNull(true);
+        caseQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
 
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
@@ -64,16 +62,16 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         log.info( "writeReport(): Start report {}", report );
         try {
             while (true) {
-                query.setOffset( offset );
-                query.setLimit( step );
-                List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( query );
+                caseQuery.setOffset( offset );
+                caseQuery.setLimit( step );
+                List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( caseQuery );
                 boolean isThisTheEnd = comments.size() < step;
                 processor.writeChunk(writer, comments, isThisTheEnd);
                 offset += step;
-                if(isEmpty(comments)){
-                    writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
-                }
                 if (isThisTheEnd) {
+                    if(offset==step && isEmpty(comments)){
+                        writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
+                    }
                     // hold ur breath
                     break;
                 }

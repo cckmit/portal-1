@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.report.caseobjects;
+package ru.protei.portal.ui.common.client.view.report.caseobjects;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;

@@ -22,9 +22,9 @@ import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
-import ru.protei.portal.ui.common.client.widget.report.timeresolution.AbstractResolutionTimeReportView;
-import ru.protei.portal.ui.common.client.widget.report.caseobjects.AbstractCaseObjectsReportView;
-import ru.protei.portal.ui.common.client.widget.report.timeelapsed.AbstractTimeElapsedReportView;
+import ru.protei.portal.ui.common.client.view.report.timeresolution.AbstractResolutionTimeReportView;
+import ru.protei.portal.ui.common.client.view.report.caseobjects.AbstractCaseObjectsReportView;
+import ru.protei.portal.ui.common.client.view.report.timeelapsed.AbstractTimeElapsedReportView;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
