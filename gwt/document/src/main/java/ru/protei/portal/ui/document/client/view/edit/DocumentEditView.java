@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -148,6 +149,15 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
+    public void isApprovedSet(boolean check) {
+        isApproved.setValue(check);
+    }
+    @Override
+    public boolean isApprovedCheck() {
+        return isApproved.getValue();
+    }
+
+    @Override
     public HasVisibility equipmentVisible() {
         return equipmentSelectorContainer;
     }
@@ -244,6 +254,11 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
             activity.onDecimalNumberChanged();
     }
 
+    @UiHandler("isApproved")
+    public void onIsApproved(ClickEvent event) {
+        activity.onIsApproved();
+    }
+
     @UiHandler("documentCategory")
     public void onDocumentCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
         if (activity != null)
@@ -323,6 +338,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     @UiField(provided = true)
     DecimalNumberInput decimalNumber;
+
+    @UiField
+    CheckBox isApproved;
 
     @UiField
     Button selectFileButton;

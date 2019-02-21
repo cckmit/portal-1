@@ -114,6 +114,15 @@
                     </g:HTMLPanel>
 
                 </div>
+                <g:HTMLPanel styleName="form-group col-xs-3" ui:field="isApprovedContainer">
+                    <label>
+                        <ui:text from="{lang.documentApproved}"/>
+                    </label>
+                    <g:CheckBox ui:field="isApproved" styleName="switch-btn"/>
+                </g:HTMLPanel>
+                <div class="grid grid-indent">
+
+                </div>
 
                 <legend class="header">
                     <ui:text from="{lang.annotation}"/>

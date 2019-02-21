@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.document.client.activity.edit;
 
 import com.google.inject.Inject;
+import javafx.scene.control.CheckBox;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -100,6 +101,11 @@ public abstract class DocumentEditActivity
 
     @Override
     public void onDecimalNumberChanged() {
+    }
+
+    @Override
+    public void onIsApproved() {
+        document.setApproved(view.isApprovedCheck());
     }
 
     @Override
@@ -251,7 +257,7 @@ public abstract class DocumentEditActivity
         d.setVersion(view.version().getValue());
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
-        d.setApproved(true);
+        d.setApproved(view.isApprovedCheck());
         return d;
     }
 
@@ -275,6 +281,7 @@ public abstract class DocumentEditActivity
         view.version().setValue(document.getVersion());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()), true);
         view.decimalNumberText().setText(document.getDecimalNumber());
+        view.isApprovedSet(document.getApproved());
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());

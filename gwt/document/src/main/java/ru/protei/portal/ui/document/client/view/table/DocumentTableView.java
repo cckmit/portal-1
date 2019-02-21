@@ -108,10 +108,12 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
 
         columns.add(id);
+        columns.add(documentName);
         columns.add(decimalNumber);
 
         table.addColumn(id.header, id.values);
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
+        table.addColumn(documentName.header, documentName.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -168,12 +170,29 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
                 html += "<div class=\"decimal-number\">" + value.getDecimalNumber() + "</div> ";
             }
 
+            cell.setInnerHTML(html);
+        }
+    };
+    private final ClickColumn<Document> documentName = new ClickColumn<Document>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.setInnerText(lang.documentName());
+            columnHeader.addClassName("document-number-column");
+        }
+
+        @Override
+        public void fillColumnValue(Element cell, Document value) {
+            String html = "";
+
             html += "<div class=\"document-name\">" + value.getName() + "</div>";
             if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
                 html += "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>";
             }
             html += "<br/>";
             html += "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>";
+            html += "<br/>";
+            html += DateFormatter.formatDateTime(value.getCreated());
+
             cell.setInnerHTML(html);
         }
     };

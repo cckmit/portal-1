@@ -53,6 +53,9 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasEnabled decimalNumberEnabled();
 
+    void isApprovedSet(boolean check);
+    boolean isApprovedCheck();
+
     HasEnabled equipmentEnabled();
 
     HasEnabled documentTypeEnabled();
