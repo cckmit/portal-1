@@ -149,13 +149,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public void isApprovedSet(boolean check) {
-        isApproved.setValue(check);
-    }
-    @Override
-    public boolean isApprovedCheck() {
-        return isApproved.getValue();
-    }
+    public HasValue<Boolean> isApprovedEnabled() { return isApproved; }
 
     @Override
     public HasVisibility equipmentVisible() {

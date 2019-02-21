@@ -50,11 +50,9 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValidable nameValidator();
 
-
     HasEnabled decimalNumberEnabled();
 
-    void isApprovedSet(boolean check);
-    boolean isApprovedCheck();
+    HasValue<Boolean> isApprovedEnabled();
 
     HasEnabled equipmentEnabled();
 
