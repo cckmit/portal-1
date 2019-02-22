@@ -239,8 +239,6 @@ public class CaseCommentItemView
     En_CaseStateLang stateLang;
     @Inject
     En_CaseImportanceLang importanceLang;
-//    @Inject
-//    MarkdownClient markdownClient;
 
     private AbstractCaseCommentItemActivity activity;
 
