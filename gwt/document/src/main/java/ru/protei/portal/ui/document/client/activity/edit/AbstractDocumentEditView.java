@@ -45,14 +45,13 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     HasValue<DecimalNumber> decimalNumber();
 
-    HasText decimalNumberText();
+    HasValue<Boolean> isApproved();
 
+    HasText decimalNumberText();
 
     HasValidable nameValidator();
 
     HasEnabled decimalNumberEnabled();
-
-    HasValue<Boolean> isApprovedEnabled();
 
     HasEnabled equipmentEnabled();
 

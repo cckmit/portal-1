@@ -14,5 +14,5 @@ public interface AbstractDocumentEditActivity {
 
     void onDecimalNumberChanged();
 
-    void onIsApproved();
+    void onApprovedChanged();
 }

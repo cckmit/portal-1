@@ -103,8 +103,8 @@ public abstract class DocumentEditActivity
     }
 
     @Override
-    public void onIsApproved() {
-        document.setApproved(view.isApprovedEnabled().getValue());
+    public void onApprovedChanged() {
+        document.setApproved(view.isApproved().getValue());
     }
 
     @Override
@@ -256,7 +256,7 @@ public abstract class DocumentEditActivity
         d.setVersion(view.version().getValue());
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
-        d.setApproved(view.isApprovedEnabled().getValue());
+        d.setApproved(view.isApproved().getValue());
         return d;
     }
 
@@ -280,7 +280,7 @@ public abstract class DocumentEditActivity
         view.version().setValue(document.getVersion());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()), true);
         view.decimalNumberText().setText(document.getDecimalNumber());
-        view.isApprovedEnabled().setValue(document.getApproved());
+        view.isApproved().setValue(document.getApproved());
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
