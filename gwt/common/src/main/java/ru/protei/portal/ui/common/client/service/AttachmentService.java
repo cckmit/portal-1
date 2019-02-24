@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -14,9 +15,9 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/AttachmentController" )
 public interface AttachmentService extends RemoteService {
 
-    List<Attachment> getAttachmentsByCaseId(Long caseId) throws RequestFailedException;
+    List<Attachment> getAttachmentsByCaseId(En_CaseType caseType, Long caseId) throws RequestFailedException;
 
-    List<Attachment> getAttachments(List<Long> attachmentIds) throws RequestFailedException;
+    List<Attachment> getAttachments(En_CaseType caseType, List<Long> attachmentIds) throws RequestFailedException;
 
     /**
      * Удаляет вложения из таблиц
@@ -24,7 +25,7 @@ public interface AttachmentService extends RemoteService {
      * {@link ru.protei.portal.core.model.ent.CaseAttachment}
      * и из облака
      */
-    boolean removeAttachmentEverywhere(Long attachmentId) throws RequestFailedException;
+    boolean removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException;
 
     /**
      * Очистка кэша загрузки

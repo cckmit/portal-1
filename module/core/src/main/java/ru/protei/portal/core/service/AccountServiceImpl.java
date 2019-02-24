@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
@@ -121,9 +121,9 @@ public class AccountServiceImpl implements AccountService {
 
         userLogin.setUlogin( userLogin.getUlogin().trim() );
 
-        UserLogin account = userLogin.getId() == null ? null : getAccount( token, userLogin.getId() ).getData();
+        boolean isNewAccount = userLogin.getId() == null;
+        UserLogin account = isNewAccount ? null : getAccount( token, userLogin.getId() ).getData();
 
-        sendWelcomeEmail = sendWelcomeEmail && (account == null || account.getId() == null);
         String passwordRaw = sendWelcomeEmail ? userLogin.getUpass() : null;
 
         if ( account == null || ( account.getUpass() == null && userLogin.getUpass() != null ) ||
@@ -147,9 +147,9 @@ public class AccountServiceImpl implements AccountService {
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
                 String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
                 NotificationEntry notificationEntry = NotificationEntry.email(address, userLogin.getPerson().getLocale());
-                UserLoginCreatedEvent userLoginCreatedEvent = new UserLoginCreatedEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), notificationEntry);
+                UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry);
 
-                publisherService.publishEvent(userLoginCreatedEvent);
+                publisherService.publishEvent(userLoginUpdateEvent);
             }
 
             return new CoreResponse< UserLogin >().success( userLogin );

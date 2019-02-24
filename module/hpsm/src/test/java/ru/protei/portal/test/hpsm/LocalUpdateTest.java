@@ -7,24 +7,25 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.hpsm.api.HpsmMessageFactory;
 import ru.protei.portal.hpsm.api.HpsmStatus;
 import ru.protei.portal.hpsm.logic.HpsmEvent;
 import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
-import ru.protei.portal.hpsm.struct.HpsmMessage;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Created by Mike on 01.05.2017.
@@ -35,16 +36,19 @@ public class LocalUpdateTest {
     public static final String JUNIT_TEST_COMMENT = "junit-test-comment";
 
     static ApplicationContext ctx;
+    static En_CaseType caseType;
 
     @BeforeClass
     public static void init () {
         ctx = new AnnotationConfigApplicationContext(HpsmTestConfiguration.class);
+        caseType = En_CaseType.CRM_SUPPORT;
     }
 
     @Test
     public void test001 () throws Exception {
 
         CaseService caseService = ctx.getBean(CaseService.class);
+        CaseCommentService caseCommentService = ctx.getBean(CaseCommentService.class);
         PersonDAO personDAO = ctx.getBean(PersonDAO.class);
         CaseObjectDAO caseObjectDAO = ctx.getBean(CaseObjectDAO.class);
         ExternalCaseAppDAO externalCaseAppDAO = ctx.getBean(ExternalCaseAppDAO.class);
@@ -83,7 +87,7 @@ public class LocalUpdateTest {
         comment.setCreated(new Date());
         comment.setCaseId(object.getId());
 
-        caseService.addCaseComment(null, comment, testPerson );
+        caseCommentService.addCaseComment(null, caseType, comment, testPerson );
 
         // wait event handling
         Thread.sleep(40000);
@@ -144,7 +148,7 @@ public class LocalUpdateTest {
         comment.setCaseStateId(object.getStateId());
         comment.setCreated(new Date());
         comment.setCaseId(object.getId());
-        caseService.addCaseComment(null, comment, testPerson );
+        caseCommentService.addCaseComment(null, caseType, comment, testPerson );
 
         // wait event handling
         Thread.sleep(200);

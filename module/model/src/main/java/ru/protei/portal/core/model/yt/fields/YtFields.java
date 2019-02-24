@@ -8,5 +8,6 @@ public interface YtFields {
     String stateEng = "State";
     String stateRus = "Состояние";
     String equipmentStateRus = "Статус заказа";
+    String acrmStateRus = "Статус заявки";
     String updaterName = "updaterName";
 }

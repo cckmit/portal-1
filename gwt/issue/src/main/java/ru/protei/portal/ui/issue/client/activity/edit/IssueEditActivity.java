@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
@@ -160,7 +161,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
@@ -175,9 +176,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.attachmentsContainer().remove(attachment);
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                if(!isNew(issue))
-                    fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) );
-
+                if (!isNew(issue)) {
+                    fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                            .withCaseType(En_CaseType.CRM_SUPPORT)
+                            .withCaseId(issue.getId())
+                            .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                            .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                            .build());
+                }
             }
         });
     }
@@ -194,7 +200,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.initiator().setValue(null);
         } else {
             Long selectedCompanyId = companyOption.getId();
-            companyService.getCompanySubscription(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
+            companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
                     .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
 
             companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
@@ -271,7 +277,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            fireEvent( new IssueEvents.ShowComments( view.getCommentsContainer(), issue.getId(), policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)));
+            fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .withCaseId(issue.getId())
+                    .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                    .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                    .build());
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
@@ -302,7 +313,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             if (isNew(issue) && !isRestoredIssue) {
                 boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
                 view.timeElapsedLabel().setTime(null);
-                view.timeElapsedInput().setTime(0L);
+                if ( !isRestoredIssue ) {
+                    view.timeElapsedInput().setTime(0L);
+                }
                 view.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
                 view.timeElapsedInputVisibility().setVisible(timeElapsedEditAllowed);
             } else {
@@ -321,9 +334,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             if ( initiatorCompany == null ) {
                 initiatorCompany = policyService.getUserCompany();
             }
-            view.company().setValue(EntityOption.fromCompany(initiatorCompany));
+            view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
         }
-        onCompanyChanged();
 
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
@@ -413,6 +425,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         ) {
             return true;
         }
+
+        if (isNew( issue )) return true;
+
         return subscriptionsList == null || subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .allMatch(CompanySubscription::isProteiRecipient);

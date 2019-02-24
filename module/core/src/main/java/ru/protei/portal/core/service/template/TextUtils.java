@@ -1,5 +1,6 @@
 package ru.protei.portal.core.service.template;
 
+import ru.protei.portal.core.service.template.htmldiff.HtmlDiff;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -34,6 +35,13 @@ public class TextUtils {
             }
         }
         return wiki.toString();
+    }
+
+
+    public String diffHTML(String oldText, String newText, String insertStyle, String deleteStyle) {
+        oldText = oldText != null?oldText:"";
+        newText = newText != null?newText:"";
+        return HtmlDiff.execute(oldText, newText, insertStyle, deleteStyle);
     }
 
 

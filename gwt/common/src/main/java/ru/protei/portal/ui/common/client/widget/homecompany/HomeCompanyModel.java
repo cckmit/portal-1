@@ -7,7 +7,8 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -16,20 +17,32 @@ import java.util.List;
 /**
  * Модель домашних компаний
  */
-public abstract class HomeCompanyModel implements Activity {
+public abstract class HomeCompanyModel implements Activity, SelectorModel<EntityOption> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshOptions();
+        for (SelectorWithModel< EntityOption > subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
     }
 
-    public void subscribe( ModelSelector< EntityOption > selector ) {
+    @Override
+    public void onSelectorLoad( SelectorWithModel<EntityOption> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
+            refreshOptions();
+        }
+    }
+
+    public void subscribe( SelectorWithModel< EntityOption > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector selector : subscribers ) {
+        for ( SelectorWithModel selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -57,5 +70,5 @@ public abstract class HomeCompanyModel implements Activity {
 
     private List< EntityOption > list = new ArrayList<>();
 
-    List< ModelSelector > subscribers = new ArrayList< ModelSelector >();
+    List<SelectorWithModel> subscribers = new ArrayList<SelectorWithModel>();
 }

@@ -1,12 +1,13 @@
 package ru.protei.portal.ui.common.client.widget.selector.person;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
@@ -24,7 +25,7 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
  */
 public class InitiatorMultiSelector
         extends MultipleInputSelector<PersonShortView>
-        implements ModelSelector<PersonShortView>
+        implements SelectorWithModel<PersonShortView>
 {
     @Inject
     public void init(InitiatorModel model, Lang lang) {
@@ -38,10 +39,7 @@ public class InitiatorMultiSelector
     @Override
     public void fillOptions( List< PersonShortView > options ) {
         clearOptions();
-
-        for ( PersonShortView type : options ) {
-            addOption( type.getDisplayShortName(), type );
-        }
+        this.persons = options;
     }
 
     @Override
@@ -58,8 +56,14 @@ public class InitiatorMultiSelector
     }
 
     @Override
-    public void refreshValue() {
-
+    protected void showPopup( IsWidget relative ) {
+        if(persons != null){
+            for ( PersonShortView type : persons ) {
+                addOption( type.getDisplayShortName(), type );
+            }
+            persons = null;
+        }
+        super.showPopup( relative );
     }
 
     public void setFired ( boolean value ) { this.fired = value; }
@@ -88,6 +92,7 @@ public class InitiatorMultiSelector
     Lang lang;
     private InitiatorModel model;
     private boolean fired;
+    private List<PersonShortView> persons;
 
 
 

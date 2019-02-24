@@ -33,23 +33,5 @@ public interface IssueController extends RemoteService {
 
     long getIssuesCount( CaseQuery query ) throws RequestFailedException;
 
-    /**
-     * Получение списка комментариев по обращению
-     * @param caseId
-     */
-    List<CaseComment> getIssueComments( Long caseId ) throws RequestFailedException;
-
-    /**
-     * Удаление комментария обращения
-     * Удаляет все вложения из БД и Cloud которые привязаны к комментарию
-     */
-    void removeIssueComment( CaseComment value ) throws RequestFailedException;
-
-    /**
-     * Редактирование комментария обращения
-     * Удаляет все вложения из БД и Cloud которые ранее были привязаны к комментарию
-     */
-    CaseComment editIssueComment( CaseComment comment ) throws RequestFailedException;
-
     CaseInfo getIssueShortInfo(Long caseNumber) throws RequestFailedException;
 }

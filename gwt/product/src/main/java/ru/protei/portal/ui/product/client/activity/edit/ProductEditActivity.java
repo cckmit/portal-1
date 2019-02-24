@@ -20,7 +20,6 @@ import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,7 +93,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         if(!isValid())
             return;
 
-        fillDTO(product);
+        fillDto(product);
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
@@ -172,9 +171,13 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 : null
         );
 
+        view.wikiLink().setValue(devUnit.getWikiLink());
+        view.cdrDescription().setValue(devUnit.getCdrDescription());
+        view.configuration().setValue(devUnit.getConfiguration());
+        view.historyVersion().setValue(devUnit.getHistoryVersion());
     }
 
-    private void fillDTO(DevUnit product) {
+    private void fillDto(DevUnit product) {
         product.setName(view.name().getValue().trim());
         product.setTypeId(view.type().getValue().getId());
         product.setInfo(view.info().getValue().trim());
@@ -198,6 +201,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                     .collect(Collectors.toList())
             );
         }
+
+        product.setWikiLink(view.wikiLink().getValue());
+        product.setCdrDescription(view.cdrDescription().getValue());
+        product.setConfiguration(view.configuration().getValue());
+        product.setHistoryVersion(view.historyVersion().getValue());
     }
 
     private void resetValidationStatus(){

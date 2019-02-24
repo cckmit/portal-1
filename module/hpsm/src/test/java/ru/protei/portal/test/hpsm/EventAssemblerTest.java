@@ -52,7 +52,7 @@ public class EventAssemblerTest {
         //First portion
         CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, object, person);
         CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, object, comment,null, person);
-        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(ServiceModule.GENERAL, caseService, this, object,
+        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(ServiceModule.GENERAL, this, object,
                 attachment, removedAttachment, person);
 
         //Second portion

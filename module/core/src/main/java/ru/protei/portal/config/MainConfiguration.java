@@ -9,6 +9,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
@@ -38,6 +39,7 @@ import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
+import ru.protei.portal.util.MarkdownServer;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
@@ -640,6 +642,12 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseCommentService getCaseCommentService() {
+        return new CaseCommentServiceImpl();
+    }
+
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
@@ -647,6 +655,16 @@ public class MainConfiguration {
     @Bean
     public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
         return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public MarkdownServer getMarkdownServer() {
+        return new MarkdownServer();
+    }
+
+    @Bean
+    public CasePrivilegeValidator getCasePrivilegeValidator() {
+        return new CasePrivilegeValidator();
     }
 
     /**

@@ -56,6 +56,17 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
     @JdbcManyToMany(localLinkColumn = "DUNIT_ID", linkTable = "dev_unit_children", remoteLinkColumn = "CHILD_ID")
     private List<DevUnit> children;
 
+    @JdbcColumn(name = "wiki_link")
+    private String wikiLink;
+
+    @JdbcColumn
+    private String configuration;
+
+    @JdbcColumn(name = "cdr_description")
+    private String cdrDescription;
+
+    @JdbcColumn(name = "history_version")
+    private String historyVersion;
 
     public static DevUnit fromProductShortView(ProductShortView productShortView){
         if(productShortView == null)
@@ -224,6 +235,39 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     public boolean isComponent() {
         return En_DevUnitType.COMPONENT.equals(getType());
+    }
+
+
+    public String getWikiLink() {
+        return wikiLink;
+    }
+
+    public void setWikiLink(String wikiLink) {
+        this.wikiLink = wikiLink;
+    }
+
+    public String getConfiguration() {
+        return configuration;
+    }
+
+    public void setConfiguration(String configuration) {
+        this.configuration = configuration;
+    }
+
+    public String getCdrDescription() {
+        return cdrDescription;
+    }
+
+    public void setCdrDescription(String cdrDescription) {
+        this.cdrDescription = cdrDescription;
+    }
+
+    public String getHistoryVersion() {
+        return historyVersion;
+    }
+
+    public void setHistoryVersion(String historyVersion) {
+        this.historyVersion = historyVersion;
     }
 
     @Override

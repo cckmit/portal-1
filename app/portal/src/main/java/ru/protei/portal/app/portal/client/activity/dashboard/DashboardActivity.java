@@ -42,7 +42,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         fireEvent(new IssueEvents.Edit());
     }
 
-
     @Event
     public void onShow( DashboardEvents.Show event ) {
         initDetails.parent.clear();
@@ -59,6 +58,11 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
 
     @Event
     public void onChangeIssues( IssueEvents.ChangeModel event ) {
+
+        if ( !policyService.hasPrivilegeFor( En_Privilege.ISSUE_VIEW ) ) {
+            return;
+        }
+
         initWidgets();
     }
 

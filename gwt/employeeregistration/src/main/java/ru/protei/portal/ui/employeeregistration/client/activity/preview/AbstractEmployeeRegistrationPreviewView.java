@@ -40,7 +40,7 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setPhoneOfficeTypeList( String pnoneOfficeTypeList );
 
-    void setProbationPeriodMonth( Integer probationPeriodMonth );
+    void setProbationPeriodMonth( String probationPeriodMonth );
 
     void setOperatingSystem( String operatingSystem );
 

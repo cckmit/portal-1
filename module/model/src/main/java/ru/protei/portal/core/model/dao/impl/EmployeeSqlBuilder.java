@@ -36,8 +36,10 @@ public class EmployeeSqlBuilder {
             }
 
             if ( HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (Person.displayName like ?)");
+                condition.append(" and (Person.displayName like ? or JSON_EXTRACT(Person.contactInfo, '$.items[*].v') like ? or Person.ipaddress like ?)");
                 String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
+                args.add(likeArg);
+                args.add(likeArg);
                 args.add(likeArg);
             }
         });

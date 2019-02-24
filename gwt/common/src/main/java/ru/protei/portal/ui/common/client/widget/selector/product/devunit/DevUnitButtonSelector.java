@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -12,11 +12,11 @@ import java.util.List;
 /**
  * Button селектор с продуктами
  */
-public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements ModelSelector<ProductShortView> {
+public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
     public void init( DevUnitModel devUnitModel) {
-        devUnitModel.subscribe( this );
+        setSelectorModel(devUnitModel);
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 

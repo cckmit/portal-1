@@ -69,7 +69,8 @@ public class Change {
         return HelperFunc.nvlt(
                 getField(YtFields.stateEng),
                 getField(YtFields.stateRus),
-                getField(YtFields.equipmentStateRus)
+                getField(YtFields.equipmentStateRus),
+                getField(YtFields.acrmStateRus)
         );
     }
 

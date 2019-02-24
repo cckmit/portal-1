@@ -229,7 +229,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String noCompanyGroup();
 
-    String companyGroupLabel();
+    String companyParentLabel();
+
+    String companyChildrenLabel();
 
     String issues();
 
@@ -1416,7 +1418,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationProbationPeriod();
 
-    String employeeRegistrationProbationPeriodPlaceholder();
+    String employeeRegistrationWithoutProbationPeriod();
 
     String employeeRegistrationOSPlaceholder();
 
@@ -1441,4 +1443,28 @@ public interface Lang extends Messages, ContactItemLang {
     String goToIssues();
 
     String employeeWithoutManager();
+
+    String commentPreview();
+
+    String companyParentCompany();
+
+    String productSubscription();
+
+    String productWikiLink();
+
+    String productCDRDescription();
+
+    String productHistoryVersion();
+
+    String productConfiguration();
+
+    String markdownPreview();
+
+    String period();
+
+    String reportMissingProduct();
+
+    String reportMissingPeriod();
+
+    String reportTypeCaseResolutionTime();
 }

@@ -49,6 +49,7 @@ public interface CompanyService {
 
     CoreResponse<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
     CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
+    CoreResponse<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
 
     /**
      * methods below are for testing purpose only

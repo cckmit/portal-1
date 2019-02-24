@@ -96,25 +96,6 @@ public class IssueEvents {
      */
     public static class ChangeModel {}
 
-    /**
-     * Показать комментарии
-     */
-    public static class ShowComments {
-        public ShowComments( HasWidgets parent, Long caseId ) {
-            this(parent, caseId, false);
-        }
-
-        public ShowComments(HasWidgets parent, Long caseId, boolean isElapsedTimeEnabled) {
-            this.parent = parent;
-            this.caseId = caseId;
-            this.isElapsedTimeEnabled = isElapsedTimeEnabled;
-        }
-
-        public Long caseId;
-        public HasWidgets parent;
-        public boolean isElapsedTimeEnabled;
-    }
-
     public static class SaveComment {
         public interface SaveCommentCompleteHandler {
             void onSuccess();

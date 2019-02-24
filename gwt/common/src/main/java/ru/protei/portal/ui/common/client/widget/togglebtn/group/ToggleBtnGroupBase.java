@@ -3,27 +3,58 @@ package ru.protei.portal.ui.common.client.widget.togglebtn.group;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Вид группы кнопок-переключателей
  */
 public class ToggleBtnGroupBase<T>
-        extends Composite implements ValueChangeHandler< Boolean >, HasEnabled {
+        extends Composite implements ValueChangeHandler< Boolean >, HasEnabled, SelectorWithModel<T> {
 
     public ToggleBtnGroupBase() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+    }
+
+    @Override
+    public Collection<T> getValues() {
+        return modelToItemView.keySet();
+    }
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
+    }
+
+    @Override
+    protected void onLoad() {
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorLoad(this);
+        }
+    }
+
+    public void clearOptions(){
+        modelToItemView.clear();
+        itemViewToModel.clear();
+    }
+
+    @Override
+    public void fillOptions( List<T> options ) {
+        clear();
+        for (T option : options) {
+            addBtn( String.valueOf( option ), option );
+        }
+    }
+
+    @Override
+    public void refreshValue() {
     }
 
     @Override
@@ -105,4 +136,6 @@ public class ToggleBtnGroupBase<T>
 
     interface ToggleButtonUiBinder extends UiBinder<HTMLPanel, ToggleBtnGroupBase > {}
     private static ToggleButtonUiBinder ourUiBinder = GWT.create( ToggleButtonUiBinder.class );
+
+    private SelectorModel<T> selectorModel;
 }

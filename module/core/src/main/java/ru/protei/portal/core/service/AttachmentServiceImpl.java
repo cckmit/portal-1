@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
+import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.user.AuthService;
@@ -47,6 +51,12 @@ public class AttachmentServiceImpl implements AttachmentService {
     AuthService authService;
 
     @Autowired
+    PolicyService policyService;
+
+    @Autowired
+    CasePrivilegeValidator casePrivilegeValidator;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     /**
@@ -54,7 +64,9 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeAttachmentEverywhere( AuthToken token, Long id) {
+    public CoreResponse<Boolean> removeAttachmentEverywhere(AuthToken token, En_CaseType caseType, Long id) {
+        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
+
         CaseAttachment ca = caseAttachmentDAO.getByAttachmentId(id);
         if (ca != null) {
             boolean isDeleted = caseAttachmentDAO.removeByKey(ca.getId());
@@ -71,13 +83,12 @@ public class AttachmentServiceImpl implements AttachmentService {
             Attachment attachment = attachmentDAO.get(id);
             UserSessionDescriptor ud = authService.findSession( token );
 
-            CoreResponse<Boolean> result = removeAttachment( token, id);
+            CoreResponse<Boolean> result = removeAttachment( token, caseType, id);
 
             if(result.isOk() && issue != null && ud != null ) {
                 jdbcManyRelationsHelper.fill(issue, "attachments");
                 publisherService.publishEvent(new CaseAttachmentEvent(
                         ServiceModule.GENERAL,
-                        caseService,
                         this,
                         issue,
                         null,
@@ -88,7 +99,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             return result;
         }else {
-            return removeAttachment( token, id);
+            return removeAttachment( token, caseType, id);
         }
     }
 
@@ -97,7 +108,9 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeAttachment(AuthToken token, Long id) {
+    public CoreResponse<Boolean> removeAttachment(AuthToken token, En_CaseType caseType, Long id) {
+        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
+
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
         if(attachment == null)
             return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
@@ -114,7 +127,8 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachmentsByCaseId(AuthToken token, Long caseId) {
+    public CoreResponse<List<Attachment>> getAttachmentsByCaseId(AuthToken token, En_CaseType caseType, Long caseId) {
+        casePrivilegeValidator.checkPrivilegesRead(token, caseType);
         List<Attachment> list = attachmentDAO.getListByCondition(
                 "ID in (Select ATT_ID from case_attachment where CASE_ID = ?)", caseId
         );
@@ -126,7 +140,9 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachments( AuthToken token, List<Long> ids) {
+    public CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, List<Long> ids) {
+        casePrivilegeValidator.checkPrivilegesRead(token, caseType);
+
         List<Attachment> list = attachmentDAO.getListByKeys(ids);
 
         if(list == null)
@@ -136,12 +152,14 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachments( AuthToken token, Collection<CaseAttachment> caseAttachments) {
+    public CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments) {
+        casePrivilegeValidator.checkPrivilegesRead(token, caseType);
+
         if(caseAttachments == null || caseAttachments.isEmpty())
             return new CoreResponse<List<Attachment>>().success(Collections.emptyList());
 
         return getAttachments(
-                token,
+                token, caseType,
                 caseAttachments.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList())
         );
     }

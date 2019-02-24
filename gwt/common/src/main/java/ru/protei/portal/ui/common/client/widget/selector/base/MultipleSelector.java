@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectableItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
@@ -20,13 +21,22 @@ import java.util.*;
  */
 public abstract class MultipleSelector<T>
         extends Composite
-        implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>
+        implements HasValue<Set<T>>, Window.ScrollHandler, ValueChangeHandler<Boolean>,
+        SelectorWithModel<T>
 {
 
     protected abstract void onUserCanAddMoreItems(boolean isCanAdd);
 
     public void setValue( Set<T> values ) {
         setValue( values, false );
+    }
+
+    public Collection<T> getValues() {
+        return itemToDisplayOptionModel.keySet();
+    }
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
     }
 
     @Override
@@ -132,11 +142,17 @@ public abstract class MultipleSelector<T>
     @Override
     protected void onLoad() {
         scrollRegistration = Window.addWindowScrollHandler( this );
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorLoad(this);
+        }
     }
 
     @Override
     protected void onUnload() {
         scrollRegistration.removeHandler();
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorUnload(this);
+        }
     }
 
     protected void showPopup( IsWidget relative ) {
@@ -145,21 +161,18 @@ public abstract class MultipleSelector<T>
         popup.setSearchVisible( true );
         popup.setSearchAutoFocus( true );
         popup.clearSearchField();
-        popup.addValueChangeHandler( event -> {
+        onSearchChanged( "" );
+        if (popupValueChangeHandlerRegistration != null) {
+            popupValueChangeHandlerRegistration.removeHandler();
+        }
+        popupValueChangeHandlerRegistration = popup.addValueChangeHandler( event -> {
             String searchText = event.getValue().toLowerCase();
             onSearchChanged( searchText );
         } );
     }
 
     protected void onSearchChanged( String searchText ) {
-        boolean isEmptyResult = true;
-        boolean exactMatch = false;
-
         popup.getChildContainer().clear();
-
-//        if ( searchText.isEmpty() && nullItemView != null ) {
-//            popup.getChildContainer().add( nullItemView );
-//        }
 
         for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
             String entryText = entry.getValue().getName().toLowerCase();
@@ -168,22 +181,8 @@ public abstract class MultipleSelector<T>
                 if ( itemView != null ) {
                     popup.getChildContainer().add( itemView );
                 }
-                if(entryText.equals(searchText))
-                    exactMatch = true;
-
-                isEmptyResult = false;
             }
         }
-
-//        if(exactMatch){
-//            SelectorChangeValEvent.fire( this, null );
-//        }else {
-//            SelectorChangeValEvent.fire(this, event.getValue());
-//        }
-//
-//        if ( isEmptyResult ) {
-//            addEmptyListGhostOption( lang.errNoMatchesFound() );
-//        }
     }
 
     protected void setItemChecked(T item, boolean isChecked) {
@@ -252,7 +251,7 @@ public abstract class MultipleSelector<T>
 
     private SelectableItem makeAnySelectorItem( String name ) {
         anyItemView = itemFactory.get();
-        anyItemView.addStyleName( "multiple-any" );
+        anyItemView.addStyleName( UiConstants.Styles.MULTIPLE_ANY );
         anyItemView.setName( name );
         anyItemView.addValueChangeHandler( this );
         itemToNameModel.put( null, name );
@@ -279,8 +278,11 @@ public abstract class MultipleSelector<T>
     private Set<T> selected = new HashSet<>();
     private HandlerRegistration scrollRegistration;
     private SelectableItem anyItemView;
+    private HandlerRegistration popupValueChangeHandlerRegistration;
 
-    private Map<T, String> itemToNameModel = new HashMap<T, String>();
+    private SelectorModel<T> selectorModel;
+
+    protected Map<T, String> itemToNameModel = new HashMap<T, String>();
 
     private Map<SelectableItem, T> itemViewToModel = new HashMap< SelectableItem, T >();
 

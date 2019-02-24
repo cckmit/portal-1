@@ -31,9 +31,10 @@ public class HTMLHelper {
             s = s.replaceAll("<", "&lt;");
         }
 
-        if (s.indexOf(">") != -1) {
-            s = s.replaceAll(">", "&gt;");
-        }
+        // Текст содержит markdown цитирование >
+        // if (s.indexOf(">") != -1) {
+        //    s = s.replaceAll(">", "&gt;");
+        // }
 
         if (s.indexOf("\"") != -1) {
             s = s.replaceAll("\"", "&quot;");
@@ -45,11 +46,4 @@ public class HTMLHelper {
 
         return s;
     }
-
-    public static String prewrapBlockquote(String message ) {
-//        return message.replaceAll("<(.*?)(\\n\\r|$)+", "<blockquote>$1</blockquote>");
-        return message.replaceAll("\\[quote\\]", "<blockquote>")
-                .replaceAll("\\[/quote\\]", "</blockquote>");
-    }
-
 }

@@ -67,6 +67,8 @@ public class UiConstants {
         String HIDE = "hide";
         String REQUIRED = "required";
         String TEXT_CENTER = "text-center";
+        String SEARCH_NO_RESULT = "search-no-result";
+        String MULTIPLE_ANY = "multiple-any";
     }
 
     /**

@@ -11,7 +11,8 @@ import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
@@ -20,36 +21,55 @@ import java.util.stream.Collectors;
 /**
  * Модель селектора компаний
  */
-public abstract class CompanyModel implements Activity {
-
+public abstract class CompanyModel implements Activity, SelectorModel<EntityOption> {
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshHomeCompanies(this::refreshOptions);
+        for (SelectorWithModel<EntityOption> subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
     }
 
     @Event
     public void onCompanyListChanged( CompanyEvents.ChangeModel event ) {
-        refreshHomeCompanies(this::refreshOptions);
+        for (SelectorWithModel<EntityOption> subscriber : subscribers) {
+            subscriber.clearOptions();
+        }
     }
 
-    public void subscribe( ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories ) {
-        subscribers.add( selector );
-        updateQuery( selector, categories );
-    }
-
-    public void updateQuery( ModelSelector<EntityOption> selector, List<En_CompanyCategory> categories ) {
-        CompanyQuery query = makeQuery( categories );
-        selectorToQuery.put(selector, query);
-        requestOptions(selector, query);
-    }
-
-    private void refreshOptions() {
-        for ( ModelSelector< EntityOption > selector : subscribers ) {
+    @Override
+    public void onSelectorLoad( SelectorWithModel<EntityOption> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
             requestOptions(selector, selectorToQuery.get(selector));
         }
     }
 
-    private void requestOptions( ModelSelector<EntityOption> selector, CompanyQuery query ) {
+    @Override
+    public void onSelectorUnload( SelectorWithModel<EntityOption> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        selector.clearOptions();
+    }
+
+    public void subscribe( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
+        subscribers.add( selector );
+        updateQuery( selector, categories );
+    }
+
+    public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories ) {
+        CompanyQuery query = makeQuery( categories, false );
+        selectorToQuery.put(selector, query);
+    }
+
+    public void updateQuery( SelectorWithModel<EntityOption> selector, List<En_CompanyCategory> categories, boolean isOnlyParentCompanies ) {
+        CompanyQuery query = makeQuery( categories, isOnlyParentCompanies );
+        selectorToQuery.put(selector, query);
+    }
+
+    private void requestOptions( SelectorWithModel<EntityOption> selector, CompanyQuery query ) {
         companyService.getCompanyOptionList(query, new RequestCallback<List<EntityOption>>() {
             @Override
             public void onError( Throwable throwable ) {
@@ -58,14 +78,13 @@ public abstract class CompanyModel implements Activity {
 
             @Override
             public void onSuccess( List<EntityOption> options ) {
-                putHomeCompaniesAtTheTop( options );
                 selector.fillOptions( options );
                 selector.refreshValue();
             }
         } );
     }
 
-    private CompanyQuery makeQuery( List<En_CompanyCategory> categories ) {
+    public CompanyQuery makeQuery( List<En_CompanyCategory> categories, boolean isParentIdIsNull ) {
         CompanyQuery query = new CompanyQuery();
         if(categories != null) {
             query.setCategoryIds(
@@ -73,35 +92,9 @@ public abstract class CompanyModel implements Activity {
                             .map( En_CompanyCategory:: getId )
                             .collect( Collectors.toList() ) );
         }
+        query.setOnlyParentCompanies( isParentIdIsNull );
+        query.setSortHomeCompaniesAtBegin( true );
         return query;
-    }
-
-    private void refreshHomeCompanies(Runnable andThen) {
-        companyService.getCompanyOptionList(
-                makeQuery(Collections.singletonList(En_CompanyCategory.HOME)),
-                new RequestCallback<List<EntityOption>>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        homeCompanies.clear();
-                        andThen.run();
-                    }
-                    @Override
-                    public void onSuccess(List<EntityOption> result) {
-                        homeCompanies.clear();
-                        homeCompanies.addAll(result);
-                        andThen.run();
-                    }
-                }
-        );
-    }
-
-    private void putHomeCompaniesAtTheTop(List<EntityOption> companies) {
-        homeCompanies.forEach(homeCompany -> {
-            int value = companies.indexOf(homeCompany);
-            if (value > 0) {
-                companies.add(0, companies.remove(value));
-            }
-        });
     }
 
     @Inject
@@ -110,7 +103,6 @@ public abstract class CompanyModel implements Activity {
     @Inject
     Lang lang;
 
-    private Map<ModelSelector< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
-    private List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
-    private List< EntityOption > homeCompanies = new ArrayList<>();
+    private Map<SelectorWithModel< EntityOption >, CompanyQuery> selectorToQuery = new HashMap<>();
+    private List<SelectorWithModel< EntityOption >> subscribers = new ArrayList<>();
 }

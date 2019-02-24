@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.LinkedList;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public class DocumentTypeSelector
         extends ButtonSelector<DocumentType>
-        implements ModelSelector<DocumentType> {
+        implements SelectorWithModel<DocumentType> {
 
     @Inject
     void init(DocumentTypeModel documentTypeModel) {

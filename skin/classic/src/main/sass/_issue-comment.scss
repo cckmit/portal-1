@@ -284,3 +284,14 @@ blockquote {
     }
   }
 }
+
+.chats .message .message-preview {
+  margin-top: 10px;
+
+  > .message-preview-label {
+    border-bottom: 1px solid #ccd0d4;
+    margin-bottom: 10px;
+    color: #686868;
+    font-size: 0.9em;
+  }
+}

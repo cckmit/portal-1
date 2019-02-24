@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.product.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LegendElement;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -11,6 +11,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
 
@@ -55,6 +56,26 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void setWikiLink(String value) {
+        this.wikiLink.setInnerText(value);
+    }
+
+    @Override
+    public void setConfiguration(String value ) {
+        this.configuration.setInnerHTML(markdownClient.plain2escaped2markdown(value));
+    }
+
+    @Override
+    public void setHistoryVersion(String value ) {
+        this.historyVersion.setInnerHTML(markdownClient.plain2escaped2markdown(value));
+    }
+
+    @Override
+    public void setCdrDescription(String value ) {
+        this.cdrDescription.setInnerHTML(markdownClient.plain2escaped2markdown(value));
+    }
+
+    @Override
     public Widget asWidget(boolean isForTableView) {
         if(isForTableView){
             rootWrapper.addStyleName("preview-wrapper");
@@ -78,9 +99,19 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     SpanElement productType;
     @UiField
     HTMLPanel productNameBlock;
+    @UiField
+    SpanElement wikiLink;
+    @UiField
+    DivElement configuration;
+    @UiField
+    DivElement historyVersion;
+    @UiField
+    DivElement cdrDescription;
 
     @Inject
     FixedPositioner positioner;
+    @Inject
+    MarkdownClient markdownClient;
 
     AbstractProductPreviewActivity activity;
 

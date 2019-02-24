@@ -9,9 +9,10 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -19,10 +20,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.CaseSubscriptionService;
-import ru.protei.portal.core.service.EmployeeService;
-import ru.protei.portal.core.service.TemplateService;
+import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
@@ -51,6 +49,9 @@ public class MailNotificationProcessor {
 
     @Autowired
     CaseService caseService;
+
+    @Autowired
+    CaseCommentService caseCommentService;
 
     @Autowired
     EmployeeService employeeService;
@@ -94,8 +95,9 @@ public class MailNotificationProcessor {
         }
 
         CaseObject caseObject = event.getCaseObject();
-        CoreResponse<List<CaseComment>> comments = caseService.getCaseCommentList(
+        CoreResponse<List<CaseComment>> comments = caseCommentService.getCaseCommentList(
                 null,
+                En_CaseType.CRM_SUPPORT,
                 event.getCaseComment() == null ?
                         new CaseCommentQuery(caseObject.getId()) :
                         new CaseCommentQuery(caseObject.getId(), event.getCaseComment().getCreated())
@@ -237,13 +239,13 @@ public class MailNotificationProcessor {
     // -----------------------
 
     @EventListener
-    public void onUserLoginCreated(UserLoginCreatedEvent event) {
+    public void onUserLoginCreated(UserLoginUpdateEvent event) {
         if (event.getNotificationEntry() != null) {
             performUserLoginNotification(event, event.getNotificationEntry());
         }
     }
 
-    private void performUserLoginNotification(UserLoginCreatedEvent event, NotificationEntry notificationEntry) {
+    private void performUserLoginNotification(UserLoginUpdateEvent event, NotificationEntry notificationEntry) {
 
         if (event.getLogin() == null || event.getLogin().isEmpty()) {
             log.info("Failed send notification to userLogin with login={}: login is empty", event.getLogin());

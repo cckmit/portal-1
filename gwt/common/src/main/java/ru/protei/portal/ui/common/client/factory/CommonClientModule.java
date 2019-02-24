@@ -4,6 +4,9 @@ import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
 import ru.protei.portal.ui.common.client.activity.actionbar.ActionBarActivity;
 import ru.protei.portal.ui.common.client.activity.attachment.AbstractAttachmentView;
+import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
+import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
@@ -23,6 +26,8 @@ import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
+import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
+import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
@@ -32,13 +37,16 @@ import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
+import ru.protei.portal.ui.common.client.widget.report.AbstractCaseCompletionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.report.CaseCompletionTimeReportView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitModel;
 import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentModel;
-import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductModel;
+
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
@@ -69,6 +77,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( CompanyModel.class ).asEagerSingleton();
         bind( HomeCompanyModel.class ).asEagerSingleton();
         bind( EmployeeModel.class ).asEagerSingleton();
+        bind( StateModel.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 
@@ -87,14 +96,15 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractPathItemListView.class ).to( PathItemListView.class );
         bind( AbstractPathItemView.class ).to( PathItemView.class );
 
+        bind( CaseCommentListActivity.class ).asEagerSingleton();
+        bind( AbstractCaseCommentListView.class ).to( CaseCommentListView.class ).in( Singleton.class );
+        bind( AbstractCaseCommentItemView.class ).to( CaseCommentItemView.class );
+
         // Models
-        bind( CompanyModel.class ).asEagerSingleton();
-        bind( EmployeeModel.class ).asEagerSingleton();
         bind( InitiatorModel.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
         bind( DevUnitModel.class ).asEagerSingleton();
         bind( ComponentModel.class ).asEagerSingleton();
-        bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);
@@ -102,6 +112,8 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(RequestCallback.class);
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
+
+        bind( AbstractCaseCompletionTimeReportView.class ).to( CaseCompletionTimeReportView.class ).in( Singleton.class );
     }
 }
 

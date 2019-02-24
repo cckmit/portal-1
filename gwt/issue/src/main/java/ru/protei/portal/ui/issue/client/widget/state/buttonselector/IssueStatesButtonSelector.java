@@ -5,7 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Селектор статусов обращения
  */
-public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> implements ModelSelector<En_CaseState> {
+public class IssueStatesButtonSelector extends ButtonSelector<En_CaseState> implements SelectorWithModel<En_CaseState> {
 
     @Inject
     public void init( StateModel stateModel, En_CaseStateLang lang ) {

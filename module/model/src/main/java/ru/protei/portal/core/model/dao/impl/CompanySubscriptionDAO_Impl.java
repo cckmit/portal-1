@@ -2,8 +2,10 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.helper.HelperFunc;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by michael on 26.05.17.
@@ -12,6 +14,11 @@ public class CompanySubscriptionDAO_Impl extends PortalBaseJdbcDAO<CompanySubscr
     @Override
     public List<CompanySubscription> listByCompanyId( Long companyId) {
         return getListByCondition("company_id=?", companyId);
+    }
+
+    @Override
+    public List<CompanySubscription> listByCompanyIds( Set<Long> companyIds ) {
+        return getListByCondition( "company_id in " + HelperFunc.makeInArg( companyIds ) );
     }
 
     @Override

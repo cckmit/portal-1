@@ -30,7 +30,7 @@ public abstract class IssueStates implements Activity{
         states.add(En_CaseState.VERIFIED);
         states.add(En_CaseState.CANCELED);
 
-        activeStates = new ArrayList<>(6);
+        activeStates = new ArrayList<>(8);
         activeStates.add(En_CaseState.CREATED);
         activeStates.add(En_CaseState.OPENED);
         activeStates.add(En_CaseState.ACTIVE);
@@ -40,10 +40,8 @@ public abstract class IssueStates implements Activity{
         activeStates.add(En_CaseState.CUST_PENDING);
         activeStates.add(En_CaseState.TEST_CUST);
 
-        inactiveStates = new ArrayList<>(5);
-        inactiveStates.add(En_CaseState.CUST_PENDING);
+        inactiveStates = new ArrayList<>(3);
         inactiveStates.add(En_CaseState.DONE);
-        inactiveStates.add(En_CaseState.TEST_CUST);
         inactiveStates.add(En_CaseState.VERIFIED);
         inactiveStates.add(En_CaseState.CANCELED);
 

@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.ent.Company;
@@ -43,13 +45,13 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
 
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(CompanyQuery query) {
+        log.info( "createSqlCondition(): query={}", query );
         return new SqlCondition().build((condition, args) -> {
 
             condition.append("company.id").append(query.getOnlyHome() ? " in" : " not in").append(" ( select companyId from company_group_home where mainId is not null )");
 
-            if (query.getGroupId() != null && query.getGroupId()> 0) {
-                condition.append(" and groupId = ?");
-                args.add(query.getGroupId());
+            if (query.getCompanyIds() != null) {
+                condition.append( " and company.id in " ).append( HelperFunc.makeInArg( query.getCompanyIds()) );
             }
 
             if (!CollectionUtils.isEmpty(query.getCategoryIds())) {
@@ -58,11 +60,17 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                         .append(")");
             }
 
+            if(query.isOnlyParentCompanies()){
+                condition.append( " and parent_company_id IS NULL" );
+            }
+
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and cname like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
         });
     }
+
+    private static final Logger log = LoggerFactory.getLogger( CompanyDAO_Impl.class );
 
 }

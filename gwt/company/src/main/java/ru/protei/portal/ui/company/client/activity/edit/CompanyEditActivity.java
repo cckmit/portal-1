@@ -14,12 +14,15 @@ import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
  * Активность создания и редактирования компании
@@ -151,7 +154,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.comment().setText(company.getInfo());
         view.companyCategory().setValue(EntityOption.fromCompanyCategory(company.getCategory()));
-        view.companyGroup().setValue(EntityOption.fromCompanyGroup(company.getCompanyGroup()));
+        view.parentCompany().setValue( makeCompanyOption( company ) );
+        view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
+        view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
         view.companySubscriptions().setValue(
                 company.getSubscriptions().stream()
                         .map( Subscription::fromCompanySubscription )
@@ -164,6 +169,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
     }
 
+    private EntityOption makeCompanyOption( Company company ) {
+        if(company.getParentCompanyId()==null) return new EntityOption( lang.selectIssueCompany(), null );
+        return new EntityOption( company.getParentCompanyName(),  company.getParentCompanyId() );
+    }
+
     private void fillDto(Company company){
         company.setCname(view.companyName().getValue());
 
@@ -173,17 +183,22 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         infoFacade.setFactAddress(view.actualAddress().getValue());
         company.setInfo(view.comment().getText());
         company.setCategory(CompanyCategory.fromEntityOption(view.companyCategory().getValue()));
-        if(view.companyGroup().getValue() != null) {
-            company.setGroupId(view.companyGroup().getValue().getId());
-        }
-        else {
-            company.setGroupId(null);
-        }
+        company.setParentCompanyId( view.parentCompany().getValue() == null ? null : view.parentCompany().getValue().getId() );
         company.setSubscriptions(view.companySubscriptions().getValue().stream()
                 .map( Subscription::toCompanySubscription )
                 .collect(Collectors.toList())
         );
         infoFacade.setWebSite(view.webSite().getText());
+    }
+
+    private Selector.SelectorFilter<EntityOption> makeCompanyFilter( Long companyId ) {
+        return new Selector.SelectorFilter<EntityOption>() {
+            @Override
+            public boolean isDisplayed( EntityOption value ) {
+                if (companyId == null) return true;
+                return !companyId.equals( value.getId() );
+            }
+        };
     }
 
     @Inject

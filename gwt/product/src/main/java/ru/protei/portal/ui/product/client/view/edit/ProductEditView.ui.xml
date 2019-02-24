@@ -4,7 +4,8 @@
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
              xmlns:typebtn='urn:import:ru.protei.portal.ui.product.client.widget.type'
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
-             xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'>
+             xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -14,7 +15,7 @@
                 <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-10">
                     <label ui:field="nameLabel"><ui:text from="{lang.productName}"/></label>
                     <div class="panelField verifiable">
-                        <i ui:field="verifiableIcon"></i>
+                        <i ui:field="verifiableIcon"/>
                         <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </div>
                 </g:HTMLPanel>
@@ -30,9 +31,28 @@
                     <g:TextArea ui:field="info" styleName="input-field description" />
                 </div>
 
+                <div class="form-group col-xs-12">
+                    <label><ui:text from="{lang.productWikiLink}"/></label>
+                    <g:TextBox ui:field="wikiLink" styleName="input-field"/>
+                </div>
+                <div class="form-group col-xs-12">
+                    <label><ui:text from="{lang.productHistoryVersion}"/></label>
+                    <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
+                </div>
+
+                <div class="form-group col-xs-12">
+                    <label><ui:text from="{lang.productConfiguration}"/></label>
+                    <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
+                </div>
+
+                <div class="form-group col-xs-12">
+                    <label><ui:text from="{lang.productCDRDescription}"/></label>
+                    <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
+                </div>
+
                 <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-xs-12">
                     <label><ui:text from="{lang.belongsTo}"/></label>
-                    <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits"/>
+                    <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits" hasNullValue="false"/>
                 </g:HTMLPanel>
 
                 <g:HTMLPanel styleName="form-group col-xs-12">

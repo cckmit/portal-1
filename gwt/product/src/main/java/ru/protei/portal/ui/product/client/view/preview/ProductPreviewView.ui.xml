@@ -15,10 +15,27 @@
                     <label class="col-xs-5"><ui:text from="{lang.productType}"/></label>
                     <span class="col-xs-7" ui:field="productType"></span>
                 </div>
+                <div class="col-xs-12">
+                    <label class="col-xs-5"><ui:text from="{lang.productWikiLink}"/></label>
+                    <span class="col-xs-7" ui:field="wikiLink"/>
+                </div>
             </g:HTMLPanel>
             <g:HTMLPanel tag="fieldset" styleName="header">
                 <legend><ui:text from="{lang.productDescription}"/></legend>
                 <span ui:field="info" class="pre-formatted-info"></span>
+            </g:HTMLPanel>
+
+            <g:HTMLPanel tag="fieldset" styleName="header">
+                <legend><ui:text from="{lang.productConfiguration}"/></legend>
+                <div class="col-xs-12 markdown" ui:field="configuration"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel tag="fieldset" styleName="header">
+                <legend><ui:text from="{lang.productHistoryVersion}"/></legend>
+                <div class="col-xs-12 markdown" ui:field="historyVersion"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel tag="fieldset" styleName="header">
+                <legend><ui:text from="{lang.productCDRDescription}"/></legend>
+                <div class="col-xs-12 markdown" ui:field="cdrDescription"/>
             </g:HTMLPanel>
         </g:HTMLPanel>
     </g:HTMLPanel>

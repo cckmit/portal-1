@@ -11,16 +11,17 @@ import java.util.List;
 public class CompanyQuery extends BaseQuery {
 
     /**
-     * request for companies that a members of group with id=groupId
-     */
-    private Long groupId;
-
-    /**
      * list of company category (a partner, dealer, customer, etc)
      */
     private List<Long> categoryIds;
 
     private boolean onlyHome;
+
+    private boolean isOnlyParentCompanies;
+
+    private boolean sortHomeCompaniesAtBegin;
+
+    private List<Long> companyIds;
 
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
@@ -33,14 +34,6 @@ public class CompanyQuery extends BaseQuery {
 
     public CompanyQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
-    }
-
-    public Long getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(Long groupId) {
-        this.groupId = groupId;
     }
 
     public List<Long> getCategoryIds() {
@@ -58,5 +51,40 @@ public class CompanyQuery extends BaseQuery {
     public void setOnlyHome(boolean onlyHome) {
         this.onlyHome = onlyHome;
     }
+
+    public void setOnlyParentCompanies( boolean parentIdIsNull ) {
+        this.isOnlyParentCompanies = parentIdIsNull;
+    }
+
+    public boolean isOnlyParentCompanies() {
+        return isOnlyParentCompanies;
+    }
+
+    public boolean isSortHomeCompaniesAtBegin() {
+        return sortHomeCompaniesAtBegin;
+    }
+
+    public void setSortHomeCompaniesAtBegin( boolean sortHomeCompaniesAtBegin ) {
+        this.sortHomeCompaniesAtBegin = sortHomeCompaniesAtBegin;
+    }
+
+    public void setCompanyIds( List<Long> companyIds) {
+        this.companyIds = companyIds;
+    }
+
+    public List<Long> getCompanyIds() {
+        return companyIds;
+    }
+
+    @Override
+    public String toString() {
+        return "CompanyQuery{" +
+                ", onlyHome=" + onlyHome +
+                ", isOnlyParentCompanies=" + isOnlyParentCompanies +
+                ", categoryIds=" + categoryIds +
+                ", companyIds=" + companyIds +
+                '}';
+    }
+
 }
 

@@ -7,7 +7,8 @@ import ru.protei.portal.core.model.struct.DistrictInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * Модель статусов
  */
-public abstract class DistrictModel implements Activity {
+public abstract class DistrictModel implements Activity, SelectorModel<DistrictInfo> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
@@ -28,13 +29,23 @@ public abstract class DistrictModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector<DistrictInfo> selector ) {
+    @Override
+    public void onSelectorLoad( SelectorWithModel<DistrictInfo> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
+            refreshOptions();
+        }
+    }
+
+    public void subscribe( SelectorWithModel<DistrictInfo> selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< DistrictInfo > selector : subscribers ) {
+        for ( SelectorWithModel< DistrictInfo > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -63,5 +74,5 @@ public abstract class DistrictModel implements Activity {
 
     private List<DistrictInfo> list = new ArrayList<>();
 
-    List<ModelSelector<DistrictInfo>> subscribers = new ArrayList<>();
+    List<SelectorWithModel<DistrictInfo>> subscribers = new ArrayList<>();
 }

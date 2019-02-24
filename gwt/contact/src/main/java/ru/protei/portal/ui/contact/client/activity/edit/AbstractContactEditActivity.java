@@ -8,4 +8,5 @@ public interface AbstractContactEditActivity {
     void onCancelClicked();
     void onFireClicked();
     void onChangeContactLogin();
+    void onChangeContactPassword();
 }

@@ -116,7 +116,6 @@ public class ProductServiceImpl implements ProductService {
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
         product.setCreated(new Date());
-        product.setTypeId(En_DevUnitType.PRODUCT.getId());
         product.setStateId(En_DevUnitState.ACTIVE.getId());
 
         Long productId = devUnitDAO.persist(product);

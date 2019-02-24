@@ -6,14 +6,14 @@ import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.optionlist.list.OptionList;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 
 import java.util.List;
 
 /**
  * Селектор списка состояний обращения
  */
-public class IssueStatesOptionList extends OptionList<En_CaseState> implements ModelSelector<En_CaseState> {
+public class IssueStatesOptionList extends OptionList<En_CaseState> implements SelectorWithModel<En_CaseState> {
 
     @Inject
     public void init( StateModel stateModel) {

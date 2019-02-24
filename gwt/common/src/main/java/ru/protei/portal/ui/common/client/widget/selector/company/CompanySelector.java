@@ -9,7 +9,7 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
@@ -19,12 +19,13 @@ import java.util.stream.Collectors;
 /**
  * Селектор списка компаний
  */
-public class CompanySelector extends ButtonSelector< EntityOption > implements ModelSelector <EntityOption> {
+public class CompanySelector extends ButtonSelector< EntityOption > implements SelectorWithModel<EntityOption> {
 
     @Inject
     public void init( CompanyModel companyModel ) {
         model = companyModel;
         model.subscribe(this, categories);
+        setSelectorModel(model);
 
         setSearchEnabled( true );
         setSearchAutoFocus( true );
@@ -42,35 +43,38 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
             vcHandler.removeHandler();
         }
 
-        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( options.stream()
-                .filter( op -> op.getDisplayText().toLowerCase().contains( popup.search.getValue().toLowerCase() ) )
-                .collect( Collectors.toList() )
-        ) );
+        vcHandler = popup.addValueChangeHandler( valueChangeEvent -> fillFilteredItems( filter( options ) ) );
 
         popup.getChildContainer().clear();
         popup.showNear( relative );
 
-        fillFilteredItems( options );
+        fillFilteredItems( filter(options) );
     }
 
-    private void fillFilteredItems( List<EntityOption> options ) {
+    @Override
+    public void clearOptions() {
+        super.clearOptions();
+        this.options = null;
+    }
+
+    private void fillFilteredItems(List<EntityOption> options ) {
         StringBuilder result = new StringBuilder();
 
         Map< String, EntityOption > optionMap = new HashMap<>();
-        String prefixId = getClass().getName()+":"+( new Date().getTime())+":";
+        String companyId = getClass().getName()+":"+( new Date().getTime())+":";
 
-        if ( defaultValue != null ) {
+        if ( defaultValue != null && hasNullValue ) {
             result
                     .append( "<li><a href='#'><span id='" )
-                    .append( prefixId+"null" )
+                    .append( companyId+"null" )
                     .append( "'>" )
                     .append( defaultValue )
                     .append( "</span><link rel=\"icon\"/></a></li>" );
-            optionMap.put( prefixId, null );
+            optionMap.put( companyId, null );
         }
 
         options.forEach( item -> {
-            String id = prefixId+item.getId();
+            String id = companyId+item.getId();
             result
                     .append( "<li><a href='#'><span id='" )
                     .append( id ).append( "'>" )
@@ -105,6 +109,9 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
         this.options = options;
+        if (deferedApplyValueIfOneOption) {
+            applyValueIfOneOption();
+        }
     }
 
     public void setDefaultValue( String value ) {
@@ -118,28 +125,52 @@ public class CompanySelector extends ButtonSelector< EntityOption > implements M
         }
     }
 
-    public void applyValueIfOneOption() {
-        if (options != null && options.size() == 1) {
-            setValue(options.get(0));
-        } else {
-            setValue(null);
+    public void showOnlyParentCompanies( boolean isOnlyParentCompanies ) {
+        if (model != null) {
+            model.updateQuery( this, categories, isOnlyParentCompanies );
         }
+    }
+
+    public void applyValueIfOneOption() {
+        if ( options == null ) {
+            deferedApplyValueIfOneOption = true;
+            return;
+        }
+
+        deferedApplyValueIfOneOption = false;
+        if (options.size() == 1) {
+            setValue(options.get(0), true);
+        } else {
+            setValue(null, true);
+        }
+    }
+
+    private List<EntityOption> filter( List<EntityOption> options ) {
+        return options.stream()
+                .filter( this::applyPredicate )
+                .collect( Collectors.toList() );
+    }
+
+    private boolean applyPredicate(EntityOption op) {
+        if (filter != null && !filter.isDisplayed(op)) return false;
+        return op.getDisplayText().toLowerCase().contains(popup.search.getValue().toLowerCase());
     }
 
     @Inject
     private Provider<SelectorPopup> popupProvider;
 
-    private String defaultValue = null;
-
     private List< EntityOption > options;
     private HandlerRegistration regHandler;
     private HandlerRegistration vcHandler;
 
-    private List<En_CompanyCategory> categories = Arrays.asList(
+    protected List<En_CompanyCategory> categories = Arrays.asList(
             En_CompanyCategory.CUSTOMER,
             En_CompanyCategory.PARTNER,
             En_CompanyCategory.SUBCONTRACTOR,
             En_CompanyCategory.HOME);
 
-    private CompanyModel model;
+    protected CompanyModel model;
+
+    protected String defaultValue = null;
+    private boolean deferedApplyValueIfOneOption = false;
 }

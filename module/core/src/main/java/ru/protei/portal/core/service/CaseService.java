@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 
@@ -42,32 +41,9 @@ public interface CaseService {
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 
-    @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })
-    CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, long caseId );
-
-    @Privileged( En_Privilege.EMPLOYEE_REGISTRATION_VIEW )
-    CoreResponse<List<CaseComment>> getEmployeeRegistrationCommentList( AuthToken token, long caseId );
-
-    @Privileged( requireAny = { En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT })
-    CoreResponse<List<CaseComment>> getCaseCommentList( AuthToken token, CaseCommentQuery query );
-
-    @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
-    @Auditable( En_AuditType.ISSUE_COMMENT_CREATE )
-    CoreResponse<CaseComment> addCaseComment( AuthToken token, CaseComment p, Person currentPerson );
-
-    @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
-    @Auditable( En_AuditType.ISSUE_COMMENT_MODIFY )
-    CoreResponse<CaseComment> updateCaseComment( AuthToken token, CaseComment p, Person person );
-
-    @Privileged({ En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_VIEW })
-    @Auditable( En_AuditType.ISSUE_COMMENT_REMOVE )
-    CoreResponse removeCaseComment( AuthToken token, CaseComment caseComment, Long personId );
-
-    @Privileged( En_Privilege.ISSUE_EDIT )
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 
-    @Privileged( En_Privilege.ISSUE_EDIT )
-    CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, Attachment attachment, long caseNumber);
+    CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber);
 
     CoreResponse<Long> attachToCaseId(Attachment attachment, long caseId);
 
@@ -80,4 +56,6 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber);
+
+    boolean hasAccessForCaseObject(AuthToken token, En_Privilege privilege, CaseObject caseObject);
 }

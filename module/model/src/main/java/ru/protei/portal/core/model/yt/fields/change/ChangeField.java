@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.yt.fields.YtFields;
         @JsonSubTypes.Type( name = YtFields.stateEng, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = YtFields.stateRus, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = YtFields.equipmentStateRus, value = StringArrayWithIdArrayOldNewChangeField.class ),
+        @JsonSubTypes.Type( name = YtFields.acrmStateRus, value = StringArrayWithIdArrayOldNewChangeField.class ),
         @JsonSubTypes.Type( name = YtFields.updaterName, value = StringChangeField.class ),
         @JsonSubTypes.Type( name = YtFields.updated, value = DateChangeField.class ),
 } )

@@ -1,7 +1,10 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.view.PersonShortView;
+
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -46,4 +49,7 @@ public class CollectionUtils {
         return col.stream().filter(predicate).findAny().orElse(null);
     }
 
+    public static <T> int size( Collection<T> col) {
+        return col == null ? 0 : col.size();
+    }
 }

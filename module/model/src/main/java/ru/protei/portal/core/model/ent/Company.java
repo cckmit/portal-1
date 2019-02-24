@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +26,15 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcJoinedObject(localColumn = "groupId", remoteColumn = "id", updateLocalColumn = false)
     private CompanyGroup companyGroup;
+
+    @JdbcColumn(name = "parent_company_id")
+    private Long parentCompanyId;
+
+    // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
+    private String parentCompanyName;
+
+    @JdbcOneToMany(table = "company", localColumn = "id", remoteColumn = "parent_company_id" )
+    private List<Company> childCompanies;
 
     @JdbcColumn(name = "cname")
     private String cname;
@@ -174,6 +182,30 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         return "Company";
     }
 
+    public Long getParentCompanyId() {
+        return parentCompanyId;
+    }
+
+    public void setParentCompanyId( Long parentCompanyId ) {
+        this.parentCompanyId = parentCompanyId;
+    }
+
+    public String getParentCompanyName() {
+        return parentCompanyName;
+    }
+
+    public void setParentCompanyName( String parentCompany ) {
+        this.parentCompanyName = parentCompany;
+    }
+
+    public List<Company> getChildCompanies() {
+        return childCompanies;
+    }
+
+    public void setChildCompanies( List<Company> childCompanies ) {
+        this.childCompanies = childCompanies;
+    }
+
     @Override
     public String toString() {
         return "Company{" +
@@ -181,6 +213,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", category=" + category +
                 ", groupId=" + groupId +
                 ", companyGroup=" + companyGroup +
+                ", parentCompanyId=" + parentCompanyId+
+                ", parentCompanyName=" + parentCompanyName+
                 ", cname='" + cname + '\'' +
                 ", contactInfo=" + contactInfo +
                 ", info='" + info + '\'' +
@@ -188,6 +222,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", subscriptions=" + subscriptions +
                 ", oldID=" + String.valueOf(oldId) +
                 ", caseStates=" + caseStates +
+                ", childCompanies=" + childCompanies +
                 '}';
     }
+
 }

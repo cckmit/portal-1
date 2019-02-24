@@ -31,7 +31,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
-        group.setDefaultValue( lang.selectCompanyGroup() );
     }
 
     @Override
@@ -49,11 +48,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     @Override
     public void setActivity( AbstractCompanyFilterActivity activity ) {
         this.activity = activity;
-    }
-
-    @Override
-    public HasValue< EntityOption > group() {
-        return group;
     }
 
     @Override
@@ -87,7 +81,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
     @Override
     public void resetFilter() {
         categories.setValue(null);
-        group.setValue(null);
         sortField.setValue( En_SortField.comp_name );
         sortDir.setValue(true);
         search.setValue( "" );
@@ -95,13 +88,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
 
     @UiHandler( "categories" )
     public void onCompanyCategorySelected( ValueChangeEvent< Set< EntityOption> > event ) {
-        if ( activity != null ) {
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "group" )
-    public void onCompanyGroupSelected( ValueChangeEvent< EntityOption > event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
@@ -132,7 +118,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
-        group.setEnsureDebugId(DebugIds.FILTER.COMPANY_GROUP_SELECTOR);
         resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
     }
 
@@ -144,11 +129,6 @@ public class CompanyFilterView extends Composite implements AbstractCompanyFilte
             }
         }
     };
-
-
-    @Inject
-    @UiField( provided = true )
-    GroupButtonSelector group;
 
     @Inject
     @UiField( provided = true )

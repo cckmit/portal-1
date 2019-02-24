@@ -1,13 +1,12 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.model.dao.CompanyGroupHomeDAO;
-import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.ent.*;
@@ -17,6 +16,7 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by michael on 26.05.17.
@@ -25,6 +25,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
 
     @Autowired
     CompanySubscriptionDAO companySubscriptionDAO;
+
+    @Autowired
+    CompanyDAO companyDAO;
 
     @Autowired
     ProductSubscriptionDAO productSubscriptionDAO;
@@ -86,8 +89,15 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         return result;
     }
 
-    private List<CompanySubscription> safeGetByCompany( Long companyId) {
-        return companyId == null ? Collections.emptyList() : companySubscriptionDAO.listByCompanyId(companyId);
+    private List<CompanySubscription> safeGetByCompany( Long companyId ) {
+        if (companyId == null) return Collections.emptyList();
+        Company company = companyDAO.get( companyId );
+        if (company == null) return Collections.emptyList();
+
+        List<CompanySubscription> selfSubscriptions = companySubscriptionDAO.listByCompanyId( companyId );
+        if (company.getParentCompanyId() != null)
+            selfSubscriptions.addAll( companySubscriptionDAO.listByCompanyId( company.getParentCompanyId() ) );
+        return selfSubscriptions;
     }
 
     private List<DevUnitSubscription> safeGetByDevUnit(Long devUnitId) {
@@ -95,12 +105,15 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
     }
 
     private void appendCompanySubscriptions(Long companyId, Set<NotificationEntry> result) {
-        safeGetByCompany(companyId)
-                .forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
+        List<CompanySubscription> companySubscriptions = safeGetByCompany( companyId );
+        log.info( "companySubscriptions: {}", companySubscriptions.stream().map(smsc->smsc.getEmail()).collect( Collectors.joining( "," ) ) );
+        companySubscriptions.forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
     }
 
     private void appendProductSubscriptions( Long devUnitId, Set<NotificationEntry> result ) {
         safeGetByDevUnit(devUnitId)
                 .forEach(s -> result.add(NotificationEntry.email(s.getEmail(), s.getLangCode())));
     }
+
+    private static final Logger log = LoggerFactory.getLogger( CaseSubscriptionServiceImpl.class );
 }

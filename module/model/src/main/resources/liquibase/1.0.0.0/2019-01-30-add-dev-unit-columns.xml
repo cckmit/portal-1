@@ -1,0 +1,15 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="dev-unit-add-columns" author="ponomareva">
+        <addColumn tableName="dev_unit">
+            <column name="wiki_link" type="VARCHAR(256)"/>
+            <column name="history_version" type="mediumtext"/>
+            <column name="cdr_description" type="mediumtext"/>
+            <column name="configuration" type="mediumtext"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

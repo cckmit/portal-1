@@ -6,7 +6,7 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.common.DecimalNumberFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class EquipmentSelector
         extends ButtonSelector<EquipmentShortView >
-        implements ModelSelector<EquipmentShortView> {
+        implements SelectorWithModel<EquipmentShortView> {
 
     @Inject
     public void init( EquipmentModel model, Lang lang ) {

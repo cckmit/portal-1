@@ -47,7 +47,7 @@
                     <label ui:field="companyLabel">
                         <ui:text from="{lang.issueCompany}"/>
                     </label>
-                    <company:CompanySelector ui:field="company" validation="false"/>
+                    <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
                 </div>
                 <div class="form-group col-xs-3">
                     <label ui:field="initiatorLabel">
