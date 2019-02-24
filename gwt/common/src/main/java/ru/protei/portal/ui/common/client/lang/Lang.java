@@ -1471,4 +1471,12 @@ public interface Lang extends Messages, ContactItemLang {
     String reportTypeCaseTimeElapsedWorkAutor();
 
     String reportTypeCaseTimeElapsedPeriod();
+
+    String proteiTitleFull();
+
+    String authTitle();
+
+    String proteiTitleShort();
+
+    String authDescription();
 }
