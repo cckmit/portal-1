@@ -4,8 +4,11 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CollectionUtils {
@@ -38,14 +41,15 @@ public class CollectionUtils {
         return collection == null ? Collections.<T>emptyList() : collection;
     }
 
-    public static <I, O> void transform( final Collection<I> input, final Collection<O> output,
-                                         final Transformer<? super I, ? extends O> transformer ) {
-        if ( input == null || transformer == null || output == null ) {
+    public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
+                                         final Function<? super I, ? extends O> mapper ) {
+        if ( iterable == null || mapper == null || output == null ) {
             return;
         }
 
-        for (final I item : input) {
-            output.add( transformer.transform( item ) );
+        Iterator<I> it = iterable.iterator();
+        while (it.hasNext()) {
+            output.add( mapper.apply( it.next() ) );
         }
     }
 
@@ -58,11 +62,23 @@ public class CollectionUtils {
     }
 
     public static <R, T> Set<R> toSet( Iterable<T> iterable, Function<? super T, ? extends R> mapper ) {
-        if (iterable == null || mapper == null) return null;
+        Set<R> result = new HashSet<>();
+        transform( iterable, result, mapper );
+        return result;
+    }
+
+    public static <T, K, U> Map<K, U> toMap( final Iterable<T> iterable,
+                                             Function<? super T, ? extends K> keyMapper,
+                                             Function<? super T, ? extends U> valueMapper ) {
+        HashMap<K, U> result = new HashMap<>();
+        if (iterable == null || keyMapper == null || valueMapper == null) {
+            return result;
+        }
+
         Iterator<T> it = iterable.iterator();
-        HashSet<R> result = new HashSet<>();
         while (it.hasNext()) {
-            result.add( mapper.apply( it.next() ) );
+            T next = it.next();
+            result.put( keyMapper.apply( next ), valueMapper.apply( next ) );
         }
         return result;
     }

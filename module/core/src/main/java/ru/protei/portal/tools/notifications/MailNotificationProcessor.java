@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
+import ru.protei.portal.core.event.EmployeeRegistrationProbationNotificaionEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
@@ -18,12 +19,14 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Collection;
 import java.util.List;
@@ -332,6 +335,37 @@ public class MailNotificationProcessor {
                 log.error("Failed to make MimeMessage", e);
             }
         });
+    }
+
+
+    @EventListener
+    public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationNotificaionEvent event) {
+        log.info( "onEmployeeRegistrationEvent(): {}", event );
+
+        PreparedTemplate bodyTemplate =  templateService.getEmployeeRegistrationProbationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
+        PreparedTemplate subjectTemplate = templateService.getEmployeeRegistrationProbationEmailNotificationSubject(employeeRegistration, urlTemplate, recipients);
+
+        try {
+            for (EmployeeRegistration employeeRegistration : event.getProbationExpires()) {
+
+                ContactInfo contactInfo = event.getContactInfoMap().get( employeeRegistration.getHeadOfDepartmentId() );
+                if(contactInfo==null) continue;
+//
+                sentMail( new PlainContactInfoFacade(contactInfo).getEmail(), subject,  body );
+            }
+        } catch (Exception e) {
+            log.error("Failed to sent employee probation notification: ", e);
+        }
+
+    }
+
+    private void sentMail( String address, String subject, String body) throws MessagingException {
+        MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+        msg.setSubject(subject);
+        msg.setFrom(getFromAddress());
+        msg.setText(HelperFunc.nvlt(body, ""), true);
+        msg.setTo( address);
+        mailSendChannel.send(msg.getMimeMessage());
     }
 
 

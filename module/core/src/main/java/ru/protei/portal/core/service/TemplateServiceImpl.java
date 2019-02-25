@@ -125,6 +125,30 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
+    public PreparedTemplate getEmployeeRegistrationProbationEmailNotificationBody(EmployeeRegistration employeeRegistrationId, String urlTemplate, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
+        templateModel.put( "er", employeeRegistration );
+        templateModel.put( "recipients", recipients );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.probation.body.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getEmployeeRegistrationProbationEmailNotificationSubject(String  employeeFullName) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put( "employeeFullName", employeeFullName );
+
+        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.probation.subject.%s.ftl" );
+        template.setModel( templateModel );
+        template.setTemplateConfiguration( templateConfiguration );
+        return template;
+    }
+
+    @Override
     public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );

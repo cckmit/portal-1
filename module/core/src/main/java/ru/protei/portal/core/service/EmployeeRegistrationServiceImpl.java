@@ -7,26 +7,21 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
+import ru.protei.portal.core.event.EmployeeRegistrationProbationNotificaionEvent;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseLink;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.*;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
@@ -40,6 +35,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseTypeDAO caseTypeDAO;
+    @Autowired
+    PersonDAO personDAO;
     @Autowired
     YoutrackService youtrackService;
     @Autowired
@@ -121,9 +118,20 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     @Override
     public CoreResponse<Boolean> notifyAboutProbationPeriod() {
-        List<EmployeeRegistration> byCondition = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 9 );
+        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 9 );
+        HashSet<Long> notifiIds = new HashSet<Long>();
 
-        log.info( "notifyAboutProbationPeriod(): {}",byCondition );
+        for (EmployeeRegistration pe : emptyIfNull(probationExpires)) {
+            notifiIds.add( pe.getHeadOfDepartmentId() );
+            for (Person curator : emptyIfNull( pe.getCurators())) {
+                notifiIds.add(  curator.getId() );
+            }
+        }
+
+        List<Person> contactInfos = personDAO.partialGetListByKeys( notifiIds, "contactInfo" );
+        log.info( "notifyAboutProbationPeriod(): {}",probationExpires );
+
+        publisherService.publishEvent(new EmployeeRegistrationProbationNotificaionEvent(this, probationExpires, toMap(contactInfos, Person::getId, Person::getContactInfo) ));
         return null;
     }
 
