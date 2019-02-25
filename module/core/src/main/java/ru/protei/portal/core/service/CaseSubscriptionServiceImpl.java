@@ -18,6 +18,8 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.StringUtils.join;
+
 /**
  * Created by michael on 26.05.17.
  */
@@ -63,7 +65,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
                 .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
                 .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
                 .ifPresent(notifiers::add);
-        log.info( "subscribers: EmployeeRegistrationEvent: {}", notifiers.stream().map(ni->ni.getAddress()).collect( Collectors.joining( "," ) ) );
+        log.info( "subscribers: EmployeeRegistrationEvent: {}", join( notifiers, ni->ni.getAddress(), ",") );
         return notifiers;
     }
 
@@ -83,7 +85,7 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         }
         //HomeCompany persons don't need to get notifications
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
-        log.info( "subscribers: AssembledCaseEvent: {}", result.stream().map( ni -> ni.getAddress() ).collect( Collectors.joining( "," ) ) );
+        log.info( "subscribers: AssembledCaseEvent: {}", join( result, ni->ni.getAddress(), ",") );
         return result;
     }
     private List<CompanySubscription> safeGetByCompany( Long companyId ) {
