@@ -30,6 +30,7 @@ import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
 import ru.protei.portal.tools.migrate.export.DummyExportDataService;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
@@ -102,6 +103,11 @@ public class MainConfiguration {
         );
     }
 
+
+    @Bean(name = "portalScheduler")
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return new PortalScheduleTasks();
+    }
 
     @Bean
     public LegacySystemDAO getLegacySystemDAO() {

@@ -94,6 +94,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
+    public void setCurators( String curators ) {
+        this.curators.setInnerText(curators);
+    }
+
+    @Override
     public void setWithRegistration(String withRegistration) {
         this.withRegistration.setInnerText(withRegistration);
     }
@@ -183,6 +188,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     DivElement caseState;
     @UiField
     HTMLPanel commentContainer;
+    @UiField
+    SpanElement curators;
 
 
     @Inject

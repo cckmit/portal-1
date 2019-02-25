@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -94,6 +96,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         employeeRegistration.setId(id);
         Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
+        jdbcManyRelationsHelper.persist(employeeRegistration, "curators");
 
         if (employeeRegistrationId == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
@@ -114,6 +117,17 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         return new CoreResponse<Long>().success(id);
     }
+
+
+    @Override
+    public CoreResponse<Boolean> notifyAboutProbationPeriod() {
+        List<EmployeeRegistration> byCondition = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 9 );
+
+        log.info( "notifyAboutProbationPeriod(): {}",byCondition );
+        return null;
+    }
+
+    private static final Logger log = LoggerFactory.getLogger( EmployeeRegistrationServiceImpl.class );
 
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {
         CaseObject caseObject = new CaseObject();

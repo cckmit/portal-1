@@ -142,6 +142,20 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcColumn(name ="additional_soft")
     String additionalSoft;
 
+    /**
+     * Попечители
+     */
+    @JdbcManyToMany( linkTable = "employee_curator", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
+    Set<Person> curators;
+
+    public Set<Person> getCurators() {
+        return curators;
+    }
+
+    public void setCurators( Set<Person> curators ) {
+        this.curators = curators;
+    }
+
     public Long getId() {
         return id;
     }

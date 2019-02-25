@@ -86,5 +86,6 @@
   <include file="2018-12-10-add-type-column-into-report.xml" relativeToChangelogFile="true"/>
   <include file="2019-01-25-add-parent-company-column.xml" relativeToChangelogFile="true"/>
   <include file="2019-01-30-add-dev-unit-columns.xml" relativeToChangelogFile="true"/>
+  <include file="2019-02-25-add-employee-curator-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

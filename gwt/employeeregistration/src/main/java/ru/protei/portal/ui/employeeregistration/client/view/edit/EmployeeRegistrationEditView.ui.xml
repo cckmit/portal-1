@@ -60,10 +60,16 @@
                         <label><!--Испытательный срок-->
                             <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
                         </label>
-                        <g:IntegerBox ui:field="probationPeriod"
-
-                                                        styleName="input-field"/>
+                        <g:IntegerBox ui:field="probationPeriod" styleName="input-field"/>
                     </div>
+
+                    <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-xs-12">
+                        <label ui:field="notifiersLabel">
+<!--                            <ui:text from="{lang.caseSubscription}"/>-->
+                            Кураторы
+                        </label>
+                        <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="curators"/>
+                    </g:HTMLPanel>
 
                     <div class="form-group col-xs-12">
                         <label>

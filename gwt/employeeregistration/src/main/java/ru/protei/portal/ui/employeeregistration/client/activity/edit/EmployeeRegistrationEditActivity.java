@@ -8,7 +8,10 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -18,6 +21,9 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.function.Function;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 public abstract class EmployeeRegistrationEditActivity implements Activity, AbstractEmployeeRegistrationEditActivity {
@@ -113,6 +119,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         q.setResourceComment( view.resourceComment().getValue() );
         q.setOperatingSystem( view.operatingSystem().getValue() );
         q.setAdditionalSoft( view.additionalSoft().getValue() );
+        q.setCurators( toSet( view.curators().getValue(), Person::fromPersonShortView ));
 
         return q;
     }
@@ -140,6 +147,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.fullNameValidation().setValid(true);
         view.headOfDepartmentValidation().setValid(true);
         view.setEmploymentDateValid(true);
+        view.curators().setValue( null );
 
         view.saveEnabled().setEnabled(true);
     }

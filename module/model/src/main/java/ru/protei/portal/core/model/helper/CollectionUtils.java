@@ -1,7 +1,10 @@
 package ru.protei.portal.core.model.helper;
 
-import java.util.Collection;
-import java.util.Collections;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.PersonShortView;
+
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -52,5 +55,15 @@ public class CollectionUtils {
 
     public static <T> int size( Collection<T> col) {
         return col == null ? 0 : col.size();
+    }
+
+    public static <R, T> Set<R> toSet( Iterable<T> iterable, Function<? super T, ? extends R> mapper ) {
+        if (iterable == null || mapper == null) return null;
+        Iterator<T> it = iterable.iterator();
+        HashSet<R> result = new HashSet<>();
+        while (it.hasNext()) {
+            result.add( mapper.apply( it.next() ) );
+        }
+        return result;
     }
 }

@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -79,6 +80,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
         view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
         view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
+        view.setCurators( join( value.getCurators(), Person::getDisplayShortName, "," ) );
         view.setPosition(value.getPosition());
         view.setProbationPeriodMonth(value.getProbationPeriodMonth() == null ?
                 lang.employeeRegistrationWithoutProbationPeriod() :

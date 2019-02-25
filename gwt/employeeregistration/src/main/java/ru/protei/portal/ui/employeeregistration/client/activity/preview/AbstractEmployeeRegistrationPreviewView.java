@@ -28,7 +28,9 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setResourceList(String resourcesList);
 
-    void setWithRegistration(String withRegistration);
+    void setCurators( String curators );
+
+    void setWithRegistration( String withRegistration);
 
     void setCreated(String created);
 
