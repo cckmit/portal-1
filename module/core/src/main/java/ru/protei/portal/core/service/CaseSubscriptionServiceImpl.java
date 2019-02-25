@@ -53,12 +53,6 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         }
     }
 
-
-    @Override
-    public Set<NotificationEntry> subscribers(AssembledCaseEvent event) {
-        return getByCase(event.getCaseObject());
-    }
-
     @Override
     public Set<NotificationEntry> subscribers(EmployeeRegistrationEvent event) {
         HashSet<NotificationEntry> notifiers = new HashSet<>(employeeRegistrationEventSubscribers);
@@ -69,10 +63,13 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
                 .map(contactInfo -> new PlainContactInfoFacade(contactInfo).getEmail())
                 .map(email -> new NotificationEntry(email, En_ContactItemType.EMAIL, "ru"))
                 .ifPresent(notifiers::add);
+        log.info( "subscribers: EmployeeRegistrationEvent: {}", notifiers.stream().map(ni->ni.getAddress()).collect( Collectors.joining( "," ) ) );
         return notifiers;
     }
 
-    private Set<NotificationEntry> getByCase (CaseObject caseObject){
+    @Override
+    public Set<NotificationEntry> subscribers( AssembledCaseEvent event ) {
+        CaseObject caseObject = event.getCaseObject();
         Set<NotificationEntry> result = new HashSet<>();
         appendCompanySubscriptions(caseObject.getInitiatorCompanyId(), result);
         appendProductSubscriptions(caseObject.getProductId(), result);
@@ -86,10 +83,9 @@ public class CaseSubscriptionServiceImpl implements CaseSubscriptionService {
         }
         //HomeCompany persons don't need to get notifications
 //        companyGroupHomeDAO.getAll().forEach( hc -> appendCompanySubscriptions(hc.getCompanyIds(), result));
-        log.info( "subscribers: {}", result.stream().map(ni->ni.getAddress()).collect( Collectors.joining( "," ) ) );
+        log.info( "subscribers: AssembledCaseEvent: {}", result.stream().map( ni -> ni.getAddress() ).collect( Collectors.joining( "," ) ) );
         return result;
     }
-
     private List<CompanySubscription> safeGetByCompany( Long companyId ) {
         if (companyId == null) return Collections.emptyList();
         Company company = companyDAO.get( companyId );

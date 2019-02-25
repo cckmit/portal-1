@@ -84,7 +84,7 @@ public class MailNotificationProcessor {
                         event.getCaseObject().getManager(),
                         event.getCaseObject().isPrivateCase());
 
-        log.info( "onCaseChanged: notifiers from event {}", notifiers.stream().map(ni->ni.getAddress()).collect( Collectors.joining( "," ) ) );
+        log.info( "subscribers: filter private: {}", notifiers.stream().map(ni->ni.getAddress()).collect( Collectors.joining( "," ) ) );
         if(!notifiers.isEmpty())
             performCaseObjectNotification( event, notifiers );
     }
@@ -221,7 +221,7 @@ public class MailNotificationProcessor {
             allNotifiers.add(creatorEmail);
         }
 
-        NotificationEntry managerEmail = fetchNotificationEntryFromPerson(initiator);
+        NotificationEntry managerEmail = fetchNotificationEntryFromPerson(manager);
         if (managerEmail != null) {
             allNotifiers.add(managerEmail);
         }
