@@ -175,7 +175,6 @@ public abstract class DocumentEditActivity
     private void setDecimalNumberEnabled() {
         En_DocumentCategory category = view.documentCategory().getValue();
         view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
-        view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
     }
 
     private boolean checkDocumentUploadValid(Document newDocument) {

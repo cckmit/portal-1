@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
+import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
@@ -55,6 +56,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         organizationCode.setValue(null);
         dateRange.setValue(null);
         documentType.setValue(null);
+        approved.setValue(null);
         keywords.setValue(new LinkedList<>());
         sortDir.setValue(false);
     }
@@ -92,6 +94,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Override
     public HasValue<DocumentType> documentType() {
         return documentType;
+    }
+
+    @Override
+    public HasValue<Boolean> approved() {
+        return approved;
     }
 
     @Override
@@ -136,6 +143,11 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiHandler("documentType")
     public void onDocumentTypeSelected(ValueChangeEvent<DocumentType> event) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("approved")
+    public void onSearchOnlyPrivateChanged(ValueChangeEvent<Boolean> event) {
         fireChangeTimer();
     }
 
@@ -220,6 +232,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     @Inject
     @UiField(provided = true)
     DocumentTypeSelector documentType;
+
+    @UiField
+    ThreeStateButton approved;
 
     @Inject
     @UiField(provided = true)
