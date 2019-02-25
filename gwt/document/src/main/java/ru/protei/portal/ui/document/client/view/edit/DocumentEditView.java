@@ -5,6 +5,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -33,6 +34,7 @@ import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCat
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
+import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -247,15 +249,15 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
             activity.onDecimalNumberChanged();
     }
 
-    @UiHandler("approved")
-    public void onApprovedChanged(ClickEvent event) {
-        activity.onApprovedChanged();
-    }
-
     @UiHandler("documentCategory")
     public void onDocumentCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
         if (activity != null)
             activity.onDocumentCategoryChanged();
+    }
+    @UiHandler("approved")
+    public void onApprovedClicked(ValueChangeEvent<Boolean> event) {
+        if (activity != null)
+            activity.onApprovedChanged();
     }
 
     @UiHandler("project")
@@ -333,7 +335,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     DecimalNumberInput decimalNumber;
 
     @UiField
-    CheckBox approved;
+    ToggleButton approved;
 
     @UiField
     Button selectFileButton;

@@ -9,7 +9,8 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.document.uploader'
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:execution="urn:import:ru.protei.portal.ui.document.client.widget.executiontype"
-             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
+             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
+             xmlns:toogle="urn:import:ru.protei.portal.ui.common.client.widget.togglebtn.item">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -121,7 +122,7 @@
                         <label>
                             <ui:text from="{lang.documentApproved}"/>
                         </label>
-                        <g:CheckBox ui:field="approved" styleName="switch-btn"/>
+                        <toogle:ToggleButton ui:field="approved" text = '{lang.documentApproved}'/>
                     </g:HTMLPanel>
 
                 </div>
