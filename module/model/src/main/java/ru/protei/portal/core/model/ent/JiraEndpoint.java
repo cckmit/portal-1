@@ -24,11 +24,8 @@ public class JiraEndpoint {
     @JdbcColumn(name = "COMPANY_ID")
     private Long companyId;
 
-    @JdbcColumn(name = "last_created")
-    private Date lastCreatedOnDate;
-
-    @JdbcColumn(name = "last_updated")
-    private Date lastUpdatedOnDate;
+    @JdbcColumn(name = "person_id")
+    private Long personId;
 
     @JdbcColumn(name = "STATUS_MAP_ID")
     private long statusMapId;
@@ -76,22 +73,6 @@ public class JiraEndpoint {
         this.companyId = companyId;
     }
 
-    public Date getLastCreatedOnDate() {
-        return lastCreatedOnDate;
-    }
-
-    public void setLastCreatedOnDate(Date lastCreatedOnDate) {
-        this.lastCreatedOnDate = lastCreatedOnDate;
-    }
-
-    public Date getLastUpdatedOnDate() {
-        return lastUpdatedOnDate;
-    }
-
-    public void setLastUpdatedOnDate(Date lastUpdatedOnDate) {
-        this.lastUpdatedOnDate = lastUpdatedOnDate;
-    }
-
     public long getStatusMapId() {
         return statusMapId;
     }
@@ -106,5 +87,13 @@ public class JiraEndpoint {
 
     public void setPriorityMapId(long priorityMapId) {
         this.priorityMapId = priorityMapId;
+    }
+
+    public Long getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Long personId) {
+        this.personId = personId;
     }
 }

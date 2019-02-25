@@ -22,77 +22,14 @@ import java.util.Map;
 
 public class JiraEventTypeHandlersFactory {
     private static final Logger logger = LoggerFactory.getLogger(JiraEventTypeHandlersFactory.class);
-    private static final Map<Long, JiraEventTypeHandler> handlers =
-            new HashMap<Long, JiraEventTypeHandler>() {{
-                put(EventType.ISSUE_CREATED_ID, new JiraIssueCreatedEventHandler());
-                put(EventType.ISSUE_UPDATED_ID, new JiraIssueUpdatedEventHandler());
+    private static final Map<String, JiraEventTypeHandler> handlers =
+            new HashMap<String, JiraEventTypeHandler>() {{
+                put("jira:issue_created", new JiraIssueCreatedEventHandler());
+                put("jira:issue_updated", new JiraIssueUpdatedEventHandler());
             }};
 
-    public static JiraEventTypeHandler returnHandler(long eventTypeId) {
-        return handlers.getOrDefault(eventTypeId, x -> {logger.debug("No handler found for event type id {}", x); return null;});
-    }
-
-    public static class JiraIssueCreatedEventHandler implements JiraEventTypeHandler {
-        @Autowired
-        CaseService caseService;
-
-        @Autowired
-        PersonDAO personDAO;
-
-        @Autowired
-        JiraEndpointDAO jiraEndpointDAO;
-
-        @Autowired
-        private ExternalCaseAppDAO externalCaseAppDAO;
-
-        @Autowired
-        private CaseObjectDAO caseObjectDAO;
-
-        @Override
-        public CaseObject handle(IssueEvent event) {
-            final Issue newJiraIssue = event.getIssue();
-            final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(event.getProject().getId());
-            final Person person = personDAO.get(jiraEndpointDAO.getCompanyUser(event.getProject().getId()));
-            final CaseObject newCaseObject = CommonUtils.convertJiraIssueToPortalIssue(newJiraIssue, person, endpoint);
-            caseObjectDAO.insertCase(newCaseObject);
-            final ExternalCaseAppData appData = new ExternalCaseAppData(newCaseObject);
-            appData.setExtAppCaseId(newJiraIssue.getId() + "_" + event.getProject().getId());
-            appData.setExtAppData(String.valueOf(newJiraIssue.getProjectId()));
-            logger.debug("create jira-case id={}, ext={}, data={}", appData.getId(), appData.getExtAppCaseId(), appData.getExtAppData());
-            externalCaseAppDAO.merge(appData);
-            return newCaseObject;
-        }
-    }
-
-    public static class JiraIssueUpdatedEventHandler implements JiraEventTypeHandler {
-        @Autowired
-        CaseService caseService;
-
-        @Autowired
-        PersonDAO personDAO;
-
-        @Autowired
-        JiraEndpointDAO jiraEndpointDAO;
-
-        @Autowired
-        private ExternalCaseAppDAO externalCaseAppDAO;
-
-        @Autowired
-        private CaseObjectDAO caseObjectDAO;
-
-        @Override
-        public CaseObject handle(IssueEvent event) {
-            final Issue newJiraIssue = event.getIssue();
-            final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(event.getProject().getId());
-            final Person person = personDAO.get(jiraEndpointDAO.getCompanyUser(event.getProject().getId()));
-            final String projectId = String.valueOf(event.getProject().getId());
-            CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(projectId + "_" + newJiraIssue.getId());
-            if (caseObj != null)
-                caseObj = CommonUtils.updatePortalIssue(newJiraIssue, caseObj, endpoint);
-            else
-                caseObj = CommonUtils.convertJiraIssueToPortalIssue(newJiraIssue, person, endpoint);
-            caseObjectDAO.saveOrUpdate(caseObj);
-            return caseObj;
-        }
+    public static JiraEventTypeHandler returnHandler(String eventType) {
+        return handlers.getOrDefault(eventType,
+                x -> {logger.debug("No handler found for event type id {}", x); return null;});
     }
 }

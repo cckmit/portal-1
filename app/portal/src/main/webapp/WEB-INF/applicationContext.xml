@@ -20,6 +20,7 @@
        <context:component-scan base-package="ru.protei.portal.tools.audit" />
        <context:component-scan base-package="ru.protei.portal.hpsm.config" />
        <context:component-scan base-package="ru.protei.portal.redmine.config" />
+       <context:component-scan base-package="ru.protei.portal.jira.config" />
 
        <task:scheduler id="winter-task-scheduler" pool-size="10"/>
 
