@@ -10,7 +10,7 @@
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:execution="urn:import:ru.protei.portal.ui.document.client.widget.executiontype"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
-             xmlns:toogle="urn:import:ru.protei.portal.ui.common.client.widget.togglebtn.item">
+             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -122,7 +122,7 @@
                         <label>
                             <ui:text from="{lang.documentApproved}"/>
                         </label>
-                        <toogle:ToggleButton ui:field="approved" text = '{lang.documentApproved}'/>
+                        <switcher:Switcher ui:field="approved"/>
                     </g:HTMLPanel>
 
                 </div>
