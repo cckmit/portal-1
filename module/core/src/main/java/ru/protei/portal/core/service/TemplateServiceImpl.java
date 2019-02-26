@@ -1,6 +1,8 @@
 package ru.protei.portal.core.service;
 
 import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
 import ru.protei.portal.core.event.AssembledCaseEvent;
@@ -17,6 +19,9 @@ import ru.protei.portal.util.MarkdownServer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
@@ -124,28 +129,43 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    @Override
-    public PreparedTemplate getEmployeeRegistrationProbationEmailNotificationBody(EmployeeRegistration employeeRegistrationId, String urlTemplate, Collection<String> recipients) {
-        Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
-        templateModel.put( "er", employeeRegistration );
-        templateModel.put( "recipients", recipients );
 
-        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.probation.body.%s.ftl" );
-        template.setModel( templateModel );
-        template.setTemplateConfiguration( templateConfiguration );
-        return template;
+    ResourceBundle lang = ResourceBundle.getBundle("Lang", Locale.ENGLISH);
+
+    @Override
+    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employee_registration_name", employeeRegistration.getEmployeeFullName() );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
+        model.put( "userName", recipientName);
+
+        return getText(model, "notification/email/employee.registration.probation.body.%s.ftl");
     }
 
     @Override
-    public PreparedTemplate getEmployeeRegistrationProbationEmailNotificationSubject(String  employeeFullName) {
-        Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put( "employeeFullName", employeeFullName );
+    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employeeFullName", employeeFullName );
 
-        PreparedTemplate template = new PreparedTemplate( "notification/email/employee.registration.probation.subject.%s.ftl" );
-        template.setModel( templateModel );
-        template.setTemplateConfiguration( templateConfiguration );
-        return template;
+        return getText(model, "notification/email/employee.registration.probation.subject.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationCuratorsEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employee_registration_name", employeeRegistration.getEmployeeFullName() );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
+        model.put( "userName", recipientName);
+
+        return getText(model, "notification/email/employee.registration.probation.curators.body.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationCuratorsEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employeeFullName", employeeFullName );
+
+        return getText(model, "notification/email/employee.registration.probation.curators.subject.%s.ftl");
     }
 
     @Override
@@ -258,5 +278,22 @@ public class TemplateServiceImpl implements TemplateService {
         model.put( "addedAttachments", added);
 
         return model;
+    }
+
+    private String getText( Map<String, Object> model, String nameTemplate ) throws IOException, TemplateException  {
+        return getText( model, nameTemplate, null );
+    }
+
+    private String getText( Map<String, Object> model, String nameTemplate, Locale lang  ) throws IOException, TemplateException {
+        Writer writer = new StringWriter();
+
+        if ( lang == null ) {
+            lang = new Locale("ru");
+        }
+
+        Template template = templateConfiguration.getTemplate( String.format( nameTemplate, lang.getLanguage() ), lang );
+        template.process( model, writer );
+        return writer.toString();
+
     }
 }

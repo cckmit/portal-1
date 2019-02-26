@@ -3,7 +3,7 @@
 </#macro>
 
 <@set name="_reminder" value="${reminder}"/>
-<@set name="_response_head_of_department" value="${response_head_of_department}"/>
+<@set name="_review_curators" value="${review_curators}"/>
 <@set name="_probation_period_is_end" value="${probation_period_is_end}"/>
 
 <@set name="_you" value="${you}"/>
@@ -22,7 +22,7 @@
             <div style="font-family: sans-serif;font-size: 14px;"><b>${_reminder}.</b></div>
             <br/>
             <div style="font-family: sans-serif;font-size: 14px;">${_probation_period_is_end} <a href="${linkToEmployeeRegistration}">${employee_registration_name}</a>.</div>
-            <div style="font-family: sans-serif;font-size: 14px;">${_response_head_of_department}</div>
+            <div style="font-family: sans-serif;font-size: 14px;">${_review_curators}</div>
         </div>
 
     </div>

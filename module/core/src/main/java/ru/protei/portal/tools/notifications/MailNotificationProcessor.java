@@ -7,10 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationProbationNotificaionEvent;
-import ru.protei.portal.core.event.UserLoginUpdateEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -19,7 +16,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
@@ -305,8 +301,7 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
-        String urlTemplate = config.data().getMailNotificationConfig().getCrmUrlInternal() +
-                config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
+        String urlTemplate = getEmployeeRegistrationUrlTemplate();
 
         PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
         if (bodyTemplate == null) {
@@ -337,26 +332,46 @@ public class MailNotificationProcessor {
         });
     }
 
-
     @EventListener
-    public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationNotificaionEvent event) {
-        log.info( "onEmployeeRegistrationEvent(): {}", event );
+    public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationHeadOfDepartmentEvent event) {
+        log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
 
-        PreparedTemplate bodyTemplate =  templateService.getEmployeeRegistrationProbationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
-        PreparedTemplate subjectTemplate = templateService.getEmployeeRegistrationProbationEmailNotificationSubject(employeeRegistration, urlTemplate, recipients);
+        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
+        Person headOfDepartment = event.getHeadOfDepartment();
 
         try {
-            for (EmployeeRegistration employeeRegistration : event.getProbationExpires()) {
+            String body = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody(
+                    employeeRegistration, getEmployeeRegistrationUrlTemplate(), headOfDepartment.getDisplayName() );
 
-                ContactInfo contactInfo = event.getContactInfoMap().get( employeeRegistration.getHeadOfDepartmentId() );
-                if(contactInfo==null) continue;
-//
-                sentMail( new PlainContactInfoFacade(contactInfo).getEmail(), subject,  body );
-            }
+            String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
+                    employeeRegistration.getEmployeeFullName() );
+
+            sentMail( new PlainContactInfoFacade( headOfDepartment.getContactInfo() ).getEmail(), subject, body );
+
         } catch (Exception e) {
-            log.error("Failed to sent employee probation notification: ", e);
+            log.warn( "Failed to sent employee probation notification: {}", employeeRegistration, e );
         }
+    }
 
+    @EventListener
+    public void onEmployeeRegistrationProbationCuratorsEvent( EmployeeRegistrationProbationCuratorsEvent event) {
+        log.info( "onEmployeeRegistrationProbationCuratorsEvent(): {}", event );
+
+        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
+        Person curator = event.getCurator();
+
+        try {
+            String body = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationBody(
+                    employeeRegistration, getEmployeeRegistrationUrlTemplate(), curator.getDisplayName() );
+
+            String subject = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationSubject(
+                    employeeRegistration.getEmployeeFullName() );
+
+            sentMail( new PlainContactInfoFacade( curator.getContactInfo() ).getEmail(), subject, body );
+
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee probation notification: {}", employeeRegistration, e );
+        }
     }
 
     private void sentMail( String address, String subject, String body) throws MessagingException {
@@ -404,6 +419,11 @@ public class MailNotificationProcessor {
         }
         String locale = person.getLocale() == null ? "ru" : person.getLocale();
         return NotificationEntry.email(email, locale);
+    }
+
+    private String getEmployeeRegistrationUrlTemplate() {
+        return config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }
 
     private class MimeMessageHeadersFacade {

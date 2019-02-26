@@ -1,1 +1,1 @@
-${employee_registration_probation}<#noparse> [${employeeFullName}]</#noparse>
+${reminder} ${response_head_of_department}<#noparse> [${employeeFullName}]</#noparse>
