@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.document.client.activity.edit;
 
+import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -192,7 +193,6 @@ public abstract class DocumentEditActivity
         }
         return true;
     }
-
     private void saveDocument(Document document) {
         this.document = document;
         view.saveEnabled().setEnabled(false);
@@ -232,6 +232,9 @@ public abstract class DocumentEditActivity
         }
         if (doc.getInventoryNumber() != null && doc.getInventoryNumber() < 0) {
             return lang.negativeInventoryNumber();
+        }
+        if (doc.getInventoryNumber() != null && doc.getInventoryNumber() == 0) {
+            return lang.inventoryNumberIsEmpty();
         }
         if (HelperFunc.isEmpty(doc.getName())) {
             return lang.documentNameIsNotSet();

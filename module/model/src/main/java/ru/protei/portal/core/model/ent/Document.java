@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -227,8 +228,12 @@ public class Document implements Serializable, Downloadable {
     }
 
     public boolean isValid() {
+        boolean hasInventoryNumber = getInventoryNumber() != null && (0 < getInventoryNumber());
+        boolean validInventoryNumber = (getProjectInfo().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) ?
+                    hasInventoryNumber :
+                    hasInventoryNumber || getInventoryNumber() == null;
         return  this.getType() != null &&
-                (this.getInventoryNumber() == null || this.getInventoryNumber() > 0) &&
+                validInventoryNumber &&
                 this.getProjectId() != null &&
                 HelperFunc.isNotEmpty(this.getName());
     }

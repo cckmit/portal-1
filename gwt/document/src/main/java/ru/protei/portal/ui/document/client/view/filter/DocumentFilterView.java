@@ -147,7 +147,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     @UiHandler("approved")
-    public void onSearchOnlyPrivateChanged(ValueChangeEvent<Boolean> event) {
+    public void onApprovedClicked(ValueChangeEvent<Boolean> event) {
         fireChangeTimer();
     }
 
