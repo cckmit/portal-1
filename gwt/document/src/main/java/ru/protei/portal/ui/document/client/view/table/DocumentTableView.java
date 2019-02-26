@@ -182,18 +182,20 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            String html = "";
+            StringBuilder sb = new StringBuilder();
 
-            html += "<div class=\"document-name\">" + value.getName() + "</div>";
+            sb.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
             if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
-                html += "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>";
+                sb.append( "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>" );
             }
-            html += "<br/>";
-            html += "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>";
-            html += "<br/>";
-            html += DateFormatter.formatDateTime(value.getCreated());
+            sb.append( "<br/>" );
+            sb.append( "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>" );
+            sb.append( "<br/>" );
+            sb.append( value.getApproved() ? lang.documentApproved() : lang.documentNotApproved() );
+            sb.append( "<br/>" );
+            sb.append( "<small>" + lang.documentCreated(DateFormatter.formatDateOnly(value.getCreated())) + "</small>" );
 
-            cell.setInnerHTML(html);
+            cell.setInnerHTML(sb.toString());
         }
     };
 
