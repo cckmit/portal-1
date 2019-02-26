@@ -1,8 +1,8 @@
 package ru.protei.portal.core.model.helper;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class StringUtils {
 
@@ -62,12 +62,38 @@ public class StringUtils {
         return sb;
     }
 
-    public static <T> String join( Collection<T> collection, Function<T, String> mapper, CharSequence delimiter) {
-        if (collection == null)
+    public static <T> String join( Iterable<T> iterable, Function<T, String> mapper, CharSequence delimiter) {
+        if (iterable == null) {
+            return null;
+        }
+
+        Iterator<T> iterator = iterable.iterator();
+        if (!iterator.hasNext()) {
             return "";
-        return collection.stream()
-                .map(mapper)
-                .collect( Collectors.joining(delimiter));
+        }
+
+        if (mapper == null) {
+            mapper = String::valueOf;
+        }
+
+        T first = iterator.next();
+        if (!iterator.hasNext()) {
+            return first == null ? "" : mapper.apply( first );
+        }
+
+        StringBuilder buf = new StringBuilder( 256 ); // Java default is 16, probably too small
+        if (first != null) {
+            buf.append( mapper.apply( first ) );
+        }
+
+        while (iterator.hasNext()) {
+            buf.append( delimiter );
+            T obj = iterator.next();if (obj != null) {
+                buf.append( mapper.apply( obj ) );
+            }
+        }
+
+        return buf.toString();
     }
 
     public static String join(Collection<?> collection, CharSequence delimiter) {

@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
  * Created by shagaleev on 30/05/17.
@@ -84,6 +85,7 @@ public class MailNotificationProcessor {
                         event.getCaseObject().getManager(),
                         event.getCaseObject().isPrivateCase());
 
+        log.info( "subscribers: filter private: {}", join( notifiers, ni->ni.getAddress(), ",") );
         if(!notifiers.isEmpty())
             performCaseObjectNotification( event, notifiers );
     }
@@ -215,12 +217,12 @@ public class MailNotificationProcessor {
             allNotifiers.add(initiatorEmail);
         }
 
-        NotificationEntry creatorEmail = fetchNotificationEntryFromPerson(initiator);
+        NotificationEntry creatorEmail = fetchNotificationEntryFromPerson(creator);
         if (creatorEmail != null) {
             allNotifiers.add(creatorEmail);
         }
 
-        NotificationEntry managerEmail = fetchNotificationEntryFromPerson(initiator);
+        NotificationEntry managerEmail = fetchNotificationEntryFromPerson(manager);
         if (managerEmail != null) {
             allNotifiers.add(managerEmail);
         }
