@@ -193,7 +193,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             sb.append( "<br/>" );
             sb.append( value.getApproved() ? lang.documentApproved() : lang.documentNotApproved() );
             sb.append( "<br/>" );
-            sb.append( "<small>" + lang.documentCreated(DateFormatter.formatDateOnly(value.getCreated())) + "</small>" );
+            sb.append( "<small>" + lang.documentCreated(DateFormatter.formatDateOnly(value.getCreated())) + " в " + DateFormatter.formatTimeOnly(value.getCreated())  + "</small>" );
 
             cell.setInnerHTML(sb.toString());
         }

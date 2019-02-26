@@ -228,12 +228,8 @@ public class Document implements Serializable, Downloadable {
     }
 
     public boolean isValid() {
-        boolean hasInventoryNumber = getInventoryNumber() != null && (0 < getInventoryNumber());
-        boolean validInventoryNumber = (getProjectInfo().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) ?
-                    hasInventoryNumber :
-                    hasInventoryNumber || getInventoryNumber() == null;
         return  this.getType() != null &&
-                validInventoryNumber &&
+                (getInventoryNumber() == null || (0 < getInventoryNumber())) &&
                 this.getProjectId() != null &&
                 HelperFunc.isNotEmpty(this.getName());
     }
