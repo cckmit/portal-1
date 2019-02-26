@@ -3,28 +3,10 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="add-employee-curator-table" author="eliseev">
-        <createTable tableName="employee_curator">
-            <column name="case_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="person_id" type="BIGINT">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-
-    <changeSet id="add-employee-curator-table-constraints" author="eliseev">
-
-        <addForeignKeyConstraint constraintName="curator_case_id_fk" deferrable="false" initiallyDeferred="false"
-                                 baseTableName="employee_curator" baseColumnNames="case_id"
-                                 referencedTableName="case_object" referencedColumnNames="id"
-                                 onDelete="CASCADE" onUpdate="NO ACTION"/>
-
-        <addForeignKeyConstraint constraintName="curator_person_id_fk" deferrable="false" initiallyDeferred="false"
-                                 baseTableName="employee_curator" baseColumnNames="person_id"
-                                 referencedTableName="person" referencedColumnNames="id"
-                                 onDelete="CASCADE" onUpdate="NO ACTION"/>
+    <changeSet id="add-employee-curator-column" author="eliseev">
+        <addColumn tableName="employee_registration">
+            <column name="curators" type="varchar(64)"></column>
+        </addColumn>
     </changeSet>
 
 

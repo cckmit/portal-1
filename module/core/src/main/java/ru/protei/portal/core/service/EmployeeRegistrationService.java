@@ -27,4 +27,7 @@ public interface EmployeeRegistrationService {
     CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration);
 
     CoreResponse<Boolean> notifyAboutProbationPeriod();
+
+    CoreResponse<Boolean> notifyAboutDevelopmentAgenda();
+
 }

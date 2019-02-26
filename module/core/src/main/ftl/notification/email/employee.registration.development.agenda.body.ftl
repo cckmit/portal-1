@@ -6,7 +6,7 @@
 <@set name="_you" value="${you}"/>
 <@set name="_notification_footer" value="${notification_footer_do_not_reply}"/>
 
-<@set name="_response_head_of_department" value="${response_head_of_department}"/>
+<@set name="_development_agenda" value="${development_agenda}"/>
 <@set name="_probation_period_is_end" value="${probation_period_is_end}"/>
 
 <#noparse>
@@ -17,10 +17,9 @@
 <body bgcolor="#FFFFFF" text="#000000">
     <div style="margin-top: 12px">
 
-
         <div style="padding: 8px 0 4px;">
-            <div style="font-family: sans-serif;font-size: 14px;">${_probation_period_is_end} <a href="${linkToEmployeeRegistration}">${employee_registration_name}</a>.</div>
-            <div style="font-family: sans-serif;font-size: 14px;">${_response_head_of_department} <a href="https://goo.gl/forms/ZLJn1gfLIGSbk6Zy2">${_anchor}</a></div>
+            <div style="font-family: sans-serif;font-size: 14px;">${_probation_period_is_end}.</div>
+            <div style="font-family: sans-serif;font-size: 14px;">${_development_agenda} <a href="https://goo.gl/forms/LMtqVDh1JcHGNwzm1">${_anchor}</a></div>
         </div>
 
     </div>

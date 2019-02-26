@@ -4,10 +4,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.PersonShortView;
 
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,6 +50,20 @@ public class CollectionUtils {
         }
     }
 
+    public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
+                                         final BiConsumer<? super I, Consumer<O>> mapper ) {
+        if ( iterable == null || mapper == null || output == null ) {
+            return;
+        }
+
+        Consumer<O> consumer = o -> output.add( o );
+
+        Iterator<I> it = iterable.iterator();
+        while (it.hasNext()) {
+            mapper.accept( it.next(), consumer );
+        }
+    }
+
     public static <T> T find(Collection<T> col, Predicate<T> predicate) {
         return col.stream().filter(predicate).findAny().orElse(null);
     }
@@ -64,6 +75,12 @@ public class CollectionUtils {
     public static <R, T> Set<R> toSet( Iterable<T> iterable, Function<? super T, ? extends R> mapper ) {
         Set<R> result = new HashSet<>();
         transform( iterable, result, mapper );
+        return result;
+    }
+
+    public static <R, T> Set<R> toSet( Iterable<T> iterable, BiConsumer<? super T, Consumer<R>> consumer ) {
+        Set<R> result = new HashSet<>();
+        transform( iterable, result, consumer );
         return result;
     }
 

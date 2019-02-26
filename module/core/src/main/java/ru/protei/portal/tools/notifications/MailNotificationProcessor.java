@@ -301,7 +301,7 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
-        String urlTemplate = getEmployeeRegistrationUrlTemplate();
+        String urlTemplate = getEmployeeRegistrationUrl();
 
         PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
         if (bodyTemplate == null) {
@@ -333,6 +333,23 @@ public class MailNotificationProcessor {
     }
 
     @EventListener
+    public void onEmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationDevelopmentAgendaEvent event) {
+        log.info( "onEmployeeRegistrationDevelopmentAgendaEvent(): {}", event );
+
+        try {
+            String subject = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody(
+                    event.getEmployeeName()
+            );
+
+            sentMail( new PlainContactInfoFacade( event.getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent development agenda notification: {}", event.getEmployeeName(), e );
+        }
+    }
+
+    @EventListener
     public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationHeadOfDepartmentEvent event) {
         log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
 
@@ -341,7 +358,8 @@ public class MailNotificationProcessor {
 
         try {
             String body = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody(
-                    employeeRegistration, getEmployeeRegistrationUrlTemplate(), headOfDepartment.getDisplayName() );
+                    employeeRegistration.getId(), employeeRegistration.getEmployeeFullName(),
+                    getEmployeeRegistrationUrl(), headOfDepartment.getDisplayName() );
 
             String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
                     employeeRegistration.getEmployeeFullName() );
@@ -362,7 +380,8 @@ public class MailNotificationProcessor {
 
         try {
             String body = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationBody(
-                    employeeRegistration, getEmployeeRegistrationUrlTemplate(), curator.getDisplayName() );
+                    employeeRegistration.getId(), employeeRegistration.getEmployeeFullName(),
+                    getEmployeeRegistrationUrl(), curator.getDisplayName() );
 
             String subject = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationSubject(
                     employeeRegistration.getEmployeeFullName() );
@@ -421,7 +440,7 @@ public class MailNotificationProcessor {
         return NotificationEntry.email(email, locale);
     }
 
-    private String getEmployeeRegistrationUrlTemplate() {
+    private String getEmployeeRegistrationUrl() {
         return config.data().getMailNotificationConfig().getCrmUrlInternal() +
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }

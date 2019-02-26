@@ -15,9 +15,10 @@ public class PortalScheduleTasks {
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasks.class );
 
-    @Scheduled(cron = "0 0/1 * * * ?")
+    @Scheduled(cron = "0 0/5 * * * ?")
     public void printInLog() {
         log.info( "printInLog(): {}", new Date() );
         employeeRegistrationServiceImpl.notifyAboutProbationPeriod();
+        employeeRegistrationServiceImpl.notifyAboutDevelopmentAgenda();
     }
 }

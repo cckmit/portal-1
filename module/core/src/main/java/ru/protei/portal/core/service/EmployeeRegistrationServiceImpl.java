@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.EmployeeRegistrationDevelopmentAgendaEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationProbationCuratorsEvent;
 import ru.protei.portal.core.event.EmployeeRegistrationProbationHeadOfDepartmentEvent;
@@ -74,6 +75,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistration == null)
             return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
         jdbcManyRelationsHelper.fillAll(employeeRegistration);
+        if(!isEmpty(employeeRegistration.getCuratorsIds())){
+            employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
+        }
         return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
     }
 
@@ -90,7 +94,6 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
         employeeRegistration.setId(id);
         Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
-        jdbcManyRelationsHelper.persist(employeeRegistration, "curators");
 
         if (employeeRegistrationId == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
@@ -112,66 +115,63 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return new CoreResponse<Long>().success(id);
     }
 
-//    @Override
-//    public CoreResponse<Boolean> notifyAboutProbationPeriod() {
-//        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 9 );
-//        log.info( "notifyAboutProbationPeriod(): {}", probationExpires );
-//
-//        Set<Long> notifyIds = new HashSet<Long>();
-//
-//        for (EmployeeRegistration pe : emptyIfNull(probationExpires)) {
-//            notifyIds.add( pe.getHeadOfDepartmentId() );
-//            jdbcManyRelationsHelper.fill( pe, "curators" );
-//        }
-//
-//        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "contactInfo" );
-//        Map<Long, Person> idToPerson = toMap( persons, Person::getId, person -> person );
-//
-//        for (EmployeeRegistration employeeRegistration : emptyIfNull(probationExpires)) {
-//            Person headOfDepartment = idToPerson.get( employeeRegistration.getHeadOfDepartmentId() );
-//
-//            publisherService.publishEvent( new EmployeeRegistrationProbationHeadOfDepartmentEvent( this,
-//                    employeeRegistration, headOfDepartment));
-//
-//            for (Person curator : emptyIfNull( employeeRegistration.getCurators())) {
-//                publisherService.publishEvent( new EmployeeRegistrationProbationCuratorsEvent( this,
-//                        employeeRegistration, curator ));
-//            }
-//        }
-//
-//        return null;
-//    }
+    @Override
+    public CoreResponse<Boolean> notifyAboutDevelopmentAgenda() {
+        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 7 );
+        log.info( "notifyAboutProbationPeriod(): {}", probationExpires );
+
+        for (EmployeeRegistration employeeRegistration : emptyIfNull(probationExpires)) {
+
+            Person employeer = null;
+
+
+            publisherService.publishEvent( new EmployeeRegistrationDevelopmentAgendaEvent( this,
+                    employeeName ));
+        }
+
+        return null;
+    }
 
     @Override
     public CoreResponse<Boolean> notifyAboutProbationPeriod() {
         List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 9 );
         log.info( "notifyAboutProbationPeriod(): {}", probationExpires );
 
-        Set<Long> notifyIds = new HashSet<Long>();
-
-        for (EmployeeRegistration pe : emptyIfNull(probationExpires)) {
-            notifyIds.add( pe.getHeadOfDepartmentId() );
-            for (Person curator : emptyIfNull( pe.getCurators())) {
-                notifyIds.add(  curator.getId() );
-            }
-        }
-
-        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "contactInfo" );
-        Map<Long, Person> idToPerson = toMap( persons, Person::getId, person -> person );
+        Map<Long, Person> idToPerson = collectPersonsForNotification( probationExpires );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull(probationExpires)) {
             Person headOfDepartment = idToPerson.get( employeeRegistration.getHeadOfDepartmentId() );
+            notifyHeadOfDepartment( employeeRegistration, headOfDepartment );
 
-            publisherService.publishEvent( new EmployeeRegistrationProbationHeadOfDepartmentEvent( this,
-                    employeeRegistration, headOfDepartment));
-
-            for (Person curator : emptyIfNull( employeeRegistration.getCurators())) {
-                publisherService.publishEvent( new EmployeeRegistrationProbationCuratorsEvent( this,
-                        employeeRegistration, curator ));
+            for (Long curatorId : emptyIfNull( employeeRegistration.getCuratorsIds())) {
+                Person curator = idToPerson.get( curatorId );
+                notifyEmployeeCurator( employeeRegistration, curator );
             }
         }
 
         return null;
+    }
+
+    private void notifyEmployeeCurator( EmployeeRegistration employeeRegistration, Person curator ) {
+        publisherService.publishEvent( new EmployeeRegistrationProbationCuratorsEvent( this,
+                employeeRegistration, curator ));
+    }
+
+    private void notifyHeadOfDepartment( EmployeeRegistration employeeRegistration, Person headOfDepartment ) {
+        publisherService.publishEvent( new EmployeeRegistrationProbationHeadOfDepartmentEvent( this,
+                employeeRegistration, headOfDepartment));
+    }
+
+    private Map<Long, Person> collectPersonsForNotification( List<EmployeeRegistration> probationExpires ) {
+        Set<Long> notifyIds = new HashSet<Long>();
+
+        for (EmployeeRegistration er : emptyIfNull( probationExpires )) {
+            notifyIds.add( er.getHeadOfDepartmentId() );
+            notifyIds.addAll( emptyIfNull( er.getCuratorsIds() ) );
+        }
+
+        List<Person> persons = personDAO.partialGetListByKeys( notifyIds, "id", "displayname", "contactInfo" );
+        return toMap( persons, Person::getId, person -> person );
     }
 
     private static final Logger log = LoggerFactory.getLogger( EmployeeRegistrationServiceImpl.class );

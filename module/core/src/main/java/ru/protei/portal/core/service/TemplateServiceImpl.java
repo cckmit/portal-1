@@ -133,10 +133,23 @@ public class TemplateServiceImpl implements TemplateService {
     ResourceBundle lang = ResourceBundle.getBundle("Lang", Locale.ENGLISH);
 
     @Override
-    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+    public  String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
         Map<String, Object> model = new HashMap<>();
-        model.put( "employee_registration_name", employeeRegistration.getEmployeeFullName() );
-        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
+        model.put( "userName", employeeName);
+
+        return getText( model, "notification/email/employee.registration.development.agenda.body.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject() throws IOException, TemplateException {
+        return getText( new HashMap<>(), "notification/email/employee.registration.development.agenda.subject.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employee_registration_name", employeeFullName );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
         model.put( "userName", recipientName);
 
         return getText(model, "notification/email/employee.registration.probation.body.%s.ftl");
@@ -151,10 +164,10 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public String getEmployeeRegistrationProbationCuratorsEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+    public String getEmployeeRegistrationProbationCuratorsEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException {
         Map<String, Object> model = new HashMap<>();
-        model.put( "employee_registration_name", employeeRegistration.getEmployeeFullName() );
-        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistration.getId() ) );
+        model.put( "employee_registration_name", employeeFullName );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
         model.put( "userName", recipientName);
 
         return getText(model, "notification/email/employee.registration.probation.curators.body.%s.ftl");

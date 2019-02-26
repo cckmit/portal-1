@@ -1,1 +1,1 @@
-${reminder} ${review_curators}<#noparse> [${employeeFullName}]</#noparse>
+${review_curators}<#noparse> [${employeeFullName}]</#noparse>

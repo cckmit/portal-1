@@ -119,7 +119,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         q.setResourceComment( view.resourceComment().getValue() );
         q.setOperatingSystem( view.operatingSystem().getValue() );
         q.setAdditionalSoft( view.additionalSoft().getValue() );
-        q.setCurators( toSet( view.curators().getValue(), Person::fromPersonShortView ));
+        q.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
 
         return q;
     }

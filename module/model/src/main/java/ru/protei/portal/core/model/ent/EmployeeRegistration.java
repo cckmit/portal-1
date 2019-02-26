@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -143,17 +144,27 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     String additionalSoft;
 
     /**
-     * Попечители
+     * Попечители на испытательный срок
      */
-    @JdbcManyToMany( linkTable = "employee_curator", localLinkColumn = "case_id", remoteLinkColumn = "person_id")
-    Set<Person> curators;
+    @JdbcColumnCollection(name = "curators", separator = ",")
+    Set<Long> curatorsIds;
 
-    public Set<Person> getCurators() {
+    Collection<Person> curators;
+
+    public Collection<Person> getCurators() {
         return curators;
     }
 
-    public void setCurators( Set<Person> curators ) {
+    public void setCurators( Collection<Person> curators ) {
         this.curators = curators;
+    }
+
+    public void setCuratorsIds( Set<Long> curatorsIds ) {
+        this.curatorsIds = curatorsIds;
+    }
+
+    public Set<Long> getCuratorsIds() {
+        return curatorsIds;
     }
 
     public Long getId() {

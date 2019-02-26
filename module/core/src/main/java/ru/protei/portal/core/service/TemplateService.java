@@ -22,11 +22,11 @@ public interface TemplateService {
 
     PreparedTemplate getCrmEmailNotificationSubject( CaseObject caseObject, Person currentPerson );
 
-    String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, String recipientName ) throws IOException, TemplateException;
+    String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException;
 
-    String getEmployeeRegistrationProbationCuratorsEmailNotificationBody( EmployeeRegistration employeeRegistration, String urlTemplate, String recipientName ) throws IOException, TemplateException;
+    String getEmployeeRegistrationProbationCuratorsEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 
     String getEmployeeRegistrationProbationCuratorsEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException;
 
@@ -37,4 +37,9 @@ public interface TemplateService {
     PreparedTemplate getUserLoginNotificationBody( UserLoginUpdateEvent event, String url);
 
     PreparedTemplate getUserLoginNotificationSubject( String url);
+
+    String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException;
+
+    String getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject() throws IOException, TemplateException;
+
 }
