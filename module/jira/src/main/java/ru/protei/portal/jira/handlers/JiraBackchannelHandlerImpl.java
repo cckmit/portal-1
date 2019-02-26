@@ -70,7 +70,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 .setSummary(object.getName())
                 .setDescription(object.getInfo())
                 .setStatusId(statusMapEntryDAO.getJiraStatus(object.getStateId()))
-                .setPriorityId(priorityMapEntryDAO.getByPortalPriorityId(object.getImpLevel(), endpoint.getId()).getJiraPriorityName());
+                .setPriorityId(String.valueOf(priorityMapEntryDAO.getByPortalPriorityId(object.getImpLevel(), endpoint.getId()).getJiraPriorityId()));
 
         IssueService.UpdateValidationResult updateValidationResult = issueService
                 .validateUpdate(user, issueId, issueInputParameters);
@@ -110,8 +110,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         final JiraStatusMapEntry jiraStatusMapEntry =
                 statusMapEntryDAO.getRedmineStatus(oldObj.getState(), newObj.getState(), statusMapId);
         if (jiraStatusMapEntry != null && newObj.getState() != En_CaseState.VERIFIED) {
-            logger.debug("Found redmine status id: {}", jiraStatusMapEntry.getJiraStatusId());
-            issue.setStatusId(jiraStatusMapEntry.getJiraStatusId());
+            logger.debug("Found redmine status id: {}", jiraStatusMapEntry.getJiraStatusName());
+            issue.setStatusId(jiraStatusMapEntry.getJiraStatusName());
         } else
             logger.debug("Redmine status not found");
 

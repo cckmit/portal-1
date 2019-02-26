@@ -8,7 +8,7 @@ import java.util.List;
 public interface JiraPriorityMapEntryDAO extends PortalBaseDAO<JiraPriorityMapEntry> {
     JiraPriorityMapEntry getByPortalPriorityId(long id, long endpointId);
 
-    JiraPriorityMapEntry getByJiraPriorityId(long id, long endpointId);
+    JiraPriorityMapEntry getByJiraPriorityId(String id);
 
     JiraPriorityMapEntry getByPortalPriorityName(String name, long endpointId);
 

@@ -12,7 +12,7 @@ public final class JiraPriorityMapEntry {
     @JdbcColumn(name = "MAP_ID")
     private long mapId;
 
-    @JdbcColumn(name = "JIRA_priority_id")
+    @JdbcColumn(name = "jira_priority_id")
     private int jiraPriorityId;
 
     @JdbcColumn(name = "LOCAL_priority_id")
@@ -20,17 +20,6 @@ public final class JiraPriorityMapEntry {
 
     @JdbcColumn(name = "LOCAL_priority_name")
     private String localPriorityName;
-
-    @JdbcColumn(name = "JIRA_priority_name")
-    private String jiraPriorityName;
-
-    public String getJiraPriorityName() {
-        return jiraPriorityName;
-    }
-
-    public void setJiraPriorityName(String jiraPriorityName) {
-        this.jiraPriorityName = jiraPriorityName;
-    }
 
     public long getId() {
         return id;

@@ -23,9 +23,6 @@ public class JiraConfigurationContext {
     @Bean
     public JiraIssueCreatedEventHandler getJiraIssueCreatedEventHandler() { return new JiraIssueCreatedEventHandler(); }
 
-//    @Bean
-//    public JiraEventTypeHandlersFactory getJiraEventTypeHandlersFactory() {return new JiraEventTypeHandlersFactory();}
-
     @Bean
     public JiraIssueUpdatedEventHandler getJiraIssueUpdatedEventHandler() { return new JiraIssueUpdatedEventHandler(); }
 }

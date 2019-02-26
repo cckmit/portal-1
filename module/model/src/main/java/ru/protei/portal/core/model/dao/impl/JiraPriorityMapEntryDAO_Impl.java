@@ -15,8 +15,8 @@ public class JiraPriorityMapEntryDAO_Impl extends PortalBaseJdbcDAO<JiraPriority
     }
 
     @Override
-    public JiraPriorityMapEntry getByJiraPriorityId(long id, long endpointId) {
-        return getByCondition("MAP_ID = ? AND JIRA_priority_id = ?", endpointId, id);
+    public JiraPriorityMapEntry getByJiraPriorityId(String id) {
+        return getByCondition("jira_priority_id = ?", id);
     }
 
     @Override

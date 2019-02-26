@@ -10,11 +10,14 @@ import com.google.gson.JsonParser;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.jira.factory.JiraEventTypeHandlersFactory;
+import ru.protei.portal.jira.factory.JiraIssueCreatedEventHandler;
+import ru.protei.portal.jira.factory.JiraIssueUpdatedEventHandler;
 import ru.protei.portal.jira.utils.CommonUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +27,12 @@ import java.io.IOException;
 @RequestMapping(value = "/", method = RequestMethod.POST)
 public class JiraEventHandlerImpl implements JiraEventHandler {
     private static final Logger log = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
+
+    @Autowired
+    JiraIssueCreatedEventHandler createdEventHandler;
+
+    @Autowired
+    JiraIssueUpdatedEventHandler updatedEventHandler;
 
     @RequestMapping(value = "/webhook", method = RequestMethod.POST)
     @EventListener
@@ -41,6 +50,11 @@ public class JiraEventHandlerImpl implements JiraEventHandler {
         final JsonObject jsonObject = jsonTree.getAsJsonObject();
         final String eventType = jsonObject.get("webhookEvent").getAsString();
         final IssueEvent issueEvent = CommonUtils.buildIssueEventFromJson(jsonObject);
-        JiraEventTypeHandlersFactory.returnHandler(eventType).handle(issueEvent);
+        if (eventType.equalsIgnoreCase("jira:issue_created"))
+            createdEventHandler.handle(issueEvent);
+        else if (eventType.equalsIgnoreCase("jira:issue_updated"))
+            updatedEventHandler.handle(issueEvent);
+        else
+            return;
     }
 }

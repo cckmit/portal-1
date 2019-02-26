@@ -13,25 +13,14 @@ public final class JiraStatusMapEntry {
     @JdbcColumn(name = "MAP_ID")
     private long mapId;
 
-    @JdbcColumn(name = "JIRA_status_id")
-    private int jiraStatusId;
+    @JdbcColumn(name = "jira_status_name")
+    private String jiraStatusName;
 
     @JdbcColumn(name = "LOCAL_status_id")
     private int localStatusId;
 
     @JdbcColumn(name = "LOCAL_status_name")
     private String localStatusName;
-
-    @JdbcColumn(name = "LOCAL_previous_status_id")
-    private int localOldStatusId;
-
-    public int getLocalOldStatusId() {
-        return localOldStatusId;
-    }
-
-    public void setLocalOldStatusId(int localOldStatusId) {
-        this.localOldStatusId = localOldStatusId;
-    }
 
     public long getId() {
         return id;
@@ -45,12 +34,12 @@ public final class JiraStatusMapEntry {
         this.mapId = mapId;
     }
 
-    public int getJiraStatusId() {
-        return jiraStatusId;
+    public String getJiraStatusName() {
+        return jiraStatusName;
     }
 
-    public void setJiraStatusId(int jiraStatusId) {
-        this.jiraStatusId = jiraStatusId;
+    public void setJiraStatusName(String jiraStatusName) {
+        this.jiraStatusName = jiraStatusName;
     }
 
     public int getLocalStatusId() {
@@ -71,9 +60,5 @@ public final class JiraStatusMapEntry {
 
     public En_CaseState getLocalStatus() {
         return En_CaseState.getById((long) localStatusId);
-    }
-
-    public En_CaseState getOldLocalStatus() {
-        return En_CaseState.getById((long) localOldStatusId);
     }
 }

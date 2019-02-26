@@ -38,20 +38,6 @@ public class CommonUtils {
     }};
 
 
-    public static CaseObject convertJiraIssueToPortalIssue(Issue issue, Person contactPerson, JiraEndpoint endpoint) {
-        final CaseObject obj = new CaseObject();
-        obj.setCreated(issue.getCreated());
-        obj.setModified(issue.getUpdated());
-        obj.setInitiator(contactPerson);
-        obj.setExtAppType("jira_nexign");
-        obj.setState(mappingOfStatuses.getOrDefault(issue.getStatus().getName(), En_CaseState.CREATED));
-        obj.setName(issue.getSummary());
-        obj.setInfo(issue.getDescription() + "\r\n" + issue.getIssueType());
-        obj.setLocal(0);
-        obj.setInitiatorCompanyId(endpoint.getCompanyId());
-        return obj;
-    }
-
     public static Issue convertPortalIssueToJiraIssue(CaseObject caseObject) {
         final String extAppType = caseObject.getExtAppType();
         final String[] splitted = extAppType.split("_");
@@ -70,11 +56,9 @@ public class CommonUtils {
 
     public static CaseObject updatePortalIssue(Issue issue, CaseObject obj, JiraEndpoint endpoint) {
         obj.setModified(issue.getUpdated());
-        obj.setCaseType(mappingOfTypes.getOrDefault(issue.getIssueType().getName(), En_CaseType.CRM_SUPPORT));
         obj.setExtAppType("jira_nexign");
-        issue.getPriority().getName();
+        issue.getPriority();
         issue.getStatus().getName();
-        issue.getExternalFieldValue("Urgency");
         obj.setStateId(0);
         obj.setState(En_CaseState.ACTIVE);
         obj.setName(issue.getSummary());

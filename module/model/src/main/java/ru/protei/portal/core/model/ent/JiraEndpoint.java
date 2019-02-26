@@ -7,7 +7,7 @@ import ru.protei.winter.jdbc.annotations.JdbcId;
 
 import java.util.Date;
 
-@Table(name = "nexign_endpoint")
+@Table(name = "jira_endpoint")
 public class JiraEndpoint {
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -17,9 +17,6 @@ public class JiraEndpoint {
 
     @JdbcColumn(name = "project_id")
     private String projectId;
-
-    @JdbcColumn(name = "api_key")
-    private String apiKey;
 
     @JdbcColumn(name = "COMPANY_ID")
     private Long companyId;
@@ -55,14 +52,6 @@ public class JiraEndpoint {
 
     public void setProjectId(String projectId) {
         this.projectId = projectId;
-    }
-
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
     }
 
     public Long getCompanyId() {

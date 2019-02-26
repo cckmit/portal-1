@@ -3,10 +3,7 @@ package ru.protei.portal.jira.factory;
 import com.atlassian.jira.event.issue.IssueEvent;
 import com.atlassian.jira.issue.Issue;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
-import ru.protei.portal.core.model.dao.JiraEndpointDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
@@ -30,17 +27,33 @@ public class JiraIssueCreatedEventHandler implements JiraEventTypeHandler {
     @Autowired
     private CaseObjectDAO caseObjectDAO;
 
+    @Autowired
+    JiraStatusMapEntryDAO jiraStatusMapEntryDAO;
+
+    @Autowired
+    JiraPriorityMapEntryDAO jiraPriorityMapEntryDAO;
+
     @Override
     public CaseObject handle(IssueEvent event) {
-        final Issue newJiraIssue = event.getIssue();
-        final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(newJiraIssue.getProjectId());
+        final Issue issue = event.getIssue();
+        final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(issue.getProjectId());
         final Person person = personDAO.get(endpoint.getPersonId());
-        final CaseObject newCaseObject = CommonUtils.convertJiraIssueToPortalIssue(newJiraIssue, person, endpoint);
-        caseObjectDAO.insertCase(newCaseObject);
-        final ExternalCaseAppData appData = new ExternalCaseAppData(newCaseObject);
-        appData.setExtAppCaseId(newJiraIssue.getId() + "_" + newJiraIssue.getProjectId());
-        appData.setExtAppData(String.valueOf(newJiraIssue.getProjectId()));
+        final CaseObject caseObj = new CaseObject();
+        caseObj.setCreated(issue.getCreated());
+        caseObj.setModified(issue.getUpdated());
+        caseObj.setInitiator(person);
+        caseObj.setExtAppType("jira_nexign");
+        caseObj.setStateId(jiraStatusMapEntryDAO.getByJiraStatus(issue.getStatusId()));
+        caseObj.setImpLevel(jiraPriorityMapEntryDAO.getByJiraPriorityId(issue.getIssueTypeId()).getLocalPriorityId());
+        caseObj.setName(issue.getSummary());
+        caseObj.setInfo(issue.getDescription() + "\r\n" + issue.getIssueType());
+        caseObj.setLocal(0);
+        caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
+        final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
+        appData.setExtAppCaseId(issue.getId() + "_" + issue.getProjectId());
+        appData.setExtAppData(String.valueOf(issue.getProjectId()));
         externalCaseAppDAO.merge(appData);
-        return newCaseObject;
+        caseObjectDAO.insertCase(caseObj);
+        return caseObj;
     }
 }
