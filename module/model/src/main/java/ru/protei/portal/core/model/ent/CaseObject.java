@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;

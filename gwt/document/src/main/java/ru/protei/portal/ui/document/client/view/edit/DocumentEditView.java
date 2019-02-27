@@ -5,7 +5,6 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -20,6 +19,10 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
+import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -31,11 +34,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
 import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeSelector;
-import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
-import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
-import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
-import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
-import ru.protei.portal.ui.common.client.widget.togglebtn.item.ToggleButton;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -255,11 +253,6 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         if (activity != null)
             activity.onDocumentCategoryChanged();
     }
-    @UiHandler("approved")
-    public void onApprovedClicked(ValueChangeEvent<Boolean> event) {
-        if (activity != null)
-            activity.onApprovedChanged();
-    }
 
     @UiHandler("project")
     public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
@@ -354,6 +347,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     HTMLPanel decimalNumberContainer;
     @UiField
     HTMLPanel inventoryNumberContainer;
+    @UiField
+    HTMLPanel approvedContainer;
 
     @Inject
     @UiField
