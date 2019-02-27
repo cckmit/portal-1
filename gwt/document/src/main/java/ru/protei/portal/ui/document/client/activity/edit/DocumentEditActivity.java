@@ -103,11 +103,6 @@ public abstract class DocumentEditActivity
     }
 
     @Override
-    public void onApprovedChanged() {
-        document.setApproved(view.isApproved().getValue());
-    }
-
-    @Override
     public void onDocumentCategoryChanged() {
         En_DocumentCategory category = view.documentCategory().getValue();
 
@@ -186,15 +181,18 @@ public abstract class DocumentEditActivity
     }
 
     private boolean checkDocumentValid(Document newDocument) {
-        if (!newDocument.isValid() || !isValidInventoryNumberForMinistryOfDefence(newDocument)) {
+        if (!documentIsValid(newDocument)) {
             fireErrorMessage(getValidationErrorMessage(newDocument));
             return false;
         }
         return true;
     }
-    private boolean isValidInventoryNumberForMinistryOfDefence(Document newDocument){
+    private boolean documentIsValid(Document document){
+        return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+    }
+    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
         if (view.project().getValue().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
-            return newDocument.getInventoryNumber() != null && (0 < newDocument.getInventoryNumber());
+            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
         }
         return true;
     }
@@ -235,11 +233,10 @@ public abstract class DocumentEditActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (doc.getInventoryNumber() != null && doc.getInventoryNumber() < 0) {
-            return lang.negativeInventoryNumber();
-        }
         if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
             return lang.inventoryNumberIsEmpty();
+        } else if (doc.getInventoryNumber() < 0) {
+            return lang.negativeInventoryNumber();
         }
         if (HelperFunc.isEmpty(doc.getName())) {
             return lang.documentNameIsNotSet();

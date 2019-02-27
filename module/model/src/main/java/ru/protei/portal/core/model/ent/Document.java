@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.ent;
 
-import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -228,8 +227,9 @@ public class Document implements Serializable, Downloadable {
     }
 
     public boolean isValid() {
+        // Основная проверка, дополнительные проверки обрабатываются в клиенте и сервере отдельно
         return  this.getType() != null &&
-                (getInventoryNumber() == null || (0 < getInventoryNumber())) &&
+                (this.getInventoryNumber() == null || (this.getInventoryNumber() > 0)) &&
                 this.getProjectId() != null &&
                 HelperFunc.isNotEmpty(this.getName());
     }
