@@ -69,8 +69,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         issueInputParameters
                 .setSummary(object.getName())
                 .setDescription(object.getInfo())
-                .setStatusId(statusMapEntryDAO.getJiraStatus(object.getStateId()))
-                .setPriorityId(String.valueOf(priorityMapEntryDAO.getByPortalPriorityId(object.getImpLevel(), endpoint.getId()).getJiraPriorityId()));
+                .setStatusId(statusMapEntryDAO.getJiraStatus(object.getStateId()));
 
         IssueService.UpdateValidationResult updateValidationResult = issueService
                 .validateUpdate(user, issueId, issueInputParameters);
@@ -87,36 +86,6 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 //        updateComments(issue, event.getCaseComment(), endpoint);
 
         logger.debug("Copying case object changes to redmine issue");
-    }
-
-    private void updateIssueProps(Issue issue, AssembledCaseEvent event, JiraEndpoint endpoint) {
-        final long priorityMapId = endpoint.getPriorityMapId();
-        final long statusMapId = endpoint.getStatusMapId();
-
-        final CaseObject oldObj = event.getInitState();
-        final CaseObject newObj = event.getLastState();
-
-        logger.debug("Trying to get redmine priority level id matching with portal: {}", newObj.getImpLevel());
-       /* final JiraPriorityMapEntry jiraPriorityMapEntry =
-                priorityMapEntryDAO.getByPortalPriorityId(newObj.getImpLevel(), priorityMapId);
-        if (jiraPriorityMapEntry != null) {
-            logger.debug("Found redmine priority level name: {}", jiraPriorityMapEntry.getJiraPriorityName());
-            issue.getCustomFieldById(RedmineUtils.REDMINE_CUSTOM_FIELD_ID)
-                    .setValue(jiraPriorityMapEntry.getJiraPriorityName());
-        } else
-            logger.debug("Redmine priority level not found");
-
-        logger.debug("Trying to get redmine status id matching with portal: {} -> {}", oldObj.getStateId(), newObj.getStateId());
-        final JiraStatusMapEntry jiraStatusMapEntry =
-                statusMapEntryDAO.getRedmineStatus(oldObj.getState(), newObj.getState(), statusMapId);
-        if (jiraStatusMapEntry != null && newObj.getState() != En_CaseState.VERIFIED) {
-            logger.debug("Found redmine status id: {}", jiraStatusMapEntry.getJiraStatusName());
-            issue.setStatusId(jiraStatusMapEntry.getJiraStatusName());
-        } else
-            logger.debug("Redmine status not found");
-
-        issue.setDescription(newObj.getInfo());
-        issue.setSubject(newObj.getName());*/
     }
 
     private void updateComments(Issue issue, CaseComment comment, JiraEndpoint endpoint) {
