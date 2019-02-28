@@ -103,7 +103,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
 
-        if (document == null || !documentIsValid(document)) {
+        if (document == null || !isValidDocument(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -160,7 +160,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public CoreResponse<Document> updateDocument(AuthToken token, Document document) {
 
-        if (document == null || !documentIsValid(document)) {
+        if (document == null || !isValidDocument(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -188,7 +188,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem) {
 
-        if (document == null || !documentIsValid(document) || document.getId() == null || fileItem == null) {
+        if (document == null || !isValidDocument(document) || document.getId() == null || fileItem == null) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -313,7 +313,7 @@ public class DocumentServiceImpl implements DocumentService {
         return oldObj != null && !oldObj.equals(newObj);
     }
 
-    private boolean documentIsValid(Document document){
+    private boolean isValidDocument(Document document){
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {

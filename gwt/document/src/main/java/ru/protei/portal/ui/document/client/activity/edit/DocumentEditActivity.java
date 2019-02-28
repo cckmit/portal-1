@@ -181,13 +181,13 @@ public abstract class DocumentEditActivity
     }
 
     private boolean checkDocumentValid(Document newDocument) {
-        if (!documentIsValid(newDocument)) {
+        if (!isValidDocument(newDocument)) {
             fireErrorMessage(getValidationErrorMessage(newDocument));
             return false;
         }
         return true;
     }
-    private boolean documentIsValid(Document document){
+    private boolean isValidDocument(Document document){
         return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
     }
     private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
