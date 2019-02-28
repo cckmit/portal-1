@@ -19,20 +19,21 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
+import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
+import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
+import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditView;
 import ru.protei.portal.ui.document.client.widget.executiontype.DocumentExecutionTypeSelector;
-import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
-import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
-import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
-import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -146,6 +147,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public HasEnabled decimalNumberEnabled() {
         return decimalNumber;
     }
+
+    @Override
+    public HasValue<Boolean> isApproved() { return approved; }
 
     @Override
     public HasVisibility equipmentVisible() {
@@ -325,6 +329,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     DecimalNumberInput decimalNumber;
 
     @UiField
+    Switcher approved;
+
+    @UiField
     Button selectFileButton;
 
     @UiField
@@ -340,6 +347,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     HTMLPanel decimalNumberContainer;
     @UiField
     HTMLPanel inventoryNumberContainer;
+    @UiField
+    HTMLPanel approvedContainer;
 
     @Inject
     @UiField

@@ -8,11 +8,14 @@ import org.springframework.dao.DuplicateKeyException;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
@@ -32,6 +35,9 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Autowired
     DocumentDAO documentDAO;
+
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
 
     @Autowired
     DocumentStorageIndex documentStorageIndex;
@@ -97,7 +103,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
 
-        if (document == null || !document.isValid()) {
+        if (document == null || !isValidDocument(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -154,7 +160,7 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public CoreResponse<Document> updateDocument(AuthToken token, Document document) {
 
-        if (document == null || !document.isValid()) {
+        if (document == null || !isValidDocument(document)) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -179,11 +185,10 @@ public class DocumentServiceImpl implements DocumentService {
 
         return new CoreResponse<Document>().success(document);
     }
-
     @Override
     public CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem) {
 
-        if (document == null || !document.isValid() || document.getId() == null || fileItem == null) {
+        if (document == null || !isValidDocument(document) || document.getId() == null || fileItem == null) {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
@@ -306,5 +311,19 @@ public class DocumentServiceImpl implements DocumentService {
 
     private <T> boolean isValueSetTwice(T oldObj, T newObj) {
         return oldObj != null && !oldObj.equals(newObj);
+    }
+
+    private boolean isValidDocument(Document document){
+        return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+    }
+    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
+        ProjectInfo project = ProjectInfo.fromCaseObject(caseObjectDAO.get(document.getProjectId()));
+        if (project == null) return false;
+        else {
+            if (project.getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+                return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
+            }
+        }
+        return true;
     }
 }
