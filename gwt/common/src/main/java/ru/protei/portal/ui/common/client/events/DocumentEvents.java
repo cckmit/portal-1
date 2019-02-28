@@ -43,15 +43,4 @@ public class DocumentEvents {
 
     public static class ChangeModel {
     }
-
-    public static class showProjectDocuments {
-
-        public showProjectDocuments (HasWidgets parent, Document document) {
-            this.parent = parent;
-            this.document = document;
-        }
-
-        public Document document;
-        public HasWidgets parent;
-    }
 }

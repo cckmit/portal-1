@@ -81,5 +81,16 @@ public class ProjectEvents {
 
         public ProjectInfo project;
     }
+
+    public static class ShowProjectDocuments {
+
+        public ShowProjectDocuments(HasWidgets parent, Long projectId) {
+            this.parent = parent;
+            this.projectId = projectId;
+        }
+
+        public Long projectId;
+        public HasWidgets parent;
+    }
 }
 
