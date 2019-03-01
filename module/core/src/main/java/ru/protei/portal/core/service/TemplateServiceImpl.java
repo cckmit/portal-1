@@ -135,7 +135,7 @@ public class TemplateServiceImpl implements TemplateService {
     @Override
     public  String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
         Map<String, Object> model = new HashMap<>();
-        model.put( "employeeFullName", employeeName);
+        model.put( "userName", employeeName);
 
         return getText( model, "notification/email/employee.registration.development.agenda.body.%s.ftl" );
     }
