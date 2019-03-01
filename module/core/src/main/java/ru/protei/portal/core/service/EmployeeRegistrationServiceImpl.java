@@ -117,24 +117,21 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     @Override
     public CoreResponse<Boolean> notifyAboutDevelopmentAgenda() {
-        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 7 );
-        log.info( "notifyAboutProbationPeriod(): {}", probationExpires );
+        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList(7);
+        log.info( "notifyAboutDevelopmentAgenda(): {}", probationExpires );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull(probationExpires)) {
-
-            Person employeer = null;
-
-
+            if(employeeRegistration.getPerson() == null ) continue;
             publisherService.publishEvent( new EmployeeRegistrationDevelopmentAgendaEvent( this,
-                    employeeName ));
+                    employeeRegistration.getPerson() ));
         }
 
-        return null;
+        return new CoreResponse<Boolean>().success(true);
     }
 
     @Override
     public CoreResponse<Boolean> notifyAboutProbationPeriod() {
-        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", 9 );
+        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList(9);
         log.info( "notifyAboutProbationPeriod(): {}", probationExpires );
 
         Map<Long, Person> idToPerson = collectPersonsForNotification( probationExpires );
@@ -149,7 +146,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             }
         }
 
-        return null;
+        return new CoreResponse<Boolean>().success(true);
     }
 
     private void notifyEmployeeCurator( EmployeeRegistration employeeRegistration, Person curator ) {

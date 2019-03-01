@@ -340,12 +340,12 @@ public class MailNotificationProcessor {
             String subject = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject();
 
             String body = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody(
-                    event.getEmployeeName()
+                    event.getPerson().getDisplayName()
             );
 
-            sentMail( new PlainContactInfoFacade( event.getContactInfo() ).getEmail(), subject, body );
+            sentMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
         } catch (Exception e) {
-            log.warn( "Failed to sent development agenda notification: {}", event.getEmployeeName(), e );
+            log.warn( "Failed to sent development agenda notification: {}", event.getPerson().getDisplayName(), e );
         }
     }
 

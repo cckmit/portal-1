@@ -1,23 +1,26 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationDevelopmentAgendaEvent extends ApplicationEvent {
-    public EmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationServiceImpl employeeRegistrationService, String employeeName ) {
+    public EmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationServiceImpl employeeRegistrationService, Person person ) {
         super( employeeRegistrationService );
-        this.employeeName = employeeName;
+        this.person = person;
     }
 
-    public String getEmployeeName() {
-        return employeeName;
+    public Person getPerson() {
+        return person;
     }
 
-    public ContactInfo getContactInfo() {
-        return contactInfo;
-    }
+    private Person person;
 
-    private String employeeName;
-    private ContactInfo contactInfo;
+    @Override
+    public String toString() {
+        return "EmployeeRegistrationDevelopmentAgendaEvent{" +
+                "person='" + person + '\'' +
+                '}';
+    }
 }

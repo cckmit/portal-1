@@ -9,5 +9,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add-employee-person-column" author="eliseev">
+        <addColumn tableName="employee_registration">
+            <column name="person" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+
 
 </databaseChangeLog>
