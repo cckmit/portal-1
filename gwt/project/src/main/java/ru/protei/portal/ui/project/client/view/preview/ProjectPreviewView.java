@@ -149,6 +149,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return commentsContainer;
     }
 
+    @Override
+    public HasWidgets documents() {
+        return documents;
+    }
+
     @UiHandler( "fullScreenBtn" )
     public void onFullScreenClicked ( ClickEvent event) {
         if ( activity != null ) {
@@ -268,6 +273,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+
+    @UiField
+    HTMLPanel documents;
 
     AbstractProjectPreviewActivity activity;
 
