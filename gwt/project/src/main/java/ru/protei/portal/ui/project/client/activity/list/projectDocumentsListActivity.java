@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.list;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -10,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -48,37 +51,37 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
             handleDocuments(new ArrayList<>());
             return;
         }
-
         documentController.getProjectDocuments(event.projectId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
     }
 
-//    @Override
-//    public void onEditClicked(AbstractProjectDocumentsListItemView itemView) {
-//
-//        if (!policyService.hasPrivilegeFor(En_Privilege.EQUIPMENT_EDIT)) {
-//            return;
-//        }
-//
-//        Document value = itemViewToModel.get(itemView);
-//
-//        if (value == null || value.getId() == null) {
-//            return;
-//        }
-//
-//        fireEvent(new EquipmentEvents.DocumentEdit(value.getId()));
-//    }
-//
-//    @Override
-//    public void onDownloadClicked(AbstractProjectDocumentsListItemView itemView) {
-//
-//        Document value = itemViewToModel.get(itemView);
-//
-//        if (value == null || value.getId() == null || value.getProjectId() == null) {
-//            return;
-//        }
-//
-//        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
-//    }
+
+    @Override
+    public void onEditClicked(AbstractProjectDocumentsListItemView itemView) {
+
+        if (!policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT)) {
+            return;
+        }
+
+        Document value = itemViewToModel.get(itemView);
+
+        if (value == null || value.getId() == null) {
+            return;
+        }
+
+        fireEvent(new DocumentEvents.Edit(value.getId()));
+    }
+
+    @Override
+    public void onDownloadClicked(AbstractProjectDocumentsListItemView itemView) {
+
+        Document value = itemViewToModel.get(itemView);
+
+        if (value == null || value.getId() == null || value.getProjectId() == null) {
+            return;
+        }
+
+        Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
+    }
 
     private void handleDocuments(List<Document> documents) {
 
@@ -116,8 +119,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         return itemView;
     }
 
-    private void putToContainer(Document document, AbstractProjectDocumentsListItemView itemView) {
-
+    private void putToContainer(AbstractProjectDocumentsListItemView itemView) {
         view.documentsContainer().add(itemView.asWidget());
     }
 
@@ -140,6 +142,6 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
     private Consumer<Document> fillViewer = document -> {
         AbstractProjectDocumentsListItemView itemView = makeItemView(document);
         itemViewToModel.put(itemView, document);
-        putToContainer(document, itemView);
+        putToContainer(itemView);
     };
 }

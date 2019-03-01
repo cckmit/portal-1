@@ -94,12 +94,12 @@ public class DocumentControllerImpl implements DocumentController {
 
     @Override
     public List<Document> getProjectDocuments(Long projectId) throws RequestFailedException {
-        log.debug("get getProjectDocuments, id: {}", projectId);
+        log.debug("get projectDocuments, id: {}", projectId);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         CoreResponse<List<Document>> response = documentService.getProjectDocuments(descriptor.makeAuthToken(), projectId);
-        log.debug("get getProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
+        log.debug("get ProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
