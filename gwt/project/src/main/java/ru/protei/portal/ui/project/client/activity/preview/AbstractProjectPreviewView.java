@@ -37,4 +37,5 @@ public interface AbstractProjectPreviewView extends IsWidget {
     String getName();
 
     HasWidgets getCommentsContainer();
+    HasWidgets getDocumentsContainer();
 }

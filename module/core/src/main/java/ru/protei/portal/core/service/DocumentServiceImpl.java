@@ -263,6 +263,12 @@ public class DocumentServiceImpl implements DocumentService {
             return new CoreResponse<Document>().success(document);
         });
     }
+    @Override
+    public CoreResponse<List<Document>> getProjectDocuments(AuthToken token, Long projectId) {
+        DocumentQuery query = new DocumentQuery();
+        query.setProjectId(projectId);
+        return documentList(token, query);
+    }
 
     private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {
         if (!isEmptyOrWhitespaceOnly(query.getInTextQuery())) {
