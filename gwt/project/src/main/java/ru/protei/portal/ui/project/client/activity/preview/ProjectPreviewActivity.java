@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.project.client.activity.preview;
 
-import com.google.gwt.core.client.GWT;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -154,7 +153,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
                 .build());
-        fireEvent(new ProjectEvents.ShowProjectDocuments(view.documents(), project.getId()));
+        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId()));
     }
 
     private void readView() {

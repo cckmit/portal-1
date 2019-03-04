@@ -7,7 +7,6 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.protei.portal.ui.project.client.activity.list.AbstractProjectDocumentsListActivity;
 import ru.protei.portal.ui.project.client.activity.list.AbstractProjectDocumentsListView;
 
 public class ProjectDocumentsListView extends Composite implements AbstractProjectDocumentsListView {
@@ -18,19 +17,12 @@ public class ProjectDocumentsListView extends Composite implements AbstractProje
     }
 
     @Override
-    public void setActivity(AbstractProjectDocumentsListActivity activity) {
-        this.activity = activity;
-    }
-
-    @Override
     public HasWidgets documentsContainer() {
         return documentsContainer;
     }
 
     @UiField
     HTMLPanel documentsContainer;
-
-    private AbstractProjectDocumentsListActivity activity;
 
     interface ProjectDocumentsListUiBinder extends UiBinder<HTMLPanel, ProjectDocumentsListView> {}
     private static ProjectDocumentsListUiBinder ourUiBinder = GWT.create(ProjectDocumentsListUiBinder.class);

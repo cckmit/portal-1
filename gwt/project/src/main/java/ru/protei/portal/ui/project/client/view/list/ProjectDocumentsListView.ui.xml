@@ -4,8 +4,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="main-content grid grid-indent">
-        <div class="form-group col-xs-12">
-            <g:HTMLPanel ui:field="documentsContainer" styleName="eqdoc-list"/>
-        </div>
+        <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-xs-12 prodoc-list"/>
     </g:HTMLPanel>
 </ui:UiBinder>

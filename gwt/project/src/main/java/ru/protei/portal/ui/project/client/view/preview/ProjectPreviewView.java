@@ -150,7 +150,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public HasWidgets documents() {
+    public HasWidgets getDocumentsContainer() {
         return documents;
     }
 

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.project.client.activity.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -26,14 +27,12 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public abstract class ProjectDocumentsListActivity implements Activity, AbstractProjectDocumentsListActivity, AbstractProjectDocumentsListItemActivity {
+public abstract class ProjectDocumentsListActivity implements Activity, AbstractProjectDocumentsListItemActivity {
 
     private static final String DOWNLOAD_PATH = "springApi/document/";
 
     @PostConstruct
-    public void init() {
-        view.setActivity(this);
-    }
+    public void init() { ; }
 
     @Event
     public void onShow(ProjectEvents.ShowProjectDocuments event) {

@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel ui:field="root" tag="li" styleName="eqdoc-list-item">
+    <g:HTMLPanel ui:field="root" tag="li" styleName="prodoc-list-item">
         <div class="approve">
             <i ui:field="approve" class="fa fa-lg"/>
         </div>
