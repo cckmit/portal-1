@@ -106,10 +106,10 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
         return workFax;
     }
 
-//    @Override
-//    public HasText homeFax() {
-//        return homeFax;
-//    }
+    @Override
+    public HasText homeFax() {
+        return homeFax;
+    }
 
     @Override
     public HasText workAddress() {
@@ -312,8 +312,8 @@ public class ContactEditView extends Composite implements AbstractContactEditVie
     @UiField
     TextBox workFax;
 
-//    @UiField
-//    TextBox homeFax;
+    @UiField
+    TextBox homeFax;
 
     @UiField
     TextArea workAddress;
