@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public abstract class ProjectDocumentsListActivity implements Activity, AbstractProjectDocumentsListItemActivity {
+public abstract class ProjectDocumentsListActivity222 implements Activity, AbstractProjectDocumentsListItemActivity {
 
     private static final String DOWNLOAD_PATH = "springApi/document/";
 
