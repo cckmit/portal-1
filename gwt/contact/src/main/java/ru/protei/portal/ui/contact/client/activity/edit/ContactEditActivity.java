@@ -233,7 +233,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         infoFacade.setHomeAddress(view.homeAddress().getText());
         infoFacade.setFax(view.workFax().getText());
         infoFacade.setFaxHome(view.homeFax().getText());
-//        contact.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
 
