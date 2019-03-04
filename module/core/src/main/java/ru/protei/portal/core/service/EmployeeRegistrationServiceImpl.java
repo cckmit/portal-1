@@ -10,6 +10,7 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -28,6 +29,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     EmployeeRegistrationDAO employeeRegistrationDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseCommentService caseCommentService;
     @Autowired
     CaseTypeDAO caseTypeDAO;
     @Autowired
@@ -151,6 +154,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             Long employeeId = employeeRegistration.getId();
 
             notifyHeadOfDepartment( headOfDepartment, employeeFullName, employeeId );
+            addCaseComment(employeeRegistration.getId(), join( getLangFor("reminder"), "\n", getLangFor("response_head_of_department")).toString());
 
             for (Long curatorId : emptyIfNull( employeeRegistration.getCuratorsIds())) {
                 Person curator = idToPerson.get( curatorId );
@@ -159,6 +163,17 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
 
         return new CoreResponse<Boolean>().success(true);
+    }
+
+    private void addCaseComment( Long caseId, String message ) {
+        CaseComment comment = new CaseComment(message);
+        comment.setCaseId( caseId );
+        comment.setOriginalAuthorName( getLangFor("reminder_system_name") );
+        CoreResponse<Long> commentId = caseCommentService.insertComment(comment);
+
+        if (!commentId.isOk()) {
+            log.warn( "addCaseComment(): Can't add case comment about {} for caseId={}",  message, caseId  );
+        }
     }
 
     private void notifyEmployerAboutFeedback( Person employee ) {
@@ -348,6 +363,12 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         }
         return "";
     }
+
+    private String getLangFor(String key){
+        return langRu.getString( key );
+    }
+
+    ResourceBundle langRu = ResourceBundle.getBundle("Lang", new Locale( "ru", "RU"));
 
     public static final int SEND_EMPLOYEE_FEEDBACK_AFTER_PROBATION_END_DAYS = 1;
     public static final int SEND_AGENDA_TO_PROBATION_END_DAYS = 7;
