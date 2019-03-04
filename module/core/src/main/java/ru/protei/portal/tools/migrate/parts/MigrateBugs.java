@@ -76,7 +76,7 @@ public class MigrateBugs implements MigrateAction {
        /*
       Map<Long, Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.BUG);
 
-      Long lastTermID = termDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.BUG.getId());
+      Long lastTermID = termDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.BUG.getEmployeeId());
       new BatchProcessTask<CaseTerm>("\"BugTracking\".Tm_BugDeadline", "nID", lastTermID)
               .setLastUpdate(lastOldDateUpdate)
               .process(src, termDAO, row -> {
@@ -88,12 +88,12 @@ public class MigrateBugs implements MigrateAction {
                  c.setLabelText((String) row.get("strComment"));
                  c.setStageId(null);
                  c.setTermOrder(((Long) row.get("nID")).intValue());
-                 c.setTermTypeId(En_CaseTermType.DEADLINE.getId());
+                 c.setTermTypeId(En_CaseTermType.DEADLINE.getEmployeeId());
                  c.setOldId((Long) row.get("nID"));
                  return c;
               });
 
-      Long lastCommentID = commentDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.BUG.getId());
+      Long lastCommentID = commentDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.BUG.getEmployeeId());
       System.out.println("start from comment-id: " + lastCommentID);
 
       Map<Long, Long> lastStateMap = new HashMap<>();

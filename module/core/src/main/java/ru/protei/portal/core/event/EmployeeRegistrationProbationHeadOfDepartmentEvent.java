@@ -6,30 +6,36 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationProbationHeadOfDepartmentEvent extends ApplicationEvent {
-    public EmployeeRegistrationProbationHeadOfDepartmentEvent( EmployeeRegistrationServiceImpl employeeRegistrationService, EmployeeRegistration employeeRegistration, Person headOfDepartment ) {
-        super( employeeRegistrationService);
+    public EmployeeRegistrationProbationHeadOfDepartmentEvent( EmployeeRegistrationServiceImpl employeeRegistrationService, Person headOfDepartment, String employeeFullName, Long employeeId ) {
+        super( employeeRegistrationService );
 
         this.headOfDepartment = headOfDepartment;
-        this.employeeRegistration = employeeRegistration;
+        this.employeeFullName = employeeFullName;
+        this.employeeId = employeeId;
     }
 
     public Person getHeadOfDepartment() {
         return headOfDepartment;
     }
 
-    public EmployeeRegistration getEmployeeRegistration() {
-        return employeeRegistration;
+    public String getEmployeeFullName() {
+        return employeeFullName;
     }
 
+    public Long getEmployeeId() {
+        return employeeId;
+    }
 
     private Person headOfDepartment;
-    private EmployeeRegistration employeeRegistration;
+    private String employeeFullName;
+    private Long employeeId;
 
     @Override
     public String toString() {
         return "EmployeeRegistrationProbationHeadOfDepartmentEvent{" +
                 "headOfDepartment=" + headOfDepartment +
-                ", employeeRegistration=" + employeeRegistration +
+                ", employeeFullName='" + employeeFullName + '\'' +
+                ", employeeId=" + employeeId +
                 '}';
     }
 }

@@ -333,6 +333,23 @@ public class MailNotificationProcessor {
     }
 
     @EventListener
+    public void onEmployeeRegistrationEmployeeFeedbackEvent( EmployeeRegistrationEmployeeFeedbackEvent event) {
+        log.info( "onEmployeeRegistrationEmployeeFeedbackEvent(): {}", event );
+
+        try {
+            String subject = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody(
+                    event.getPerson().getDisplayName()
+            );
+
+            sentMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee feedback notification: {}", event.getPerson().getDisplayName(), e );
+        }
+    }
+
+    @EventListener
     public void onEmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationDevelopmentAgendaEvent event) {
         log.info( "onEmployeeRegistrationDevelopmentAgendaEvent(): {}", event );
 
@@ -353,21 +370,22 @@ public class MailNotificationProcessor {
     public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationHeadOfDepartmentEvent event) {
         log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
 
-        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
         Person headOfDepartment = event.getHeadOfDepartment();
 
         try {
             String body = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody(
-                    employeeRegistration.getId(), employeeRegistration.getEmployeeFullName(),
+                    employeeId, employeeFullName,
                     getEmployeeRegistrationUrl(), headOfDepartment.getDisplayName() );
 
             String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
-                    employeeRegistration.getEmployeeFullName() );
+                    employeeFullName );
 
             sentMail( new PlainContactInfoFacade( headOfDepartment.getContactInfo() ).getEmail(), subject, body );
 
         } catch (Exception e) {
-            log.warn( "Failed to sent employee probation notification: {}", employeeRegistration, e );
+            log.warn( "Failed to sent employee probation notification: employeeId={}", employeeId, e );
         }
     }
 
@@ -375,31 +393,32 @@ public class MailNotificationProcessor {
     public void onEmployeeRegistrationProbationCuratorsEvent( EmployeeRegistrationProbationCuratorsEvent event) {
         log.info( "onEmployeeRegistrationProbationCuratorsEvent(): {}", event );
 
-        EmployeeRegistration employeeRegistration = event.getEmployeeRegistration();
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
         Person curator = event.getCurator();
 
         try {
             String body = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationBody(
-                    employeeRegistration.getId(), employeeRegistration.getEmployeeFullName(),
+                    employeeId, employeeFullName,
                     getEmployeeRegistrationUrl(), curator.getDisplayName() );
 
             String subject = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationSubject(
-                    employeeRegistration.getEmployeeFullName() );
+                    employeeFullName );
 
             sentMail( new PlainContactInfoFacade( curator.getContactInfo() ).getEmail(), subject, body );
 
         } catch (Exception e) {
-            log.warn( "Failed to sent employee probation notification: {}", employeeRegistration, e );
+            log.warn( "Failed to sent employee probation (for curator) notification: employeeId={}", employeeId, e );
         }
     }
 
-    private void sentMail( String address, String subject, String body) throws MessagingException {
-        MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
-        msg.setSubject(subject);
-        msg.setFrom(getFromAddress());
-        msg.setText(HelperFunc.nvlt(body, ""), true);
-        msg.setTo( address);
-        mailSendChannel.send(msg.getMimeMessage());
+    private void sentMail( String address, String subject, String body ) throws MessagingException {
+        MimeMessageHelper msg = new MimeMessageHelper( messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset() );
+        msg.setSubject( subject );
+        msg.setFrom( getFromAddress() );
+        msg.setText( HelperFunc.nvlt( body, "" ), true );
+        msg.setTo( address );
+        mailSendChannel.send( msg.getMimeMessage() );
     }
 
 

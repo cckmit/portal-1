@@ -1,1 +1,1 @@
-${development_agenda}<#noparse> [${employeeFullName}]</#noparse>
+${development_agenda}

@@ -196,7 +196,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 //
 //            migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_EMPLOYEE, HelperFunc.last(processList));
 //
-//            processList.removeIf(e -> personDAO.existsByLegacyId(e.getId()));
+//            processList.removeIf(e -> personDAO.existsByLegacyId(e.getEmployeeId()));
 //
 //            logger.debug("external person list after filtering, size = {}", processList.size());
 //
@@ -368,7 +368,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 //        }
 //        else {
 //            obj.setExtId(En_CaseType.CRM_MARKET.makeGUID(obj.getCaseNumber()));
-//            obj.setTypeId(En_CaseType.CRM_MARKET.getId());
+//            obj.setTypeId(En_CaseType.CRM_MARKET.getEmployeeId());
 //            obj.setStateId(marketStatusMap.get(row.get("nStatusID")));
 //        }
 

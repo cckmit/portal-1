@@ -47,6 +47,11 @@ public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegi
         return getListByCondition( "DATE_ADD(CURDATE(), INTERVAL ? DAY) = DATE_ADD(employment_date, INTERVAL probation_period MONTH)", daysToProbationEndDate );
     }
 
+    @Override
+    public List<EmployeeRegistration> getAfterProbationList( int daysAfterProbationEndDate ) {
+        return getListByCondition( "CURDATE() = DATE_ADD(DATE_ADD(employment_date, INTERVAL probation_period MONTH), INTERVAL ? DAY)", daysAfterProbationEndDate );
+    }
+
     @SqlConditionBuilder
     public SqlCondition createSqlCondition(EmployeeRegistrationQuery query) {
         return new SqlCondition().build(((condition, args) -> {

@@ -58,6 +58,8 @@
                     <arguments>
                         <argument>notification/email/crm.subject.ftl</argument>
                         <argument>notification/email/crm.body.ftl</argument>
+                        <argument>notification/email/employee.registration.employee.feedback.subject.ftl</argument>
+                        <argument>notification/email/employee.registration.employee.feedback.body.ftl</argument>
                         <argument>notification/email/employee.registration.development.agenda.subject.ftl</argument>
                         <argument>notification/email/employee.registration.development.agenda.body.ftl</argument>
                         <argument>notification/email/employee.registration.probation.curators.subject.ftl</argument>

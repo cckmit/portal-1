@@ -31,6 +31,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Реализация сервиса управления проектами
  */
 public class TemplateServiceImpl implements TemplateService {
+    public static final String BASE_TEMPLATE_PATH = "notification/email/";
     private static Logger log = getLogger(TemplateServiceImpl.class);
 
     Configuration templateConfiguration;
@@ -130,19 +131,30 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
 
-    ResourceBundle lang = ResourceBundle.getBundle("Lang", Locale.ENGLISH);
+    @Override
+    public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "userName", employeeName);
+
+        return getText( model, "employee.registration.employee.feedback.body.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject() throws IOException, TemplateException {
+        return getText( new HashMap<>(), "employee.registration.employee.feedback.subject.%s.ftl" );
+    }
 
     @Override
     public  String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
         Map<String, Object> model = new HashMap<>();
         model.put( "userName", employeeName);
 
-        return getText( model, "notification/email/employee.registration.development.agenda.body.%s.ftl" );
+        return getText( model, "employee.registration.development.agenda.body.%s.ftl" );
     }
 
     @Override
     public String getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject() throws IOException, TemplateException {
-        return getText( new HashMap<>(), "notification/email/employee.registration.development.agenda.subject.%s.ftl" );
+        return getText( new HashMap<>(), "employee.registration.development.agenda.subject.%s.ftl" );
     }
 
     @Override
@@ -152,7 +164,7 @@ public class TemplateServiceImpl implements TemplateService {
         model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
         model.put( "userName", recipientName);
 
-        return getText(model, "notification/email/employee.registration.probation.body.%s.ftl");
+        return getText(model, "employee.registration.probation.body.%s.ftl");
     }
 
     @Override
@@ -160,7 +172,7 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> model = new HashMap<>();
         model.put( "employeeFullName", employeeFullName );
 
-        return getText(model, "notification/email/employee.registration.probation.subject.%s.ftl");
+        return getText(model, "employee.registration.probation.subject.%s.ftl");
     }
 
     @Override
@@ -170,7 +182,7 @@ public class TemplateServiceImpl implements TemplateService {
         model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
         model.put( "userName", recipientName);
 
-        return getText(model, "notification/email/employee.registration.probation.curators.body.%s.ftl");
+        return getText(model, "employee.registration.probation.curators.body.%s.ftl");
     }
 
     @Override
@@ -178,7 +190,7 @@ public class TemplateServiceImpl implements TemplateService {
         Map<String, Object> model = new HashMap<>();
         model.put( "employeeFullName", employeeFullName );
 
-        return getText(model, "notification/email/employee.registration.probation.curators.subject.%s.ftl");
+        return getText(model, "employee.registration.probation.curators.subject.%s.ftl");
     }
 
     @Override
@@ -300,11 +312,13 @@ public class TemplateServiceImpl implements TemplateService {
     private String getText( Map<String, Object> model, String nameTemplate, Locale lang  ) throws IOException, TemplateException {
         Writer writer = new StringWriter();
 
-        if ( lang == null ) {
-            lang = new Locale("ru");
+        if (lang == null) {
+            lang = new Locale( "ru" );
         }
 
-        Template template = templateConfiguration.getTemplate( String.format( nameTemplate, lang.getLanguage() ), lang );
+        nameTemplate = String.format( nameTemplate, lang.getLanguage() );
+
+        Template template = templateConfiguration.getTemplate( BASE_TEMPLATE_PATH + nameTemplate, lang );
         template.process( model, writer );
         return writer.toString();
 

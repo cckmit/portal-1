@@ -56,9 +56,9 @@ public abstract class IssueStates implements Activity{
 //                activeStates = new ArrayList<>();
 //                inactiveStates = new ArrayList<>();
 //
-//                int doneStateId = En_CaseState.DONE.getId();
+//                int doneStateId = En_CaseState.DONE.getEmployeeId();
 //                for(En_CaseState state: en_caseStates){
-//                    if(state.getId() < doneStateId)
+//                    if(state.getEmployeeId() < doneStateId)
 //                        activeStates.add(state);
 //                    else
 //                        inactiveStates.add(state);

@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.EmployeeRegistrationDevelopmentAgendaEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationProbationCuratorsEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationProbationHeadOfDepartmentEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -116,14 +113,26 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     @Override
+    public CoreResponse<Boolean> notifyAboutEmployeeFeedback() {
+        List<EmployeeRegistration> probationComplete = employeeRegistrationDAO.getAfterProbationList( SEND_EMPLOYEE_FEEDBACK_AFTER_PROBATION_END_DAYS );
+        log.info( "notifyAboutEmployeeFeedback(): {}", probationComplete );
+
+        for (EmployeeRegistration employeeRegistration : emptyIfNull(probationComplete)) {
+            if(employeeRegistration.getPerson() == null ) continue;
+            notifyEmployerAboutFeedback( employeeRegistration.getPerson() );
+        }
+
+        return new CoreResponse<Boolean>().success(true);
+    }
+
+    @Override
     public CoreResponse<Boolean> notifyAboutDevelopmentAgenda() {
-        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList(7);
+        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList( SEND_AGENDA_TO_PROBATION_END_DAYS );
         log.info( "notifyAboutDevelopmentAgenda(): {}", probationExpires );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull(probationExpires)) {
             if(employeeRegistration.getPerson() == null ) continue;
-            publisherService.publishEvent( new EmployeeRegistrationDevelopmentAgendaEvent( this,
-                    employeeRegistration.getPerson() ));
+            notifyEmployerAboutAgenda( employeeRegistration.getPerson() );
         }
 
         return new CoreResponse<Boolean>().success(true);
@@ -131,32 +140,45 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     @Override
     public CoreResponse<Boolean> notifyAboutProbationPeriod() {
-        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList(9);
+        List<EmployeeRegistration> probationExpires = employeeRegistrationDAO.getProbationExpireList( SEND_PROBATION_EXPIRES_TO_PROBATION_END_DAYS );
         log.info( "notifyAboutProbationPeriod(): {}", probationExpires );
 
         Map<Long, Person> idToPerson = collectPersonsForNotification( probationExpires );
 
         for (EmployeeRegistration employeeRegistration : emptyIfNull(probationExpires)) {
             Person headOfDepartment = idToPerson.get( employeeRegistration.getHeadOfDepartmentId() );
-            notifyHeadOfDepartment( employeeRegistration, headOfDepartment );
+            String employeeFullName = employeeRegistration.getEmployeeFullName();
+            Long employeeId = employeeRegistration.getId();
+
+            notifyHeadOfDepartment( headOfDepartment, employeeFullName, employeeId );
 
             for (Long curatorId : emptyIfNull( employeeRegistration.getCuratorsIds())) {
                 Person curator = idToPerson.get( curatorId );
-                notifyEmployeeCurator( employeeRegistration, curator );
+                notifyEmployeeCurator( curator, employeeFullName, employeeId );
             }
         }
 
         return new CoreResponse<Boolean>().success(true);
     }
 
-    private void notifyEmployeeCurator( EmployeeRegistration employeeRegistration, Person curator ) {
-        publisherService.publishEvent( new EmployeeRegistrationProbationCuratorsEvent( this,
-                employeeRegistration, curator ));
+    private void notifyEmployerAboutFeedback( Person employee ) {
+        publisherService.publishEvent( new EmployeeRegistrationEmployeeFeedbackEvent( this,
+                employee ) );
     }
 
-    private void notifyHeadOfDepartment( EmployeeRegistration employeeRegistration, Person headOfDepartment ) {
+    private void notifyEmployerAboutAgenda( Person employee ) {
+        publisherService.publishEvent( new EmployeeRegistrationDevelopmentAgendaEvent( this,
+                employee ) );
+    }
+
+    private void notifyEmployeeCurator( Person curator, String employeeFullName, Long employeeId ) {
+        publisherService.publishEvent( new EmployeeRegistrationProbationCuratorsEvent( this,
+                curator, employeeFullName, employeeId  ) );
+    }
+
+    private void notifyHeadOfDepartment( Person headOfDepartment, String employeeFullName, Long employeeId ) {
         publisherService.publishEvent( new EmployeeRegistrationProbationHeadOfDepartmentEvent( this,
-                employeeRegistration, headOfDepartment));
+                headOfDepartment, employeeFullName, employeeId ) );
     }
 
     private Map<Long, Person> collectPersonsForNotification( List<EmployeeRegistration> probationExpires ) {
@@ -327,4 +349,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         return "";
     }
 
+    public static final int SEND_EMPLOYEE_FEEDBACK_AFTER_PROBATION_END_DAYS = 1;
+    public static final int SEND_AGENDA_TO_PROBATION_END_DAYS = 7;
+    public static final int SEND_PROBATION_EXPIRES_TO_PROBATION_END_DAYS = 9;
 }

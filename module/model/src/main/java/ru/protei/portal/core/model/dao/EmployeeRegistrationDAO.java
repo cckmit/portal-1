@@ -13,4 +13,6 @@ public interface EmployeeRegistrationDAO extends JdbcDAO<Long, EmployeeRegistrat
     int countByQuery(EmployeeRegistrationQuery query);
 
     List<EmployeeRegistration> getProbationExpireList( int daysToProbationEndDate );
+
+    List<EmployeeRegistration> getAfterProbationList( int sendEmployeeFeedbackAfterProbationEndDays );
 }

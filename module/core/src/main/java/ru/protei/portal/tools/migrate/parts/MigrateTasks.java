@@ -79,7 +79,7 @@ public class MigrateTasks implements MigrateAction {
 
         Map<Long, Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.TASK);
 
-        Long lastTimeFact = caseDAO.getMaxValue("caseno", Long.class, "case_type=? and exists (select * from case_task t where t.case_id=case_object.id)", En_CaseType.TASK.getId());
+        Long lastTimeFact = caseDAO.getMaxValue("caseno", Long.class, "case_type=? and exists (select * from case_task t where t.case_id=case_object.id)", En_CaseType.TASK.getEmployeeId());
         new BatchProcessTask<CaseTask>("\"ToDoList\".Tm_Task", "nID", lastTimeFact)
                 .setLastUpdate(lastOldDateUpdate)
                 .process(src, taskDAO, row -> {

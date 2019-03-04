@@ -20,5 +20,6 @@ public class PortalScheduleTasks {
         log.info( "printInLog(): {}", new Date() );
         employeeRegistrationServiceImpl.notifyAboutProbationPeriod();
         employeeRegistrationServiceImpl.notifyAboutDevelopmentAgenda();
+        employeeRegistrationServiceImpl.notifyAboutEmployeeFeedback();
     }
 }

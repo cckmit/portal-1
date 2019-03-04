@@ -146,7 +146,7 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onEditClicked( ProjectInfo value ) {
-        //fireEvent(new ProjectEvents.Edit(value.getId()));
+        //fireEvent(new ProjectEvents.Edit(value.getEmployeeId()));
         showPreview( value );
     }
 

@@ -28,6 +28,8 @@ public interface EmployeeRegistrationService {
 
     CoreResponse<Boolean> notifyAboutProbationPeriod();
 
+    CoreResponse<Boolean> notifyAboutEmployeeFeedback();
+
     CoreResponse<Boolean> notifyAboutDevelopmentAgenda();
 
 }
