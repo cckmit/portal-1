@@ -15,8 +15,12 @@ import ru.protei.portal.core.model.helper.StringUtils;
 
 import static ru.protei.portal.ui.common.client.common.UiConstants.Icons;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles;
+
+import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemActivity;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemView;
+
+import java.util.Date;
 
 public class ProjectDocumentsListItemView extends Composite implements AbstractProjectDocumentsListItemView {
 
@@ -56,6 +60,27 @@ public class ProjectDocumentsListItemView extends Composite implements AbstractP
     }
 
     @Override
+    public void setDocumentType(String type) {
+        if (StringUtils.isNotBlank(type)) {
+            documentType.setInnerText(type.trim());
+            documentType.removeClassName(Styles.HIDE);
+        } else {
+            documentType.addClassName(Styles.HIDE);
+        }
+    }
+
+    @Override
+    public void setCreated(Date date) {
+        String created = DateFormatter.formatDateOnly(date);
+        if (StringUtils.isNotBlank(created)) {
+            documentCreated.setInnerText(created.trim());
+            documentCreated.removeClassName(Styles.HIDE);
+        } else {
+            documentCreated.addClassName(Styles.HIDE);
+        }
+    }
+
+    @Override
     public void setEditVisible(boolean visible) {
         edit.setVisible(visible);
     }
@@ -82,6 +107,10 @@ public class ProjectDocumentsListItemView extends Composite implements AbstractP
     SpanElement decimalNumber;
     @UiField
     SpanElement information;
+    @UiField
+    SpanElement documentType;
+    @UiField
+    SpanElement documentCreated;
     @UiField
     Anchor edit;
     @UiField

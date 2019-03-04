@@ -89,7 +89,7 @@
             </fieldset>
 
             <fieldset class="header">
-                <legend><ui:text from="{lang.document}"/></legend>
+                <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
                 <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
             </fieldset>
 

@@ -86,6 +86,8 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         itemView.setApproved(document.getApproved());
         itemView.setDecimalNumber(document.getDecimalNumber());
         itemView.setInfo((document.getInventoryNumber() == null ? "" : document.getInventoryNumber() + " ") + document.getName());
+        itemView.setDocumentType(document.getType().getName());
+        itemView.setCreated(document.getCreated());
         itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT));
         return itemView;
     }
