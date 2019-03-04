@@ -15,7 +15,8 @@ public class PortalScheduleTasks {
 
     private static final Logger log = LoggerFactory.getLogger( PortalScheduleTasks.class );
 
-    @Scheduled(cron = "0 0/5 * * * ?")
+    //   Ежедневно в 11:10
+    @Scheduled(cron = "0 10 11 * * ?")
     public void printInLog() {
         log.info( "printInLog(): {}", new Date() );
         employeeRegistrationServiceImpl.notifyAboutProbationPeriod();

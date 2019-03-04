@@ -84,6 +84,18 @@ public class CollectionUtils {
         return result;
     }
 
+    public static <R, T> List<R> toList( Iterable<T> iterable, Function<? super T, ? extends R> mapper  ) {
+        List<R> result = new ArrayList<>();
+        transform( iterable, result, mapper );
+        return result;
+    }
+
+    public static <R, T> List<R> toList( Iterable<T> iterable, BiConsumer<? super T, Consumer<R>> consumer ) {
+        List<R> result = new ArrayList<>();
+        transform( iterable, result, consumer );
+        return result;
+    }
+
     public static <T, K, U> Map<K, U> toMap( final Iterable<T> iterable,
                                              Function<? super T, ? extends K> keyMapper,
                                              Function<? super T, ? extends U> valueMapper ) {
