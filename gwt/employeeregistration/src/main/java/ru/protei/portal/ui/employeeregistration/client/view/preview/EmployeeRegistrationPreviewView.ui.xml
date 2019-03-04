@@ -7,7 +7,7 @@
     <g:HTMLPanel styleName="preview-wrapper grid">
         <div class="preview">
             <fieldset class="header">
-                <legend><ui:text from="{lang.employeeRegistrationCommonHeader}"/></legend>
+                <legend><lable ui:field="header"/></legend>
                 <list:IssueLinks ui:field="issues" styleName="form-group col-xs-12" enabled="false"/>
 
                 <div class="col-xs-12">

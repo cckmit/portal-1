@@ -1301,6 +1301,40 @@ label.bordered:after{
   height: 60px;
 }
 
+.employee-registration{
+  table {
+    tbody {
+      tr {
+        td {
+          height: 70px;
+
+          div {
+            height: 70px;
+            max-height: 70px;
+            white-space: pre-line;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          p {
+            margin: 0;
+            font-size: 85%;
+          }
+        }
+      }
+    }
+
+    .number {
+      width: 10%;
+      text-align: center;
+
+      .number-size {
+        font-size: 22px;
+      }
+    }
+  }
+}
+
 .issue-reports {
   table {
     tbody {
