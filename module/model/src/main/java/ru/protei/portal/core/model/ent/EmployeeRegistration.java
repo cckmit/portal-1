@@ -142,6 +142,17 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcColumn(name ="additional_soft")
     String additionalSoft;
 
+    //@JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "PersonEmployee" )
+    private Person person;
+
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson( Person person ) {
+        this.person = person;
+    }
+
     public Long getId() {
         return id;
     }

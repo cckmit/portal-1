@@ -40,6 +40,7 @@ public class WorkerRecord {
 
     private String workerId;
     private String departmentId;
+    private Long registrationId;
 
     private String hireDate;
     private String hireOrderNo;
@@ -255,6 +256,15 @@ public class WorkerRecord {
         this.departmentId = departmentId;
     }
 
+    @XmlElement(name = "registration-id")
+    public Long getRegistrationId() {
+        return registrationId;
+    }
+
+    public void setRegistrationId( Long registrationId ) {
+        this.registrationId = registrationId;
+    }
+
     @XmlElement(name = "hire-date")
     public String getHireDate() {
         return hireDate;
@@ -350,6 +360,7 @@ public class WorkerRecord {
                 ", isFired=" + isFired +
                 ", workerId='" + workerId + '\'' +
                 ", departmentId='" + departmentId + '\'' +
+                ", registrationId=" + registrationId +
                 ", hireDate='" + hireDate + '\'' +
                 ", hireOrderNo='" + hireOrderNo + '\'' +
                 ", active=" + active +
