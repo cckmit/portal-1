@@ -35,7 +35,7 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         resourcesList.setMandatoryOptions(En_InternalResource.EMAIL);
-        probationPeriod.getElement().setAttribute("placeholder",  lang.employeeRegistrationWithoutProbationPeriod());
+        probationPeriod.getElement().setAttribute("placeholder",  lang.employeeRegistrationProbationPeriodPlaceholder());
     }
     
     @Override
