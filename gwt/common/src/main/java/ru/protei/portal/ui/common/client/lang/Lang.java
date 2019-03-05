@@ -1418,6 +1418,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationProbationPeriod();
 
+    String employeeRegistrationWithoutProbationPeriod();
+
     String employeeRegistrationProbationPeriodPlaceholder();
 
     String employeeRegistrationOSPlaceholder();
