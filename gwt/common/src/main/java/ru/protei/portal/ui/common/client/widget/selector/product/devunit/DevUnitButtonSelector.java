@@ -41,7 +41,6 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
 
         if( defaultValue != null ) {
             addOption( null );
-            setValue(null);
         }
         products.forEach( this :: addOption );
      }
