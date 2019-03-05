@@ -6,8 +6,8 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationProbationHeadOfDepartmentEvent extends ApplicationEvent {
-    public EmployeeRegistrationProbationHeadOfDepartmentEvent( EmployeeRegistrationServiceImpl employeeRegistrationService, Person headOfDepartment, String employeeFullName, Long employeeId ) {
-        super( employeeRegistrationService );
+    public EmployeeRegistrationProbationHeadOfDepartmentEvent( Object source, Person headOfDepartment, String employeeFullName, Long employeeId ) {
+        super( source );
 
         this.headOfDepartment = headOfDepartment;
         this.employeeFullName = employeeFullName;

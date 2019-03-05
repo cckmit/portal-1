@@ -6,8 +6,8 @@ import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationDevelopmentAgendaEvent extends ApplicationEvent {
-    public EmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationServiceImpl employeeRegistrationService, Person person ) {
-        super( employeeRegistrationService );
+    public EmployeeRegistrationDevelopmentAgendaEvent( Object source, Person person ) {
+        super( source );
         this.person = person;
     }
 

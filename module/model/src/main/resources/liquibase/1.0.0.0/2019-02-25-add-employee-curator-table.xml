@@ -15,5 +15,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="fk-employee-registration-to-person" author="eliseev">
+        <addForeignKeyConstraint constraintName="FK_PERSON_PERSON_ID" onDelete="CASCADE"
+                                 baseTableName="employee_registration"  baseColumnNames="person"
+                                 referencedTableName="person" referencedColumnNames="id" />
+    </changeSet>
+
 
 </databaseChangeLog>

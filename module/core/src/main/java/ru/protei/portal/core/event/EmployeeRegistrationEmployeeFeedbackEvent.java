@@ -5,8 +5,8 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationEmployeeFeedbackEvent extends ApplicationEvent {
-    public EmployeeRegistrationEmployeeFeedbackEvent( EmployeeRegistrationServiceImpl employeeRegistrationService, Person person ) {
-        super( employeeRegistrationService );
+    public EmployeeRegistrationEmployeeFeedbackEvent( Object source, Person person ) {
+        super( source );
         this.person = person;
     }
 

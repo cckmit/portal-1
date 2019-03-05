@@ -26,10 +26,4 @@ public interface EmployeeRegistrationService {
     @Privileged(requireAny = En_Privilege.EMPLOYEE_REGISTRATION_CREATE)
     CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration);
 
-    CoreResponse<Boolean> notifyAboutProbationPeriod();
-
-    CoreResponse<Boolean> notifyAboutEmployeeFeedback();
-
-    CoreResponse<Boolean> notifyAboutDevelopmentAgenda();
-
 }

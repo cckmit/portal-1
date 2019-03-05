@@ -648,6 +648,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EmployeeRegistrationReminderService getEmployeeRegistrationReminderService() {
+        return new EmployeeRegistrationReminderServiceImpl();
+    }
+
+    @Bean
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
     }
