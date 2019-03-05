@@ -84,7 +84,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setCurators( join( value.getCurators(), Person::getDisplayShortName, "," ) );
         view.setPosition(value.getPosition());
         view.setProbationPeriodMonth(value.getProbationPeriodMonth() == null ?
-                lang.employeeRegistrationWithoutProbationPeriod() :
+                lang.employeeRegistrationProbationPeriodPlaceholder() :
                 String.valueOf(value.getProbationPeriodMonth())
         );
         view.setOperatingSystem(value.getOperatingSystem());

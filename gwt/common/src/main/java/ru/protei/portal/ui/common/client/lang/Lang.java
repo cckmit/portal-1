@@ -1418,7 +1418,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationProbationPeriod();
 
-    String employeeRegistrationWithoutProbationPeriod();
+    String employeeRegistrationProbationPeriodPlaceholder();
 
     String employeeRegistrationOSPlaceholder();
 
@@ -1483,4 +1483,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationNumberColumn();
 
     String employeeRegistrationCurators();
+
+    String employeeRegistrationValidationCurators();
+
+    String employeeRegistrationValidationProbationPeriod();
 }

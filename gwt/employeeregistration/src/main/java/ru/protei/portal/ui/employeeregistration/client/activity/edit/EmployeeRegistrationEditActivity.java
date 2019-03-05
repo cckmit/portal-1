@@ -45,7 +45,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
 
     @Override
     public void onSaveClicked() {
-        EmployeeRegistration newEmployeeRegistration = fillDto();
+        EmployeeRegistration newEmployeeRegistration = fillDto( new EmployeeRegistration() );
         if (getValidationError(newEmployeeRegistration) != null) {
             showValidationError(newEmployeeRegistration);
             return;
@@ -75,6 +75,12 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         if (registration.getHeadOfDepartment() == null)
             return lang.employeeRegistrationValidationHeadOfDepartment();
 
+        if (registration.getProbationPeriodMonth() == null || registration.getProbationPeriodMonth() < 1)
+            return lang.employeeRegistrationValidationProbationPeriod();
+
+        if (isEmpty(registration.getCuratorsIds()))
+            return lang.employeeRegistrationValidationCurators();
+
         return null;
     }
 
@@ -95,8 +101,8 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     }
 
 
-    private EmployeeRegistration fillDto() {
-        EmployeeRegistration q = new EmployeeRegistration();
+    private EmployeeRegistration fillDto(EmployeeRegistration q) {
+
         q.setEmployeeFullName(view.fullName().getValue());
         q.setComment(view.comment().getValue());
         q.setWorkplace(view.workplace().getValue());

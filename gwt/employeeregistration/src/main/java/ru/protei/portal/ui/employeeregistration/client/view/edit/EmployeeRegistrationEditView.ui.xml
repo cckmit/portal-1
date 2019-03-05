@@ -57,7 +57,7 @@
                     </div>
 
                     <div class="form-group col-xs-3">
-                        <label><!--Испытательный срок-->
+                        <label class=""><!--Испытательный срок-->
                             <ui:text from="{lang.employeeRegistrationProbationPeriod}"/>
                         </label>
                         <g:IntegerBox ui:field="probationPeriod" styleName="input-field"/>
