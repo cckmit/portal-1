@@ -431,6 +431,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField(provided = true)
     PersonButtonSelector initiator;
 
+    // !!!
     @Inject
     @UiField(provided = true)
     DevUnitButtonSelector product;
