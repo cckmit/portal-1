@@ -129,7 +129,7 @@ public class OfficialServiceImpl implements OfficialService {
 
     @Override
     public CoreResponse<Long> createOfficial(AuthToken authToken, Official official, Long creatorId) {
-//        CaseType type = caseTypeDAO.get( new Long( En_CaseType.OFFICIAL.getEmployeeId() ) );
+//        CaseType type = caseTypeDAO.get( new Long( En_CaseType.OFFICIAL.getId() ) );
 //        Long id = type.getNextId();
 //        type.setNextId( id + 1 );
 //        caseTypeDAO.merge( type );

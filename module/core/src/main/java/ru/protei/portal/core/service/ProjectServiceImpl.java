@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.struct.RegionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -74,7 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
 //        caseQuery.setStateIds( query.getStates().stream()
-//                .map( (state)->new Long(state.getEmployeeId()).intValue() )
+//                .map( (state)->new Long(state.getId()).intValue() )
 //                .collect( Collectors.toList() )
 //        );
 
@@ -186,7 +185,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     public CoreResponse< Long > createProject( AuthToken token, Long creatorId ) {
 
-//        CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getEmployeeId() ) );
+//        CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getId() ) );
 //        Long id = type.getNextId();
 //        type.setNextId( id + 1 );
 //        caseTypeDAO.merge( type );

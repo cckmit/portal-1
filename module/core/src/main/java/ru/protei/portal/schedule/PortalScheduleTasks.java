@@ -17,8 +17,7 @@ public class PortalScheduleTasks {
 
     //   Ежедневно в 11:10
     @Scheduled(cron = "0 10 11 * * ?")
-    public void printInLog() {
-        log.info( "printInLog(): {}", new Date() );
+    public void remindAboutEmployeeProbationPeriod() {
         employeeRegistrationServiceImpl.notifyAboutProbationPeriod();
         employeeRegistrationServiceImpl.notifyAboutDevelopmentAgenda();
         employeeRegistrationServiceImpl.notifyAboutEmployeeFeedback();

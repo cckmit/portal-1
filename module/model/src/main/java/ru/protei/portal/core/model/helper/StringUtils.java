@@ -1,6 +1,9 @@
 package ru.protei.portal.core.model.helper;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -72,6 +75,19 @@ public class StringUtils {
 
     public static String join(Collection<?> collection, CharSequence delimiter) {
         return join(collection, Object::toString, delimiter);
+    }
+
+    public static <T> String join(Iterable<T> iterable, BiConsumer<T, StringBuilder> consumer) {
+        if (iterable == null || consumer == null)
+            return "";
+
+        StringBuilder sb = new StringBuilder();
+        Iterator<T> it = iterable.iterator();
+        while(it.hasNext()){
+            consumer.accept( it.next(), sb );
+        }
+
+        return sb.toString();
     }
 
     public static String trim( String string ) {

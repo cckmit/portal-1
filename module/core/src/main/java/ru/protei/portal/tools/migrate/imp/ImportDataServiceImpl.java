@@ -196,7 +196,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 //
 //            migrationEntry = migrationEntryDAO.updateEntry(En_MigrationEntry.PERSON_EMPLOYEE, HelperFunc.last(processList));
 //
-//            processList.removeIf(e -> personDAO.existsByLegacyId(e.getEmployeeId()));
+//            processList.removeIf(e -> personDAO.existsByLegacyId(e.getId()));
 //
 //            logger.debug("external person list after filtering, size = {}", processList.size());
 //

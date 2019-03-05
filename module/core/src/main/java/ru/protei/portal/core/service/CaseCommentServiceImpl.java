@@ -157,7 +157,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> insertComment( CaseComment comment ) {
+    public CoreResponse<Long> addCommentOnSentReminder( CaseComment comment ) {
         comment.setCreated( new Date() );
         comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
         Long commentId = caseCommentDAO.persist(comment);

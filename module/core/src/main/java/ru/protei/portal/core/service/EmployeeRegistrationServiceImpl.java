@@ -10,13 +10,11 @@ import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.function.Consumer;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.*;
@@ -195,7 +193,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         CaseComment comment = new CaseComment(message);
         comment.setCaseId( caseId );
         comment.setOriginalAuthorName( getLangFor("reminder_system_name") );
-        CoreResponse<Long> commentId = caseCommentService.insertComment(comment);
+        CoreResponse<Long> commentId = caseCommentService.addCommentOnSentReminder(comment);
 
         if (!commentId.isOk()) {
             log.warn( "addCaseComment(): Can't add case comment about {} for caseId={}",  message, caseId  );

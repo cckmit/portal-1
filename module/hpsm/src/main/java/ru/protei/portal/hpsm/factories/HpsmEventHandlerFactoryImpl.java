@@ -54,7 +54,7 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
         if (object != null && HpsmUtils.testBind(object, instance)) {
 
-//            if (object.getInitiatorCompanyId() == null || !object.getInitiatorCompanyId().equals(request.getCompany().getEmployeeId()))
+//            if (object.getInitiatorCompanyId() == null || !object.getInitiatorCompanyId().equals(request.getCompany().getId()))
 //                return new RejectHandler("Wrong company");
             logger.debug("return update handler");
             return new UpdateCaseHandler(object, caseObjectDAO.get(object.getId()));
