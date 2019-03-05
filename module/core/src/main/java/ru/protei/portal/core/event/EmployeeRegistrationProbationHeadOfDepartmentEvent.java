@@ -1,9 +1,7 @@
 package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
-import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationProbationHeadOfDepartmentEvent extends ApplicationEvent {
     public EmployeeRegistrationProbationHeadOfDepartmentEvent( Object source, Person headOfDepartment, String employeeFullName, Long employeeId ) {

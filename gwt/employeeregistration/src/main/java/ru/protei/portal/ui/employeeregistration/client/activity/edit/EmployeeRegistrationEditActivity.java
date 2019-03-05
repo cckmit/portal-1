@@ -8,8 +8,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -21,7 +19,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.function.Function;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 

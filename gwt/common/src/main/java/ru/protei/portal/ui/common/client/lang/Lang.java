@@ -1481,4 +1481,6 @@ public interface Lang extends Messages, ContactItemLang {
     String authDescription();
 
     String employeeRegistrationNumberColumn();
+
+    String employeeRegistrationCurators();
 }

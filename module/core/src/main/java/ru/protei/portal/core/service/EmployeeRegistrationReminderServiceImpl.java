@@ -3,21 +3,20 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.*;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
-import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
+import ru.protei.portal.core.event.EmployeeRegistrationDevelopmentAgendaEvent;
+import ru.protei.portal.core.event.EmployeeRegistrationEmployeeFeedbackEvent;
+import ru.protei.portal.core.event.EmployeeRegistrationProbationCuratorsEvent;
+import ru.protei.portal.core.event.EmployeeRegistrationProbationHeadOfDepartmentEvent;
+import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.Person;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistrationReminderService {
@@ -87,7 +86,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
     }
 
     private String makeDevelopmentAgendaComment( Person person ) {
-        return join( getLangFor( "sent_reminder_about_development_agenda" ), "\n",
+        return join( getLangFor( "send_reminder_about_development_agenda" ), "\n",
                 getLangFor( "reminder_recipients" ), ": ", person.getDisplayShortName() ).toString();
     }
 

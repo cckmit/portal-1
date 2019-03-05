@@ -9,7 +9,8 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.document.uploader'
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:execution="urn:import:ru.protei.portal.ui.document.client.widget.executiontype"
-             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project">
+             xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
+             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel styleName="main-content">
@@ -111,6 +112,17 @@
                             <ui:text from="{lang.documentDecimalNumber}"/>
                         </label>
                         <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="input-field"/>
+                    </g:HTMLPanel>
+
+                </div>
+
+                <div class="grid grid-indent">
+
+                    <g:HTMLPanel styleName="form-group col-xs-12" ui:field="approvedContainer">
+                        <label>
+                            <ui:text from="{lang.documentApproved}"/>
+                        </label>
+                        <switcher:Switcher ui:field="approved"/>
                     </g:HTMLPanel>
 
                 </div>

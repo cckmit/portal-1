@@ -99,14 +99,14 @@ public class MigrateFreq implements MigrateAction {
                     c.setLabelText((String) row.get("strComment"));
                     c.setStageId(null);
                     c.setTermOrder(((Long) row.get("nID")).intValue());
-                    c.setTermTypeId(En_CaseTermType.DEADLINE.getEmployeeId());
+                    c.setTermTypeId(En_CaseTermType.DEADLINE.getId());
                     c.setOldId((Long) row.get("nID"));
                     return c;
                 });
 
         System.out.println("FREQ terms import done");
 
-        Long lastDocID = documentDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.FREQ.getEmployeeId());
+        Long lastDocID = documentDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.FREQ.getId());
 
         new BatchProcessTask<CaseDocument>("\"FREQ\".Tm_ReqDocument", "nID", lastDocID)
                 .setLastUpdate(lastOldDateUpdate)
@@ -124,7 +124,7 @@ public class MigrateFreq implements MigrateAction {
 
         System.out.println("FREQ doc import done");
 
-        Long lastCommentID = commentDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.FREQ.getEmployeeId());
+        Long lastCommentID = commentDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.FREQ.getId());
         System.out.println("start from comment-id: " + lastCommentID);
 
         Map<Long, Long> lastStateMap = new HashMap<>();

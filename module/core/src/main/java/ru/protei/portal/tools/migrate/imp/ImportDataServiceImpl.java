@@ -368,7 +368,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 //        }
 //        else {
 //            obj.setExtId(En_CaseType.CRM_MARKET.makeGUID(obj.getCaseNumber()));
-//            obj.setTypeId(En_CaseType.CRM_MARKET.getEmployeeId());
+//            obj.setTypeId(En_CaseType.CRM_MARKET.getId());
 //            obj.setStateId(marketStatusMap.get(row.get("nStatusID")));
 //        }
 

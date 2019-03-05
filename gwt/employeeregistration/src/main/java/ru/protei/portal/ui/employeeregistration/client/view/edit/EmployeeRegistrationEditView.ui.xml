@@ -65,8 +65,7 @@
 
                     <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-xs-12">
                         <label ui:field="notifiersLabel">
-<!--                            <ui:text from="{lang.caseSubscription}"/>-->
-                            Кураторы
+                            <ui:text from="{lang.employeeRegistrationCurators}"/>
                         </label>
                         <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="curators"/>
                     </g:HTMLPanel>

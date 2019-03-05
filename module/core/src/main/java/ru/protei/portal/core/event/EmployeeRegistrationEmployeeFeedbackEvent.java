@@ -2,7 +2,6 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationEmployeeFeedbackEvent extends ApplicationEvent {
     public EmployeeRegistrationEmployeeFeedbackEvent( Object source, Person person ) {
@@ -18,7 +17,7 @@ public class EmployeeRegistrationEmployeeFeedbackEvent extends ApplicationEvent 
 
     @Override
     public String toString() {
-        return "EmployeeRegistrationDevelopmentAgendaEvent{" +
+        return "EmployeeRegistrationEmployeeFeedbackEvent{" +
                 "person='" + person + '\'' +
                 '}';
     }

@@ -2,7 +2,6 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationProbationCuratorsEvent extends ApplicationEvent {
     public EmployeeRegistrationProbationCuratorsEvent( Object source, Person curator, String employeeFullName, Long employeeId ) {

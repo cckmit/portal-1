@@ -153,6 +153,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
                 .build());
+        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId()));
     }
 
     private void readView() {

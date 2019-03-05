@@ -2,8 +2,6 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.struct.ContactInfo;
-import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 
 public class EmployeeRegistrationDevelopmentAgendaEvent extends ApplicationEvent {
     public EmployeeRegistrationDevelopmentAgendaEvent( Object source, Person person ) {
