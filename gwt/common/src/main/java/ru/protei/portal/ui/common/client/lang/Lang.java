@@ -1479,4 +1479,8 @@ public interface Lang extends Messages, ContactItemLang {
     String proteiTitleShort();
 
     String authDescription();
+
+    String employeeRegistrationNumberColumn();
+
+    String employeeRegistrationCurators();
 }

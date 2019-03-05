@@ -5,16 +5,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.model.dao.CaseLinkDAO;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.CaseTypeDAO;
-import ru.protei.portal.core.model.dao.EmployeeRegistrationDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -25,7 +21,8 @@ import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.*;
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -38,6 +35,8 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseTypeDAO caseTypeDAO;
+    @Autowired
+    PersonDAO personDAO;
     @Autowired
     YoutrackService youtrackService;
     @Autowired
@@ -78,6 +77,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (employeeRegistration == null)
             return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
         jdbcManyRelationsHelper.fillAll(employeeRegistration);
+        if(!isEmpty(employeeRegistration.getCuratorsIds())){
+            employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
+        }
         return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
     }
 

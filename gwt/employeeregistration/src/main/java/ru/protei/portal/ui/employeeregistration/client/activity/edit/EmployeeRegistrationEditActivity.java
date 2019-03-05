@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_EmploymentType;
 import ru.protei.portal.core.model.dict.En_InternalResource;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -18,6 +19,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
 import java.util.HashSet;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 
 public abstract class EmployeeRegistrationEditActivity implements Activity, AbstractEmployeeRegistrationEditActivity {
@@ -113,6 +116,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         q.setResourceComment( view.resourceComment().getValue() );
         q.setOperatingSystem( view.operatingSystem().getValue() );
         q.setAdditionalSoft( view.additionalSoft().getValue() );
+        q.setCuratorsIds( toSet( view.curators().getValue(), PersonShortView::getId ));
 
         return q;
     }
@@ -140,6 +144,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         view.fullNameValidation().setValid(true);
         view.headOfDepartmentValidation().setValid(true);
         view.setEmploymentDateValid(true);
+        view.curators().setValue( null );
 
         view.saveEnabled().setEnabled(true);
     }

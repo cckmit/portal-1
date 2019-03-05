@@ -7,9 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.event.UserLoginUpdateEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -24,6 +22,7 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Collection;
 import java.util.List;
@@ -304,8 +303,7 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
-        String urlTemplate = config.data().getMailNotificationConfig().getCrmUrlInternal() +
-                config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
+        String urlTemplate = getEmployeeRegistrationUrl();
 
         PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
         if (bodyTemplate == null) {
@@ -334,6 +332,95 @@ public class MailNotificationProcessor {
                 log.error("Failed to make MimeMessage", e);
             }
         });
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationEmployeeFeedbackEvent( EmployeeRegistrationEmployeeFeedbackEvent event) {
+        log.info( "onEmployeeRegistrationEmployeeFeedbackEvent(): {}", event );
+
+        try {
+            String subject = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody(
+                    event.getPerson().getDisplayName()
+            );
+
+            sentMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee feedback notification: {}", event.getPerson().getDisplayName(), e );
+        }
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationDevelopmentAgendaEvent event) {
+        log.info( "onEmployeeRegistrationDevelopmentAgendaEvent(): {}", event );
+
+        try {
+            String subject = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody(
+                    event.getPerson().getDisplayName()
+            );
+
+            sentMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent development agenda notification: {}", event.getPerson().getDisplayName(), e );
+        }
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationHeadOfDepartmentEvent event) {
+        log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
+
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
+        Person headOfDepartment = event.getHeadOfDepartment();
+
+        try {
+            String body = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody(
+                    employeeId, employeeFullName,
+                    getEmployeeRegistrationUrl(), headOfDepartment.getDisplayName() );
+
+            String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
+                    employeeFullName );
+
+            sentMail( new PlainContactInfoFacade( headOfDepartment.getContactInfo() ).getEmail(), subject, body );
+
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee probation notification: employeeId={}", employeeId, e );
+        }
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationProbationCuratorsEvent( EmployeeRegistrationProbationCuratorsEvent event) {
+        log.info( "onEmployeeRegistrationProbationCuratorsEvent(): {}", event );
+
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
+        Person curator = event.getCurator();
+
+        try {
+            String body = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationBody(
+                    employeeId, employeeFullName,
+                    getEmployeeRegistrationUrl(), curator.getDisplayName() );
+
+            String subject = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationSubject(
+                    employeeFullName );
+
+            sentMail( new PlainContactInfoFacade( curator.getContactInfo() ).getEmail(), subject, body );
+
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee probation (for curator) notification: employeeId={}", employeeId, e );
+        }
+    }
+
+    private void sentMail( String address, String subject, String body ) throws MessagingException {
+        MimeMessageHelper msg = new MimeMessageHelper( messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset() );
+        msg.setSubject( subject );
+        msg.setFrom( getFromAddress() );
+        msg.setText( HelperFunc.nvlt( body, "" ), true );
+        msg.setTo( address );
+        mailSendChannel.send( msg.getMimeMessage() );
     }
 
 
@@ -372,6 +459,11 @@ public class MailNotificationProcessor {
         }
         String locale = person.getLocale() == null ? "ru" : person.getLocale();
         return NotificationEntry.email(email, locale);
+    }
+
+    private String getEmployeeRegistrationUrl() {
+        return config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }
 
     private class MimeMessageHeadersFacade {

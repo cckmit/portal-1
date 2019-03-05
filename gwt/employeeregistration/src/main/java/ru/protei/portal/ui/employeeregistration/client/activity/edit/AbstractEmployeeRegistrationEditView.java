@@ -56,4 +56,6 @@ public interface AbstractEmployeeRegistrationEditView extends IsWidget {
     HasValue<String> operatingSystem();
 
     HasValue<String> additionalSoft();
+
+    HasValue<Set<PersonShortView>> curators();
 }
