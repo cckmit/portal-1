@@ -30,7 +30,7 @@ public abstract class ComponentModel extends BaseModel implements Activity {
     }
 
     @Event
-    public void onProductListChanged( ProductEvents.ChangeModel event ) {
+    public void onProductListChanged( ProductEvents.ProductListChanged event ) {
         refreshOptions();
     }
 
