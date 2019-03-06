@@ -72,10 +72,6 @@ public class ProjectServiceImpl implements ProjectService {
 
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType( En_CaseType.PROJECT );
-//        caseQuery.setStateIds( query.getStates().stream()
-//                .map( (state)->new Long(state.getId()).intValue() )
-//                .collect( Collectors.toList() )
-//        );
 
         List<Long> productIds = null;
         if (query.getDirectionId() != null){
@@ -184,11 +180,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     @Transactional
     public CoreResponse< Long > createProject( AuthToken token, Long creatorId ) {
-
-//        CaseType type = caseTypeDAO.get( new Long( En_CaseType.PROJECT.getId() ) );
-//        Long id = type.getNextId();
-//        type.setNextId( id + 1 );
-//        caseTypeDAO.merge( type );
 
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber( caseTypeDAO.generateNextId(En_CaseType.PROJECT) );

@@ -8,7 +8,11 @@ import java.util.Date;
 
 @JdbcEntity(table = "case_comment", selectSql = "" +
         "case_comment.case_id case_id, case_comment.author_id author_id, " +
-        "author.displayshortname author_display_name, sum(case_comment.time_elapsed) time_elapsed_sum, " +
+        "author.displayshortname author_display_name, " +
+        "sum(case_comment.time_elapsed) time_elapsed_sum, " +
+        "sum(IF(case_comment.time_elapsed_type = 0, case_comment.time_elapsed, 0)) time_elapsed_none, " +
+        "sum(IF(case_comment.time_elapsed_type = 1, case_comment.time_elapsed, 0)) time_elapsed_watch, " +
+        "sum(IF(case_comment.time_elapsed_type = 2, case_comment.time_elapsed, 0)) time_elapsed_night_work, " +
         "case_object.caseno case_no, case_object.private_flag private_flag, case_object.case_name case_name, " +
         "company.cname case_company_name, manager.displayshortname manager_display_name, " +
         "case_object.importance importance, case_object.state state, case_object.created created, " +
@@ -36,6 +40,15 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     @JdbcColumn(name = "time_elapsed_sum", permType = PermType.READ_ONLY)
     private Long timeElapsedSum;
+
+    @JdbcColumn(name = "time_elapsed_none", permType = PermType.READ_ONLY)
+    private Long timeElapsedNone;
+
+    @JdbcColumn(name = "time_elapsed_watch", permType = PermType.READ_ONLY)
+    private Long timeElapsedWatch;
+
+    @JdbcColumn(name = "time_elapsed_night_work", permType = PermType.READ_ONLY)
+    private Long timeElapsedNightWork;
 
     @JdbcColumn(name = "case_no", permType = PermType.READ_ONLY)
     private Long caseNumber;
@@ -75,6 +88,18 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     public Long getTimeElapsedSum() {
         return timeElapsedSum;
+    }
+
+    public Long getTimeElapsedNone() {
+        return timeElapsedNone;
+    }
+
+    public Long getTimeElapsedWatch() {
+        return timeElapsedWatch;
+    }
+
+    public Long getTimeElapsedNightWork() {
+        return timeElapsedNightWork;
     }
 
     public String getProductName() {
