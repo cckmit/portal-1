@@ -43,13 +43,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
         subscribers.remove( selector );
 
     }
-    public void subscribe( SelectorWithModel<ProductShortView> selector) {
-        subscribers.add(selector);
-        selector.fillOptions(list);
-    }
-    public void updateProducts(boolean onlyActive) {
-        refreshOptions(onlyActive);
-    }
     protected abstract void failedToLoad();
 
     protected abstract ProductQuery getQuery();
@@ -73,14 +66,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
             }
         });
     }
-
-    protected void refreshOptions(boolean onlyActive) {
-        ProductQuery query = getQuery();
-        if (onlyActive) query.setState(En_DevUnitState.ACTIVE);
-        else query.setState(null);
-        refreshOptions();
-    }
-
     protected void clearSubscribersOptions() {
         for (SelectorWithModel<ProductShortView> subscriber : subscribers) {
             subscriber.clearOptions();
