@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -22,7 +21,6 @@ public abstract class DevUnitModel extends BaseModel implements Activity {
         query = new ProductQuery();
         query.setSortField(En_SortField.prod_name);
         query.setSortDir(En_SortDir.ASC);
-        query.setState(En_DevUnitState.ACTIVE);
     }
 
     @Event
@@ -34,7 +32,6 @@ public abstract class DevUnitModel extends BaseModel implements Activity {
     public void onProductListChanged( ProductEvents.ChangeModel event ) {
         refreshOptions();
     }
-
     @Override
     protected void failedToLoad() {
         fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));

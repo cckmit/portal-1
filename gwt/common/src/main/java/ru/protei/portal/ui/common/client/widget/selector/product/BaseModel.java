@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 public abstract class BaseModel implements SelectorModel<ProductShortView> {
 
@@ -43,6 +43,13 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
         subscribers.remove( selector );
 
     }
+    public void subscribe( SelectorWithModel<ProductShortView> selector) {
+        subscribers.add(selector);
+        selector.fillOptions(list);
+    }
+    public void updateProducts(boolean onlyActive) {
+        refreshOptions(onlyActive);
+    }
     protected abstract void failedToLoad();
 
     protected abstract ProductQuery getQuery();
@@ -53,7 +60,8 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
         productService.getProductViewList(getQuery(), new RequestCallback<List<ProductShortView>>() {
             @Override
             public void onError(Throwable throwable) {
-                requested = false; failedToLoad();
+                requested = false;
+                failedToLoad();
             }
 
             @Override
@@ -64,6 +72,13 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
                 notifySubscribers();
             }
         });
+    }
+
+    protected void refreshOptions(boolean onlyActive) {
+        ProductQuery query = getQuery();
+        if (onlyActive) query.setState(En_DevUnitState.ACTIVE);
+        else query.setState(null);
+        refreshOptions();
     }
 
     protected void clearSubscribersOptions() {
@@ -85,6 +100,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
     ProductControllerAsync productService;
 
     private boolean requested;
-    private Set<SelectorWithModel<ProductShortView>> subscribers = new HashSet<>();
-    private List<ProductShortView> list = new ArrayList<>();
+    protected Set<SelectorWithModel<ProductShortView>> subscribers = new HashSet<>();
+    protected List<ProductShortView> list = new ArrayList<>();
 }

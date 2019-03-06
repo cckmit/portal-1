@@ -7,16 +7,14 @@ import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
-import java.util.List;
-
 /**
  * Button селектор с продуктами
  */
 public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
-    public void init( DevUnitModel devUnitModel) {
-        setSelectorModel(devUnitModel);
+    public void init( DevUnitModel model) {
+        model.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 
@@ -24,7 +22,6 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
             if ( value == null ) {
                 return new DisplayOption( defaultValue );
             }
-
             return new DisplayOption(
                     value.getName(),
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
@@ -35,16 +32,8 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
+    public void setOnlyActive ( boolean value ) { onlyActive = value; }
 
-    public void fillOptions( List< ProductShortView > products) {
-        clearOptions();
-
-        if( defaultValue != null ) {
-            addOption( null );
-            setValue(null);
-        }
-        products.forEach( this :: addOption );
-     }
-
+    private boolean onlyActive = false;
     private String defaultValue = null;
 }
