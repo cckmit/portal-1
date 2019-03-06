@@ -1489,4 +1489,14 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationValidationCurators();
 
     String employeeRegistrationValidationProbationPeriod();
+
+    String timeElapsedTypeNone();
+
+    String timeElapsedTypeWatch();
+
+    String timeElapsedTypeNightWork();
+
+    String timeElapsedType();
+
+    String issueCommentElapsedTimeTypeLabel();
 }

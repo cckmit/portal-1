@@ -232,6 +232,14 @@ public class CaseComment extends AuditableObject {
         this.originalAuthorFullName = originalAuthorFullName;
     }
 
+    public En_TimeElapsedType getTimeElapsedType() {
+        return timeElapsedType;
+    }
+
+    public void setTimeElapsedType( En_TimeElapsedType timeElapsedType ) {
+        this.timeElapsedType = timeElapsedType;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";

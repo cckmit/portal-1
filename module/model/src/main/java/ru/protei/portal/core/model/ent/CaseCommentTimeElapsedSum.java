@@ -10,7 +10,7 @@ import java.util.Date;
         "case_comment.case_id case_id, case_comment.author_id author_id, " +
         "author.displayshortname author_display_name, " +
         "sum(case_comment.time_elapsed) time_elapsed_sum, " +
-        "sum(IF(case_comment.time_elapsed_type = 0, case_comment.time_elapsed, 0)) time_elapsed_none, " +
+        "sum(IF(case_comment.time_elapsed_type IS NUll or case_comment.time_elapsed_type = 0, case_comment.time_elapsed, 0)) time_elapsed_none, " +
         "sum(IF(case_comment.time_elapsed_type = 1, case_comment.time_elapsed, 0)) time_elapsed_watch, " +
         "sum(IF(case_comment.time_elapsed_type = 2, case_comment.time_elapsed, 0)) time_elapsed_night_work, " +
         "case_object.caseno case_no, case_object.private_flag private_flag, case_object.case_name case_name, " +

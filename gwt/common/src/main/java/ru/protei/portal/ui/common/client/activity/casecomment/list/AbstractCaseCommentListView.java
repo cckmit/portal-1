@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -33,9 +34,13 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     HasTime timeElapsed();
 
+    HasValue<En_TimeElapsedType> timeElapsedType();
+
     void clearTimeElapsed();
 
     HasVisibility timeElapsedVisibility();
+
+    HasVisibility timeElapsedTypeVisibility();
 
     void setUserIcon(String icon);
 

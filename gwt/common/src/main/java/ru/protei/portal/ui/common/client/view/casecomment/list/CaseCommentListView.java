@@ -13,10 +13,13 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.lang.ElapsedTimeTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
@@ -24,6 +27,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEve
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
+import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -39,6 +43,8 @@ public class CaseCommentListView
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
+        timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
+        timeElapsedType.fillOptions();
     }
 
     @Override
@@ -77,13 +83,24 @@ public class CaseCommentListView
     }
 
     @Override
+    public HasValue<En_TimeElapsedType> timeElapsedType() {
+        return timeElapsedType;
+    }
+
+    @Override
     public void clearTimeElapsed() {
         timeElapsed.setValue(null);
+        timeElapsedType.setValue( null );
     }
 
     @Override
     public HasVisibility timeElapsedVisibility() {
         return timeElapsed;
+    }
+
+    @Override
+    public HasVisibility timeElapsedTypeVisibility() {
+        return timeElapsedType;
     }
 
     @Override
@@ -203,6 +220,9 @@ public class CaseCommentListView
     @Inject
     @UiField(provided = true)
     TimeTextBox timeElapsed;
+    @Inject
+    @UiField(provided = true)
+    ElapsedTimeTypeSelector timeElapsedType;
     @UiField
     ImageElement icon;
     @UiField
@@ -210,6 +230,8 @@ public class CaseCommentListView
     @UiField
     DivElement commentPreview;
 
+    @Inject
+    private ElapsedTimeTypeLang elapsedTimeTypeLang;
     private AbstractCaseCommentListActivity activity;
 
     private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);
