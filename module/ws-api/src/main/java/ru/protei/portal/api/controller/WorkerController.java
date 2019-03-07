@@ -94,9 +94,12 @@ public class WorkerController {
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
         try {
-
             return withHomeCompany(companyCode,
-                    item -> new WorkerRecord(workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId())));
+                    item -> {
+                        WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
+                        EmployeeRegistration registration = employeeRegistrationDAO.getByPerson(entry.getPersonId());
+                        return new WorkerRecord(entry, registration);
+                    });
 
         } catch (Throwable e) {
             logger.error("error while get worker", e.getMessage());
@@ -212,6 +215,7 @@ public class WorkerController {
 
                     EmployeeRegistration employeeRegistration = operationData.registration();
                     if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
                         employeeRegistration.setPerson(person);
                         mergeEmployeeRegistration(employeeRegistration);
                     }
@@ -286,6 +290,7 @@ public class WorkerController {
                     Person person = operationData.person();
                     WorkerEntry worker = operationData.worker();
                     UserLogin userLogin = operationData.account();
+                    EmployeeRegistration employeeRegistration = operationData.registration();
 
                     convert(rec, person);
 
@@ -329,8 +334,8 @@ public class WorkerController {
                         saveAccount(userLogin);
                     }
 
-                    EmployeeRegistration employeeRegistration = operationData.registration();
                     if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
                         employeeRegistration.setPerson(person);
                         mergeEmployeeRegistration(employeeRegistration);
                     }
@@ -793,6 +798,14 @@ public class WorkerController {
         String fileName = WSConfig.getInstance().getDirPhotos() + id + ".jpg";
         logger.debug("name of file: {} ", fileName);
         return fileName;
+    }
+
+    private void checkRegistrationByPerson(Long personId) throws Exception {
+        EmployeeRegistration registration = employeeRegistrationDAO.getByPerson(personId);
+        if (registration != null) {
+            registration.setPerson(null);
+            mergeEmployeeRegistration(registration);
+        }
     }
 
     private void persistPerson(Person person) throws Exception {

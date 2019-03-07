@@ -1,6 +1,7 @@
 package ru.protei.portal.api.model;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.ent.WorkerEntry;
@@ -54,8 +55,9 @@ public class WorkerRecord {
         copy (p);
     }
 
-    public WorkerRecord(WorkerEntry w) {
+    public WorkerRecord(WorkerEntry w, EmployeeRegistration r) {
         copy (w);
+        setRegistrationId(r == null ? null : r.getId());
     }
 
     @XmlElement(name = "company-code")
