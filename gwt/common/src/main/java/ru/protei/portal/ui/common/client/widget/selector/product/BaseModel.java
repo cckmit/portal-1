@@ -1,22 +1,23 @@
 package ru.protei.portal.ui.common.client.widget.selector.product;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public abstract class BaseModel implements SelectorModel<ProductShortView> {
+public abstract class BaseModel implements SelectorModel<ProductShortView>, Activity {
 
     @Override
     public void onSelectorLoad( SelectorWithModel<ProductShortView> selector ) {
@@ -33,7 +34,6 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
             refreshOptions();
         }
     }
-
     @Override
     public void onSelectorUnload( SelectorWithModel<ProductShortView> selector ) {
         if ( selector == null ) {
@@ -43,48 +43,39 @@ public abstract class BaseModel implements SelectorModel<ProductShortView> {
         subscribers.remove( selector );
 
     }
-    protected abstract void failedToLoad();
-
-    protected abstract ProductQuery getQuery();
-
-    protected void refreshOptions() {
-        if(requested) return;
-        requested = true;
-        productService.getProductViewList(getQuery(), new RequestCallback<List<ProductShortView>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                requested = false;
-                failedToLoad();
-            }
-
-            @Override
-            public void onSuccess(List<ProductShortView> result) {
-                requested = false;
-                list.clear();
-                list.addAll(result);
-                notifySubscribers();
-            }
-        });
+    @Event
+    public void onInit(AuthEvents.Success event) {
+        clearSubscribersOptions();
     }
+
+    @Event
+    public void onProductListChanged( ProductEvents.ProductListChanged event ) {
+        refreshOptions();
+    }
+
+    protected void failedToLoad() {
+        fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+    }
+    public void setOptions(List<ProductShortView> result) {
+        list.clear();
+        list.addAll(result);
+        notifySubscribers();
+    }
+    protected abstract void refreshOptions();
     protected void clearSubscribersOptions() {
         for (SelectorWithModel<ProductShortView> subscriber : subscribers) {
             subscriber.clearOptions();
         }
     }
-
     private void notifySubscribers() {
         for (SelectorWithModel<ProductShortView> selector : subscribers) {
             selector.fillOptions(list);
             selector.refreshValue();
         }
     }
-
     @Inject
     public Lang lang;
-    @Inject
-    ProductControllerAsync productService;
 
-    private boolean requested;
-    protected Set<SelectorWithModel<ProductShortView>> subscribers = new HashSet<>();
-    protected List<ProductShortView> list = new ArrayList<>();
+    private Set<SelectorWithModel<ProductShortView>> subscribers = new HashSet<>();
+    private List<ProductShortView> list = new ArrayList<>();
 }

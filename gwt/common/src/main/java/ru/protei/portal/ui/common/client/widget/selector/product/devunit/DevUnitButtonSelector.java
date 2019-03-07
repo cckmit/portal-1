@@ -13,7 +13,7 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
-    public void init( DevUnitModelEdit model) {
+    public void init( DevUnitEditModel model) {
         setSelectorModel( model );
         setSearchEnabled( true );
         setSearchAutoFocus( true );

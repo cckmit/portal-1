@@ -17,7 +17,7 @@ import java.util.Objects;
 public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements SelectorWithModel< ProductShortView > {
 
     @Inject
-    public void init(DevUnitModelFilter model, Lang lang ) {
+    public void init(DevUnitFilterModel model, Lang lang ) {
         setSelectorModel(model);
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
