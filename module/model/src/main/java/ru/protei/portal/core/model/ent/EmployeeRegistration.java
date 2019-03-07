@@ -151,7 +151,7 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     Collection<Person> curators;
 
-    @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "PersonEmployee" )
+    @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = true, sqlTableAlias = "PersonEmployee" )
     private Person person;
 
     public Person getPerson() {
@@ -391,11 +391,14 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +
                 ", state=" + state +
+                ", youtrackIssues=" + youtrackIssues +
                 ", probationPeriodMonth=" + probationPeriodMonth +
                 ", resourceComment='" + resourceComment + '\'' +
                 ", operatingSystem='" + operatingSystem + '\'' +
                 ", additionalSoft='" + additionalSoft + '\'' +
-                ", youtrackIssues=" + youtrackIssues +
+                ", curatorsIds=" + curatorsIds +
+                ", curators=" + curators +
+                ", person=" + person +
                 '}';
     }
 }

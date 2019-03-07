@@ -85,4 +85,9 @@ public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegi
             }
         }));
     }
+
+    @Override
+    public EmployeeRegistration getByPersonId( Long personId ) {
+        return getByCondition( "employee_registration.person=?", personId );
+    }
 }
