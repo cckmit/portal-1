@@ -7,10 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 
-import javax.servlet.http.HttpServletRequest;
-
 @RestController
-@RequestMapping(value = "/", method = RequestMethod.POST)
 public class JiraEventHandlerImpl implements JiraEventHandler {
     private static final Logger logger = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
 
@@ -18,13 +15,26 @@ public class JiraEventHandlerImpl implements JiraEventHandler {
     JiraIntegrationService integrationService;
 
 
-    @RequestMapping(value = "/webhook", method = RequestMethod.POST)
-//    @EventListener
+    public JiraEventHandlerImpl() {
+        logger.debug("jira webhook handler installed");
+    }
+
+    @PostMapping("/webhook")
+    public void onIssueEventNoParam(@RequestBody String jsonString,
+                             @RequestHeader(value = "Host",required = false) String fromHost,
+                             @RequestHeader(value = "X-Real-IP", required = false)String realIP,
+                             @PathVariable("stuff")String query
+    ) {
+        onIssueEvent (jsonString, fromHost, realIP, query);
+    }
+
+        @PostMapping("/webhook?{stuff}")
     public void onIssueEvent(@RequestBody String jsonString,
                              @RequestHeader(value = "Host",required = false) String fromHost,
                              @RequestHeader(value = "X-Real-IP", required = false)String realIP,
-                             HttpServletRequest request) {
-        logger.debug("got json string, src-ip={}, host={}, query={}, data: {}", realIP, fromHost, request.getQueryString(), jsonString);
+                             @PathVariable("stuff")String query
+                             ) {
+        logger.debug("got json string, src-ip={}, host={}, query={}, data: {}", realIP, fromHost, query, jsonString);
 
         try {
             JiraHookEventData eventData = JiraHookEventData.parse(jsonString);
