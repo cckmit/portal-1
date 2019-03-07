@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -90,6 +91,7 @@ public abstract class CaseCommentListActivity
         view.clearCommentsContainer();
         view.clearTimeElapsed();
         view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
+        view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
         view.enabledNewComment(isModifyEnabled);
 
@@ -174,6 +176,7 @@ public abstract class CaseCommentListActivity
         view.message().setValue( editedMessage, true );
         if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
+            view.timeElapsedType().setValue(comment.getTimeElapsedType());
         }
         view.focus();
     }
@@ -414,6 +417,8 @@ public abstract class CaseCommentListActivity
         comment.setCaseId( id != null ? id : caseId );
         comment.setText( message );
         comment.setTimeElapsed(view.timeElapsed().getTime());
+        En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
+        comment.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))
