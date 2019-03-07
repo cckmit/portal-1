@@ -1420,6 +1420,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationWithoutProbationPeriod();
 
+    String employeeRegistrationProbationPeriodPlaceholder();
+
     String employeeRegistrationOSPlaceholder();
 
     String employeeRegistrationAdditionalSoft();
@@ -1479,4 +1481,12 @@ public interface Lang extends Messages, ContactItemLang {
     String proteiTitleShort();
 
     String authDescription();
+
+    String employeeRegistrationNumberColumn();
+
+    String employeeRegistrationCurators();
+
+    String employeeRegistrationValidationCurators();
+
+    String employeeRegistrationValidationProbationPeriod();
 }

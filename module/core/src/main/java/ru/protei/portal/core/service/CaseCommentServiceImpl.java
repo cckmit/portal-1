@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -152,6 +153,20 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "time_elapsed");
 
         return new CoreResponse<Boolean>().success(isUpdated);
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<Long> addCommentOnSentReminder( CaseComment comment ) {
+        comment.setCreated( new Date() );
+        comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
+        Long commentId = caseCommentDAO.persist(comment);
+
+        if (commentId == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+        }
+
+        return new CoreResponse<Long>().success(commentId);
     }
 
     // -> Get comments -> //

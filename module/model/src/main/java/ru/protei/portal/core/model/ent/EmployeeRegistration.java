@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -142,7 +143,15 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
     @JdbcColumn(name ="additional_soft")
     String additionalSoft;
 
-    //@JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "PersonEmployee" )
+    /**
+     * Попечители на испытательный срок
+     */
+    @JdbcColumnCollection(name = "curators", separator = ",")
+    Set<Long> curatorsIds;
+
+    Collection<Person> curators;
+
+    @JdbcJoinedObject( localColumn = "person", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "PersonEmployee" )
     private Person person;
 
     public Person getPerson() {
@@ -151,6 +160,22 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
 
     public void setPerson( Person person ) {
         this.person = person;
+    }
+
+    public Collection<Person> getCurators() {
+        return curators;
+    }
+
+    public void setCurators( Collection<Person> curators ) {
+        this.curators = curators;
+    }
+
+    public void setCuratorsIds( Set<Long> curatorsIds ) {
+        this.curatorsIds = curatorsIds;
+    }
+
+    public Set<Long> getCuratorsIds() {
+        return curatorsIds;
     }
 
     public Long getId() {
@@ -366,11 +391,14 @@ public class EmployeeRegistration extends AuditableObject implements Serializabl
                 ", employeeFullName='" + employeeFullName + '\'' +
                 ", created=" + created +
                 ", state=" + state +
+                ", youtrackIssues=" + youtrackIssues +
                 ", probationPeriodMonth=" + probationPeriodMonth +
                 ", resourceComment='" + resourceComment + '\'' +
                 ", operatingSystem='" + operatingSystem + '\'' +
                 ", additionalSoft='" + additionalSoft + '\'' +
-                ", youtrackIssues=" + youtrackIssues +
+                ", curatorsIds=" + curatorsIds +
+                ", curators=" + curators +
+                ", person=" + person +
                 '}';
     }
 }

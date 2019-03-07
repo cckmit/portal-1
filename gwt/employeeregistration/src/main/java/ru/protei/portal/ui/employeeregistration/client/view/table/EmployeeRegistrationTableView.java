@@ -3,7 +3,6 @@ package ru.protei.portal.ui.employeeregistration.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -11,6 +10,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -71,7 +71,8 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
         ClickColumn<EmployeeRegistration> state = new ClickColumn<EmployeeRegistration>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
-                columnHeader.setInnerText(lang.employeeRegistrationState());
+                columnHeader.addClassName("number");
+                columnHeader.setInnerText(lang.employeeRegistrationNumberColumn());
             }
 
             @Override
@@ -81,10 +82,13 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
                     return;
                 }
 
-                Element stateElement = DOM.createElement( "p" );
-                stateElement.addClassName( "label label-" + value.getState().toString().toLowerCase() );
-                stateElement.setInnerText( caseStateLang.getStateName( value.getState() ) );
-                cell.appendChild( stateElement );
+                cell.addClassName("number");
+                cell.setInnerHTML( StringUtils.join(
+                        "<div>",
+                        "<p class='number-size'>", String.valueOf( value.getId() ), "</p>",
+                        "<p class='label label-", value.getState().toString().toLowerCase(), "'>", caseStateLang.getStateName( value.getState() ), "</p>",
+                        "</div>"
+                ).toString() );
             }
         };
 
