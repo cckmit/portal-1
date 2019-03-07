@@ -84,59 +84,23 @@
 
         <dependency>
             <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-api</artifactId>
-            <version>7.6.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.atlassian.jira/jira-rest-java-client-api -->
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
-            <artifactId>jira-rest-java-client-api</artifactId>
-            <version>5.1.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.atlassian.jira/jira-rest-java-client-core -->
-        <dependency>
-            <groupId>com.atlassian.jira</groupId>
             <artifactId>jira-rest-java-client-core</artifactId>
-            <version>5.1.0-476bd700</version>
+            <version>5.1.0</version>
         </dependency>
 
         <dependency>
             <groupId>io.atlassian.fugue</groupId>
             <artifactId>fugue</artifactId>
-            <version>
-                RELEASE
-            </version>
+            <version>4.7.2</version>
+            <!--<scope>provided</scope>-->
         </dependency>
-
-        <dependency>
-            <groupId>com.atlassian.plugin</groupId>
-            <artifactId>atlassian-spring-scanner-annotation</artifactId>
-            <version>RELEASE</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jta</groupId>
-            <artifactId>jta</artifactId>
-            <version>1.0.1b</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/webwork/pell-multipart-request -->
-        <dependency>
-            <groupId>webwork</groupId>
-            <artifactId>pell-multipart-request</artifactId>
-            <version>1.31.1</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-        </dependency>
-
-
     </dependencies>
 
+
+    <repositories>
+        <repository>
+            <id>atlassian-public</id>
+            <url>https://packages.atlassian.com/maven/repository/public</url>
+        </repository>
+    </repositories>
 </project>

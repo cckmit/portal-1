@@ -30,6 +30,15 @@ public class JiraEndpoint {
     @JdbcColumn(name = "PRIORITY_MAP_ID")
     private long priorityMapId;
 
+    @JdbcColumn(name = "server_login")
+    private String serverLogin;
+
+    @JdbcColumn(name = "server_pwd")
+    private String serverPassword;
+
+    public JiraEndpoint() {
+    }
+
     public Long getId() {
         return id;
     }
@@ -84,5 +93,22 @@ public class JiraEndpoint {
 
     public void setPersonId(Long personId) {
         this.personId = personId;
+    }
+
+
+    public String getServerLogin() {
+        return serverLogin;
+    }
+
+    public void setServerLogin(String serverLogin) {
+        this.serverLogin = serverLogin;
+    }
+
+    public String getServerPassword() {
+        return serverPassword;
+    }
+
+    public void setServerPassword(String serverPassword) {
+        this.serverPassword = serverPassword;
     }
 }

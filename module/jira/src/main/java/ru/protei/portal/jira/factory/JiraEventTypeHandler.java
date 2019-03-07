@@ -1,9 +1,8 @@
 package ru.protei.portal.jira.factory;
 
-import com.atlassian.jira.event.issue.IssueEvent;
-import com.atlassian.jira.event.issue.JiraIssueEvent;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.jira.utils.JiraHookEventData;
 
 public interface JiraEventTypeHandler {
-    public CaseObject handle(IssueEvent event);
+    CaseObject handle(JiraHookEventData event);
 }

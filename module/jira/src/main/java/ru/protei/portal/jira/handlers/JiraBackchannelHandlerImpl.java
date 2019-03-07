@@ -1,23 +1,25 @@
 package ru.protei.portal.jira.handlers;
 
-import com.atlassian.jira.bc.issue.IssueService;
-import com.atlassian.jira.component.ComponentAccessor;
-import com.atlassian.jira.issue.Issue;
-import com.atlassian.jira.issue.IssueInputParameters;
-import com.atlassian.jira.user.ApplicationUser;
-import com.atlassian.jira.user.util.UserManager;
+import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueFieldId;
+import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.jira.service.JiraService;
+import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
+import ru.protei.portal.core.model.ent.JiraEndpoint;
+import ru.protei.portal.jira.factory.JiraClientFactory;
+import ru.protei.portal.jira.utils.CommonUtils;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
-    private final IssueService issueService = ComponentAccessor.getIssueService();
-    private final UserManager userService = ComponentAccessor.getUserManager();
+    @Autowired
+    JiraClientFactory clientFactory;
+
     @Autowired
     PersonDAO personDAO;
 
@@ -35,57 +37,46 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
         logger.debug("Modified object has id: {}", caseId);
 
-        String extAppId = externalCaseAppDAO.get(caseId).getExtAppCaseId();
-        if (extAppId == null) {
+        ExternalCaseAppData extCaseData = externalCaseAppDAO.get(caseId);
+        if (extCaseData == null || extCaseData.getExtAppCaseId() == null) {
             logger.debug("case {} has no ext-app-id", caseId);
             return;
         }
 
-        final String[] issueAndProjectIds = extAppId.split("_");
+        final CommonUtils.IssueData issueData = CommonUtils.convert(extCaseData);
 
-        if (issueAndProjectIds.length != 2) {
-            logger.debug("case {} has invalid ext-app-id : {}", caseId, extAppId);
-            return;
-        }
 
-        final long issueId = Long.parseLong(issueAndProjectIds[0]);
-        final String projectId = issueAndProjectIds[1];
-
-        final JiraEndpoint endpoint = endpointDAO.getByProjectId(Long.parseLong(projectId));
+        final JiraEndpoint endpoint = endpointDAO.getByProjectId(issueData.endpointId);
         if (endpoint == null) {
-            logger.debug("Endpoint was not found for projectId {}", projectId);
+            logger.debug("Endpoint was not found for projectId {}, case = {}", issueData.projectId, caseId);
             return;
         }
 
-        logger.debug("Using endpoint for server: {}", endpoint.getServerAddress());
-        final ApplicationUser user = userService.getUserByName("protei_tech_user");
-        final Issue issue = issueService.getIssue(user, issueId).getIssue();
-        if (issue == null) {
-            logger.debug("Issue with id {} was not found", issueId);
-            return;
-        }
-
-        final IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
-        issueInputParameters
-                .setSummary(object.getName())
-                .setDescription(object.getInfo())
-                .setStatusId(statusMapEntryDAO.getJiraStatus(object.getStateId()));
-
-        IssueService.UpdateValidationResult updateValidationResult = issueService
-                .validateUpdate(user, issueId, issueInputParameters);
-
-        if (updateValidationResult.isValid())
-        {
-            IssueService.IssueResult updateResult = issueService.update(user, updateValidationResult);
-            if (!updateResult.isValid())
-            {
-                logger.debug("Something is wrong, Jira issue couldn't be updated");
+        clientFactory.run(endpoint, client -> {
+            logger.debug("Using endpoint for server: {}", endpoint.getServerAddress());
+            final Issue issue = client.getIssueClient().getIssue(issueData.key).claim();
+            if (issue == null) {
+                logger.debug("Issue with key {} was not found", issueData.key);
+                return;
             }
-        }
 
-//        updateComments(issue, event.getCaseComment(), endpoint);
+            final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
 
-        logger.debug("Copying case object changes to redmine issue");
+            issueInputParameters
+                    .setSummary(object.getName())
+                    .setDescription(object.getInfo())
+                    .setFieldValue (IssueFieldId.STATUS_FIELD.id, statusMapEntryDAO.getJiraStatus(object.getStateId()));
+
+            client.getIssueClient().updateIssue(issueData.key, issueInputParameters.build()).done(
+                    aVoid -> logger.debug("ok, issue {} was handled, case {}", issueData.key, caseId)
+                    //logger.debug("Copying case object changes to jira issue");
+                    //updateComments(issue, event.getCaseComment(), endpoint);
+            )
+            .fail(throwable ->
+                logger.debug("unable to send changes for case {}, issue={}", caseId, issueData.key, throwable)
+            )
+            ;
+        });
     }
 
     private void updateComments(Issue issue, CaseComment comment, JiraEndpoint endpoint) {
@@ -94,9 +85,6 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
     @Autowired
     private JiraEndpointDAO endpointDAO;
-
-    @Autowired
-    private JiraService service;
 
     @Autowired
     private CaseObjectDAO caseObjectDAO;
