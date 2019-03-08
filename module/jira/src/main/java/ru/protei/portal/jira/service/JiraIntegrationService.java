@@ -59,7 +59,7 @@ public class JiraIntegrationService {
         updateCasePriority(issue, caseObj);
 
         caseObj.setName(issue.getSummary());
-        caseObj.setInfo(issue.getDescription() + "\r\n" + issue.getIssueType());
+        caseObj.setInfo(issue.getDescription());
         caseObj.setLocal(0);
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
         caseObjectDAO.insertCase(caseObj);
@@ -101,7 +101,6 @@ public class JiraIntegrationService {
             caseObj = createCaseObject(issue, endpoint, person);
         }
         return caseObj;
-
     }
 
     private void updateCaseState(Issue issue, CaseObject caseObj) {

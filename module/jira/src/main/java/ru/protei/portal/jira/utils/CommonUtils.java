@@ -55,130 +55,20 @@ public class CommonUtils {
             this.projectId = projectId;
         }
     }
+//
+//    private static final Map<String, En_CaseType> mappingOfTypes = new HashMap<String, En_CaseType>() {{
+//        put("Improvement", En_CaseType.FREQ);
+//        put("Error", En_CaseType.BUG);
+//        put("Service", En_CaseType.TASK);
+//        put("Consultation", En_CaseType.OFFICIAL);
+//    }};
 
-    private static final Map<String, En_CaseType> mappingOfTypes = new HashMap<String, En_CaseType>() {{
-        put("Improvement", En_CaseType.FREQ);
-        put("Error", En_CaseType.BUG);
-        put("Service", En_CaseType.TASK);
-        put("Consultation", En_CaseType.OFFICIAL);
-    }};
-
-    private static final Map<String, En_CaseState> mappingOfStatuses = new HashMap<String, En_CaseState>() {{
-        put("Authorized", En_CaseState.CREATED);
-        put("Studying", En_CaseState.OPENED);
-        put("Request to customer", En_CaseState.INFO_REQUEST);
-        put("Postpone", En_CaseState.PAUSED);
-        put("Soft close", En_CaseState.DONE);
-        put("Nothing to change", En_CaseState.VERIFIED);
-    }};
-
-
-//    public static Issue convertPortalIssueToJiraIssue(CaseObject caseObject) {
-//        final String extAppType = caseObject.getExtAppType();
-//        final String[] splitted = extAppType.split("_");
-//        if (splitted.length != 2)
-//            return null;
-//
-//        final long issueId = Long.parseLong(splitted[1]);
-//
-//        final ApplicationUser user = ComponentAccessor.getUserManager().getUserByName("protei_tech_user");
-//        IssueService issueService = ComponentAccessor.getIssueService();
-//        final Issue issue = issueService.getIssue(user, issueId).getIssue();
-//        //retrieved issue
-//
-//        return issue;
-//    }
-
-    public static CaseObject updatePortalIssue(Issue issue, CaseObject obj, JiraEndpoint endpoint) {
-        return obj;
-    }
-
-//    private static Issue buildIssueFromJson(JsonObject jsonObject) {
-//        final Long id = jsonObject.get("id").getAsLong();
-//        final JsonObject fields = jsonObject.get("fields").getAsJsonObject();
-//
-//        final String created = fields.get("created").getAsString();
-//        final String updated = fields.get("updated").getAsString();
-//        final String summary = fields.get("summary").getAsString();
-//        final String description = fields.get("description").getAsString();
-//        final String statusName = fields.get("status").getAsJsonObject().get("name").getAsString();
-//        final Long projId = fields.get("project").getAsJsonObject().get("id").getAsLong();
-//        final String severityId = fields.get("customfield_12405").getAsJsonObject().get("value").getAsString().split("-")[0].trim();
-//        return new ShortenedIssue(
-//                id,
-//                created,
-//                updated,
-//                summary,
-//                description,
-//                statusName,
-//                projId,
-//                severityId
-//        );
-//    }
-
-//    private static Map buildIssueParamsFromJson(JsonObject jsonObject) {
-//        return null;
-//    }
-
-//    private static ApplicationUser buildUserFromJson(JsonObject jsonObject) {
-//        return new ApplicationUser() {
-//            @Override
-//            public String getKey() {
-//                return jsonObject.get("key").getAsString();
-//            }
-//
-//            @Override
-//            public String getUsername() {
-//                return jsonObject.get("name").getAsString();
-//            }
-//
-//            @Override
-//            public String getName() {
-//                return jsonObject.get("displayName").getAsString();
-//            }
-//
-//            @Override
-//            public long getDirectoryId() {
-//                return 0;
-//            }
-//
-//            @Override
-//            public boolean isActive() {
-//                return jsonObject.get("active").getAsBoolean();
-//            }
-//
-//            @Override
-//            public String getEmailAddress() {
-//                return jsonObject.get("emailAddress").getAsString();
-//            }
-//
-//            @Override
-//            public String getDisplayName() {
-//                return jsonObject.get("displayName").getAsString();
-//            }
-//
-//            @Override
-//            public User getDirectoryUser() {
-//                return null;
-//            }
-//
-//            @Override
-//            public Long getId() {
-//                return null;
-//            }
-//        };
-//    }
-//
-//    public static IssueEvent buildIssueEventFromJson(JsonObject jsonObject) {
-//        final JsonObject issueJson = jsonObject.get("issue").getAsJsonObject();
-//        final JsonObject userJson = jsonObject.get("user").getAsJsonObject();
-//        final Issue issue = buildIssueFromJson(issueJson);
-//        final ApplicationUser user = buildUserFromJson(userJson);
-//        return new IssueEvent(
-//                issue,
-//                null,
-//                user,
-//                0L
-//        );
-//    }
+//    private static final Map<String, En_CaseState> mappingOfStatuses = new HashMap<String, En_CaseState>() {{
+//        put("Authorized", En_CaseState.CREATED);
+//        put("Studying", En_CaseState.OPENED);
+//        put("Request to customer", En_CaseState.INFO_REQUEST);
+//        put("Postpone", En_CaseState.PAUSED);
+//        put("Soft close", En_CaseState.DONE);
+//        put("Nothing to change", En_CaseState.VERIFIED);
+//    }};
 }
