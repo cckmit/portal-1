@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
-public class JiraEventHandlerImpl implements JiraEventHandler {
+public class JiraEventHandlerImpl {
     private static final Logger logger = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
 
     @Autowired
@@ -19,28 +21,20 @@ public class JiraEventHandlerImpl implements JiraEventHandler {
         logger.debug("jira webhook handler installed");
     }
 
-    @PostMapping("/webhook")
-    public void onIssueEventNoParam(@RequestBody String jsonString,
-                             @RequestHeader(value = "Host",required = false) String fromHost,
-                             @RequestHeader(value = "X-Real-IP", required = false)String realIP,
-                             @PathVariable("stuff")String query
-    ) {
-        onIssueEvent (jsonString, fromHost, realIP, query);
-    }
 
-        @PostMapping("/webhook?{stuff}")
+    @PostMapping("/webhook")
     public void onIssueEvent(@RequestBody String jsonString,
                              @RequestHeader(value = "Host",required = false) String fromHost,
                              @RequestHeader(value = "X-Real-IP", required = false)String realIP,
-                             @PathVariable("stuff")String query
+                             HttpServletRequest request
                              ) {
-        logger.debug("got json string, src-ip={}, host={}, query={}, data: {}", realIP, fromHost, query, jsonString);
+        logger.debug("got json string, src-ip={}, host={}, query={}, data: {}", realIP, fromHost, request.getQueryString(), jsonString);
 
         try {
             JiraHookEventData eventData = JiraHookEventData.parse(jsonString);
 
             if (eventData == null) {
-                logger.debug("unable to parse event data, return");
+                logger.debug("no valid data, return");
                 return;
             }
 

@@ -90,16 +90,6 @@ public class CommonUtils {
 //    }
 
     public static CaseObject updatePortalIssue(Issue issue, CaseObject obj, JiraEndpoint endpoint) {
-        obj.setModified(issue.getUpdateDate().toDate());
-        obj.setExtAppType("jira_nexign");
-        issue.getPriority();
-        issue.getStatus().getName();
-        obj.setStateId(0);
-//        obj.setState(En_CaseState.ACTIVE);
-        obj.setName(issue.getSummary());
-        obj.setInfo(issue.getDescription());
-        obj.setLocal(0);
-        obj.setInitiatorCompanyId(endpoint.getCompanyId());
         return obj;
     }
 

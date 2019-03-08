@@ -65,7 +65,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             issueInputParameters
                     .setSummary(object.getName())
                     .setDescription(object.getInfo())
-                    .setFieldValue (IssueFieldId.STATUS_FIELD.id, statusMapEntryDAO.getJiraStatus(object.getStateId()));
+                    .setFieldValue (IssueFieldId.STATUS_FIELD.id, statusMapEntryDAO.getJiraStatus(object.getState()));
 
             client.getIssueClient().updateIssue(issueData.key, issueInputParameters.build()).done(
                     aVoid -> logger.debug("ok, issue {} was handled, case {}", issueData.key, caseId)

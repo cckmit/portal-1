@@ -7,7 +7,6 @@ import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
 import ru.protei.portal.jira.handlers.JiraBackchannelHandler;
 import ru.protei.portal.jira.handlers.JiraBackchannelHandlerImpl;
-import ru.protei.portal.jira.handlers.JiraEventHandler;
 import ru.protei.portal.jira.handlers.JiraEventHandlerImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 
@@ -21,7 +20,7 @@ public class JiraConfigurationContext {
     }
 
     @Bean
-    public JiraEventHandler getJiraEventHandler() {
+    public JiraEventHandlerImpl getJiraEventHandler() {
         return new JiraEventHandlerImpl();
     }
 
