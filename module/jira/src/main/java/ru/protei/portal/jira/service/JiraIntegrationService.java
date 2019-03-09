@@ -95,16 +95,27 @@ public class JiraIntegrationService {
     }
 
     private void processAllComments(Issue issue, CaseObject caseObj, PersonMapper personMapper) {
-        List<CaseComment> comments = new ArrayList<>();
-        issue.getComments().forEach(comment ->
-            comments.add(convertComment(caseObj, personMapper, comment))
-        );
+        logger.debug("process comments on {}", issue.getKey());
 
-        if (!comments.isEmpty()) {
-            comments.get(0).setCaseImpLevel(caseObj.getImpLevel());
-            comments.get(0).setCaseStateId(caseObj.getStateId());
+        if (issue.getComments() == null) {
+            logger.debug("no comments in issue {}", issue.getKey());
+            return;
+        }
 
-            commentDAO.persistBatch(comments);
+        List<CaseComment> ourCaseComments = new ArrayList<>();
+        issue.getComments().forEach(comment -> {
+            logger.debug("convert jira-comment {} with text {}", comment.getId(), comment.getBody());
+            ourCaseComments.add(convertComment(caseObj, personMapper, comment));
+        });
+
+        if (!ourCaseComments.isEmpty()) {
+            logger.debug("store case comments, size = {}", ourCaseComments.size());
+            ourCaseComments.get(0).setCaseImpLevel(caseObj.getImpLevel());
+            ourCaseComments.get(0).setCaseStateId(caseObj.getStateId());
+
+            logger.debug("before invoke persists batch");
+            commentDAO.persistBatch(ourCaseComments);
+            logger.debug("after invoke persists batch");
         }
     }
 
@@ -116,6 +127,7 @@ public class JiraIntegrationService {
         our.setCreated(comment.getCreationDate().toDate());
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
+        our.setText(comment.getBody());
         return our;
     }
 
