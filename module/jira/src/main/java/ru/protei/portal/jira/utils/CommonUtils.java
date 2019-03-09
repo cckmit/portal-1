@@ -1,6 +1,8 @@
 package ru.protei.portal.jira.utils;
 
+import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -9,6 +11,8 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 
+import java.net.URI;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,6 +59,23 @@ public class CommonUtils {
             this.projectId = projectId;
         }
     }
+
+    private static Map<String,URI> fakeAvatarURI_map = Collections.singletonMap(User.S48_48, safeURI("https://atlassian.com/"));
+
+    private static URI safeURI (String uri) {
+        try {
+            return new URI(uri);
+        }
+        catch (Throwable e) {
+            return null;
+        }
+    }
+
+    public static User fromBasicUserInfo (BasicUser basicUser) {
+        return new User(basicUser.getSelf(), basicUser.getDisplayName(), basicUser.getDisplayName(), null, true,
+                null, fakeAvatarURI_map, null);
+    }
+
 //
 //    private static final Map<String, En_CaseType> mappingOfTypes = new HashMap<String, En_CaseType>() {{
 //        put("Improvement", En_CaseType.FREQ);

@@ -21,6 +21,7 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 
+import java.net.URI;
 import java.util.*;
 
 public class JiraIntegrationService {
@@ -110,7 +111,7 @@ public class JiraIntegrationService {
     private CaseComment convertComment(CaseObject caseObj, PersonMapper personMapper, Comment comment) {
         CaseComment our = new CaseComment();
         our.setCaseId(caseObj.getId());
-        our.setAuthor(personMapper.toProteiPerson(fromBasicUserInfo(comment.getAuthor())));
+        our.setAuthor(personMapper.toProteiPerson(CommonUtils.fromBasicUserInfo(comment.getAuthor())));
 //            our.setCaseAttachments();
         our.setCreated(comment.getCreationDate().toDate());
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
@@ -118,10 +119,6 @@ public class JiraIntegrationService {
         return our;
     }
 
-    private User fromBasicUserInfo (BasicUser basicUser) {
-        return new User(basicUser.getSelf(), basicUser.getDisplayName(), basicUser.getDisplayName(), null, true,
-        null, null, null);
-    }
 
     public CaseObject updateOrCreate (JiraHookEventData event) {
         final Issue issue = event.getIssue();
