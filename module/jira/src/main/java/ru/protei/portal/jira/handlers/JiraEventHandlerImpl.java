@@ -72,7 +72,7 @@ public class JiraEventHandlerImpl {
         try {
             JiraHookEventData eventData = JiraHookEventData.parse(jsonString);
 
-            if (eventData == null) {
+            if (eventData == null || eventData.getIssue() == null) {
                 logger.warn("no valid data, return");
                 return;
             }
