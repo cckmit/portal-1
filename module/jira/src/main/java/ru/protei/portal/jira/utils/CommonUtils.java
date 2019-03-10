@@ -24,9 +24,9 @@ public class CommonUtils {
         return endpoint.getId()+ "_" + issue.getKey();
     }
 
-    public static String makeExtAppData (Issue issue) {
-        return String.valueOf(issue.getProject().getId());
-    }
+//    public static String makeExtAppData (Issue issue) {
+//        return String.valueOf(issue.getProject().getId());
+//    }
 
     public static String extractIssueKey (String ourStoredId) {
         return ourStoredId.substring(ourStoredId.indexOf('_')+1);
