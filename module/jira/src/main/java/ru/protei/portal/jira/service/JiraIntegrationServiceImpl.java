@@ -1,10 +1,14 @@
 package ru.protei.portal.jira.service;
 
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.domain.Attachment;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamSource;
+import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -16,6 +20,9 @@ import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +56,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
     @Autowired
     JiraClientFactory clientFactory;
+
+    @Autowired
+    FileController fileController;
 
 
     @Override
@@ -174,7 +184,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
 
-//    private void processAttachments (JiraEndpoint endpoint, Issue issue, CaseObject caseObject, IssueMergeState state) {
+//    private void processAttachments (JiraEndpoint endpoint, Issue issue, CaseObject caseObject, IssueMergeState state, PersonMapper personMapper) {
 //        if (issue.getAttachments() == null) {
 //            logger.debug("issue {} has no attachments, skip merging", issue.getKey());
 //            return;
@@ -188,24 +198,53 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 //            }
 //            else {
 //                jiraAttachments.add(attachment);
-//                state.appendAttachment(attachment.getSelf());
 //            }
 //        });
 //
 //        if (!jiraAttachments.isEmpty()) {
 //            logger.debug("load attachments for issue {}, size={}", issue.getKey(), jiraAttachments.size());
-//
 //            clientFactory.run(endpoint, client-> {
-//                jiraAttachments.forEach(attachment -> {
-//                    logger.debug("load attachment issue={}, uri={}", issue.getKey(), attachment.getContentUri());
+//                jiraAttachments.forEach(jiraAttachment -> {
+//                    logger.debug("load attachment issue={}, uri={}", issue.getKey(), jiraAttachment.getContentUri());
 //
-//                    client.getIssueClient().getAttachment()
+//                    ru.protei.portal.core.model.ent.Attachment a = convertAttachment(personMapper, jiraAttachment);
+//
+//                    if (fileController.saveAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject.getId()) != null)
+//                        state.appendAttachment(jiraAttachment.getSelf());
 //                });
 //            });
-//
 //        }
-//
 //    }
+
+    private ru.protei.portal.core.model.ent.Attachment convertAttachment(PersonMapper personMapper, Attachment jiraAttachment) {
+        ru.protei.portal.core.model.ent.Attachment a = new ru.protei.portal.core.model.ent.Attachment();
+        a.setCreated(jiraAttachment.getCreationDate().toDate());
+        a.setCreatorId(personMapper.toProteiPerson(CommonUtils.fromBasicUserInfo(jiraAttachment.getAuthor())).getId());
+        a.setDataSize((long)jiraAttachment.getSize());
+        a.setFileName(jiraAttachment.getFilename());
+        a.setMimeType(jiraAttachment.getMimeType());
+        a.setLabelText(jiraAttachment.getFilename());
+        return a;
+    }
+
+
+    class JiraAttachmentSource implements InputStreamSource {
+
+        JiraRestClient client;
+//        Attachment attachment;
+        URI contentURI;
+
+        public JiraAttachmentSource(JiraRestClient client, Attachment attachment) {
+            this.client = client;
+            this.contentURI = attachment.getContentUri();
+        }
+
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return client.getIssueClient().getAttachment(contentURI).claim();
+        }
+    }
+
 
     private CaseComment convertComment(CaseObject caseObj, PersonMapper personMapper, Comment comment) {
         CaseComment our = new CaseComment();

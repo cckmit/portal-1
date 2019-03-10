@@ -74,7 +74,7 @@
                 <!--<module>module/hpsm</module>-->
                 <!--<module>module/ws-api</module>-->
                 <module>module/jira</module>
-                <!--<module>module/redmine</module>-->
+                <module>module/redmine</module>
             </modules>
         </profile>
 
