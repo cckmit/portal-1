@@ -2,6 +2,7 @@ package ru.protei.portal.jira.utils;
 
 import com.atlassian.jira.rest.client.api.domain.BasicUser;
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import com.atlassian.jira.rest.client.api.domain.IssueField;
 import com.atlassian.jira.rest.client.api.domain.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,8 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommonUtils {
     private final static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
@@ -74,6 +77,18 @@ public class CommonUtils {
     public static User fromBasicUserInfo (BasicUser basicUser) {
         return new User(basicUser.getSelf(), basicUser.getDisplayName(), basicUser.getDisplayName(), null, true,
                 null, fakeAvatarURI_map, null);
+    }
+
+    public static String getIssueSeverity (Issue issue) {
+        IssueField field = issue.getFieldByName(CustomJiraIssueParser.SEVERITY_CODE_NAME);
+        return field == null ? null : dirtyHackForSeverity(field.getValue().toString());
+    }
+
+    // значение содержит строковое описание, из которого нужно получить число
+    private static Pattern pattern = Pattern.compile(".*([0-9]{2}).*");
+    public static String dirtyHackForSeverity (String value) {
+        Matcher m = pattern.matcher(value);
+        return m.matches() ? m.group(1) : "0";
     }
 
 //

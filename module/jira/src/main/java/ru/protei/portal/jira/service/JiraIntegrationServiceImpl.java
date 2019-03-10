@@ -235,8 +235,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private void updateCasePriority(Issue issue, CaseObject caseObj) {
-        logger.debug("update case priority, issue={}, jira-level={}, current case level={}", issue.getKey(), issue.getPriority().getName(), caseObj.importanceLevel());
-        JiraPriorityMapEntry jiraPriorityEntry = jiraPriorityMapEntryDAO.getByJiraPriorityId(issue.getPriority().getName());
+        String severityName = CommonUtils.getIssueSeverity(issue);
+
+        logger.debug("update case priority, issue={}, jira-level={}, current case level={}", issue.getKey(), severityName, caseObj.importanceLevel());
+
+        JiraPriorityMapEntry jiraPriorityEntry = jiraPriorityMapEntryDAO.getByJiraPriorityId(severityName);
+
         if (jiraPriorityEntry == null) {
             logger.warn("unable to map jira-priority level : {}, set as basic", issue.getPriority().getName());
             caseObj.setImpLevel(En_ImportanceLevel.BASIC.getId());

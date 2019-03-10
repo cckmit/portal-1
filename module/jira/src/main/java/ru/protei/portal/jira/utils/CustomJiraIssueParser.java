@@ -2,6 +2,7 @@ package ru.protei.portal.jira.utils;
 
 import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.internal.json.*;
+import com.google.common.collect.Sets;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -10,10 +11,7 @@ import org.joda.time.DateTime;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.*;
 import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOptionalJsonObject;
@@ -24,6 +22,8 @@ import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOp
  * и кроме того, большая часть методов private, так что..
  */
 public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
+    public static final String CUSTOM_FIELD_SEVERITY = "customfield_12405";
+    public static final String SEVERITY_CODE_NAME = "severity";
     private final BasicIssueJsonParser basicIssueJsonParser = new BasicIssueJsonParser();
     private final StatusJsonParser statusJsonParser = new StatusJsonParser();
     private final VersionJsonParser versionJsonParser = new VersionJsonParser();
@@ -56,7 +56,7 @@ public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
         final String description = getOptionalFieldStringUnisex(issueJson, DESCRIPTION_FIELD.id);
 
         final Collection<Attachment> attachments = parseOptionalArray(issueJson, attachmentJsonParser, FIELDS, ATTACHMENT_FIELD.id);
-//        final Collection<IssueField> fields = parseFields(issueJson);
+        final Collection<IssueField> fields = parseFields(issueJson);
 
         final IssueType issueType = issueTypeJsonParser.parse(getFieldUnisex(issueJson, ISSUE_TYPE_FIELD.id));
         final DateTime creationDate = JsonParseUtil.parseDateTime(getFieldStringUnisex(issueJson, CREATED_FIELD.id));
@@ -117,7 +117,7 @@ public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
 
         return new Issue(summary, selfUri, basicIssue.getKey(), basicIssue.getId(), project, issueType, status,
                 description, priority, resolution, attachments, reporter, assignee, creationDate, updateDate,
-                dueDate, affectedVersions, fixVersions, components, timeTracking, Collections.emptyList(), comments,
+                dueDate, affectedVersions, fixVersions, components, timeTracking, fields, comments,
                 transitionsUri, issueLinks,
                 votes, worklogs, watchers, Collections.emptyList(), subtasks, changelog, operations, labels);
     }
@@ -208,5 +208,16 @@ public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
         return transitionsUriString != null
                 ? JsonParseUtil.parseURI(transitionsUriString)
                 : UriBuilder.fromUri(selfUri).path("transitions").queryParam("expand", "transitions.fields").build();
+    }
+
+
+    private Collection<IssueField> parseFields(final JSONObject issueJson) throws JSONException {
+        final JSONObject json = issueJson.getJSONObject(FIELDS);
+        if (json.has(CUSTOM_FIELD_SEVERITY)) {
+            JSONObject severity = json.getJSONObject(CUSTOM_FIELD_SEVERITY);
+            return Collections.singleton(new IssueField(severity.getString("id"), SEVERITY_CODE_NAME, "string", severity.getString("value")));
+        }
+
+        return Collections.emptyList();
     }
 }
