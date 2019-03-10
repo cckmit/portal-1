@@ -1,10 +1,13 @@
 package ru.protei.portal.jira.handlers;
 
+import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.JiraEndpointDAO;
+import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
@@ -20,11 +23,14 @@ public class JiraEventHandlerImpl {
     private static final Logger logger = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
 
     interface JiraEventHandler {
-        void handle (long companyId, JiraHookEventData event);
+        void handle (JiraEndpoint endpoint, JiraHookEventData event);
     }
 
     @Autowired
     JiraIntegrationService integrationService;
+
+    @Autowired
+    JiraEndpointDAO jiraEndpointDAO;
 
     @Autowired
     PortalConfig portalConfig;
@@ -41,10 +47,10 @@ public class JiraEventHandlerImpl {
     @PostConstruct
     private void init () {
         handlersMap = new HashMap<>();
-        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (companyId, event) -> integrationService.create(companyId, event));
-        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (companyId, event) -> integrationService.updateOrCreate(companyId, event));
-        handlersMap.put(JiraHookEventType.COMMENT_CREATED, (companyId, event) -> logger.debug("skip comment-created event"));
-        defaultHandler = (companyId, evt) -> logger.debug("has no handler for event {}, skip", evt.getEventType());
+        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> integrationService.create(ep, event));
+        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> integrationService.updateOrCreate(ep, event));
+        handlersMap.put(JiraHookEventType.COMMENT_CREATED, (ep, event) -> logger.debug("skip comment-created event"));
+        defaultHandler = (ep, evt) -> logger.debug("has no handler for event {}, skip", evt.getEventType());
     }
 
 
@@ -71,6 +77,19 @@ public class JiraEventHandlerImpl {
                 return;
             }
 
+            final Issue issue = eventData.getIssue();
+            final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(companyId, issue.getProject().getId());
+
+            if (endpoint == null) {
+                logger.warn("unable to find end-point record for jira-issue project {}, company={}", issue.getProject(), companyId);
+                return;
+            }
+
+            if (eventData.getUser().getName().equals(endpoint.getServerLogin())) {
+                logger.info("skip event to prevent recursion, author is tech-login");
+                return;
+            }
+
             logger.debug("parsed data: {}", eventData.toDebugString());
 
             /**
@@ -91,7 +110,7 @@ public class JiraEventHandlerImpl {
              * чтобы не получать петли, когда наш комментарий опять свалится к нам и мы его еще раз добавим.
              */
 
-            handlersMap.getOrDefault(eventData.getEventType(), defaultHandler).handle(companyId, eventData);
+            handlersMap.getOrDefault(eventData.getEventType(), defaultHandler).handle(endpoint, eventData);
         }
         catch (Exception e) {
             logger.error("unable to parse json-data", e);

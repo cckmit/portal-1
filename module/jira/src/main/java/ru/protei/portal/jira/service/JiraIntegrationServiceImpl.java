@@ -52,26 +52,17 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
 
     @Override
-    public CaseObject create(long companyId, JiraHookEventData event) {
-        final Issue issue = event.getIssue();
-        final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(companyId, issue.getProject().getId());
-        if (endpoint == null) {
-            logger.warn("unable to find end-point record for jira-issue project {}, company={}", issue.getProject(), companyId);
-            return null;
-        }
-        return createCaseObject(issue, endpoint, new CachedPersonMapper(personDAO, endpoint, personDAO.get(endpoint.getPersonId())));
+    public CaseObject create(JiraEndpoint endpoint, JiraHookEventData event) {
+        return createCaseObject(event.getIssue(),
+                endpoint,
+                new CachedPersonMapper(personDAO, endpoint, personDAO.get(endpoint.getPersonId()))
+        );
     }
 
     @Override
-    public CaseObject updateOrCreate(long companyId, JiraHookEventData event) {
+    public CaseObject updateOrCreate(JiraEndpoint endpoint, JiraHookEventData event) {
         final Issue issue = event.getIssue();
-        final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(companyId, issue.getProject().getId());
-        if (endpoint == null) {
-            logger.warn("unable to find end-point record for jira-issue project {}, company={}", issue.getProject(), companyId);
-            return null;
-        }
         final Person defaultPerson = personDAO.get(endpoint.getPersonId());
-
         final PersonMapper personMapper = new CachedPersonMapper(personDAO, endpoint, defaultPerson);
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
@@ -94,7 +85,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             caseObjectDAO.saveOrUpdate(caseObj);
 
-            processComments(defaultPerson, issue, caseObj, personMapper, mergeState);
+            processComments(issue, caseObj, personMapper, mergeState);
 
             logger.debug("save case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
 
@@ -124,7 +115,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObjectDAO.insertCase(caseObj);
 
         IssueMergeState mergeState = new IssueMergeState();
-        processComments(null, issue, caseObj, personMapper, mergeState);
+        processComments(issue, caseObj, personMapper, mergeState);
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
         appData.setExtAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
@@ -138,7 +129,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return caseObj;
     }
 
-    private void processComments(Person skipPerson, Issue issue, CaseObject caseObj, PersonMapper personMapper, IssueMergeState state) {
+    private void processComments(Issue issue, CaseObject caseObj, PersonMapper personMapper, IssueMergeState state) {
         logger.debug("process comments on {}", issue.getKey());
 
         if (issue.getComments() == null) {
@@ -152,12 +143,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
                 logger.debug("skip already merged comment id = {}", comment.getId());
                 return;
             }
+
             CaseComment caseComment = convertComment(caseObj, personMapper, comment);
 
-            if (skipPerson != null && skipPerson.getId().equals(caseComment.getAuthorId())) {
-                logger.debug("skip comment {} to prevent recursion", comment.getId());
-                return;
-            }
+//            if (skipPerson != null && skipPerson.getId().equals(caseComment.getAuthorId())) {
+//                logger.debug("skip comment {} to prevent recursion", comment.getId());
+//                return;
+//            }
 
             logger.debug("add new comment, id = {}", comment.getId());
             state.appendComment(comment.getId());

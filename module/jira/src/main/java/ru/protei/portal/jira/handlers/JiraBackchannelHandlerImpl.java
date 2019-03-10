@@ -76,25 +76,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             IssueRestClient issueClient = client.getIssueClient();
 
             if (isRequireGenericDataUpdate(event)){
-                final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
-
-                issueInputParameters
-                        .setSummary(object.getName())
-                        .setDescription(object.getInfo());
-
-                if (event.isCaseStateChanged()) {
-                    String newJiraStatus = statusMapEntryDAO.getJiraStatus(object.getState());
-                    logger.debug("send change state, new jira-state: {}", newJiraStatus);
-                    issueInputParameters.setFieldValue(IssueFieldId.STATUS_FIELD.id, newJiraStatus);
-                }
-
-                issueClient.updateIssue(issueData.key, issueInputParameters.build()).done(
-                        aVoid ->
-                                logger.debug("ok, issue {} was handled, case {}", issueData.key, object.getId())
-                )
-                        .fail(throwable ->
-                                logger.debug("unable to send changes for case {}, issue={}", object.getId(), issueData.key, throwable)
-                        ).claim();
+                generalUpdate(event, object, issueData, issueClient);
             }
 
             if (event.getCaseComment() != null) {
@@ -103,6 +85,28 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                         .claim();
             }
         });
+    }
+
+    private void generalUpdate(AssembledCaseEvent event, CaseObject object, CommonUtils.IssueData issueData, IssueRestClient issueClient) {
+        final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
+
+        issueInputParameters
+                .setSummary(object.getName())
+                .setDescription(object.getInfo());
+
+        if (event.isCaseStateChanged()) {
+            String newJiraStatus = statusMapEntryDAO.getJiraStatus(object.getState());
+            logger.debug("send change state, new jira-state: {}", newJiraStatus);
+            issueInputParameters.setFieldValue(IssueFieldId.STATUS_FIELD.id, newJiraStatus);
+        }
+
+        issueClient.updateIssue(issueData.key, issueInputParameters.build()).done(
+                aVoid ->
+                        logger.debug("ok, issue {} was handled, case {}", issueData.key, object.getId())
+        )
+        .fail(throwable ->
+                logger.debug("unable to send changes for case {}, issue={}", object.getId(), issueData.key, throwable)
+        ).claim();
     }
 
     private boolean isRequireGenericDataUpdate (AssembledCaseEvent event) {
