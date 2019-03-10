@@ -23,6 +23,11 @@ public class IssueMergeState {
         return this;
     }
 
+    public IssueMergeState appendAttachment (String id) {
+        attachmentIds.add(id);
+        return this;
+    }
+
     public IssueMergeState appendAttachment (URI uri) {
         attachmentIds.add(uri.toString());
         return this;
