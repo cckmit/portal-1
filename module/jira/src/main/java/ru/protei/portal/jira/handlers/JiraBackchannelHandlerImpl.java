@@ -1,5 +1,7 @@
 package ru.protei.portal.jira.handlers;
 
+import com.atlassian.jira.rest.client.api.IssueRestClient;
+import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueFieldId;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
@@ -8,8 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
+import ru.protei.portal.core.model.dao.JiraEndpointDAO;
+import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
@@ -33,22 +37,31 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
         final CaseObject object = event.getCaseObject();
 
-        final long caseId = event.getCaseObject().getId();
+        if (object.isDeleted()) {
+            logger.debug("case object {} is deleted, skip", object.defGUID());
+            return;
+        }
 
-        logger.debug("Modified object has id: {}", caseId);
+        if (object.isPrivateCase()) {
+            logger.debug("case object {} is private, skip", object.defGUID());
+            return;
+        }
 
-        ExternalCaseAppData extCaseData = externalCaseAppDAO.get(caseId);
-        if (extCaseData == null || extCaseData.getExtAppCaseId() == null) {
-            logger.debug("case {} has no ext-app-id", caseId);
+//        final long caseId = object.getId();
+
+        logger.debug("Modified object has id: {}", object.getId());
+
+        ExternalCaseAppData extCaseData = externalCaseAppDAO.get(object.getId());
+        if (extCaseData.getExtAppCaseId() == null) {
+            logger.debug("case {} has no ext-case-id, skip", object.getId());
             return;
         }
 
         final CommonUtils.IssueData issueData = CommonUtils.convert(extCaseData);
 
-
-        final JiraEndpoint endpoint = endpointDAO.getByProjectId(issueData.endpointId);
+        final JiraEndpoint endpoint = endpointDAO.get(issueData.endpointId);
         if (endpoint == null) {
-            logger.debug("Endpoint was not found for projectId {}, case = {}", issueData.projectId, caseId);
+            logger.debug("Endpoint was not found for projectId {}, case = {}", issueData.projectId, object.getId());
             return;
         }
 
@@ -60,37 +73,51 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 return;
             }
 
-            final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
+            IssueRestClient issueClient = client.getIssueClient();
 
-            issueInputParameters
-                    .setSummary(object.getName())
-                    .setDescription(object.getInfo())
-                    .setFieldValue (IssueFieldId.STATUS_FIELD.id, statusMapEntryDAO.getJiraStatus(object.getState()));
+            if (isRequireGenericDataUpdate(event)){
+                final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
 
-            client.getIssueClient().updateIssue(issueData.key, issueInputParameters.build()).done(
-                    aVoid -> logger.debug("ok, issue {} was handled, case {}", issueData.key, caseId)
-                    //logger.debug("Copying case object changes to jira issue");
-                    //updateComments(issue, event.getCaseComment(), endpoint);
-            )
-            .fail(throwable ->
-                logger.debug("unable to send changes for case {}, issue={}", caseId, issueData.key, throwable)
-            )
-            ;
+                issueInputParameters
+                        .setSummary(object.getName())
+                        .setDescription(object.getInfo());
+
+                if (event.isCaseStateChanged()) {
+                    String newJiraStatus = statusMapEntryDAO.getJiraStatus(object.getState());
+                    logger.debug("send change state, new jira-state: {}", newJiraStatus);
+                    issueInputParameters.setFieldValue(IssueFieldId.STATUS_FIELD.id, newJiraStatus);
+                }
+
+                issueClient.updateIssue(issueData.key, issueInputParameters.build()).done(
+                        aVoid ->
+                                logger.debug("ok, issue {} was handled, case {}", issueData.key, object.getId())
+                )
+                        .fail(throwable ->
+                                logger.debug("unable to send changes for case {}, issue={}", object.getId(), issueData.key, throwable)
+                        ).claim();
+            }
+
+            if (event.getCaseComment() != null) {
+                logger.debug("add comment {} to issue {}", event.getCaseComment().getId(), issue.getKey());
+                issueClient.addComment(issue.getCommentsUri(), Comment.valueOf(event.getCaseComment().getText()))
+                        .claim();
+            }
         });
     }
 
-    private void updateComments(Issue issue, CaseComment comment, JiraEndpoint endpoint) {
-
+    private boolean isRequireGenericDataUpdate (AssembledCaseEvent event) {
+        return event.isInfoChanged() || event.isNameChanged() || event.isCaseStateChanged();
     }
+
 
     @Autowired
     private JiraEndpointDAO endpointDAO;
 
-    @Autowired
-    private CaseObjectDAO caseObjectDAO;
+//    @Autowired
+//    private CaseObjectDAO caseObjectDAO;
 
-    @Autowired
-    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
+//    @Autowired
+//    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
 
     @Autowired
     private JiraStatusMapEntryDAO statusMapEntryDAO;

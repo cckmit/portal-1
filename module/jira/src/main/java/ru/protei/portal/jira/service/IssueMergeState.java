@@ -4,13 +4,14 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 public class IssueMergeState {
     Set<Long> commentIds;
-    Set<Long> attachmentIds;
+    Set<String> attachmentIds;
 
     public IssueMergeState () {
         commentIds = new HashSet<>();
@@ -22,8 +23,8 @@ public class IssueMergeState {
         return this;
     }
 
-    public IssueMergeState appendAttachment (long id) {
-        attachmentIds.add(id);
+    public IssueMergeState appendAttachment (URI uri) {
+        attachmentIds.add(uri.toString());
         return this;
     }
 
@@ -44,8 +45,12 @@ public class IssueMergeState {
         return commentIds.contains(id);
     }
 
-    public boolean hasAttachment (long id) {
+    public boolean hasAttachment (String id) {
         return attachmentIds.contains(id);
+    }
+
+    public boolean hasAttachment (URI uri) {
+        return attachmentIds.contains(uri.toString());
     }
 
     public static String toJSON (IssueMergeState state) {
@@ -71,7 +76,7 @@ public class IssueMergeState {
             JSONObject json = new JSONObject(val);
 
             readArrayOfLong(json, "cid", state.commentIds);
-            readArrayOfLong(json, "aid", state.attachmentIds);
+            readArrayOfString(json, "aid", state.attachmentIds);
 
             return state;
         }
@@ -88,5 +93,14 @@ public class IssueMergeState {
         JSONArray array = obj.getJSONArray(key);
         for (int i = 0; i < array.length(); i++)
             to.add(array.getLong(i));
+    }
+
+    private static void readArrayOfString (JSONObject obj, String key, Collection<String> to) throws JSONException {
+        if (!obj.has(key))
+            return;
+
+        JSONArray array = obj.getJSONArray(key);
+        for (int i = 0; i < array.length(); i++)
+            to.add(array.getString(i));
     }
 }

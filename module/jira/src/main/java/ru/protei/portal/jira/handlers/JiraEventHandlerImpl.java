@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
@@ -18,11 +19,19 @@ import java.util.function.Consumer;
 public class JiraEventHandlerImpl {
     private static final Logger logger = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
 
+    interface JiraEventHandler {
+        void handle (long companyId, JiraHookEventData event);
+    }
+
     @Autowired
     JiraIntegrationService integrationService;
 
-    Map<JiraHookEventType, Consumer<JiraHookEventData>> handlersMap;
-    Consumer<JiraHookEventData> defaultHandler;
+    @Autowired
+    PortalConfig portalConfig;
+
+
+    Map<JiraHookEventType, JiraEventHandler> handlersMap;
+    JiraEventHandler defaultHandler;
 
     public JiraEventHandlerImpl() {
         logger.debug("jira webhook handler installed");
@@ -32,20 +41,26 @@ public class JiraEventHandlerImpl {
     @PostConstruct
     private void init () {
         handlersMap = new HashMap<>();
-        handlersMap.put(JiraHookEventType.ISSUE_CREATED, evt -> integrationService.create(evt));
-        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, evt -> integrationService.updateOrCreate(evt));
-        handlersMap.put(JiraHookEventType.COMMENT_CREATED, evt -> logger.debug("skip comment-created event"));
-        defaultHandler = evt -> logger.debug("has no handler for event {}, skip", evt.getEventType());
+        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (companyId, event) -> integrationService.create(companyId, event));
+        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (companyId, event) -> integrationService.updateOrCreate(companyId, event));
+        handlersMap.put(JiraHookEventType.COMMENT_CREATED, (companyId, event) -> logger.debug("skip comment-created event"));
+        defaultHandler = (companyId, evt) -> logger.debug("has no handler for event {}, skip", evt.getEventType());
     }
 
 
-    @PostMapping("/webhook")
+    @PostMapping("/jira/{companyId}/wh")
     public void onIssueEvent(@RequestBody String jsonString,
+                             @PathVariable("companyId") long companyId,
                              @RequestHeader(value = "Host",required = false) String fromHost,
                              @RequestHeader(value = "X-Real-IP", required = false)String realIP,
                              HttpServletRequest request
                              ) {
-        logger.info("got request from JIRA, src-ip={}, host={}, query={}", realIP, fromHost, request.getQueryString());
+        if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
+            logger.debug("Jira integration is disabled, nothing happens");
+            return;
+        }
+
+        logger.info("got request from JIRA, companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
         logger.debug("data: {}", jsonString);
 
         try {
@@ -76,7 +91,7 @@ public class JiraEventHandlerImpl {
              * чтобы не получать петли, когда наш комментарий опять свалится к нам и мы его еще раз добавим.
              */
 
-            handlersMap.getOrDefault(eventData.getEventType(), defaultHandler).accept(eventData);
+            handlersMap.getOrDefault(eventData.getEventType(), defaultHandler).handle(companyId, eventData);
         }
         catch (Exception e) {
             logger.error("unable to parse json-data", e);

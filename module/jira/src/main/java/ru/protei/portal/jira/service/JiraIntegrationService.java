@@ -7,8 +7,8 @@ import ru.protei.portal.jira.utils.JiraHookEventData;
 public interface JiraIntegrationService {
 
     @Transactional
-    CaseObject create (JiraHookEventData event);
+    CaseObject create (long companyId, JiraHookEventData event);
 
     @Transactional
-    CaseObject updateOrCreate(JiraHookEventData event);
+    CaseObject updateOrCreate(long companyId, JiraHookEventData event);
 }

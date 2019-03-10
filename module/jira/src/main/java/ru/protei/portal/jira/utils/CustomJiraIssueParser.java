@@ -55,7 +55,7 @@ public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
         final String summary = getFieldStringValue(issueJson, SUMMARY_FIELD.id);
         final String description = getOptionalFieldStringUnisex(issueJson, DESCRIPTION_FIELD.id);
 
-        final Collection<Attachment> attachments = Collections.emptyList();// parseOptionalArray(issueJson, new JsonWeakParserForJsonObject<Attachment>(attachmentJsonParser), FIELDS, ATTACHMENT_FIELD.id);
+        final Collection<Attachment> attachments = parseOptionalArray(issueJson, attachmentJsonParser, FIELDS, ATTACHMENT_FIELD.id);
 //        final Collection<IssueField> fields = parseFields(issueJson);
 
         final IssueType issueType = issueTypeJsonParser.parse(getFieldUnisex(issueJson, ISSUE_TYPE_FIELD.id));

@@ -20,9 +20,10 @@ public class CachedPersonMapper implements PersonMapper {
     private Person defaultEntryPointUser;
     private final Map<String, Person> index;
 
-    public CachedPersonMapper(PersonDAO personDAO, JiraEndpoint endpoint) {
+    public CachedPersonMapper(PersonDAO personDAO, JiraEndpoint endpoint, Person defUser) {
         this.personDAO = personDAO;
         this.endpoint = endpoint;
+        this.defaultEntryPointUser = defUser;
         this.index = new HashMap<>();
     }
 
