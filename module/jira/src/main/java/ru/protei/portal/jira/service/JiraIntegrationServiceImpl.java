@@ -67,6 +67,11 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
         if (caseObj != null) {
+            if (event.getUser().getName().equals(endpoint.getServerLogin())) {
+                logger.info("skip event to prevent recursion, author is tech-login");
+                return null;
+            }
+
             ExternalCaseAppData appData = externalCaseAppDAO.get(caseObj.getId());
             logger.debug("get case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
 

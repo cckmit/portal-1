@@ -85,11 +85,6 @@ public class JiraEventHandlerImpl {
                 return;
             }
 
-            if (eventData.getUser().getName().equals(endpoint.getServerLogin())) {
-                logger.info("skip event to prevent recursion, author is tech-login");
-                return;
-            }
-
             logger.debug("parsed data: {}", eventData.toDebugString());
 
             /**
