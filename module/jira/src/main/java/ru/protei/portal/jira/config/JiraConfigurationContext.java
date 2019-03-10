@@ -9,6 +9,7 @@ import ru.protei.portal.jira.handlers.JiraBackchannelHandler;
 import ru.protei.portal.jira.handlers.JiraBackchannelHandlerImpl;
 import ru.protei.portal.jira.handlers.JiraEventHandlerImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
+import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
 
 @Configuration
 @EnableWebMvc
@@ -26,7 +27,7 @@ public class JiraConfigurationContext {
 
     @Bean
     public JiraIntegrationService getJiraService () {
-        return new JiraIntegrationService();
+        return new JiraIntegrationServiceImpl();
     }
 
     @Bean
