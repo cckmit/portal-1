@@ -4,21 +4,26 @@ import com.atlassian.jira.rest.client.api.IssueRestClient;
 import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueFieldId;
+import com.atlassian.jira.rest.client.api.domain.input.AttachmentInput;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.controller.cloud.FileController;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.ExternalCaseAppData;
-import ru.protei.portal.core.model.ent.JiraEndpoint;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     @Autowired
@@ -26,6 +31,9 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
     @Autowired
     PersonDAO personDAO;
+
+    @Autowired
+    FileStorage fileStorage;
 
     @Override
     public void handle(AssembledCaseEvent event) {
@@ -84,7 +92,26 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 issueClient.addComment(issue.getCommentsUri(), Comment.valueOf(event.getCaseComment().getText()))
                         .claim();
             }
+
+            if (event.getAddedAttachments() != null) {
+                issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(event.getAddedAttachments())).claim();
+            }
         });
+    }
+
+    private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {
+        List<AttachmentInput> result = new ArrayList<>(ourAttachments.size());
+
+        for (Attachment a : ourAttachments) {
+            FileStorage.File file =  fileStorage.getFile(a.getExtLink());
+            if (file == null) {
+                logger.debug("unable to get file from storage for link : {}", a.getExtLink());
+                continue;
+            }
+            result.add(new AttachmentInput(a.getFileName(), file.getData()));
+        }
+
+        return result.toArray(new AttachmentInput[]{});
     }
 
     private void generalUpdate(AssembledCaseEvent event, CaseObject object, CommonUtils.IssueData issueData, IssueRestClient issueClient) {
