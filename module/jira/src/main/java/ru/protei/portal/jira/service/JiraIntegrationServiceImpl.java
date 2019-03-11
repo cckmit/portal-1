@@ -8,13 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamSource;
-import ru.protei.portal.core.controller.cloud.FileController;
+import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.DateUtils;
+import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
@@ -23,6 +26,7 @@ import ru.protei.portal.jira.utils.JiraHookEventData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +62,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     JiraClientFactory clientFactory;
 
     @Autowired
-    FileController fileController;
+    FileStorage fileStorage;
+
+    @Autowired
+    AttachmentService attachmentService;
 
 
     @Override
@@ -79,6 +86,16 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         if (caseObj != null) {
             if (event.getUser().getName().equals(endpoint.getServerLogin())) {
                 logger.info("skip event to prevent recursion, author is tech-login");
+                return null;
+            }
+
+            if (caseObj.isDeleted()) {
+                logger.debug("our case {} is marked as deleted, skip event", caseObj.defGUID());
+                return null;
+            }
+
+            if (caseObj.isPrivateCase()) {
+                logger.debug("our case {} is marked as private, skip event", caseObj.defGUID());
                 return null;
             }
 
@@ -215,7 +232,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
                     ru.protei.portal.core.model.ent.Attachment a = convertAttachment(personMapper, jiraAttachment);
 
-                    fileController.saveAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject.getId());
+                    storeAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject.getId());
                 }
                 catch (Throwable e) {
                     logger.error("unable to store attachment {}", jiraAttachment.getContentUri(), e);
@@ -223,6 +240,39 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             });
         }
     }
+
+
+    private String generateUniqueFileName(String filename){
+        return generateUniqueName() + "_" + filename;
+    }
+
+    private String generateUniqueName() {
+        return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
+    }
+
+    private void storeAttachment (ru.protei.portal.core.model.ent.Attachment attachment, InputStreamSource content, long caseId) throws Exception {
+        try (InputStream contentStream = content.getInputStream()) {
+            String filePath =  fileStorage.save(
+                    generateUniqueFileName(attachment.getFileName()),
+                    new FileStream(contentStream, attachment.getDataSize(), attachment.getMimeType())
+            );
+
+            attachment.setExtLink(filePath);
+        }
+
+        if(attachmentService.saveAttachment(attachment).isError()) {
+            fileStorage.deleteFile(attachment.getExtLink());
+            throw new SQLException("attachment not saved");
+        }
+
+        CoreResponse<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
+        if(caseAttachId.isError())
+            throw new SQLException("unable to bind attachment to case");
+
+        logger.debug("new attachment id {}", caseAttachId.getData());
+    }
+
+
 
     private ru.protei.portal.core.model.ent.Attachment convertAttachment(PersonMapper personMapper, Attachment jiraAttachment) {
         ru.protei.portal.core.model.ent.Attachment a = new ru.protei.portal.core.model.ent.Attachment();

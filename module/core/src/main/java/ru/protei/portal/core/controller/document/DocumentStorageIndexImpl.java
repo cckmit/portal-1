@@ -62,7 +62,8 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
     @PreDestroy
     public void destroy() {
         try {
-            indexWriter.close();
+            if (indexWriter != null)
+                indexWriter.close();
         } catch (IOException e) {
             log.error("Failed to close index writer", e);
         }

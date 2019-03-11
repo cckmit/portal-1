@@ -1,4 +1,4 @@
-package ru.protei.portal.jira.handlers;
+package ru.protei.portal.jira.service;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.slf4j.Logger;
@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
-import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
 
@@ -16,7 +15,6 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 @RestController
 public class JiraEventHandlerImpl {

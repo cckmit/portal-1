@@ -1,4 +1,4 @@
-package ru.protei.portal.jira.handlers;
+package ru.protei.portal.jira.service;
 
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.core.event.AssembledCaseEvent;

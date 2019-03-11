@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
-import ru.protei.portal.jira.handlers.JiraBackchannelHandler;
-import ru.protei.portal.jira.handlers.JiraBackchannelHandlerImpl;
-import ru.protei.portal.jira.handlers.JiraEventHandlerImpl;
+import ru.protei.portal.jira.service.JiraBackchannelHandler;
+import ru.protei.portal.jira.service.JiraBackchannelHandlerImpl;
+import ru.protei.portal.jira.service.JiraEventHandlerImpl;
 import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.service.JiraIntegrationServiceImpl;
 
