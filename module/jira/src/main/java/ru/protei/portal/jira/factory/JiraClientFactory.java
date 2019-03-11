@@ -4,6 +4,8 @@ import com.atlassian.jira.rest.client.api.JiraRestClient;
 import org.apache.commons.io.IOUtils;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 
+import java.util.Collection;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -18,6 +20,10 @@ public interface JiraClientFactory {
         finally {
             IOUtils.closeQuietly(client);
         }
+    }
+
+    default <D> void forEach (JiraEndpoint endpoint, Collection<D> items, BiConsumer<JiraRestClient,D> consumer) {
+        run(endpoint, client -> items.forEach(data -> consumer.accept(client, data)));
     }
 
     default <R> R invoke (JiraEndpoint endpoint, Function<JiraRestClient, R> function) {

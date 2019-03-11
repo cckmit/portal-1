@@ -158,8 +158,14 @@ public class FileController {
         if(caseId == null)
             throw new RuntimeException("Case-ID is required");
 
-        String filePath = saveFileStream(content.getInputStream(), attachment.getFileName(), fileSize, contentType);
-        attachment.setExtLink(filePath);
+        /**
+         * судя по всему, у нас раньше не закрывался inputStream
+         * добавляю в блок try, для гарантированного закрытия
+         */
+        try (InputStream contentStream = content.getInputStream()) {
+            String filePath = saveFileStream(contentStream, attachment.getFileName(), fileSize, contentType);
+            attachment.setExtLink(filePath);
+        }
 
         if(attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());

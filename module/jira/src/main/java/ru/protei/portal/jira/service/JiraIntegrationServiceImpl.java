@@ -101,6 +101,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObjectDAO.saveOrUpdate(caseObj);
 
             processComments(issue, caseObj, personMapper, mergeState);
+            processAttachments(endpoint, issue, caseObj, mergeState, personMapper);
+
+            appData.setExtAppData(mergeState.toString());
 
             logger.debug("save case external data, ext-id = {}, case-id = {}, sync-state = {}", appData.getExtAppCaseId(), appData.getId(), appData.getExtAppData());
 
@@ -131,6 +134,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         IssueMergeState mergeState = new IssueMergeState();
         processComments(issue, caseObj, personMapper, mergeState);
+        processAttachments(endpoint, issue, caseObj, mergeState, personMapper);
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
         appData.setExtAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
@@ -184,37 +188,41 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
 
-//    private void processAttachments (JiraEndpoint endpoint, Issue issue, CaseObject caseObject, IssueMergeState state, PersonMapper personMapper) {
-//        if (issue.getAttachments() == null) {
-//            logger.debug("issue {} has no attachments, skip merging", issue.getKey());
-//            return;
-//        }
-//
-//        List<Attachment> jiraAttachments = new ArrayList<>();
-//
-//        issue.getAttachments().forEach(attachment -> {
-//            if (state.hasAttachment(attachment.getSelf())) {
-//                logger.debug("skip attachment {}", attachment.getSelf());
-//            }
-//            else {
-//                jiraAttachments.add(attachment);
-//            }
-//        });
-//
-//        if (!jiraAttachments.isEmpty()) {
-//            logger.debug("load attachments for issue {}, size={}", issue.getKey(), jiraAttachments.size());
-//            clientFactory.run(endpoint, client-> {
-//                jiraAttachments.forEach(jiraAttachment -> {
-//                    logger.debug("load attachment issue={}, uri={}", issue.getKey(), jiraAttachment.getContentUri());
-//
-//                    ru.protei.portal.core.model.ent.Attachment a = convertAttachment(personMapper, jiraAttachment);
-//
-//                    if (fileController.saveAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject.getId()) != null)
-//                        state.appendAttachment(jiraAttachment.getSelf());
-//                });
-//            });
-//        }
-//    }
+    private void processAttachments (JiraEndpoint endpoint, Issue issue, CaseObject caseObject, IssueMergeState state, PersonMapper personMapper) {
+        if (issue.getAttachments() == null) {
+            logger.debug("issue {} has no attachments", issue.getKey());
+            return;
+        }
+
+        List<Attachment> jiraAttachments = new ArrayList<>();
+
+        issue.getAttachments().forEach(attachment -> {
+            if (state.hasAttachment(attachment.getSelf())) {
+                logger.debug("skip attachment {} (exists)", attachment.getSelf());
+            }
+            else {
+                jiraAttachments.add(attachment);
+                state.appendAttachment(attachment.getSelf());
+            }
+        });
+
+        if (!jiraAttachments.isEmpty()) {
+            logger.debug("load attachments for issue {}, size={}", issue.getKey(), jiraAttachments.size());
+
+            clientFactory.forEach(endpoint, jiraAttachments, (client, jiraAttachment) -> {
+                try {
+                    logger.debug("load attachment issue={}, uri={}", issue.getKey(), jiraAttachment.getContentUri());
+
+                    ru.protei.portal.core.model.ent.Attachment a = convertAttachment(personMapper, jiraAttachment);
+
+                    fileController.saveAttachment(a, new JiraAttachmentSource(client, jiraAttachment), caseObject.getId());
+                }
+                catch (Throwable e) {
+                    logger.error("unable to store attachment {}", jiraAttachment.getContentUri(), e);
+                }
+            });
+        }
+    }
 
     private ru.protei.portal.core.model.ent.Attachment convertAttachment(PersonMapper personMapper, Attachment jiraAttachment) {
         ru.protei.portal.core.model.ent.Attachment a = new ru.protei.portal.core.model.ent.Attachment();
@@ -231,7 +239,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     class JiraAttachmentSource implements InputStreamSource {
 
         JiraRestClient client;
-//        Attachment attachment;
         URI contentURI;
 
         public JiraAttachmentSource(JiraRestClient client, Attachment attachment) {
