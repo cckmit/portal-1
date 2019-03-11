@@ -210,4 +210,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public Person getInitiator() {
         return initiator;
     }
+
+    public boolean isCoreModuleEvent () {
+        return serviceModule == null || serviceModule == ServiceModule.GENERAL;
+    }
 }

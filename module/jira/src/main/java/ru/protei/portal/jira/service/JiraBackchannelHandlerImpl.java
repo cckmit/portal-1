@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
@@ -36,6 +37,11 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         logger.debug("Handling action on jira-related issue in Portal-CRM");
         if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
             logger.debug("Jira integration is disabled, nothing happens");
+            return;
+        }
+
+        if (!event.isCoreModuleEvent()) {
+            logger.debug("event from plugin-modules, skip handling");
             return;
         }
 
