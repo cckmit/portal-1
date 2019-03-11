@@ -213,7 +213,7 @@ public class CustomJiraIssueParser implements JsonObjectParser<Issue> {
 
     private Collection<IssueField> parseFields(final JSONObject issueJson) throws JSONException {
         final JSONObject json = issueJson.getJSONObject(FIELDS);
-        if (json.has(CUSTOM_FIELD_SEVERITY)) {
+        if (!json.isNull(CUSTOM_FIELD_SEVERITY)) {
             JSONObject severity = json.getJSONObject(CUSTOM_FIELD_SEVERITY);
             return Collections.singleton(new IssueField(severity.getString("id"), SEVERITY_CODE_NAME, "string", severity.getString("value")));
         }
