@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -21,12 +20,13 @@ import javax.inject.Inject;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Реализация сервиса управления проектами
  */
 public class TemplateServiceImpl implements TemplateService {
-    private static Logger log = LoggerFactory.getLogger(TemplateServiceImpl.class);
+    private static Logger log = getLogger(TemplateServiceImpl.class);
 
     Configuration templateConfiguration;
 
@@ -198,11 +198,13 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    private String escapeTextComment(String text) {
+    String escapeTextComment( String text) {
         if (text == null) {
             return null;
         }
-        text = markdownServer.plain2escaped2markdown( text );
+        text = HTMLHelper.htmlEscape(text);
+        text = markdownServer.plain2markdown(text);
+        text = replaceLineBreaks( text );
         return text;
     }
 
@@ -219,7 +221,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        return text.replaceAll("(\r\n|\n|\r)", "<br/>");
+        return text.replaceAll("((?<!<br \\/>)[\r\n|\n|\r])", "<br/>");
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){

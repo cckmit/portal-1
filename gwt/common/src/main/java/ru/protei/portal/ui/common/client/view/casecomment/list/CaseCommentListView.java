@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttach
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeTextBox;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -160,6 +161,11 @@ public class CaseCommentListView
         if (activity != null) {
             activity.onCommentChanged(event.getValue());
         }
+    }
+
+    @UiHandler("comment")
+    public void onBase64Pasted(PasteEvent event) {
+        fileUploader.uploadBase64File(event.getJson());
     }
 
     @Override

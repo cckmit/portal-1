@@ -1,10 +1,7 @@
 package ru.protei.portal.core.model.helper;
 
-import ru.protei.portal.core.model.view.PersonShortView;
-
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -20,6 +17,10 @@ public class CollectionUtils {
 
     public static boolean isEmpty( Iterable iterable ) {
         return (null == iterable || !iterable.iterator().hasNext());
+    }
+
+    public static <T> T getFirst( Iterable<T> iterable ) {
+        return isEmpty( iterable ) ? null : iterable.iterator().next();
     }
 
     public static <T> Stream<T> stream(Collection<T> collection) {

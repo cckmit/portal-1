@@ -57,7 +57,7 @@ public class ExcelReportWriter implements
     public int[] getColumnsWidth() {
         return new int[] {
                 3650, 3430, 8570,
-                4590, 4200, 4200,
+                4590, 4200, 4200, 4200,
                 3350, 4600, 4200,
                 5800
         };
@@ -67,7 +67,7 @@ public class ExcelReportWriter implements
     public String[] getColumnNames() {
         return new String[] {
                 "ir_caseno", "ir_private", "ir_name",
-                "ir_company", "ir_performer", "ir_manager",
+                "ir_company", "ir_product", "ir_performer", "ir_manager",
                 "ir_importance", "ir_state", "ir_date_created",
                 "ir_actual_work_time"
         };
@@ -79,7 +79,7 @@ public class ExcelReportWriter implements
             // summary
             return new Object[] {
                     "", "", "",
-                    "", "", "",
+                    "", "", "", "",
                     "", "", lang.get("summary") + ":",
                     timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
             };
@@ -89,6 +89,7 @@ public class ExcelReportWriter implements
                 lang.get(object.isCasePrivateCase() ? "yes" : "no"),
                 HelperFunc.isNotEmpty(object.getCaseName()) ? object.getCaseName() : "",
                 HelperFunc.isNotEmpty(object.getCaseCompanyName()) ? object.getCaseCompanyName() : "",
+                HelperFunc.isNotEmpty(object.getProductName()) ? object.getProductName() : "",
                 HelperFunc.isNotEmpty(object.getAuthorDisplayName()) ? object.getAuthorDisplayName() : "",
                 HelperFunc.isNotEmpty(object.getCaseManagerDisplayName()) ? object.getCaseManagerDisplayName() : "",
                 object.getCaseImpLevel() != null ? lang.get("importance_" + object.getCaseImpLevel()) : "",

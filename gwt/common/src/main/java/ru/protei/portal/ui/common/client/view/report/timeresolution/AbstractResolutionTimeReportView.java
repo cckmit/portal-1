@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.report;
+package ru.protei.portal.ui.common.client.view.report.timeresolution;
 
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
@@ -9,11 +9,9 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 
 import java.util.Set;
 
-public interface AbstractCaseCompletionTimeReportView extends IsWidget {
+public interface AbstractResolutionTimeReportView extends IsWidget {
 
     void setActivity( AbstractIssueFilterParamActivity activity );
-
-    AbstractIssueFilterParamActivity getActivity();
 
     HasValue<DateInterval> dateRange();
 
