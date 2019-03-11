@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 /**
  * Button селектор с продуктами
@@ -13,7 +14,8 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
-    public void init( DevUnitEditModel model) {
+    public void init( ProductModel model) {
+        model.subscribe(this, En_DevUnitState.ACTIVE, null);
         setSelectorModel( model );
         setSearchEnabled( true );
         setSearchAutoFocus( true );

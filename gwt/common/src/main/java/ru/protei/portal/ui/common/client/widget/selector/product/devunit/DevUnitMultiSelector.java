@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,8 @@ import java.util.Objects;
 public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements SelectorWithModel< ProductShortView > {
 
     @Inject
-    public void init(DevUnitFilterModel model, Lang lang ) {
+    public void init(ProductModel model, Lang lang ) {
+        model.subscribe(this, null, null);
         setSelectorModel(model);
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
