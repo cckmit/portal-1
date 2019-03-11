@@ -337,7 +337,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         if (jiraPriorityEntry != null) {
             infoValue.append("\r\n")
                     .append("SLA: ")
-                    .append(jiraPriorityEntry.getLocalPriorityName());
+                    .append(jiraPriorityEntry.getSlaInfo());
         }
 
         infoValue.append("\r\n").append(issue.getDescription());

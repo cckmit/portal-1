@@ -26,12 +26,12 @@ public class FieldMappingTest {
     @Test
     public void testStatusMapping () {
         Map<String, En_CaseState> expectedMapping = new HashMap<>();
-        expectedMapping.put("authorized", En_CaseState.CREATED);
-        expectedMapping.put("studying", En_CaseState.OPENED);
-        expectedMapping.put("request to customer", En_CaseState.INFO_REQUEST);
-        expectedMapping.put("postpone", En_CaseState.PAUSED);
-        expectedMapping.put("soft close", En_CaseState.DONE);
-        expectedMapping.put("nothing to change", En_CaseState.VERIFIED);
+        expectedMapping.put("Authorized", En_CaseState.CREATED);
+        expectedMapping.put("Studying", En_CaseState.OPENED);
+        expectedMapping.put("Request to customer", En_CaseState.INFO_REQUEST);
+        expectedMapping.put("Postpone", En_CaseState.PAUSED);
+        expectedMapping.put("Soft Close", En_CaseState.DONE);
+        expectedMapping.put("Nothing to change", En_CaseState.VERIFIED);
 
         expectedMapping.forEach((key,state) -> {
             Assert.assertEquals(state, statusMapEntryDAO.getByJiraStatus(1, key));

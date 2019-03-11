@@ -3,10 +3,7 @@ package ru.protei.portal.test.jira;
 import com.atlassian.jira.rest.client.api.GetCreateIssueMetadataOptionsBuilder;
 import com.atlassian.jira.rest.client.api.JiraRestClient;
 import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.api.domain.CustomFieldOption;
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import com.atlassian.jira.rest.client.api.domain.Transition;
-import com.atlassian.jira.rest.client.api.domain.User;
+import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
 import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
@@ -25,7 +22,8 @@ public class Transitions {
 
         User user = client.getUserClient().getUser("protei_tech_user").claim();
 
-//        client.getIssueClient().getCreateIssueMetadata(new GetCreateIssueMetadataOptionsBuilder().withExpandedIssueTypesFields().build()).claim()
+        client.getIssueClient().getCreateIssueMetadata(new GetCreateIssueMetadataOptionsBuilder().withExpandedIssueTypesFields().build()).claim()
+                .forEach(cimProject -> cimProject.getIssueTypes().forEach(it->it.getFields().get(IssueFieldId.STATUS_FIELD.id).getAllowedValues()));
 //        .forEach(cimProject ->
 //                cimProject.getIssueTypes().forEach(
 //                        it -> it.getFields().get(CustomJiraIssueParser.CUSTOM_FIELD_SEVERITY).getAllowedValues()
@@ -36,6 +34,7 @@ public class Transitions {
 //        System.out.println(user.getEmailAddress());
 //        System.out.println(user.getTimezone());
 
+        /*
         Issue issue = client.getIssueClient().getIssue("PRT-2").claim();
 
         // change severity
@@ -48,5 +47,6 @@ public class Transitions {
         Iterable<Transition> transitions = client.getIssueClient().getTransitions(issue).claim();
         transitions.forEach(transition -> System.out.println(transition));
         client.getIssueClient().transition(issue, new TransitionInput(transitions.iterator().next().getId())).claim();
+        */
     }
 }

@@ -25,6 +25,9 @@ public final class JiraPriorityMapEntry {
     @JdbcColumn(name = "jira_priority_name")
     private String jiraPriorityName;
 
+    @JdbcColumn(name = "jira_sla_info")
+    private String slaInfo;
+
     public JiraPriorityMapEntry() {
     }
 
@@ -79,5 +82,13 @@ public final class JiraPriorityMapEntry {
 
     public void setJiraPriorityName(String jiraPriorityName) {
         this.jiraPriorityName = jiraPriorityName;
+    }
+
+    public String getSlaInfo() {
+        return slaInfo;
+    }
+
+    public void setSlaInfo(String slaInfo) {
+        this.slaInfo = slaInfo;
     }
 }

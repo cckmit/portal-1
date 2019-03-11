@@ -91,4 +91,5 @@
   <include file="2019-02-25-nexign-integration.xml" relativeToChangelogFile="true" />
   <include file="2019-03-06-nexign-integration.xml" relativeToChangelogFile="true" />
   <include file="2019-03-11-nexign-integration.xml" relativeToChangelogFile="true" />
+  <include file="2019-03-11-nexign-integration-2.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>
