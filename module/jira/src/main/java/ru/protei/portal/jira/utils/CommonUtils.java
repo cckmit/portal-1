@@ -81,15 +81,15 @@ public class CommonUtils {
 
     public static String getIssueSeverity (Issue issue) {
         IssueField field = issue.getFieldByName(CustomJiraIssueParser.SEVERITY_CODE_NAME);
-        return field == null ? null : dirtyHackForSeverity(field.getValue().toString());
+        return field == null ? null : field.getValue().toString();
     }
 
-    // значение содержит строковое описание, из которого нужно получить число
-    private static Pattern pattern = Pattern.compile(".*([0-9]{2}).*");
-    public static String dirtyHackForSeverity (String value) {
-        Matcher m = pattern.matcher(value);
-        return m.matches() ? m.group(1) : "0";
-    }
+//    // значение содержит строковое описание, из которого нужно получить число
+//    private static Pattern pattern = Pattern.compile(".*([0-9]{2}).*");
+//    public static String dirtyHackForSeverity (String value) {
+//        Matcher m = pattern.matcher(value);
+//        return m.matches() ? m.group(1) : "0";
+//    }
 
 //
 //    private static final Map<String, En_CaseType> mappingOfTypes = new HashMap<String, En_CaseType>() {{

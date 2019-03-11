@@ -7,12 +7,12 @@ import ru.protei.portal.jira.utils.CommonUtils;
 
 public class UtilityTest {
 
-    @Test
-    public void testSeverityParse () {
-        Assert.assertEquals("10", CommonUtils.dirtyHackForSeverity("10-Critical"));
-        Assert.assertEquals("01", CommonUtils.dirtyHackForSeverity("01 - Emergency, caused by reason beyond control of Peter-Service"));
-        Assert.assertEquals("50", CommonUtils.dirtyHackForSeverity("50 - Basic"));
-    }
+//    @Test
+//    public void testSeverityParse () {
+//        Assert.assertEquals("10", CommonUtils.dirtyHackForSeverity("10-Critical"));
+//        Assert.assertEquals("01", CommonUtils.dirtyHackForSeverity("01 - Emergency, caused by reason beyond control of Peter-Service"));
+//        Assert.assertEquals("50", CommonUtils.dirtyHackForSeverity("50 - Basic"));
+//    }
 
     @Test
     public void testIssueStateParse () {

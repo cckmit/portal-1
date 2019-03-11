@@ -106,14 +106,14 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             caseObj.setModified(DateUtils.max(issue.getUpdateDate().toDate(), caseObj.getModified()));
             caseObj.setExtAppType("jira");
-
-            updateCaseState(issue, caseObj);
-            updateCasePriority(issue, caseObj);
-
             caseObj.setName(issue.getSummary());
-            caseObj.setInfo(issue.getDescription());
             caseObj.setLocal(0);
             caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
+
+
+            updateCaseState(endpoint, issue, caseObj);
+            updatePriorityAndInfo(endpoint, issue, caseObj);
+
 
             caseObjectDAO.saveOrUpdate(caseObj);
 
@@ -139,14 +139,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setModified(issue.getUpdateDate().toDate());
         caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
         caseObj.setExtAppType("jira");
-
-        updateCaseState(issue, caseObj);
-        updateCasePriority(issue, caseObj);
-
         caseObj.setName(issue.getSummary());
-        caseObj.setInfo(issue.getDescription());
         caseObj.setLocal(0);
         caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
+
+        updateCaseState(endpoint, issue, caseObj);
+        updatePriorityAndInfo(endpoint, issue, caseObj);
+
         caseObjectDAO.insertCase(caseObj);
 
         IssueMergeState mergeState = new IssueMergeState();
@@ -182,11 +181,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             CaseComment caseComment = convertComment(caseObj, personMapper, comment);
 
-//            if (skipPerson != null && skipPerson.getId().equals(caseComment.getAuthorId())) {
-//                logger.debug("skip comment {} to prevent recursion", comment.getId());
-//                return;
-//            }
-
             logger.debug("add new comment, id = {}", comment.getId());
             state.appendComment(comment.getId());
             logger.debug("convert jira-comment {} with text {}", comment.getId(), comment.getBody());
@@ -195,12 +189,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         if (!ourCaseComments.isEmpty()) {
             logger.debug("store case comments, size = {}", ourCaseComments.size());
-//            ourCaseComments.get(0).setCaseImpLevel(caseObj.getImpLevel());
-//            ourCaseComments.get(0).setCaseStateId(caseObj.getStateId());
-
-            logger.debug("before invoke persists batch");
             commentDAO.persistBatch(ourCaseComments);
-            logger.debug("after invoke persists batch");
         }
     }
 
@@ -316,10 +305,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
 
-    private void updateCaseState(Issue issue, CaseObject caseObj) {
+    private void updateCaseState(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
         logger.debug("update case state, issue={}, jira-status = {}, current case state = {}", issue.getKey(), issue.getStatus().getName(), caseObj.getState());
 
-        En_CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(issue.getStatus().getName());
+        En_CaseState state = jiraStatusMapEntryDAO.getByJiraStatus(endpoint.getStatusMapId(), issue.getStatus().getName());
         if (state == null)
             throw new RuntimeException("unable to map jira-status " + issue.getStatus().getName() + " to portal case-state");
 
@@ -327,12 +316,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setState(state);
     }
 
-    private void updateCasePriority(Issue issue, CaseObject caseObj) {
+    private void updatePriorityAndInfo(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
         String severityName = CommonUtils.getIssueSeverity(issue);
 
         logger.debug("update case priority, issue={}, jira-level={}, current case level={}", issue.getKey(), severityName, caseObj.importanceLevel());
 
-        JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityId(severityName) : null;
+        JiraPriorityMapEntry jiraPriorityEntry = severityName != null ? jiraPriorityMapEntryDAO.getByJiraPriorityName(endpoint.getPriorityMapId(), severityName) : null;
 
         if (jiraPriorityEntry == null) {
             logger.warn("unable to map jira-priority level : {}, set as basic", issue.getPriority().getName());
@@ -342,5 +331,17 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             logger.debug("issue {}, case-priority old={}, new={}", issue.getKey(), caseObj.importanceLevel(), jiraPriorityEntry.importanceLevel());
             caseObj.setImpLevel(jiraPriorityEntry.getLocalPriorityId());
         }
+
+        StringBuilder infoValue = new StringBuilder("Тип: " + issue.getIssueType().getName());
+
+        if (jiraPriorityEntry != null) {
+            infoValue.append("\r\n")
+                    .append("SLA: ")
+                    .append(jiraPriorityEntry.getLocalPriorityName());
+        }
+
+        infoValue.append("\r\n").append(issue.getDescription());
+
+        caseObj.setInfo(infoValue.toString());
     }
 }

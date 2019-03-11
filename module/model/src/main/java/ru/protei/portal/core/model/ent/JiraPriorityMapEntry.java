@@ -22,8 +22,18 @@ public final class JiraPriorityMapEntry {
     @JdbcColumn(name = "LOCAL_priority_name")
     private String localPriorityName;
 
+    @JdbcColumn(name = "jira_priority_name")
+    private String jiraPriorityName;
+
+    public JiraPriorityMapEntry() {
+    }
+
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public long getMapId() {
@@ -58,8 +68,16 @@ public final class JiraPriorityMapEntry {
         this.localPriorityName = localPriorityName;
     }
 
-
     public En_ImportanceLevel importanceLevel () {
         return En_ImportanceLevel.find(this.localPriorityId);
+    }
+
+
+    public String getJiraPriorityName() {
+        return jiraPriorityName;
+    }
+
+    public void setJiraPriorityName(String jiraPriorityName) {
+        this.jiraPriorityName = jiraPriorityName;
     }
 }

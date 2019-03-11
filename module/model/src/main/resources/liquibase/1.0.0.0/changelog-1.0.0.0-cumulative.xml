@@ -90,5 +90,5 @@
   <include file="2019-02-20-jira_statuses_and_priorities.xml" relativeToChangelogFile="true" />
   <include file="2019-02-25-nexign-integration.xml" relativeToChangelogFile="true" />
   <include file="2019-03-06-nexign-integration.xml" relativeToChangelogFile="true" />
-
+  <include file="2019-03-11-nexign-integration.xml" relativeToChangelogFile="true" />
 </databaseChangeLog>

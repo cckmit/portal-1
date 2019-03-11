@@ -5,24 +5,22 @@ import com.atlassian.jira.rest.client.api.domain.Comment;
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.atlassian.jira.rest.client.api.domain.IssueFieldId;
 import com.atlassian.jira.rest.client.api.domain.input.AttachmentInput;
+import com.atlassian.jira.rest.client.api.domain.input.ComplexIssueInputFieldValue;
 import com.atlassian.jira.rest.client.api.domain.input.IssueInputBuilder;
+import com.atlassian.jira.rest.client.api.domain.input.TransitionInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
-import ru.protei.portal.core.model.dao.JiraEndpointDAO;
-import ru.protei.portal.core.model.dao.JiraStatusMapEntryDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.utils.CommonUtils;
+import ru.protei.portal.jira.utils.CustomJiraIssueParser;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
     @Autowired
@@ -83,7 +81,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             IssueRestClient issueClient = client.getIssueClient();
 
             if (isRequireGenericDataUpdate(event)){
-                generalUpdate(event, object, issueData, issueClient);
+                generalUpdate(endpoint, event, issue, issueClient);
             }
 
             if (event.getCaseComment() != null) {
@@ -117,41 +115,68 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         return result.toArray(new AttachmentInput[]{});
     }
 
-    private void generalUpdate(AssembledCaseEvent event, CaseObject object, CommonUtils.IssueData issueData, IssueRestClient issueClient) {
-        final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
+    private void generalUpdate(JiraEndpoint endpoint, AssembledCaseEvent event, Issue issue, IssueRestClient issueClient) {
+//        final IssueInputBuilder issueInputParameters = new IssueInputBuilder();
+//
+//        issueInputParameters
+//                .setSummary(object.getName());
+//                .setDescription(object.getInfo());
 
-        issueInputParameters
-                .setSummary(object.getName())
-                .setDescription(object.getInfo());
+        final CaseObject object = event.getCaseObject();
 
         if (event.isCaseStateChanged()) {
-            String newJiraStatus = statusMapEntryDAO.getJiraStatus(object.getState());
+            String newJiraStatus = statusMapEntryDAO.getJiraStatus(endpoint.getStatusMapId(), object.getState());
             logger.debug("send change state, new jira-state: {}", newJiraStatus);
-            issueInputParameters.setFieldValue(IssueFieldId.STATUS_FIELD.id, newJiraStatus);
+
+            Map<String,Integer> stateTransitions = new HashMap<>();
+            issueClient.getTransitions(issue).claim().forEach(t -> stateTransitions.put(t.getName(), t.getId()));
+
+            if (stateTransitions.containsKey(newJiraStatus)) {
+                int transitionId = stateTransitions.get(newJiraStatus);
+                logger.debug("ok, we have jira transition for it, name={}, id={}, invoke", newJiraStatus, transitionId);
+
+                issueClient.transition(issue, new TransitionInput(transitionId)).claim();
+            } else {
+                logger.warn("issue {} has no transition for status {}, available set is {}, skip changes", issue.getKey(), newJiraStatus, stateTransitions.keySet());
+            }
         }
 
-        issueClient.updateIssue(issueData.key, issueInputParameters.build()).done(
-                aVoid ->
-                        logger.debug("ok, issue {} was handled, case {}", issueData.key, object.getId())
-        )
-        .fail(throwable ->
-                logger.debug("unable to send changes for case {}, issue={}", object.getId(), issueData.key, throwable)
-        ).claim();
+        if (event.isCaseImportanceChanged()) {
+            logger.debug("case priority is changed, try find jira-value");
+            JiraPriorityMapEntry priorityMapEntry = priorityMapEntryDAO.getByPortalPriorityId(endpoint.getPriorityMapId(), object.importanceLevel());
+
+            if (priorityMapEntry != null) {
+                logger.debug("ok, found jira-severity field value {} for our {}, send changes", priorityMapEntry.getJiraPriorityName(), object.importanceLevel());
+
+                IssueInputBuilder builder = new IssueInputBuilder();
+                builder.setFieldValue(CustomJiraIssueParser.CUSTOM_FIELD_SEVERITY, ComplexIssueInputFieldValue.with("value", priorityMapEntry.getJiraPriorityName()));
+                issueClient.updateIssue(issue.getKey(), builder.build()).claim();
+            }
+            else {
+                logger.debug("unable to find jira-severity value for our level {}", object.importanceLevel());
+            }
+        }
+
+
+//        issueClient.updateIssue(issueData.key, issueInputParameters.build()).done(
+//                aVoid ->
+//                        logger.debug("ok, issue {} was handled, case {}", issueData.key, object.getId())
+//        )
+//        .fail(throwable ->
+//                logger.debug("unable to send changes for case {}, issue={}", object.getId(), issueData.key, throwable)
+//        ).claim();
     }
 
     private boolean isRequireGenericDataUpdate (AssembledCaseEvent event) {
-        return event.isInfoChanged() || event.isNameChanged() || event.isCaseStateChanged();
+        return event.isCaseStateChanged() || event.isCaseImportanceChanged();
     }
 
 
     @Autowired
     private JiraEndpointDAO endpointDAO;
 
-//    @Autowired
-//    private CaseObjectDAO caseObjectDAO;
-
-//    @Autowired
-//    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
+    @Autowired
+    private JiraPriorityMapEntryDAO priorityMapEntryDAO;
 
     @Autowired
     private JiraStatusMapEntryDAO statusMapEntryDAO;
