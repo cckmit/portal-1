@@ -89,7 +89,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
 
             if (event.getCaseComment() != null) {
                 logger.debug("add comment {} to issue {}", event.getCaseComment().getId(), issue.getKey());
-                issueClient.addComment(issue.getCommentsUri(), Comment.valueOf(event.getCaseComment().getText()))
+                issueClient.addComment(issue.getCommentsUri(), convertComment(event.getCaseComment()))
                         .claim();
             }
 
@@ -97,6 +97,10 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 issueClient.addAttachments(issue.getAttachmentsUri(), buildAttachmentsArray(event.getAddedAttachments())).claim();
             }
         });
+    }
+
+    private Comment convertComment (CaseComment ourComment) {
+        return Comment.valueOf(ourComment.getAuthor().getDisplayShortName() + "\r\n" + ourComment.getText());
     }
 
     private AttachmentInput[] buildAttachmentsArray (Collection<Attachment> ourAttachments) {
