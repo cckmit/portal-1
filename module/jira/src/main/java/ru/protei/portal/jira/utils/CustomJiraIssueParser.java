@@ -2,7 +2,6 @@ package ru.protei.portal.jira.utils;
 
 import com.atlassian.jira.rest.client.api.domain.*;
 import com.atlassian.jira.rest.client.internal.json.*;
-import com.google.common.collect.Sets;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -11,7 +10,10 @@ import org.joda.time.DateTime;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 import static com.atlassian.jira.rest.client.api.domain.IssueFieldId.*;
 import static com.atlassian.jira.rest.client.internal.json.JsonParseUtil.parseOptionalJsonObject;
