@@ -439,6 +439,11 @@ public class MainConfiguration {
         return new CaseCommentTimeElapsedSumDAO_Impl();
     }
 
+    @Bean
+    public CaseTagDAO getCaseTagDAO() {
+        return new CaseTagDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/

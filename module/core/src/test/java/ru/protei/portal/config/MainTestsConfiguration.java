@@ -347,6 +347,11 @@ public class MainTestsConfiguration {
         return new CaseCommentTimeElapsedSumDAO_Impl();
     }
 
+    @Bean
+    public CaseTagDAO getCaseTagDAO() {
+        return new CaseTagDAO_Impl();
+    }
+
 /**
  *
  *
