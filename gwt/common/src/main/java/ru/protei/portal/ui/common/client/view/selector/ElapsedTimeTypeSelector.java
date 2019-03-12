@@ -2,7 +2,7 @@ package ru.protei.portal.ui.common.client.view.selector;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.ui.common.client.lang.ElapsedTimeTypeLang;
+import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
@@ -22,5 +22,5 @@ public class ElapsedTimeTypeSelector extends ButtonSelector<En_TimeElapsedType> 
     }
 
     @Inject
-    private ElapsedTimeTypeLang lang;
+    private TimeElapsedTypeLang lang;
 }

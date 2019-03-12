@@ -20,9 +20,6 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
-import ru.protei.portal.ui.common.client.util.MarkdownClient;
-import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
-import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 
@@ -149,13 +146,13 @@ public class CaseCommentItemView
     }
 
     @Override
-    public HasTime timeElapsed() {
-        return timeElapsed;
+    public void setTimeElapsed( String timeTypeString ) {
+        timeElapsed.setInnerHTML( timeTypeString == null ? "" : timeTypeString );
     }
 
     @Override
     public void clearElapsedTime() {
-        timeElapsed.setText("");
+        timeElapsed.setInnerHTML("");
     }
 
     @Override
@@ -213,9 +210,8 @@ public class CaseCommentItemView
     @Inject
     @UiField(provided = true)
     AttachmentList attachList;
-    @Inject
-    @UiField(provided = true)
-    TimeLabel timeElapsed;
+    @UiField
+    LIElement timeElapsed;
     @UiField
     DivElement attachBlock;
     @UiField
@@ -232,6 +228,7 @@ public class CaseCommentItemView
     LIElement options;
     @UiField
     ImageElement icon;
+
     @Inject
     @UiField
     Lang lang;
