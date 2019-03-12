@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.dao.impl;
 
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -24,15 +25,12 @@ public class CaseObjectSqlBuilder {
                 args.add( query.getId() );
             } else if (CollectionUtils.isNotEmpty(query.getMemberIds())) {
                 condition.append(" and case_object.id in (select case_id from case_member where member_id in (")
-                        .append(query.getMemberIds().stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(",")))
+                        .append(StringUtils.join(query.getMemberIds(), ","))
                         .append("))");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
+
                 condition.append(" and case_object.id in (select case_id from case_object_tag where tag_id in (")
-                        .append(query.getCaseTagsIds().stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(",")))
+                        .append(StringUtils.join(query.getCaseTagsIds(), ","))
                         .append("))");
             }
 

@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
@@ -558,11 +557,6 @@ public class MainTestsConfiguration {
     @Bean
     public MarkdownServer getMarkdownServer() {
         return new MarkdownServer();
-    }
-
-    @Bean
-    public CasePrivilegeValidator getCasePrivilegeValidator() {
-        return new CasePrivilegeValidator();
     }
 
     /** ASPECT/INTERCEPTORS **/

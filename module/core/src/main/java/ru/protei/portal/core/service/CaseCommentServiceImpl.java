@@ -6,23 +6,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
-import ru.protei.portal.core.model.struct.AuditObject;
-import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -34,7 +28,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, long caseObjectId) {
-        casePrivilegeValidator.checkPrivilegesRead(token, caseType);
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseObjectId);
         if (checkAccessStatus != null) {
             return new CoreResponse<List<CaseComment>>().error(checkAccessStatus);
@@ -44,15 +37,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-        casePrivilegeValidator.checkPrivilegesRead(token, caseType);
         return getList(query);
     }
 
     @Override
     @Transactional
     public CoreResponse<CaseComment> addCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
-        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
-
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
             return new CoreResponse<CaseComment>().error(checkAccessStatus);
@@ -65,7 +55,25 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
         CaseComment result = response.getData();
 
-        postAdd(token, caseType, result, caseObjectOld, person);
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            CaseObject caseObjectNew = caseObjectDAO.get(comment.getCaseId());
+            jdbcManyRelationsHelper.fill(caseObjectNew, "attachments");
+            jdbcManyRelationsHelper.fill(caseObjectNew, "notifiers");
+            caseObjectOld.setAttachments(caseObjectNew.getAttachments());
+            caseObjectOld.setNotifiers(caseObjectNew.getNotifiers());
+
+            Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
+                    .stream()
+                    .map(CaseAttachment::getAttachmentId)
+                    .collect(Collectors.toList());
+
+            Collection<Attachment> addedAttachments = caseObjectNew.getAttachments()
+                    .stream()
+                    .filter(a -> addedAttachmentsIds.contains(a.getId()))
+                    .collect(Collectors.toList());
+
+            publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, addedAttachments, person));
+        }
 
         return new CoreResponse<CaseComment>().success(result);
     }
@@ -73,8 +81,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> updateCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
-        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
-
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
             return new CoreResponse<CaseComment>().error(checkAccessStatus);
@@ -89,7 +95,22 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
         CaseComment result = response.getData();
 
-        postUpdate(token, caseType, result, person, prevComment, caseObjectOld, removedCaseAttachments);
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            CaseObject newState = caseObjectDAO.get(comment.getCaseId());
+            jdbcManyRelationsHelper.fill( newState, "attachments");
+            jdbcManyRelationsHelper.fill(newState, "notifiers");
+            caseObjectOld.setAttachments(newState.getAttachments());
+            caseObjectOld.setNotifiers(newState.getNotifiers());
+
+            Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, caseType, removedCaseAttachments).getData();
+            Collection<Attachment> addedAttachments = attachmentService.getAttachments(token, caseType,
+                    HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
+            ).getData();
+
+            publisherService.publishEvent(
+                    new CaseCommentEvent(this, newState, caseObjectOld, prevComment, removedAttachments, comment, addedAttachments, person)
+            );
+        }
 
         return new CoreResponse<CaseComment>().success(result);
     }
@@ -97,8 +118,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Override
     @Transactional
     public CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
-        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
-
         En_ResultStatus checkAccessStatus = null;
         if (comment == null || comment.getId() == null || personId == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
@@ -120,8 +139,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return response;
         }
         Boolean result = response.getData();
-
-        postRemove(token, caseType, comment);
 
         return new CoreResponse<Boolean>().success(result);
     }
@@ -169,7 +186,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return new CoreResponse<Long>().success(commentId);
     }
 
-    // -> Get comments -> //
 
     private CoreResponse<List<CaseComment>> getList(CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
@@ -191,33 +207,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         });
 
         return new CoreResponse<List<CaseComment>>().success(comments);
-    }
-
-    // -> Add comment -> //
-
-    private void postAdd(AuthToken token, En_CaseType caseType, CaseComment comment, CaseObject caseObjectOld, Person person) {
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject caseObjectNew = caseObjectDAO.get(comment.getCaseId());
-            jdbcManyRelationsHelper.fill(caseObjectNew, "attachments");
-            jdbcManyRelationsHelper.fill(caseObjectNew, "notifiers");
-            caseObjectOld.setAttachments(caseObjectNew.getAttachments());
-            caseObjectOld.setNotifiers(caseObjectNew.getNotifiers());
-
-            Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
-                    .stream()
-                    .map(CaseAttachment::getAttachmentId)
-                    .collect(Collectors.toList());
-
-            Collection<Attachment> addedAttachments = caseObjectNew.getAttachments()
-                    .stream()
-                    .filter(a -> addedAttachmentsIds.contains(a.getId()))
-                    .collect(Collectors.toList());
-
-            publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, addedAttachments, person));
-        }
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            tryDoAudit(token, En_AuditType.ISSUE_COMMENT_CREATE, comment);
-        }
     }
 
     private CoreResponse<CaseComment> add(AuthToken token, CaseComment comment) {
@@ -258,31 +247,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         result.setCaseAttachments(comment.getCaseAttachments());
 
         return new CoreResponse<CaseComment>().success( result );
-    }
-
-    // -> Update comment -> //
-
-    private void postUpdate(AuthToken token, En_CaseType caseType, CaseComment comment, Person person,
-                            CaseComment prevComment, CaseObject caseObjectOld, Collection<CaseAttachment> removedCaseAttachments) {
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject newState = caseObjectDAO.get(comment.getCaseId());
-            jdbcManyRelationsHelper.fill( newState, "attachments");
-            jdbcManyRelationsHelper.fill(newState, "notifiers");
-            caseObjectOld.setAttachments(newState.getAttachments());
-            caseObjectOld.setNotifiers(newState.getNotifiers());
-
-            Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, caseType, removedCaseAttachments).getData();
-            Collection<Attachment> addedAttachments = attachmentService.getAttachments(token, caseType,
-                    HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
-            ).getData();
-
-            publisherService.publishEvent(
-                    new CaseCommentEvent(this, newState, caseObjectOld, prevComment, removedAttachments, comment, addedAttachments, person)
-            );
-        }
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            tryDoAudit(token, En_AuditType.ISSUE_COMMENT_MODIFY, comment);
-        }
     }
 
     private CoreResponse<CaseComment> update(AuthToken token, En_CaseType caseType, CaseComment comment, Person person,
@@ -332,14 +296,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return new CoreResponse<CaseComment>().success(comment);
     }
 
-    // -> Remove comment -> //
-
-    private void postRemove(AuthToken token, En_CaseType caseType, CaseComment comment) {
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            tryDoAudit(token, En_AuditType.ISSUE_COMMENT_REMOVE, comment);
-        }
-    }
-
     private CoreResponse<Boolean> remove(AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         long caseId = comment.getCaseId();
@@ -369,20 +325,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return new CoreResponse<Boolean>().success(isRemoved);
     }
 
-    // -> Utils -> //
-
-    private void tryDoAudit(AuthToken token, En_AuditType auditType, AuditableObject auditableObject) {
-        if (token == null) {
-            return;
-        }
-
-        UserSessionDescriptor descriptor = authService.findSession(token);
-
-        AuditObject auditObject = new AuditObject(auditType.getId(), descriptor, auditableObject);
-
-        publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
-    }
-
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObject = caseObjectDAO.get(caseObjectId);
@@ -407,17 +349,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Autowired
-    AuthService authService;
-    @Autowired
-    PolicyService policyService;
-    @Autowired
     CaseService caseService;
     @Autowired
     AttachmentService attachmentService;
     @Autowired
     EventPublisherService publisherService;
-    @Autowired
-    CasePrivilegeValidator casePrivilegeValidator;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;

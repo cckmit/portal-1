@@ -9,7 +9,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
@@ -686,11 +685,6 @@ public class MainConfiguration {
     @Bean
     public MarkdownServer getMarkdownServer() {
         return new MarkdownServer();
-    }
-
-    @Bean
-    public CasePrivilegeValidator getCasePrivilegeValidator() {
-        return new CasePrivilegeValidator();
     }
 
     /**
