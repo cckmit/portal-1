@@ -42,6 +42,9 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     CaseService caseService;
 
     @Autowired
+    CompanyDAO companyDAO;
+
+    @Autowired
     PersonDAO personDAO;
 
     @Autowired
@@ -145,13 +148,13 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setCreated(issue.getCreationDate().toDate());
         caseObj.setModified(issue.getUpdateDate().toDate());
 
-        caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
         caseObj.setCreatorId(caseObj.getInitiatorId());
 
         caseObj.setExtAppType("jira");
         caseObj.setName(issue.getSummary());
         caseObj.setLocal(0);
-        caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
+        caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
+        caseObj.setInitiatorCompany(companyDAO.get(endpoint.getCompanyId()));
 
         updateCaseState(endpoint, issue, caseObj);
         updatePriorityAndInfo(endpoint, issue, caseObj);
