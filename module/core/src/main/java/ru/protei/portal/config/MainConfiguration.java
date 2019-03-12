@@ -444,6 +444,11 @@ public class MainConfiguration {
         return new CaseTagDAO_Impl();
     }
 
+    @Bean
+    public CaseObjectTagDAO getCaseObjectTagDAO() {
+        return new CaseObjectTagDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -660,6 +665,11 @@ public class MainConfiguration {
     @Bean
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
+    }
+
+    @Bean
+    public CaseTagService getCaseTagService() {
+        return new CaseTagServiceImpl();
     }
 
 

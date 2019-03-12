@@ -42,6 +42,9 @@
                                  baseTableName="case_object_tag" baseColumnNames="tag_id"
                                  referencedTableName="case_tag" referencedColumnNames="id"
                                  onDelete="CASCADE" onUpdate="CASCADE"/>
+
+        <addUniqueConstraint constraintName="case_tag_name_unique"
+                             tableName="case_tag" columnNames="case_type, name"/>
     </changeSet>
 
 </databaseChangeLog>

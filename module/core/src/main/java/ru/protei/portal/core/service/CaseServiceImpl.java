@@ -54,6 +54,9 @@ public class CaseServiceImpl implements CaseService {
     CaseNotifierDAO caseNotifierDAO;
 
     @Autowired
+    CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
     PolicyService policyService;
 
     @Autowired
@@ -102,6 +105,11 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setLinks(caseLinks.getData());
         }
 
+        if (policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
+            jdbcManyRelationsHelper.fill(caseObject, "tags");
+        } else {
+            caseObject.setTags(null);
+        }
 
         // RESET PRIVACY INFO
         if ( caseObject.getInitiator() != null ) {
@@ -192,10 +200,21 @@ public class CaseServiceImpl implements CaseService {
             caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         }
 
+        if (CollectionUtils.isNotEmpty(caseObject.getTags()) &&
+                policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_EDIT, En_Scope.SYSTEM)) {
+            caseObjectTagDAO.persistBatch(
+                    caseObject.getTags()
+                            .stream()
+                            .map(tag -> new CaseObjectTag(caseId, tag.getId()))
+                            .collect(Collectors.toList())
+            );
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
+        newState.setTags(caseObject.getTags());
         publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
 
         return new CoreResponse<CaseObject>().success( newState );

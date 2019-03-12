@@ -352,6 +352,11 @@ public class MainTestsConfiguration {
         return new CaseTagDAO_Impl();
     }
 
+    @Bean
+    public CaseObjectTagDAO getCaseObjectTagDAO() {
+        return new CaseObjectTagDAO_Impl();
+    }
+
 /**
  *
  *
@@ -533,6 +538,12 @@ public class MainTestsConfiguration {
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
     }
+
+    @Bean
+    public CaseTagService getCaseTagService() {
+        return new CaseTagServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {
