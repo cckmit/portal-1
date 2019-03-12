@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
+import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
 
@@ -33,6 +35,9 @@ public class JiraEventHandlerImpl {
     @Autowired
     PortalConfig portalConfig;
 
+    @Autowired
+    EventPublisherService eventPublisherService;
+
 
     Map<JiraHookEventType, JiraEventHandler> handlersMap;
     JiraEventHandler defaultHandler;
@@ -45,12 +50,18 @@ public class JiraEventHandlerImpl {
     @PostConstruct
     private void init () {
         handlersMap = new HashMap<>();
-        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> integrationService.create(ep, event));
-        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> integrationService.updateOrCreate(ep, event));
+        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> sendEvent(integrationService.create(ep, event)));
+        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> sendEvent(integrationService.updateOrCreate(ep, event)));
         handlersMap.put(JiraHookEventType.COMMENT_CREATED, (ep, event) -> logger.debug("skip comment-created event"));
         defaultHandler = (ep, evt) -> logger.debug("has no handler for event {}, skip", evt.getEventType());
     }
 
+    private void sendEvent (AssembledCaseEvent event) {
+        if (event != null) {
+            logger.debug("send assembled event {}", event.getCaseObject().defGUID());
+            eventPublisherService.publishEvent(event);
+        }
+    }
 
     @PostMapping("/jira/{companyId}/wh")
     public void onIssueEvent(@RequestBody String jsonString,
