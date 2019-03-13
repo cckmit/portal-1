@@ -64,7 +64,7 @@ public class ProductEvents {
         public Long productId;
     }
 
-    public static class ChangeModel {}
+    public static class ProductListChanged {}
 
     /**
      * Обновление списка продуктов по фильтру

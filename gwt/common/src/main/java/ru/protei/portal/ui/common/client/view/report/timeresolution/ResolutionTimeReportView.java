@@ -27,6 +27,7 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
+        products.updateQuery(null, null);
     }
 
     @Override
