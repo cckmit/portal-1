@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -30,9 +31,15 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );
     }
+    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
+        if ( model != null ) {
+            model.updateQuery(this, enDevUnitState, enDevUnitType);
+        }
+    }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
     private String defaultValue = null;
+    protected ProductModel model;
 }

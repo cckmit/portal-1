@@ -1,10 +1,14 @@
 package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
@@ -19,6 +23,7 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
 
     @Inject
     public void init(ProductModel model, Lang lang ) {
+        this.model = model;
         model.subscribe(this, null, null);
         setSelectorModel(model);
         setAddName( lang.buttonAdd() );
@@ -39,7 +44,11 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         this.exclude = exclude;
         fillOptions();
     }
-
+    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
+        if ( model != null ) {
+            model.updateQuery(this, enDevUnitState, enDevUnitType);
+        }
+    }
     private void fillOptions() {
         clearOptions();
         if (hasNullValue) {
@@ -56,4 +65,5 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
     private List<ProductShortView> options = new ArrayList<>();
     private ProductShortView exclude = null;
     private boolean hasNullValue = true;
+    protected ProductModel model;
 }

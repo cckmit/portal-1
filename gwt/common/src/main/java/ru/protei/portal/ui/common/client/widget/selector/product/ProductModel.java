@@ -45,8 +45,7 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
     }
 
     public void subscribe(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
-        subscribers.add( selector );
-        updateQuery( selector, enDevUnitState, enDevUnitType);
+        updateQuery( selector, enDevUnitState, enDevUnitType );
     }
 
     public void updateQuery( SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
@@ -54,7 +53,7 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         selectorToQuery.put(selector, query);
     }
     private void clearSubscribersOptions() {
-        for (SelectorWithModel<ProductShortView> subscriber : subscribers) {
+        for (SelectorWithModel<ProductShortView> subscriber : selectorToQuery.keySet()) {
             subscriber.clearOptions();
         }
     }
@@ -87,5 +86,4 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
     ProductControllerAsync productService;
 
     private Map<SelectorWithModel<ProductShortView>, ProductQuery> selectorToQuery = new HashMap<>();
-    private Set<SelectorWithModel<ProductShortView>> subscribers = new HashSet<>();
 }
