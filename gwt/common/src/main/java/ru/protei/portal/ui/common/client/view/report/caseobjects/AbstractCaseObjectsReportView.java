@@ -42,6 +42,8 @@ public interface AbstractCaseObjectsReportView  extends IsWidget {
 
     HasValue<Set<PersonShortView>> commentAuthors();
 
+    HasValue<Set<EntityOption>> tags();
+
     HasValue<Boolean> searchPrivate();
 
     HasValue<Set<En_ImportanceLevel>> importances();
@@ -55,6 +57,8 @@ public interface AbstractCaseObjectsReportView  extends IsWidget {
     HasVisibility managersVisibility();
 
     HasVisibility commentAuthorsVisibility();
+
+    HasVisibility tagsVisibility();
 
     HasVisibility searchPrivateVisibility();
 

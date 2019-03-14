@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterS
 import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
@@ -114,6 +115,11 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
+    public HasValue<Set<EntityOption>> tags() {
+        return tags;
+    }
+
+    @Override
     public HasValue<Boolean> searchPrivate() {
         return searchPrivate;
     }
@@ -149,6 +155,11 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
+    public HasVisibility tagsVisibility() {
+        return tags;
+    }
+
+    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
     }
@@ -173,6 +184,7 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         search.setValue("");
         searchByComments.setValue(false);
         searchPrivate.setValue(null);
+        tags.setValue(null);
         toggleMsgSearchThreshold();
 
         userFilter.setValue( null );
@@ -194,6 +206,7 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
         products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
         commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
+        tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
     }
 
     @Override
@@ -271,6 +284,11 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
 
     @UiHandler("commentAuthors")
     public void onCommentAuthorsSelected(ValueChangeEvent<Set<PersonShortView>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("tags")
+    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
         onFilterChanged();
     }
 
@@ -379,6 +397,9 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;
+    @Inject
+    @UiField(provided = true)
+    CaseTagMultiSelector tags;
     @UiField
     HTMLPanel searchPrivateContainer;
     @UiField

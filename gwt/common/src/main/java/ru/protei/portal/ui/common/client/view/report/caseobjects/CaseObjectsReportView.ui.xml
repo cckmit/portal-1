@@ -10,6 +10,7 @@
              xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
              xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -59,6 +60,11 @@
 
             <person:EmployeeMultiSelector ui:field="commentAuthors"
                                           header="{lang.issueCommentAuthor}"
+                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <casetag:CaseTagMultiSelector ui:field="tags"
+                                          caseType="CRM_SUPPORT"
+                                          header="{lang.tags}"
                                           addStyleNames="form-group col-xs-12 resize-xs-6"/>
 
             <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12 resize-xs-6">

@@ -184,6 +184,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
         query.setStates(getStateList(filterWidgetView.states().getValue()));
         query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
+        query.setCaseTagsIds(getIds(filterWidgetView.tags().getValue()));
         query = IssueFilterUtils.fillInterval( query, filterWidgetView.dateRange().getValue() );
 
         return query;
@@ -225,6 +226,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         caseObjectReportView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
         caseObjectReportView.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
         caseObjectReportView.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        caseObjectReportView.tagsVisibility().setVisible(policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW));
 
         timeElapsedReportView.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
         timeElapsedReportView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));

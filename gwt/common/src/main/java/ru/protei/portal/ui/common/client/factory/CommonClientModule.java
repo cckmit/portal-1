@@ -50,6 +50,7 @@ import ru.protei.portal.ui.common.client.view.report.timeelapsed.AbstractTimeEla
 import ru.protei.portal.ui.common.client.view.report.timeelapsed.TimeElapsedReportView;
 import ru.protei.portal.ui.common.client.view.report.timeresolution.AbstractResolutionTimeReportView;
 import ru.protei.portal.ui.common.client.view.report.timeresolution.ResolutionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -118,6 +119,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( DevUnitModel.class ).asEagerSingleton();
         bind( ComponentModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
+        bind( CaseTagModel.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);
         requestStaticInjection(DefaultErrorHandler.class);
