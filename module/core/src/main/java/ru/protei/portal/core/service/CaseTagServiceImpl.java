@@ -1,6 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
@@ -22,7 +23,12 @@ public class CaseTagServiceImpl implements CaseTagService {
         if (!isCaseTagValid(caseTag)) {
             return new CoreResponse<>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
-        Long id = caseTagDAO.persist(caseTag);
+        Long id;
+        try {
+            id = caseTagDAO.persist(caseTag);
+        } catch (DuplicateKeyException exception) {
+            return new CoreResponse<>().error(En_ResultStatus.ALREADY_EXIST);
+        }
         return id == null ?
                 new CoreResponse<>().error(En_ResultStatus.NOT_CREATED) :
                 new CoreResponse<>().success();
