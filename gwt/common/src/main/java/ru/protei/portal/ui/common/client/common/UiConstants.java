@@ -28,6 +28,10 @@ public class UiConstants {
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
     }
+    public interface Icons {
+        String APPROVED = "fa-check-circle-o";
+        String NOT_APPROVED = "fa-file-text-o";
+    }
 
     public interface ActionBarIcons {
         String CREATE = "fa fa-plus";

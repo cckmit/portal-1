@@ -8,7 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
@@ -17,7 +17,6 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
@@ -74,10 +73,12 @@ public abstract class CaseCommentListActivity
     public void onShow(CaseCommentEvents.Show event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
+        markdownClient.setOptions( markdownClient.options.build() );
 
         this.caseType = event.caseType;
         this.caseId = event.caseId;
-        this.isEditingEnabled = true;
+        this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
+        this.isModifyEnabled = event.isModifyEnabled;
 
         comment = null;
         lastCommentView = null;
@@ -89,10 +90,10 @@ public abstract class CaseCommentListActivity
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
-        view.timeElapsedVisibility().setVisible(event.isElapsedTimeEnabled);
+        view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
+        view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
-        view.enabledNewComment(isEditingEnabled);
-        view.setEnabledAttachAndComment(isEditingEnabled);
+        view.enabledNewComment(isModifyEnabled);
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
@@ -173,8 +174,9 @@ public abstract class CaseCommentListActivity
 
         String editedMessage = caseComment.getText();
         view.message().setValue( editedMessage, true );
-        if (comment.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)) {
+        if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
             view.timeElapsed().setTime(comment.getTimeElapsed());
+            view.timeElapsedType().setValue(comment.getTimeElapsedType());
         }
         view.focus();
     }
@@ -258,7 +260,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void removeAttachment(Long id, Runnable successAction){
-        attachmentService.removeAttachmentEverywhere(id, new RequestCallback<Boolean>() {
+        attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
@@ -283,7 +285,7 @@ public abstract class CaseCommentListActivity
     private void fillView(List<CaseComment> comments){
         itemViewToModel.clear();
         view.clearCommentsContainer();
-        view.enabledNewComment( policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ));
+        view.enabledNewComment(isModifyEnabled);
 
         for (CaseComment value : comments) {
             AbstractCaseCommentItemView itemView = makeCommentView( value );
@@ -305,7 +307,7 @@ public abstract class CaseCommentListActivity
         itemView.setRemoteLink(value.getRemoteLink());
 
         itemView.clearElapsedTime();
-        if (value.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) ) {
+        if (isElapsedTimeEnabled && value.getTimeElapsed() != null) {
             itemView.timeElapsed().setTime(value.getTimeElapsed());
         }
 
@@ -313,14 +315,14 @@ public abstract class CaseCommentListActivity
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
 
         if ( HelperFunc.isNotEmpty( value.getText() ) ) {
-            itemView.setMessage( value.getText() );
+            itemView.setMessage( markdownClient.plain2escaped2markdown(value.getText()) );
         }
 
         if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
             itemView.hideOptions();
         }
 
-        itemView.enabledEdit( isEditingEnabled && policyService.hasEveryPrivilegeOf( En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT ) );
+        itemView.enabledEdit(isModifyEnabled && isModifyEnabled);
 
         if ( isStateChangeComment ) {
             En_CaseState caseState = En_CaseState.getById( value.getCaseStateId() );
@@ -334,8 +336,8 @@ public abstract class CaseCommentListActivity
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());
 
-        itemView.enabledEdit( isEditingEnabled && CaseCommentUtils.isEnableEdit( value, profile.getId() ) );
-        itemView.enableReply(isEditingEnabled);
+        itemView.enabledEdit( isModifyEnabled && CaseCommentUtils.isEnableEdit( value, profile.getId() ) );
+        itemView.enableReply(isModifyEnabled);
         itemViewToModel.put( itemView, value );
 
         return itemView;
@@ -354,7 +356,7 @@ public abstract class CaseCommentListActivity
 
     private void requestAttachments(List<Long> ids, Consumer<Collection<Attachment>> addAction){
 
-        attachmentService.getAttachments(ids, new RequestCallback<List<Attachment>>() {
+        attachmentService.getAttachments(caseType, ids, new RequestCallback<List<Attachment>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
@@ -407,12 +409,16 @@ public abstract class CaseCommentListActivity
             if ( id == null ) {
                 fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
             }
+            requesting = false;
+            view.sendEnabled().setEnabled(true);
             return;
         }
 
         comment.setCaseId( id != null ? id : caseId );
         comment.setText( message );
         comment.setTimeElapsed(view.timeElapsed().getTime());
+        En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
+        comment.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))
@@ -421,8 +427,8 @@ public abstract class CaseCommentListActivity
 
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
                 .withError(throwable -> {
-                    view.sendEnabled().setEnabled(true);
                     requesting = false;
+                    view.sendEnabled().setEnabled(true);
 
                     if (saveCommentCompleteHandler != null) {
                         saveCommentCompleteHandler.onError(throwable);
@@ -442,9 +448,9 @@ public abstract class CaseCommentListActivity
                     result.setCaseAttachments(comment.getCaseAttachments());
 
                     if (isEdit) {
-                        lastCommentView.setMessage(result.getText());
+                        lastCommentView.setMessage(markdownClient.plain2escaped2markdown(result.getText()));
                         lastCommentView.clearElapsedTime();
-                        if (comment.getTimeElapsed() != null && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)) {
+                        if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
                             lastCommentView.timeElapsed().setTime(comment.getTimeElapsed());
                         }
 
@@ -468,6 +474,7 @@ public abstract class CaseCommentListActivity
                     view.attachmentContainer().clear();
                     view.clearTimeElapsed();
                     tempAttachments.clear();
+                    // FIXME зачем IssueEvents.ChangeModel здесь \/
                     fireEvent(new IssueEvents.ChangeModel());
                     updateTimeElapsedInIssue(itemViewToModel.values());
                 })
@@ -524,8 +531,6 @@ public abstract class CaseCommentListActivity
     @Inject
     AttachmentServiceAsync attachmentService;
     @Inject
-    PolicyService policyService;
-    @Inject
     MarkdownClient markdownClient;
 
     private CaseComment comment;
@@ -535,7 +540,8 @@ public abstract class CaseCommentListActivity
 
     private En_CaseType caseType;
     private boolean requesting = false;
-    private boolean isEditingEnabled = true;
+    private boolean isElapsedTimeEnabled = false;
+    private boolean isModifyEnabled = true;
     private Long caseId;
     
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();

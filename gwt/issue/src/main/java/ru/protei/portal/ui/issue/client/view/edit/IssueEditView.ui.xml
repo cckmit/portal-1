@@ -9,7 +9,7 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
-             xmlns:issuelinks='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks'
+             xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list"
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
@@ -47,7 +47,7 @@
                     <label ui:field="companyLabel">
                         <ui:text from="{lang.issueCompany}"/>
                     </label>
-                    <company:CompanySelector ui:field="company" validation="false"/>
+                    <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
                 </div>
                 <div class="form-group col-xs-3">
                     <label ui:field="initiatorLabel">
@@ -70,12 +70,18 @@
                     <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
 
-                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group col-xs-12">
-                    <label ui:field="timeElapsedLabel">
-                        <ui:text from="{lang.timeElapsed}"/>
-                    </label>
-                    <timefield:TimeLabel ui:field="timeElapsed" styleName="inline-block m-l-10"/>
-                    <timefield:TimeTextBox ui:field="timeElapsedInput" styleName="input-field time-elapsed" notNull="false"/>
+                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="grid grid-indent col-xs-12">
+                    <div class="col-xs-8">
+                        <label ui:field="timeElapsedLabel">
+                            <ui:text from="{lang.timeElapsed}"/>
+                        </label>
+                        <timefield:TimeLabel ui:field="timeElapsed" styleName="inline-block m-l-10"/>
+                        <timefield:TimeTextBox ui:field="timeElapsedInput" styleName="input-field time-elapsed" notNull="false"/>
+                    </div>
+
+                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" styleName="btn-selector col-xs-4"
+                                                         header="{lang.timeElapsedType}"/>
+
                 </g:HTMLPanel>
 
                 <div class="form-group col-xs-12">

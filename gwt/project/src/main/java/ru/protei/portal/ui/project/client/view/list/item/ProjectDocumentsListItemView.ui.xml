@@ -1,0 +1,21 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <g:HTMLPanel ui:field="root" tag="li" styleName="prodoc-list-item">
+        <div class="approve">
+            <i ui:field="approve" class="fa fa-lg"/>
+        </div>
+        <div class="content">
+            <span ui:field="decimalNumber" class="decimal-number"/>
+            <span ui:field="information" class="information"/>
+        </div>
+        <div class="content">
+            <span ui:field="documentType" class="information"/>
+            <span ui:field="documentCreated" class="information"/>
+        </div>
+        <div class="controls">
+            <g:Anchor ui:field="download" styleName="fa fa-lg fa-cloud-download" href="#"/>
+            <g:Anchor ui:field="edit" styleName="fa fa-lg fa-pencil" href="#"/>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

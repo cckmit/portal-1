@@ -1,6 +1,7 @@
 package ru.protei.portal.api.model;
 
 import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.tools.migrate.HelperService;
 import ru.protei.portal.core.model.ent.WorkerEntry;
@@ -40,6 +41,7 @@ public class WorkerRecord {
 
     private String workerId;
     private String departmentId;
+    private Long registrationId;
 
     private String hireDate;
     private String hireOrderNo;
@@ -53,8 +55,9 @@ public class WorkerRecord {
         copy (p);
     }
 
-    public WorkerRecord(WorkerEntry w) {
+    public WorkerRecord(WorkerEntry w, EmployeeRegistration r) {
         copy (w);
+        setRegistrationId(r == null ? null : r.getId());
     }
 
     @XmlElement(name = "company-code")
@@ -255,6 +258,15 @@ public class WorkerRecord {
         this.departmentId = departmentId;
     }
 
+    @XmlElement(name = "registration-id")
+    public Long getRegistrationId() {
+        return registrationId;
+    }
+
+    public void setRegistrationId( Long registrationId ) {
+        this.registrationId = registrationId;
+    }
+
     @XmlElement(name = "hire-date")
     public String getHireDate() {
         return hireDate;
@@ -350,6 +362,7 @@ public class WorkerRecord {
                 ", isFired=" + isFired +
                 ", workerId='" + workerId + '\'' +
                 ", departmentId='" + departmentId + '\'' +
+                ", registrationId=" + registrationId +
                 ", hireDate='" + hireDate + '\'' +
                 ", hireOrderNo='" + hireOrderNo + '\'' +
                 ", active=" + active +

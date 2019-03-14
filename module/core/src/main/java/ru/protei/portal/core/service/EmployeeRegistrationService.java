@@ -25,4 +25,5 @@ public interface EmployeeRegistrationService {
     @Auditable(En_AuditType.EMPLOYEE_REGISTRATION_CREATE)
     @Privileged(requireAny = En_Privilege.EMPLOYEE_REGISTRATION_CREATE)
     CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration);
+
 }

@@ -18,6 +18,9 @@ public class CrmConstants {
         Long UNDEFINED = -1L;
     }
 
+    public interface Person {
+        Long SYSTEM_USER_ID = 1L;
+    }
 
     public interface Issue {
         String CREATE_CONTACT_IDENTITY = "issue-edit";

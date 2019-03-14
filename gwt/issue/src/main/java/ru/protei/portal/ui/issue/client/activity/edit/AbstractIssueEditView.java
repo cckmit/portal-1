@@ -3,6 +3,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -29,6 +30,9 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<En_ImportanceLevel> importance();
     HasTime timeElapsedLabel();
     HasTime timeElapsedInput();
+
+    HasValue<En_TimeElapsedType> timeElapsedType();
+
     HasValue<EntityOption> company();
     HasValue<PersonShortView> initiator();
     HasValue<PersonShortView> manager();
@@ -76,6 +80,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility privacyVisibility();
     HasVisibility timeElapsedLabelVisibility();
     HasVisibility timeElapsedInputVisibility();
+    void setTimeElapseTypeVisibility( boolean isVisible );
+
 
     HasEnabled saveEnabled();
 
@@ -86,4 +92,5 @@ public interface AbstractIssueEditView extends IsWidget {
     void initiatorSelectorAllowAddNew(boolean b);
 
     void applyCompanyValueIfOneOption();
+
 }

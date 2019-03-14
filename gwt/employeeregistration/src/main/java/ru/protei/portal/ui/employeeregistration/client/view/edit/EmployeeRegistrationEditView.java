@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.employeeregistration.client.activity.edit.AbstractEmployeeRegistrationEditActivity;
@@ -139,6 +140,11 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
         return additionalSoft;
     }
 
+    @Override
+    public HasValue<Set<PersonShortView>> curators() {
+        return curators;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -206,6 +212,10 @@ public class EmployeeRegistrationEditView extends Composite implements AbstractE
 
     @UiField
     Lang lang;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector curators;
 
     private AbstractEmployeeRegistrationEditActivity activity;
 

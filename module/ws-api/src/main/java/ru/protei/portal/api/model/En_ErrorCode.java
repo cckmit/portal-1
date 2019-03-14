@@ -33,8 +33,8 @@ public enum En_ErrorCode {
     EXIST_POS("WE-10026", "Position already exist."),
     INV_FORMAT_DEP_CODE("WE-10027", "Invalid department code."),
     INV_FORMAT_WOR_CODE("WE-10028", "Invalid worker code."),
-    DELETED_OR_FIRED_RECORD("WE-10029", "Deleted or fired record.");
-
+    DELETED_OR_FIRED_RECORD("WE-10029", "Deleted or fired record."),
+    UNKNOWN_REG("WE-10030", "Unknown EmployeeRegistration.");
 
     En_ErrorCode (String code, String message) {
         this.code = code;

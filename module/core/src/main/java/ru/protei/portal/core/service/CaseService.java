@@ -41,11 +41,9 @@ public interface CaseService {
 
     CoreResponse<List<En_CaseState>> stateList(En_CaseType caseType);
 
-    @Privileged( En_Privilege.ISSUE_EDIT )
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 
-    @Privileged( En_Privilege.ISSUE_EDIT )
-    CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, Attachment attachment, long caseNumber);
+    CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber);
 
     CoreResponse<Long> attachToCaseId(Attachment attachment, long caseId);
 

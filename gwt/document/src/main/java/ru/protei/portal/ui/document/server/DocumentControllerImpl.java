@@ -92,6 +92,21 @@ public class DocumentControllerImpl implements DocumentController {
         return documentService.count(descriptor.makeAuthToken(), query).getData();
     }
 
+    @Override
+    public List<Document> getProjectDocuments(Long projectId) throws RequestFailedException {
+        log.debug("get projectDocuments, id: {}", projectId);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse<List<Document>> response = documentService.getProjectDocuments(descriptor.makeAuthToken(), projectId);
+        log.debug("get ProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+        return response.getData();
+    }
+
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);

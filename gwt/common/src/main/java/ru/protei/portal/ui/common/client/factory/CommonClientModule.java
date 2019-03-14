@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactIte
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -37,7 +38,15 @@ import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
+import ru.protei.portal.ui.common.client.view.report.caseobjects.AbstractCaseObjectsReportView;
+import ru.protei.portal.ui.common.client.view.report.caseobjects.CaseObjectsReportView;
+import ru.protei.portal.ui.common.client.view.report.timeelapsed.AbstractTimeElapsedReportView;
+import ru.protei.portal.ui.common.client.view.report.timeelapsed.TimeElapsedReportView;
+import ru.protei.portal.ui.common.client.view.report.timeresolution.AbstractResolutionTimeReportView;
+import ru.protei.portal.ui.common.client.view.report.timeresolution.ResolutionTimeReportView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -74,6 +83,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( CompanyModel.class ).asEagerSingleton();
         bind( HomeCompanyModel.class ).asEagerSingleton();
         bind( EmployeeModel.class ).asEagerSingleton();
+        bind( StateModel.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 
@@ -108,6 +118,11 @@ public class CommonClientModule extends AbstractGinModule {
         requestStaticInjection(RequestCallback.class);
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
+
+        bind( AbstractResolutionTimeReportView.class ).to( ResolutionTimeReportView.class ).in( Singleton.class );
+        bind( AbstractTimeElapsedReportView.class ).to( TimeElapsedReportView.class ).in( Singleton.class );
+        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
+        bind( AbstractCaseObjectsReportView.class ).to( CaseObjectsReportView.class ).in( Singleton.class );
     }
 }
 

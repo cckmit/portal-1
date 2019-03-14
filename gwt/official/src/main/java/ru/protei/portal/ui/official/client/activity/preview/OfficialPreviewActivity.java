@@ -102,7 +102,12 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
         view.setInfo(official.getInfo());
 
         fillMembers(OfficialUtils.createMembersByRegionsMap(official));
-        fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.OFFICIAL, official.getId()) );
+
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.OFFICIAL)
+                .withCaseId(official.getId())
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT))
+                .build());
 
     }
 
@@ -142,7 +147,7 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+        attachmentService.removeAttachmentEverywhere(En_CaseType.OFFICIAL, attachment.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
@@ -157,7 +162,12 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
                 view.attachmentsContainer().remove(attachment);
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(officialId));
-                fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.OFFICIAL, officialId ) );
+
+                fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                        .withCaseType(En_CaseType.OFFICIAL)
+                        .withCaseId(officialId)
+                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT))
+                        .build());
             }
         });
     }

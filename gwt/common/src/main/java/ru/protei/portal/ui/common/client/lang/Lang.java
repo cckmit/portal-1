@@ -1418,6 +1418,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationProbationPeriod();
 
+    String employeeRegistrationWithoutProbationPeriod();
+
     String employeeRegistrationProbationPeriodPlaceholder();
 
     String employeeRegistrationOSPlaceholder();
@@ -1459,4 +1461,42 @@ public interface Lang extends Messages, ContactItemLang {
     String productConfiguration();
 
     String markdownPreview();
+
+    String period();
+
+    String reportMissingProduct();
+
+    String reportMissingPeriod();
+
+    String reportTypeCaseResolutionTime();
+
+    String reportTypeCaseTimeElapsedWorkAutor();
+
+    String reportTypeCaseTimeElapsedPeriod();
+
+    String proteiTitleFull();
+
+    String authTitle();
+
+    String proteiTitleShort();
+
+    String authDescription();
+
+    String employeeRegistrationNumberColumn();
+
+    String employeeRegistrationCurators();
+
+    String employeeRegistrationValidationCurators();
+
+    String employeeRegistrationValidationProbationPeriod();
+
+    String timeElapsedTypeNone();
+
+    String timeElapsedTypeWatch();
+
+    String timeElapsedTypeNightWork();
+
+    String timeElapsedType();
+
+    String issueCommentElapsedTimeTypeLabel();
 }

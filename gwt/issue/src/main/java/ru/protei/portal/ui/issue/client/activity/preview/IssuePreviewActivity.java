@@ -12,14 +12,13 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,7 +95,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
@@ -113,12 +112,12 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 if(view.attachmentsContainer().isEmpty())
                     fireEvent(new IssueEvents.ChangeIssue(issueId));
 
-                fireEvent(new CaseCommentEvents.Show(
-                        view.getCommentsContainer(),
-                        En_CaseType.CRM_SUPPORT,
-                        issueId,
-                        policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-                ));
+                fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                        .withCaseType(En_CaseType.CRM_SUPPORT)
+                        .withCaseId(issueId)
+                        .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                        .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                        .build());
             }
         });
     }
@@ -153,7 +152,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         } else {
             view.setCompany( initiator.getCname() );
         }
-        view.setSubscriptionEmails(formSubscribers(value, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW), value.isPrivateCase())); //TODO change rule
+        fillSubscriptions(value);
 
         view.timeElapsedContainerVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW));
         Long timeElapsed = value.getTimeElapsed();
@@ -163,12 +162,24 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
 
-        fireEvent(new CaseCommentEvents.Show(
-                view.getCommentsContainer(),
-                En_CaseType.CRM_SUPPORT,
-                value.getId(),
-                policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-        ));
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.CRM_SUPPORT)
+                .withCaseId(value.getId())
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                .build());
+    }
+
+    private void fillSubscriptions( CaseObject value ) {
+        List<CompanySubscription> companySubscriptions = value.getInitiatorCompany() == null ? null : value.getInitiatorCompany().getSubscriptions();
+        String subscribers = formSubscribers( value.getNotifiers(), companySubscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
+        view.setSubscriptionEmails( subscribers );
+
+        companyService.getCompanyWithParentCompanySubscriptions( value.getInitiatorCompanyId(), new ShortRequestCallback<List<CompanySubscription>>()
+                .setOnSuccess( subscriptions -> {
+                    String subscribers2 = formSubscribers( value.getNotifiers(), subscriptions, policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ), value.isPrivateCase() );
+                    view.setSubscriptionEmails( subscribers2 );
+                } ) );
     }
 
     private void fillView( Long number ) {
@@ -192,19 +203,18 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         } );
     }
 
-    private String formSubscribers(CaseObject value, boolean isPersonsAllowed, boolean isPrivateCase){
-        Company initiator = value.getInitiatorCompany();
+    private String formSubscribers(Set<Person> notifiers, List< CompanySubscription > companySubscriptions, boolean isPersonsAllowed, boolean isPrivateCase){
 
         Stream<String> companySubscribers = Stream.empty();
-        if ( initiator != null && initiator.getSubscriptions() != null ) {
-             companySubscribers = initiator.getSubscriptions().stream()
+        if ( companySubscriptions != null ) {
+             companySubscribers = companySubscriptions.stream()
                      .map( CompanySubscription::getEmail )
                      .filter(mail -> !isPrivateCase || mail.endsWith("@protei.ru"));
         }
 
         Stream<String> personSubscribers = Stream.empty();
-        if(isPersonsAllowed && value.getNotifiers() != null){
-            personSubscribers = value.getNotifiers().stream().map(Person::getDisplayShortName);
+        if(isPersonsAllowed && notifiers != null){
+            personSubscribers = notifiers.stream().map(Person::getDisplayShortName);
         }
         return Stream.concat(companySubscribers, personSubscribers).collect(Collectors.joining(", "));
     }
@@ -226,6 +236,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     AttachmentServiceAsync attachmentService;
     @Inject
     PolicyService policyService;
+    @Inject
+    CompanyControllerAsync companyService;
 
     private Long issueCaseNumber;
     private Long issueId;

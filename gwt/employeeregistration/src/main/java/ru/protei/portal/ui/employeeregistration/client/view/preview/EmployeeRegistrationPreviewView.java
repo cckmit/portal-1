@@ -2,6 +2,7 @@ package ru.protei.portal.ui.employeeregistration.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -94,6 +95,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
+    public void setCurators( String curators ) {
+        this.curators.setInnerText(curators);
+    }
+
+    @Override
     public void setWithRegistration(String withRegistration) {
         this.withRegistration.setInnerText(withRegistration);
     }
@@ -125,8 +131,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setProbationPeriodMonth( Integer probationPeriodMonth ) {
-        probationPeriod.setInnerText( String.valueOf( probationPeriodMonth ));
+    public void setProbationPeriodMonth( String probationPeriodMonth ) {
+        probationPeriod.setInnerText(probationPeriodMonth);
     }
 
     @Override
@@ -144,6 +150,13 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         this.additionalSoft.setInnerText( additionalSoft );
     }
 
+    @Override
+    public void setHeader( String value ) {
+        this.header.setInnerText( value );
+    }
+
+    @UiField
+    Element header;
     @Inject
     @UiField(provided = true)
     IssueLinks issues;
@@ -183,6 +196,8 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     DivElement caseState;
     @UiField
     HTMLPanel commentContainer;
+    @UiField
+    SpanElement curators;
 
 
     @Inject

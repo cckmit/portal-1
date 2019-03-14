@@ -232,7 +232,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         infoFacade.setFactAddress(view.workAddress().getText());
         infoFacade.setHomeAddress(view.homeAddress().getText());
         infoFacade.setFax(view.workFax().getText());
-//        contact.setFaxHome(view.homeFax().getText());
+        infoFacade.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
 
@@ -288,6 +288,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.homeAddress().setText(infoFacade.getHomeAddress());
 
         view.workFax().setText(infoFacade.getFax());
+        view.homeFax().setText(infoFacade.getFaxHome());
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());
 

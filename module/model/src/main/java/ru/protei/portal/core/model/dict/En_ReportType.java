@@ -13,5 +13,10 @@ public enum En_ReportType {
     /**
      * Отчет по затраченному времени
      */
-    CASE_TIME_ELAPSED
+    CASE_TIME_ELAPSED,
+
+    /**
+     * Отчет по времени завершения
+     */
+    CASE_RESOLUTION_TIME
 }

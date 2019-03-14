@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -127,6 +128,9 @@ public class CaseObject extends AuditableObject {
 
     // not db column
     private List<CaseLink> links;
+
+    // not db column
+    private En_TimeElapsedType timeElapsedType;
 
     public CaseObject() {
 
@@ -461,6 +465,14 @@ public class CaseObject extends AuditableObject {
         this.products = products;
     }
 
+    public En_TimeElapsedType getTimeElapsedType() {
+        return timeElapsedType;
+    }
+
+    public void setTimeElapsedType( En_TimeElapsedType timeElapsedType ) {
+        this.timeElapsedType = timeElapsedType;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -503,4 +515,6 @@ public class CaseObject extends AuditableObject {
                 ", timeElapsed=" + timeElapsed +
                 '}';
     }
+
+
 }

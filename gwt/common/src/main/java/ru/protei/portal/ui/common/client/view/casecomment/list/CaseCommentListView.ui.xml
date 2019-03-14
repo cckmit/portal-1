@@ -3,6 +3,7 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
+             xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -21,6 +22,7 @@
                             <autoresizetextarea:AutoResizeTextArea
                                     ui:field="comment"
                                     styleName="input-field form-group message-input resize-vertical"
+                                    enablePasteImage="true"
                                     minRows="5" maxRows="20"/>
 
                             <div class="attachments">
@@ -34,8 +36,10 @@
                                     </div>
                                 </fileuploader:AttachmentUploader>
 
-                                <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field inline-block time-elapsed" notNull="false"/>
-
+                                <div class="inline-block ">
+                                    <timefield:TimeTextBox ui:field="timeElapsed" styleName="input-field inline-block time-elapsed" notNull="false"/>
+                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" styleName="inline-block" />
+                                </div>
                                 <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                             </div>
 

@@ -170,7 +170,6 @@ public abstract class DocumentEditActivity
     private void setDecimalNumberEnabled() {
         En_DocumentCategory category = view.documentCategory().getValue();
         view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
-        view.decimalNumberEnabled().setEnabled(category != null && !category.isForEquipment());
     }
 
     private boolean checkDocumentUploadValid(Document newDocument) {
@@ -182,13 +181,21 @@ public abstract class DocumentEditActivity
     }
 
     private boolean checkDocumentValid(Document newDocument) {
-        if (!newDocument.isValid()) {
+        if (!isValidDocument(newDocument)) {
             fireErrorMessage(getValidationErrorMessage(newDocument));
             return false;
         }
         return true;
     }
-
+    private boolean isValidDocument(Document document){
+        return document.isValid() && isValidInventoryNumberForMinistryOfDefence(document);
+    }
+    private boolean isValidInventoryNumberForMinistryOfDefence(Document document) {
+        if (view.project().getValue().getCustomerType() == En_CustomerType.MINISTRY_OF_DEFENCE) {
+            return document.getInventoryNumber() != null && (document.getInventoryNumber() > 0);
+        }
+        return true;
+    }
     private void saveDocument(Document document) {
         this.document = document;
         view.saveEnabled().setEnabled(false);
@@ -226,7 +233,9 @@ public abstract class DocumentEditActivity
         if (doc.getProjectId() == null) {
             return lang.documentProjectIsEmpty();
         }
-        if (doc.getInventoryNumber() != null && doc.getInventoryNumber() < 0) {
+        if (doc.getInventoryNumber() == null || doc.getInventoryNumber() == 0) {
+            return lang.inventoryNumberIsEmpty();
+        } else if (doc.getInventoryNumber() < 0) {
             return lang.negativeInventoryNumber();
         }
         if (HelperFunc.isEmpty(doc.getName())) {
@@ -251,7 +260,7 @@ public abstract class DocumentEditActivity
         d.setVersion(view.version().getValue());
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
-        d.setApproved(true);
+        d.setApproved(view.isApproved().getValue());
         return d;
     }
 
@@ -275,6 +284,7 @@ public abstract class DocumentEditActivity
         view.version().setValue(document.getVersion());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()), true);
         view.decimalNumberText().setText(document.getDecimalNumber());
+        view.isApproved().setValue(document.getApproved());
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());

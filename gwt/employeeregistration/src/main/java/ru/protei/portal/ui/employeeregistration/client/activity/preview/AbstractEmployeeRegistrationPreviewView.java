@@ -28,7 +28,9 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setResourceList(String resourcesList);
 
-    void setWithRegistration(String withRegistration);
+    void setCurators( String curators );
+
+    void setWithRegistration( String withRegistration);
 
     void setCreated(String created);
 
@@ -40,11 +42,13 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
 
     void setPhoneOfficeTypeList( String pnoneOfficeTypeList );
 
-    void setProbationPeriodMonth( Integer probationPeriodMonth );
+    void setProbationPeriodMonth( String probationPeriodMonth );
 
     void setOperatingSystem( String operatingSystem );
 
     void setResourceComment( String resourceComment );
 
     void setAdditionalSoft( String additionalSoft );
+
+    void setHeader( String value );
 }

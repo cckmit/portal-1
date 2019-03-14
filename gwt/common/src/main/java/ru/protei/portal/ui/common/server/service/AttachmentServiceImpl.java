@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.server.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -20,8 +21,8 @@ import java.util.List;
 public class AttachmentServiceImpl implements AttachmentService{
 
     @Override
-    public List<Attachment> getAttachmentsByCaseId(Long caseId) throws RequestFailedException {
-        CoreResponse<List<Attachment>> response =  attachmentService.getAttachmentsByCaseId( getDescriptorAndCheckSession().makeAuthToken(), caseId);
+    public List<Attachment> getAttachmentsByCaseId(En_CaseType caseType, Long caseId) throws RequestFailedException {
+        CoreResponse<List<Attachment>> response =  attachmentService.getAttachmentsByCaseId( getDescriptorAndCheckSession().makeAuthToken(), caseType, caseId);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
@@ -30,8 +31,8 @@ public class AttachmentServiceImpl implements AttachmentService{
     }
 
     @Override
-    public List<Attachment> getAttachments(List<Long> attachmentIds) throws RequestFailedException {
-        CoreResponse<List<Attachment>> response =  attachmentService.getAttachments( getDescriptorAndCheckSession().makeAuthToken(), attachmentIds);
+    public List<Attachment> getAttachments(En_CaseType caseType, List<Long> attachmentIds) throws RequestFailedException {
+        CoreResponse<List<Attachment>> response =  attachmentService.getAttachments( getDescriptorAndCheckSession().makeAuthToken(), caseType, attachmentIds);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
@@ -40,8 +41,8 @@ public class AttachmentServiceImpl implements AttachmentService{
     }
 
     @Override
-    public boolean removeAttachmentEverywhere(Long attachmentId) throws RequestFailedException{
-        CoreResponse<Boolean> response =  attachmentService.removeAttachmentEverywhere( getDescriptorAndCheckSession().makeAuthToken(), attachmentId);
+    public boolean removeAttachmentEverywhere(En_CaseType caseType, Long attachmentId) throws RequestFailedException{
+        CoreResponse<Boolean> response =  attachmentService.removeAttachmentEverywhere( getDescriptorAndCheckSession().makeAuthToken(), caseType, attachmentId);
 
         if(response.isError())
             throw new RequestFailedException( response.getStatus() );
