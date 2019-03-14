@@ -282,6 +282,10 @@ public class CaseServiceImpl implements CaseService {
 
         caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
 
+        if (policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_EDIT, En_Scope.SYSTEM)) {
+            jdbcManyRelationsHelper.persist(caseObject, "tags");
+        }
+
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
 

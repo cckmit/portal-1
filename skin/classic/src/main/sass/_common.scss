@@ -2228,45 +2228,64 @@ a {
 .preview .case-link-icon {
   margin-top: 4px;
 }
-.case-links {
-  .case-links-label {
-    display: inline-block;
-    float: left;
-  }
 
-  .case-links-container {
-    display: inline-block;
-    float: left;
-    margin: 0;
-    padding: 0;
-    line-height: 0.8em;
+.case-meta {
+  position: relative;
+  display: flex;
 
-    > div {
-      position: relative;
+  .case-meta-content {
+    flex: 1;
+
+    .case-meta-links, .case-meta-tags {
+      &:after {
+        content: "";
+        display: block;
+        clear: both;
+      }
+    }
+
+    .case-meta-label {
       display: inline-block;
-      outline: none;
+      float: left;
+    }
+
+    .case-meta-container {
+      display: inline-block;
+      float: left;
+      margin: 0;
+      padding: 0;
+      line-height: 0.8em;
+
+      > div {
+        position: relative;
+        display: inline-block;
+        outline: none;
+      }
     }
   }
 
-  .case-links-button {
-    padding: 0;
-    margin: 2px 0 2px 2px;
+  .case-meta-controls {
 
-    i {
-      position: relative;
-      height: 26px;
-      line-height: 26px;
-      float: left;
-      vertical-align: middle;
-    }
+    > .case-meta-button {
+      padding: 0;
+      margin: 3px 0;
 
-    i:nth-child(1) {
-      padding: 0 1px 0 8px;
-    }
+      i {
+        position: relative;
+        height: 26px;
+        line-height: 26px;
+        float: left;
+        vertical-align: middle;
+      }
 
-    i:nth-child(2) {
-      font-size: 0.6em;
-      padding: 0 8px 0 2px;
+      i:nth-child(1) {
+        padding: 0 1px 0 8px;
+      }
+
+      i:nth-child(2) {
+        font-size: 0.6em;
+        padding: 0 8px 0 2px;
+      }
     }
   }
 }
@@ -2274,7 +2293,7 @@ a {
 .case-link {
   position: relative;
   display: inline-block;
-  margin: 3px 0 0 4px;
+  margin: 2px;
   text-align: center;
   height: 22px;
   line-height: 22px;
@@ -2471,6 +2490,101 @@ a {
   .type-selector-item {
     display: block;
     padding: 0;
+  }
+}
+
+.case-tag {
+  position: relative;
+  display: inline-block;
+  margin: 2px;
+  text-align: center;
+  height: 22px;
+  line-height: 22px;
+  cursor: default;
+
+  > * {
+    float: left;
+  }
+
+  .case-tag-close {
+    height: 12px;
+    width: 12px;
+    padding: 5px 2px 5px 4px;
+    font-size: 0.8em;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .case-tag-text {
+    padding: 0 2px 0 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .case-tag-icon {
+    height: 16px;
+    width: 16px;
+    margin: 2px 2px 2px 3px;
+    line-height: 16px;
+    color: #383838;
+    background-color: #e9edef;
+    border-radius: 2px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.8em;
+    font-weight: bold;
+  }
+}
+
+.case-tag-popup {
+  z-index: 1000;
+  float: left;
+  min-width: 160px;
+  text-align: left;
+  box-sizing: border-box;
+  background: #fff;
+  box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  -webkit-box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
+  border: 1px solid #ced2d7;
+
+  .case-tag-popup-header {
+    display: flex;
+    border-bottom: 1px solid #ced2d7;
+
+    > .search-input {
+      flex: 1;
+
+      input {
+        border-color: transparent;
+      }
+    }
+
+    > .btn {
+      border-left: 1px solid #ced2d7;
+    }
+  }
+
+  .case-tag-list {
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 0;
+
+    .case-tag {
+      position: relative;
+      display: flex;
+      margin-left: 6px;
+      cursor: pointer;
+
+      .case-tag-text {
+        flex: 1;
+        text-align: left;
+      }
+    }
   }
 }
 

@@ -33,7 +33,7 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_CREATE )
     CoreResponse<CaseObject> saveCaseObject( AuthToken token, CaseObject p, Person initiator );
 
-    @Privileged({ En_Privilege.ISSUE_CREATE })
+    @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p );
 

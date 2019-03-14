@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * Service to get/save/remove attachments {@link ru.protei.portal.core.model.ent.Attachment}
  * of types {@link ru.protei.portal.core.model.dict.En_CaseType}
- * Privileges are checked manually
  */
 public interface AttachmentService {
 

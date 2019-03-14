@@ -1,12 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:enterabletextbox='urn:import:ru.protei.portal.ui.common.client.widget.enterabletextbox'
-             xmlns:popup='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.popup'>
+             xmlns:popup='urn:import:ru.protei.portal.ui.common.client.widget.casemeta.link.popup'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="case-link-popup">
-        <popup:IssueLinksTypeSelector ui:field="typeSelector" styleName="type-selector"/>
+        <popup:CaseLinkTypeSelector ui:field="typeSelector" styleName="type-selector"/>
         <enterabletextbox:EnterableTextBox ui:field="remoteIdInput" placeholder="{lang.id}" styleName="remote-id-input"/>
     </g:HTMLPanel>
 </ui:UiBinder>

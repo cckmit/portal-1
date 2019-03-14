@@ -18,7 +18,6 @@ import java.util.List;
 /**
  * Service to get/add/update/remove comments {@link CaseComment}
  * of types {@link En_CaseType}
- * Audit performed manually
  */
 public interface CaseCommentService {
 

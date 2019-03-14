@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.issuelinks.popup;
+package ru.protei.portal.ui.common.client.widget.casemeta.link.popup;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOptionCreat
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 import ru.protei.portal.ui.common.client.widget.togglebtn.group.ToggleBtnGroup;
 
-public class IssueLinksTypeSelector extends ButtonSelector<En_CaseLink> {
+public class CaseLinkTypeSelector extends ButtonSelector<En_CaseLink> {
 
     @Inject
     public void init() {

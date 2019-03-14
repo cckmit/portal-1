@@ -4,6 +4,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @JdbcEntity(table = "case_tag")
 public class CaseTag implements Serializable {
@@ -53,6 +54,19 @@ public class CaseTag implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CaseTag caseTag = (CaseTag) o;
+        return Objects.equals(id, caseTag.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override

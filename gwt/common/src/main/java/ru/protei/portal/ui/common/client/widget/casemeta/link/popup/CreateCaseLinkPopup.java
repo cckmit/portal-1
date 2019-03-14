@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.issuelinks.popup;
+package ru.protei.portal.ui.common.client.widget.casemeta.link.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.enterabletextbox.EnterableTextBox;
 
-public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandlers<CaseLink> {
+public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHandlers<CaseLink> {
 
     @Inject
     public void onInit() {
@@ -125,7 +125,7 @@ public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandler
     HTMLPanel root;
     @Inject
     @UiField(provided = true)
-    IssueLinksTypeSelector typeSelector;
+    CaseLinkTypeSelector typeSelector;
     @UiField
     EnterableTextBox remoteIdInput;
     @Inject
@@ -138,6 +138,6 @@ public class CreateLinkPopup extends PopupPanel implements HasValueChangeHandler
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
 
-    interface CreateLinkPopupViewUiBinder extends UiBinder<HTMLPanel, CreateLinkPopup> {}
+    interface CreateLinkPopupViewUiBinder extends UiBinder<HTMLPanel, CreateCaseLinkPopup> {}
     private static CreateLinkPopupViewUiBinder ourUiBinder = GWT.create(CreateLinkPopupViewUiBinder.class);
 }

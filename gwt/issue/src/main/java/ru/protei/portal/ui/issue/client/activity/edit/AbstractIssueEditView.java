@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -40,6 +41,7 @@ public interface AbstractIssueEditView extends IsWidget {
     HasValue<Boolean> isLocal();
     HasValue<Set<PersonShortView>> notifiers();
     HasValue<Set<CaseLink>> links();
+    HasValue<Set<CaseTag>> tags();
 
     HasValidable nameValidator();
     HasValidable stateValidator();
@@ -92,5 +94,7 @@ public interface AbstractIssueEditView extends IsWidget {
     void initiatorSelectorAllowAddNew(boolean b);
 
     void applyCompanyValueIfOneOption();
+
+    void setTagsEnabled(boolean enabled);
 
 }

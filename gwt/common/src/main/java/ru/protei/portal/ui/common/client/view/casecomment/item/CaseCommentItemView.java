@@ -19,8 +19,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
-import ru.protei.portal.ui.common.client.util.MarkdownClient;
+import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
@@ -163,7 +162,7 @@ public class CaseCommentItemView
         Set<CaseLink> set = new HashSet<>();
         if (remoteLink != null)
             set.add(remoteLink);
-        this.remoteLink.setValue(set);
+        this.remoteLink.setLinks(set);
         this.remoteLink.setVisible(remoteLink != null);
     }
 
@@ -199,7 +198,7 @@ public class CaseCommentItemView
 
     @Inject
     @UiField(provided = true)
-    IssueLinks remoteLink;
+    CaseMetaView remoteLink;
     @UiField
     HTMLPanel message;
     @UiField

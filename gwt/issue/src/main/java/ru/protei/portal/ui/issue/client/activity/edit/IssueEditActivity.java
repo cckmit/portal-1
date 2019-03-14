@@ -291,6 +291,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.links().setValue(issue.getLinks() == null ? null : new HashSet<>(issue.getLinks()));
+        view.tags().setValue(issue.getTags() == null ? null : new HashSet<>(issue.getTags()));
+        view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
 
         view.name().setValue(issue.getName());
 
@@ -359,6 +361,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
         issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
+        issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
 
         if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             issue.setTimeElapsed(view.timeElapsedInput().getTime());

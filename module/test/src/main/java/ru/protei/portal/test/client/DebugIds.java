@@ -149,7 +149,7 @@ public class DebugIds {
         String LINKS_TYPE_SELECTOR = "issue-links-type-selector";
         String LINKS_INPUT = "issue-links-input";
         String LINKS_APPLY_BUTTON = "issue-links-apply-button";
-        String LINKS_ERROR_LABEL = "issue-links-error-label";
+        @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
         String STATE_SELECTOR = "issue-state-selector";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
         String COMPANY_SELECTOR = "issue-company-selector";

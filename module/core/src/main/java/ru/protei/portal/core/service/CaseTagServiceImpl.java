@@ -2,10 +2,12 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseObjectTag;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
@@ -24,6 +26,12 @@ public class CaseTagServiceImpl implements CaseTagService {
         return id == null ?
                 new CoreResponse<>().error(En_ResultStatus.NOT_CREATED) :
                 new CoreResponse<>().success();
+    }
+
+    @Override
+    public CoreResponse<List<CaseObjectTag>> getTagsForCase(AuthToken token, long caseId) {
+        List<CaseObjectTag> tags = caseObjectTagDAO.getListByCaseId(caseId);
+        return new CoreResponse<List<CaseObjectTag>>().success(tags);
     }
 
     @Override
@@ -49,4 +57,6 @@ public class CaseTagServiceImpl implements CaseTagService {
 
     @Autowired
     CaseTagDAO caseTagDAO;
+    @Autowired
+    CaseObjectTagDAO caseObjectTagDAO;
 }
