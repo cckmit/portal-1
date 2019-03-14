@@ -1501,4 +1501,12 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentElapsedTimeTypeLabel();
 
     String tags();
+
+    String colorHex();
+
+    String tagCreate();
+
+    String tagName();
+
+    String tagColor();
 }

@@ -28,6 +28,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.casemeta.link.item.CaseLinkView;
@@ -191,7 +192,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
 
     @UiHandler("addLinkButton")
     public void addLinkButtonClick(ClickEvent e) {
-        if (!enabled) {
+        if (!enabled || !linksEnabled) {
             return;
         }
         createCaseLinkPopup.showNear(addLinkButton);
@@ -203,7 +204,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
 
     @UiHandler("addTagButton")
     public void addTagButtonClick(ClickEvent e) {
-        if (!enabled) {
+        if (!enabled || !tagsEnabled) {
             return;
         }
         caseTagSelectorPopup.showNear(addTagButton);
@@ -212,6 +213,12 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
             tagsPopupHandlerRegistration.removeHandler();
         }
         tagsPopupHandlerRegistration = caseTagSelectorPopup.addValueChangeHandler(event -> addCaseTag(event.getValue()));
+        if (tagsCreateHandlerRegistration != null) {
+            tagsCreateHandlerRegistration.removeHandler();
+        }
+        tagsCreateHandlerRegistration = caseTagSelectorPopup.addAddHandler(event -> {
+            activity.fireEvent(new CaseTagEvents.Create(tagCaseType));
+        });
     }
 
     private void addCaseLink(CaseLink item) {
@@ -371,6 +378,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     private En_CaseType tagCaseType;
     private HandlerRegistration linksPopupHandlerRegistration;
     private HandlerRegistration tagsPopupHandlerRegistration;
+    private HandlerRegistration tagsCreateHandlerRegistration;
 
     interface CaseMetaViewUiBinder extends UiBinder<HTMLPanel, CaseMetaView> {}
     private static CaseMetaViewUiBinder ourUiBinder = GWT.create(CaseMetaViewUiBinder.class);

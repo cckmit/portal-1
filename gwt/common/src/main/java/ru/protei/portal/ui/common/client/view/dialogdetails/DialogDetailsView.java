@@ -66,6 +66,7 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
 
     @UiHandler( "save" )
     public void onSaveClicked( ClickEvent event ) {
+        event.preventDefault();
         fireSaveClicked();
     }
 

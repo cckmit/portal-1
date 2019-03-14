@@ -11,5 +11,7 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/CaseTagController" )
 public interface CaseTagController extends RemoteService {
 
+    void createTag(CaseTag caseTag) throws RequestFailedException;
+
     List<CaseTag> getCaseTagsForCaseType(En_CaseType caseType) throws RequestFailedException;
 }

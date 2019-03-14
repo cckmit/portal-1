@@ -15,6 +15,9 @@ import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.events.AddEvent;
+import ru.protei.portal.ui.common.client.events.AddHandler;
+import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagController;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
@@ -26,7 +29,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import java.util.List;
 import java.util.Set;
 
-public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueChangeHandlers<CaseTag> {
+public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers {
 
     @Inject
     public void onInit() {
@@ -37,6 +40,11 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseTag> handler) {
         return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addAddHandler(AddHandler handler) {
+        return addHandler(handler, AddEvent.getType());
     }
 
     @Override
@@ -62,7 +70,8 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
 
     @UiHandler("addButton")
     public void addButtonClick(ClickEvent event) {
-
+        AddEvent.fire(this);
+        hide();
     }
 
     private void resetSearchFilter() {
