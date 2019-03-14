@@ -350,6 +350,11 @@ public class CaseObject extends AuditableObject {
         return creator;
     }
 
+    public void setCreator (Person person) {
+        this.creator = person;
+        this.creatorId = person != null ? person.getId() : null;
+    }
+
     public Person getInitiator() {
         return initiator;
     }

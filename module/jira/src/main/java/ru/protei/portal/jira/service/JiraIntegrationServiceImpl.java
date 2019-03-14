@@ -155,6 +155,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setLocal(0);
         caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
         caseObj.setInitiatorCompany(companyDAO.get(endpoint.getCompanyId()));
+        caseObj.setCreator (caseObj.getInitiator());
+        caseObj.setCreatorInfo("jira");
 
         updateCaseState(endpoint, issue, caseObj);
         updatePriorityAndInfo(endpoint, issue, caseObj);
