@@ -294,15 +294,42 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     }
 
     private void parseAndUpdateComments(Long caseId, Date lastSynchronization, Long caseLinkId, List<Comment> comments) {
-        List<CaseComment> commentsToAdd = new LinkedList<>();
-        List<CaseComment> commentsToMerge = new LinkedList<>();
-        List<Long> commentsToDelete = new LinkedList<>();
+
+        if (CollectionUtils.isEmpty(comments)) {
+            return;
+        }
+
+        comments = comments.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Set<CaseComment> commentsToAdd = new LinkedHashSet<>();
+        Set<CaseComment> commentsToMerge = new LinkedHashSet<>();
+        Set<Long> commentsToDelete = new LinkedHashSet<>();
+
+        List<CaseComment> caseComments = caseCommentDAO.listByRemoteIds(comments.stream()
+                .map(Comment::getId)
+                .collect(Collectors.toList()));
+
+        List<String> checkedRemoteIds = new ArrayList<>();
+        for (ListIterator<CaseComment> it = caseComments.listIterator(); it.hasNext();) {
+            CaseComment caseComment = it.next();
+            if (checkedRemoteIds.contains(caseComment.getRemoteId())) {
+                log.warn("parseAndUpdateComments(): caseId={}: comment duplication detected at database, " +
+                        "going to remove comment: [remoteId={}], [caseComment={}]", caseComment.getRemoteId(), caseComment);
+                commentsToDelete.add(caseComment.getId());
+                it.remove();
+                continue;
+            }
+            checkedRemoteIds.add(caseComment.getRemoteId());
+        }
 
         for (Comment comment : comments) {
-            if (comment == null)
-                continue;
 
-            CaseComment caseComment = caseCommentDAO.getByRemoteId(comment.getId());
+            CaseComment caseComment = caseComments.stream()
+                    .filter(cc -> Objects.equals(cc.getRemoteId(), comment.getId()))
+                    .findFirst()
+                    .orElse(null);
 
             Boolean isDeleted = comment.getDeleted();
             boolean existInDb = caseComment != null;
