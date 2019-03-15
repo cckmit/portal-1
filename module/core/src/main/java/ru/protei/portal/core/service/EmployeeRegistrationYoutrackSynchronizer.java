@@ -216,6 +216,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             ChangeResponse changes = issueToChanges.get(caseLink);
             if (changes == null)
                 continue;
+
+            log.info("updateIssues(): caseId={}, caseLink={}, changes={}", employeeRegistration.getId(), caseLink, changes);
+
             parseStateChanges(employeeRegistration, lastYtSynchronization, caseLink.getId(), changes.getChange());
             parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), changes.getIssue().getComment());
         }
@@ -311,22 +314,11 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 .map(Comment::getId)
                 .collect(Collectors.toList()));
 
-        List<String> checkedRemoteIds = new ArrayList<>();
-        for (ListIterator<CaseComment> it = caseComments.listIterator(); it.hasNext();) {
-            CaseComment caseComment = it.next();
-            if (checkedRemoteIds.contains(caseComment.getRemoteId())) {
-                log.warn("parseAndUpdateComments(): caseId={}: comment duplication detected at database, " +
-                        "going to remove comment: [remoteId={}], [caseComment={}]", caseComment.getRemoteId(), caseComment);
-                commentsToDelete.add(caseComment.getId());
-                it.remove();
-                continue;
-            }
-            checkedRemoteIds.add(caseComment.getRemoteId());
-        }
+        List<CaseComment> caseCommentsWithoutDup = makeCaseCommentListWithoutDuplicates(caseComments);
 
         for (Comment comment : comments) {
 
-            CaseComment caseComment = caseComments.stream()
+            CaseComment caseComment = caseCommentsWithoutDup.stream()
                     .filter(cc -> Objects.equals(cc.getRemoteId(), comment.getId()))
                     .findFirst()
                     .orElse(null);
@@ -366,6 +358,10 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 log.debug("parseAndUpdateComments(): update comment text: YT: {}, PORTAL: {}", comment, caseComment);
             }
         }
+
+        log.info("parseAndUpdateComments(): caseId={}, commentsToAdd={}, commentsToMerge={}, commentsToDelete={}",
+                caseId, commentsToAdd, commentsToMerge, commentsToDelete);
+
         caseCommentDAO.persistBatch(commentsToAdd);
         caseCommentDAO.mergeBatch(commentsToMerge);
         caseCommentDAO.removeByKeys(commentsToDelete);
@@ -413,5 +409,20 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private void fireEmployeeRegistrationEvent(EmployeeRegistration employeeRegistration) {
         publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+    }
+
+    private List<CaseComment> makeCaseCommentListWithoutDuplicates(List<CaseComment> caseComments) {
+        List<CaseComment> checkedCaseComments = new ArrayList<>();
+        List<String> checkedRemoteIds = new ArrayList<>();
+        for (CaseComment caseComment : caseComments) {
+            if (checkedRemoteIds.contains(caseComment.getRemoteId())) {
+                log.warn("makeCaseCommentListWithoutDuplicates(): comment duplication detected at database: " +
+                        "[remoteId={}], [caseComment={}]", caseComment.getRemoteId(), caseComment);
+                continue;
+            }
+            checkedRemoteIds.add(caseComment.getRemoteId());
+            checkedCaseComments.add(caseComment);
+        }
+        return checkedCaseComments;
     }
 }
