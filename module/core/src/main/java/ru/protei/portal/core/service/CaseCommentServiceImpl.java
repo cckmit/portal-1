@@ -296,7 +296,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_UPDATED);
         }
 
-        if (!person.getId().equals(comment.getAuthorId()) || !isCaseCommentReadOnly(comment.getCreated())) {
+        if (!person.getId().equals(comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
             return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -399,7 +399,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         c.setTime(date);
         long checked = c.getTimeInMillis();
 
-        return current - checked < CHANGE_LIMIT_TIME;
+        return current - checked > CHANGE_LIMIT_TIME;
     }
 
     private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
