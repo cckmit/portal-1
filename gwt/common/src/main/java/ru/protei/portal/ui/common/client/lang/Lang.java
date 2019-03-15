@@ -1499,4 +1499,6 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedType();
 
     String issueCommentElapsedTimeTypeLabel();
+
+    String selectValue();
 }
