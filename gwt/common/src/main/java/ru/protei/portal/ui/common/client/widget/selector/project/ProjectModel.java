@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -16,10 +17,14 @@ import java.util.*;
 
 public abstract class ProjectModel implements Activity {
 
-
     @Event
     public void onInit(AuthEvents.Success event) {
         this.profile = event.profile;
+        refreshOptions();
+    }
+
+    @Event
+    public void onProjectChanged(ProjectEvents.ChangeModel event) {
         refreshOptions();
     }
 

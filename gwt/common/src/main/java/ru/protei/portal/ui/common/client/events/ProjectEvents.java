@@ -69,7 +69,12 @@ public class ProjectEvents {
     public static class ChangeStateModel {}
 
     /**
-     * Добавление / изменение / удаление проектов
+     * Изменение модели проектов
+     */
+    public static class ChangeModel {}
+
+    /**
+     * Изменение проекта
      */
     public static class Changed {
         public Changed() {
