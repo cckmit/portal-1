@@ -7,6 +7,7 @@
              xmlns:doctype='urn:import:ru.protei.portal.ui.common.client.widget.document.doctype'
              xmlns:keyword='urn:import:ru.protei.portal.ui.common.client.widget.stringselect.input'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:group='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -45,6 +46,11 @@
                     <ui:text from="{lang.documentType}"/>
                 </label>
                 <doctype:DocumentTypeSelector ui:field="documentType"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.documentApproved}"/></label>
+                <group:ThreeStateButton ui:field="approved"/>
             </div>
 
             <div class="form-group col-xs-12">

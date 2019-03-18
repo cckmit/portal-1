@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -63,6 +64,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseCommentService caseCommentService;
+
+    @Autowired
+    CasePrivilegeValidator casePrivilegeValidator;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
@@ -150,7 +154,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, caseObject.getState(), caseObject.getTimeElapsed());
+        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
         if(stateMessageId == null)
             log.error("State message for the issue %d not saved!", caseId);
 
@@ -230,7 +234,7 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         if(oldState.getState() != caseObject.getState()){
-            Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null);
+            Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null, null);
             if(messageId == null)
                 log.error("State message for the issue %d isn't saved!", caseObject.getId());
         }
@@ -377,8 +381,10 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, Attachment attachment, long caseNumber) {
-        CaseObject caseObject = caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber);
+    public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
+        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
+
+        CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return new CoreResponse<Long>().error( En_ResultStatus.PERMISSION_DENIED );
         }
@@ -410,7 +416,7 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
-    private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed){
+    private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
         stateChangeMessage.setCreated(new Date());
@@ -418,6 +424,7 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseStateId((long)state.getId());
         if (timeElapsed != null && timeElapsed > 0L) {
             stateChangeMessage.setTimeElapsed(timeElapsed);
+            stateChangeMessage.setTimeElapsedType(timeElapsedType!=null?timeElapsedType:En_TimeElapsedType.NONE);
         }
         return caseCommentDAO.persist(stateChangeMessage);
     }
@@ -456,7 +463,9 @@ public class CaseServiceImpl implements CaseService {
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
             caseObject.setPrivateCase( false );
-            caseObject.setInitiatorCompany( descriptor.getCompany() );
+            if(!descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() )) {
+                caseObject.setInitiatorCompany( descriptor.getCompany() );
+            }
             caseObject.setManagerId( null );
         }
     }

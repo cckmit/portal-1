@@ -1,9 +1,10 @@
 package ru.protei.portal.core.service;
 
 import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -18,15 +19,20 @@ import ru.protei.portal.util.MarkdownServer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Реализация сервиса управления проектами
  */
 public class TemplateServiceImpl implements TemplateService {
-    private static Logger log = LoggerFactory.getLogger(TemplateServiceImpl.class);
+    public static final String BASE_TEMPLATE_PATH = "notification/email/";
+    private static Logger log = getLogger(TemplateServiceImpl.class);
 
     Configuration templateConfiguration;
 
@@ -124,6 +130,69 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+
+    @Override
+    public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "userName", employeeName);
+
+        return getText( model, "employee.registration.employee.feedback.body.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject() throws IOException, TemplateException {
+        return getText( new HashMap<>(), "employee.registration.employee.feedback.subject.%s.ftl" );
+    }
+
+    @Override
+    public  String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "userName", employeeName);
+
+        return getText( model, "employee.registration.development.agenda.body.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject() throws IOException, TemplateException {
+        return getText( new HashMap<>(), "employee.registration.development.agenda.subject.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employee_registration_name", employeeFullName );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
+        model.put( "userName", recipientName);
+
+        return getText(model, "employee.registration.probation.body.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employeeFullName", employeeFullName );
+
+        return getText(model, "employee.registration.probation.subject.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationCuratorsEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employee_registration_name", employeeFullName );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
+        model.put( "userName", recipientName);
+
+        return getText(model, "employee.registration.probation.curators.body.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationCuratorsEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employeeFullName", employeeFullName );
+
+        return getText(model, "employee.registration.probation.curators.subject.%s.ftl");
+    }
+
     @Override
     public PreparedTemplate getEmployeeRegistrationEmailNotificationBody(EmployeeRegistration employeeRegistration, String urlTemplate, Collection<String> recipients) {
         Map<String, Object> templateModel = new HashMap<>();
@@ -198,11 +267,13 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    private String escapeTextComment(String text) {
+    String escapeTextComment( String text) {
         if (text == null) {
             return null;
         }
-        text = markdownServer.plain2escaped2markdown( text );
+        text = HTMLHelper.htmlEscape(text);
+        text = markdownServer.plain2markdown(text);
+        text = replaceLineBreaks( text );
         return text;
     }
 
@@ -219,7 +290,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        return text.replaceAll("(\r\n|\n|\r)", "<br/>");
+        return text.replaceAll("((?<!<br \\/>)[\r\n|\n|\r])", "<br/>");
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
@@ -232,5 +303,24 @@ public class TemplateServiceImpl implements TemplateService {
         model.put( "addedAttachments", added);
 
         return model;
+    }
+
+    private String getText( Map<String, Object> model, String nameTemplate ) throws IOException, TemplateException  {
+        return getText( model, nameTemplate, null );
+    }
+
+    private String getText( Map<String, Object> model, String nameTemplate, Locale lang  ) throws IOException, TemplateException {
+        Writer writer = new StringWriter();
+
+        if (lang == null) {
+            lang = new Locale( "ru" );
+        }
+
+        nameTemplate = String.format( nameTemplate, lang.getLanguage() );
+
+        Template template = templateConfiguration.getTemplate( BASE_TEMPLATE_PATH + nameTemplate, lang );
+        template.process( model, writer );
+        return writer.toString();
+
     }
 }

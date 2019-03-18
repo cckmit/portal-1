@@ -201,6 +201,12 @@ public abstract class MultipleSelector<T>
         }
     }
 
+
+    @Override
+    public void refreshValue() {
+        getSelectedItemNamesAndFillSelectorView();
+    }
+
     protected void reselectValuesIfNeeded() {
         Set<T> value = getValue();
         if (CollectionUtils.isNotEmpty(value)) {

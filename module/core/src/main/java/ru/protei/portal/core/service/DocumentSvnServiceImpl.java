@@ -32,7 +32,7 @@ public class DocumentSvnServiceImpl implements DocumentSvnService {
         try {
             repository = DAVRepositoryFactory.create(SVNURL.parseURIEncoded(repositoryUrl));
         } catch (SVNException e) {
-            log.error("Failed to init repository " + repositoryUrl, e);
+            log.error("Failed to condition repository " + repositoryUrl, e);
             return;
         }
         repository.setAuthenticationManager(SVNWCUtil.createDefaultAuthenticationManager(config.data().svn().getUsername(), config.data().svn().getPassword()));

@@ -7,7 +7,10 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
@@ -69,6 +72,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     }
 
     private void fillView( EmployeeRegistration value ) {
+        view.setHeader( lang.employeeRegistrationCommonHeader() + (value.getId() == null ? "" : " #" + value.getId()) );
         view.setFullName(value.getEmployeeFullName());
         view.setComment(value.getComment());
         view.setWorkplace(value.getWorkplace());
@@ -77,6 +81,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setEquipmentList( join(value.getEquipmentList(), equipmentLang::getName, ", "));
         view.setResourceList( join(value.getResourceList(), resourceLang::getName, ", "));
         view.setPhoneOfficeTypeList( join(value.getPhoneOfficeTypeList(), phoneOfficeTypeLang::getName, ", "));
+        view.setCurators( join( value.getCurators(), Person::getDisplayShortName, "," ) );
         view.setPosition(value.getPosition());
         view.setProbationPeriodMonth(value.getProbationPeriodMonth() == null ?
                 lang.employeeRegistrationWithoutProbationPeriod() :
@@ -105,7 +110,11 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
         view.setState(value.getState());
         view.setIssues(value.getYoutrackIssues());
 
-        fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.EMPLOYEE_REGISTRATION, value.getId()) );
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.EMPLOYEE_REGISTRATION)
+                .withCaseId(value.getId())
+                .withModifyEnabled(policyService.hasPrivilegeFor(En_Privilege.EMPLOYEE_REGISTRATION_VIEW))
+                .build());
     }
 
     private HasWidgets fullScreenContainer;
@@ -114,6 +123,8 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     private AbstractEmployeeRegistrationPreviewView view;
     @Inject
     private EmployeeRegistrationControllerAsync employeeRegistrationController;
+    @Inject
+    private PolicyService policyService;
 
     @Inject
     private En_EmployeeEquipmentLang equipmentLang;

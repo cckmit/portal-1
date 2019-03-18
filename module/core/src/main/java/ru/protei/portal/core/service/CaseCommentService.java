@@ -32,4 +32,6 @@ public interface CaseCommentService {
     CoreResponse<Boolean> updateTimeElapsed(AuthToken token, Long caseId);
 
     CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed);
+
+    CoreResponse<Long> addCommentOnSentReminder( CaseComment comment );
 }

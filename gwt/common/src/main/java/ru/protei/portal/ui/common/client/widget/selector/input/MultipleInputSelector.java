@@ -12,7 +12,6 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.MultipleSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectItemView;
 
@@ -86,10 +85,6 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         for ( T option : options ) {
             addOption( String.valueOf( option ), option );
         }
-    }
-
-    @Override
-    public void refreshValue() {
     }
 
     public void setAddName( String text ) {

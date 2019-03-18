@@ -66,7 +66,10 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDirection(StringUtils.emptyIfNull(value.getDirectionName()));
         view.setDates(getAllDatesAsString(value.getContractDates()));
 
-        fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.CONTRACT, value.getId()) );
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.CONTRACT)
+                .withCaseId(value.getId())
+                .build());
     }
 
     private String getAllDatesAsString(ContractDates dates) {

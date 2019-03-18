@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.common.client.widget.report;
+package ru.protei.portal.ui.common.client.view.report.timeresolution;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -21,12 +21,13 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 
 import java.util.Set;
 
-public class CaseCompletionTimeReportView extends Composite implements AbstractCaseCompletionTimeReportView {
+public class ResolutionTimeReportView extends Composite implements AbstractResolutionTimeReportView {
 
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
+        products.updateQuery(null, null);
     }
 
     @Override
@@ -34,13 +35,7 @@ public class CaseCompletionTimeReportView extends Composite implements AbstractC
         this.activity = activity;
     }
 
-    @Override
-    public AbstractIssueFilterParamActivity getActivity() {
-        return activity;
-    }
-
-
-    @Override
+     @Override
     public HasValue<DateInterval> dateRange() {
         return dateRange;
     }
@@ -109,7 +104,7 @@ public class CaseCompletionTimeReportView extends Composite implements AbstractC
 
     private AbstractIssueFilterParamActivity activity = null;
 
-    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, CaseCompletionTimeReportView> {
+    interface IssueFilterUiBinder extends UiBinder<HTMLPanel, ResolutionTimeReportView> {
     }
 
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );

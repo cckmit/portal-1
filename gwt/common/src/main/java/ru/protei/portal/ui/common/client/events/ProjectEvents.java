@@ -69,7 +69,12 @@ public class ProjectEvents {
     public static class ChangeStateModel {}
 
     /**
-     * Добавление / изменение / удаление проектов
+     * Изменение модели проектов
+     */
+    public static class ChangeModel {}
+
+    /**
+     * Изменение проекта
      */
     public static class Changed {
         public Changed() {
@@ -80,6 +85,17 @@ public class ProjectEvents {
         }
 
         public ProjectInfo project;
+    }
+
+    public static class ShowProjectDocuments {
+
+        public ShowProjectDocuments(HasWidgets parent, Long projectId) {
+            this.parent = parent;
+            this.projectId = projectId;
+        }
+
+        public Long projectId;
+        public HasWidgets parent;
     }
 }
 

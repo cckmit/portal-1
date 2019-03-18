@@ -2,12 +2,12 @@ package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
-
-import java.util.List;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 /**
  * Button селектор с продуктами
@@ -15,8 +15,9 @@ import java.util.List;
 public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
-    public void init( DevUnitModel devUnitModel) {
-        setSelectorModel(devUnitModel);
+    public void init( ProductModel model) {
+        model.subscribe(this, En_DevUnitState.ACTIVE, null);
+        setSelectorModel( model );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
 
@@ -24,27 +25,21 @@ public class DevUnitButtonSelector extends ButtonSelector<ProductShortView> impl
             if ( value == null ) {
                 return new DisplayOption( defaultValue );
             }
-
             return new DisplayOption(
                     value.getName(),
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "not-active" : "" ,
                     En_DevUnitState.DEPRECATED.getId() == value.getStateId() ? "fa fa-ban ban" : "");
         } );
     }
+    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
+        if ( model != null ) {
+            model.updateQuery(this, enDevUnitState, enDevUnitType);
+        }
+    }
 
     public void setDefaultValue( String value ) {
         this.defaultValue = value;
     }
-
-    public void fillOptions( List< ProductShortView > products) {
-        clearOptions();
-
-        if( defaultValue != null ) {
-            addOption( null );
-            setValue(null);
-        }
-        products.forEach( this :: addOption );
-     }
-
     private String defaultValue = null;
+    protected ProductModel model;
 }

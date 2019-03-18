@@ -37,7 +37,6 @@ public class EmployeeButtonSelector extends ButtonSelector<PersonShortView> impl
 
         if(defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
 
         persons.forEach( this :: addOption );

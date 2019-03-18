@@ -59,6 +59,9 @@ public class WorkerController {
     private WorkerEntryDAO workerEntryDAO;
 
     @Autowired
+    private EmployeeRegistrationDAO employeeRegistrationDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -91,9 +94,12 @@ public class WorkerController {
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
         try {
-
             return withHomeCompany(companyCode,
-                    item -> new WorkerRecord(workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId())));
+                    item -> {
+                        WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
+                        EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
+                        return new WorkerRecord(entry, registration);
+                    });
 
         } catch (Throwable e) {
             logger.error("error while get worker", e.getMessage());
@@ -166,7 +172,8 @@ public class WorkerController {
                     .requireHomeItem()
                     .requireDepartment(null)
                     .requireNotExistsWorker()
-                    .requireAccount(null);
+                    .requireAccount(null)
+                    .requireRegistration(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
@@ -204,6 +211,13 @@ public class WorkerController {
                     if (userLogin != null) {
                         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                         saveAccount(userLogin);
+                    }
+
+                    EmployeeRegistration employeeRegistration = operationData.registration();
+                    if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
+                        employeeRegistration.setPerson(person);
+                        mergeEmployeeRegistration(employeeRegistration);
                     }
 
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
@@ -263,7 +277,8 @@ public class WorkerController {
                     .requireDepartment(null)
                     .requirePerson(null)
                     .requireWorker(null)
-                    .requireAccount(null);
+                    .requireAccount(null)
+                    .requireRegistration(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
@@ -275,6 +290,7 @@ public class WorkerController {
                     Person person = operationData.person();
                     WorkerEntry worker = operationData.worker();
                     UserLogin userLogin = operationData.account();
+                    EmployeeRegistration employeeRegistration = operationData.registration();
 
                     convert(rec, person);
 
@@ -316,6 +332,12 @@ public class WorkerController {
                     if (userLogin != null) {
                         userLogin.setAdminStateId(En_AdminState.UNLOCKED.getId());
                         saveAccount(userLogin);
+                    }
+
+                    if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
+                        employeeRegistration.setPerson(person);
+                        mergeEmployeeRegistration(employeeRegistration);
                     }
 
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
@@ -778,6 +800,14 @@ public class WorkerController {
         return fileName;
     }
 
+    private void checkRegistrationByPerson(Long personId) throws Exception {
+        EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(personId);
+        if (registration != null) {
+            registration.setPerson(null);
+            mergeEmployeeRegistration(registration);
+        }
+    }
+
     private void persistPerson(Person person) throws Exception {
         personDAO.persist(person);
         makeAudit(person, En_AuditType.EMPLOYEE_CREATE);
@@ -845,6 +875,11 @@ public class WorkerController {
             makeAudit(new LongAuditableObject(userLogin.getId()), En_AuditType.ACCOUNT_REMOVE);
     }
 
+    private void mergeEmployeeRegistration(EmployeeRegistration employeeRegistration) throws Exception {
+        employeeRegistrationDAO.merge(employeeRegistration);
+        makeAudit(employeeRegistration, En_AuditType.EMPLOYEE_REGISTRATION_MODIFY);
+    }
+
     private void makeAudit(AuditableObject object, En_AuditType type) throws Exception {
         AuditObject auditObject = new AuditObject();
         auditObject.setCreated( new Date() );
@@ -871,6 +906,7 @@ public class WorkerController {
         Person person;
         WorkerPosition position;
         UserLogin account;
+        EmployeeRegistration registration;
 
         Record record;
 
@@ -955,6 +991,13 @@ public class WorkerController {
                 this.account = handle(userLoginDAO.findLDAPByPersonId(record.getPersonId()), optional, null, true);
                 jdbcManyRelationsHelper.fill(account, "roles");
             }
+
+            return this;
+        }
+
+        public OperationData requireRegistration(Supplier<EmployeeRegistration> optional) {
+            if (isValid() && record.registrationId != null)
+                this.registration = handle(employeeRegistrationDAO.get(record.getRegistrationId()), optional, En_ErrorCode.UNKNOWN_REG);
 
             return this;
         }
@@ -1082,6 +1125,10 @@ public class WorkerController {
             return account;
         }
 
+        public EmployeeRegistration registration() {
+            return registration;
+        }
+
         public class Record {
             String companyCode;
             String departmentId;
@@ -1091,12 +1138,14 @@ public class WorkerController {
             Long personId;
             String positionName;
             String newPositionName;
+            Long registrationId;
 
             public Record(WorkerRecord workerRecord) {
                 this.companyCode = workerRecord.getCompanyCode();
                 this.departmentId = workerRecord.getDepartmentId();
                 this.workerId = workerRecord.getWorkerId();
                 this.personId = workerRecord.getId();
+                this.registrationId = workerRecord.getRegistrationId();
             }
 
             public Record(DepartmentRecord departmentRecord) {
@@ -1145,6 +1194,10 @@ public class WorkerController {
 
             public String getNewPositionName() {
                 return newPositionName;
+            }
+
+            public Long getRegistrationId() {
+                return registrationId;
             }
         }
     }

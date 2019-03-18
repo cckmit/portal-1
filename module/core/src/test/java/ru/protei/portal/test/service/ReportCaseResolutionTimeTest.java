@@ -11,7 +11,7 @@ import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.report.casecompletion.ReportCaseResolutionTime;
+import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-import static ru.protei.portal.core.report.casecompletion.ReportCaseResolutionTime.*;
-import static ru.protei.portal.core.report.casecompletion.ReportCaseResolutionTime.DAY;
+import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.*;
+import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.DAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})

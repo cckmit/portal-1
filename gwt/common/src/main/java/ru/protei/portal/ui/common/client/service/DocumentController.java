@@ -18,4 +18,6 @@ public interface DocumentController extends RemoteService {
     Document getDocument(Long id) throws RequestFailedException;
 
     Document saveDocument(Document document) throws RequestFailedException;
+
+    List<Document> getProjectDocuments(Long projectId) throws RequestFailedException;
 }

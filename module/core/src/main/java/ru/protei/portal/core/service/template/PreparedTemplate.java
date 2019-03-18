@@ -44,8 +44,10 @@ public class PreparedTemplate {
             return writer.toString();
         } catch ( Exception e ) {
             e.printStackTrace();
+
         }
 
         return null;
     }
+
 }

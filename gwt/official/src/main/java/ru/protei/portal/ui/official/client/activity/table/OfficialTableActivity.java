@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -159,7 +160,7 @@ public abstract class OfficialTableActivity
 
     @Override
     public void onAttachClicked(Official value, IsWidget widget) {
-        attachmentService.getAttachmentsByCaseId(value.getId(), new RequestCallback<List<Attachment>>() {
+        attachmentService.getAttachmentsByCaseId(En_CaseType.OFFICIAL, value.getId(), new RequestCallback<List<Attachment>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR));

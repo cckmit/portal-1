@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
-import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -33,7 +34,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, long caseObjectId) {
-        checkPrivilegesGetList(token, caseType);
+        casePrivilegeValidator.checkPrivilegesRead(token, caseType);
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseObjectId);
         if (checkAccessStatus != null) {
             return new CoreResponse<List<CaseComment>>().error(checkAccessStatus);
@@ -43,14 +44,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
-        checkPrivilegesGetList(token, caseType);
+        casePrivilegeValidator.checkPrivilegesRead(token, caseType);
         return getList(query);
     }
 
     @Override
     @Transactional
     public CoreResponse<CaseComment> addCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
-        checkPrivilegesAdd(token, caseType);
+        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
 
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
@@ -72,7 +73,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> updateCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
-        checkPrivilegesUpdate(token, caseType);
+        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
 
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
@@ -82,7 +83,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseComment prevComment = caseCommentDAO.get(comment.getId());
         CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
         Collection<CaseAttachment> removedCaseAttachments = new ArrayList<>();
-        CoreResponse<CaseComment> response = update(token, comment, person, prevComment, removedCaseAttachments);
+        CoreResponse<CaseComment> response = update(token, caseType, comment, person, prevComment, removedCaseAttachments);
         if (response.isError()) {
             return response;
         }
@@ -96,7 +97,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Override
     @Transactional
     public CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
-        checkPrivilegesRemove(token, caseType);
+        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
 
         En_ResultStatus checkAccessStatus = null;
         if (comment == null || comment.getId() == null || personId == null) {
@@ -114,7 +115,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return new CoreResponse<Boolean>().error(checkAccessStatus);
         }
 
-        CoreResponse<Boolean> response = remove(token, comment);
+        CoreResponse<Boolean> response = remove(token, caseType, comment);
         if (response.isError()) {
             return response;
         }
@@ -154,16 +155,21 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         return new CoreResponse<Boolean>().success(isUpdated);
     }
 
-    // -> Get comments -> //
+    @Override
+    @Transactional
+    public CoreResponse<Long> addCommentOnSentReminder( CaseComment comment ) {
+        comment.setCreated( new Date() );
+        comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
+        Long commentId = caseCommentDAO.persist(comment);
 
-    private void checkPrivilegesGetList(AuthToken token, En_CaseType caseType) {
-        switch (caseType) {
-            case CRM_SUPPORT: checkRequireAnyPrivileges(token, En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT); break;
-            case OFFICIAL: checkRequireAnyPrivileges(token, En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT); break;
-            case PROJECT: checkRequireAnyPrivileges(token, En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT); break;
-            case EMPLOYEE_REGISTRATION: checkRequireAnyPrivileges(token, En_Privilege.EMPLOYEE_REGISTRATION_VIEW); break;
+        if (commentId == null) {
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
         }
+
+        return new CoreResponse<Long>().success(commentId);
     }
+
+    // -> Get comments -> //
 
     private CoreResponse<List<CaseComment>> getList(CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
@@ -188,15 +194,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     // -> Add comment -> //
-
-    private void checkPrivilegesAdd(AuthToken token, En_CaseType caseType) {
-        switch (caseType) {
-            case CRM_SUPPORT: checkRequireAllPrivileges(token, En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT); break;
-            case OFFICIAL: checkRequireAllPrivileges(token, En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT); break;
-            case PROJECT: checkRequireAllPrivileges(token, En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT); break;
-            case EMPLOYEE_REGISTRATION: checkRequireAllPrivileges(token, En_Privilege.EMPLOYEE_REGISTRATION_VIEW); break;
-        }
-    }
 
     private void postAdd(AuthToken token, En_CaseType caseType, CaseComment comment, CaseObject caseObjectOld, Person person) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
@@ -265,10 +262,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     // -> Update comment -> //
 
-    private void checkPrivilegesUpdate(AuthToken token, En_CaseType caseType) {
-        checkPrivilegesAdd(token, caseType);
-    }
-
     private void postUpdate(AuthToken token, En_CaseType caseType, CaseComment comment, Person person,
                             CaseComment prevComment, CaseObject caseObjectOld, Collection<CaseAttachment> removedCaseAttachments) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
@@ -278,8 +271,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             caseObjectOld.setAttachments(newState.getAttachments());
             caseObjectOld.setNotifiers(newState.getNotifiers());
 
-            Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, removedCaseAttachments).getData();
-            Collection<Attachment> addedAttachments = attachmentService.getAttachments(token,
+            Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, caseType, removedCaseAttachments).getData();
+            Collection<Attachment> addedAttachments = attachmentService.getAttachments(token, caseType,
                     HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
             ).getData();
 
@@ -292,7 +285,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
     }
 
-    private CoreResponse<CaseComment> update(AuthToken token, CaseComment comment, Person person,
+    private CoreResponse<CaseComment> update(AuthToken token, En_CaseType caseType, CaseComment comment, Person person,
                                              CaseComment prevComment, Collection<CaseAttachment> removedCaseAttachments) {
 
         if (comment == null || comment.getId() == null) {
@@ -303,7 +296,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_UPDATED);
         }
 
-        if (!person.getId().equals(comment.getAuthorId()) || !isCaseCommentReadOnly(comment.getCreated())) {
+        if (!person.getId().equals(comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
             return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_UPDATED);
         }
 
@@ -321,7 +314,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         ));
 
         if (!removedCaseAttachments.isEmpty()) {
-            removeAttachments(token, removedCaseAttachments);
+            removeAttachments(token, caseType, removedCaseAttachments);
         }
 
         boolean isCaseChanged =
@@ -341,17 +334,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     // -> Remove comment -> //
 
-    private void checkPrivilegesRemove(AuthToken token, En_CaseType caseType) {
-        checkPrivilegesAdd(token, caseType);
-    }
-
     private void postRemove(AuthToken token, En_CaseType caseType, CaseComment comment) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             tryDoAudit(token, En_AuditType.ISSUE_COMMENT_REMOVE, comment);
         }
     }
 
-    private CoreResponse<Boolean> remove(AuthToken token, CaseComment comment) {
+    private CoreResponse<Boolean> remove(AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         long caseId = comment.getCaseId();
 
@@ -364,7 +353,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         boolean isCaseChanged = true;
         if (CollectionUtils.isNotEmpty(comment.getCaseAttachments())) {
             caseAttachmentDAO.removeByCommentId(caseId);
-            comment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, ca.getAttachmentId()));
+            comment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
 
             if (!caseService.isExistsAttachments(comment.getCaseId())) {
                 isCaseChanged = caseService.updateExistsAttachmentsFlag(comment.getCaseId(), false).getData();
@@ -381,26 +370,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     // -> Utils -> //
-
-    private void checkRequireAllPrivileges(AuthToken token, En_Privilege... privileges) {
-        if (token == null) {
-            return;
-        }
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        if (!policyService.hasEveryPrivilegeOf(descriptor.getLogin().getRoles(), privileges)) {
-            throw new InsufficientPrivilegesException();
-        }
-    }
-
-    private void checkRequireAnyPrivileges(AuthToken token, En_Privilege... privileges) {
-        if (token == null) {
-            return;
-        }
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        if (!policyService.hasAnyPrivilegeOf(descriptor.getLogin().getRoles(), privileges)) {
-            throw new InsufficientPrivilegesException();
-        }
-    }
 
     private void tryDoAudit(AuthToken token, En_AuditType auditType, AuditableObject auditableObject) {
         if (token == null) {
@@ -430,11 +399,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         c.setTime(date);
         long checked = c.getTimeInMillis();
 
-        return current - checked < CHANGE_LIMIT_TIME;
+        return current - checked > CHANGE_LIMIT_TIME;
     }
 
-    private void removeAttachments(AuthToken token, Collection<CaseAttachment> list) {
-        list.forEach(ca -> attachmentService.removeAttachment(token, ca.getAttachmentId()));
+    private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
+        list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
     }
 
     @Autowired
@@ -447,6 +416,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     AttachmentService attachmentService;
     @Autowired
     EventPublisherService publisherService;
+    @Autowired
+    CasePrivilegeValidator casePrivilegeValidator;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;

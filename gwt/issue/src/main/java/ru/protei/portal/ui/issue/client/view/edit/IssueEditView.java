@@ -1,23 +1,20 @@
 package ru.protei.portal.ui.issue.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -27,11 +24,12 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -108,6 +106,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasTime timeElapsedInput() {
         return timeElapsedInput;
+    }
+
+    @Override
+    public HasValue<En_TimeElapsedType> timeElapsedType() {
+        return timeElapsedType;
     }
 
     @Override
@@ -218,7 +221,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setCaseNumber(Long caseNumber) {
-        fileUploader.autoBindingToCase(caseNumber);
+        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
     @Override
@@ -274,6 +277,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasVisibility timeElapsedInputVisibility() {
         return timeElapsedInput;
+    }
+
+    @Override
+    public void setTimeElapseTypeVisibility(boolean isVisible) {
+        timeElapsedType.setVisible( isVisible );
     }
 
     @Override
@@ -421,6 +429,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     TimeTextBox timeElapsedInput;
+
+    @Inject
+    @UiField(provided = true)
+    ElapsedTimeTypeSelector timeElapsedType;
 
     @Inject
     @UiField(provided = true)

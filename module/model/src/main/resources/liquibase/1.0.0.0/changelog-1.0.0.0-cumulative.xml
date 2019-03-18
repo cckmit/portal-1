@@ -87,5 +87,7 @@
   <include file="2019-01-25-add-parent-company-column.xml" relativeToChangelogFile="true"/>
   <include file="2019-01-30-add-dev-unit-columns.xml" relativeToChangelogFile="true"/>
   <include file="2019-01-30-create-contract-table.xml" relativeToChangelogFile="true"/>
-
+  <include file="2019-02-25-add-employee-curator-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-03-04-add-audit-type.xml" relativeToChangelogFile="true"/>
+  <include file="2019-03-06-add-case-comment-time-type.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

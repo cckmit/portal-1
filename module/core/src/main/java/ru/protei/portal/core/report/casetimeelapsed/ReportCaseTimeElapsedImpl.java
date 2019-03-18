@@ -11,10 +11,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.CaseCommentTimeElapsedSum;
 import ru.protei.portal.core.model.ent.Report;
-import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
-import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.report.ReportWriter;
 import ru.protei.portal.core.utils.TimeFormatter;
 
@@ -22,7 +19,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
 
@@ -48,62 +46,38 @@ public class ReportCaseTimeElapsedImpl implements ReportCaseTimeElapsed {
         }
 
         Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
-
-        List<CaseShortView> caseIds = caseShortViewDAO.partialGetCases(caseQuery, "id");
-
-        if (CollectionUtils.isEmpty(caseIds)) {
-            log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
-            ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
-            writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
-            writer.collect(buffer);
-            return true;
-        }
-
-        CaseCommentQuery caseCommentQuery = new CaseCommentQuery();
-        caseCommentQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
-        caseCommentQuery.setTimeElapsedNotNull(true);
-        caseCommentQuery.setCaseObjectIds(caseIds.stream()
-                .map(CaseShortView::getId)
-                .collect(Collectors.toList())
-        );
-        caseCommentQuery.setAuthorIds(caseQuery.getCommentAuthorIds());
-
         ReportWriter<CaseCommentTimeElapsedSum> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 
-        if (writeReport(writer, report, caseCommentQuery)) {
-            writer.collect(buffer);
-            return true;
-        } else {
-            writer.close();
-            return false;
-        }
-    }
-
-    private boolean writeReport(ReportWriter<CaseCommentTimeElapsedSum> writer, Report report, CaseCommentQuery query) {
+        caseQuery.useSort(En_SortField.author_id, En_SortDir.DESC);
 
         final Processor processor = new Processor();
         final int step = config.data().reportConfig().getChunkSize();
         int offset = 0;
 
-        while (true) {
-            try {
-                query.setOffset(offset);
-                query.setLimit(step);
-                List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery(query);
+        log.info( "writeReport(): Start report {}", report );
+        try {
+            while (true) {
+                caseQuery.setOffset( offset );
+                caseQuery.setLimit( step );
+                List<CaseCommentTimeElapsedSum> comments = caseCommentTimeElapsedSumDAO.getListByQuery( caseQuery );
                 boolean isThisTheEnd = comments.size() < step;
                 processor.writeChunk(writer, comments, isThisTheEnd);
                 offset += step;
                 if (isThisTheEnd) {
+                    if(offset==step && isEmpty(comments)){
+                        writer.setSheetName(writer.createSheet(), localizedLang.get("no_data"));
+                    }
                     // hold ur breath
                     break;
                 }
-            } catch (Throwable th) {
-                log.warn("writeReport : fail to process chunk [{} - {}] : reportId={}", offset, offset + step, report.getId());
-                log.warn("writeReport : fail to process chunk", th);
-                return false;
             }
+        } catch (Throwable th) {
+            writer.close();
+            log.warn( "writeReport : fail to process chunk [{} - {}] : reportId={} e: ", offset, offset + step, report.getId(), th );
+            return false;
         }
 
+        writer.collect( buffer );
         return true;
     }
 

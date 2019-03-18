@@ -3,13 +3,9 @@ package ru.protei.portal.ui.project.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -21,14 +17,11 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
@@ -37,7 +30,6 @@ import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPrevie
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -147,6 +139,11 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Override
     public HasWidgets getCommentsContainer() {
         return commentsContainer;
+    }
+
+    @Override
+    public HasWidgets getDocumentsContainer() {
+        return documents;
     }
 
     @UiHandler( "fullScreenBtn" )
@@ -268,6 +265,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+
+    @UiField
+    HTMLPanel documents;
 
     AbstractProjectPreviewActivity activity;
 

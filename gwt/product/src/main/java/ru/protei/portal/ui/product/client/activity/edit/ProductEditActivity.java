@@ -101,8 +101,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
             @Override
             public void onSuccess(Boolean result) {
-                goBack();
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new ProductEvents.ProductListChanged());
+                goBack();
             }
         });
     }

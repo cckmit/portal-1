@@ -9,6 +9,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
@@ -29,6 +30,7 @@ import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
 import ru.protei.portal.tools.migrate.export.DummyExportDataService;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
@@ -101,6 +103,11 @@ public class MainConfiguration {
         );
     }
 
+
+    @Bean(name = "portalScheduler")
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return new PortalScheduleTasks();
+    }
 
     @Bean
     public LegacySystemDAO getLegacySystemDAO() {
@@ -646,6 +653,11 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EmployeeRegistrationReminderService getEmployeeRegistrationReminderService() {
+        return new EmployeeRegistrationReminderServiceImpl();
+    }
+
+    @Bean
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
     }
@@ -668,6 +680,11 @@ public class MainConfiguration {
     @Bean
     public MarkdownServer getMarkdownServer() {
         return new MarkdownServer();
+    }
+
+    @Bean
+    public CasePrivilegeValidator getCasePrivilegeValidator() {
+        return new CasePrivilegeValidator();
     }
 
     /**

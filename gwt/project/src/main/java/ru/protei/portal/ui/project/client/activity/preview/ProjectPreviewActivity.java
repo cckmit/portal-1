@@ -74,6 +74,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
                 .withSuccess(result -> {
                     fireEvent(new ProjectEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new ProjectEvents.ChangeModel());
                 })
         );
     }
@@ -107,6 +108,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
             @Override
             public void onSuccess( Void aVoid ) {
                 fireEvent( new ProjectEvents.Changed( project ) );
+                fireEvent( new ProjectEvents.ChangeModel() );
             }
         });
     }
@@ -148,7 +150,12 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         view.removeBtnVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE));
 
-        fireEvent( new CaseCommentEvents.Show( view.getCommentsContainer(), En_CaseType.PROJECT, value.getId() ) );
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.PROJECT)
+                .withCaseId(value.getId())
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
+                .build());
+        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId()));
     }
 
     private void readView() {
