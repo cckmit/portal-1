@@ -50,17 +50,17 @@ public class ContractDAO_Impl extends JdbcBaseDAO<Long, Contract> implements Con
             }
 
             if (query.getState() != null) {
-                condition.append(" and CO.state = ");
-                condition.append(query.getState().getId());
+                condition.append(" and CO.state = ?");
+                args.add(query.getState().getId());
             }
 
             if (query.getType() != null) {
-                condition.append(" and contract.contract_type = ");
-                condition.append(query.getType().ordinal());
+                condition.append(" and contract.contract_type = ?");
+                args.add(query.getType().ordinal());
             }
 
             if (query.getDirectionId() != null) {
-                condition.append(" and CO.product_id = ");
+                condition.append(" and CO.product_id = ?");
                 args.add(query.getDirectionId());
             }
 
