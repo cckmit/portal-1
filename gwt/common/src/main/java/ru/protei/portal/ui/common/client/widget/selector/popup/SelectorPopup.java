@@ -72,12 +72,26 @@ public class SelectorPopup
 
     public void showNearRight( final IsWidget nearWidget ) {
         prepareToShow(nearWidget);
-        setPopupPositionAndShow(getPositionCallback(nearWidget));
+        setPopupPositionAndShow((popupWidth, popupHeight) -> {
+                int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
+                int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
+                int popupLeft = relativeLeft - widthDiff;
+                int relativeTop = nearWidget.asWidget().getAbsoluteTop();
+                int popupTop = relativeTop + nearWidget.asWidget().getOffsetHeight();
+
+                setPopupPosition( popupLeft, popupTop );
+        });
     }
 
     public void showNearInlineRight( final IsWidget nearWidget ) {
         prepareToShow(nearWidget);
-        setPopupPositionAndShow(getPositionCallback(nearWidget));
+        setPopupPositionAndShow((popupWidth, popupHeight) -> {
+            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
+            int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
+            int popupLeft = relativeLeft - widthDiff;
+            int popupTop = nearWidget.asWidget().getAbsoluteTop();
+            setPopupPosition(popupLeft, popupTop);
+        });
     }
     public void setSearchVisible( boolean searchVisible ) {
         this.searchVisible = searchVisible;
@@ -147,15 +161,6 @@ public class SelectorPopup
         root.getElement().getStyle().setPosition(Style.Position.ABSOLUTE);
         root.getElement().getStyle().setDisplay(Style.Display.BLOCK);
         root.getElement().getStyle().setFloat(Style.Float.LEFT);
-    }
-    private PositionCallback getPositionCallback(IsWidget nearWidget) {
-        return (popupWidth, popupHeight) -> {
-            int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
-            int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();
-            int popupLeft = relativeLeft - widthDiff;
-            int popupTop = nearWidget.asWidget().getAbsoluteTop();
-            setPopupPosition(popupLeft, popupTop);
-        };
     }
     private void fireChangeValueTimer() {
         searchValueChangeTimer.cancel();
