@@ -118,7 +118,10 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(workGroupColumn);
 
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
-                contract -> contract.getCost() == null ? lang.contractCostNotDefined() : contract.getCost().toString() + " руб.");
+                contract -> contract.getCost() == null ?
+                        lang.contractCostNotDefined() :
+                        contract.getCost().toString() + " " + contract.getCurrency().getCode() + "."
+        );
         clickColumns.add(costColumn);
 
         clickColumns.forEach(c -> table.addColumn(c.header, c.values));

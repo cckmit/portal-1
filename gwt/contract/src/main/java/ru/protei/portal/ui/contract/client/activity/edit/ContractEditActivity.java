@@ -7,9 +7,11 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -77,7 +79,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
         view.costEnabled().setEnabled(!isFrameworkContract);
         if ( isFrameworkContract ) {
-            view.cost().setValue(0L);
+            view.cost().setValue(new CostWithCurrency(0L, En_Currency.RUB));
         }
     }
 
@@ -99,7 +101,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         if ( contract.getCost() == null ) {
             contract.setCost(0L);
         }
-        view.cost().setValue(contract.getCost());
+        view.cost().setValue(new CostWithCurrency(contract.getCost(), contract.getCurrency()));
         view.description().setValue(contract.getDescription());
 
         view.contragent().setValue(createOptionOrNull(contract.getContragentId(), contract.getContragentName()));
@@ -116,7 +118,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractType(view.type().getValue());
         contract.setState(view.state().getValue());
         contract.setNumber(view.number().getValue());
-        contract.setCost(view.cost().getValue());
+        contract.setCost(view.cost().getValue().getCost());
+        contract.setCurrency(view.cost().getValue().getCurrency());
         contract.setDescription(view.description().getValue());
 
         contract.setContragentId(getOptionIdOrNull(view.contragent().getValue()));

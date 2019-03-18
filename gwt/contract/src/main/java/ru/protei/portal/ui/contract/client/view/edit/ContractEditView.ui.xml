@@ -7,7 +7,8 @@
              xmlns:single="urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.single"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:list="urn:import:ru.protei.portal.ui.contract.client.widget.contractdates.list"
-             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
+             xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
+             xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -36,11 +37,7 @@
                         <label>
                             <ui:text from="{lang.contractCost}"/>
                         </label>
-
-                        <div class="input-group">
-                            <g:LongBox ui:field="cost" styleName="input-field"/>
-                            <span class="input-group-addon">руб.</span>
-                        </div>
+                        <money:CostWithCurrencyView ui:field="costWithCurrency" defaultCurrency="RUB"/>
                     </div>
 
                     <div class="form-group col-xs-4">

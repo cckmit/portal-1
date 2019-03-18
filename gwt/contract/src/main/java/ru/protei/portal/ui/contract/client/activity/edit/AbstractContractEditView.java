@@ -5,9 +5,8 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.struct.ContractDate;
 import ru.protei.portal.core.model.struct.ContractDates;
+import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -20,7 +19,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasEnabled saveEnabled();
 
-    HasValue<Long> cost();
+    HasValue<CostWithCurrency> cost();
 
     HasValue<String> number();
 

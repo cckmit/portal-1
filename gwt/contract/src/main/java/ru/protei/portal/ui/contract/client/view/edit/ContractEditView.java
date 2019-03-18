@@ -12,15 +12,16 @@ import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SingleP
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.struct.ContractDates;
+import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditActivity;
 import ru.protei.portal.ui.contract.client.activity.edit.AbstractContractEditView;
@@ -48,8 +49,8 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<Long> cost() {
-        return cost;
+    public HasValue<CostWithCurrency> cost() {
+        return costWithCurrency;
     }
 
     @Override
@@ -109,7 +110,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
 
     @Override
     public HasEnabled costEnabled() {
-        return cost;
+        return costWithCurrency;
     }
 
     @UiHandler("saveButton")
@@ -155,8 +156,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractTypeSelector type;
-    @UiField
-    LongBox cost;
+    @Inject
+    @UiField(provided = true)
+    CostWithCurrencyView costWithCurrency;
     @UiField
     ValidableTextBox number;
     @UiField

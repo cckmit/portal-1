@@ -2,6 +2,7 @@ package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContractDates;
 import ru.protei.winter.jdbc.annotations.*;
@@ -105,8 +106,15 @@ public class Contract extends AuditableObject implements Serializable {
     /**
      * Сумма
      */
-    @JdbcColumn
+    @JdbcColumn(name = "cost")
     private Long cost;
+
+    /**
+     * Валюта
+     */
+    @JdbcColumn(name = "cost_currency")
+    @JdbcEnumerated(EnumType.ID)
+    private En_Currency currency;
 
     /**
      * Тип
@@ -226,6 +234,14 @@ public class Contract extends AuditableObject implements Serializable {
         this.cost = cost;
     }
 
+    public En_Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(En_Currency currency) {
+        this.currency = currency;
+    }
+
     public String getNumber() {
         return number;
     }
@@ -280,5 +296,32 @@ public class Contract extends AuditableObject implements Serializable {
 
     public void setContractDates(ContractDates contractDates) {
         this.contractDates = contractDates;
+    }
+
+    @Override
+    public String toString() {
+        return "Contract{" +
+                "id=" + id +
+                ", creatorId=" + creatorId +
+                ", created=" + created +
+                ", modified=" + modified +
+                ", managerId=" + managerId +
+                ", managerShortName='" + managerShortName + '\'' +
+                ", curatorId=" + curatorId +
+                ", curatorShortName='" + curatorShortName + '\'' +
+                ", contragentId=" + contragentId +
+                ", contragentName='" + contragentName + '\'' +
+                ", directionId=" + directionId +
+                ", directionName='" + directionName + '\'' +
+                ", stateId=" + stateId +
+                ", description='" + description + '\'' +
+                ", number='" + number + '\'' +
+                ", cost=" + cost +
+                ", currency=" + currency +
+                ", contractType=" + contractType +
+                ", dateSigning=" + dateSigning +
+                ", dateValid=" + dateValid +
+                ", contractDates=" + contractDates +
+                '}';
     }
 }
