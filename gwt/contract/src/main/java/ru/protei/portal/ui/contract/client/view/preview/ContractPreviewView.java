@@ -103,6 +103,11 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
         this.dates.setInnerText(value);
     }
 
+    @Override
+    public void setOrganization(String value) {
+        this.organization.setInnerText(value);
+    }
+
     @UiField
     Lang lang;
     @UiField
@@ -119,6 +124,8 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     SpanElement direction;
     @UiField
     SpanElement state;
+    @UiField
+    SpanElement organization;
     @UiField
     SpanElement manager;
     @UiField

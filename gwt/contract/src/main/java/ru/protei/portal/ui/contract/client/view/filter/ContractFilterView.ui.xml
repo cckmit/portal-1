@@ -6,6 +6,7 @@
              xmlns:company="urn:import:ru.protei.portal.ui.common.client.widget.selector.company"
              xmlns:selector="urn:import:ru.protei.portal.ui.contract.client.widget.selector"
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -42,6 +43,11 @@
             <company:CompanyMultiSelector ui:field="contragents"
                                           header="{lang.contractContragent}"
                                           addStyleNames="form-group col-xs-12"/>
+
+            <homecompany:HomeCompanyMultiSelector ui:field="organizations"
+                                                  header="{lang.contractOrganization}"
+                                                  reverseOrder="true"
+                                                  addStyleNames="form-group col-xs-12"/>
         </div>
         <div class="footer">
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>

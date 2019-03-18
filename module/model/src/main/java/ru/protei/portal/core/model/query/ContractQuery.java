@@ -17,6 +17,8 @@ public class ContractQuery extends BaseQuery {
 
     private List<Long> contragentIds;
 
+    private List<Long> organizationIds;
+
     public Long getDirectionId() {
         return directionId;
     }
@@ -55,5 +57,13 @@ public class ContractQuery extends BaseQuery {
 
     public void setState(En_ContractState state) {
         this.state = state;
+    }
+
+    public List<Long> getOrganizationIds() {
+        return organizationIds;
+    }
+
+    public void setOrganizationIds(List<Long> organizationIds) {
+        this.organizationIds = organizationIds;
     }
 }

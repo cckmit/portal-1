@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
 
     @PostConstruct
@@ -112,6 +111,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.dateSigning().setValue(contract.getDateSigning());
         view.dateValid().setValue(contract.getDateValid());
         view.contractDates().setValue(contract.getContractDates());
+
+        view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
     }
 
     private void fillDto() {
@@ -130,6 +131,8 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setDateSigning(view.dateSigning().getValue());
         contract.setDateValid(view.dateValid().getValue());
         contract.setContractDates(view.contractDates().getValue());
+
+        contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
     }
 
     private void showValidationError() {

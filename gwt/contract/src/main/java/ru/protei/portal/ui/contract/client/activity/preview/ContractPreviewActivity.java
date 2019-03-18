@@ -61,6 +61,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setDateValid(formatDate(value.getDateValid()));
         view.setDescription(StringUtils.emptyIfNull(value.getDescription()));
         view.setContragent(StringUtils.emptyIfNull(value.getContragentName()));
+        view.setOrganization(StringUtils.emptyIfNull(value.getOrganizationName()));
         view.setManager(StringUtils.emptyIfNull(value.getManagerShortName()));
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
         view.setDirection(StringUtils.emptyIfNull(value.getDirectionName()));

@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -109,6 +110,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasValue<EntityOption> organization() {
+        return organization;
+    }
+
+    @Override
     public HasEnabled costEnabled() {
         return costWithCurrency;
     }
@@ -147,6 +153,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector manager;
+    @Inject
+    @UiField(provided = true)
+    HomeCompanyButtonSelector organization;
     @Inject
     @UiField(provided = true)
     EmployeeButtonSelector curator;

@@ -28,6 +28,8 @@ public interface AbstractContractFilterView extends IsWidget {
 
     HasValue<Set<EntityOption>> contragents();
 
+    HasValue<Set<EntityOption>> organizations();
+
     HasValue<En_ContractType> type();
 
     HasValue<En_ContractState> state();

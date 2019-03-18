@@ -69,6 +69,11 @@ public class ContractDAO_Impl extends JdbcBaseDAO<Long, Contract> implements Con
                         .append(HelperFunc.makeInArg(query.getContragentIds(), false));
             }
 
+            if (CollectionUtils.isNotEmpty(query.getOrganizationIds())) {
+                condition.append(" and contract.organization_id in ")
+                        .append(HelperFunc.makeInArg(query.getOrganizationIds(), false));
+            }
+
             if (CollectionUtils.isNotEmpty(query.getManagerIds())) {
                 condition.append(" and CO.MANAGER in ")
                         .append(HelperFunc.makeInArg(query.getManagerIds(), false));

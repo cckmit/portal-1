@@ -21,6 +21,7 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
@@ -55,6 +56,7 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         sortField.setValue(En_SortField.creation_date);
         sortDir.setValue(false);
         contragents.setValue(null);
+        organizations.setValue(null);
         managers.setValue(null);
         direction.setValue(null);
         state.setValue(null);
@@ -85,6 +87,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Override
     public HasValue<Set<EntityOption>> contragents() {
         return contragents;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> organizations() {
+        return organizations;
     }
 
     @Override
@@ -143,6 +150,11 @@ public class ContractFilterView extends Composite implements AbstractContractFil
         restartChangeTimer();
     }
 
+    @UiHandler("organizations")
+    public void onOrganizationsChanged(ValueChangeEvent<Set<EntityOption>> event) {
+        restartChangeTimer();
+    }
+
     @UiHandler("state")
     public void onStateChanged(ValueChangeEvent<En_ContractState> event) {
         restartChangeTimer();
@@ -196,6 +208,9 @@ public class ContractFilterView extends Composite implements AbstractContractFil
     @Inject
     @UiField(provided = true)
     CompanyMultiSelector contragents;
+    @Inject
+    @UiField(provided = true)
+    HomeCompanyMultiSelector organizations;
     @Inject
     @UiField(provided = true)
     ContractStateSelector state;

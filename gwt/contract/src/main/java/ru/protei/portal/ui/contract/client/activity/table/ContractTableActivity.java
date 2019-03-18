@@ -104,6 +104,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         query.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
         query.setSortField(filterView.sortField().getValue());
         query.setContragentIds(getCompaniesIdList(filterView.contragents().getValue()));
+        query.setOrganizationIds(getCompaniesIdList(filterView.organizations().getValue()));
         query.setManagerIds(getManagersIdList(filterView.managers().getValue()));
         query.setType(filterView.type().getValue());
         query.setState(filterView.state().getValue());

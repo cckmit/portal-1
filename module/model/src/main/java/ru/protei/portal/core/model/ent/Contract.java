@@ -132,6 +132,12 @@ public class Contract extends AuditableObject implements Serializable {
     @JdbcColumn(name = "contract_dates", converterType = ConverterType.JSON)
     private ContractDates contractDates;
 
+    @JdbcColumn(name = "organization_id")
+    private Long organizationId;
+
+    @JdbcJoinedColumn(localColumn = "organization_id", table = "company", remoteColumn = "id", mappedColumn = "cname")
+    private String organizationName;
+
     @Override
     public String getAuditType() {
         return "Contract";
@@ -298,6 +304,21 @@ public class Contract extends AuditableObject implements Serializable {
         this.contractDates = contractDates;
     }
 
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
     @Override
     public String toString() {
         return "Contract{" +
@@ -322,6 +343,8 @@ public class Contract extends AuditableObject implements Serializable {
                 ", dateSigning=" + dateSigning +
                 ", dateValid=" + dateValid +
                 ", contractDates=" + contractDates +
+                ", organizationId=" + organizationId +
+                ", organizationName='" + organizationName + '\'' +
                 '}';
     }
 }

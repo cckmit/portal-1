@@ -112,7 +112,8 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         clickColumns.add(descriptionColumn);
 
         DynamicColumn<Contract> workGroupColumn = new DynamicColumn<>(lang.contractWorkGroup(), "work-group-column",
-                contract -> "<b>" + lang.contractManager() + ":</b> " + StringUtils.emptyIfNull(contract.getManagerShortName()) + "</b><br/>"
+                contract -> "<b>" + lang.contractOrganization() + ":</b> " + StringUtils.emptyIfNull(contract.getOrganizationName()) + "</b><br/>"
+                        +  "<b>" + lang.contractManager() + ":</b> " + StringUtils.emptyIfNull(contract.getManagerShortName()) + "</b><br/>"
                         +  "<b>" + lang.contractCurator() + ":</b> " + StringUtils.emptyIfNull(contract.getCuratorShortName()) + "</b><br/>"
                         +  "<b>" + lang.contractContragent() + ":</b> " + StringUtils.emptyIfNull(contract.getContragentName()) + "</b>");
         clickColumns.add(workGroupColumn);
@@ -120,7 +121,7 @@ public class ContractTableView extends Composite implements AbstractContractTabl
         DynamicColumn<Contract> costColumn = new DynamicColumn<>(lang.contractCost(), "cost-column",
                 contract -> contract.getCost() == null ?
                         lang.contractCostNotDefined() :
-                        contract.getCost().toString() + " " + contract.getCurrency().getCode() + "."
+                        contract.getCost().toString() + " " + contract.getCurrency().getCode()
         );
         clickColumns.add(costColumn);
 

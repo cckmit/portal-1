@@ -1601,4 +1601,6 @@ public interface Lang extends Messages, ContactItemLang {
     String selectValue();
 
     String privilegeContract();
+
+    String contractOrganization();
 }

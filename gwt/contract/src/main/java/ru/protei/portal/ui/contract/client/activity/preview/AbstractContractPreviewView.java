@@ -31,4 +31,6 @@ public interface AbstractContractPreviewView extends IsWidget {
     void setManager(String value);
 
     void setDates(String value);
+
+    void setOrganization(String value);
 }
