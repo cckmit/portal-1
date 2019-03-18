@@ -63,22 +63,26 @@ public abstract class DocumentEditActivity
 
     @Event
     public void onShow(DocumentEvents.Edit event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
         if (event.id == null) {
+            fireEvent(new AppEvents.InitPanelName(lang.documentNameNew()));
             fillView(new Document());
-            return;
+        } else {
+            fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
+            documentService.getDocument(event.id, new RequestCallback<Document>() {
+                @Override
+                public void onError(Throwable throwable) {
+                    fireErrorMessage(lang.errGetObject());
+                }
+
+                @Override
+                public void onSuccess(Document result) {
+                    fillView(result);
+                }
+            });
         }
-
-        documentService.getDocument(event.id, new RequestCallback<Document>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireErrorMessage(lang.errGetObject());
-            }
-
-            @Override
-            public void onSuccess(Document result) {
-                fillView(result);
-            }
-        });
     }
 
     @Override
@@ -267,14 +271,8 @@ public abstract class DocumentEditActivity
     private void fillView(Document document) {
         this.document = document;
 
-        boolean isNew = document.getId() == null;
-
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
-
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
-        view.executionType().setValue(isNew ? En_DocumentExecutionType.ELECTRONIC : document.getExecutionType());
         view.setCreated( document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
         view.documentType().setValue(document.getType(), true);
@@ -286,6 +284,8 @@ public abstract class DocumentEditActivity
         view.decimalNumberText().setText(document.getDecimalNumber());
         view.isApproved().setValue(document.getApproved());
 
+        boolean isNew = document.getId() == null;
+        view.executionType().setValue(isNew ? En_DocumentExecutionType.ELECTRONIC : document.getExecutionType());
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
             view.registrar().setValue(currentPerson);
@@ -294,11 +294,11 @@ public abstract class DocumentEditActivity
             view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
             view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
         }
+        view.uploaderVisible().setVisible(isNew);
 
         boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
         boolean inventoryNumberIsNotSet = document.getInventoryNumber() == null;
 
-        view.uploaderVisible().setVisible(isNew);
         view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
         view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
         view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
@@ -322,4 +322,5 @@ public abstract class DocumentEditActivity
     private Document document;
     private Profile authorizedProfile;
     private AppEvents.InitDetails initDetails;
+
 }
