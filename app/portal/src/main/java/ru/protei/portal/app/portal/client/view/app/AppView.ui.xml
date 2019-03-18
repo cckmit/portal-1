@@ -59,9 +59,8 @@
 
                 <g:HTMLPanel styleName="sidebar-menu" ui:field="menuContainer"/>
             </section>
+            <g:Label styleName="app-version" ui:field="appVersion"/>
         </g:HTMLPanel>
-
-        <g:Label styleName="app-version" ui:field="appVersion"/>
 
         <g:HTMLPanel ui:field="container" styleName="right-side"/>
 
