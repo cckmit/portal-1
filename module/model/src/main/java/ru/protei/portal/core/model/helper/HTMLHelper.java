@@ -1,5 +1,8 @@
 package ru.protei.portal.core.model.helper;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class HTMLHelper {
     public static final String START_COMMENT = "<!--";
     public static final String END_COMMENT = "-->";
@@ -23,27 +26,16 @@ public class HTMLHelper {
     }
 
     public static String htmlEscape(String s) {
-        if (s.indexOf("&") != -1) {
-            s = s.replaceAll("&", "&amp;");
+        for (Map.Entry<String, String> entry: htmlEscapeChars.entrySet()) {
+            if (s.contains(entry.getKey())) s = s.replaceAll(entry.getKey(), entry.getValue());
         }
-
-        if (s.indexOf("<") != -1) {
-            s = s.replaceAll("<", "&lt;");
-        }
-
-        // Текст содержит markdown цитирование >
-        // if (s.indexOf(">") != -1) {
-        //    s = s.replaceAll(">", "&gt;");
-        // }
-
-        if (s.indexOf("\"") != -1) {
-            s = s.replaceAll("\"", "&quot;");
-        }
-
-        if (s.indexOf("'") != -1) {
-            s = s.replaceAll("'", "&#39;");
-        }
-
         return s;
+    }
+    static private Map<String, String> htmlEscapeChars = new HashMap<>();
+    static {
+        htmlEscapeChars.put("&", "&amp;");
+        htmlEscapeChars.put("<", "&lt;");
+        htmlEscapeChars.put("\"", "&quot;");
+        htmlEscapeChars.put("'", "&#39;");
     }
 }

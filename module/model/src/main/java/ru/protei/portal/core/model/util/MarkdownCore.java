@@ -1,6 +1,5 @@
 package ru.protei.portal.core.model.util;
 
-import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.StringUtils;
 
 import java.util.LinkedHashMap;
@@ -30,7 +29,6 @@ public abstract class MarkdownCore {
         if (StringUtils.isBlank(text)) {
             return text;
         }
-        text = HTMLHelper.htmlEscape(text);
         text = plain2markdown(text);
         return text;
     }
