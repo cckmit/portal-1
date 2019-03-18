@@ -45,6 +45,20 @@
                     </label>
                     <span class="col-xs-7 col-md-7" ui:field="description"/>
                 </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractParent}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="contractParent"/>
+                </div>
+
+                <div class="col-xs-12">
+                    <label class="col-xs-5 col-md-5">
+                        <ui:text from="{lang.contractChild}"/>
+                    </label>
+                    <span class="col-xs-7 col-md-7" ui:field="contractChild"/>
+                </div>
             </fieldset>
             <fieldset class="header">
                 <legend>

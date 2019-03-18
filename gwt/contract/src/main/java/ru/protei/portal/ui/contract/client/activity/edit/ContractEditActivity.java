@@ -21,7 +21,6 @@ import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
-import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 public abstract class ContractEditActivity implements Activity, AbstractContractEditActivity {
@@ -84,7 +83,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private void requestData(Long id){
         contractService.getContract(id, new FluentCallback<Contract>()
-                .withError(throwable -> errorHandler.accept(throwable))
                 .withSuccess(this::fillView));
     }
 
@@ -158,12 +156,11 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private void saveContract() {
         view.saveEnabled().setEnabled(false);
         contractService.saveContract(contract, new FluentCallback<Long>()
-                .withError(throwable -> {
-                    errorHandler.accept(throwable);
+                .withResult(() -> {
                     view.saveEnabled().setEnabled(true);
                 })
                 .withSuccess(value -> {
-                    view.saveEnabled().setEnabled(true);
+                    fireEvent(new ContractEvents.ChangeModel());
                     fireEvent(new Back());
                 }));
     }
@@ -198,8 +195,6 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
     private AbstractContractEditView view;
     @Inject
     private ContractControllerAsync contractService;
-    @Inject
-    private DefaultErrorHandler errorHandler;
     @Inject
     PolicyService policyService;
 

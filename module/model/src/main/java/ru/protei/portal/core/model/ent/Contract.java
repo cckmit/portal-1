@@ -9,6 +9,7 @@ import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Договор
@@ -137,6 +138,16 @@ public class Contract extends AuditableObject implements Serializable {
 
     @JdbcJoinedColumn(localColumn = "organization_id", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String organizationName;
+
+    @JdbcColumn(name = "parent_contract_id")
+    private Long parentContractId;
+
+    // winter не поддерживает JdbcJoinedObject на ту же сущность во избежание рекурсии
+    private String parentContractNumber;
+
+    @JdbcOneToMany(table = "Contract", localColumn = "id", remoteColumn = "parent_contract_id")
+    private List<Contract> childContracts;
+
 
     @Override
     public String getAuditType() {
@@ -312,11 +323,28 @@ public class Contract extends AuditableObject implements Serializable {
         this.organizationId = organizationId;
     }
 
-    public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
-    }
     public String getOrganizationName() {
         return organizationName;
+    }
+
+    public Long getParentContractId() {
+        return parentContractId;
+    }
+
+    public void setParentContractId(Long parentContractId) {
+        this.parentContractId = parentContractId;
+    }
+
+    public String getParentContractNumber() {
+        return parentContractNumber;
+    }
+
+    public void setParentContractNumber(String parentContractNumber) {
+        this.parentContractNumber = parentContractNumber;
+    }
+
+    public List<Contract> getChildContracts() {
+        return childContracts;
     }
 
     @Override
@@ -345,6 +373,9 @@ public class Contract extends AuditableObject implements Serializable {
                 ", contractDates=" + contractDates +
                 ", organizationId=" + organizationId +
                 ", organizationName='" + organizationName + '\'' +
+                ", parentContractId=" + parentContractId +
+                ", parentContractNumber='" + parentContractNumber + '\'' +
+                ", childContracts=" + childContracts +
                 '}';
     }
 }

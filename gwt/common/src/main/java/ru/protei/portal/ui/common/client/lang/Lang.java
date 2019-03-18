@@ -1603,4 +1603,8 @@ public interface Lang extends Messages, ContactItemLang {
     String privilegeContract();
 
     String contractOrganization();
+
+    String contractParent();
+
+    String contractChild();
 }

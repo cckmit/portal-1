@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContractDates;
 import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
@@ -66,6 +67,10 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
         view.setDirection(StringUtils.emptyIfNull(value.getDirectionName()));
         view.setDates(getAllDatesAsString(value.getContractDates()));
+        view.setParentContract(lang.contractNum(value.getParentContractNumber()));
+        view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
+                .map(contract -> lang.contractNum(contract.getNumber()))
+                .collect(Collectors.joining(", ")));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.CONTRACT)

@@ -30,4 +30,6 @@ public class ContractEvents {
         public Long id;
         public HasWidgets parent;
     }
+
+    public static class ChangeModel {}
 }

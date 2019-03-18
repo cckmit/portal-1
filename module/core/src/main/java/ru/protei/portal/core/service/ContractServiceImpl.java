@@ -47,8 +47,18 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public CoreResponse<Contract> getContract(AuthToken token, Long id) {
         Contract contract = contractDAO.get(id);
-        if (contract == null)
+
+        if (contract == null) {
             return new CoreResponse<Contract>().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        if (contract.getParentContractId() != null) {
+            Contract parentContract = contractDAO.partialGet(contract.getParentContractId(), "number");
+            if (parentContract != null) {
+                contract.setParentContractNumber(parentContract.getNumber());
+            }
+        }
+
         return new CoreResponse<Contract>().success(contract);
     }
 
