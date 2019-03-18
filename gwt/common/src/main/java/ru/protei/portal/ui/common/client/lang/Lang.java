@@ -1599,4 +1599,6 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentElapsedTimeTypeLabel();
 
     String selectValue();
+
+    String privilegeContract();
 }
