@@ -444,6 +444,11 @@ public class MainConfiguration {
         return new ContractDAO_Impl();
     }
 
+    @Bean
+    public ContractDateDAO getContractDateDAO() {
+        return new ContractDateDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -665,6 +670,11 @@ public class MainConfiguration {
     @Bean
     public ContractService getContractService() {
         return new ContractServiceImpl();
+    }
+
+    @Bean
+    public ContractReminderService getContractReminderService() {
+        return new ContractReminderServiceImpl();
     }
 
     @Bean

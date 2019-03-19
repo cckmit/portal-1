@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.AuditableObject;
-import ru.protei.portal.core.model.struct.ContractDates;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
@@ -16,7 +15,7 @@ import java.util.List;
 /**
  * Договор
  */
-@JdbcEntity(table = "Contract")
+@JdbcEntity(table = "contract")
 public class Contract extends AuditableObject implements Serializable, EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
@@ -132,8 +131,8 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
     @JdbcColumn(name = "date_valid")
     private Date dateValid;
 
-    @JdbcColumn(name = "contract_dates", converterType = ConverterType.JSON)
-    private ContractDates contractDates;
+    @JdbcOneToMany(localColumn = "id", remoteColumn = "contract_id")
+    private List<ContractDate> contractDates;
 
     @JdbcColumn(name = "organization_id")
     private Long organizationId;
@@ -309,11 +308,11 @@ public class Contract extends AuditableObject implements Serializable, EntityOpt
         this.dateValid = dateValid;
     }
 
-    public ContractDates getContractDates() {
+    public List<ContractDate> getContractDates() {
         return contractDates;
     }
 
-    public void setContractDates(ContractDates contractDates) {
+    public void setContractDates(List<ContractDate> contractDates) {
         this.contractDates = contractDates;
     }
 

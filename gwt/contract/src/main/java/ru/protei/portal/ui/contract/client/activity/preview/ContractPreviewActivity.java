@@ -7,9 +7,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.ContractDates;
 import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.ContractControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
@@ -78,9 +79,9 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
                 .build());
     }
 
-    private String getAllDatesAsString(ContractDates dates) {
-        if ( dates == null || dates.getItems() == null ) return "";
-        return dates.getItems().stream()
+    private String getAllDatesAsString(List<ContractDate> dates) {
+        if ( dates == null ) return "";
+        return dates.stream()
                 .map(p -> datesTypeLang.getName(p.getType()) + " – " + formatDate(p.getDate()) + (isNotEmpty(p.getComment()) ? " (" + p.getComment() + ")" : ""))
                 .collect(Collectors.joining(", "));
     }

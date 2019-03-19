@@ -13,35 +13,34 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.core.datetimepicker.client.util.DateUtils;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
-import ru.protei.portal.core.model.struct.ContractDate;
-import ru.protei.portal.core.model.struct.ContractDates;
+import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.ui.contract.client.widget.contractdates.item.ContractDateItem;
 
 import java.util.*;
 
 public class ContractDatesList
         extends Composite
-        implements HasValue<ContractDates>
+        implements HasValue<List<ContractDate>>
 {
     public ContractDatesList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
     @Override
-    public ContractDates getValue() {
+    public List<ContractDate> getValue() {
         return value;
     }
 
     @Override
-    public void setValue(ContractDates value ) {
+    public void setValue(List<ContractDate> value ) {
         setValue( value, false );
     }
 
     @Override
-    public void setValue(ContractDates value, boolean fireEvents ) {
+    public void setValue(List<ContractDate> value, boolean fireEvents ) {
         clear();
-        this.value = value == null ? new ContractDates() : value;
-        for ( ContractDate items : this.value.getItems() ) {
+        this.value = value == null ? new ArrayList<>() : value;
+        for ( ContractDate items : this.value ) {
             makeItemAndFillValue(items);
         }
 
@@ -56,7 +55,7 @@ public class ContractDatesList
     }
 
     @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ContractDates> handler ) {
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<List<ContractDate>> handler ) {
         return addHandler( handler, ValueChangeEvent.getType() );
     }
 
@@ -72,7 +71,7 @@ public class ContractDatesList
         item.setType(En_ContractDatesType.PAYMENT);
         item.setDate(DateUtils.setBeginOfDay(new Date()));
 
-        value.getItems().add( item );
+        value.add( item );
 
         makeItemAndFillValue( item );
     }
@@ -84,7 +83,7 @@ public class ContractDatesList
             container.remove( event.getTarget() );
 
             ContractDate remove = modelToView.remove( event.getTarget() );
-            ContractDatesList.this.value.getItems().remove( remove );
+            ContractDatesList.this.value.remove( remove );
         });
 
         modelToView.put( itemWidget, value );
@@ -98,7 +97,7 @@ public class ContractDatesList
 
     @Inject
     Provider<ContractDateItem> itemFactory;
-    ContractDates value;
+    List<ContractDate> value;
     Map<ContractDateItem, ContractDate> modelToView = new HashMap<>();
 
     interface ContractPeriodListUiBinder extends UiBinder< HTMLPanel, ContractDatesList> {}

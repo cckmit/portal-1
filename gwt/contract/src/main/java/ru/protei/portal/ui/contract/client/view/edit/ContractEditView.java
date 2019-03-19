@@ -11,8 +11,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
-import ru.protei.portal.core.model.ent.Contract;
-import ru.protei.portal.core.model.struct.ContractDates;
+import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -33,6 +32,7 @@ import ru.protei.portal.ui.contract.client.widget.selector.ContractStateSelector
 import ru.protei.portal.ui.contract.client.widget.selector.ContractTypeSelector;
 
 import java.util.Date;
+import java.util.List;
 
 public class ContractEditView extends Composite implements AbstractContractEditView {
 
@@ -107,7 +107,7 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
-    public HasValue<ContractDates> contractDates() {
+    public HasValue<List<ContractDate>> contractDates() {
         return dateList;
     }
 

@@ -34,4 +34,27 @@
                                  referencedTableName="contract" referencedColumnNames="id"
                                  onUpdate="CASCADE" onDelete="SET NULL"/>
     </changeSet>
+
+    <changeSet id="create-contract-date-table" author="buchmastov">
+        <dropColumn tableName="contract" columnName="contract_dates"/>
+        <createTable tableName="contract_date">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="contract_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date" type="DATETIME"/>
+            <column name="comment" type="VARCHAR(2048)"/>
+            <column name="type" type="VARCHAR(32)"/>
+            <column name="notify" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="fk-contract-date-to-contract" author="buchmastov">
+        <addForeignKeyConstraint constraintName="fk_contract_id_to_contract"
+                                 baseTableName="contract_date" baseColumnNames="contract_id"
+                                 referencedTableName="contract" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
 </databaseChangeLog>

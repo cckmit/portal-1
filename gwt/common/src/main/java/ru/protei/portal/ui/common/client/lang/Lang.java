@@ -1609,4 +1609,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractChild();
 
     String contractParentWithout();
+
+    String contractDatesNotify();
 }

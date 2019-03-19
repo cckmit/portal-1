@@ -16,12 +16,12 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_ContractDatesType;
-import ru.protei.portal.core.model.struct.ContractDate;
+import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
 import ru.protei.portal.ui.contract.client.widget.selector.ContractDatesTypeSelector;
 
 import java.util.Date;
-
 
 public class ContractDateItem
         extends Composite
@@ -48,6 +48,7 @@ public class ContractDateItem
         type.setValue( value.getType() );
         date.setValue( value.getDate() );
         comment.setValue( value.getComment() );
+        notify.setValue( value.isNotify() );
     }
 
     @Override
@@ -76,6 +77,11 @@ public class ContractDateItem
         value.setType(type.getValue());
     }
 
+    @UiHandler( "notify" )
+    public void onChangeNotify(ValueChangeEvent<Boolean> event) {
+        value.setNotify(notify.getValue());
+    }
+
     @UiField
     TextBox comment;
     @UiField
@@ -86,6 +92,8 @@ public class ContractDateItem
     @Inject
     @UiField(provided = true)
     SinglePicker date;
+    @UiField
+    Switcher notify;
 
     @UiField
     Lang lang;
