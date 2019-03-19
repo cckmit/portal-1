@@ -14,6 +14,8 @@ public class HTMLHelper {
 
     public static final String CLOSE_EMPTY_ELEMENT = "/>";
 
+    public static final String THREE_BACKTICKET_ELEMENT = "```";
+
     public static String wrap(String tag, String content) {
         return new StringBuilder()
                 .append(OPEN_START_TAG).append(tag).append(CLOSE_START_TAG)
@@ -24,8 +26,23 @@ public class HTMLHelper {
     public static String wrapDiv(String content) {
         return wrap("div", content);
     }
-
     public static String htmlEscape(String s) {
+        StringBuilder sb = new StringBuilder();
+        boolean openElement = false;
+        int start = 0;
+        while (true) {
+            int end = s.indexOf(THREE_BACKTICKET_ELEMENT, openElement? start + THREE_BACKTICKET_ELEMENT.length() : start);
+            if (end == -1) {
+                sb.append(replaceHtmlEscapeChars(s.substring(start)));
+                break;
+            }
+            sb.append(openElement? s.substring(start, end += THREE_BACKTICKET_ELEMENT.length()) : replaceHtmlEscapeChars(s.substring(start, end)));
+            openElement = !openElement;
+            start = end;
+        }
+        return sb.toString();
+    }
+    static private String replaceHtmlEscapeChars(String s){
         for (Map.Entry<String, String> entry: htmlEscapeChars.entrySet()) {
             if (s.contains(entry.getKey())) s = s.replaceAll(entry.getKey(), entry.getValue());
         }
