@@ -9,7 +9,8 @@
              xmlns:list="urn:import:ru.protei.portal.ui.contract.client.widget.contractdates.list"
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield"
              xmlns:money="urn:import:ru.protei.portal.ui.common.client.widget.money"
-             xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany">
+             xmlns:homecompany="urn:import:ru.protei.portal.ui.common.client.widget.homecompany"
+             xmlns:contract="urn:import:ru.protei.portal.ui.common.client.widget.selector.contract">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -21,13 +22,27 @@
                     <ui:text from="{lang.contractCommonHeader}"/>
                 </legend>
                 <div class="grid grid-indent">
+
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractNumber}"/></label>
                         <validatefield:ValidableTextBox ui:field="number" styleName="input-field" notNull="true"/>
                     </div>
                     <div class="form-group col-xs-4">
+                        <label><ui:text from="{lang.contractDirection}"/></label>
+                        <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}"/>
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label><ui:text from="{lang.contractParent}"/></label>
+                        <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
+                    </div>
+
+                    <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractType}"/></label>
                         <selector:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}"/>
+                    </div>
+                    <div class="form-group col-xs-4">
+                        <label><ui:text from="{lang.contractState}"/></label>
+                        <selector:ContractStateSelector ui:field="state"/>
                     </div>
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractCost}"/></label>
@@ -35,8 +50,8 @@
                     </div>
 
                     <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractState}"/></label>
-                        <selector:ContractStateSelector ui:field="state"/>
+                        <label><ui:text from="{lang.contractOrganization}"/></label>
+                        <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization" reverseOrder="true"/>
                     </div>
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractCurator}"/></label>
@@ -47,14 +62,6 @@
                         <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" defaultValue="{lang.selectAccountPerson}"/>
                     </div>
 
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractOrganization}"/></label>
-                        <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization" reverseOrder="true"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractDirection}"/></label>
-                        <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}"/>
-                    </div>
                     <div class="form-group col-xs-4">
                         <label><ui:text from="{lang.contractContragent}"/></label>
                         <company:CompanySelector hasNullValue="false" ui:field="contragent" defaultValue="{lang.selectAccountCompany}"/>

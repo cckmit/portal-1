@@ -111,6 +111,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         view.contractDates().setValue(contract.getContractDates());
 
         view.organization().setValue(createOptionOrNull(contract.getOrganizationId(), contract.getOrganizationName()));
+        view.contractParent().setValue(createOptionOrNull(contract.getParentContractId(), contract.getParentContractNumber()));
     }
 
     private void fillDto() {
@@ -131,6 +132,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
         contract.setContractDates(view.contractDates().getValue());
 
         contract.setOrganizationId(getOptionIdOrNull(view.organization().getValue()));
+        contract.setParentContractId(getOptionIdOrNull(view.contractParent().getValue()));
     }
 
     private void showValidationError() {

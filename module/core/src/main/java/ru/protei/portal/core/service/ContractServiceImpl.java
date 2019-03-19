@@ -53,11 +53,13 @@ public class ContractServiceImpl implements ContractService {
         }
 
         if (contract.getParentContractId() != null) {
-            Contract parentContract = contractDAO.partialGet(contract.getParentContractId(), "number");
-            if (parentContract != null) {
-                contract.setParentContractNumber(parentContract.getNumber());
+            CaseObject parent = caseObjectDAO.partialGet(contract.getParentContractId(), "CASE_NAME");
+            if (parent != null) {
+                contract.setParentContractNumber(parent.getName());
             }
         }
+
+        jdbcManyRelationsHelper.fill(contract, "childContracts");
 
         return new CoreResponse<Contract>().success(contract);
     }

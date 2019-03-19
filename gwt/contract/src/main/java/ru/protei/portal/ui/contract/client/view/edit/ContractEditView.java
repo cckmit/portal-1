@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.single.SinglePicker;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
+import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.struct.ContractDates;
 import ru.protei.portal.core.model.struct.CostWithCurrency;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -21,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTex
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyButtonSelector;
 import ru.protei.portal.ui.common.client.widget.money.CostWithCurrencyView;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.selector.contract.ContractButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -115,6 +117,11 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     }
 
     @Override
+    public HasValue<EntityOption> contractParent() {
+        return contractParent;
+    }
+
+    @Override
     public HasEnabled costEnabled() {
         return costWithCurrency;
     }
@@ -181,6 +188,9 @@ public class ContractEditView extends Composite implements AbstractContractEditV
     @Inject
     @UiField(provided = true)
     ContractDatesList dateList;
+    @Inject
+    @UiField(provided = true)
+    ContractButtonSelector contractParent;
 
     private AbstractContractEditActivity activity;
 

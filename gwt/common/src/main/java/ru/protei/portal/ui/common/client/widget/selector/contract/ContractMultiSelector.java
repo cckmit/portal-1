@@ -1,14 +1,14 @@
 package ru.protei.portal.ui.common.client.widget.selector.contract;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 
 import java.util.List;
 
-public class ContractMultiSelector extends MultipleInputSelector<Contract> implements SelectorWithModel<Contract> {
+public class ContractMultiSelector extends MultipleInputSelector<EntityOption> implements SelectorWithModel<EntityOption> {
 
     @Inject
     public void init(ContractModel model, Lang lang) {
@@ -19,9 +19,9 @@ public class ContractMultiSelector extends MultipleInputSelector<Contract> imple
     }
 
     @Override
-    public void fillOptions(List<Contract> options) {
+    public void fillOptions(List<EntityOption> options) {
         clearOptions();
-        options.forEach(option -> addOption(lang.contractNum(option.getNumber()), option));
+        options.forEach(option -> addOption(lang.contractNum(option.getDisplayText()), option));
     }
 
     private Lang lang;

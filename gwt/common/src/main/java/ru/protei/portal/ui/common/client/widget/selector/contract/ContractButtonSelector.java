@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.contract;
 
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -9,7 +9,7 @@ import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
 
-public class ContractButtonSelector extends ButtonSelector<Contract> implements SelectorWithModel<Contract> {
+public class ContractButtonSelector extends ButtonSelector<EntityOption> implements SelectorWithModel<EntityOption> {
 
     @Inject
     public void init(ContractModel model, Lang lang) {
@@ -18,13 +18,13 @@ public class ContractButtonSelector extends ButtonSelector<Contract> implements 
             if (value == null) {
                 return new DisplayOption(defaultValue == null ? lang.selectValue() : defaultValue);
             } else {
-                return new DisplayOption(lang.contractNum(value.getNumber()));
+                return new DisplayOption(lang.contractNum(value.getDisplayText()));
             }
         });
     }
 
     @Override
-    public void fillOptions(List<Contract> options) {
+    public void fillOptions(List<EntityOption> options) {
         clearOptions();
         if (hasNullValue) {
             addOption(null);

@@ -1,7 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.selector.base;
 
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.ContractEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -13,8 +14,9 @@ import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorM
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-public abstract class ContractModel extends LifecycleSelectorModel<Contract> {
+public abstract class ContractModel extends LifecycleSelectorModel<EntityOption> {
 
     @Event
     public void onInit(AuthEvents.Success event) {
@@ -32,7 +34,11 @@ public abstract class ContractModel extends LifecycleSelectorModel<Contract> {
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess(this::notifySubscribers)
+                .withSuccess(contracts -> {
+                    notifySubscribers(contracts.stream()
+                            .map(Contract::toEntityOption)
+                            .collect(Collectors.toList()));
+                })
         );
     }
 

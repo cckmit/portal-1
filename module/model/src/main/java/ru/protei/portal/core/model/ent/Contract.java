@@ -5,6 +5,8 @@ import ru.protei.portal.core.model.dict.En_ContractType;
 import ru.protei.portal.core.model.dict.En_Currency;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.struct.ContractDates;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.EntityOptionSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
@@ -15,7 +17,7 @@ import java.util.List;
  * Договор
  */
 @JdbcEntity(table = "Contract")
-public class Contract extends AuditableObject implements Serializable {
+public class Contract extends AuditableObject implements Serializable, EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.EXPLICIT)
     private Long id;
@@ -377,5 +379,10 @@ public class Contract extends AuditableObject implements Serializable {
                 ", parentContractNumber='" + parentContractNumber + '\'' +
                 ", childContracts=" + childContracts +
                 '}';
+    }
+
+    @Override
+    public EntityOption toEntityOption() {
+        return new EntityOption(getNumber(), getId());
     }
 }

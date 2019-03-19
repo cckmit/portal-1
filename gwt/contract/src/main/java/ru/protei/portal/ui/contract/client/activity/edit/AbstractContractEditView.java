@@ -45,5 +45,7 @@ public interface AbstractContractEditView extends IsWidget {
 
     HasValue<EntityOption> organization();
 
+    HasValue<EntityOption> contractParent();
+
     HasEnabled costEnabled();
 }

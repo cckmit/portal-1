@@ -67,7 +67,7 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
         view.setCurator(StringUtils.emptyIfNull(value.getCuratorShortName()));
         view.setDirection(StringUtils.emptyIfNull(value.getDirectionName()));
         view.setDates(getAllDatesAsString(value.getContractDates()));
-        view.setParentContract(lang.contractNum(value.getParentContractNumber()));
+        view.setParentContract(value.getParentContractNumber() == null ? "" : lang.contractNum(value.getParentContractNumber()));
         view.setChildContracts(CollectionUtils.stream(value.getChildContracts())
                 .map(contract -> lang.contractNum(contract.getNumber()))
                 .collect(Collectors.joining(", ")));
