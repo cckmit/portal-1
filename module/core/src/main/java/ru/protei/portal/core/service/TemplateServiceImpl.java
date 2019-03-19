@@ -271,7 +271,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        text = HTMLHelper.htmlEscape(text);
+        text = HTMLHelper.htmlEscapeWOThreeBackticks(text);
         text = markdownServer.plain2markdown(text);
         text = replaceLineBreaks( text );
         return text;

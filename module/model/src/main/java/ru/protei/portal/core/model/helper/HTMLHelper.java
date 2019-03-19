@@ -14,7 +14,7 @@ public class HTMLHelper {
 
     public static final String CLOSE_EMPTY_ELEMENT = "/>";
 
-    public static final String THREE_BACKTICKET_ELEMENT = "```";
+    public static final String THREE_BACKTICKS_ELEMENT = "```";
 
     public static String wrap(String tag, String content) {
         return new StringBuilder()
@@ -27,16 +27,19 @@ public class HTMLHelper {
         return wrap("div", content);
     }
     public static String htmlEscape(String s) {
+        return replaceHtmlEscapeChars(s);
+    }
+    public static String htmlEscapeWOThreeBackticks(String s) {
         StringBuilder sb = new StringBuilder();
         boolean openElement = false;
         int start = 0;
         while (true) {
-            int end = s.indexOf(THREE_BACKTICKET_ELEMENT, openElement? start + THREE_BACKTICKET_ELEMENT.length() : start);
+            int end = s.indexOf(THREE_BACKTICKS_ELEMENT, openElement? start + THREE_BACKTICKS_ELEMENT.length() : start);
             if (end == -1) {
-                sb.append(replaceHtmlEscapeChars(s.substring(start)));
+                sb.append(openElement? s.substring(start) : replaceHtmlEscapeChars(s.substring(start)));
                 break;
             }
-            sb.append(openElement? s.substring(start, end += THREE_BACKTICKET_ELEMENT.length()) : replaceHtmlEscapeChars(s.substring(start, end)));
+            sb.append(openElement? s.substring(start, end += THREE_BACKTICKS_ELEMENT.length()) : replaceHtmlEscapeChars(s.substring(start, end)));
             openElement = !openElement;
             start = end;
         }
