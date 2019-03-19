@@ -68,7 +68,7 @@ public abstract class DocumentEditActivity
 
         if (event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.documentNameNew()));
-            fillView(new Document());
+            initView();
         } else {
             fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
             documentService.getDocument(event.id, new RequestCallback<Document>() {
@@ -267,7 +267,42 @@ public abstract class DocumentEditActivity
         d.setApproved(view.isApproved().getValue());
         return d;
     }
+    private void initView() {
+        this.document = new Document();
 
+        view.name().setValue("");
+        view.annotation().setValue("");
+        view.setCreated("");
+        view.documentCategory().setValue(null);
+        view.documentType().setValue(null);
+        view.inventoryNumber().setValue(null);
+        view.keywords().setValue(null);
+        view.project().setValue(null);
+        view.version().setValue("");
+        view.equipment().setValue(null);
+        view.decimalNumberText().setText("");
+
+        view.isApproved().setValue(false);
+        view.executionType().setValue(En_DocumentExecutionType.ELECTRONIC);
+
+        PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
+        view.registrar().setValue(currentPerson);
+        view.contractor().setValue(currentPerson);
+
+        view.uploaderVisible().setVisible(true);
+
+        view.equipmentEnabled().setEnabled(true);
+        view.decimalNumberEnabled().setEnabled(true);
+        view.inventoryNumberEnabled().setEnabled(true);
+
+        view.nameValidator().setValid(true);
+
+        view.resetFilename();
+        view.documentUploader().resetAction();
+        view.saveEnabled().setEnabled(true);
+
+        setDesignationVisibility();
+    }
     private void fillView(Document document) {
         this.document = document;
 
@@ -282,24 +317,19 @@ public abstract class DocumentEditActivity
         view.version().setValue(document.getVersion());
         view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()), true);
         view.decimalNumberText().setText(document.getDecimalNumber());
-        view.isApproved().setValue(document.getApproved());
 
-        boolean isNew = document.getId() == null;
-        view.executionType().setValue(isNew ? En_DocumentExecutionType.ELECTRONIC : document.getExecutionType());
-        if (isNew) {
-            PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
-            view.registrar().setValue(currentPerson);
-            view.contractor().setValue(currentPerson);
-        } else {
-            view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
-            view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
-        }
-        view.uploaderVisible().setVisible(isNew);
+        view.isApproved().setValue(document.getApproved());
+        view.executionType().setValue(document.getExecutionType());
+
+        view.registrar().setValue(document.getRegistrar() == null ? null : document.getRegistrar().toShortNameShortView());
+        view.contractor().setValue(document.getContractor() == null ? null : document.getContractor().toShortNameShortView());
+
+        view.uploaderVisible().setVisible(false);
 
         boolean decimalNumberIsNotSet = StringUtils.isEmpty(document.getDecimalNumber());
         boolean inventoryNumberIsNotSet = document.getInventoryNumber() == null;
 
-        view.equipmentEnabled().setEnabled(isNew || decimalNumberIsNotSet);
+        view.equipmentEnabled().setEnabled(decimalNumberIsNotSet);
         view.decimalNumberEnabled().setEnabled(decimalNumberIsNotSet);
         view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
 
@@ -322,5 +352,4 @@ public abstract class DocumentEditActivity
     private Document document;
     private Profile authorizedProfile;
     private AppEvents.InitDetails initDetails;
-
 }
