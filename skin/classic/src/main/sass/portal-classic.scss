@@ -19,6 +19,10 @@
 .date {
   .form-control {
     @extend .input-field;
+    min-height: auto;
+    border-radius: 0;
+    background-clip: initial;
+    -webkit-background-clip: initial;
   }
 
   .btn-default {
