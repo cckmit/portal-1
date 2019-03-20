@@ -7,10 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -116,16 +113,16 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        view.setDocumentTypeCategoryFilter(category);
+        if( view.documentType().getValue() != null && !category.equals( view.documentType().getValue().getDocumentCategory())){
+            view.documentType().setValue(null);
+        }
+        view.setDocumentTypeCategoryFilter(documentType -> documentType.getDocumentCategory() == category );
+
         view.equipmentVisible().setVisible(category.isForEquipment());
 
         setDecimalNumberEnabled();
         setDesignationVisibility();
 
-        if (view.documentType().getValue() != null &&
-                category == view.documentType().getValue().getDocumentCategory()) {
-            view.documentType().setValue(null, true);
-        }
     }
 
     @Override
