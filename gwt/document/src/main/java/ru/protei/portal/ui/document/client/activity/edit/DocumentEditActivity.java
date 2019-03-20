@@ -7,11 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
-import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -63,22 +59,26 @@ public abstract class DocumentEditActivity
 
     @Event
     public void onShow(DocumentEvents.Edit event) {
+        initDetails.parent.clear();
+        initDetails.parent.add(view.asWidget());
+
         if (event.id == null) {
+            fireEvent(new AppEvents.InitPanelName(lang.documentNameNew()));
             fillView(new Document());
-            return;
+        } else {
+            fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
+            documentService.getDocument(event.id, new RequestCallback<Document>() {
+                @Override
+                public void onError(Throwable throwable) {
+                    fireErrorMessage(lang.errGetObject());
+                }
+
+                @Override
+                public void onSuccess(Document result) {
+                    fillView(result);
+                }
+            });
         }
-
-        documentService.getDocument(event.id, new RequestCallback<Document>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireErrorMessage(lang.errGetObject());
-            }
-
-            @Override
-            public void onSuccess(Document result) {
-                fillView(result);
-            }
-        });
     }
 
     @Override
@@ -113,16 +113,16 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        view.setDocumentTypeCategoryFilter(category);
+        if( view.documentType().getValue() != null && !category.equals( view.documentType().getValue().getDocumentCategory())){
+            view.documentType().setValue(null);
+        }
+        view.setDocumentTypeCategoryFilter(documentType -> documentType.getDocumentCategory() == category );
+
         view.equipmentVisible().setVisible(category.isForEquipment());
 
         setDecimalNumberEnabled();
         setDesignationVisibility();
 
-        if (view.documentType().getValue() != null &&
-                category == view.documentType().getValue().getDocumentCategory()) {
-            view.documentType().setValue(null, true);
-        }
     }
 
     @Override
@@ -263,28 +263,24 @@ public abstract class DocumentEditActivity
         d.setApproved(view.isApproved().getValue());
         return d;
     }
-
     private void fillView(Document document) {
         this.document = document;
 
         boolean isNew = document.getId() == null;
 
-        initDetails.parent.clear();
-        initDetails.parent.add(view.asWidget());
-
         view.name().setValue(document.getName());
         view.annotation().setValue(document.getAnnotation());
-        view.executionType().setValue(isNew ? En_DocumentExecutionType.ELECTRONIC : document.getExecutionType());
+        view.executionType().setValue(document.getExecutionType());
         view.setCreated( document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
-        view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory(), true);
-        view.documentType().setValue(document.getType(), true);
+        view.documentCategory().setValue(document.getType() == null ? null : document.getType().getDocumentCategory());
+        view.documentType().setValue(document.getType());
         view.inventoryNumber().setValue(document.getInventoryNumber());
         view.keywords().setValue(document.getKeywords());
-        view.project().setValue(document.getProjectInfo(), true);
+        view.project().setValue(document.getProjectInfo());
         view.version().setValue(document.getVersion());
-        view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()), true);
+        view.equipment().setValue(EquipmentShortView.fromEquipment(document.getEquipment()));
         view.decimalNumberText().setText(document.getDecimalNumber());
-        view.isApproved().setValue(document.getApproved());
+        view.isApproved().setValue(isNew ? false : document.getApproved());
 
         if (isNew) {
             PersonShortView currentPerson = new PersonShortView(authorizedProfile.getShortName(), authorizedProfile.getId(), authorizedProfile.isFired());
