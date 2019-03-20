@@ -129,7 +129,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
     public void onDocumentCategoryChanged() {
         En_DocumentCategory category = view.documentCategory().getValue();
         view.documentType().setValue(null, true);
-        view.setDocumentTypeCategoryFilter(category);
+        view.setDocumentTypeCategoryFilter(documentType -> documentType.getDocumentCategory() == category );
         view.documentTypeEnabled().setEnabled(category != null);
     }
 
