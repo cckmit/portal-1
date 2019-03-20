@@ -16,6 +16,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -136,9 +137,12 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         if (isEmpty(resourceList)) {
             return;
         }
+        boolean needPC = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.COMPUTER);
+
         String summary = "Регистрация нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
+                needPC ? "\n Предоставить ПК." : "",
                 "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
                 (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
@@ -154,12 +158,15 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
 
+        boolean needPhone = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE);
+
         String summary = "Настройка офисной телефонии для сотрудника " + employeeRegistration.getEmployeeFullName();
 
-        String configure = contains( employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )
+        String configure = contains(employeeRegistration.getEquipmentList(), En_EmployeeEquipment.TELEPHONE )
                 ? "перенастройка": "настройка";
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
+                needPhone ? "\n Предоставить телефон." : "",
                 "\n", "Необходима ", configure, " офисной телефонии",
                 "\n", "Необходимо включить связь: ", join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
         ).toString();
@@ -170,6 +177,12 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
+        if (isEmpty(equipmentList)) {
+            return;
+        }
+        equipmentList = new HashSet<>(employeeRegistration.getEquipmentList());
+        equipmentList.remove(En_EmployeeEquipment.TELEPHONE);
+        equipmentList.remove(En_EmployeeEquipment.COMPUTER);
         if (isEmpty(equipmentList)) {
             return;
         }
