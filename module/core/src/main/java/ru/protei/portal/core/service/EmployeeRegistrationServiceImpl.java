@@ -142,7 +142,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
         String summary = "Регистрация нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
-                needPC ? "\n Предоставить ПК." : "",
+                needPC ? "\n Требуется установить новый ПК." : "",
                 "\n", "Предоставить доступ к ресурсам: ", join( resourceList, r -> getResourceName( r ), ", " ),
                 (isBlank( employeeRegistration.getResourceComment() ) ? "" : "\n   Дополнительно: " + employeeRegistration.getResourceComment()),
                 makeWorkplaceConfigurationString( employeeRegistration.getOperatingSystem(), employeeRegistration.getAdditionalSoft() )
@@ -166,7 +166,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
                 ? "перенастройка": "настройка";
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
-                needPhone ? "\n Предоставить телефон." : "",
+                needPhone ? "\n Требуется установить новый телефон." : "",
                 "\n", "Необходима ", configure, " офисной телефонии",
                 "\n", "Необходимо включить связь: ", join( resourceList, r -> getPhoneOfficeTypeName( r ), ", " )
         ).toString();
@@ -176,24 +176,28 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
-        Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
-        if (isEmpty(equipmentList)) {
+        if (isEmpty(employeeRegistration.getEquipmentList())) {
             return;
         }
-        equipmentList = new HashSet<>(employeeRegistration.getEquipmentList());
-        equipmentList.remove(En_EmployeeEquipment.TELEPHONE);
-        equipmentList.remove(En_EmployeeEquipment.COMPUTER);
-        if (isEmpty(equipmentList)) {
+        Set<En_EmployeeEquipment> equipmentsListFurniture = getEquipmentsListFurniture(employeeRegistration.getEquipmentList());
+        if (equipmentsListFurniture == null) {
             return;
         }
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
-                "\n", "Необходимо: ", join( equipmentList, e -> getEquipmentName( e ), ", " )
+                "\n", "Необходимо: ", join( equipmentsListFurniture, e -> getEquipmentName( e ), ", " )
         ).toString();
 
         String issueId = youtrackService.createIssue(EQUIPMENT_PROJECT_NAME, summary, description);
         saveCaseLink(employeeRegistration.getId(), issueId);
+    }
+
+    private Set<En_EmployeeEquipment> getEquipmentsListFurniture(Set<En_EmployeeEquipment> employeeRegistration) {
+        Set<En_EmployeeEquipment> equipmentsListFurniture = new HashSet<>(employeeRegistration);
+        equipmentsListFurniture.remove(En_EmployeeEquipment.TELEPHONE);
+        equipmentsListFurniture.remove(En_EmployeeEquipment.COMPUTER);
+        return equipmentsListFurniture;
     }
 
     private CharSequence makeCommonDescriptionString( EmployeeRegistration er ) {
