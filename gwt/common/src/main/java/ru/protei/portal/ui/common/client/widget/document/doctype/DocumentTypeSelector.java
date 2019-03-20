@@ -46,8 +46,8 @@ public class DocumentTypeSelector
         clearOptions();
         if (defaultValue != null) {
             addOption(null);
-            setValue(null);
         }
+        if (getValue() != null && !options.contains(getValue())) setValue(null);
         options.forEach(this::addOption);
     }
 
