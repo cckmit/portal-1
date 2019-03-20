@@ -170,7 +170,9 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     private void createEquipmentYoutrackIssueIfNeeded(EmployeeRegistration employeeRegistration) {
         Set<En_EmployeeEquipment> equipmentList = employeeRegistration.getEquipmentList();
-
+        if (isEmpty(equipmentList)) {
+            return;
+        }
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
 
         String description = join( makeCommonDescriptionString( employeeRegistration ),
