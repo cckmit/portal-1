@@ -4,11 +4,13 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="dropdown-menu" ui:field="root" >
+    <g:HTMLPanel ui:field="root" >
         <div class="dropdown-addbutton hide" ui:field="addContainer">
             <g:Button ui:field="addButton"/>
         </div>
         <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="dropdown-searchbox hide"/>
-        <g:HTMLPanel ui:field="childContainer" tag="ul"/>
+        <div class="dropdown-menu">
+            <g:HTMLPanel ui:field="childContainer" tag="ul"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>
