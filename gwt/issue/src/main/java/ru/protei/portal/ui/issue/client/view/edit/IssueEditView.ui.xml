@@ -70,7 +70,7 @@
                     <person:EmployeeButtonSelector ui:field="manager" validation="false"/>
                 </div>
 
-                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="grid grid-indent col-xs-12">
+                <g:HTMLPanel ui:field="timeElapsedContainer" styleName="form-group grid grid-indent col-xs-12">
                     <div class="col-xs-8">
                         <label ui:field="timeElapsedLabel">
                             <ui:text from="{lang.timeElapsed}"/>
