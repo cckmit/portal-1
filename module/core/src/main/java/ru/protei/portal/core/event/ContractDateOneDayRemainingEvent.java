@@ -9,15 +9,6 @@ import java.util.Set;
 
 public class ContractDateOneDayRemainingEvent extends ApplicationEvent {
 
-    private Contract contract;
-    private ContractDate contractDate;
-    private Set<NotificationEntry> notificationEntryList;
-
-
-    public ContractDateOneDayRemainingEvent(Object source) {
-        super(source);
-    }
-
     public ContractDateOneDayRemainingEvent(Object source, Contract contract, ContractDate contractDate, Set<NotificationEntry> notificationEntryList) {
         super(source);
         this.contract = contract;
@@ -36,4 +27,8 @@ public class ContractDateOneDayRemainingEvent extends ApplicationEvent {
     public Set<NotificationEntry> getNotificationEntrySet() {
         return notificationEntryList;
     }
+
+    private Contract contract;
+    private ContractDate contractDate;
+    private Set<NotificationEntry> notificationEntryList;
 }

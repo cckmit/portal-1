@@ -31,7 +31,8 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
 
     @Override
     public void setValue(CostWithCurrency value, boolean fireEvents) {
-        updateUI(value);
+        cost.setValue(value.getCost());
+        currency.setValue(value.getCurrency() == null ? defaultCurrency : value.getCurrency());
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
         }
@@ -39,12 +40,11 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return cost.isEnabled();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
         cost.setEnabled(enabled);
         currency.setEnabled(enabled);
     }
@@ -54,18 +54,9 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    public void setDefaultCost(Long value) {
-        cost.setValue(value);
-    }
-
     public void setDefaultCurrency(En_Currency value) {
         defaultCurrency = value;
         currency.setValue(value);
-    }
-
-    private void updateUI(CostWithCurrency value) {
-        cost.setValue(value.getCost());
-        currency.setValue(value.getCurrency() == null ? defaultCurrency : value.getCurrency());
     }
 
     @UiField
@@ -75,7 +66,6 @@ public class CostWithCurrencyView extends Composite implements HasValue<CostWith
     CurrencyButtonSelector currency;
 
     private En_Currency defaultCurrency;
-    private boolean enabled = true;
 
     interface CostWithCurrencyViewUiBinder extends UiBinder<HTMLPanel, CostWithCurrencyView> {}
     private static CostWithCurrencyViewUiBinder ourUiBinder = GWT.create(CostWithCurrencyViewUiBinder.class);

@@ -22,7 +22,7 @@ public class ContractDate implements Serializable {
     private String comment;
 
     @JdbcColumn(name = "type")
-    @JdbcEnumerated(EnumType.STRING)
+    @JdbcEnumerated(EnumType.ID)
     private En_ContractDatesType type;
 
     @JdbcColumn(name = "notify")

@@ -8,34 +8,15 @@
         <addColumn tableName="contract">
             <column name="cost_currency" type="INT"/>
         </addColumn>
-    </changeSet>
-
-    <changeSet id="add-organization_id-to-contract" author="buchmastov">
         <addColumn tableName="contract">
             <column name="organization_id" type="BIGINT"/>
         </addColumn>
-    </changeSet>
-
-    <changeSet id="add-organization_id-fk-to-contract" author="buchmastov">
-        <addForeignKeyConstraint constraintName="fk_organization_company"
-                                 baseTableName="contract" baseColumnNames="organization_id"
-                                 referencedTableName="company" referencedColumnNames="id"/>
-    </changeSet>
-
-    <changeSet id="add-parent-contract-id-in-contract" author="buchmastov">
         <addColumn tableName="contract">
             <column name="parent_contract_id" type="BIGINT" defaultValue="NULL"/>
         </addColumn>
     </changeSet>
 
-    <changeSet id="fk-company-parent-company-id-to-company-id" author="buchmastov">
-        <addForeignKeyConstraint constraintName="fk_parent_contract"
-                                 baseTableName="contract" baseColumnNames="parent_contract_id"
-                                 referencedTableName="contract" referencedColumnNames="id"
-                                 onUpdate="CASCADE" onDelete="SET NULL"/>
-    </changeSet>
-
-    <changeSet id="create-contract-date-table" author="buchmastov">
+    <changeSet id="contract-drop-contract_dates-column-and-create-contract-date-table" author="buchmastov">
         <dropColumn tableName="contract" columnName="contract_dates"/>
         <createTable tableName="contract_date">
             <column name="id" type="BIGINT" autoIncrement="true">
@@ -46,9 +27,22 @@
             </column>
             <column name="date" type="DATETIME"/>
             <column name="comment" type="VARCHAR(2048)"/>
-            <column name="type" type="VARCHAR(32)"/>
+            <column name="type" type="INT"/>
             <column name="notify" type="BOOLEAN"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="add-organization_id-fk-to-contract" author="buchmastov">
+        <addForeignKeyConstraint constraintName="fk_organization_company"
+                                 baseTableName="contract" baseColumnNames="organization_id"
+                                 referencedTableName="company" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="fk-company-parent-company-id-to-company-id" author="buchmastov">
+        <addForeignKeyConstraint constraintName="fk_parent_contract"
+                                 baseTableName="contract" baseColumnNames="parent_contract_id"
+                                 referencedTableName="contract" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
     </changeSet>
 
     <changeSet id="fk-contract-date-to-contract" author="buchmastov">

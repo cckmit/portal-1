@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -35,9 +36,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public CoreResponse<Integer> count(AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            List<Long> managerIds = new ArrayList<>();
-            managerIds.add(getCurrentPerson(token).getId());
-            query.setManagerIds(managerIds);
+            query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
         }
         return new CoreResponse<Integer>().success(contractDAO.countByQuery(query));
     }
@@ -45,9 +44,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public CoreResponse<List<Contract>> contractList(AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            List<Long> managerIds = new ArrayList<>();
-            managerIds.add(getCurrentPerson(token).getId());
-            query.setManagerIds(managerIds);
+            query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
         }
         List<Contract> list = contractDAO.getListByQuery(query);
         if (list == null) {

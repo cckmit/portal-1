@@ -1,18 +1,12 @@
 package ru.protei.portal.core.model.struct;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_Currency;
 
 import java.io.Serializable;
 
-@JsonAutoDetect
 public class CostWithCurrency implements Serializable {
 
-    @JsonProperty("ct")
     private Long cost;
-
-    @JsonProperty("cr")
     private En_Currency currency;
 
     public CostWithCurrency() {}
