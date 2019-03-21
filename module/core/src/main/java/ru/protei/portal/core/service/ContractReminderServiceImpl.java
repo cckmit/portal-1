@@ -1,42 +1,67 @@
 package ru.protei.portal.core.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
+import ru.protei.portal.core.event.ContractDateOneDayRemainingEvent;
+import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.ContractDateDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
-import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 public class ContractReminderServiceImpl implements ContractReminderService {
 
     @Override
-    public CoreResponse<Boolean> notifyAboutDates() {
+    public CoreResponse<Integer> notifyAboutDates() {
+        log.info("notifyAboutDates(): start");
+
         Calendar now = Calendar.getInstance();
         Calendar tomorrowStart = makeTomorrowWithTime(now, 0, 0, 0);
         Calendar tomorrowEnd = makeTomorrowWithTime(now, 23, 59, 59);
 
+        log.info("notifyAboutDates(): start for tomorrow from {} to {}", tomorrowStart, tomorrowEnd);
+
         List<ContractDate> contractDates = contractDateDAO.getNotifyBetweenDates(tomorrowStart.getTime(), tomorrowEnd.getTime());
         if (CollectionUtils.isEmpty(contractDates)) {
-            return new CoreResponse<Boolean>().success(true);
+            log.info("notifyAboutDates(): contractDates is empty for tomorrow");
+            return new CoreResponse<Integer>().success(0);
         }
+
+        int notificationSentAmount = 0;
 
         for (ContractDate contractDate : contractDates) {
-            CaseObject caseObject = caseObjectDAO.partialGet(contractDate.getId(), "MANAGER", "INITIATOR");
-            List<ContactInfo> contactInfoList = getContacts(caseObject);
-
-            // to be continued...
-            // send notify mails to contract's contacts
-
+            Contract contract = contractDAO.get(contractDate.getContractId());
+            if (contract == null) {
+                continue;
+            }
+            log.info("notifyAboutDates(): notification for contract={}", contract.getId());
+            Set<Long> personIdList = makePersonIdListForNotification(contract);
+            if (CollectionUtils.isEmpty(personIdList)) {
+                log.info("notifyAboutDates(): notification for contract={}: no persons to be notified", contract.getId());
+                continue;
+            }
+            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList);
+            if (CollectionUtils.isEmpty(notificationEntries)) {
+                log.info("notifyAboutDates(): notification for contract={}: no entries to be notified", contract.getId());
+                continue;
+            }
+            log.info("notifyAboutDates(): notification for contract={}: entries to be notified: {}", contract.getId(), notificationEntries);
+            publisherService.publishEvent(new ContractDateOneDayRemainingEvent(this, contract, contractDate, notificationEntries));
+            notificationSentAmount++;
         }
 
-        return null;
+        log.info("notifyAboutDates(): done {} notification(s)", notificationSentAmount);
+        return new CoreResponse<Integer>().success(notificationSentAmount);
     }
 
     private Calendar makeTomorrowWithTime(Calendar now, int hour, int min, int sec) {
@@ -48,24 +73,44 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         return tomorrow;
     }
 
-    private List<ContactInfo> getContacts(CaseObject caseObject) {
-        List<ContactInfo> contactInfoList = new ArrayList<>();
-        if (caseObject.getManagerId() != null) {
-            ContactInfo contactInfo = personDAO.partialGet(caseObject.getManagerId(), "contactInfo").getContactInfo();
-            contactInfoList.add(contactInfo);
+    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
+        Set<NotificationEntry> notificationEntries = new HashSet<>();
+        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "contactInfo", "locale");
+        for (Person person : personList) {
+            ContactInfo contactInfo = person.getContactInfo();
+            if (contactInfo == null) {
+                continue;
+            }
+            String email = new PlainContactInfoFacade(contactInfo).getEmail();
+            String locale = person.getLocale() == null ? DEFAULT_LOCALE : person.getLocale();
+            if (StringUtils.isBlank(email)) {
+                continue;
+            }
+            notificationEntries.add(NotificationEntry.email(email, locale));
         }
-        if (caseObject.getInitiatorId() != null) {
-            ContactInfo contactInfo = personDAO.partialGet(caseObject.getInitiatorId(), "contactInfo").getContactInfo();
-            contactInfoList.add(contactInfo);
+        return notificationEntries;
+    }
+
+    private Set<Long> makePersonIdListForNotification(Contract contract) {
+        Set<Long> personIdList = new HashSet<>();
+        if (contract.getManagerId() != null) {
+            personIdList.add(contract.getManagerId());
         }
-        return contactInfoList;
+        if (contract.getCuratorId() != null) {
+            personIdList.add(contract.getCuratorId());
+        }
+        return personIdList;
     }
 
     @Autowired
+    ContractDAO contractDAO;
+    @Autowired
     ContractDateDAO contractDateDAO;
     @Autowired
-    CaseObjectDAO caseObjectDAO;
-    @Autowired
     PersonDAO personDAO;
+    @Autowired
+    EventPublisherService publisherService;
 
+    private static final String DEFAULT_LOCALE = "ru";
+    private static final Logger log = LoggerFactory.getLogger(ContractReminderServiceImpl.class);
 }

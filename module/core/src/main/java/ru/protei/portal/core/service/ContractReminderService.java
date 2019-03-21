@@ -4,5 +4,5 @@ import ru.protei.portal.api.struct.CoreResponse;
 
 public interface ContractReminderService {
 
-    CoreResponse<Boolean> notifyAboutDates();
+    CoreResponse<Integer> notifyAboutDates();
 }

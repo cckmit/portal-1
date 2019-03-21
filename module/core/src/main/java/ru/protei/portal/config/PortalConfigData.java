@@ -120,12 +120,14 @@ public class PortalConfigData {
 
     public static class MailNotificationConfig extends CommonConfig {
         private final String crmCaseUrl;
+        private final String contractUrl;
         private final String crmEmployeeRegistrationUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+            contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
         }
@@ -133,6 +135,10 @@ public class PortalConfigData {
 
         public String getCrmCaseUrl() {
             return crmCaseUrl;
+        }
+
+        public String getContractUrl() {
+            return contractUrl;
         }
 
         public String getCrmEmployeeRegistrationUrl() {
