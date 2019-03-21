@@ -26,8 +26,8 @@ public class OfficialServiceImpl implements OfficialService {
         Map<String, List<Official>> officialsByRegions = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setSearchString(query.getSearchString());
-        caseQuery.setFrom(query.getFrom());
-        caseQuery.setTo(query.getTo());
+        caseQuery.setCreatedFrom(query.getFrom());
+        caseQuery.setCreatedTo(query.getTo());
         caseQuery.setType( En_CaseType.OFFICIAL );
         List<Long> productIds = null;
         if (query.getProductId() != null){

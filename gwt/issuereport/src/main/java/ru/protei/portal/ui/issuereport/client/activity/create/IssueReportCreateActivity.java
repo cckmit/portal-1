@@ -184,7 +184,8 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
         query.setStates(getStateList(filterWidgetView.states().getValue()));
         query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
-        query = IssueFilterUtils.fillInterval( query, filterWidgetView.dateRange().getValue() );
+        query = IssueFilterUtils.fillCreatedInterval(query, filterWidgetView.dateCreatedRange().getValue() );
+        query = IssueFilterUtils.fillModifiedInterval( query, filterWidgetView.dateModifiedRange().getValue() );
 
         return query;
     }
@@ -196,7 +197,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setCompanyIds( getCompaniesIdList( timeElapsedReportView.companies().getValue() ) );
         query.setProductIds( getProductsIdList( timeElapsedReportView.products().getValue() ) );
         query.setCommentAuthorIds( getManagersIdList( timeElapsedReportView.commentAuthors().getValue() ) );
-        query = IssueFilterUtils.fillInterval( query, timeElapsedReportView.dateRange().getValue() );
+        query = IssueFilterUtils.fillCreatedInterval( query, timeElapsedReportView.dateRange().getValue() );
 
         return query;
     }
@@ -215,8 +216,8 @@ public abstract class IssueReportCreateActivity implements Activity,
             fireEvent( new NotifyEvents.Show( lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR ) );
             return null;
         }
-        query.setFrom( interval.from );
-        query.setTo( interval.to );
+        query.setCreatedFrom( interval.from );
+        query.setCreatedTo( interval.to );
         return query;
     }
 

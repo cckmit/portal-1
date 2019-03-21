@@ -78,8 +78,8 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     public void onFastOpenClicked(AbstractDashboardTableView view) {
         if (viewToModel.containsKey(view)) {
             CaseQuery query = new CaseQuery(viewToModel.get(view).query);
-            query.setFrom(null);
-            query.setTo(null);
+            query.setCreatedFrom(null);
+            query.setCreatedTo(null);
             fireEvent(new IssueEvents.Show(query));
         }
     }
@@ -174,8 +174,8 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         }
         Date to = new Date();
         Date from = new Date(to.getTime() - (MILLISECONDS_PER_DAY * model.daysLimit));
-        model.query.setFrom(from);
-        model.query.setTo(to);
+        model.query.setCreatedFrom(from);
+        model.query.setCreatedTo(to);
     }
 
 

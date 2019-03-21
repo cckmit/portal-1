@@ -29,7 +29,7 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasValue<Boolean> searchByComments();
 
-    HasValue<DateInterval> dateRange();
+    HasValue<DateInterval> dateCreatedRange();
 
     HasValue<DateInterval> dateModifiedRange();
 
