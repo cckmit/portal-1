@@ -267,6 +267,15 @@ public class CaseServiceImpl implements CaseService {
 
         caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
 
+        // UI should not touch "email last id" column
+        CoreResponse<Long> lastMessageIdResponse = getEmailLastId(caseObject.getId());
+        if (lastMessageIdResponse.isOk()) {
+            caseObject.setEmailLastId(lastMessageIdResponse.getData());
+        } else {
+            log.warn("updateCaseObject(id={}): unable to set email last id from db: status={}",
+                    caseObject.getId(), lastMessageIdResponse.getStatus());
+        }
+
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
 
