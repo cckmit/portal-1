@@ -439,6 +439,16 @@ public class MainConfiguration {
         return new CaseCommentTimeElapsedSumDAO_Impl();
     }
 
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+    @Bean
+    public ContractDateDAO getContractDateDAO() {
+        return new ContractDateDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -657,6 +667,15 @@ public class MainConfiguration {
         return new CaseCommentServiceImpl();
     }
 
+    @Bean
+    public ContractService getContractService() {
+        return new ContractServiceImpl();
+    }
+
+    @Bean
+    public ContractReminderService getContractReminderService() {
+        return new ContractReminderServiceImpl();
+    }
 
     @Bean
     public ReportCase getReportCase() {

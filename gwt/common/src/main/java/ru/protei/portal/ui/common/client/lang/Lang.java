@@ -1462,6 +1462,104 @@ public interface Lang extends Messages, ContactItemLang {
 
     String markdownPreview();
 
+    String contractTypeAfterSalesServiceContract();
+
+    String contractTypeExportOfServiceContract();
+
+    String contractTypeGovermentContract();
+
+    String contractTypeLeaseContract();
+
+    String contractTypeLicenseContract();
+
+    String contractTypeLicenseFrameworkContract();
+
+    String contractTypeMunicipalContract();
+
+    String contractTypeOrder();
+
+    String contractTypePurchaseContract();
+
+    String contractTypeSubcontract();
+
+    String contractTypeSupplyAndWorkContract();
+
+    String contractTypeSupplyAndWorkFrameworkContract();
+
+    String contractTypeSupplyContract();
+
+    String contractTypeSupplyFrameworkContract();
+
+    String contractTypeWorkContract();
+
+    String contractStateAgreement();
+
+    String contractStateCopiesSendToCustomer();
+
+    String contractStateHaveOriginal();
+
+    String contractStateWaitOriginal();
+
+    String contractWaitingCopiesFromCustomer();
+
+    String contractDescription();
+
+    String contractContragent();
+
+    String contractManager();
+
+    String contractCost();
+
+    String contractDirection();
+
+    String contractCurator();
+
+    String contractState();
+
+    String contractType();
+
+    String contractNumber();
+
+    String contractCommonHeader();
+
+    String contracts();
+
+    String contractNum(String number);
+
+    String contractWorkGroup();
+
+    String contractCostNotDefined();
+
+    String contractSearchPlaceholder();
+
+    String contractPeriodHeader();
+
+    String contractDeliveryAndPaymentsPeriodHeader();
+
+    String contractDateSigning();
+
+    String contractDateValid();
+
+    String contractPayment();
+
+    String contractSupply();
+
+    String contractPaymentCommentPlaceholder();
+
+    String contractSelectDirection();
+
+    String contractSelectType();
+
+    String contractDateNotDefined();
+
+    String contractValidationEmptyNumber();
+
+    String contractValidationEmptyDescription();
+
+    String contractValidationEmptyType();
+
+    String contractValidationEmptyDirection();
+
     String period();
 
     String reportMissingProduct();
@@ -1501,4 +1599,16 @@ public interface Lang extends Messages, ContactItemLang {
     String issueCommentElapsedTimeTypeLabel();
 
     String selectValue();
+
+    String privilegeContract();
+
+    String contractOrganization();
+
+    String contractParent();
+
+    String contractChild();
+
+    String contractParentWithout();
+
+    String contractDatesNotify();
 }

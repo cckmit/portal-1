@@ -347,6 +347,16 @@ public class MainTestsConfiguration {
         return new CaseCommentTimeElapsedSumDAO_Impl();
     }
 
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+    @Bean
+    public ContractDateDAO getContractDateDAO() {
+        return new ContractDateDAO_Impl();
+    }
+
 /**
  *
  *
@@ -527,6 +537,16 @@ public class MainTestsConfiguration {
     @Bean
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
+    }
+
+    @Bean
+    public ContractService getContractService() {
+        return new ContractServiceImpl();
+    }
+
+    @Bean
+    public ContractReminderService getContractReminderService() {
+        return new ContractReminderServiceImpl();
     }
 
     @Bean

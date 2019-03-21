@@ -111,4 +111,10 @@ public class CollectionUtils {
         }
         return result;
     }
+
+    public static <T> List<T> singleValueList(T value) {
+        List<T> list = new ArrayList<>();
+        list.add(value);
+        return list;
+    }
 }
