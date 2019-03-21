@@ -1,5 +1,7 @@
 package ru.protei.portal.ui.issue.client.activity.edit;
 
+import com.google.gwt.storage.client.Storage;
+import com.google.gwt.user.client.Timer;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
@@ -28,6 +30,8 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+
 /**
  * Активность создания и редактирования обращения
  */
@@ -46,6 +50,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+        localStorage = Storage.getLocalStorageIfSupported();
     }
 
     @Event
@@ -58,6 +63,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
 
+        caseID = event.id;
         if (event.id == null) {
             fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
             if (issue != null) {
@@ -126,6 +132,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
             @Override
             public void onSuccess(CaseObject caseObject) {
+                if (localStorage != null) {
+                    localStorage.removeItem(lsCaseComment + caseObject.getId());
+                }
                 view.saveEnabled().setEnabled(true);
                 if (isNew(issue)) {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
@@ -153,6 +162,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
+        if (localStorage != null) {
+            if (caseID != null) {
+                localStorage.removeItem(lsCaseComment + caseID);
+            }
+        }
         fireEvent(new Back());
     }
 
@@ -217,6 +231,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+    }
+    @Override
+    public void onDescriptionChanged() {
+        scheduleChangedDescription();
     }
 
     @Override
@@ -298,7 +316,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.number().setValue( isNew(issue) ? null : issue.getCaseNumber().intValue() );
 
         view.isLocal().setValue(issue.isPrivateCase());
-        view.description().setText(issue.getInfo());
+
+        String description = "";
+        if (localStorage != null) {
+            description = localStorage.getItem(lsCaseComment + caseID);
+        }
+        view.description().setText(isEmpty(description) ? issue.getInfo() : description);
 
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
         view.stateEnabled().setEnabled(!isNew(issue) || policyService.personBelongsToHomeCompany());
@@ -445,6 +468,24 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 !En_CaseState.CANCELED.equals(caseState);
     }
 
+    private void scheduleChangedDescription() {
+        changedDescriptionTimer.cancel();
+        changedDescriptionTimer.schedule(DESCRIPTION_CHANGE_DELAY_MS);
+    }
+    private final Timer changedDescriptionTimer = new Timer() {
+        @Override
+        public void run() {
+            fireSaveComment();
+        }
+    };
+    private void fireSaveComment() {
+        if (localStorage != null) {
+            if (caseID != null) {
+                localStorage.setItem(lsCaseComment + caseID, view.description().getText());
+            }
+        }
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -467,4 +508,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CaseObject issue;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
+
+    private Storage localStorage;
+    private Long caseID;
+    private final static String lsCaseComment = "CaseObjectComment_";
+    private final static int DESCRIPTION_CHANGE_DELAY_MS = 200;
 }

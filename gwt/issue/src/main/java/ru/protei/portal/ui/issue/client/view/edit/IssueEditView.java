@@ -315,6 +315,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             activity.onCompanyChanged();
         }
     }
+    @UiHandler( "description" )
+    public void onChangeDescription( ValueChangeEvent<String> event ){
+        if ( activity != null ) {
+            activity.onDescriptionChanged();
+        }
+    }
 
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
