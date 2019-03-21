@@ -32,6 +32,11 @@ public class ContractDAO_Impl extends JdbcBaseDAO<Long, Contract> implements Con
     }
 
     @Override
+    public Contract getByIdAndManagerId(Long id, Long managerId) {
+        return getByCondition("contract.id = ? AND CO.MANAGER = ?", id, managerId);
+    }
+
+    @Override
     public int countByQuery(ContractQuery query) {
         SqlCondition where = createSqlCondition(query);
         return getObjectsCount(where.condition, where.args);

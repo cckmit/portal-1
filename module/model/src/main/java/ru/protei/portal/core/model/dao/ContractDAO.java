@@ -10,5 +10,7 @@ public interface ContractDAO extends JdbcDAO<Long, Contract> {
 
     List<Contract> getListByQuery(ContractQuery query);
 
+    Contract getByIdAndManagerId(Long id, Long managerId);
+
     int countByQuery(ContractQuery query);
 }

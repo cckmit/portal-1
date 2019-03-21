@@ -8,14 +8,12 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dict.*;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.ContractQuery;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -29,14 +27,28 @@ public class ContractServiceImpl implements ContractService {
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PortalConfig portalConfig;
+    @Autowired
+    PolicyService policyService;
+    @Autowired
+    AuthService authService;
 
     @Override
     public CoreResponse<Integer> count(AuthToken token, ContractQuery query) {
+        if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
+            List<Long> managerIds = new ArrayList<>();
+            managerIds.add(getCurrentPerson(token).getId());
+            query.setManagerIds(managerIds);
+        }
         return new CoreResponse<Integer>().success(contractDAO.countByQuery(query));
     }
 
     @Override
     public CoreResponse<List<Contract>> contractList(AuthToken token, ContractQuery query) {
+        if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
+            List<Long> managerIds = new ArrayList<>();
+            managerIds.add(getCurrentPerson(token).getId());
+            query.setManagerIds(managerIds);
+        }
         List<Contract> list = contractDAO.getListByQuery(query);
         if (list == null) {
             return new CoreResponse<List<Contract>>().error(En_ResultStatus.INTERNAL_ERROR);
@@ -46,7 +58,13 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public CoreResponse<Contract> getContract(AuthToken token, Long id) {
-        Contract contract = contractDAO.get(id);
+
+        Contract contract;
+        if (hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
+            contract = contractDAO.get(id);
+        } else {
+            contract = contractDAO.getByIdAndManagerId(id, getCurrentPerson(token).getId());
+        }
 
         if (contract == null) {
             return new CoreResponse<Contract>().error(En_ResultStatus.NOT_FOUND);
@@ -68,6 +86,10 @@ public class ContractServiceImpl implements ContractService {
     @Override
     @Transactional
     public CoreResponse<Long> createContract(AuthToken token, Contract contract) {
+        if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_CREATE)) {
+            return new CoreResponse<Long>().error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         if (contract == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -91,6 +113,10 @@ public class ContractServiceImpl implements ContractService {
     @Override
     @Transactional
     public CoreResponse<Long> updateContract(AuthToken token, Contract contract) {
+        if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_EDIT)) {
+            return new CoreResponse<Long>().error(En_ResultStatus.PERMISSION_DENIED);
+        }
+
         if (contract == null)
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -127,4 +153,14 @@ public class ContractServiceImpl implements ContractService {
         return caseObject;
     }
 
+    private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        return policyService.hasGrantAccessFor(roles, privilege);
+    }
+
+    private Person getCurrentPerson(AuthToken token) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        return descriptor.getLogin().getPerson();
+    }
 }
