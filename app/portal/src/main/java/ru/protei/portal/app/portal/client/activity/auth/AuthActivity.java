@@ -1,12 +1,15 @@
 package ru.protei.portal.app.portal.client.activity.auth;
 
+import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.app.portal.client.service.AuthControllerAsync;
@@ -44,6 +47,12 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         } );
     }
 
+    @Override
+    public void onLocaleChanged(String locale) {
+        LocaleUtils.changeLocale( locale );
+    }
+
+    @Override
     public void onLoginClicked() {
         authService.authentificate( view.getUserName(), view.getPassword(), new RequestCallback< Profile >() {
             @Override
@@ -60,6 +69,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         } );
     }
 
+    @Override
     public void onResetClicked() {
 
     }
@@ -88,6 +98,9 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         init.parent.add( view.asWidget() );
 
         view.setFocus();
+
+        String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
+        view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
     }
 
     private void fireAuthSuccess(Profile profile) {

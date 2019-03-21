@@ -81,7 +81,7 @@ public class ToggleBtnGroupBase<T>
     }
 
     public ToggleButton addBtn( String caption, T value, String buttonStyle ) {
-        ToggleButton itemView = itemFactory.get();
+        ToggleButton itemView = new ToggleButton();
         if ( caption != null ) {
             itemView.setText( caption );
         }
@@ -127,9 +127,6 @@ public class ToggleBtnGroupBase<T>
 
     @UiField
     HTMLPanel root;
-
-    @Inject
-    Provider< ToggleButton > itemFactory;
 
     public Map<ToggleButton, T> itemViewToModel = new HashMap<>();
     Map<T, ToggleButton> modelToItemView = new HashMap<>();

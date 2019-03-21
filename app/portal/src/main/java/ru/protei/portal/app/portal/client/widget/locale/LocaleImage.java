@@ -1,4 +1,4 @@
-package ru.protei.portal.app.portal.client.widget.localeselector;
+package ru.protei.portal.app.portal.client.widget.locale;
 
 public enum LocaleImage {
     RU("ru", "images/ru.png"), EN("en", "images/en.png");

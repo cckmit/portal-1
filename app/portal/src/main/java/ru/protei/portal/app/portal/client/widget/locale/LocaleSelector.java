@@ -1,4 +1,4 @@
-package ru.protei.portal.app.portal.client.widget.localeselector;
+package ru.protei.portal.app.portal.client.widget.locale;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;

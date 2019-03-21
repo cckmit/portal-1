@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:navsearch="urn:import:ru.protei.portal.app.portal.client.widget.navsearch"
-             xmlns:locale="urn:import:ru.protei.portal.app.portal.client.widget.localeselector">
+             xmlns:locale="urn:import:ru.protei.portal.app.portal.client.widget.locale">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 

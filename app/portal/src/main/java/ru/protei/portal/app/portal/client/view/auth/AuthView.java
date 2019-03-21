@@ -7,14 +7,16 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleBtnGroup;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
@@ -25,7 +27,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
  */
 public class AuthView extends Composite implements AbstractAuthView, KeyPressHandler {
 
-    public AuthView() {
+    @Inject
+    public void onInit() {
         initWidget (ourUiBinder.createAndBindUi (this));
         ensureDebugIds();
         initHandlers();
@@ -92,9 +95,21 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     }
 
     @Override
+    public HasValue<LocaleImage> locale() {
+        return locale;
+    }
+
+    @Override
     public void reset() {
         login.setText("");
         password.setText("");
+    }
+
+    @UiHandler( "locale" )
+    public void onLocaleClicked( ValueChangeEvent<LocaleImage> event ) {
+        if ( activity != null ) {
+            activity.onLocaleChanged( event.getValue().getLocale() );
+        }
     }
 
     private void initPlaceholders() {
@@ -104,13 +119,10 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
 
     @UiField
     TextBox login;
-
     @UiField
     TextBox password;
-
     @UiField
     Button loginButton;
-
     @UiField
     Lang lang;
     @UiField
@@ -119,6 +131,8 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     SpanElement errorText;
     @UiField
     DivElement errorMessage;
+    @UiField
+    LocaleBtnGroup locale;
 
     AbstractAuthActivity activity;
 
