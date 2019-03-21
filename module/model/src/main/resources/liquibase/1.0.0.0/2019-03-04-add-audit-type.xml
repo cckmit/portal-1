@@ -6,7 +6,7 @@
 
     <changeSet id="add-audit-type-for-employee-registration" author="turik">
         <insert tableName="audit_type">
-            <column name="id" value="50"/>
+            <column name="id" value="48"/>
             <column name="code" value="EMPLOYEE_REGISTRATION_MODIFY"/>
             <column name="info" value="Изменение анкеты нового сотрудника"/>
         </insert>

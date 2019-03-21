@@ -39,12 +39,12 @@
 
     <changeSet id="add-audit-type-for-contract" author="ponomareva">
         <insert tableName="audit_type">
-            <column name="id" value="48"/>
+            <column name="id" value="49"/>
             <column name="code" value="CONTRACT_MODIFY"/>
             <column name="info" value="Изменение договора"/>
         </insert>
         <insert tableName="audit_type">
-            <column name="id" value="49"/>
+            <column name="id" value="50"/>
             <column name="code" value="CONTRACT_CREATE"/>
             <column name="info" value="Создание договора"/>
         </insert>
