@@ -2,6 +2,8 @@
     ${"<#assign "+ name +"=\""+ value +"\"/>"}
 </#macro>
 
+<@set name="_contract_payment" value="${contract_payment}"/>
+<@set name="_contract_supply" value="${contract_supply}"/>
 <@set name="_contract_for_contract" value="${contract_for_contract}"/>
 <@set name="_contract_will_be" value="${contract_will_be}"/>
 <@set name="_contract_comment" value="${contract_comment}"/>
@@ -18,9 +20,10 @@
 <body bgcolor="#FFFFFF" text="#000000">
     <div style="margin-top: 12px">
         <div style="padding: 8px 0 4px;">
-            <div style="font-family: sans-serif;font-size: 14px;">${contractDateType} ${_contract_for_contract}${contractNumber} ${_contract_will_be} ${contractDateDate}.</div>
+            <div style="font-family: sans-serif;font-size: 14px;">
+            <#if contractDateType == "PAYMENT"> ${_contract_payment} <#else> ${_contract_supply} </#if> ${_contract_for_contract}${contractNumber} ${_contract_will_be} ${contractDateDate}</div>
             <#if contractDateCommentExists>
-                <div style="font-family: sans-serif;font-size: 14px;">${_contract_comment}: ${contractDateComment}.</div>
+                <div style="font-family: sans-serif;font-size: 14px;">${_contract_comment}: ${contractDateComment}</div>
             </#if>
             <div style="font-family: sans-serif;font-size: 14px;">${_contract_open}: <a href="${linkToContract}">${_anchor}</a></div>
         </div>

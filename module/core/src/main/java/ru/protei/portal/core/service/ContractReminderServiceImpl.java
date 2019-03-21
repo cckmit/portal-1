@@ -17,7 +17,12 @@ import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ContractReminderServiceImpl implements ContractReminderService {
 
@@ -25,13 +30,12 @@ public class ContractReminderServiceImpl implements ContractReminderService {
     public CoreResponse<Integer> notifyAboutDates() {
         log.info("notifyAboutDates(): start");
 
-        Calendar now = Calendar.getInstance();
-        Calendar tomorrowStart = makeTomorrowWithTime(now, 0, 0, 0);
-        Calendar tomorrowEnd = makeTomorrowWithTime(now, 23, 59, 59);
+        LocalDateTime tomorrowStart = makeTomorrowWithTime(0, 0, 0);
+        LocalDateTime tomorrowEnd = makeTomorrowWithTime(23, 59, 59);
 
         log.info("notifyAboutDates(): start for tomorrow from {} to {}", tomorrowStart, tomorrowEnd);
 
-        List<ContractDate> contractDates = contractDateDAO.getNotifyBetweenDates(tomorrowStart.getTime(), tomorrowEnd.getTime());
+        List<ContractDate> contractDates = contractDateDAO.getNotifyBetweenDates(convertLocalDateTimeToDate(tomorrowStart), convertLocalDateTimeToDate(tomorrowEnd));
         if (CollectionUtils.isEmpty(contractDates)) {
             log.info("notifyAboutDates(): contractDates is empty for tomorrow");
             return new CoreResponse<Integer>().success(0);
@@ -64,13 +68,18 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         return new CoreResponse<Integer>().success(notificationSentAmount);
     }
 
-    private Calendar makeTomorrowWithTime(Calendar now, int hour, int min, int sec) {
-        Calendar tomorrow = (Calendar) now.clone();
-        tomorrow.add(Calendar.DATE, 1);
-        tomorrow.set(Calendar.HOUR_OF_DAY, hour);
-        tomorrow.set(Calendar.MINUTE, min);
-        tomorrow.set(Calendar.SECOND, sec);
+    private LocalDateTime makeTomorrowWithTime(int hour, int min, int sec) {
+        LocalDateTime tomorrow = LocalDateTime.now();
+        tomorrow = tomorrow.plusDays(1);
+        tomorrow = tomorrow.withHour(hour);
+        tomorrow = tomorrow.withMinute(min);
+        tomorrow = tomorrow.withSecond(sec);
+        tomorrow = tomorrow.withNano(0);
         return tomorrow;
+    }
+
+    private Date convertLocalDateTimeToDate(LocalDateTime dateToConvert) {
+        return Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
