@@ -31,6 +31,8 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasValue<DateInterval> dateRange();
 
+    HasValue<DateInterval> dateModifiedRange();
+
     HasValue<En_SortField> sortField();
 
     HasValue<Boolean> sortDir();

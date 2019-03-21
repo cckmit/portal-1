@@ -55,6 +55,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortField.setType(ModuleType.ISSUE);
         sortDir.setValue(false);
         dateRange.setPlaceholder(lang.selectDate());
+        dateModifiedRange.setPlaceholder(lang.selectDate());
     }
 
     @Override
@@ -85,6 +86,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public HasValue<DateInterval> dateRange() {
         return dateRange;
+    }
+
+    @Override
+    public HasValue<DateInterval> dateModifiedRange() {
+        return dateModifiedRange;
     }
 
     @Override
@@ -177,6 +183,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         importance.setValue(null);
         state.setValue(null);
         dateRange.setValue(null);
+        dateModifiedRange.setValue(null);
         sortField.setValue(En_SortField.creation_date);
         sortDir.setValue(false);
         search.setValue("");
@@ -194,6 +201,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortDir().setValue(caseQuery.getSortDir().equals(En_SortDir.ASC));
         sortField().setValue(caseQuery.getSortField());
         dateRange().setValue(new DateInterval(caseQuery.getFrom(), caseQuery.getTo()));
+        // TO DO change caseQuery "ModifiedRange"
+        dateModifiedRange().setValue(new DateInterval(caseQuery.getFrom(), caseQuery.getTo()));
         importances().setValue(IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
         companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
@@ -308,6 +317,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("dateModifiedRange")
+    public void onDateModifiedRangeChanged(ValueChangeEvent<DateInterval> event) {
+        onFilterChanged();
+    }
+
     @UiHandler("sortField")
     public void onSortFieldSelected(ValueChangeEvent<En_SortField> event) {
         onFilterChanged();
@@ -366,6 +380,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
+        dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
         companies.setAddEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ADD_BUTTON);
@@ -422,6 +437,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     RangePicker dateRange;
+    @Inject
+    @UiField(provided = true)
+    RangePicker dateModifiedRange;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;
