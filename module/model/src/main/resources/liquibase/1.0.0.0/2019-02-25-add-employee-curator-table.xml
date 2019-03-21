@@ -1,0 +1,25 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-employee-curator-column" author="eliseev">
+        <addColumn tableName="employee_registration">
+            <column name="curators" type="varchar(64)"></column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-employee-person-column" author="eliseev">
+        <addColumn tableName="employee_registration">
+            <column name="person" type="BIGINT" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="fk-employee-registration-to-person" author="eliseev">
+        <addForeignKeyConstraint constraintName="FK_PERSON_PERSON_ID" onDelete="CASCADE"
+                                 baseTableName="employee_registration"  baseColumnNames="person"
+                                 referencedTableName="person" referencedColumnNames="id" />
+    </changeSet>
+
+
+</databaseChangeLog>

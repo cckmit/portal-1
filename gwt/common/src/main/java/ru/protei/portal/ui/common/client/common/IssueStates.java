@@ -45,30 +45,6 @@ public abstract class IssueStates implements Activity{
         inactiveStates.add(En_CaseState.VERIFIED);
         inactiveStates.add(En_CaseState.CANCELED);
 
-//        issueService.getStateList(new RequestCallback<List<En_CaseState>>() {
-//            @Override
-//            public void onError(Throwable throwable) {
-//                Window.alert("issue states error");
-//            }
-//
-//            @Override
-//            public void onSuccess(List<En_CaseState> en_caseStates) {
-//                activeStates = new ArrayList<>();
-//                inactiveStates = new ArrayList<>();
-//
-//                int doneStateId = En_CaseState.DONE.getId();
-//                for(En_CaseState state: en_caseStates){
-//                    if(state.getId() < doneStateId)
-//                        activeStates.add(state);
-//                    else
-//                        inactiveStates.add(state);
-//                }
-//
-//                states = Collections.unmodifiableList(en_caseStates);
-//                activeStates = Collections.unmodifiableList(activeStates);
-//                inactiveStates = Collections.unmodifiableList(inactiveStates);
-//            }
-//        });
 
         states = Collections.unmodifiableList(states);
         activeStates = Collections.unmodifiableList(activeStates);
@@ -86,10 +62,6 @@ public abstract class IssueStates implements Activity{
     public List<En_CaseState> getInactiveStates(){
         return inactiveStates;
     }
-
-
-//    @Inject
-//    IssueServiceAsync issueService;
 
     private List<En_CaseState> states;
     private List<En_CaseState> activeStates;

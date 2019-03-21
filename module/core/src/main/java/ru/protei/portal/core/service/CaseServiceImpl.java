@@ -154,7 +154,7 @@ public class CaseServiceImpl implements CaseService {
         else
             caseObject.setId(caseId);
 
-        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, caseObject.getState(), caseObject.getTimeElapsed());
+        Long stateMessageId = createAndPersistStateMessage(initiator, caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
         if(stateMessageId == null)
             log.error("State message for the issue %d not saved!", caseId);
 
@@ -234,7 +234,7 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
 
         if(oldState.getState() != caseObject.getState()){
-            Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null);
+            Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null, null);
             if(messageId == null)
                 log.error("State message for the issue %d isn't saved!", caseObject.getId());
         }
@@ -416,7 +416,7 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
-    private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed){
+    private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
         stateChangeMessage.setCreated(new Date());
@@ -424,6 +424,7 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseStateId((long)state.getId());
         if (timeElapsed != null && timeElapsed > 0L) {
             stateChangeMessage.setTimeElapsed(timeElapsed);
+            stateChangeMessage.setTimeElapsedType(timeElapsedType!=null?timeElapsedType:En_TimeElapsedType.NONE);
         }
         return caseCommentDAO.persist(stateChangeMessage);
     }

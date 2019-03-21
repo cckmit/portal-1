@@ -86,7 +86,7 @@ public class MigrateFreq implements MigrateAction {
 /* temporary commented
         Map<Long, Long> caseNumberToIdMapper = caseDAO.getNumberToIdMap(En_CaseType.FREQ);
 
-        Long lastTermID = termDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.FREQ.getId());
+        Long lastTermID = termDAO.getMaxValue("old_id", Long.class, "case_id in (select id from case_object where case_type=?)", En_CaseType.FREQ.getEmployeeId());
 
         new BatchProcessTask<CaseTerm>("\"FREQ\".Tm_ReqDeadline", "nID", lastTermID)
                 .setLastUpdate(lastOldDateUpdate)

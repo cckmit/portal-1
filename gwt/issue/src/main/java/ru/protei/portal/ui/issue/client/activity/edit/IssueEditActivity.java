@@ -6,10 +6,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -318,12 +315,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 }
                 view.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
                 view.timeElapsedInputVisibility().setVisible(timeElapsedEditAllowed);
+                view.setTimeElapseTypeVisibility(true);
+                view.timeElapsedType().setValue( En_TimeElapsedType.NONE );
             } else {
                 Long timeElapsed = issue.getTimeElapsed();
                 view.timeElapsedLabel().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
                 view.timeElapsedInput().setTime(timeElapsed);
                 view.timeElapsedLabelVisibility().setVisible(true);
                 view.timeElapsedInputVisibility().setVisible(false);
+                view.setTimeElapseTypeVisibility(false);
             }
         }
 
@@ -362,6 +362,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             issue.setTimeElapsed(view.timeElapsedInput().getTime());
+            En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
+            issue.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
         }
     }
 
