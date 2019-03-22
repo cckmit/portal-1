@@ -1,12 +1,14 @@
-package ru.protei.portal.ui.issue.client.activity.edit;
+package ru.protei.portal.ui.common.client.common;
 
 import com.google.gwt.storage.client.Storage;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class IssueEditStorageService {
-    public IssueEditStorageService() {
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+
+public class LocalStorageService {
+    public LocalStorageService() {
         localStorage = Storage.getLocalStorageIfSupported();
         if (localStorage != null) {
             mapStorage = new HashMap<>();
@@ -22,11 +24,20 @@ public class IssueEditStorageService {
             mapStorage.put(key, item);
         }
     }
-    public void remove(String key) {
+    public String remove(String key) {
         if (localStorage != null) {
-            localStorage.removeItem(key);
+            String s = localStorage.getItem(key);
+            if (!isEmpty(s)) localStorage.removeItem(key);
+            return s;
         } else {
-            mapStorage.remove(key);
+            return mapStorage.remove(key);
+        }
+    }
+    public boolean contains(String key){
+        if (localStorage != null) {
+            return !isEmpty( localStorage.getItem(key) );
+        } else {
+            return mapStorage.containsKey(key);
         }
     }
     private Storage localStorage;

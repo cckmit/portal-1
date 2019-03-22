@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -128,7 +129,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
             @Override
             public void onSuccess(CaseObject caseObject) {
-                storage.remove(STORAGE_CASE_COMMENT_PREFIX + caseObject.getId());
+                storage.remove(makeStorageKey(caseObject.getId()));
 
                 view.saveEnabled().setEnabled(true);
                 if (isNew(issue)) {
@@ -158,7 +159,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onCancelClicked() {
         if (issue.getId() != null) {
-            storage.remove(STORAGE_CASE_COMMENT_PREFIX + issue.getId());
+            storage.remove(makeStorageKey(issue.getId()));
         }
         fireEvent(new Back());
     }
@@ -227,7 +228,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     }
     @Override
     public void onDescriptionChanged() {
-        saveComment();
+        if (issue.getId() != null) {
+            storage.set(makeStorageKey(issue.getId()), view.description().getText());
+        }
     }
 
     @Override
@@ -456,14 +459,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         return !En_CaseState.CREATED.equals(caseState) &&
                 !En_CaseState.CANCELED.equals(caseState);
     }
-    private void saveComment() {
-        if (issue.getId() != null) {
-            storage.set(STORAGE_CASE_COMMENT_PREFIX + issue.getId(), view.description().getText());
-        }
-    }
+
     private String makeDescription(String issueDescription){
-        String description = storage.get(STORAGE_CASE_COMMENT_PREFIX + issue.getId());
+        String description = storage.get(makeStorageKey(issue.getId()));
         return isEmpty(description) ? issueDescription : description;
+    }
+
+    private String makeStorageKey(Long id){
+        return STORAGE_CASE_COMMENT_PREFIX + id;
     }
 
     @Inject
@@ -488,7 +491,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CaseObject issue;
 
     @Inject
-    private IssueEditStorageService storage;
+    private LocalStorageService storage;
     private final static String STORAGE_CASE_COMMENT_PREFIX = "CaseObjectComment_";
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
