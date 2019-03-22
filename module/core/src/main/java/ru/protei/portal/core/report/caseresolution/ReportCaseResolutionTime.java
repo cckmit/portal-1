@@ -44,13 +44,13 @@ public class ReportCaseResolutionTime {
 
     public void run() {
         log.info( "run(): Start report. caseQuery: {}", caseQuery );
-        intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
+        intervals = makeIntervals( caseQuery.getCreatedFrom(), caseQuery.getCreatedTo(), DAY );
 
         long startQuery = System.currentTimeMillis();
         List<CaseComment> comments = caseCommentDAO.reportCaseResolutionTime(
                 caseQuery.getProductIds().get( 0 ),
-                caseQuery.getFrom(),
-                caseQuery.getTo(),
+                caseQuery.getCreatedFrom(),
+                caseQuery.getCreatedTo(),
                 caseQuery.getStateIds()
         );
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );

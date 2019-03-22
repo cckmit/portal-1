@@ -173,18 +173,31 @@ public class IssueFilterUtils {
         query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
         query.setStates(getStateList(filterWidgetView.states().getValue()));
         query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
-        DateInterval interval = filterWidgetView.dateRange().getValue();
-        if (interval != null) {
-            query.setFrom(interval.from);
-            query.setTo(interval.to);
+        DateInterval createdInterval = filterWidgetView.dateCreatedRange().getValue();
+        if (createdInterval != null) {
+            query.setCreatedFrom(createdInterval.from);
+            query.setCreatedTo(createdInterval.to);
+        }
+        DateInterval modifiedInterval = filterWidgetView.dateModifiedRange().getValue();
+        if (modifiedInterval != null) {
+            query.setModifiedFrom(modifiedInterval.from);
+            query.setModifiedTo(modifiedInterval.to);
         }
         return query;
     }
 
-    public static CaseQuery fillInterval( CaseQuery query, DateInterval interval ) {
+    public static CaseQuery fillCreatedInterval( CaseQuery query, DateInterval interval ) {
         if (interval != null) {
-            query.setFrom(interval.from);
-            query.setTo(interval.to);
+            query.setCreatedFrom(interval.from);
+            query.setCreatedTo(interval.to);
+        }
+        return query;
+    }
+
+    public static CaseQuery fillModifiedInterval( CaseQuery query, DateInterval interval ) {
+        if (interval != null) {
+            query.setModifiedFrom(interval.from);
+            query.setModifiedTo(interval.to);
         }
         return query;
     }

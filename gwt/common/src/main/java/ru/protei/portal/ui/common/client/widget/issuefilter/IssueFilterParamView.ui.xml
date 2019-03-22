@@ -29,7 +29,12 @@
 
             <div class="col-xs-12 resize-xs-6">
                 <label class="bold"><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            </div>
+
+            <div class="col-xs-12 resize-xs-6">
+                <label class="bold"><ui:text from="{lang.updated}"/></label>
+                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
 
             <div class="form-group col-xs-12 resize-xs-6">

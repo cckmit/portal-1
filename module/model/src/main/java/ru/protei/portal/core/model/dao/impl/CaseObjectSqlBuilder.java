@@ -80,14 +80,24 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and importance in (" + query.getImportanceIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
-            if ( query.getFrom() != null ) {
+            if ( query.getCreatedFrom() != null ) {
                 condition.append( " and case_object.created >= ?" );
-                args.add( query.getFrom() );
+                args.add( query.getCreatedFrom() );
             }
 
-            if ( query.getTo() != null ) {
+            if ( query.getCreatedTo() != null ) {
                 condition.append( " and case_object.created < ?" );
-                args.add( query.getTo() );
+                args.add( query.getCreatedTo() );
+            }
+
+            if ( query.getModifiedFrom() != null ) {
+                condition.append( " and case_object.modified >= ?" );
+                args.add( query.getModifiedFrom() );
+            }
+
+            if ( query.getModifiedTo() != null ) {
+                condition.append( " and case_object.modified < ?" );
+                args.add( query.getModifiedTo() );
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {

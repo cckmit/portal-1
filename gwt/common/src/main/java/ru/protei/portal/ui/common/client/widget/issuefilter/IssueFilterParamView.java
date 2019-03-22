@@ -54,7 +54,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         search.getElement().setPropertyString("placeholder", lang.search());
         sortField.setType(ModuleType.ISSUE);
         sortDir.setValue(false);
-        dateRange.setPlaceholder(lang.selectDate());
+        dateCreatedRange.setPlaceholder(lang.selectDate());
+        dateModifiedRange.setPlaceholder(lang.selectDate());
     }
 
     @Override
@@ -83,8 +84,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
-    public HasValue<DateInterval> dateRange() {
-        return dateRange;
+    public HasValue<DateInterval> dateCreatedRange() {
+        return dateCreatedRange;
+    }
+
+    @Override
+    public HasValue<DateInterval> dateModifiedRange() {
+        return dateModifiedRange;
     }
 
     @Override
@@ -176,7 +182,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         commentAuthors.setValue(null);
         importance.setValue(null);
         state.setValue(null);
-        dateRange.setValue(null);
+        dateCreatedRange.setValue(null);
+        dateModifiedRange.setValue(null);
         sortField.setValue(En_SortField.creation_date);
         sortDir.setValue(false);
         search.setValue("");
@@ -193,7 +200,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate().setValue(caseQuery.isViewPrivate());
         sortDir().setValue(caseQuery.getSortDir().equals(En_SortDir.ASC));
         sortField().setValue(caseQuery.getSortField());
-        dateRange().setValue(new DateInterval(caseQuery.getFrom(), caseQuery.getTo()));
+        dateCreatedRange().setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
+        dateModifiedRange().setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
         importances().setValue(IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
         companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
@@ -303,8 +311,13 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    @UiHandler("dateRange")
-    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+    @UiHandler("dateCreatedRange")
+    public void onDateCreatedRangeChanged(ValueChangeEvent<DateInterval> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("dateModifiedRange")
+    public void onDateModifiedRangeChanged(ValueChangeEvent<DateInterval> event) {
         onFilterChanged();
     }
 
@@ -365,7 +378,8 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
-        dateRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
+        dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
+        dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
         companies.setAddEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ADD_BUTTON);
@@ -421,7 +435,10 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     OptionItem searchByComments;
     @Inject
     @UiField(provided = true)
-    RangePicker dateRange;
+    RangePicker dateCreatedRange;
+    @Inject
+    @UiField(provided = true)
+    RangePicker dateModifiedRange;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;
