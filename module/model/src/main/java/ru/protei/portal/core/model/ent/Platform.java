@@ -4,7 +4,6 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.jdbc.annotations.*;
 
 import java.io.Serializable;
-import java.util.List;
 
 @JdbcEntity(table = "platform")
 public class Platform implements Serializable, Removable {
@@ -29,6 +28,12 @@ public class Platform implements Serializable, Removable {
 
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
+
+    @JdbcJoinedColumn(table = "case_object", mappedColumn = "id", joinData = {
+            @JdbcJoinData(remoteColumn = "case_type", value = "13"), //En_CaseType.SF_PLATFORM
+            @JdbcJoinData(localColumn = "id", remoteColumn = "CASENO")
+    })
+    private Long caseId;
 
     private Long serversCount;
 
@@ -96,6 +101,9 @@ public class Platform implements Serializable, Removable {
         this.manager = manager;
     }
 
+    public Long getCaseId() {
+        return caseId;
+    }
 
     public static Platform fromEntityOption(EntityOption entityOption) {
         if (entityOption == null) {
@@ -126,10 +134,13 @@ public class Platform implements Serializable, Removable {
         return "Platform{" +
                 "id=" + id +
                 ", companyId=" + companyId +
-                ", name=" + name +
-                ", params=" + params +
+                ", name='" + name + '\'' +
+                ", params='" + params + '\'' +
+                ", comment='" + comment + '\'' +
                 ", manager=" + manager +
-                ", comment=" + comment +
+                ", company=" + company +
+                ", caseId=" + caseId +
+                ", serversCount=" + serversCount +
                 '}';
     }
 }

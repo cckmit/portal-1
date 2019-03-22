@@ -15,7 +15,9 @@ public enum En_CaseType {
     PROJECT(9, "project"),
     OFFICIAL(10, "official"),
     EMPLOYEE_REGISTRATION(11, "employee-reg"),
-    CONTRACT(12, "contract");
+    CONTRACT(12, "contract"),
+    SF_PLATFORM(13, "sf-platform"),
+    ;
 
     En_CaseType (int id, String code) {
         this.id = id;

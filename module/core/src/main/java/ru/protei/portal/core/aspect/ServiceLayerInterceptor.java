@@ -15,6 +15,7 @@ import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -78,6 +79,12 @@ public class ServiceLayerInterceptor {
 
             if ( e instanceof InsufficientPrivilegesException ) {
                 return handleReturn(pjp.getSignature(), En_ResultStatus.PERMISSION_DENIED );
+            }
+
+            if ( e instanceof ResultStatusException ) {
+                En_ResultStatus resultStatus = ((ResultStatusException) e).getResultStatus();
+                logger.info("Service layer ResultStatusException: status={}", resultStatus);
+                return handleReturn(pjp.getSignature(), resultStatus);
             }
         }
 
