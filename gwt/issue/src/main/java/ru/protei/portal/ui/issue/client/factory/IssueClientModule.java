@@ -2,10 +2,7 @@ package ru.protei.portal.ui.issue.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
 import com.google.inject.Singleton;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
-import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
-import ru.protei.portal.ui.issue.client.activity.edit.IssueEditActivity;
+import ru.protei.portal.ui.issue.client.activity.edit.*;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
 import ru.protei.portal.ui.issue.client.activity.page.IssuePage;
@@ -27,6 +24,7 @@ public class IssueClientModule extends AbstractGinModule {
     @Override
     protected void configure() {
         bind( IssueFilterService.class ).asEagerSingleton();
+        bind( IssueEditStorageService.class ).asEagerSingleton();
         bind( IssuePage.class ).asEagerSingleton();
 
         bind( CaseStateFilterProvider.class ).asEagerSingleton();
