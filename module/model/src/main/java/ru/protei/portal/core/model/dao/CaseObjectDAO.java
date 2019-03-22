@@ -30,6 +30,9 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     List<CaseObject> getCaseIdAndNumbersByCaseNumbers(List<Long> caseNumbers);
 
+    boolean updateEmailLastId(Long caseId, Long emailLastId);
+    Long getEmailLastId(Long caseId);
+
     @SqlConditionBuilder
     SqlCondition caseQueryCondition (CaseQuery query);
 }

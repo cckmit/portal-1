@@ -331,13 +331,7 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        CaseObject caseObject = caseObjectDAO.partialGet(caseId, "email_last_id");
-
-        if (caseObject == null) {
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_FOUND);
-        }
-
-        Long lastMessageId = caseObject.getEmailLastId();
+        Long lastMessageId = caseObjectDAO.getEmailLastId(caseId);
         if (lastMessageId == null) {
             lastMessageId = 0L;
         }
@@ -346,12 +340,12 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject) {
-        if (caseObject == null) {
+    public CoreResponse<Boolean> updateEmailLastId(Long caseId, Long emailLastId) {
+        if (caseId == null) {
             return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        boolean result = caseObjectDAO.partialMerge(caseObject, "email_last_id");
+        boolean result = caseObjectDAO.updateEmailLastId(caseId, emailLastId);
 
         return new CoreResponse<Boolean>().success(result);
     }

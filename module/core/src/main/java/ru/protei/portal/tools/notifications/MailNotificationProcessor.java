@@ -144,8 +144,7 @@ public class MailNotificationProcessor {
                             .collect(toList())
             );
 
-            caseObject.setEmailLastId(lastMessageId + 1);
-            caseService.updateEmailLastId(caseObject);
+            caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
 
         } finally {
             semaphore.release();

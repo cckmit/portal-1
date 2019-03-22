@@ -52,7 +52,7 @@ public interface CaseService {
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId);
 
     CoreResponse<Long> getEmailLastId(Long caseId);
-    CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject);
+    CoreResponse<Boolean> updateEmailLastId(Long caseId, Long emailLastId);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber);
