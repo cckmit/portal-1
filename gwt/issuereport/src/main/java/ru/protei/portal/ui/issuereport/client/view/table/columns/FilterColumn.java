@@ -61,7 +61,7 @@ public class FilterColumn extends StaticColumn<Report> {
             element.appendChild(managerElement);
         }
 
-        // date from to
+        // date CreatedFrom CreatedTo
         if (caseQuery.getCreatedFrom() != null || caseQuery.getCreatedTo() != null) {
             Element managerElement = DOM.createElement("p");
             StringBuilder sb = new StringBuilder();
@@ -71,6 +71,20 @@ public class FilterColumn extends StaticColumn<Report> {
             }
             if (caseQuery.getCreatedTo() != null) {
                 sb.append(lang.to().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getCreatedTo())).append(" ");
+            }
+            managerElement.setInnerText(sb.toString());
+            element.appendChild(managerElement);
+        }
+        // date ModifiedFrom ModifiedTo
+        if (caseQuery.getModifiedFrom() != null || caseQuery.getModifiedTo() != null) {
+            Element managerElement = DOM.createElement("p");
+            StringBuilder sb = new StringBuilder();
+            sb.append(lang.updated()).append(": ");
+            if (caseQuery.getModifiedFrom() != null) {
+                sb.append(lang.from().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getModifiedFrom())).append(" ");
+            }
+            if (caseQuery.getModifiedTo() != null) {
+                sb.append(lang.to().toLowerCase()).append(" ").append(DateFormatter.formatDateTime(caseQuery.getModifiedTo())).append(" ");
             }
             managerElement.setInnerText(sb.toString());
             element.appendChild(managerElement);
