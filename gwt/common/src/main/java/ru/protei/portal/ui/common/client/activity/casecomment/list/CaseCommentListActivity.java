@@ -105,9 +105,26 @@ public abstract class CaseCommentListActivity
     }
 
     @Event
-    public void onSaveComment(IssueEvents.SaveComment event) {
+    public void onValidateComment(CaseCommentEvents.ValidateComment event) {
+        if (StringUtils.isNotBlank(view.message().getValue())) {
+            event.validate(true);
+            return;
+        }
+        if (view.timeElapsed().getTime() != null) {
+            event.validate(false);
+            return;
+        }
+        if (!tempAttachments.isEmpty()) {
+            event.validate(false);
+            return;
+        }
+        event.validate(true);
+    }
+
+    @Event
+    public void onSaveComment(CaseCommentEvents.SaveComment event) {
         if (!HelperFunc.isEmpty(view.message().getValue())) {
-            send(event.id, event.handler);
+            send(event.caseId, event.handler);
         } else {
             event.handler.onSuccess();
         }
@@ -401,7 +418,7 @@ public abstract class CaseCommentListActivity
                 list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList());
     }
 
-    private void send(Long id, IssueEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
+    private void send(Long id, CaseCommentEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
         if ( requesting ) {
             return;
         }
@@ -442,7 +459,7 @@ public abstract class CaseCommentListActivity
                     view.sendEnabled().setEnabled(true);
 
                     if (saveCommentCompleteHandler != null) {
-                        saveCommentCompleteHandler.onError(throwable);
+                        saveCommentCompleteHandler.onError(throwable, null);
                         return;
                     }
 
