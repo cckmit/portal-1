@@ -120,9 +120,6 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
-    @JdbcColumn(name = "email_last_id")
-    private Long emailLastId;
-
     @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> products;
 
@@ -449,14 +446,6 @@ public class CaseObject extends AuditableObject {
         this.links = links;
     }
 
-    public Long getEmailLastId() {
-        return emailLastId;
-    }
-
-    public void setEmailLastId(Long emailLastId) {
-        this.emailLastId = emailLastId;
-    }
-
     public Set<DevUnit> getProducts() {
         return products;
     }
@@ -511,7 +500,6 @@ public class CaseObject extends AuditableObject {
                 ", locations=" + locations +
                 ", members=" + members +
                 ", links=" + links +
-                ", emailLastId=" + emailLastId +
                 ", timeElapsed=" + timeElapsed +
                 '}';
     }
