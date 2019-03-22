@@ -160,6 +160,7 @@ public class IssueFilterUtils {
             String searchString = filterWidgetView.searchPattern().getValue();
             query.setCaseNumbers( searchCaseNumber( searchString, filterWidgetView.searchByComments().getValue() ) );
             if (query.getCaseNumbers() == null) {
+                query.setSearchStringAtComments(filterWidgetView.searchByComments().getValue());
                 query.setSearchString( isBlank( searchString ) ? null : searchString );
             }
         }
