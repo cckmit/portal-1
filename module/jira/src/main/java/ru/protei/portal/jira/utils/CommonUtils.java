@@ -17,6 +17,11 @@ public class CommonUtils {
     private final static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
 
 
+    public static boolean isTechUser (JiraEndpoint endpoint, BasicUser user) {
+        return user != null && user.getName().equals(endpoint.getServerLogin());
+    }
+
+
     public static String makeExternalIssueID (JiraEndpoint endpoint, Issue issue) {
         return endpoint.getId()+ "_" + issue.getKey();
     }

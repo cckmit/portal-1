@@ -91,7 +91,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         CaseObject caseObj = caseObjectDAO.getByExternalAppCaseId(CommonUtils.makeExternalIssueID(endpoint, issue));
         if (caseObj != null) {
-            if (event.getUser().getName().equals(endpoint.getServerLogin())) {
+            if (CommonUtils.isTechUser(endpoint, event.getUser())) {
                 logger.info("skip event to prevent recursion, author is tech-login");
                 return null;
             }
@@ -124,7 +124,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             caseObjectDAO.saveOrUpdate(caseObj);
 
-            caseEvent.includeCaseComments(processComments(issue, caseObj, personMapper, mergeState));
+            caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, mergeState));
             caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, mergeState, personMapper));
 
             appData.setExtAppData(mergeState.toString());
@@ -165,7 +165,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         IssueMergeState mergeState = new IssueMergeState();
 
-        caseEvent.includeCaseComments(processComments(issue, caseObj, personMapper, mergeState));
+        caseEvent.includeCaseComments(processComments(endpoint, issue, caseObj, personMapper, mergeState));
         caseEvent.includeCaseAttachments(processAttachments(endpoint, issue, caseObj, mergeState, personMapper));
 
         final ExternalCaseAppData appData = new ExternalCaseAppData(caseObj);
@@ -180,7 +180,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return caseEvent;
     }
 
-    private List<CaseComment> processComments(Issue issue, CaseObject caseObj, PersonMapper personMapper, IssueMergeState state) {
+    private List<CaseComment> processComments(JiraEndpoint endpoint, Issue issue, CaseObject caseObj, PersonMapper personMapper, IssueMergeState state) {
         logger.debug("process comments on {}", issue.getKey());
 
         if (issue.getComments() == null) {
@@ -192,6 +192,12 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         issue.getComments().forEach(comment -> {
             if (state.hasComment(comment.getId())) {
                 logger.debug("skip already merged comment id = {}", comment.getId());
+                return;
+            }
+
+            if (CommonUtils.isTechUser(endpoint, comment.getUpdateAuthor()) ||
+                    CommonUtils.isTechUser(endpoint, comment.getAuthor())) {
+                logger.debug("skip our comment {}, it's by tech-login", comment.getId());
                 return;
             }
 
