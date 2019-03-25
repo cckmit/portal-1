@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -75,7 +76,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                         newRecordsQuery, view.getNewRecordsContainer(), lang.newRecords(), DebugIds.DASHBOARD.TABLE_NEW));
         fireEvent(
                 new DashboardEvents.ShowTableBlock(
-                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, DebugIds.DASHBOARD.TABLE_INACTIVE).withDaysLimit(30));
+                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, DebugIds.DASHBOARD.TABLE_INACTIVE));
     }
 
 
@@ -104,6 +105,12 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, null, En_SortField.last_update, En_SortDir.DESC);
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());
         query.setStates(inactiveStates);
+
+        Date to = new Date();
+        Date from = new Date(to.getTime() - INACTIVE_DAYS);
+        query.setModifiedFrom(from);
+        query.setModifiedTo(to);
+
         List<Long> productIds = null;
         if (policyService.getProfile() != null){
             productIds = new ArrayList<>();
@@ -131,4 +138,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
     private CaseQuery activeRecordsQuery;
     private CaseQuery newRecordsQuery;
     private CaseQuery inactiveRecordsQuery;
+
+    private final static Long MILLISECONDS_PER_DAY = 86400000L;
+    private final static Long INACTIVE_DAYS = MILLISECONDS_PER_DAY * 30;
 }
