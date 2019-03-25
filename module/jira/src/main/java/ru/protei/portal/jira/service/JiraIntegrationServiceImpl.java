@@ -115,7 +115,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
             caseObj.setModified(DateUtils.max(issue.getUpdateDate().toDate(), caseObj.getModified()));
             caseObj.setExtAppType("jira");
-            caseObj.setName(issue.getSummary());
+//            caseObj.setName(issue.getSummary()); -- update it with priority and info
             caseObj.setLocal(0);
             caseObj.setInitiatorCompanyId(endpoint.getCompanyId());
 
@@ -151,7 +151,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setCreatorId(caseObj.getInitiatorId());
 
         caseObj.setExtAppType("jira");
-        caseObj.setName(issue.getSummary());
+//        caseObj.setName(issue.getSummary()); -- update it with priority and info
         caseObj.setLocal(0);
         caseObj.setInitiator(personMapper.toProteiPerson(issue.getReporter()));
         caseObj.setInitiatorCompany(companyDAO.get(endpoint.getCompanyId()));
@@ -352,6 +352,10 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
     private void updatePriorityAndInfo(JiraEndpoint endpoint, Issue issue, CaseObject caseObj) {
+//        logger.debug("update case name, issue={}, case={}", issue.getKey(), caseObj.getCaseNumber());
+        caseObj.setName(issue.getKey() + " | " + issue.getSummary());
+
+        // update severity
         String severityName = CommonUtils.getIssueSeverity(issue);
 
         logger.debug("update case priority, issue={}, jira-level={}, current case level={}", issue.getKey(), severityName, caseObj.importanceLevel());
@@ -367,6 +371,8 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
             caseObj.setImpLevel(jiraPriorityEntry.getLocalPriorityId());
         }
 
+
+        // update info (description)
         StringBuilder infoValue = new StringBuilder("Тип: " + issue.getIssueType().getName());
 
         if (jiraPriorityEntry != null) {
