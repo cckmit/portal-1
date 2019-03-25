@@ -357,6 +357,11 @@ public class MainTestsConfiguration {
         return new ContractDateDAO_Impl();
     }
 
+    @Bean
+    public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
+        return new CaseStateWorkflowDAO_Impl();
+    }
+
 /**
  *
  *
@@ -548,6 +553,13 @@ public class MainTestsConfiguration {
     public ContractReminderService getContractReminderService() {
         return new ContractReminderServiceImpl();
     }
+
+    @Bean
+    public CaseStateWorkflowService getCaseStateWorkflowService() {
+        return new CaseStateWorkflowServiceImpl();
+    }
+
+
 
     @Bean
     public ReportCase getReportCase() {

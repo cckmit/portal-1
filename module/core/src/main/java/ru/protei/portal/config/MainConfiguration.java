@@ -449,6 +449,11 @@ public class MainConfiguration {
         return new ContractDateDAO_Impl();
     }
 
+    @Bean
+    public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
+        return new CaseStateWorkflowDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -676,6 +681,13 @@ public class MainConfiguration {
     public ContractReminderService getContractReminderService() {
         return new ContractReminderServiceImpl();
     }
+
+    @Bean
+    public CaseStateWorkflowService getCaseStateWorkflowService() {
+        return new CaseStateWorkflowServiceImpl();
+    }
+
+
 
     @Bean
     public ReportCase getReportCase() {
