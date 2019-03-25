@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.PlatformDAO;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseObject;
@@ -101,10 +102,12 @@ public class BootstrapService {
                 caseObject.setCaseType(En_CaseType.SF_PLATFORM);
                 caseObject.setCaseNumber(platform.getId());
                 caseObject.setCreated(new Date());
+                caseObject.setName(platform.getName());
+                caseObject.setState(En_CaseState.CREATED);
                 caseObjectListToPersist.add(caseObject);
             }
             caseObjectDAO.persistBatch(caseObjectListToPersist);
-            if (result.getTotalCount() < limit) {
+            if (result.getResults().size() < limit) {
                 break;
             } else {
                 offset += limit;

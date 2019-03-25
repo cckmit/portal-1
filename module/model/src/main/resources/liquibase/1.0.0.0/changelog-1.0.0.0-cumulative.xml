@@ -91,4 +91,5 @@
   <include file="2019-03-04-add-audit-type.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-06-add-case-comment-time-type.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-18-modify-contract-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-03-25-add-sf-platform-case-type.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

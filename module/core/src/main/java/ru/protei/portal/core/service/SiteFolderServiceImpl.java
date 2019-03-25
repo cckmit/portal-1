@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -215,7 +216,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
         }
 
-        CaseObject caseObject = makePlatformCaseObject(id);
+        CaseObject caseObject = makePlatformCaseObject(id, platform.getName());
         Long caseId = caseObjectDAO.persist(caseObject);
         if (caseId == null) {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
@@ -377,11 +378,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         applicationDAO.persistBatch(applications);
     }
 
-    private CaseObject makePlatformCaseObject(Long platformId) {
+    private CaseObject makePlatformCaseObject(Long platformId, String name) {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseType(En_CaseType.SF_PLATFORM);
         caseObject.setCaseNumber(platformId);
         caseObject.setCreated(new Date());
+        caseObject.setName(name);
+        caseObject.setState(En_CaseState.CREATED);
         return caseObject;
     }
 
