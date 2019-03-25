@@ -1611,4 +1611,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contractParentWithout();
 
     String contractDatesNotify();
+
+    String siteFolderAttachments();
 }

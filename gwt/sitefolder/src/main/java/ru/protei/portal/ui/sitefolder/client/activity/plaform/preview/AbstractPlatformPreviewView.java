@@ -2,6 +2,7 @@ package ru.protei.portal.ui.sitefolder.client.activity.plaform.preview;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 
 public interface AbstractPlatformPreviewView extends IsWidget {
 
@@ -20,4 +21,6 @@ public interface AbstractPlatformPreviewView extends IsWidget {
     HasWidgets contactsContainer();
 
     HasWidgets serversContainer();
+
+    HasAttachments attachmentsContainer();
 }

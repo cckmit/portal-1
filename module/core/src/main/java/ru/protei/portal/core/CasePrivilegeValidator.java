@@ -23,6 +23,7 @@ public class CasePrivilegeValidator {
             case OFFICIAL: checkRequireAnyPrivileges(token, En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT); break;
             case PROJECT: checkRequireAnyPrivileges(token, En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT); break;
             case EMPLOYEE_REGISTRATION: checkRequireAnyPrivileges(token, En_Privilege.EMPLOYEE_REGISTRATION_VIEW); break;
+            case SF_PLATFORM: checkRequireAnyPrivileges(token, En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT); break;
             default: throw new InsufficientPrivilegesException("Provided En_CaseType='" + caseType + "' not matched supported types");
         }
     }
@@ -36,6 +37,7 @@ public class CasePrivilegeValidator {
             case OFFICIAL: checkRequireAllPrivileges(token, En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT); break;
             case PROJECT: checkRequireAllPrivileges(token, En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT); break;
             case EMPLOYEE_REGISTRATION: checkRequireAllPrivileges(token, En_Privilege.EMPLOYEE_REGISTRATION_VIEW); break;
+            case SF_PLATFORM: checkRequireAllPrivileges(token, En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT); break;
             default: throw new InsufficientPrivilegesException("Provided En_CaseType='" + caseType + "' not matched supported types");
         }
     }

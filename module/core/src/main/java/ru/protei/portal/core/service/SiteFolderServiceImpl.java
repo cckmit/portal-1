@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
@@ -178,6 +179,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<Platform>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
+        jdbcManyRelationsHelper.fill(result, "attachments");
+
         return new CoreResponse<Platform>().success(result);
     }
 
@@ -220,6 +223,21 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long caseId = caseObjectDAO.persist(caseObject);
         if (caseId == null) {
             throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        platform.setCaseId(caseId);
+        boolean isCaseIdSet = platformDAO.partialMerge(platform, "case_id");
+        if (!isCaseIdSet) {
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        if (CollectionUtils.isNotEmpty(platform.getAttachments())) {
+            caseAttachmentDAO.persistBatch(
+                    platform.getAttachments()
+                            .stream()
+                            .map(attachment -> new CaseAttachment(platform.getCaseId(), attachment.getId()))
+                            .collect(Collectors.toList())
+            );
         }
 
         Platform result = platformDAO.get(id);
@@ -400,4 +418,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     ServerApplicationDAO serverApplicationDAO;
     @Autowired
     CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
 }

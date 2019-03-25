@@ -12,4 +12,17 @@
             <column name="NEXT_ID" valueNumeric="0"/>
         </insert>
     </changeSet>
+
+    <changeSet id="add-case_id-column-to-platform-table" author="buchmastov">
+        <addColumn tableName="platform">
+            <column name="case_id" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-fk-case_id-column-to-platform-table" author="buchmastov">
+        <addForeignKeyConstraint constraintName="fk_case_id_to_case_object"
+                                 baseTableName="platform" baseColumnNames="case_id"
+                                 referencedTableName="case_object" referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="SET NULL"/>
+    </changeSet>
 </databaseChangeLog>

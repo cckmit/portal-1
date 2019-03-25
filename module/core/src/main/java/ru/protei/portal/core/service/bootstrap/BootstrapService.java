@@ -96,7 +96,6 @@ public class BootstrapService {
         int offset = 0;
         while (true) {
             SearchResult<Platform> result = platformDAO.getAll(offset, limit);
-            List<CaseObject> caseObjectListToPersist = new ArrayList<>();
             for (Platform platform : result.getResults()) {
                 CaseObject caseObject = new CaseObject();
                 caseObject.setCaseType(En_CaseType.SF_PLATFORM);
@@ -104,9 +103,10 @@ public class BootstrapService {
                 caseObject.setCreated(new Date());
                 caseObject.setName(platform.getName());
                 caseObject.setState(En_CaseState.CREATED);
-                caseObjectListToPersist.add(caseObject);
+                Long caseId = caseObjectDAO.persist(caseObject);
+                platform.setCaseId(caseId);
+                platformDAO.partialMerge(platform, "case_id");
             }
-            caseObjectDAO.persistBatch(caseObjectListToPersist);
             if (result.getResults().size() < limit) {
                 break;
             } else {
