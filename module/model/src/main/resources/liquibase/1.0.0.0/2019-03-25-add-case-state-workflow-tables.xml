@@ -52,7 +52,60 @@
         </insert>
         <insert tableName="case_state_workflow">
             <column name="id" value="1"/>
-            <column name="info" value="JIRA"/>
+            <column name="info" value="NX_JIRA"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-nx-jira-workflow-links" author="buchmastov">
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="1"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="31"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="4"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="5"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="31"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="31"/>
+            <column name="state_to" value="17"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="4"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="4"/>
+            <column name="state_to" value="31"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="17"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="17"/>
+            <column name="state_to" value="5"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

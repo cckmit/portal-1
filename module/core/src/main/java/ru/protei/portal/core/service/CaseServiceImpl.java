@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.CasePrivilegeValidator;
+import ru.protei.portal.core.CaseStateWorkflowValidator;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -67,6 +69,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CasePrivilegeValidator casePrivilegeValidator;
+
+    @Autowired
+    CaseStateWorkflowValidator caseStateWorkflowValidator;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
@@ -216,6 +221,12 @@ public class CaseServiceImpl implements CaseService {
 
         if(isCaseHasNoChanges(caseObject, oldState))
             return new CoreResponse<CaseObject>().success( caseObject ); //ignore
+
+        En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
+        boolean isStateTransitionValid = caseStateWorkflowValidator.isCaseStateTransitionValid(workflow, oldState.getState(), caseObject.getState());
+        if (!isStateTransitionValid) {
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
 
         caseObject.setModified(new Date());
         caseObject.setTimeElapsed(caseCommentService.getTimeElapsed(caseObject.getId()).getData());
