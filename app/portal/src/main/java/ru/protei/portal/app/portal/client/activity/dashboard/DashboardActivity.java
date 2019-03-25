@@ -111,6 +111,8 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         query.setModifiedFrom(from);
         query.setModifiedTo(to);
 
+        query.setFindRecordByCaseComments(true);
+
         List<Long> productIds = null;
         if (policyService.getProfile() != null){
             productIds = new ArrayList<>();

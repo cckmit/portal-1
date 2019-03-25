@@ -124,6 +124,31 @@ public class CaseObjectSqlBuilder {
                                 .collect(Collectors.joining(",")))
                         .append("))");
             }
+
+            if (query.isFindRecordByCaseComments()) {
+                String from = "";
+                String to = "";
+                String state = "";
+
+                if ( query.getModifiedFrom() != null ) {
+                    from = " and case_comment.created >= ?";
+                }
+                if ( query.getModifiedTo() != null ) {
+                    to = " and case_comment.created < ?";
+                }
+                if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
+                    state = " and case_comment.cstate_id in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")";
+               }
+
+                condition.append(" and case_object.id in (SELECT case_comment.case_id FROM case_comment " +
+                        "WHERE 1=1" + from + to + state + ")");
+                if (!from.equals("")) {
+                    args.add(query.getModifiedFrom());
+                }
+                if (!to.equals("")) {
+                    args.add(query.getModifiedTo());
+                }
+            }
         });
     }
 }
