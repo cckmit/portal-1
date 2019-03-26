@@ -2,7 +2,6 @@ package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
-import ru.protei.portal.core.model.annotations.CaseAuditable;
 import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -43,9 +42,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
     })
-    @Auditable(forCases = {
-            @CaseAuditable(caseType = En_CaseType.CRM_SUPPORT, auditType = En_AuditType.ISSUE_COMMENT_CREATE)
-    })
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
     CoreResponse<CaseComment> addCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
 
     @Privileged(forCases = {
@@ -54,9 +51,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
     })
-    @Auditable(forCases = {
-            @CaseAuditable(caseType = En_CaseType.CRM_SUPPORT, auditType = En_AuditType.ISSUE_COMMENT_MODIFY)
-    })
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
     CoreResponse<CaseComment> updateCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
 
     @Privileged(forCases = {
@@ -65,9 +60,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
     })
-    @Auditable(forCases = {
-            @CaseAuditable(caseType = En_CaseType.CRM_SUPPORT, auditType = En_AuditType.ISSUE_COMMENT_REMOVE)
-    })
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = En_CaseType.CRM_SUPPORT)
     CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Long personId);
 
     CoreResponse<Long> getTimeElapsed(Long caseId);

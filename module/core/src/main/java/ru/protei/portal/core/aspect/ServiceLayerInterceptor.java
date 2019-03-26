@@ -16,7 +16,6 @@ import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
 import ru.protei.portal.core.model.annotations.Auditable;
-import ru.protei.portal.core.model.annotations.CaseAuditable;
 import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -111,7 +110,7 @@ public class ServiceLayerInterceptor {
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Auditable auditable = method.getDeclaredAnnotation(Auditable.class);
 
-        if ( auditable == null ) {
+        if ( auditable == null || auditable.value() == null ) {
             return;
         }
 
@@ -125,27 +124,19 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        if ( auditable.value().length > 0 ) {
-            makeAudit(token, auditable.value()[0], auditableObject);
+        if (auditable.forCases().length == 0) {
+            makeAudit(token, auditable.value(), auditableObject);
             return;
         }
 
-        if ( auditable.forCases().length > 0 ) {
-            En_CaseType caseType = findArgument(pjp, En_CaseType.class);
-            if (caseType == null) {
-                return;
-            }
+        En_CaseType caseType = findArgument(pjp, En_CaseType.class);
+        if (caseType == null) {
+            return;
+        }
 
-            CaseAuditable caseAuditable = Arrays.stream(auditable.forCases())
-                    .filter(cp -> caseType.equals(cp.caseType()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (caseAuditable == null) {
-                return;
-            }
-
-            makeAudit(token, caseAuditable.auditType(), auditableObject);
+        boolean isCaseTypePresentAtAnnotation = Arrays.asList(auditable.forCases()).contains(caseType);
+        if (isCaseTypePresentAtAnnotation) {
+            makeAudit(token, auditable.value(), auditableObject);
             return;
         }
     }
