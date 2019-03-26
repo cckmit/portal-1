@@ -2,10 +2,12 @@ package ru.protei.portal.ui.common.client.widget.selector.casetag;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
@@ -20,6 +22,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public abstract class CaseTagModel implements Activity, SelectorModel<EntityOption> {
+
+    @Event
+    public void onChangeModel(CaseTagEvents.ChangeModel event) {
+        refreshOptions();
+    }
 
     public void subscribe(SelectorWithModel<EntityOption> selector, En_CaseType caseType) {
         if (!subscribersMap.containsKey(caseType)) {
