@@ -2232,6 +2232,8 @@ a {
 .case-meta {
   position: relative;
   display: flex;
+  display: -webkit-flex;
+  display: -ms-flexbox;
 
   .case-meta-content {
     flex: 1 auto;
