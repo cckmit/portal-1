@@ -14,7 +14,6 @@
                     <span ui:field="importance" class="pull-right"/>
                     <h2 ui:field="header"/>
                 </div>
-
                 <div ui:field="info" class="case-description"/>
             </g:HTMLPanel>
         </g:HTMLPanel>

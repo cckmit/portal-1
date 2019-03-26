@@ -9,7 +9,7 @@
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
-             xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list"
+             xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -27,7 +27,7 @@
                             <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
-                <list:IssueLinks ui:field="links" styleName="form-group col-xs-12 m-b-0"/>
+                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 m-b-0" tagCaseType="CRM_SUPPORT"/>
             </div>
             <div class="grid grid-indent">
                 <div class="form-group col-xs-6">

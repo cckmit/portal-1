@@ -1,10 +1,9 @@
-package ru.protei.portal.ui.common.client.widget.issuelinks.link;
+package ru.protei.portal.ui.common.client.widget.casemeta.link.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -23,14 +22,13 @@ import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
-import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseLinkLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
-public class IssueLink extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled{
+public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled{
 
-    public IssueLink() {
+    public CaseLinkView() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -85,7 +83,7 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
 
     @Override
     public boolean isEnabled() {
-        return remove.isEnabled();
+        return remove.isVisible();
     }
 
     @Override
@@ -102,7 +100,7 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
     }
 
     @UiHandler("root")
-    public void onHover(MouseOverEvent event) {
+    public void onMouseOver(MouseOverEvent event) {
         if ( !En_CaseLink.CRM.equals(caseLink.getType()) ){
             return;
         }
@@ -110,7 +108,7 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
     }
 
     @UiHandler("root")
-    public void onHover(MouseOutEvent event) {
+    public void onMouseOut(MouseOutEvent event) {
         caseInfoPanel.setVisible(false);
     }
 
@@ -118,6 +116,9 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
     public void closeClick(ClickEvent event) {
         event.preventDefault();
         event.stopPropagation();
+        if (!remove.isVisible()) {
+            return;
+        }
         CloseEvent.fire(this, caseLink);
     }
 
@@ -138,9 +139,11 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
     @Inject
     En_CaseLinkLang caseLinkLang;
     @Inject
-    Lang lang;
-    @Inject
     En_CaseStateLang caseStateLang;
+
+    @Inject
+    @UiField
+    Lang lang;
 
     @UiField
     FocusPanel root;
@@ -165,6 +168,6 @@ public class IssueLink extends Composite implements HasValue<CaseLink>, HasClose
 
     private CaseLink caseLink = null;
 
-    interface IssueLinkViewUiBinder extends UiBinder<FocusPanel, IssueLink> {}
-    private static IssueLinkViewUiBinder ourUiBinder = GWT.create(IssueLinkViewUiBinder.class);
+    interface CaseLinkViewUiBinder extends UiBinder<FocusPanel, CaseLinkView> {}
+    private static CaseLinkViewUiBinder ourUiBinder = GWT.create(CaseLinkViewUiBinder.class);
 }

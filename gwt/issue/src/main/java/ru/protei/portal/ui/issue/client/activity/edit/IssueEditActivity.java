@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -304,7 +305,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-        view.links().setValue(issue.getLinks() == null ? null : new HashSet<>(issue.getLinks()));
+        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+        view.tags().setValue(CollectionUtils.emptyIfNull(issue.getTags()));
+        view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
 
         view.name().setValue(issue.getName());
 
@@ -374,6 +377,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
         issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
+        issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
 
         if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             issue.setTimeElapsed(view.timeElapsedInput().getTime());

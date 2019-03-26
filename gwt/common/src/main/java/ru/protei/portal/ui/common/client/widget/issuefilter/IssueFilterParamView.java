@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -32,6 +33,7 @@ import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.Importa
 import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
@@ -129,6 +131,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasValue<Set<EntityOption>> tags() {
+        return tags;
+    }
+
+    @Override
     public HasValue<Boolean> searchPrivate() {
         return searchPrivate;
     }
@@ -164,6 +171,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public HasVisibility tagsVisibility() {
+        return tags;
+    }
+
+    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
     }
@@ -190,6 +202,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         userFilter.setValue(null);
         searchByComments.setValue(false);
         searchPrivate.setValue(null);
+        tags.setValue(null);
         toggleMsgSearchThreshold();
     }
 
@@ -210,6 +223,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
         products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
         commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
+        tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
     }
 
     @Override
@@ -358,6 +372,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
+    @UiHandler("tags")
+    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        onFilterChanged();
+    }
+
     @UiHandler("searchPrivate")
     public void onSearchOnlyPrivateChanged(ValueChangeEvent<Boolean> event) {
         onFilterChanged();
@@ -459,6 +478,9 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;
+    @Inject
+    @UiField(provided = true)
+    CaseTagMultiSelector tags;
     @UiField
     HTMLPanel searchPrivateContainer;
     @UiField

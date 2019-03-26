@@ -9,6 +9,8 @@ public class CaseLinkQuery extends BaseQuery {
     private Boolean showOnlyPrivate;
     private String remoteId;
 
+    public CaseLinkQuery() {}
+
     public CaseLinkQuery(Long caseId, Boolean showOnlyPrivate, String remoteId) {
         this(null, null, null, caseId, showOnlyPrivate, remoteId);
     }

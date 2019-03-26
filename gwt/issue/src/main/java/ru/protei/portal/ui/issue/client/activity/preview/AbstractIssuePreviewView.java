@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -28,6 +29,7 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setCompany( String value );
 
     void setLinks(Set<CaseLink> value);
+    void setTags(Set<CaseTag> value);
 
     void setContact(String value );
     void setOurCompany( String value );

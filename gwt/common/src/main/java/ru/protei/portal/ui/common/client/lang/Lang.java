@@ -1611,4 +1611,14 @@ public interface Lang extends Messages, ContactItemLang {
     String contractParentWithout();
 
     String contractDatesNotify();
+
+    String tags();
+
+    String colorHex();
+
+    String tagCreate();
+
+    String tagName();
+
+    String tagColor();
 }

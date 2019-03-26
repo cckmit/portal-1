@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
+import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.preview.AbstractEmployeeRegistrationPreviewView;
 
@@ -122,7 +122,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
 
     @Override
     public void setIssues(Set<CaseLink> issues) {
-        this.issues.setValue(issues);
+        this.caseMetaView.setLinks(issues);
     }
     
     @Override
@@ -159,7 +159,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     Element header;
     @Inject
     @UiField(provided = true)
-    IssueLinks issues;
+    CaseMetaView caseMetaView;
     @UiField
     SpanElement fullName;
     @UiField

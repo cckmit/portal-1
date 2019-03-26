@@ -62,6 +62,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> commentAuthorIds;
 
+    private List<Long> caseTagsIds;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -96,6 +98,7 @@ public class CaseQuery extends BaseQuery {
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
         setCommentAuthorIds(query.getCommentAuthorIds());
+        setCaseTagsIds(query.getCaseTagsIds());
     }
 
     public Long getId() {
@@ -244,6 +247,14 @@ public class CaseQuery extends BaseQuery {
         this.commentAuthorIds = commentAuthorIds;
     }
 
+    public List<Long> getCaseTagsIds() {
+        return caseTagsIds;
+    }
+
+    public void setCaseTagsIds(List<Long> caseTagsIds) {
+        this.caseTagsIds = caseTagsIds;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -261,7 +272,8 @@ public class CaseQuery extends BaseQuery {
                 modifiedTo != null ||
                 StringUtils.isNotBlank(searchCasenoString) ||
                 CollectionUtils.isNotEmpty(memberIds) ||
-                CollectionUtils.isNotEmpty(commentAuthorIds);
+                CollectionUtils.isNotEmpty(commentAuthorIds) ||
+                CollectionUtils.isNotEmpty(caseTagsIds);
     }
 
     @Override
@@ -285,6 +297,7 @@ public class CaseQuery extends BaseQuery {
                 ", viewPrivate=" + viewPrivate +
                 ", memberIds=" + memberIds +
                 ", commentAuthorIds=" + commentAuthorIds +
+                ", caseTagsIds=" + caseTagsIds +
                 '}';
     }
 }

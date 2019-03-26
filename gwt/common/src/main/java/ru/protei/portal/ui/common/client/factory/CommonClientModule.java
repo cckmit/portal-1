@@ -8,6 +8,8 @@ import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseC
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateView;
+import ru.protei.portal.ui.common.client.activity.casetag.CaseTagCreateActivity;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
@@ -29,6 +31,7 @@ import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
+import ru.protei.portal.ui.common.client.view.casetag.CaseTagCreateView;
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
@@ -47,6 +50,7 @@ import ru.protei.portal.ui.common.client.view.report.timeelapsed.AbstractTimeEla
 import ru.protei.portal.ui.common.client.view.report.timeelapsed.TimeElapsedReportView;
 import ru.protei.portal.ui.common.client.view.report.timeresolution.AbstractResolutionTimeReportView;
 import ru.protei.portal.ui.common.client.view.report.timeresolution.ResolutionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
@@ -105,11 +109,15 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractCaseCommentListView.class ).to( CaseCommentListView.class ).in( Singleton.class );
         bind( AbstractCaseCommentItemView.class ).to( CaseCommentItemView.class );
 
+        bind( CaseTagCreateActivity.class ).asEagerSingleton();
+        bind( AbstractCaseTagCreateView.class ).to( CaseTagCreateView.class ).in( Singleton.class );
+
         // Models
         bind( InitiatorModel.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
         bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
+        bind( CaseTagModel.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);
         requestStaticInjection(DefaultErrorHandler.class);

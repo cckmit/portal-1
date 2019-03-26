@@ -123,6 +123,9 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> products;
 
+    @JdbcManyToMany(linkTable = "case_object_tag", localLinkColumn = "case_id", remoteLinkColumn = "tag_id")
+    private Set<CaseTag> tags;
+
     // not db column
     private List<CaseLink> links;
 
@@ -462,6 +465,14 @@ public class CaseObject extends AuditableObject {
         this.timeElapsedType = timeElapsedType;
     }
 
+    public Set<CaseTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<CaseTag> tags) {
+        this.tags = tags;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -501,8 +512,7 @@ public class CaseObject extends AuditableObject {
                 ", members=" + members +
                 ", links=" + links +
                 ", timeElapsed=" + timeElapsed +
+                ", tags=" + tags +
                 '}';
     }
-
-
 }

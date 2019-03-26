@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -54,6 +53,9 @@ public class CaseServiceImpl implements CaseService {
     CaseNotifierDAO caseNotifierDAO;
 
     @Autowired
+    CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
     PolicyService policyService;
 
     @Autowired
@@ -64,9 +66,6 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseCommentService caseCommentService;
-
-    @Autowired
-    CasePrivilegeValidator casePrivilegeValidator;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
@@ -102,6 +101,11 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setLinks(caseLinks.getData());
         }
 
+        if (policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
+            jdbcManyRelationsHelper.fill(caseObject, "tags");
+        } else {
+            caseObject.setTags(new HashSet<>());
+        }
 
         // RESET PRIVACY INFO
         if ( caseObject.getInitiator() != null ) {
@@ -192,10 +196,21 @@ public class CaseServiceImpl implements CaseService {
             caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         }
 
+        if (CollectionUtils.isNotEmpty(caseObject.getTags()) &&
+                policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_EDIT, En_Scope.SYSTEM)) {
+            caseObjectTagDAO.persistBatch(
+                    caseObject.getTags()
+                            .stream()
+                            .map(tag -> new CaseObjectTag(caseId, tag.getId()))
+                            .collect(Collectors.toList())
+            );
+        }
+
         // From GWT-side we get partially filled object, that's why we need to refresh state from db
         CaseObject newState = caseObjectDAO.get(caseId);
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
+        newState.setTags(caseObject.getTags());
         publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
 
         return new CoreResponse<CaseObject>().success( newState );
@@ -266,6 +281,10 @@ public class CaseServiceImpl implements CaseService {
         UserSessionDescriptor descriptor = authService.findSession( token );
 
         caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
+
+        if (policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_EDIT, En_Scope.SYSTEM)) {
+            jdbcManyRelationsHelper.persist(caseObject, "tags");
+        }
 
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
@@ -376,8 +395,6 @@ public class CaseServiceImpl implements CaseService {
     @Override
     @Transactional
     public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
-        casePrivilegeValidator.checkPrivilegesModify(token, caseType);
-
         CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return new CoreResponse<Long>().error( En_ResultStatus.PERMISSION_DENIED );

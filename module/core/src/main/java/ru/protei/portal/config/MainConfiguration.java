@@ -9,7 +9,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
@@ -449,6 +448,16 @@ public class MainConfiguration {
         return new ContractDateDAO_Impl();
     }
 
+    @Bean
+    public CaseTagDAO getCaseTagDAO() {
+        return new CaseTagDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectTagDAO getCaseObjectTagDAO() {
+        return new CaseObjectTagDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -678,6 +687,12 @@ public class MainConfiguration {
     }
 
     @Bean
+    public CaseTagService getCaseTagService() {
+        return new CaseTagServiceImpl();
+    }
+
+
+    @Bean
     public ReportCase getReportCase() {
         return new ReportCaseImpl();
     }
@@ -690,11 +705,6 @@ public class MainConfiguration {
     @Bean
     public MarkdownServer getMarkdownServer() {
         return new MarkdownServer();
-    }
-
-    @Bean
-    public CasePrivilegeValidator getCasePrivilegeValidator() {
-        return new CasePrivilegeValidator();
     }
 
     /**
