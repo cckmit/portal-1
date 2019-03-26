@@ -14,4 +14,6 @@ public class CaseTagEvents {
             return caseType;
         }
     }
+
+    public static class ChangeModel {}
 }

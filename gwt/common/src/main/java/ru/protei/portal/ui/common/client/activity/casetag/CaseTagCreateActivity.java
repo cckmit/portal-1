@@ -45,7 +45,10 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseTag.setColor(view.color().getValue());
 
         caseTagController.createTag(caseTag, new FluentCallback<Void>()
-                .withSuccess(v -> dialogView.hidePopup())
+                .withSuccess(v -> {
+                    dialogView.hidePopup();
+                    fireEvent(new CaseTagEvents.ChangeModel());
+                })
         );
     }
 
