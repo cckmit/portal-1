@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -121,40 +122,41 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.saveEnabled().setEnabled(false);
 
-        issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
-            @Override
-            public void onError(Throwable throwable) {
+        fireEvent(new CaseCommentEvents.ValidateComment(isValid -> {
+            if (!isValid) {
+                fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
                 view.saveEnabled().setEnabled(true);
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
             }
-
-            @Override
-            public void onSuccess(CaseObject caseObject) {
-                storage.remove(makeStorageKey(caseObject.getId()));
-
-                view.saveEnabled().setEnabled(true);
-                if (isNew(issue)) {
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeModel());
-                    fireEvent(new IssueEvents.Show());
-                } else {
-                    fireEvent(new IssueEvents.SaveComment(caseObject.getId(), new IssueEvents.SaveComment.SaveCommentCompleteHandler() {
-                        @Override
-                        public void onError(Throwable throwable) {
-                            fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
-                        }
-
-                        @Override
-                        public void onSuccess() {
+            issueService.saveIssue(issue, new FluentCallback<CaseObject>()
+                    .withResult(() -> {
+                        view.saveEnabled().setEnabled(true);
+                    })
+                    .withError(throwable -> {
+                        fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                    })
+                    .withSuccess(caseObject -> {
+                        storage.remove(makeStorageKey(caseObject.getId()));
+                        if (isNew(issue)) {
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new IssueEvents.ChangeModel());
-                            fireEvent(new Back());
+                            fireEvent(new IssueEvents.Show());
+                            return;
                         }
+                        fireEvent(new CaseCommentEvents.SaveComment(caseObject.getId(), new CaseCommentEvents.SaveComment.SaveCommentCompleteHandler() {
+                            @Override
+                            public void onError(Throwable throwable, String message) {
+                                fireEvent(new NotifyEvents.Show(message != null ? message : lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
+                            }
+                            @Override
+                            public void onSuccess() {
+                                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                                fireEvent(new IssueEvents.ChangeModel());
+                                fireEvent(new Back());
+                            }
+                        }));
                     }));
-
-                }
-            }
-        });
+        }));
     }
 
     @Override

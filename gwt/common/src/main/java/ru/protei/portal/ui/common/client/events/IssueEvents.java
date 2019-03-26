@@ -97,20 +97,6 @@ public class IssueEvents {
      */
     public static class ChangeModel {}
 
-    public static class SaveComment {
-        public interface SaveCommentCompleteHandler {
-            void onSuccess();
-            void onError(Throwable throwable);
-        }
-
-        public SaveComment( Long id, SaveCommentCompleteHandler handler ) {
-            this.id = id;
-            this.handler = handler;
-        }
-        public Long id;
-        public SaveCommentCompleteHandler handler;
-    }
-
     /**
      * Изменилась модель фильтров пользователя
      */
