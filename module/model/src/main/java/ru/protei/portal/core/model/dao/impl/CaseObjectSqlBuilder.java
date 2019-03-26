@@ -129,25 +129,25 @@ public class CaseObjectSqlBuilder {
                 String from = "";
                 String to = "";
                 String state = "";
+                String manager = "";
 
                 if ( query.getModifiedFrom() != null ) {
                     from = " and case_comment.created >= ?";
+                    args.add(query.getModifiedFrom());
                 }
                 if ( query.getModifiedTo() != null ) {
                     to = " and case_comment.created < ?";
+                    args.add(query.getModifiedTo());
                 }
                 if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
                     state = " and case_comment.cstate_id in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")";
-               }
+                }
+                if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
+                    manager = (" and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                }
 
                 condition.append(" and case_object.id in (SELECT case_comment.case_id FROM case_comment " +
-                        "WHERE 1=1" + from + to + state + ")");
-                if (!from.equals("")) {
-                    args.add(query.getModifiedFrom());
-                }
-                if (!to.equals("")) {
-                    args.add(query.getModifiedTo());
-                }
+                        "WHERE 1=1" + from + to + state + manager + ")");
             }
         });
     }
