@@ -127,7 +127,7 @@ public class CaseObjectSqlBuilder {
 
             if (query.isFindRecordByCaseComments()) {
                 condition.append(" and case_object.id in (SELECT case_comment.case_id FROM case_comment " +
-                        "WHERE 1=1");
+                        "WHERE 2=2");
 
                 if ( query.getModifiedFrom() != null ) {
                     condition.append( " and case_comment.created >= ?" );
