@@ -137,11 +137,11 @@ public class CaseObjectSqlBuilder {
                     condition.append( " and case_comment.created < ?" );
                     args.add(query.getModifiedTo());
                 }
-                if ( query.getStateIds() != null && !query.getStateIds().isEmpty() ) {
-                    condition.append( " and case_comment.cstate_id in (" + query.getStateIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")" );
+                if ( query.getStateIds() != null ) {
+                    condition.append( " and case_comment.cstate_id in " + HelperFunc.makeInArg(query.getStateIds()));
                 }
-                if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
-                    condition.append( " and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")" );
+                if ( query.getManagerIds() != null ) {
+                    condition.append( " and manager in " +  HelperFunc.makeInArg(query.getManagerIds()));
                 }
 
                 condition.append(")");
