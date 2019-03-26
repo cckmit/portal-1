@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.CaseLink;
@@ -93,4 +94,5 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void applyCompanyValueIfOneOption();
 
+    void setStateWorkflow(En_CaseStateWorkflow workflow);
 }

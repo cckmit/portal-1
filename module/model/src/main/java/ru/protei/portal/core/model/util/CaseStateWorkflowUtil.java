@@ -36,6 +36,10 @@ public class CaseStateWorkflowUtil {
     public static En_CaseStateWorkflow recognizeWorkflow(CaseObject caseObject) {
         Objects.requireNonNull(caseObject, "Case object should not be null");
 
+        if (caseObject.getImpLevel() == 2) {
+            return En_CaseStateWorkflow.NX_JIRA;
+        }
+
         if (false) {
             // TODO paste criteria for NX_JIRA
             return En_CaseStateWorkflow.NX_JIRA;
