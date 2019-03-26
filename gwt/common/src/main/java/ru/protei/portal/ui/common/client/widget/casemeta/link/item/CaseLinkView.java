@@ -83,12 +83,11 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return remove.isVisible();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
         remove.setVisible(enabled);
     }
 
@@ -117,7 +116,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     public void closeClick(ClickEvent event) {
         event.preventDefault();
         event.stopPropagation();
-        if (!enabled) {
+        if (!remove.isVisible()) {
             return;
         }
         CloseEvent.fire(this, caseLink);
@@ -168,7 +167,6 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     DivElement info;
 
     private CaseLink caseLink = null;
-    private boolean enabled = true;
 
     interface CaseLinkViewUiBinder extends UiBinder<FocusPanel, CaseLinkView> {}
     private static CaseLinkViewUiBinder ourUiBinder = GWT.create(CaseLinkViewUiBinder.class);

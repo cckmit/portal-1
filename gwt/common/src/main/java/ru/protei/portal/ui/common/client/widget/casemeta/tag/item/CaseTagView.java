@@ -52,12 +52,11 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return remove.isVisible();
     }
 
     @Override
     public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
         remove.setVisible(enabled);
     }
 
@@ -87,34 +86,35 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         if (StringUtils.isNotBlank(color)) {
             return color;
         }
-        return "#e9edef";
+        return COLOR_LIGHT_GRAY;
     }
 
     private String makeContrastColor(String color) {
         int colorBase = parseHexColor(color);
-        int colorThreshold = parseHexColor("#757575");
-        return colorBase > colorThreshold ? "#000000" : "#FFFFFF";
+        int colorThreshold = parseHexColor(COLOR_CONTRAST_THRESHOLD);
+        return colorBase > colorThreshold ? COLOR_BLACK : COLOR_WHITE;
     }
 
     private int parseHexColor(String color) {
         if (color.charAt(0) == '#') {
-            long parsed = Long.parseLong(color.substring(1), 16);
-            if (color.length() == 7) {
-                // Set the alpha value
-                parsed |= 0x00000000ff000000;
-            } else if (color.length() != 9) {
-                throw new IllegalArgumentException("Unknown color");
-            }
-            return (int) parsed;
+            color = color.substring(1);
         }
-        throw new IllegalArgumentException("Unknown color");
+        if (color.length() != 6 && color.length() != 8) {
+            return 0;
+        }
+        long parsed = Long.parseLong(color, 16);
+        if (color.length() == 6) {
+            // Set the alpha value
+            parsed |= 0x00000000ff000000;
+        }
+        return (int) parsed;
     }
 
     @UiHandler("remove")
     public void closeClick(ClickEvent event) {
         event.preventDefault();
         event.stopPropagation();
-        if (!enabled) {
+        if (!remove.isVisible()) {
             return;
         }
         CloseEvent.fire(this, caseTag);
@@ -137,7 +137,11 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
     InlineLabel icon;
 
     private CaseTag caseTag = null;
-    private boolean enabled = true;
+
+    private static final String COLOR_LIGHT_GRAY = "#e9edef";
+    private static final String COLOR_CONTRAST_THRESHOLD = "#757575";
+    private static final String COLOR_BLACK = "#000000";
+    private static final String COLOR_WHITE = "#FFFFFF";
 
     interface CaseTagViewUiBinder extends UiBinder<FocusPanel, CaseTagView> {}
     private static CaseTagViewUiBinder ourUiBinder = GWT.create(CaseTagViewUiBinder.class);

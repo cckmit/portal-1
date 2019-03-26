@@ -2,6 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
@@ -19,9 +20,10 @@ import java.util.List;
 public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
+    @Transactional
     public CoreResponse createTag(AuthToken token, CaseTag caseTag) {
         if (!isCaseTagValid(caseTag)) {
-            return new CoreResponse<>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return new CoreResponse<>().error(En_ResultStatus.VALIDATION_ERROR);
         }
         Long id;
         try {

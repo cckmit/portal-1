@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -290,8 +291,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-        view.links().setValue(issue.getLinks() == null ? null : new HashSet<>(issue.getLinks()));
-        view.tags().setValue(issue.getTags() == null ? null : new HashSet<>(issue.getTags()));
+        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+        view.tags().setValue(CollectionUtils.emptyIfNull(issue.getTags()));
         view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
 
         view.name().setValue(issue.getName());

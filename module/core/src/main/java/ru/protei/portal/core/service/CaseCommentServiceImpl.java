@@ -56,11 +56,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseComment result = response.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject caseObjectNew = caseObjectDAO.get(comment.getCaseId());
-            jdbcManyRelationsHelper.fill(caseObjectNew, "attachments");
-            jdbcManyRelationsHelper.fill(caseObjectNew, "notifiers");
-            caseObjectOld.setAttachments(caseObjectNew.getAttachments());
-            caseObjectOld.setNotifiers(caseObjectNew.getNotifiers());
+            CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
 
             Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
                     .stream()
@@ -96,20 +92,21 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         CaseComment result = response.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject newState = caseObjectDAO.get(comment.getCaseId());
-            jdbcManyRelationsHelper.fill( newState, "attachments");
-            jdbcManyRelationsHelper.fill(newState, "notifiers");
-            caseObjectOld.setAttachments(newState.getAttachments());
-            caseObjectOld.setNotifiers(newState.getNotifiers());
+            CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
 
-            Collection<Attachment> removedAttachments = attachmentService.getAttachments(token, caseType, removedCaseAttachments).getData();
-            Collection<Attachment> addedAttachments = attachmentService.getAttachments(token, caseType,
+            Collection<Attachment> removedAttachments = attachmentService.getAttachments(
+                    token,
+                    caseType,
+                    removedCaseAttachments
+            ).getData();
+
+            Collection<Attachment> addedAttachments = attachmentService.getAttachments(
+                    token,
+                    caseType,
                     HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
             ).getData();
 
-            publisherService.publishEvent(
-                    new CaseCommentEvent(this, newState, caseObjectOld, prevComment, removedAttachments, comment, addedAttachments, person)
-            );
+            publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, prevComment, removedAttachments, comment, addedAttachments, person));
         }
 
         return new CoreResponse<CaseComment>().success(result);
@@ -346,6 +343,15 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     private void removeAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> list) {
         list.forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
+    }
+
+    private CaseObject getNewStateAndFillOldState(Long caseId, CaseObject oldState) {
+        CaseObject newState = caseObjectDAO.get(caseId);
+        jdbcManyRelationsHelper.fill(newState, "attachments");
+        jdbcManyRelationsHelper.fill(newState, "notifiers");
+        oldState.setAttachments(newState.getAttachments());
+        oldState.setNotifiers(newState.getNotifiers());
+        return newState;
     }
 
     @Autowired

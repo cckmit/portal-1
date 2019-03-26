@@ -104,7 +104,7 @@ public class CaseServiceImpl implements CaseService {
         if (policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
             jdbcManyRelationsHelper.fill(caseObject, "tags");
         } else {
-            caseObject.setTags(null);
+            caseObject.setTags(new HashSet<>());
         }
 
         // RESET PRIVACY INFO
