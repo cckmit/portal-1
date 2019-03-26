@@ -6,7 +6,7 @@
 
     <changeSet id="add-case_state_workflow-table" author="buchmastov">
         <createTable tableName="case_state_workflow">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <column name="id" type="BIGINT">
                 <constraints primaryKey="true"/>
             </column>
             <column name="info" type="VARCHAR(64)"/>
