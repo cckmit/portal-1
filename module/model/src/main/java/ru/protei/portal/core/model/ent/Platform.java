@@ -30,6 +30,12 @@ public class Platform implements Serializable, Removable {
     @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
     private Company company;
 
+    @JdbcColumn(name="case_id")
+    private Long caseId;
+
+    @JdbcManyToMany(localColumn = "case_id", linkTable = "case_attachment", localLinkColumn = "case_id", remoteLinkColumn = "att_id")
+    private List<Attachment> attachments;
+
     private Long serversCount;
 
     public Long getId() {
@@ -96,6 +102,21 @@ public class Platform implements Serializable, Removable {
         this.manager = manager;
     }
 
+    public void setCaseId(Long caseId) {
+        this.caseId = caseId;
+    }
+
+    public Long getCaseId() {
+        return caseId;
+    }
+
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
+    }
 
     public static Platform fromEntityOption(EntityOption entityOption) {
         if (entityOption == null) {
@@ -126,10 +147,13 @@ public class Platform implements Serializable, Removable {
         return "Platform{" +
                 "id=" + id +
                 ", companyId=" + companyId +
-                ", name=" + name +
-                ", params=" + params +
+                ", name='" + name + '\'' +
+                ", params='" + params + '\'' +
+                ", comment='" + comment + '\'' +
                 ", manager=" + manager +
-                ", comment=" + comment +
+                ", company=" + company +
+                ", caseId=" + caseId +
+                ", serversCount=" + serversCount +
                 '}';
     }
 }

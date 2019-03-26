@@ -1,13 +1,15 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dao.ApplicationDAO;
-import ru.protei.portal.core.model.dao.PlatformDAO;
-import ru.protei.portal.core.model.dao.ServerApplicationDAO;
-import ru.protei.portal.core.model.dao.ServerDAO;
+import ru.protei.portal.core.exception.ResultStatusException;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
@@ -19,21 +21,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    @Autowired
-    PlatformDAO platformDAO;
-
-    @Autowired
-    ServerDAO serverDAO;
-
-    @Autowired
-    ApplicationDAO applicationDAO;
-
-    @Autowired
-    ServerApplicationDAO serverApplicationDAO;
 
     @Override
     public CoreResponse<Long> countPlatforms(AuthToken token, PlatformQuery query) {
@@ -192,6 +179,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<Platform>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
+        jdbcManyRelationsHelper.fill(result, "attachments");
+
         return new CoreResponse<Platform>().success(result);
     }
 
@@ -221,18 +210,39 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
+    @Transactional
     public CoreResponse<Platform> createPlatform(AuthToken token, Platform platform) {
 
         Long id = platformDAO.persist(platform);
 
         if (id == null) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        CaseObject caseObject = makePlatformCaseObject(id, platform.getName());
+        Long caseId = caseObjectDAO.persist(caseObject);
+        if (caseId == null) {
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        platform.setCaseId(caseId);
+        boolean isCaseIdSet = platformDAO.partialMerge(platform, "case_id");
+        if (!isCaseIdSet) {
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        if (CollectionUtils.isNotEmpty(platform.getAttachments())) {
+            caseAttachmentDAO.persistBatch(
+                    platform.getAttachments()
+                            .stream()
+                            .map(attachment -> new CaseAttachment(platform.getCaseId(), attachment.getId()))
+                            .collect(Collectors.toList())
+            );
         }
 
         Platform result = platformDAO.get(id);
-
         if (result == null) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return new CoreResponse<Platform>().success(result);
@@ -244,7 +254,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long id = serverDAO.persist(server);
 
         if (id == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return new CoreResponse<Server>().error(En_ResultStatus.NOT_CREATED, null);
         }
 
         Server result = serverDAO.get(id);
@@ -274,7 +284,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long id = applicationDAO.persist(application);
 
         if (id == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return new CoreResponse<Application>().error(En_ResultStatus.NOT_CREATED, null);
         }
 
         Application result = applicationDAO.get(id);
@@ -293,7 +303,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = platformDAO.merge(platform);
 
         if (!status) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return new CoreResponse<Platform>().error(En_ResultStatus.NOT_UPDATED, null);
         }
 
         Platform result = platformDAO.get(platform.getId());
@@ -311,7 +321,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = serverDAO.merge(server);
 
         if (!status) {
-            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return new CoreResponse<Server>().error(En_ResultStatus.NOT_UPDATED, null);
         }
 
         Server result = serverDAO.get(server.getId());
@@ -329,7 +339,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = applicationDAO.merge(application);
 
         if (!status) {
-            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return new CoreResponse<Application>().error(En_ResultStatus.NOT_UPDATED, null);
         }
 
         Application result = applicationDAO.get(application.getId());
@@ -385,4 +395,29 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         applicationDAO.persistBatch(applications);
     }
+
+    private CaseObject makePlatformCaseObject(Long platformId, String name) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseType(En_CaseType.SF_PLATFORM);
+        caseObject.setCaseNumber(platformId);
+        caseObject.setCreated(new Date());
+        caseObject.setName(name);
+        caseObject.setState(En_CaseState.CREATED);
+        return caseObject;
+    }
+
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+    @Autowired
+    PlatformDAO platformDAO;
+    @Autowired
+    ServerDAO serverDAO;
+    @Autowired
+    ApplicationDAO applicationDAO;
+    @Autowired
+    ServerApplicationDAO serverApplicationDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
 }
