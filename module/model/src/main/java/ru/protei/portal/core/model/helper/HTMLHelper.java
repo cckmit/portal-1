@@ -36,7 +36,7 @@ public class HTMLHelper {
         while (true) {
             int end = s.indexOf(THREE_BACKTICKS_ELEMENT, openElement? start + THREE_BACKTICKS_ELEMENT.length() : start);
             if (end == -1) {
-                sb.append(openElement? s.substring(start) : replaceHtmlEscapeChars(s.substring(start)));
+                sb.append(replaceHtmlEscapeChars(s.substring(start)));
                 break;
             }
             sb.append(openElement? s.substring(start, end += THREE_BACKTICKS_ELEMENT.length()) : replaceHtmlEscapeChars(s.substring(start, end)));
