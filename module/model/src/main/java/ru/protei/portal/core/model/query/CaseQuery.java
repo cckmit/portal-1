@@ -64,6 +64,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> caseTagsIds;
 
+    private boolean findRecordByCaseComments;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -99,6 +101,7 @@ public class CaseQuery extends BaseQuery {
         setViewPrivate(query.isViewPrivate());
         setCommentAuthorIds(query.getCommentAuthorIds());
         setCaseTagsIds(query.getCaseTagsIds());
+        setFindRecordByCaseComments(query.isFindRecordByCaseComments());
     }
 
     public Long getId() {
@@ -255,6 +258,14 @@ public class CaseQuery extends BaseQuery {
         this.caseTagsIds = caseTagsIds;
     }
 
+    public boolean isFindRecordByCaseComments() {
+        return findRecordByCaseComments;
+    }
+
+    public void setFindRecordByCaseComments(boolean findRecordByCaseComments) {
+        this.findRecordByCaseComments = findRecordByCaseComments;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -298,6 +309,7 @@ public class CaseQuery extends BaseQuery {
                 ", memberIds=" + memberIds +
                 ", commentAuthorIds=" + commentAuthorIds +
                 ", caseTagsIds=" + caseTagsIds +
+                ", findRecordByCaseComments=" + findRecordByCaseComments +
                 '}';
     }
 }
