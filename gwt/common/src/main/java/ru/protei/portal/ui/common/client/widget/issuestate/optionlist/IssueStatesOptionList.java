@@ -2,7 +2,6 @@ package ru.protei.portal.ui.common.client.widget.issuestate.optionlist;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.test.client.DebugIdsHelper;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
@@ -18,7 +17,7 @@ public class IssueStatesOptionList extends OptionList<En_CaseState> implements S
 
     @Inject
     public void init( StateModel stateModel) {
-        stateModel.subscribe(En_CaseStateWorkflow.NO_WORKFLOW, this);
+        stateModel.subscribeNoWorkflow(this);
     }
 
     @Override

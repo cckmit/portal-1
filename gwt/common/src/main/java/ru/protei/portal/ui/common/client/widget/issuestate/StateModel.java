@@ -27,13 +27,13 @@ public abstract class StateModel implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        clearData();
+        refreshLists();
     }
 
     @Event
     public void onStateListChanged(IssueEvents.ChangeStateModel event) {
         clearData();
-        refreshData();
+        refreshLists();
     }
 
     @Event
@@ -41,51 +41,50 @@ public abstract class StateModel implements Activity {
         notifySubscribers();
     }
 
-    public void subscribe(En_CaseStateWorkflow workflow, SelectorWithModel<En_CaseState> selector) {
+    public void subscribeNoWorkflow(SelectorWithModel<En_CaseState> selector) {
+        subscribe(selector, En_CaseStateWorkflow.NO_WORKFLOW, null);
+    }
 
-        if (!subscriberMap.containsKey(workflow)) {
-            subscriberMap.put(workflow, new ArrayList<>());
-        } else {
-            unsubscribe(selector);
-        }
+    public void subscribe(SelectorWithModel<En_CaseState> selector, En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
 
-        subscriberMap.get(workflow).add(selector);
+        subscriberMap.put(selector, new WorkflowWithState(workflow, currentCaseState));
 
         if (isDataLoaded()) {
-            List<En_CaseState> caseStates = fetchCaseStatesForWorkflow(workflow);
-            notifySubscriber(selector, caseStates);
+            List<En_CaseState> nextCaseStates = fetchNextCaseStatesForWorkflow(workflow, currentCaseState);
+            notifySubscriber(selector, nextCaseStates);
             return;
         }
 
-        refreshData();
+        refreshLists();
     }
 
-    public void unsubscribe(SelectorWithModel<En_CaseState> selector) {
-        subscriberMap.values().forEach(subscribers -> {
-            subscribers.remove(selector);
-        });
-    }
-
-    private void refreshData() {
+    private void refreshLists() {
+        if (isRefreshing) {
+            return;
+        }
+        isRefreshing = true;
         issueController.getStateList(new FluentCallback<List<En_CaseState>>()
                 .withError(throwable -> {
+                    isRefreshing = false;
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(caseStateList -> {
                     caseStatesList.clear();
                     caseStatesList.addAll(caseStateList);
-                    refreshWorkflow();
+                    refreshWorkflowList();
                 }));
     }
 
-    private void refreshWorkflow() {
+    private void refreshWorkflowList() {
         caseStateWorkflowController.getWorkflowList(new FluentCallback<List<CaseStateWorkflow>>()
                 .withError(throwable -> {
+                    isRefreshing = false;
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(workflowList -> {
                     caseStateWorkflowList.clear();
                     caseStateWorkflowList.addAll(workflowList);
+                    isRefreshing = false;
                     notifySubscribers();
                 }));
     }
@@ -97,17 +96,20 @@ public abstract class StateModel implements Activity {
     private void clearData() {
         caseStatesList.clear();
         caseStateWorkflowList.clear();
+        if (isRefreshing) {
+            isRefreshing = false;
+            refreshLists();
+        }
     }
 
     private void notifySubscribers() {
-        for (Map.Entry<En_CaseStateWorkflow, List<SelectorWithModel<En_CaseState>>> entry : subscriberMap.entrySet()) {
-            En_CaseStateWorkflow workflow = entry.getKey();
-            List<SelectorWithModel<En_CaseState>> subscribers = entry.getValue();
+        for (Map.Entry<SelectorWithModel<En_CaseState>, WorkflowWithState> entry : subscriberMap.entrySet()) {
+            SelectorWithModel<En_CaseState> selector = entry.getKey();
+            En_CaseStateWorkflow workflow = entry.getValue().workflow;
+            En_CaseState currentCaseState = entry.getValue().state;
 
-            List<En_CaseState> caseStates = fetchCaseStatesForWorkflow(workflow);
-            for (SelectorWithModel<En_CaseState> selector : subscribers) {
-                notifySubscriber(selector, caseStates);
-            }
+            List<En_CaseState> nextCaseStates = fetchNextCaseStatesForWorkflow(workflow, currentCaseState);
+            notifySubscriber(selector, nextCaseStates);
         }
     }
 
@@ -116,30 +118,31 @@ public abstract class StateModel implements Activity {
         selector.refreshValue();
     }
 
-    private List<En_CaseState> fetchCaseStatesForWorkflow(En_CaseStateWorkflow workflow) {
+    private List<En_CaseState> fetchNextCaseStatesForWorkflow(En_CaseStateWorkflow workflow, En_CaseState currentCaseState) {
 
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
             return caseStatesList;
         }
 
         Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
-                .filter(csw -> csw.getId() == workflow.getId())
+                .filter(csw -> csw.matches(workflow))
                 .findFirst();
 
+        Set<En_CaseState> nextCaseStates = new HashSet<>();
+        nextCaseStates.add(currentCaseState);
+
         if (caseStateWorkflow.isPresent()) {
-            Set<En_CaseState> supportedCaseStates = new HashSet<>();
             for (CaseStateWorkflowLink caseStateWorkflowLink : caseStateWorkflow.get().getCaseStateWorkflowLinks()) {
-                if (caseStatesList.contains(caseStateWorkflowLink.getCaseStateFrom())) {
-                    supportedCaseStates.add(caseStateWorkflowLink.getCaseStateFrom());
+                if (caseStateWorkflowLink.getCaseStateFrom() != currentCaseState) {
+                    continue;
                 }
                 if (caseStatesList.contains(caseStateWorkflowLink.getCaseStateTo())) {
-                    supportedCaseStates.add(caseStateWorkflowLink.getCaseStateTo());
+                    nextCaseStates.add(caseStateWorkflowLink.getCaseStateTo());
                 }
             }
-            return CollectionUtils.toList(supportedCaseStates, caseState -> caseState);
-        } else {
-            return new ArrayList<>();
         }
+
+        return CollectionUtils.toList(nextCaseStates, cs -> cs);
     }
 
     @Inject
@@ -149,7 +152,17 @@ public abstract class StateModel implements Activity {
     @Inject
     CaseStateWorkflowControllerAsync caseStateWorkflowController;
 
+    private boolean isRefreshing = false;
     private List<En_CaseState> caseStatesList = new ArrayList<>();
     private List<CaseStateWorkflow> caseStateWorkflowList = new ArrayList<>();
-    private Map<En_CaseStateWorkflow, List<SelectorWithModel<En_CaseState>>> subscriberMap = new HashMap<>();
+    private Map<SelectorWithModel<En_CaseState>, WorkflowWithState> subscriberMap = new HashMap<>();
+
+    private class WorkflowWithState {
+        En_CaseStateWorkflow workflow;
+        En_CaseState state;
+        WorkflowWithState(En_CaseStateWorkflow workflow, En_CaseState state) {
+            this.workflow = workflow;
+            this.state = state;
+        }
+    }
 }

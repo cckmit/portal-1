@@ -17,16 +17,11 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
     public void init(StateModel model, En_CaseStateLang lang) {
         this.model = model;
         this.lang = lang;
-        subscribeIfReady();
-    }
-
-    @Override
-    public void setValue(En_CaseState value) {
-        super.setValue(value);
     }
 
     @Override
     public void setValue(En_CaseState value, boolean fireEvents) {
+        onValueSet(value);
         super.setValue(value, fireEvents);
     }
 
@@ -39,34 +34,40 @@ public class IssueStateButtonSelector extends ButtonSelector<En_CaseState> imple
         options.forEach(this::addOption);
     }
 
+    @Override
+    public void refreshValue() { /* no need to set value again */ }
+
     public void setWorkflow(En_CaseStateWorkflow workflow) {
         this.workflow = workflow;
-        subscribeIfReady();
     }
 
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
     }
 
-    private void subscribeIfReady() {
+    private void onValueSet(En_CaseState caseState) {
         if (model == null || workflow == null) {
+            // widget has not been configured properly yet
             return;
         }
+        setDisplayOptionCreator(makeDisplayOptionCreator(workflow));
+        model.subscribe(this, workflow, caseState);
+    }
+
+    private DisplayOptionCreator<En_CaseState> makeDisplayOptionCreator(En_CaseStateWorkflow workflow) {
         if (workflow == En_CaseStateWorkflow.NO_WORKFLOW) {
-            setDisplayOptionCreator(caseState -> new DisplayOption(makeCaseStateName(caseState)));
-        } else {
-            setDisplayOptionCreator(new DisplayOptionCreator<En_CaseState>() {
-                @Override
-                public DisplayOption makeDisplayOption(En_CaseState caseState) {
-                    return new DisplayOption(makeCaseStateName(caseState));
-                }
-                @Override
-                public DisplayOption makeDisplaySelectedOption(En_CaseState caseState) {
-                    return new DisplayOption(makeCaseStateName(caseState), "", "fa fa-dot-circle-o case-state-item");
-                }
-            });
+            return caseState -> new DisplayOption(makeCaseStateName(caseState));
         }
-        model.subscribe(workflow, this);
+        return new DisplayOptionCreator<En_CaseState>() {
+            @Override
+            public DisplayOption makeDisplayOption(En_CaseState caseState) {
+                return new DisplayOption(makeCaseStateName(caseState));
+            }
+            @Override
+            public DisplayOption makeDisplaySelectedOption(En_CaseState caseState) {
+                return new DisplayOption(makeCaseStateName(caseState), "", "fa fa-dot-circle-o case-state-item");
+            }
+        };
     }
 
     private String makeCaseStateName(En_CaseState caseState) {

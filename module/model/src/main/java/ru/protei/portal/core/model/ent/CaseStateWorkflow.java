@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.winter.jdbc.annotations.IdInsertMode;
 import ru.protei.winter.jdbc.annotations.JdbcEntity;
 import ru.protei.winter.jdbc.annotations.JdbcId;
@@ -26,6 +27,10 @@ public class CaseStateWorkflow implements Serializable {
 
     public List<CaseStateWorkflowLink> getCaseStateWorkflowLinks() {
         return caseStateWorkflowLinks;
+    }
+
+    public boolean matches(En_CaseStateWorkflow workflow) {
+        return id == workflow.getId();
     }
 
     @Override

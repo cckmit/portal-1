@@ -2,7 +2,6 @@ package ru.protei.portal.core.model.util;
 
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
@@ -12,6 +11,8 @@ import java.util.Objects;
 
 public class CaseStateWorkflowUtil {
 
+    private static final String CASE_APP_TYPE_JIRA = "jira";
+
     public static boolean isCaseStateTransitionValid(CaseStateWorkflow workflow, En_CaseState caseStateFrom, En_CaseState caseStateTo) {
         Objects.requireNonNull(workflow, "Workflow should not be null");
 
@@ -19,7 +20,7 @@ public class CaseStateWorkflowUtil {
             return true;
         }
 
-        if (workflow.getId() == En_CaseStateWorkflow.NO_WORKFLOW.getId()) {
+        if (workflow.matches(En_CaseStateWorkflow.NO_WORKFLOW)) {
             return true;
         }
 
@@ -36,12 +37,7 @@ public class CaseStateWorkflowUtil {
     public static En_CaseStateWorkflow recognizeWorkflow(CaseObject caseObject) {
         Objects.requireNonNull(caseObject, "Case object should not be null");
 
-        if (caseObject.getImpLevel() == 2) {
-            return En_CaseStateWorkflow.NX_JIRA;
-        }
-
-        if (false) {
-            // TODO paste criteria for NX_JIRA
+        if (CASE_APP_TYPE_JIRA.equals(caseObject.getExtAppType())) {
             return En_CaseStateWorkflow.NX_JIRA;
         }
 
