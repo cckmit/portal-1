@@ -10,7 +10,7 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 public class LocalStorageService {
     public LocalStorageService() {
         localStorage = Storage.getLocalStorageIfSupported();
-        if (localStorage != null) {
+        if (localStorage == null) {
             mapStorage = new HashMap<>();
         }
     }
