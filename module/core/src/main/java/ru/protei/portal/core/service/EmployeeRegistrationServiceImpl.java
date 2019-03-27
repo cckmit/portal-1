@@ -180,7 +180,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             return;
         }
         Set<En_EmployeeEquipment> equipmentsListFurniture = getEquipmentsListFurniture(employeeRegistration.getEquipmentList());
-        if (equipmentsListFurniture == null) {
+        if (isEmpty(equipmentsListFurniture)) {
             return;
         }
         String summary = "Оборудование для нового сотрудника " + employeeRegistration.getEmployeeFullName();
