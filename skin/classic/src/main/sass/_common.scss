@@ -1012,23 +1012,18 @@ label.bordered:after{
 }
 
 .table-pager {
-  height: 30px;
-  background-color: gray;
+  height: 40px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #ddd;
 
-  a {
-    color : #fff;
+  .btn {
+    border-radius: 4px;
+    min-width: 32px;
   }
-}
 
-.table-pager > div:first-child {
-  margin-left: 20px;
-  margin-right: 0px;
-}
-.table-pager > div {
-  margin-left: 5px;
-  margin-right: 5px;
-  color: white;
-  margin-top: 6px;
+  .pager-label {
+    line-height: 30px;
+  }
 }
 
 .contacts {
