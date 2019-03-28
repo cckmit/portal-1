@@ -1625,4 +1625,6 @@ public interface Lang extends Messages, ContactItemLang {
     String commentEmpty();
 
     String siteFolderAttachments();
+
+    String numberUncompletedCases();
 }
