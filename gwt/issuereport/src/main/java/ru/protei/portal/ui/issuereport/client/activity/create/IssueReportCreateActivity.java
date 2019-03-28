@@ -29,6 +29,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -207,7 +208,10 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private CaseQuery makeTimeResolutionQuery() {
         CaseQuery query = new CaseQuery();
-        ProductShortView product = caseResolutionTimeReportView.products().getValue();
+
+        // AAAAAAAAAAAA
+        Iterator<ProductShortView> it = caseResolutionTimeReportView.products().getValue().iterator();
+        ProductShortView product = it.hasNext()? it.next() : null;
         if (product == null || product.getId() == null) {
             fireEvent( new NotifyEvents.Show( lang.reportMissingProduct(), NotifyEvents.NotifyType.ERROR ) );
             return null;
