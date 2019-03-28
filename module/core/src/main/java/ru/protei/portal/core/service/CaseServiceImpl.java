@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.CasePrivilegeValidator;
-import ru.protei.portal.core.CaseStateWorkflowValidator;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
@@ -71,7 +70,7 @@ public class CaseServiceImpl implements CaseService {
     CasePrivilegeValidator casePrivilegeValidator;
 
     @Autowired
-    CaseStateWorkflowValidator caseStateWorkflowValidator;
+    CaseStateWorkflowService caseStateWorkflowService;
 
     @Override
     public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
@@ -223,9 +222,9 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<CaseObject>().success( caseObject ); //ignore
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
-        boolean isStateTransitionValid = caseStateWorkflowValidator.isCaseStateTransitionValid(workflow, oldState.getState(), caseObject.getState());
+        boolean isStateTransitionValid = isCaseStateTransitionValid(workflow, oldState.getState(), caseObject.getState());
         if (!isStateTransitionValid) {
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.VALIDATION_ERROR);
         }
 
         caseObject.setModified(new Date());
@@ -532,5 +531,17 @@ public class CaseServiceImpl implements CaseService {
         if (caseObject.getState() == En_CaseState.CREATED && caseObject.getManager() != null) {
             caseObject.setState(En_CaseState.OPENED);
         }
+    }
+
+    public boolean isCaseStateTransitionValid(En_CaseStateWorkflow workflow, En_CaseState caseStateFrom, En_CaseState caseStateTo) {
+        if (caseStateFrom == caseStateTo) {
+            return true;
+        }
+        CoreResponse<CaseStateWorkflow> response = caseStateWorkflowService.getWorkflow(workflow);
+        if (response.isError()) {
+            log.error("Failed to get case state workflow, status={}", response.getStatus());
+            return false;
+        }
+        return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
     }
 }

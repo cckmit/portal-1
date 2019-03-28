@@ -29,7 +29,7 @@ public class CaseStateWorkflow implements Serializable {
         return caseStateWorkflowLinks;
     }
 
-    public boolean matches(En_CaseStateWorkflow workflow) {
+    public boolean isMatched(En_CaseStateWorkflow workflow) {
         return id == workflow.getId();
     }
 

@@ -8,13 +8,13 @@ import ru.protei.portal.core.model.dict.En_CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.portal.core.model.ent.CaseStateWorkflowLink;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.CaseStateAndWorkflowList;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseStateEvents;
 import ru.protei.portal.ui.common.client.events.IssueEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseStateWorkflowControllerAsync;
-import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
@@ -27,13 +27,13 @@ public abstract class StateModel implements Activity {
 
     @Event
     public void onInit(AuthEvents.Success event) {
-        refreshLists();
+        refreshData();
     }
 
     @Event
     public void onStateListChanged(IssueEvents.ChangeStateModel event) {
         clearData();
-        refreshLists();
+        refreshData();
     }
 
     @Event
@@ -55,35 +55,24 @@ public abstract class StateModel implements Activity {
             return;
         }
 
-        refreshLists();
+        refreshData();
     }
 
-    private void refreshLists() {
+    private void refreshData() {
         if (isRefreshing) {
             return;
         }
         isRefreshing = true;
-        issueController.getStateList(new FluentCallback<List<En_CaseState>>()
+        caseStateWorkflowController.getCaseStateAndWorkflowList(new FluentCallback<CaseStateAndWorkflowList>()
                 .withError(throwable -> {
                     isRefreshing = false;
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess(caseStateList -> {
-                    caseStatesList.clear();
-                    caseStatesList.addAll(caseStateList);
-                    refreshWorkflowList();
-                }));
-    }
-
-    private void refreshWorkflowList() {
-        caseStateWorkflowController.getWorkflowList(new FluentCallback<List<CaseStateWorkflow>>()
-                .withError(throwable -> {
-                    isRefreshing = false;
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(workflowList -> {
+                .withSuccess(caseStateAndWorkflowList -> {
                     caseStateWorkflowList.clear();
-                    caseStateWorkflowList.addAll(workflowList);
+                    caseStateWorkflowList.addAll(caseStateAndWorkflowList.getCaseStateWorkflowList());
+                    caseStatesList.clear();
+                    caseStatesList.addAll(caseStateAndWorkflowList.getCaseStatesList());
                     isRefreshing = false;
                     notifySubscribers();
                 }));
@@ -96,10 +85,6 @@ public abstract class StateModel implements Activity {
     private void clearData() {
         caseStatesList.clear();
         caseStateWorkflowList.clear();
-        if (isRefreshing) {
-            isRefreshing = false;
-            refreshLists();
-        }
     }
 
     private void notifySubscribers() {
@@ -125,7 +110,7 @@ public abstract class StateModel implements Activity {
         }
 
         Optional<CaseStateWorkflow> caseStateWorkflow = caseStateWorkflowList.stream()
-                .filter(csw -> csw.matches(workflow))
+                .filter(csw -> csw.isMatched(workflow))
                 .findFirst();
 
         Set<En_CaseState> nextCaseStates = new HashSet<>();
@@ -147,8 +132,6 @@ public abstract class StateModel implements Activity {
 
     @Inject
     Lang lang;
-    @Inject
-    IssueControllerAsync issueController;
     @Inject
     CaseStateWorkflowControllerAsync caseStateWorkflowController;
 
