@@ -76,7 +76,7 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
                         newRecordsQuery, view.getNewRecordsContainer(), lang.newRecords(), DebugIds.DASHBOARD.TABLE_NEW));
         fireEvent(
                 new DashboardEvents.ShowTableBlock(
-                        inactiveRecordsQuery, view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, DebugIds.DASHBOARD.TABLE_INACTIVE));
+                        setQueryModifiedDate(inactiveRecordsQuery), view.getInactiveRecordsContainer(), lang.inactiveRecords(), true, DebugIds.DASHBOARD.TABLE_INACTIVE));
     }
 
 
@@ -106,11 +106,6 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
         List<En_CaseState> inactiveStates = new ArrayList<>(issueStates.getInactiveStates());
         query.setStates(inactiveStates);
 
-        Date to = new Date();
-        Date from = new Date(to.getTime() - INACTIVE_DAYS);
-        query.setModifiedFrom(from);
-        query.setModifiedTo(to);
-
         query.setFindRecordByCaseComments(true);
 
         List<Long> productIds = null;
@@ -119,6 +114,14 @@ public abstract class DashboardActivity implements AbstractDashboardActivity, Ac
             productIds.add( policyService.getProfile().getId() );
         }
         query.setManagerIds( productIds );
+
+        return setQueryModifiedDate(query);
+    }
+
+    private CaseQuery setQueryModifiedDate(CaseQuery query){
+        Date now = new Date();
+        Date from = new Date(now.getTime() - INACTIVE_DAYS);
+        query.setModifiedFrom(from);
 
         return query;
     }
