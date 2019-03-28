@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 
@@ -80,5 +81,5 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setEquipmentProjectId(Long id);
 
-    void setDocumentTypeCategoryFilter(En_DocumentCategory value);
+    void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter);
 }

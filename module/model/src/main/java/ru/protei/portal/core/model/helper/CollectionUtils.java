@@ -1,10 +1,11 @@
 package ru.protei.portal.core.model.helper;
 
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.view.PersonShortView;
+
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class CollectionUtils {
@@ -42,6 +43,10 @@ public class CollectionUtils {
 
     public static <T> Collection<T> emptyIfNull( Collection<T> collection ) {
         return collection == null ? Collections.<T>emptyList() : collection;
+    }
+
+    public static <T> Set<T> emptyIfNull( Set<T> set ) {
+        return set == null ? Collections.<T>emptySet() : set;
     }
 
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
@@ -118,4 +123,9 @@ public class CollectionUtils {
         return result;
     }
 
+    public static <T> List<T> singleValueList(T value) {
+        List<T> list = new ArrayList<>();
+        list.add(value);
+        return list;
+    }
 }

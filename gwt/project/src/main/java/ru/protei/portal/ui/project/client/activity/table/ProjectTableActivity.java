@@ -69,17 +69,12 @@ public abstract class ProjectTableActivity
             return;
         }
 
-        regionService.createNewProject( new RequestCallback<Long>(){
-            @Override
-            public void onError( Throwable throwable ) {
-
-            }
-
-            @Override
-            public void onSuccess( Long aLong ) {
-                updateListAndSelect( aLong );
-            }
-        });
+        regionService.createNewProject(new FluentCallback<Long>()
+                .withSuccess(projectId -> {
+                    updateListAndSelect(projectId);
+                    fireEvent(new ProjectEvents.ChangeModel());
+                })
+        );
     }
 
     @Event

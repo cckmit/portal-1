@@ -32,7 +32,7 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
 
         contactId = null;
 
-        query = makeQuery(event.companyId);
+        query = makeQuery(event.companyId, false);
         view.showEditableColumns(event.editable);
 
         requestContacts();
@@ -89,7 +89,10 @@ public abstract class ContactConciseTableActivity implements AbstractContactConc
     }
 
     private ContactQuery makeQuery(Long companyId) {
-        return new ContactQuery(companyId, null, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+        return makeQuery(companyId, null);
+    }
+    private ContactQuery makeQuery(Long companyId, Boolean fired) {
+        return new ContactQuery(companyId, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
     }
 
     private void requestContacts() {

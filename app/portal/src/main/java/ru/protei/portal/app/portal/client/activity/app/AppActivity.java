@@ -5,20 +5,20 @@ import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.app.portal.client.service.AppServiceAsync;
-import ru.protei.portal.app.portal.client.widget.localeselector.LocaleImage;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
+import ru.protei.portal.ui.common.client.util.LocaleUtils;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
@@ -71,7 +71,7 @@ public abstract class AppActivity
 
     @Override
     public void onLocaleChanged( String locale ) {
-        changeLocale( locale );
+        LocaleUtils.changeLocale( locale );
     }
 
     @Override
@@ -97,23 +97,6 @@ public abstract class AppActivity
         fireEvent( new ActionBarEvents.Init( view.getActionBarContainer() ) );
     }
 
-    private void changeLocale( String language ) {
-        String href = Window.Location.getHref();
-        String newHref;
-
-        if ( !href.contains( "locale" ) ) {
-            newHref = href.contains( "#" ) ? href.replace( "#", "?locale=" + language + "#" ) : href + "?locale=" + language;
-        } else {
-            String locale = LocaleInfo.getCurrentLocale().getLocaleName();
-            if ( locale.isEmpty() )
-                newHref = href.replace( "#", "?locale=" + language + "#" );
-            else {
-                String replace = "locale=" + locale;
-                newHref = href.replace( replace, "locale=" + language );
-            }
-        }
-        Window.Location.replace( newHref );
-    }
 
     private void pingServer() {
         pingService.ping( new AsyncCallback<Void>() {

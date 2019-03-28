@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterS
 import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorMultiSelector;
@@ -50,7 +51,8 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         search.getElement().setPropertyString("placeholder", lang.search());
         sortField.setType( ModuleType.ISSUE);
         sortDir.setValue(false);
-        dateRange.setPlaceholder(lang.selectDate());
+        dateCreatedRange.setPlaceholder(lang.selectDate());
+        dateModifiedRange.setPlaceholder(lang.selectDate());
     }
 
     @Override
@@ -74,8 +76,13 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
-    public HasValue<DateInterval> dateRange() {
-        return dateRange;
+    public HasValue<DateInterval> dateCreatedRange() {
+        return dateCreatedRange;
+    }
+
+    @Override
+    public HasValue<DateInterval> dateModifiedRange() {
+        return dateModifiedRange;
     }
 
     @Override
@@ -114,6 +121,11 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
+    public HasValue<Set<EntityOption>> tags() {
+        return tags;
+    }
+
+    @Override
     public HasValue<Boolean> searchPrivate() {
         return searchPrivate;
     }
@@ -149,6 +161,11 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
+    public HasVisibility tagsVisibility() {
+        return tags;
+    }
+
+    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
     }
@@ -167,12 +184,14 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         commentAuthors.setValue(null);
         importance.setValue(null);
         state.setValue(null);
-        dateRange.setValue(null);
+        dateCreatedRange.setValue(null);
+        dateModifiedRange.setValue(null);
         sortField.setValue(En_SortField.creation_date);
         sortDir.setValue(false);
         search.setValue("");
         searchByComments.setValue(false);
         searchPrivate.setValue(null);
+        tags.setValue(null);
         toggleMsgSearchThreshold();
 
         userFilter.setValue( null );
@@ -185,7 +204,8 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         searchPrivate().setValue(caseQuery.isViewPrivate());
         sortDir().setValue(caseQuery.getSortDir().equals( En_SortDir.ASC));
         sortField().setValue(caseQuery.getSortField());
-        dateRange().setValue(new DateInterval(caseQuery.getFrom(), caseQuery.getTo()));
+        dateCreatedRange().setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
+        dateModifiedRange().setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
         importances().setValue(IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
         states().setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
         companies().setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
@@ -194,6 +214,7 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         initiators().setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
         products().setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
         commentAuthors().setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
+        tags().setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
     }
 
     @Override
@@ -232,8 +253,13 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         onFilterChanged();
     }
 
-    @UiHandler("dateRange")
-    public void onDateRangeChanged(ValueChangeEvent<DateInterval> event) {
+    @UiHandler("dateCreatedRange")
+    public void onDateCreatedRangeChanged(ValueChangeEvent<DateInterval> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("dateModifiedRange")
+    public void onDateModifiedRangeChanged(ValueChangeEvent<DateInterval> event) {
         onFilterChanged();
     }
 
@@ -274,6 +300,11 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         onFilterChanged();
     }
 
+    @UiHandler("tags")
+    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        onFilterChanged();
+    }
+
     @UiHandler("searchPrivate")
     public void onSearchOnlyPrivateChanged(ValueChangeEvent<Boolean> event) {
         onFilterChanged();
@@ -296,12 +327,12 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         }
     }
 
-
     private void ensureDebugIds() {
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
         searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
-        dateRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
+        dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
+        dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
         sortDir.ensureDebugId(DebugIds.FILTER.SORT_DIR_BUTTON);
         companies.setAddEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ADD_BUTTON);
@@ -358,7 +389,10 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     OptionItem searchByComments;
     @Inject
     @UiField(provided = true)
-    RangePicker dateRange;
+    RangePicker dateCreatedRange;
+    @Inject
+    @UiField(provided = true)
+    RangePicker dateModifiedRange;
     @Inject
     @UiField(provided = true)
     SortFieldSelector sortField;
@@ -379,6 +413,9 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector commentAuthors;
+    @Inject
+    @UiField(provided = true)
+    CaseTagMultiSelector tags;
     @UiField
     HTMLPanel searchPrivateContainer;
     @UiField

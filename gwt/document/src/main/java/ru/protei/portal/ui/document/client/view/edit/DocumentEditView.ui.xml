@@ -66,7 +66,7 @@
                         <label>
                             <ui:text from="{lang.documentType}"/>
                         </label>
-                        <doctype:DocumentTypeSelector ui:field="documentType"/>
+                        <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectValue}"/>
                     </div>
                     <div class="form-group col-xs-3">
                         <label>

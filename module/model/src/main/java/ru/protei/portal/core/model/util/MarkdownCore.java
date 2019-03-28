@@ -30,7 +30,7 @@ public abstract class MarkdownCore {
         if (StringUtils.isBlank(text)) {
             return text;
         }
-        text = HTMLHelper.htmlEscape(text);
+        text = HTMLHelper.htmlEscapeWOThreeBackticks(text);
         text = plain2markdown(text);
         return text;
     }

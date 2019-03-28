@@ -1,0 +1,125 @@
+package ru.protei.portal.core.service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.ContractDateOneDayRemainingEvent;
+import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dao.ContractDateDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.ent.Contract;
+import ru.protei.portal.core.model.ent.ContractDate;
+import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class ContractReminderServiceImpl implements ContractReminderService {
+
+    @Override
+    public CoreResponse<Integer> notifyAboutDates() {
+        log.info("notifyAboutDates(): start");
+
+        LocalDateTime tomorrowStart = makeTomorrowWithTime(0, 0, 0);
+        LocalDateTime tomorrowEnd = makeTomorrowWithTime(23, 59, 59);
+
+        log.info("notifyAboutDates(): start for tomorrow from {} to {}", tomorrowStart, tomorrowEnd);
+
+        List<ContractDate> contractDates = contractDateDAO.getNotifyBetweenDates(convertLocalDateTimeToDate(tomorrowStart), convertLocalDateTimeToDate(tomorrowEnd));
+        if (CollectionUtils.isEmpty(contractDates)) {
+            log.info("notifyAboutDates(): contractDates is empty for tomorrow");
+            return new CoreResponse<Integer>().success(0);
+        }
+
+        int notificationSentAmount = 0;
+
+        for (ContractDate contractDate : contractDates) {
+            Contract contract = contractDAO.get(contractDate.getContractId());
+            if (contract == null) {
+                continue;
+            }
+            log.info("notifyAboutDates(): notification for contract={}", contract.getId());
+            Set<Long> personIdList = makePersonIdListForNotification(contract);
+            if (CollectionUtils.isEmpty(personIdList)) {
+                log.info("notifyAboutDates(): notification for contract={}: no persons to be notified", contract.getId());
+                continue;
+            }
+            Set<NotificationEntry> notificationEntries = getNotificationEntries(personIdList);
+            if (CollectionUtils.isEmpty(notificationEntries)) {
+                log.info("notifyAboutDates(): notification for contract={}: no entries to be notified", contract.getId());
+                continue;
+            }
+            log.info("notifyAboutDates(): notification for contract={}: entries to be notified: {}", contract.getId(), notificationEntries);
+            publisherService.publishEvent(new ContractDateOneDayRemainingEvent(this, contract, contractDate, notificationEntries));
+            notificationSentAmount++;
+        }
+
+        log.info("notifyAboutDates(): done {} notification(s)", notificationSentAmount);
+        return new CoreResponse<Integer>().success(notificationSentAmount);
+    }
+
+    private LocalDateTime makeTomorrowWithTime(int hour, int min, int sec) {
+        LocalDateTime tomorrow = LocalDateTime.now();
+        tomorrow = tomorrow.plusDays(1);
+        tomorrow = tomorrow.withHour(hour);
+        tomorrow = tomorrow.withMinute(min);
+        tomorrow = tomorrow.withSecond(sec);
+        tomorrow = tomorrow.withNano(0);
+        return tomorrow;
+    }
+
+    private Date convertLocalDateTimeToDate(LocalDateTime dateToConvert) {
+        return Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private Set<NotificationEntry> getNotificationEntries(Set<Long> personIdList) {
+        Set<NotificationEntry> notificationEntries = new HashSet<>();
+        List<Person> personList = personDAO.partialGetListByKeys(personIdList, "contactInfo", "locale");
+        for (Person person : personList) {
+            ContactInfo contactInfo = person.getContactInfo();
+            if (contactInfo == null) {
+                continue;
+            }
+            String email = new PlainContactInfoFacade(contactInfo).getEmail();
+            String locale = person.getLocale() == null ? DEFAULT_LOCALE : person.getLocale();
+            if (StringUtils.isBlank(email)) {
+                continue;
+            }
+            notificationEntries.add(NotificationEntry.email(email, locale));
+        }
+        return notificationEntries;
+    }
+
+    private Set<Long> makePersonIdListForNotification(Contract contract) {
+        Set<Long> personIdList = new HashSet<>();
+        if (contract.getManagerId() != null) {
+            personIdList.add(contract.getManagerId());
+        }
+        if (contract.getCuratorId() != null) {
+            personIdList.add(contract.getCuratorId());
+        }
+        return personIdList;
+    }
+
+    @Autowired
+    ContractDAO contractDAO;
+    @Autowired
+    ContractDateDAO contractDateDAO;
+    @Autowired
+    PersonDAO personDAO;
+    @Autowired
+    EventPublisherService publisherService;
+
+    private static final String DEFAULT_LOCALE = "ru";
+    private static final Logger log = LoggerFactory.getLogger(ContractReminderServiceImpl.class);
+}

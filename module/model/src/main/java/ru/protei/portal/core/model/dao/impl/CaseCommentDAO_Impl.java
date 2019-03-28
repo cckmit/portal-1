@@ -46,6 +46,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
+    public List<CaseComment> listByRemoteIds(List<String> remoteIds) {
+        String sql = "case_comment.remote_id in (" + remoteIds.stream().map(id -> "?").collect(Collectors.joining(", ")) + ")";
+        return getListByCondition(sql, remoteIds);
+    }
+
+    @Override
     public boolean checkExistsByRemoteIdAndRemoteLinkId( String remoteId, Long remoteLinkId ) {
         return checkExistsByCondition( " case_comment.remote_id=? and case_comment.remote_link_id=?", remoteId, remoteLinkId );
     }

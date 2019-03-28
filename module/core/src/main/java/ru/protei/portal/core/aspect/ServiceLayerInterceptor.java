@@ -15,11 +15,16 @@ import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.annotations.Auditable;
+import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
+import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.LongAuditableObject;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
@@ -33,6 +38,7 @@ import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by Mike on 06.11.2016.
@@ -79,6 +85,12 @@ public class ServiceLayerInterceptor {
             if ( e instanceof InsufficientPrivilegesException ) {
                 return handleReturn(pjp.getSignature(), En_ResultStatus.PERMISSION_DENIED );
             }
+
+            if ( e instanceof ResultStatusException ) {
+                En_ResultStatus resultStatus = ((ResultStatusException) e).getResultStatus();
+                logger.info("Service layer ResultStatusException: status={}", resultStatus);
+                return handleReturn(pjp.getSignature(), resultStatus);
+            }
         }
 
         return handleReturn(pjp.getSignature(), En_ResultStatus.INTERNAL_ERROR);
@@ -95,6 +107,7 @@ public class ServiceLayerInterceptor {
         return null;
     }
 
+
     private void tryDoAudit( ProceedingJoinPoint pjp, Object result ) {
 
         if ( result instanceof CoreResponse && !((CoreResponse)result).getStatus().equals( En_ResultStatus.OK ) ){
@@ -108,7 +121,7 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        AuthToken token = findAuthToken( pjp );
+        AuthToken token = findArgument( pjp, AuthToken.class );
         if ( token == null ) {
             return;
         }
@@ -118,27 +131,50 @@ public class ServiceLayerInterceptor {
             return;
         }
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-
-        AuditObject auditObject = new AuditObject(auditable.value().getId(), descriptor, auditableObject);
-
-        publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
-    }
-
-    private void checkPrivileges( ProceedingJoinPoint pjp ) {
-        checkRequireAllPrivileges( pjp );
-        checkRequireAnyPrivileges( pjp );
-    }
-
-    private void checkRequireAllPrivileges( ProceedingJoinPoint pjp ) {
-        Method method = ((MethodSignature)pjp.getSignature()).getMethod();
-        Privileged privileges = method.getDeclaredAnnotation(Privileged.class);
-
-        if ( privileges == null || privileges.value().length == 0 ) {
+        if (auditable.forCases().length == 0) {
+            makeAudit(token, auditable.value(), auditableObject);
             return;
         }
 
-        AuthToken token = findAuthToken( pjp );
+        En_CaseType caseType = findArgument(pjp, En_CaseType.class);
+        if (caseType == null) {
+            return;
+        }
+
+        boolean isCaseTypePresentAtAnnotation = Arrays.asList(auditable.forCases()).contains(caseType);
+        if (isCaseTypePresentAtAnnotation) {
+            makeAudit(token, auditable.value(), auditableObject);
+            return;
+        }
+    }
+
+    private void makeAudit(AuthToken token, En_AuditType auditType, AuditableObject auditableObject) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        AuditObject auditObject = new AuditObject(auditType.getId(), descriptor, auditableObject);
+        publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
+    }
+
+
+    private void checkPrivileges( ProceedingJoinPoint pjp ) {
+        Method method = ((MethodSignature)pjp.getSignature()).getMethod();
+        Privileged privileges = method.getDeclaredAnnotation(Privileged.class);
+
+        if ( privileges == null ) {
+            return;
+        }
+
+        checkRequireAllPrivileges( pjp, privileges );
+        checkRequireAnyPrivileges( pjp, privileges );
+        checkRequireCasePrivileges( pjp, privileges );
+    }
+
+    private void checkRequireAllPrivileges( ProceedingJoinPoint pjp, Privileged privileges ) {
+
+        if ( privileges.value().length == 0 ) {
+            return;
+        }
+
+        AuthToken token = findArgument( pjp, AuthToken.class );
         if ( token == null ) {
             return;
         }
@@ -149,15 +185,13 @@ public class ServiceLayerInterceptor {
         }
     }
 
-    private void checkRequireAnyPrivileges( ProceedingJoinPoint pjp ) {
-        Method method = ((MethodSignature)pjp.getSignature()).getMethod();
-        Privileged privileges = method.getDeclaredAnnotation(Privileged.class);
+    private void checkRequireAnyPrivileges( ProceedingJoinPoint pjp, Privileged privileges ) {
 
-        if ( privileges == null || privileges.requireAny().length == 0 ) {
+        if ( privileges.requireAny().length == 0 ) {
             return;
         }
 
-        AuthToken token = findAuthToken( pjp );
+        AuthToken token = findArgument( pjp, AuthToken.class );
         if ( token == null ) {
             return;
         }
@@ -168,9 +202,51 @@ public class ServiceLayerInterceptor {
         }
     }
 
-    private AuthToken findAuthToken( ProceedingJoinPoint pjp ) {
+    private void checkRequireCasePrivileges( ProceedingJoinPoint pjp, Privileged privileges ) {
+
+        if ( privileges.forCases().length == 0) {
+            return;
+        }
+
+        AuthToken token = findArgument(pjp, AuthToken.class);
+        if (token == null) {
+            return;
+        }
+
+        En_CaseType caseType = findArgument(pjp, En_CaseType.class);
+        if (caseType == null) {
+            return;
+        }
+
+        CasePrivileged casePrivileged = Arrays.stream(privileges.forCases())
+                .filter(cp -> caseType.equals(cp.caseType()))
+                .findFirst()
+                .orElse(null);
+
+        if (casePrivileged == null) {
+            throw new InsufficientPrivilegesException("Provided En_CaseType='" + caseType + "' not matched supported types");
+        }
+
+        if (casePrivileged.requireAll().length == 0 && casePrivileged.requireAny().length == 0) {
+            return;
+        }
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+
+        if (casePrivileged.requireAll().length > 0 && !policyService.hasEveryPrivilegeOf(roles, casePrivileged.requireAll())) {
+            throw new InsufficientPrivilegesException();
+        }
+
+        if (casePrivileged.requireAny().length > 0 && !policyService.hasAnyPrivilegeOf(roles, casePrivileged.requireAny())) {
+            throw new InsufficientPrivilegesException();
+        }
+    }
+
+
+    private <T> T findArgument(ProceedingJoinPoint pjp, Class<T> clazz) {
         // try to check if method is called from core (in this case, we allow NULL to be passed in authToken)
-        Optional<String> firstCoreStackTraceElement = Arrays.asList( Thread.currentThread().getStackTrace() ).stream()
+        Optional<String> firstCoreStackTraceElement = Arrays.stream( Thread.currentThread().getStackTrace() )
                 .map( StackTraceElement::toString )
                 .filter( (item)-> item.trim().startsWith( "ru.protei.portal.core.service" ) || item.trim().startsWith( "ru.protei.portal.test" ))
                 .findFirst();
@@ -178,13 +254,13 @@ public class ServiceLayerInterceptor {
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Parameter[] params = method.getParameters();
         for (int i = 0; i < params.length; i++) {
-            if ( !params[ i ].getType().equals( AuthToken.class ) ) {
+            if ( !params[ i ].getType().equals( clazz ) ) {
                 continue;
             }
 
             Object arg = pjp.getArgs()[ i ];
             if ( arg != null ) {
-                return (AuthToken) arg;
+                return (T) arg;
             }
 
             if ( firstCoreStackTraceElement.isPresent() ) {

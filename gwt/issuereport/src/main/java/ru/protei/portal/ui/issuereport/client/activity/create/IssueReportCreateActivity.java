@@ -171,6 +171,7 @@ public abstract class IssueReportCreateActivity implements Activity,
             String searchString = filterWidgetView.searchPattern().getValue();
             query.setCaseNumbers( searchCaseNumber( searchString, filterWidgetView.searchByComments().getValue() ) );
             if (query.getCaseNumbers() == null) {
+                query.setSearchStringAtComments(filterWidgetView.searchByComments().getValue());
                 query.setSearchString( isBlank( searchString ) ? null : searchString );
             }
         }
@@ -184,7 +185,10 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setImportanceIds(getImportancesIdList(filterWidgetView.importances().getValue()));
         query.setStates(getStateList(filterWidgetView.states().getValue()));
         query.setCommentAuthorIds(getManagersIdList(filterWidgetView.commentAuthors().getValue()));
-        query = IssueFilterUtils.fillInterval( query, filterWidgetView.dateRange().getValue() );
+        query.setCaseTagsIds(getIds(filterWidgetView.tags().getValue()));
+
+        query = IssueFilterUtils.fillCreatedInterval(query, filterWidgetView.dateCreatedRange().getValue() );
+        query = IssueFilterUtils.fillModifiedInterval( query, filterWidgetView.dateModifiedRange().getValue() );
 
         return query;
     }
@@ -196,7 +200,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setCompanyIds( getCompaniesIdList( timeElapsedReportView.companies().getValue() ) );
         query.setProductIds( getProductsIdList( timeElapsedReportView.products().getValue() ) );
         query.setCommentAuthorIds( getManagersIdList( timeElapsedReportView.commentAuthors().getValue() ) );
-        query = IssueFilterUtils.fillInterval( query, timeElapsedReportView.dateRange().getValue() );
+        query = IssueFilterUtils.fillCreatedInterval( query, timeElapsedReportView.dateRange().getValue() );
 
         return query;
     }
@@ -215,8 +219,8 @@ public abstract class IssueReportCreateActivity implements Activity,
             fireEvent( new NotifyEvents.Show( lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR ) );
             return null;
         }
-        query.setFrom( interval.from );
-        query.setTo( interval.to );
+        query.setCreatedFrom( interval.from );
+        query.setCreatedTo( interval.to );
         return query;
     }
 
@@ -225,6 +229,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         caseObjectReportView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
         caseObjectReportView.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
         caseObjectReportView.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        caseObjectReportView.tagsVisibility().setVisible(policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW));
 
         timeElapsedReportView.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
         timeElapsedReportView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));

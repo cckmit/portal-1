@@ -17,7 +17,7 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.lang.ElapsedTimeTypeLang;
+import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
@@ -231,7 +231,7 @@ public class CaseCommentListView
     DivElement commentPreview;
 
     @Inject
-    private ElapsedTimeTypeLang elapsedTimeTypeLang;
+    private TimeElapsedTypeLang elapsedTimeTypeLang;
     private AbstractCaseCommentListActivity activity;
 
     private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);

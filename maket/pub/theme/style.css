@@ -21255,11 +21255,10 @@ body {
 }
 
 .dropdown-menu {
-  position: absolute;
+  position: relative;
   top: 100%;
   left: 0;
   z-index: 1000;
-  float: left;
   min-width: 160px;
   text-align: left;
   list-style: none;

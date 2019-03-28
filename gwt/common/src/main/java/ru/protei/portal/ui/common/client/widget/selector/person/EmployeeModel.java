@@ -41,6 +41,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
         if(!CollectionUtils.isEmpty( list )){
             selector.clearOptions();
             selector.fillOptions( list );
+            selector.refreshValue();
             return;
         }
         if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
@@ -63,8 +64,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
             selector.refreshValue();
         }
     }
-
-    private boolean requested;
 
     private void refreshOptions() {
         if(requested) return;
@@ -98,9 +97,9 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
     @Inject
     Lang lang;
 
+    private Long myId;
+    private boolean requested;
+
     private List< PersonShortView > list = new ArrayList<>();
-
-    Set<SelectorWithModel< PersonShortView >> subscribers = new HashSet<>();
-
-    Long myId;
+    protected Set<SelectorWithModel< PersonShortView >> subscribers = new HashSet<>();
 }

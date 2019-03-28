@@ -21,11 +21,13 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseCommentUtils;
 import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
+import ru.protei.portal.ui.common.client.widget.timefield.WorkTimeFormatter;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -62,6 +64,7 @@ public abstract class CaseCommentListActivity
                 fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+        workTimeFormatter = new WorkTimeFormatter(lang);
     }
 
     @Event
@@ -102,9 +105,26 @@ public abstract class CaseCommentListActivity
     }
 
     @Event
-    public void onSaveComment(IssueEvents.SaveComment event) {
+    public void onValidateComment(CaseCommentEvents.ValidateComment event) {
+        if (StringUtils.isNotBlank(view.message().getValue())) {
+            event.validate(true);
+            return;
+        }
+        if (view.timeElapsed().getTime() != null) {
+            event.validate(false);
+            return;
+        }
+        if (!tempAttachments.isEmpty()) {
+            event.validate(false);
+            return;
+        }
+        event.validate(true);
+    }
+
+    @Event
+    public void onSaveComment(CaseCommentEvents.SaveComment event) {
         if (!HelperFunc.isEmpty(view.message().getValue())) {
-            send(event.id, event.handler);
+            send(event.caseId, event.handler);
         } else {
             event.handler.onSuccess();
         }
@@ -307,9 +327,7 @@ public abstract class CaseCommentListActivity
         itemView.setRemoteLink(value.getRemoteLink());
 
         itemView.clearElapsedTime();
-        if (isElapsedTimeEnabled && value.getTimeElapsed() != null) {
-            itemView.timeElapsed().setTime(value.getTimeElapsed());
-        }
+        fillTimeElapsed( value, itemView );
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
@@ -341,6 +359,16 @@ public abstract class CaseCommentListActivity
         itemViewToModel.put( itemView, value );
 
         return itemView;
+    }
+
+    private void fillTimeElapsed( CaseComment value, AbstractCaseCommentItemView itemView ) {
+        if (isElapsedTimeEnabled && value.getTimeElapsed() != null) {
+            String timeType = (value.getTimeElapsedType() == null || value.getTimeElapsedType().equals( En_TimeElapsedType.NONE ) ? "" : ", " + timeElapsedTypeLang.getName( value.getTimeElapsedType() ));
+            itemView.setTimeElapsed( StringUtils.join(
+                    " ( +", workTimeFormatter.asString( value.getTimeElapsed() ), timeType, " )"
+                    ).toString()
+            );
+        }
     }
 
     private void bindAttachmentsToComment(AbstractCaseCommentItemView itemView, List<CaseAttachment> caseAttachments){
@@ -390,7 +418,7 @@ public abstract class CaseCommentListActivity
                 list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList());
     }
 
-    private void send(Long id, IssueEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
+    private void send(Long id, CaseCommentEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
         if ( requesting ) {
             return;
         }
@@ -431,7 +459,7 @@ public abstract class CaseCommentListActivity
                     view.sendEnabled().setEnabled(true);
 
                     if (saveCommentCompleteHandler != null) {
-                        saveCommentCompleteHandler.onError(throwable);
+                        saveCommentCompleteHandler.onError(throwable, null);
                         return;
                     }
 
@@ -450,9 +478,7 @@ public abstract class CaseCommentListActivity
                     if (isEdit) {
                         lastCommentView.setMessage(markdownClient.plain2escaped2markdown(result.getText()));
                         lastCommentView.clearElapsedTime();
-                        if (isElapsedTimeEnabled && comment.getTimeElapsed() != null) {
-                            lastCommentView.timeElapsed().setTime(comment.getTimeElapsed());
-                        }
+                        fillTimeElapsed( comment, lastCommentView );
 
                         Collection<Attachment> prevAttachments = lastCommentView.attachmentContainer().getAll();
 
@@ -523,6 +549,8 @@ public abstract class CaseCommentListActivity
     @Inject
     Lang lang;
     @Inject
+    TimeElapsedTypeLang timeElapsedTypeLang;
+    @Inject
     CaseCommentControllerAsync caseCommentController;
     @Inject
     AbstractCaseCommentListView view;
@@ -535,6 +563,7 @@ public abstract class CaseCommentListActivity
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;
+    private WorkTimeFormatter workTimeFormatter;
 
     private Profile profile;
 

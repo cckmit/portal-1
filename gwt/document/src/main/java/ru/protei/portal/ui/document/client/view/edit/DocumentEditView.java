@@ -23,6 +23,7 @@ import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCat
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
 import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -213,8 +214,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     }
 
     @Override
-    public void setDocumentTypeCategoryFilter(En_DocumentCategory value) {
-        documentType.setCategoryFilter(value);
+    public void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter) {
+        documentType.setFilter(filter);
+        documentType.refreshValue();
     }
 
     @UiHandler("saveButton")

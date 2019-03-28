@@ -347,8 +347,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         caseQuery.setStateIds( activeStatesShort );
 
 
-        caseQuery.setFrom( from );
-        caseQuery.setTo( to );
+        caseQuery.setCreatedFrom( from );
+        caseQuery.setCreatedTo( to );
 
         Report report = new Report();
         report.setReportType( En_ReportType.CASE_RESOLUTION_TIME );

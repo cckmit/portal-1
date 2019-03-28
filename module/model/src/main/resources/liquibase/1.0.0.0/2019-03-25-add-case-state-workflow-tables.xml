@@ -1,0 +1,111 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-case_state_workflow-table" author="buchmastov">
+        <createTable tableName="case_state_workflow">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="info" type="VARCHAR(64)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-case_state_workflow_link-table" author="buchmastov">
+        <createTable tableName="case_state_workflow_link">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="workflow_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state_from" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state_to" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-case_state_workflow_link-table" author="buchmastov">
+
+        <addForeignKeyConstraint constraintName="fk_workflow_id_to_case_state_workflow"
+                                 baseTableName="case_state_workflow_link" baseColumnNames="workflow_id"
+                                 referencedTableName="case_state_workflow" referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_state_from_to_case_state"
+                                 baseTableName="case_state_workflow_link" baseColumnNames="state_from"
+                                 referencedTableName="case_state" referencedColumnNames="ID"/>
+
+        <addForeignKeyConstraint constraintName="fk_state_to_to_case_state"
+                                 baseTableName="case_state_workflow_link" baseColumnNames="state_to"
+                                 referencedTableName="case_state" referencedColumnNames="ID"/>
+    </changeSet>
+
+    <changeSet id="add-values-to-case_state_workflow" author="buchmastov">
+        <insert tableName="case_state_workflow">
+            <column name="id" value="0"/>
+            <column name="info" value="NO_WORKFLOW"/>
+        </insert>
+        <insert tableName="case_state_workflow">
+            <column name="id" value="1"/>
+            <column name="info" value="NX_JIRA"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-nx-jira-workflow-links" author="buchmastov">
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="1"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="31"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="4"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="2"/>
+            <column name="state_to" value="5"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="31"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="31"/>
+            <column name="state_to" value="17"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="4"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="4"/>
+            <column name="state_to" value="31"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="17"/>
+            <column name="state_to" value="2"/>
+        </insert>
+        <insert tableName="case_state_workflow_link">
+            <column name="workflow_id" value="1"/>
+            <column name="state_from" value="17"/>
+            <column name="state_to" value="5"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
