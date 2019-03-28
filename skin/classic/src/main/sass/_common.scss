@@ -3867,3 +3867,19 @@ div.select2-container {
 .width-auto {
   width: auto !important;
 }
+
+.case-state-item {
+  position: relative;
+  float: left;
+  width: 16px;
+  height: 16px;
+  margin: 0 6px 0 0;
+
+  &:before {
+    display: block;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    line-height: 16px;
+  }
+}

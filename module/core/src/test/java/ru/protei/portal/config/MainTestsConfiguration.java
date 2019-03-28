@@ -366,6 +366,11 @@ public class MainTestsConfiguration {
         return new CaseObjectTagDAO_Impl();
     }
 
+    @Bean
+    public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
+        return new CaseStateWorkflowDAO_Impl();
+    }
+
 /**
  *
  *
@@ -561,6 +566,11 @@ public class MainTestsConfiguration {
     @Bean
     public CaseTagService getCaseTagService() {
         return new CaseTagServiceImpl();
+    }
+
+    @Bean
+    public CaseStateWorkflowService getCaseStateWorkflowService() {
+        return new CaseStateWorkflowServiceImpl();
     }
 
 

@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.selector.dict'
-             xmlns:state='urn:import:ru.protei.portal.ui.issue.client.widget.state.buttonselector'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
@@ -11,7 +10,8 @@
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
@@ -34,7 +34,7 @@
                     <label ui:field="stateLabel">
                         <ui:text from="{lang.issueState}"/>
                     </label>
-                    <state:IssueStatesButtonSelector ui:field="state" validation="true"/>
+                    <issuestate:IssueStateButtonSelector ui:field="state" validation="true"/>
                 </div>
                 <div class="form-group col-xs-6">
                     <label ui:field="importanceLabel">

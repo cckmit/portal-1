@@ -458,6 +458,11 @@ public class MainConfiguration {
         return new CaseObjectTagDAO_Impl();
     }
 
+    @Bean
+    public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
+        return new CaseStateWorkflowDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -689,6 +694,11 @@ public class MainConfiguration {
     @Bean
     public CaseTagService getCaseTagService() {
         return new CaseTagServiceImpl();
+    }
+
+    @Bean
+    public CaseStateWorkflowService getCaseStateWorkflowService() {
+        return new CaseStateWorkflowServiceImpl();
     }
 
 
