@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -29,8 +30,8 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.*;
@@ -209,14 +210,11 @@ public abstract class IssueReportCreateActivity implements Activity,
     private CaseQuery makeTimeResolutionQuery() {
         CaseQuery query = new CaseQuery();
 
-        // AAAAAAAAAAAA
-        Iterator<ProductShortView> it = caseResolutionTimeReportView.products().getValue().iterator();
-        ProductShortView product = it.hasNext()? it.next() : null;
-        if (product == null || product.getId() == null) {
-            fireEvent( new NotifyEvents.Show( lang.reportMissingProduct(), NotifyEvents.NotifyType.ERROR ) );
-            return null;
-        }
-        query.setProductIds( Arrays.asList( product.getId() ) );
+        query.setCompanyIds( caseResolutionTimeReportView.companies().getValue().stream().map(EntityOption::getId).collect(Collectors.toList()) );
+        query.setProductIds( caseResolutionTimeReportView.products().getValue().stream().map(ProductShortView::getId).collect(Collectors.toList()) );
+        query.setManagerIds( getManagersIdList(caseResolutionTimeReportView.managers().getValue()) );
+        query.setImportanceIds( getImportancesIdList(caseResolutionTimeReportView.importances().getValue()) );
+
         query.setStates( IssueFilterUtils.getStateList( caseResolutionTimeReportView.states().getValue() ) );
         DateInterval interval = caseResolutionTimeReportView.dateRange().getValue();
         if (interval == null) {

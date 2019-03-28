@@ -33,7 +33,6 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
-        dateRange.setPlaceholder(lang.selectDate());
         products.updateQuery(null, null);
     }
 
