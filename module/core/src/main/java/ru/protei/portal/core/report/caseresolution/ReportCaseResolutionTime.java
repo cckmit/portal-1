@@ -49,10 +49,13 @@ public class ReportCaseResolutionTime {
 
         long startQuery = System.currentTimeMillis();
         List<CaseComment> comments = caseCommentDAO.reportCaseResolutionTime(
-                caseQuery.getProductIds().get( 0 ),
                 caseQuery.getCreatedFrom(),
                 caseQuery.getCreatedTo(),
-                caseQuery.getStateIds()
+                caseQuery.getStateIds(),
+                caseQuery.getCompanyIds(),
+                caseQuery.getProductIds(),
+                caseQuery.getManagerIds(),
+                caseQuery.getImportanceIds()
         );
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();

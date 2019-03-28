@@ -108,6 +108,63 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         }
     }
 
+    @Override
+    public List<CaseComment> reportCaseResolutionTime( Date from, Date to, List<Integer> terminatedStates,
+                                                       List<Long> companiesIds, List<Long> productIds, List<Long> managersIds, List<Integer> importanceIds) {
+        String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
+        String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
+        String acceptableStates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+
+//        String companiesIdsStr = companiesIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+        String productIdsStr = productIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+//        String managersIdsStr = managersIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+//        String importanceIdsStr = importanceIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+
+        // Активные задачи на момент начала интервала запроса
+        String activeCasesAtIntervalStart =
+                "SELECT case_id, cc.created, CSTATE_ID" +
+                        " FROM case_comment cc" +
+                        "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
+                        " WHERE ob.product_id in (" + productIdsStr + ")" +
+                        "   and cc.created = (" +
+                        "   SELECT max(created) last" +
+                        "   FROM case_comment" +
+                        "   WHERE case_id = cc.CASE_ID" +
+                        "     and created < '" + fromTime + "'" +  // # левая граница
+                        " )" +
+                        "   and CSTATE_ID in (" + acceptableStates + ")";
+
+        // Задачи переходящие в активное состояние в интервале запроса
+        String activeCasesInInterval =
+                "SELECT case_id, cc.created, CSTATE_ID" +
+                        " FROM case_comment cc" +
+                        "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
+                        " WHERE ob.product_id in (" + productIdsStr + ")" +
+                        "   and cc.created > '" + fromTime + "'" +  // # левая граница
+                        "   and cc.created < '" + toTime + "' " +  //# правая граница
+                        "   and CSTATE_ID in (" + acceptableStates + ")";
+
+        String query =
+                "SELECT case_id, created, CSTATE_ID" +
+                        " FROM case_comment outerComment" +
+                        " WHERE outerComment.case_id in (" +
+                        "   SELECT DISTINCT case_id" +
+                        "   from (" +
+                        activeCasesAtIntervalStart +
+                        " union " +
+                        activeCasesInInterval +
+                        "        ) as beforeAndInInterval " +
+                        " )" +
+                        " and created < '" + toTime + "' " + //# правая граница
+                        "  ORDER BY created ASC;";
+
+        try {
+            return jdbcTemplate.query( query, rm );
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
     RowMapper<CaseComment> rm = new RowMapper<CaseComment>() {
         @Override
         public CaseComment mapRow( ResultSet r, int i ) throws SQLException {
