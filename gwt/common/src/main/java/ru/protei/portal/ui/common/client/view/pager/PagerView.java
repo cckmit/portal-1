@@ -32,7 +32,8 @@ public class PagerView extends Composite implements AbstractPagerView {
     @Override
     public void setCurrentPage(int value) {
         currentPage = value;
-        updateButtons();
+        toggleArrowButtonsEnabled();
+        redrawPageButtons();
         updateLabel();
     }
 
@@ -45,7 +46,8 @@ public class PagerView extends Composite implements AbstractPagerView {
     @Override
     public void setTotalPages(int value) {
         totalPages = value;
-        updateButtons();
+        toggleArrowButtonsEnabled();
+        redrawPageButtons();
         updateLabel();
     }
 
@@ -78,11 +80,6 @@ public class PagerView extends Composite implements AbstractPagerView {
 
     private void updateLabel() {
         label.setInnerText(lang.pagerLabel(currentPage + 1, totalPages, totalCount));
-    }
-
-    private void updateButtons() {
-        toggleArrowButtonsEnabled();
-        redrawPageButtons();
     }
 
     private void toggleArrowButtonsEnabled() {
