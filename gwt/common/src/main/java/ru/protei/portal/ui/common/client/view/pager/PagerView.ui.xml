@@ -1,24 +1,28 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel styleName="table-pager">
-        <div class="pull-left">
-            <g:Anchor ui:field="fastBackward" href="#">
-                <i class="fa fa-fast-backward"></i>
-            </g:Anchor>
+
+        <div class="pull-left m-l-5 m-t-5 m-b-5">
+            <g:Button ui:field="fastBackward" styleName="btn btn-white">
+                <i class="fa fa-fast-backward"/>
+            </g:Button>
+            <g:Button ui:field="backward" styleName="btn btn-white m-r-5">
+                <i class="fa fa-backward"/>
+            </g:Button>
         </div>
-        <!--<div class="pull-left">-->
-        <!--<i class="fa fa-backward"></i>-->
-        <!--</div>-->
-        <div ui:field="label" class="pull-left">
-            Страница 1 из 193 (Записи 1-29)
+
+        <g:HTMLPanel ui:field="pagesContainer" styleName="pull-left m-t-5 m-b-5"/>
+
+        <div class="pull-left m-t-5 m-b-5">
+            <g:Button ui:field="forward" styleName="btn btn-white">
+                <i class="fa fa-forward"/>
+            </g:Button>
+            <g:Button ui:field="fastForward" styleName="btn btn-white">
+                <i class="fa fa-fast-forward"/>
+            </g:Button>
         </div>
-        <!--<div class="pull-left">-->
-        <!--<i class="fa fa-forward"></i>-->
-        <!--</div>-->
-        <div class="pull-left">
-            <g:Anchor ui:field="fastForward" href="#">
-                <i class="fa fa-fast-forward"></i>
-            </g:Anchor>
-        </div>
+
+        <div ui:field="label" class="pull-left pager-label m-l-10 m-r-5 m-t-5 m-b-5">Страница 1 из 193, всего записей 3860</div>
+
     </g:HTMLPanel>
 </ui:UiBinder>
