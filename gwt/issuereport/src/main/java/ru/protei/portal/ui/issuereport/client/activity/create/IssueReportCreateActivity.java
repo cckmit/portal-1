@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -210,10 +211,35 @@ public abstract class IssueReportCreateActivity implements Activity,
     private CaseQuery makeTimeResolutionQuery() {
         CaseQuery query = new CaseQuery();
 
-        query.setCompanyIds( caseResolutionTimeReportView.companies().getValue().stream().map(EntityOption::getId).collect(Collectors.toList()) );
-        query.setProductIds( caseResolutionTimeReportView.products().getValue().stream().map(ProductShortView::getId).collect(Collectors.toList()) );
-        query.setManagerIds( getManagersIdList(caseResolutionTimeReportView.managers().getValue()) );
-        query.setImportanceIds( getImportancesIdList(caseResolutionTimeReportView.importances().getValue()) );
+
+        // getCompaniesIdList, getProductsIdList - выдают NPE при работе!!!
+        Set<EntityOption> c = caseResolutionTimeReportView.companies().getValue();
+
+        List<Long> ids = null;
+        if ( c == null || c.isEmpty() ) {
+            ;
+        } else {
+            ids = c.stream()
+                    .map( EntityOption::getId )
+                    .collect( Collectors.toList() );
+        }
+
+        query.setCompanyIds( ids );
+
+        Set<ProductShortView> p = caseResolutionTimeReportView.products().getValue();
+
+        ids = null;
+        if ( p == null || p.isEmpty() ) {
+            ;
+        } else {
+            ids = p.stream()
+                    .map( ProductShortView::getId )
+                    .collect( Collectors.toList() );
+        }
+
+        query.setProductIds( ids );
+        query.setManagerIds( getManagersIdList( caseResolutionTimeReportView.managers().getValue()) );
+        query.setImportanceIds( getImportancesIdList( caseResolutionTimeReportView.importances().getValue()) );
 
         query.setStates( IssueFilterUtils.getStateList( caseResolutionTimeReportView.states().getValue() ) );
         DateInterval interval = caseResolutionTimeReportView.dateRange().getValue();

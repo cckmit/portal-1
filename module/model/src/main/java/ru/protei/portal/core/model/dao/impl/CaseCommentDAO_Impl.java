@@ -115,34 +115,42 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
         String acceptableStates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
 
-//        String companiesIdsStr = companiesIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
-        String productIdsStr = productIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
-//        String managersIdsStr = managersIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
-//        String importanceIdsStr = importanceIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+        String products = makeAndPartFromListIds(productIds, "ob.product_id");
+        String companies = makeAndPartFromListIds(companiesIds, "ob.initiator_company");
+        String managers = makeAndPartFromListIds(managersIds, "ob.manager");
+        String importance = makeAndPartFromListIds(importanceIds, "ob.importance");
 
         // Активные задачи на момент начала интервала запроса
         String activeCasesAtIntervalStart =
                 "SELECT case_id, cc.created, CSTATE_ID" +
                         " FROM case_comment cc" +
                         "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                        " WHERE ob.product_id in (" + productIdsStr + ")" +
-                        "   and cc.created = (" +
+                        " WHERE cc.created = (" +
                         "   SELECT max(created) last" +
                         "   FROM case_comment" +
                         "   WHERE case_id = cc.CASE_ID" +
                         "     and created < '" + fromTime + "'" +  // # левая граница
                         " )" +
-                        "   and CSTATE_ID in (" + acceptableStates + ")";
+                        "   and CSTATE_ID in (" + acceptableStates + ")"
+                        + products
+                        + companies
+                        + managers
+                        + importance
+                ;
 
         // Задачи переходящие в активное состояние в интервале запроса
         String activeCasesInInterval =
                 "SELECT case_id, cc.created, CSTATE_ID" +
                         " FROM case_comment cc" +
                         "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
-                        " WHERE ob.product_id in (" + productIdsStr + ")" +
-                        "   and cc.created > '" + fromTime + "'" +  // # левая граница
+                        " WHERE cc.created > '" + fromTime + "'" +  // # левая граница
                         "   and cc.created < '" + toTime + "' " +  //# правая граница
-                        "   and CSTATE_ID in (" + acceptableStates + ")";
+                        "   and CSTATE_ID in (" + acceptableStates + ")"
+                        + products
+                        + companies
+                        + managers
+                        + importance
+                ;
 
         String query =
                 "SELECT case_id, created, CSTATE_ID" +
@@ -178,5 +186,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         }
     };
 
-
+    private String makeAndPartFromListIds(final List<?> list, final String field){
+        String q = "";
+        if ( list != null ) {
+            String str = list.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+            q = " and " + field + " in (" + str + ")";
+        }
+        return q;
+    }
 }
