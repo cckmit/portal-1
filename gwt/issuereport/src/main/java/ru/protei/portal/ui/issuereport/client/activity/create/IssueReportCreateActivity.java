@@ -211,45 +211,29 @@ public abstract class IssueReportCreateActivity implements Activity,
     private CaseQuery makeTimeResolutionQuery() {
         CaseQuery query = new CaseQuery();
 
-
-        // getCompaniesIdList, getProductsIdList - выдают NPE при работе!!!
-        Set<EntityOption> c = caseResolutionTimeReportView.companies().getValue();
-
-        List<Long> ids = null;
-        if ( c == null || c.isEmpty() ) {
-            ;
-        } else {
-            ids = c.stream()
-                    .map( EntityOption::getId )
-                    .collect( Collectors.toList() );
-        }
-
-        query.setCompanyIds( ids );
-
-        Set<ProductShortView> p = caseResolutionTimeReportView.products().getValue();
-
-        ids = null;
-        if ( p == null || p.isEmpty() ) {
-            ;
-        } else {
-            ids = p.stream()
-                    .map( ProductShortView::getId )
-                    .collect( Collectors.toList() );
-        }
-
-        query.setProductIds( ids );
+        query.setCompanyIds( getCompaniesIdList( caseResolutionTimeReportView.companies().getValue() ) );
+        query.setProductIds( getProductsIdList( caseResolutionTimeReportView.products().getValue() ) );
         query.setManagerIds( getManagersIdList( caseResolutionTimeReportView.managers().getValue()) );
         query.setImportanceIds( getImportancesIdList( caseResolutionTimeReportView.importances().getValue()) );
 
         query.setStates( IssueFilterUtils.getStateList( caseResolutionTimeReportView.states().getValue() ) );
+
         DateInterval interval = caseResolutionTimeReportView.dateRange().getValue();
-        if (interval == null) {
-            fireEvent( new NotifyEvents.Show( lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR ) );
-            return null;
-        }
         query.setCreatedFrom( interval.from );
         query.setCreatedTo( interval.to );
-        return query;
+
+        return validateTimeResolutionQuery(query) ? query : null;
+    }
+    private boolean validateTimeResolutionQuery(CaseQuery query){
+        if (query.getCreatedFrom() == null || query.getCreatedTo() == null)  {
+            fireEvent( new NotifyEvents.Show( lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR ) );
+            return false;
+        }
+        if (query.getStateIds() == null)  {
+            fireEvent( new NotifyEvents.Show( lang.reportMissingState(), NotifyEvents.NotifyType.ERROR ) );
+            return false;
+        }
+        return true;
     }
 
     private void applyFilterViewPrivileges() {
