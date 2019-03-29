@@ -161,7 +161,8 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
 
         if (En_ReportType.CASE_RESOLUTION_TIME.equals( reportType )) {
-            return makeTimeResolutionQuery();
+            CaseQuery query = makeTimeResolutionQuery();
+            return validateTimeResolutionQuery(query) ? query : null;
         }
 
         return makeTimeElapsedQuery();
@@ -222,7 +223,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setCreatedFrom( interval.from );
         query.setCreatedTo( interval.to );
 
-        return validateTimeResolutionQuery(query) ? query : null;
+        return query;
     }
     private boolean validateTimeResolutionQuery(CaseQuery query){
         if (query.getCreatedFrom() == null || query.getCreatedTo() == null)  {

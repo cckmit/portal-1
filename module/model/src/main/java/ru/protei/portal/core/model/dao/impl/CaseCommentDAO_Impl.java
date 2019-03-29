@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+
 /**
  * Created by michael on 20.05.16.
  */
@@ -137,8 +139,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     private String makeAndPartFromListIds(final List<?> list, final String field){
         String q = "";
         if ( list != null ) {
-            String str = list.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
-            q = " and " + field + " in (" + str + ")";
+            q = " and " + field + " in (" + makeInArg(list) + ")";
         }
         return q;
     }
