@@ -11,7 +11,6 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -158,7 +157,8 @@ public abstract class IssueReportCreateActivity implements Activity,
         }
 
         if (En_ReportType.CASE_RESOLUTION_TIME.equals( reportType )) {
-            return makeTimeResolutionQuery();
+            CaseQuery query = makeTimeResolutionQuery();
+            return validateTimeResolutionQuery(query) ? query : null;
         }
 
         return makeTimeElapsedQuery();
@@ -207,21 +207,30 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private CaseQuery makeTimeResolutionQuery() {
         CaseQuery query = new CaseQuery();
-        ProductShortView product = caseResolutionTimeReportView.products().getValue();
-        if (product == null || product.getId() == null) {
-            fireEvent( new NotifyEvents.Show( lang.reportMissingProduct(), NotifyEvents.NotifyType.ERROR ) );
-            return null;
-        }
-        query.setProductIds( Arrays.asList( product.getId() ) );
+
+        query.setCompanyIds( getCompaniesIdList( caseResolutionTimeReportView.companies().getValue() ) );
+        query.setProductIds( getProductsIdList( caseResolutionTimeReportView.products().getValue() ) );
+        query.setManagerIds( getManagersIdList( caseResolutionTimeReportView.managers().getValue()) );
+        query.setImportanceIds( getImportancesIdList( caseResolutionTimeReportView.importances().getValue()) );
+
         query.setStates( IssueFilterUtils.getStateList( caseResolutionTimeReportView.states().getValue() ) );
+
         DateInterval interval = caseResolutionTimeReportView.dateRange().getValue();
-        if (interval == null) {
-            fireEvent( new NotifyEvents.Show( lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR ) );
-            return null;
-        }
         query.setCreatedFrom( interval.from );
         query.setCreatedTo( interval.to );
+
         return query;
+    }
+    private boolean validateTimeResolutionQuery(CaseQuery query){
+        if (query.getCreatedFrom() == null || query.getCreatedTo() == null)  {
+            fireEvent( new NotifyEvents.Show( lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR ) );
+            return false;
+        }
+        if (query.getStateIds() == null)  {
+            fireEvent( new NotifyEvents.Show( lang.reportMissingState(), NotifyEvents.NotifyType.ERROR ) );
+            return false;
+        }
+        return true;
     }
 
     private void applyFilterViewPrivileges() {

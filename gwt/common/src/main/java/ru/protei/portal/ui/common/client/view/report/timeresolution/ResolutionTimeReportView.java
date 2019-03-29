@@ -12,12 +12,18 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 
 import java.util.Set;
 
@@ -40,12 +46,23 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
         return dateRange;
     }
 
-
     @Override
-    public HasValue<ProductShortView> products() {
-        return products;
+    public HasValue<Set<EntityOption>> companies() {
+        return companies;
     }
 
+    @Override
+    public HasValue<Set<ProductShortView>> products() { return products; }
+
+    @Override
+    public HasValue<Set<PersonShortView>> managers() {
+        return managers;
+    }
+
+    @Override
+    public HasValue<Set<En_ImportanceLevel>> importances() {
+        return importance;
+    }
 
     @Override
     public HasValue<Set<En_CaseState>> states() {
@@ -54,9 +71,12 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
 
     @Override
     public void resetFilter() {
-        products.setValue( null );
-        state.setValue( null );
         dateRange.setValue( null );
+        companies.setValue( null );
+        products.setValue( null );
+        managers.setValue( null );
+        importance.setValue( null );
+        state.setValue( null );
     }
 
     @UiHandler("dateRange")
@@ -64,8 +84,21 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
         onFilterChanged();
     }
 
+    @UiHandler("companies")
+    public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) { onFilterChanged(); }
+
     @UiHandler("products")
-    public void onProductsSelected( ValueChangeEvent<ProductShortView> event ) {
+    public void onProductsSelected(ValueChangeEvent<Set<ProductShortView>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("managers")
+    public void onManagersSelected(ValueChangeEvent<Set<PersonShortView>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("importance")
+    public void onImportanceSelected(ValueChangeEvent<Set<En_ImportanceLevel>> event) {
         onFilterChanged();
     }
 
@@ -76,12 +109,16 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
 
     private void ensureDebugIds() {
         dateRange.setEnsureDebugId( DebugIds.FILTER.DATE_RANGE_SELECTOR );
+        companies.setAddEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_ADD_BUTTON);
+        companies.setClearEnsureDebugId(DebugIds.FILTER.COMPANY_SELECTOR_CLEAR_BUTTON);
+        products.setAddEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_ADD_BUTTON);
+        products.setClearEnsureDebugId(DebugIds.FILTER.PRODUCT_SELECTOR_CLEAR_BUTTON);
+        managers.setAddEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_ADD_BUTTON);
+        managers.setClearEnsureDebugId(DebugIds.FILTER.MANAGER_SELECTOR_CLEAR_BUTTON);
     }
 
     private void onFilterChanged() {
-        if (activity != null) {
-            activity.onFilterChanged();
-        }
+        activity.onFilterChanged();
     }
 
     @Inject
@@ -90,13 +127,26 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
 
     @UiField
     HTMLPanel body;
+
     @Inject
     @UiField(provided = true)
     RangePicker dateRange;
 
     @Inject
     @UiField(provided = true)
-    DevUnitButtonSelector products;
+    CompanyMultiSelector companies;
+
+    @Inject
+    @UiField(provided = true)
+    DevUnitMultiSelector products;
+
+    @Inject
+    @UiField(provided = true)
+    EmployeeMultiSelector managers;
+
+    @Inject
+    @UiField(provided = true)
+    ImportanceBtnGroupMulti importance;
 
     @Inject
     @UiField(provided = true)

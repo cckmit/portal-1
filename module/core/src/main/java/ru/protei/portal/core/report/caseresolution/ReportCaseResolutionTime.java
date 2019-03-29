@@ -30,6 +30,7 @@ public class ReportCaseResolutionTime {
             columnNames.add( localizedLang.get( "averageColumn" ) );
             columnNames.add( localizedLang.get( "maximumColumn" ) );
             columnNames.add( localizedLang.get( "minimumColumn" ) );
+            columnNames.add( localizedLang.get( "numberUncompletedCases" ) );
         } else {
             columnNames.addAll( DEFAULT_COLUMN_NAMES );
         }
@@ -48,10 +49,13 @@ public class ReportCaseResolutionTime {
 
         long startQuery = System.currentTimeMillis();
         List<CaseComment> comments = caseCommentDAO.reportCaseResolutionTime(
-                caseQuery.getProductIds().get( 0 ),
                 caseQuery.getCreatedFrom(),
                 caseQuery.getCreatedTo(),
-                caseQuery.getStateIds()
+                caseQuery.getStateIds(),
+                caseQuery.getCompanyIds(),
+                caseQuery.getProductIds(),
+                caseQuery.getManagerIds(),
+                caseQuery.getImportanceIds()
         );
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();
@@ -87,7 +91,8 @@ public class ReportCaseResolutionTime {
             dateCell.setCellStyle( dateStyle );
             row.createCell( cellIndex++ ).setCellValue( calcAverage( interval ) );
             row.createCell( cellIndex++ ).setCellValue( calcHours( interval.maxTime ) );
-            row.createCell( cellIndex ).setCellValue( calcHours( interval.minTime ) );
+            row.createCell( cellIndex++ ).setCellValue( calcHours( interval.minTime ) );
+            row.createCell( cellIndex ).setCellValue( interval.casesCount );
         }
         return workbook;
     }
@@ -148,7 +153,7 @@ public class ReportCaseResolutionTime {
     public static final long DAY = 24 * HOUR;
 
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum" );
+    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count" );
 
     private List<Case> cases = new ArrayList<>();
     private List<Interval> intervals = new ArrayList<>();
