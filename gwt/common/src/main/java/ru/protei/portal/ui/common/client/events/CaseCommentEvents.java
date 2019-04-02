@@ -85,4 +85,16 @@ public class CaseCommentEvents {
 
         private Consumer<Boolean> onValidate;
     }
+
+    /**
+     * Удалить черновик комментария из хранилища
+     */
+    public static class RemoveDraftFromStorage {
+
+        public RemoveDraftFromStorage(Long caseId) {
+            this.caseId = caseId;
+        }
+
+        public Long caseId;
+    }
 }
