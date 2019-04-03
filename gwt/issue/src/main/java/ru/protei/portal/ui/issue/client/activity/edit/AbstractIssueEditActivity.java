@@ -13,5 +13,4 @@ public interface AbstractIssueEditActivity {
     void onCompanyChanged();
     void onCreateContactClicked();
     void onLocalClicked();
-    void onDescriptionChanged();
 }

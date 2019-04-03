@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -43,6 +44,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 /**
  * Активность списка комментариев
@@ -89,7 +91,7 @@ public abstract class CaseCommentListActivity
         tempAttachments.clear();
 
         view.sendEnabled().setEnabled(true);
-        view.message().setValue(null, true);
+        view.message().setValue(makeCommentText(null), true);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
@@ -127,6 +129,13 @@ public abstract class CaseCommentListActivity
             send(event.caseId, event.handler);
         } else {
             event.handler.onSuccess();
+        }
+    }
+
+    @Event
+    public void onRemoveDraft(CaseCommentEvents.RemoveDraft event){
+        if (event.caseId != null) {
+            storage.remove(makeStorageKey(event.caseId));
         }
     }
 
@@ -258,6 +267,7 @@ public abstract class CaseCommentListActivity
 
     @Override
     public void onCommentChanged(String text) {
+        storage.set(makeStorageKey(caseId), text);
         scheduleChangedPreview();
     }
 
@@ -466,6 +476,8 @@ public abstract class CaseCommentListActivity
                     fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(result -> {
+                    storage.remove(makeStorageKey(result.getCaseId()));
+
                     requesting = false;
                     view.sendEnabled().setEnabled(true);
 
@@ -539,6 +551,15 @@ public abstract class CaseCommentListActivity
         }
     }
 
+    private String makeCommentText(String commentText){
+        String text = storage.get(makeStorageKey(caseId));
+        return isEmpty(text) ? commentText : text;
+    }
+
+    private String makeStorageKey(Long id){
+        return STORAGE_CASE_COMMENT_PREFIX + id;
+    }
+
     private final Timer changedPreviewTimer = new Timer() {
         @Override
         public void run() {
@@ -577,4 +598,8 @@ public abstract class CaseCommentListActivity
     private Collection<Attachment> tempAttachments = new ArrayList<>();
 
     private final static int PREVIEW_CHANGE_DELAY_MS = 200;
+
+    @Inject
+    private LocalStorageService storage;
+    private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
 }
