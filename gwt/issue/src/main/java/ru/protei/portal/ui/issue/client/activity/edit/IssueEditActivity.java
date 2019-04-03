@@ -134,6 +134,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
                     })
                     .withSuccess(caseObject -> {
+                        fireEvent(new CaseCommentEvents.RemoveDraft(caseObject.getId()));
+
                         if (isNew(issue)) {
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new IssueEvents.ChangeModel());
@@ -158,7 +160,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
-        fireEvent(new CaseCommentEvents.RemoveDraftFromStorage(issue.getId()));
         fireEvent(new Back());
     }
 

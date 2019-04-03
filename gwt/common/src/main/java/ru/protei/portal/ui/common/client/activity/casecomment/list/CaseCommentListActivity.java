@@ -133,7 +133,7 @@ public abstract class CaseCommentListActivity
     }
 
     @Event
-    public void onRemoveStorageKey(CaseCommentEvents.RemoveDraftFromStorage event){
+    public void onRemoveDraft(CaseCommentEvents.RemoveDraft event){
         if (event.caseId != null) {
             storage.remove(makeStorageKey(event.caseId));
         }

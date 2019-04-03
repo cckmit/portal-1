@@ -89,9 +89,9 @@ public class CaseCommentEvents {
     /**
      * Удалить черновик комментария из хранилища
      */
-    public static class RemoveDraftFromStorage {
+    public static class RemoveDraft {
 
-        public RemoveDraftFromStorage(Long caseId) {
+        public RemoveDraft(Long caseId) {
             this.caseId = caseId;
         }
 
