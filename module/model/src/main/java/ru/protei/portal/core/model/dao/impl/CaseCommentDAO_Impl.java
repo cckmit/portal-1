@@ -139,7 +139,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     private String makeAndPartFromListIds(final List<?> list, final String field){
         String q = "";
         if ( list != null ) {
-            q = " and " + field + " in (" + makeInArg(list) + ")";
+            q = " and " + field + " in " + makeInArg(list);
         }
         return q;
     }
