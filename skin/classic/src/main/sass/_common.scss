@@ -1836,7 +1836,8 @@ td.info {
   background-color: $info_color;
 }
 
-.option-cust_pending .option-name, .label-cust_pending {
+.option-cust_pending .option-name, .label-cust_pending,
+.label-paused {
   background-color: #133aadcf;
 }
 
