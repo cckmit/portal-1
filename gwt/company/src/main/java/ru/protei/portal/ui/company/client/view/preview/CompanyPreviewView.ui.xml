@@ -66,6 +66,12 @@
 
                 <g:HTMLPanel ui:field="contactsContainer" styleName="col-xs-12"/>
             </fieldset>
+
+            <fieldset class="header">
+                <legend><ui:text from="{lang.siteFolder}"/></legend>
+
+                <g:HTMLPanel ui:field="siteFolderContainer" styleName="col-xs-12"/>
+            </fieldset>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>
