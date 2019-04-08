@@ -20,6 +20,8 @@ import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPl
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.PlatformPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableView;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.PlatformTableActivity;
+import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.concise.AbstractPlatformConciseTableView;
+import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.concise.PlatformConciseTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.AbstractServerEditView;
 import ru.protei.portal.ui.sitefolder.client.activity.server.edit.ServerEditActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServerFilterView;
@@ -43,6 +45,7 @@ import ru.protei.portal.ui.sitefolder.client.view.platform.edit.PlatformEditView
 import ru.protei.portal.ui.sitefolder.client.view.platform.filter.PlatformFilterView;
 import ru.protei.portal.ui.sitefolder.client.view.platform.preview.PlatformPreviewView;
 import ru.protei.portal.ui.sitefolder.client.view.platform.table.PlatformTableView;
+import ru.protei.portal.ui.sitefolder.client.view.platform.table.concise.PlatformConciseTableView;
 import ru.protei.portal.ui.sitefolder.client.view.server.edit.ServerEditView;
 import ru.protei.portal.ui.sitefolder.client.view.server.filter.ServerFilterView;
 import ru.protei.portal.ui.sitefolder.client.view.server.list.ServerListView;
@@ -64,10 +67,12 @@ public class SiteFolderClientModule extends AbstractGinModule {
         bind(PlatformTableActivity.class).asEagerSingleton();
         bind(PlatformPreviewActivity.class).asEagerSingleton();
         bind(PlatformEditActivity.class).asEagerSingleton();
+        bind(PlatformConciseTableActivity.class).asEagerSingleton();
         bind(AbstractPlatformTableView.class).to(PlatformTableView.class).in(Singleton.class);
         bind(AbstractPlatformFilterView.class).to(PlatformFilterView.class).in(Singleton.class);
         bind(AbstractPlatformPreviewView.class).to(PlatformPreviewView.class).in(Singleton.class);
         bind(AbstractPlatformEditView.class).to(PlatformEditView.class).in(Singleton.class);
+        bind(AbstractPlatformConciseTableView.class).to(PlatformConciseTableView.class).in(Singleton.class);
 
         // Server
         bind(ServerTableActivity.class).asEagerSingleton();

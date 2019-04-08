@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -64,6 +65,7 @@ public abstract class CompanyPreviewActivity
         requestParentAndChildCompanies(value.getId());
 
         fireEvent( new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()).readOnly() );
+        fireEvent( new SiteFolderPlatformEvents.ShowConciseTable(view.getSiteFolderContainer(), value.getId()));
     }
 
     private void requestParentAndChildCompanies( Long parentCompanyId ) {

@@ -20,7 +20,11 @@ public class PlatformQuery extends BaseQuery {
 
     public PlatformQuery(String name, En_SortField sortField, En_SortDir sortDir) {
         super(name, sortField, sortDir);
-        this.companyIds = new ArrayList<>();
+    }
+
+    public PlatformQuery(List<Long> companyIds) {
+        this();
+        this.companyIds = companyIds;
     }
 
     public static PlatformQuery forId(Long platformId) {
