@@ -19,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
+
 /**
  * Created by michael on 29.06.16.
  */
@@ -129,14 +131,17 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+        UserLogin login = userLoginDAO.findByLogin(ulogin);
 
-        String loginSuffix = config.data().getLoginSuffix();
-        if (!ulogin.contains("@") && !loginSuffix.isEmpty()) {
-            logger.debug("login [{}] missed suffix [{}], forced to use suffix", ulogin, loginSuffix);
-            ulogin += loginSuffix;
+        if (login == null && !ulogin.contains("@")) {
+            String loginSuffix = config.data().getLoginSuffix();
+            if (isNotEmpty(loginSuffix)) {
+                logger.debug("login [{}] not found, forced to use suffix [{}]", ulogin, loginSuffix);
+                ulogin += loginSuffix;
+                login = userLoginDAO.findByLogin(ulogin);
+            }
         }
 
-        UserLogin login = userLoginDAO.findByLogin(ulogin);
         if (login == null) {
             logger.debug("login [" + ulogin + "] not found, auth-failed");
             return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
