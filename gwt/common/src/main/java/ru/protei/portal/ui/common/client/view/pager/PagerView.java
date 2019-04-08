@@ -58,7 +58,7 @@ public class PagerView extends Composite implements AbstractPagerView {
 
     @UiHandler("fastForward")
     public void onFastForwardClicked(ClickEvent event) {
-        onPageSelected(totalPages);
+        onPageSelected(totalPages-1);
     }
 
     @UiHandler("backward")
@@ -72,7 +72,7 @@ public class PagerView extends Composite implements AbstractPagerView {
     }
 
     private void onPageSelected(int page) {
-        if (page < 0 || page > totalPages || activity == null) {
+        if (page < 0 || (totalPages-1) < page || activity == null) {
             return;
         }
         activity.onPageSelected(page);
