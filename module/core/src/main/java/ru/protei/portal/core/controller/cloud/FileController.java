@@ -10,6 +10,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Objects;
 
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
@@ -69,7 +74,7 @@ public class FileController {
     @PostConstruct
     public void onInit() {
         upload.setFileItemFactory(new DiskFileItemFactory());
-        upload.setHeaderEncoding("UTF-8");
+        upload.setHeaderEncoding(StandardCharsets.UTF_8.name());
     }
 
     @RequestMapping(
@@ -277,6 +282,8 @@ public class FileController {
 
         String fileName = fileItem.getName();
 
+        fileName = convertStringCharset(fileName, StandardCharsets.UTF_8, StandardCharsets.UTF_8);
+
         if (StringUtils.isBlank(fileName)) {
             fileName = generateUniqueName();
         }
@@ -301,12 +308,39 @@ public class FileController {
         }
         final String encodedPart = fileName.substring(underscorePos + 1, dotLastPos);
         final String fileExt = fileName.substring(dotLastPos);
-        final String val = new String(decoder.decode(encodedPart));
+        final String val = new String(decoder.decode(encodedPart.getBytes(StandardCharsets.UTF_8)));
         return val + fileExt;
     }
 
 
     private String getCaseNumberOrNull(Long caseNumber) {
         return caseNumber == null ? "null" : caseNumber.toString();
+    }
+
+    private String convertStringCharset(String input, Charset inputCharset, Charset outputCharset) {
+        byte[] bytes;
+        bytes = input.getBytes(inputCharset);
+        Charset detectedInputCharset = tryDetectCharset(bytes);
+        if (detectedInputCharset == null || Objects.equals(detectedInputCharset, inputCharset)) {
+            return input;
+        }
+        bytes = input.getBytes(detectedInputCharset);
+        return new String(bytes, 0, bytes.length, outputCharset);
+    }
+
+    private Charset tryDetectCharset(byte[] bytes) {
+        UniversalDetector detector = new UniversalDetector(null);
+        detector.handleData(bytes, 0, bytes.length);
+        detector.dataEnd();
+        String detectedCharset = detector.getDetectedCharset();
+        detector.reset();
+        if (detectedCharset == null) {
+            return null;
+        }
+        try {
+            return Charset.forName(detectedCharset);
+        } catch (UnsupportedCharsetException e) {
+            return null;
+        }
     }
 }
