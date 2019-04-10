@@ -324,11 +324,10 @@ public class FileController {
         byte[] bytes;
         bytes = input.getBytes(inputCharset);
         Charset detectedInputCharset = tryDetectCharset(bytes);
-        if (detectedInputCharset == null || Objects.equals(detectedInputCharset, inputCharset)) {
-            return input;
+        if (detectedInputCharset != null && !Objects.equals(detectedInputCharset, inputCharset)) {
+            bytes = input.getBytes(detectedInputCharset);
         }
-        bytes = input.getBytes(detectedInputCharset);
-        return new String(bytes, 0, bytes.length, outputCharset);
+        return new String(bytes, outputCharset);
     }
 
     private Charset tryDetectCharset(byte[] bytes) {
