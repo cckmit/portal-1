@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
@@ -42,6 +43,10 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name="comment_text")
     private String text;
+
+    @JdbcColumn(name="comment_text_markup")
+    @JdbcEnumerated(EnumType.ID)
+    private En_TextMarkup textMarkup;
 
     @JdbcColumn(name="old_id")
     private Long oldId;
@@ -240,6 +245,14 @@ public class CaseComment extends AuditableObject {
         this.timeElapsedType = timeElapsedType;
     }
 
+    public En_TextMarkup getTextMarkup() {
+        return textMarkup;
+    }
+
+    public void setTextMarkup(En_TextMarkup textMarkup) {
+        this.textMarkup = textMarkup;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -258,6 +271,7 @@ public class CaseComment extends AuditableObject {
                 ", replyTo=" + replyTo +
                 ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
+                ", textMarkup='" + textMarkup + '\'' +
                 ", oldId=" + oldId +
                 ", timeElapsed=" + timeElapsed +
                 ", remoteId='" + remoteId + '\'' +
