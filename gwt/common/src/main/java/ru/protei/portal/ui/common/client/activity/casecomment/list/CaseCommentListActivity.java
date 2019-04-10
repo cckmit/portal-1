@@ -90,7 +90,7 @@ public abstract class CaseCommentListActivity
 
         view.sendEnabled().setEnabled(true);
         view.message().setValue(makeCommentText(null), true);
-        view.messageMarkup().setValue(En_TextMarkup.MARKDOWN /* FIXME bukh */);
+        view.messageMarkup().setValue(event.textMarkup);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
@@ -329,13 +329,6 @@ public abstract class CaseCommentListActivity
         }
 
         textRenderController.render(values, new FluentCallback<List<String>>()
-                .withError(throwable -> {
-                    for (int i = 0; i < values.size(); i++) {
-                        views.get(i).setMessage(values.get(i).getText());
-                    }
-                    views.clear();
-                    values.clear();
-                })
                 .withSuccess(textList -> {
                     for (int i = 0; i < textList.size(); i++) {
                         views.get(i).setMessage(textList.get(i));

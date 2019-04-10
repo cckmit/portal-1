@@ -46,6 +46,7 @@
                             <div class="hints">
                                 <span class="icon fa fa-info-circle"/>
                                 <span class="hint"><ui:text from='{lang.sendOnCtrlEnter}'/></span>
+                                <span class="hint hide" ui:field="textMarkupLabel"/>
                             </div>
 
                             <div ui:field="commentPreviewContainer" class="message-preview hide">

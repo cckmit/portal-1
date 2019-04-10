@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 
 import java.util.function.Consumer;
 
@@ -33,6 +34,10 @@ public class CaseCommentEvents {
                 event.isElapsedTimeEnabled = isElapsedTimeEnabled;
                 return this;
             }
+            public Builder withTextMarkup(En_TextMarkup textMarkup) {
+                event.textMarkup = textMarkup;
+                return this;
+            }
             public Show build() {
                 return event;
             }
@@ -49,6 +54,7 @@ public class CaseCommentEvents {
         public Long caseId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
+        public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
 
     /**

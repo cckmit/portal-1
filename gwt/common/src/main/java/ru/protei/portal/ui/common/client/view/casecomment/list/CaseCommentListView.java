@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.view.casecomment.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -65,6 +66,14 @@ public class CaseCommentListView
             @Override
             public void setValue(En_TextMarkup value) {
                 textMarkup = value;
+                if (value == null) {
+                    textMarkupLabel.addClassName("hide");
+                } else {
+                    textMarkupLabel.setInnerText(value == En_TextMarkup.MARKDOWN ?
+                            lang.textMarkdownSupport() :
+                            lang.textJiraWikiMarkupSupport());
+                    textMarkupLabel.removeClassName("hide");
+                }
             }
             @Override
             public En_TextMarkup getValue() {
@@ -245,6 +254,8 @@ public class CaseCommentListView
     DivElement commentPreviewContainer;
     @UiField
     DivElement commentPreview;
+    @UiField
+    SpanElement textMarkupLabel;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
