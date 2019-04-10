@@ -25,6 +25,13 @@ public class CollectionUtils {
     public static <T> T getFirst( Iterable<T> iterable ) {
         return isEmpty( iterable ) ? null : iterable.iterator().next();
     }
+    public static <T> T last (List<T> list) {
+        return lastOrDefault(list, null);
+    }
+
+    public static <T> T lastOrDefault (List<T> list, T def) {
+        return list == null || list.isEmpty() ? def : list.get(list.size()-1);
+    }
 
     public static <T> Stream<T> stream(Collection<T> collection) {
         return null == collection ? Stream.empty() : collection.stream();
@@ -72,7 +79,7 @@ public class CollectionUtils {
         return col.stream().filter(predicate).findAny().orElse(null);
     }
 
-    public static <T> int size( Collection<T> col) {
+    public static <T> int size(Collection<T> col) {
         return col == null ? 0 : col.size();
     }
 

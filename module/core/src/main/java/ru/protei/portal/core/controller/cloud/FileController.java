@@ -189,12 +189,22 @@ public class FileController {
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
+    public Long saveAttachment(Attachment attachment, InputStreamSource content, long caseId) throws Exception {
+        return saveAttachment(attachment, content, attachment.getDataSize(), attachment.getMimeType(), caseId);
+    }
+
     public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
         if(caseId == null)
             throw new RuntimeException("Case-ID is required");
 
-        String filePath = saveFileStream(content.getInputStream(), attachment.getFileName(), fileSize, contentType);
-        attachment.setExtLink(filePath);
+        /**
+         * судя по всему, у нас раньше не закрывался inputStream
+         * добавляю в блок try, для гарантированного закрытия
+         */
+        try (InputStream contentStream = content.getInputStream()) {
+            String filePath = saveFileStream(contentStream, attachment.getFileName(), fileSize, contentType);
+            attachment.setExtLink(filePath);
+        }
 
         if(attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());

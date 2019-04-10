@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.service.CaseService;
 
@@ -147,6 +148,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         lastUpdated = currentTimeMillis();
     }
 
+    public void includeCaseComments (List<CaseComment> commentList) {
+        comment = CollectionUtils.lastOrDefault(commentList, comment);
+        lastUpdated = currentTimeMillis();
+    }
+
+    public void includeCaseAttachments (List<Attachment> attachments) {
+        this.addedAttachments.addAll(attachments);
+        this.lastUpdated = currentTimeMillis();
+    }
+
     public CaseComment getOldComment() {
         return oldComment;
     }
@@ -209,5 +220,9 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public Person getInitiator() {
         return initiator;
+    }
+
+    public boolean isCoreModuleEvent () {
+        return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
 }
