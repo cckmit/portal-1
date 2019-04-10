@@ -11,8 +11,10 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
@@ -55,6 +57,20 @@ public class CaseCommentListView
     @Override
     public HasValue< String > message() {
         return comment;
+    }
+
+    @Override
+    public TakesValue<En_TextMarkup> messageMarkup() {
+        return new TakesValue<En_TextMarkup>() {
+            @Override
+            public void setValue(En_TextMarkup value) {
+                textMarkup = value;
+            }
+            @Override
+            public En_TextMarkup getValue() {
+                return textMarkup;
+            }
+        };
     }
 
     @Override
@@ -176,7 +192,7 @@ public class CaseCommentListView
     @UiHandler("comment")
     public void onCommentChanged(ValueChangeEvent<String> event) {
         if (activity != null) {
-            activity.onCommentChanged(event.getValue());
+            activity.onCommentChanged(event.getValue(), textMarkup);
         }
     }
 
@@ -233,6 +249,7 @@ public class CaseCommentListView
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
     private AbstractCaseCommentListActivity activity;
+    private En_TextMarkup textMarkup;
 
     private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);
     interface CaseCommentListUiBinder extends UiBinder<HTMLPanel, CaseCommentListView> {}

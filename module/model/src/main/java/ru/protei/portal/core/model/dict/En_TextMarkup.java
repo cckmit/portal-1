@@ -2,7 +2,7 @@ package ru.protei.portal.core.model.dict;
 
 public enum En_TextMarkup implements ru.protei.winter.core.utils.enums.HasId {
 
-    MARKDOWN_COMMONMARK(0),
+    MARKDOWN(0),
     JIRA_WIKI_MARKUP(1),
     ;
 

@@ -1,9 +1,11 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
+import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -23,6 +25,8 @@ public interface AbstractCaseCommentListView extends IsWidget {
     void removeComment( IsWidget comment );
 
     HasValue<String> message();
+
+    TakesValue<En_TextMarkup> messageMarkup();
 
     void focus();
 
