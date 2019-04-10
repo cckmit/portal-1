@@ -74,4 +74,6 @@ public interface AttachmentService {
     CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments);
 
     CoreResponse<Long> saveAttachment(Attachment attachment);
+
+    CoreResponse<String> getAttachmentNameByExtLink(String extLink);
 }
