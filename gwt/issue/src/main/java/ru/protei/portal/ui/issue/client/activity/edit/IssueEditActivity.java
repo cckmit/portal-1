@@ -105,7 +105,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             issue.setInitiator(event.person);
             issue.setInitiatorId(event.person.getId());
             if (issue.getInitiator() != null) {
-                view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
+                view.initiator().setValue(issue.getInitiator().toFullNameShortView());
             }
         }
     }
@@ -318,7 +318,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
         view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
         if (hasPrivilegeForTimeElapsed) {
-            if (isNew(issue) && !isRestoredIssue) {
+            if (isNew(issue)) {
                 boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
                 view.timeElapsedLabel().setTime(null);
                 if ( !isRestoredIssue ) {
