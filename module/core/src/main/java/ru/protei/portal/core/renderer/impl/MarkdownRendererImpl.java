@@ -46,6 +46,7 @@ public class MarkdownRendererImpl implements MarkdownRenderer {
             return text;
         }
         text = doConvert(text);
+        text = addBreakOnCaretReturn(text);
         text = replaceAllowedTags(text);
         return text;
     }
@@ -56,6 +57,10 @@ public class MarkdownRendererImpl implements MarkdownRenderer {
             text = text.replaceAll("\\[/" + entry.getKey() + "\\]", "</" + entry.getValue() + ">");
         }
         return text;
+    }
+
+    private String addBreakOnCaretReturn(String text) {
+        return text.trim().replaceAll("((?<!<br />)[\r\n|\n|\r])", "<br/>");
     }
 
     private String doConvert(String text) {
