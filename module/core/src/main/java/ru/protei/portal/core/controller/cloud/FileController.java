@@ -10,6 +10,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
+import org.mozilla.universalchardet.UniversalDetector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Objects;
 
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
@@ -69,7 +74,7 @@ public class FileController {
     @PostConstruct
     public void onInit() {
         upload.setFileItemFactory(new DiskFileItemFactory());
-        upload.setHeaderEncoding("UTF-8");
+        upload.setHeaderEncoding(StandardCharsets.UTF_8.name());
     }
 
     @RequestMapping(
@@ -100,13 +105,13 @@ public class FileController {
         if(ud != null) {
             try {
 
-                logger.debug("uploadFileToCase: caseNumber=" + getCaseNumberOrNull(caseNumber));
+                logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
 
                 for (FileItem item : upload.parseRequest(request)) {
                     if(item.isFormField())
                         continue;
 
-                    logger.debug("uploadFileToCase: caseNumber=" + getCaseNumberOrNull(caseNumber) + " | found file to be uploaded");
+                    logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
 
                     Person creator = ud.getPerson();
                     Attachment attachment = saveAttachment(item, creator.getId());
@@ -125,7 +130,7 @@ public class FileController {
                     return mapper.writeValueAsString(attachment);
                 }
 
-                logger.debug("uploadFileToCase: caseNumber=" + getCaseNumberOrNull(caseNumber) + " | file to be uploaded not found");
+                logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
 
             } catch (FileUploadException | SQLException | IOException e) {
                 logger.error("uploadFileToCase", e);
@@ -167,7 +172,8 @@ public class FileController {
 
         logger.debug("getFile: folder=" + folder + ", fileName=" + fileName);
 
-        FileStorage.File file = fileStorage.getFile(folder +"/"+ fileName);
+        String filePath = folder + "/" + fileName;
+        FileStorage.File file = fileStorage.getFile(filePath);
         if(file == null) {
             logger.debug("getFile: folder=" + folder + ", fileName=" + fileName + " | file is null");
             response.setStatus(HttpStatus.NOT_FOUND.value());
@@ -178,9 +184,8 @@ public class FileController {
         response.setContentType(file.getContentType());
         response.setHeader("Content-Transfer-Encoding", "binary");
         response.setHeader("Cache-Control", "max-age=86400, must-revalidate"); // 1 day
-//        response.setHeader("Content-Disposition", "filename=" + extractRealFileName(fileName));
         response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" +
-                encodeToRFC2231(extractRealFileName(fileName)));
+                encodeToRFC2231(getRealFileName(filePath, fileName)));
         IOUtils.copy(file.getData(), response.getOutputStream());
     }
 
@@ -287,6 +292,8 @@ public class FileController {
 
         String fileName = fileItem.getName();
 
+        fileName = convertStringCharset(fileName, StandardCharsets.UTF_8, StandardCharsets.UTF_8);
+
         if (StringUtils.isBlank(fileName)) {
             fileName = generateUniqueName();
         }
@@ -302,6 +309,14 @@ public class FileController {
         return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
     }
 
+    private String getRealFileName(String filePath, String encodedFileName) {
+        CoreResponse<String> nameResult = attachmentService.getAttachmentNameByExtLink(filePath);
+        if (nameResult.isOk() && StringUtils.isNotBlank(nameResult.getData())) {
+            return nameResult.getData();
+        }
+        return extractRealFileName(encodedFileName);
+    }
+
     private String extractRealFileName(String fileName){
         final Base64.Decoder decoder = Base64.getUrlDecoder();
         final int underscorePos = fileName.indexOf('_');
@@ -311,12 +326,33 @@ public class FileController {
         }
         final String encodedPart = fileName.substring(underscorePos + 1, dotLastPos);
         final String fileExt = fileName.substring(dotLastPos);
-        final String val = new String(decoder.decode(encodedPart));
+        final String val = new String(decoder.decode(encodedPart.getBytes(StandardCharsets.UTF_8)));
         return val + fileExt;
     }
 
+    private String convertStringCharset(String input, Charset inputCharset, Charset outputCharset) {
+        byte[] bytes;
+        bytes = input.getBytes(inputCharset);
+        Charset detectedInputCharset = tryDetectCharset(bytes);
+        if (detectedInputCharset != null && !Objects.equals(detectedInputCharset, inputCharset)) {
+            bytes = input.getBytes(detectedInputCharset);
+        }
+        return new String(bytes, outputCharset);
+    }
 
-    private String getCaseNumberOrNull(Long caseNumber) {
-        return caseNumber == null ? "null" : caseNumber.toString();
+    private Charset tryDetectCharset(byte[] bytes) {
+        UniversalDetector detector = new UniversalDetector(null);
+        detector.handleData(bytes, 0, bytes.length);
+        detector.dataEnd();
+        String detectedCharset = detector.getDetectedCharset();
+        detector.reset();
+        if (detectedCharset == null) {
+            return null;
+        }
+        try {
+            return Charset.forName(detectedCharset);
+        } catch (UnsupportedCharsetException e) {
+            return null;
+        }
     }
 }

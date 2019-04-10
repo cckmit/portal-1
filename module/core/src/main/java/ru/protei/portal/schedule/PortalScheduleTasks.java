@@ -17,7 +17,7 @@ public class PortalScheduleTasks {
         // Ежедневно в 11:10
         scheduler.schedule(this::remindAboutEmployeeProbationPeriod, new CronTrigger( "0 10 11 * * ?"));
         // Ежедневно в 11:14
-        scheduler.schedule(this::notifyAboutContractDates, new CronTrigger("0 10 14 * * ?"));
+        scheduler.schedule(this::notifyAboutContractDates, new CronTrigger("0 14 11 * * ?"));
     }
 
     public void remindAboutEmployeeProbationPeriod() {

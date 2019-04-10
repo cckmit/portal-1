@@ -124,6 +124,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasWidgets siteFolderContainer() {
+        return siteFolderContainer;
+    }
+
+    @Override
     public void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter ) {
         parentCompany.setFilter( companyFilter );
     }
@@ -194,6 +199,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     HTMLPanel tableContainer;
+
+    @UiField
+    HTMLPanel siteFolderContainer;
 
     @Inject
     @UiField

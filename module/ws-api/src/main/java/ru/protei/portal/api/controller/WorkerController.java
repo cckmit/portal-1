@@ -73,8 +73,12 @@ public class WorkerController {
     @Autowired
     AuditObjectDAO auditObjectDAO;
 
+    /**
+     * Получить данные о физическом лице
+     * @param id идентификатор физического лица на портале
+     * @return WorkerRecord
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
-    public @ResponseBody
     WorkerRecord getPerson(@RequestParam(name = "id") Long id) {
 
         logger.debug("getPerson(): id={}", id);
@@ -87,8 +91,13 @@ public class WorkerController {
         return null;
     }
 
+    /**
+     * Получить данные о сотруднике
+     * @param id идентификатор сотрудника в 1С
+     * @param companyCode код компании
+     * @return WorkerRecord
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    public @ResponseBody
     WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
@@ -107,8 +116,13 @@ public class WorkerController {
         return null;
     }
 
+    /**
+     * Получить данные об отделе
+     * @param id идентификатор отдела в 1С
+     * @param companyCode код компании
+     * @return DepartmentRecord
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
-    public @ResponseBody
     DepartmentRecord getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("getDepartment(): id={}, companyCode={}", id, companyCode);
@@ -125,8 +139,12 @@ public class WorkerController {
         return null;
     }
 
+    /**
+     * Получить список физических лиц
+     * @param expr строка для поиска с использованием шаблонных символов
+     * @return WorkerRecordList
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
-    public @ResponseBody
     WorkerRecordList getPersons(@RequestParam(name = "expr") String expr) {
 
         logger.debug("getPersons(): expr={}", expr);
@@ -148,9 +166,12 @@ public class WorkerController {
         return persons;
     }
 
-
+    /**
+     * Добавить сотрудника
+     * @param rec данные о сотруднике
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
-    public @ResponseBody
     ServiceResult addWorker(@RequestBody WorkerRecord rec) {
 
         logger.debug("addWorker(): rec={}", rec);
@@ -258,8 +279,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_CREATE.getCode(), En_ErrorCode.NOT_CREATE.getMessage(), null);
     }
 
+    /**
+     * Обновить сотрудника
+     * @param rec данные о сотруднике
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
-    public @ResponseBody
     ServiceResult updateWorker(@RequestBody WorkerRecord rec) {
 
         logger.debug("updateWorker(): rec={}", rec);
@@ -372,8 +397,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getCode(), null);
     }
 
+    /**
+     * Обновить сотрудников
+     * @param list список сотрудников
+     * @return ServiceResultList
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
-    public @ResponseBody
     ServiceResultList updateWorkers(@RequestBody WorkerRecordList list) {
 
         logger.debug("updateWorkers(): list={}", list);
@@ -392,8 +421,13 @@ public class WorkerController {
         return results;
     }
 
+    /**
+     * Удалить сотрудника
+     * @param externalId идентификатор сотрудника в 1С
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
-    public @ResponseBody
     ServiceResult deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("deleteWorker(): externalId={}, companyCode={}", externalId, companyCode);
@@ -446,8 +480,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_DELETE.getCode(), En_ErrorCode.NOT_DELETE.getMessage(), null);
     }
 
+    /**
+     * Обновить фотографию сотрудника
+     * @param photo фоторгафия
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
-    public @ResponseBody
     ServiceResult updatePhoto(@RequestBody Photo photo) {
 
         logger.debug("updatePhoto(): photo={}", photo);
@@ -483,8 +521,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
     }
 
+    /**
+     * Получить фотографии сотрудников
+     * @param list список идентификаторов физических лиц
+     * @return PhotoList
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
-    public @ResponseBody
     PhotoList getPhotos(@RequestBody IdList list) {
 
         logger.debug("getPhotos(): list={}", list);
@@ -526,8 +568,12 @@ public class WorkerController {
         return photos;
     }
 
+    /**
+     * Создать/обновить отдел
+     * @param rec данные об отделе
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
-    public @ResponseBody
     ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
 
         logger.debug("updateDepartment(): rec={}", rec);
@@ -574,8 +620,13 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
     }
 
+    /**
+     * Удалить отдел
+     * @param externalId идентификатор отдела в 1С
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
-    public @ResponseBody
     ServiceResult deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("deleteDepartment(): externalId={}, companyCode={}", externalId, companyCode);
@@ -604,8 +655,14 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_DELETE.getCode(), En_ErrorCode.NOT_DELETE.getMessage(), null);
     }
 
+    /**
+     * Обновить должность
+     * @param oldName наименование должности
+     * @param newName новое наименование должности
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.position")
-    public @ResponseBody
     ServiceResult updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName") String newName, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("updatePosition(): oldName={}, newName={}, companyCode={}", oldName, newName, companyCode);
@@ -640,8 +697,13 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
     }
 
+    /**
+     * Удалить должность
+     * @param name наименование должности
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.position")
-    public @ResponseBody
     ServiceResult deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("deletePosition(): name={}, companyCode={}", name, companyCode);

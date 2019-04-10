@@ -80,6 +80,13 @@
                         </label>
                         <g:HTMLPanel ui:field="tableContainer"></g:HTMLPanel>
                     </div>
+
+                    <div class="form-group col-xs-12">
+                        <label class="bordered">
+                            <ui:text from="{lang.siteFolder}"/>
+                        </label>
+                        <g:HTMLPanel ui:field="siteFolderContainer"></g:HTMLPanel>
+                    </div>
                 </div>
             </div>
             <div class="footer">

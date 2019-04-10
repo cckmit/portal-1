@@ -124,6 +124,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public HasWidgets getSiteFolderContainer() {
+        return siteFolderContainer;
+    }
+
+    @Override
     public void setSubscriptionEmails(String value) {
         subscription.setInnerText(value);
     }
@@ -160,6 +165,8 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     FieldSetElement comments;
     @UiField
     HTMLPanel contactsContainer;
+    @UiField
+    HTMLPanel siteFolderContainer;
     @UiField
     SpanElement subscription;
 

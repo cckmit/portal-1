@@ -20,7 +20,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
-import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -31,8 +30,6 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 /**
  * Активность создания и редактирования обращения
@@ -108,7 +105,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             issue.setInitiator(event.person);
             issue.setInitiatorId(event.person.getId());
             if (issue.getInitiator() != null) {
-                view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
+                view.initiator().setValue(issue.getInitiator().toFullNameShortView());
             }
         }
     }
@@ -137,7 +134,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
                     })
                     .withSuccess(caseObject -> {
-                        storage.remove(makeStorageKey(caseObject.getId()));
+                        fireEvent(new CaseCommentEvents.RemoveDraft(caseObject.getId()));
+
                         if (isNew(issue)) {
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new IssueEvents.ChangeModel());
@@ -162,9 +160,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCancelClicked() {
-        if (issue.getId() != null) {
-            storage.remove(makeStorageKey(issue.getId()));
-        }
         fireEvent(new Back());
     }
 
@@ -229,12 +224,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
-    }
-    @Override
-    public void onDescriptionChanged() {
-        if (issue.getId() != null) {
-            storage.set(makeStorageKey(issue.getId()), view.description().getText());
-        }
     }
 
     @Override
@@ -309,7 +298,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
-        view.tags().setValue(CollectionUtils.emptyIfNull(issue.getTags()));
+        view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
         view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
 
         view.name().setValue(issue.getName());
@@ -319,7 +308,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isLocal().setValue(issue.isPrivateCase());
 
-        view.description().setText(makeDescription(issue.getInfo()));
+        view.description().setText(issue.getInfo());
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
@@ -329,7 +318,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
         view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
         if (hasPrivilegeForTimeElapsed) {
-            if (isNew(issue) && !isRestoredIssue) {
+            if (isNew(issue)) {
                 boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
                 view.timeElapsedLabel().setTime(null);
                 if ( !isRestoredIssue ) {
@@ -468,15 +457,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 !En_CaseState.CANCELED.equals(caseState);
     }
 
-    private String makeDescription(String issueDescription){
-        String description = storage.get(makeStorageKey(issue.getId()));
-        return isEmpty(description) ? issueDescription : description;
-    }
-
-    private String makeStorageKey(Long id){
-        return STORAGE_CASE_COMMENT_PREFIX + id;
-    }
-
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -497,10 +477,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private AppEvents.InitDetails initDetails;
     @ContextAware
     CaseObject issue;
-
-    @Inject
-    private LocalStorageService storage;
-    private final static String STORAGE_CASE_COMMENT_PREFIX = "CaseObjectComment_";
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
 }
