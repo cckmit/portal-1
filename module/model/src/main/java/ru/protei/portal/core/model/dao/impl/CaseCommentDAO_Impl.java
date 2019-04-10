@@ -80,6 +80,7 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "   FROM case_comment" +
                         "   WHERE case_id = cc.CASE_ID" +
                         "     and created < '" + fromTime + "'" +  // # левая граница
+                        "     and CSTATE_ID is not null" +
                         " )" +
                         "   and CSTATE_ID in (" + acceptableStates + ")"
                         + products
