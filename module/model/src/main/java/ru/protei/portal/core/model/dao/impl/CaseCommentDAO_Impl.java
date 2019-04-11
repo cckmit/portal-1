@@ -60,15 +60,17 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
 
     @Override
     public List<CaseComment> reportCaseResolutionTime( Date from, Date to, List<Integer> terminatedStates,
-                                                       List<Long> companiesIds, List<Long> productIds, List<Long> managersIds, List<Integer> importanceIds) {
+                                                       List<Long> companiesIds, List<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
+                                                       List<Long> tagsIds) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
-        String acceptableStates = terminatedStates.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
+        String acceptableStates = makeInArg( terminatedStates);
 
         String products = makeAndPartFromListIds(productIds, "ob.product_id");
         String companies = makeAndPartFromListIds(companiesIds, "ob.initiator_company");
         String managers = makeAndPartFromListIds(managersIds, "ob.manager");
         String importance = makeAndPartFromListIds(importanceIds, "ob.importance");
+        String tags = tagsIds == null ? "" : " and ob.ID in (SELECT cot.case_id FROM case_object_tag cot WHERE cot.tag_id in " + makeInArg(tagsIds) + ")";
 
         // Активные задачи на момент начала интервала запроса
         String activeCasesAtIntervalStart =
@@ -82,11 +84,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "     and created < '" + fromTime + "'" +  // # левая граница
                         "     and CSTATE_ID is not null" +
                         " )" +
-                        "   and CSTATE_ID in (" + acceptableStates + ")"
+                        "   and CSTATE_ID in " + acceptableStates
                         + products
                         + companies
                         + managers
                         + importance
+                        + tags
                 ;
 
         // Задачи переходящие в активное состояние в интервале запроса
@@ -96,11 +99,12 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         "        LEFT OUTER JOIN case_object ob on ob.id = cc.CASE_ID" +
                         " WHERE cc.created > '" + fromTime + "'" +  // # левая граница
                         "   and cc.created < '" + toTime + "' " +  //# правая граница
-                        "   and CSTATE_ID in (" + acceptableStates + ")"
+                        "   and CSTATE_ID in " + acceptableStates
                         + products
                         + companies
                         + managers
                         + importance
+                        + tags
                 ;
 
         String query =
@@ -138,10 +142,6 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     };
 
     private String makeAndPartFromListIds(final List<?> list, final String field){
-        String q = "";
-        if ( list != null ) {
-            q = " and " + field + " in " + makeInArg(list);
-        }
-        return q;
+        return list == null ? "" : " and " + field + " in " + makeInArg(list);
     }
 }

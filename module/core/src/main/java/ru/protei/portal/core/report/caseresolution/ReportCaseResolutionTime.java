@@ -55,7 +55,8 @@ public class ReportCaseResolutionTime {
                 caseQuery.getCompanyIds(),
                 caseQuery.getProductIds(),
                 caseQuery.getManagerIds(),
-                caseQuery.getImportanceIds()
+                caseQuery.getImportanceIds(),
+                null
         );
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();
