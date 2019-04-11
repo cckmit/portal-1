@@ -123,7 +123,9 @@ public class ReportCaseResolutionTime {
                 map.put( comment.getCaseId(), aCase );
                 cases.add( aCase );
             }
-            mapCase( aCase, comment );
+            if (comment.getCaseStateId() != null){
+                mapCase( aCase, comment);
+            }
         }
         return cases;
     }

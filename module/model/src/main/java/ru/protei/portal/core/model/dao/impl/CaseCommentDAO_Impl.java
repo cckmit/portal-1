@@ -134,7 +134,8 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
             CaseComment comment = new CaseComment();
 
             comment.setCaseId( r.getLong( "case_id" ) );
-            comment.setCaseStateId( r.getLong( "CSTATE_ID" ) );
+            Long CSTATE_ID = r.getLong( "CSTATE_ID" );
+            comment.setCaseStateId( r.wasNull() ? null : CSTATE_ID );
             comment.setCreated( new Date( r.getTimestamp( "created" ).getTime() ) );
 
             return comment;

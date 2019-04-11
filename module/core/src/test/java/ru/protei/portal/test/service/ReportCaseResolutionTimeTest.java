@@ -27,6 +27,8 @@ import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTi
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
+    private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
+
     private void initCaseObjectsQueryTest() {
         if (productId == null) {
 
@@ -49,90 +51,24 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         makeComment( c1, DONE, addHours( day( 11 ), 6 ) );                  //2050-01-11 06:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                          ^-------^-----------^
+        //                          ^----^n-^--------x     ^----------------------------------------
         Long caseId2 = makeCaseObject( person, productId, day( 9 ) );
         CaseComment c2 = createNewComment( person, caseId2, "Week" );
-        makeComment( c2, CREATED, day( 9 ) );                               //2050-01-09 00:00:00
+        makeComment( c2, CREATED, day( 9 ) );                                      //2050-01-09 00:00:00
+        makeComment( c2, null, addHours( day( 9 ), 2 ) );            //2050-01-09 02:00:00
         makeComment( c2, OPENED, addHours( day( 12 ), 2 ) );                //2050-01-12 02:00:00
-        makeComment( c2, DONE, addHours( day( 15 ), 5 ) );                  //2050-01-16 05:00:00
-        makeComment( c2, REOPENED, addHours( day( 17 ), 11 ) );
+        makeComment( c2, DONE, addHours( day( 15 ), 5 ) );                  //2050-01-15 05:00:00
+        makeComment( c2, REOPENED, addHours( day( 17 ), 11 ) );             //2050-01-17 11:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                                     ^--------------^----------------^
         Long caseId3 = makeCaseObject( person, productId, day( 9 ) );
         CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
-        makeComment( c3, CREATED, day( 13 ) );                              //2050-01-13 00:00:00
+        makeComment( c3, CREATED, day( 13 ) );                                     //2050-01-13 00:00:00
         makeComment( c3, OPENED, addHours( day( 18 ), 5 ) );                //2050-01-18 05:00:00
-        makeComment( c3, DONE, addHours( day( 24 ), 11 ) );                  //2050-01-24 11:00:00
+        makeComment( c3, null, addHours( day( 19 ), 11 ) );          //2050-01-19 11:00:00
+        makeComment( c3, DONE, addHours( day( 24 ), 11 ) );                 //2050-01-24 11:00:00
 
-    }
-
-    @Test
-    public void caseObjectsQueryTest() throws Exception {
-        try {
-            initCaseObjectsQueryTest();
-
-            int numberOfDays = 12;
-            //                         | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
-            //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-            //                         |-----------------------------------|
-            //                               ^x
-            //                          ^-------^-----------x  ^----------------------------------------
-            //                                     ^--------------^-----------------х
-            Report report = createReport( productId, date9, addHours( date9, numberOfDays * H_DAY ) );
-
-            ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO );
-            caseCompletionTimeReport.run();
-
-            List<Case> cases = caseCompletionTimeReport.getCases();
-            assertEquals( "grouping comments not worked", caseIds.size(), size( cases ) );
-            assertEquals( 9, cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
-
-            List<Interval> intervals = caseCompletionTimeReport.getIntervals();
-            assertEquals( numberOfDays, intervals.size() );
-
-            assertEquals( 1, intervals.get( 0 ).casesCount );
-            assertEquals( DAY, intervals.get( 0 ).minTime );
-            assertEquals( DAY, intervals.get( 0 ).maxTime );
-            assertEquals( DAY, intervals.get( 0 ).summTime );
-
-            assertEquals( 1, intervals.get( 1 ).casesCount );
-            assertEquals( 2 * DAY, intervals.get( 1 ).minTime );
-            assertEquals( 2 * DAY, intervals.get( 1 ).maxTime );
-            assertEquals( 2 * DAY, intervals.get( 1 ).summTime );
-
-            assertEquals( 2, intervals.get( 2 ).casesCount );
-            assertEquals( 6 * HOUR, intervals.get( 2 ).minTime );
-            assertEquals( 3 * DAY, intervals.get( 2 ).maxTime );
-            assertEquals( 3 * DAY + 6 * HOUR, intervals.get( 2 ).summTime );
-
-            assertEquals( 1, intervals.get( 3 ).casesCount );
-            assertEquals( 4 * DAY, intervals.get( 3 ).minTime );
-            assertEquals( 4 * DAY, intervals.get( 3 ).maxTime );
-            assertEquals( 4 * DAY, intervals.get( 3 ).summTime );
-
-            assertEquals( 2, intervals.get( 4 ).casesCount );
-            assertEquals( 1 * DAY, intervals.get( 4 ).minTime );
-            assertEquals( 5 * DAY, intervals.get( 4 ).maxTime );
-            assertEquals( 6 * DAY, intervals.get( 4 ).summTime );
-
-            assertEquals( 1, intervals.get( 7 ).casesCount );
-            assertEquals( 4 * DAY, intervals.get( 7 ).minTime );
-            assertEquals( 4 * DAY, intervals.get( 7 ).maxTime );
-            assertEquals( 4 * DAY, intervals.get( 7 ).summTime );
-
-            assertEquals( 2, intervals.get( 8 ).casesCount );
-            long case3Time = 5 * DAY;
-            assertEquals( case3Time, intervals.get( 8 ).minTime );
-            long case2Time = 6 * DAY + 5 * HOUR + DAY - 11 * HOUR;
-            assertEquals( case2Time, intervals.get( 8 ).maxTime );
-            assertEquals( case2Time + case3Time, intervals.get( 8 ).summTime );
-
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            clean();
-        }
     }
 
     @Test
@@ -387,6 +323,76 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     }
 
     private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
+
+    @Test
+    public void caseObjectsQueryTest() throws Exception {
+        try {
+            initCaseObjectsQueryTest();
+
+            int numberOfDays = 12;
+            //                            | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
+            //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+            //                            |-----------------------------------|
+            //                               ^x
+            //                          ^n------^--------x     ^----------------------------------------
+            //                                     ^--------------^---n-------------х
+            Report report = createReport( productId, date10, addHours( date10, numberOfDays * H_DAY ) );
+
+            ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO );
+            caseCompletionTimeReport.run();
+
+            List<Case> cases = caseCompletionTimeReport.getCases();
+            assertEquals( "grouping comments not worked", caseIds.size(), size( cases ) );
+            assertEquals( 9, cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
+
+            List<Interval> intervals = caseCompletionTimeReport.getIntervals();
+            assertEquals( numberOfDays, intervals.size() );
+
+            assertEquals( 1, intervals.get( 0 ).casesCount );
+            assertEquals( 2 * DAY, intervals.get( 0 ).minTime );
+            assertEquals( 2 * DAY, intervals.get( 0 ).maxTime );
+            assertEquals( 2 * DAY, intervals.get( 0 ).summTime );
+
+            assertEquals( 2, intervals.get( 1 ).casesCount );
+            assertEquals( 6 * HOUR, intervals.get( 1 ).minTime );
+            assertEquals( 3 * DAY, intervals.get( 1 ).maxTime );
+            assertEquals( 3 * DAY + 6 * HOUR, intervals.get( 1 ).summTime );
+
+            assertEquals( 1, intervals.get( 2 ).casesCount );
+            assertEquals( 4 * DAY, intervals.get( 2 ).minTime );
+            assertEquals( 4 * DAY, intervals.get( 2 ).maxTime );
+            assertEquals( 4 * DAY, intervals.get( 2 ).summTime );
+
+            assertEquals( 2, intervals.get( 3 ).casesCount );
+            assertEquals( 1 * DAY, intervals.get( 3 ).minTime );
+            assertEquals( 5 * DAY, intervals.get( 3 ).maxTime );
+            assertEquals( 6 * DAY, intervals.get( 3 ).summTime );
+
+            assertEquals( 1, intervals.get( 6 ).casesCount );
+            assertEquals( 4 * DAY, intervals.get( 6 ).minTime );
+            assertEquals( 4 * DAY, intervals.get( 6 ).maxTime );
+            assertEquals( 4 * DAY, intervals.get( 6 ).summTime );
+
+            assertEquals( 2, intervals.get( 7 ).casesCount );
+            long case3Time = 5 * DAY;
+            assertEquals( case3Time, intervals.get( 7 ).minTime );
+            long case2Time = 6 * DAY + 5 * HOUR + DAY - 11 * HOUR;
+            assertEquals( case2Time, intervals.get( 7 ).maxTime );
+            assertEquals( case2Time + case3Time, intervals.get( 7 ).summTime );
+
+            assertEquals( 2, intervals.get( 11 ).casesCount );
+            long case11minTime = 9 * DAY;
+            assertEquals( case11minTime, intervals.get( 11 ).minTime );
+            long case11maxTime = 7 * DAY + 5 * HOUR + 4 * DAY - 11 * HOUR;
+            assertEquals( case11maxTime, intervals.get( 11 ).maxTime );
+            assertEquals( case11minTime + case11maxTime, intervals.get( 11 ).summTime );
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            clean();
+        }
+    }
     private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
 
     private static List<Integer> activeStatesShort = Arrays.asList( 1, 2, 6, 16, 19, 30 );
