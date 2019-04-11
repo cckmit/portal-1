@@ -211,6 +211,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         query.setCompanyIds( getCompaniesIdList( caseResolutionTimeReportView.companies().getValue() ) );
         query.setProductIds( getProductsIdList( caseResolutionTimeReportView.products().getValue() ) );
         query.setManagerIds( getManagersIdList( caseResolutionTimeReportView.managers().getValue()) );
+        query.setCaseTagsIds( getIds( caseResolutionTimeReportView.tags().getValue()) );
         query.setImportanceIds( getImportancesIdList( caseResolutionTimeReportView.importances().getValue()) );
 
         query.setStates( IssueFilterUtils.getStateList( caseResolutionTimeReportView.states().getValue() ) );
