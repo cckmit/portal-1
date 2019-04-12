@@ -10,7 +10,7 @@
     <stylesheet src="css/ionicons.min.css"/>
     <stylesheet src="css/switcher.css"/>
     <stylesheet src="css/select2.css"/>
-    <stylesheet src="css/markdown.css"/>
+    <stylesheet src="css/markdown-markup.css"/>
 
     <source path='client'/>
     <source path='shared'/>
