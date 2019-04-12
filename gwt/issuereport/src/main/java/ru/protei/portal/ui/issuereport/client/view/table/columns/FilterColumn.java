@@ -143,6 +143,11 @@ public class FilterColumn extends StaticColumn<Report> {
             element.appendChild(makeArraySelectedElement(lang.issueManager(), caseQuery.getManagerIds()));
         }
 
+        // tags
+        if (CollectionUtils.isNotEmpty(caseQuery. getCaseTagsIds())) {
+            element.appendChild(makeArraySelectedElement(lang.tags(), caseQuery.getCaseTagsIds()));
+        }
+
         // authors
         if (CollectionUtils.isNotEmpty(caseQuery.getCommentAuthorIds())) {
             element.appendChild(makeArraySelectedElement(lang.issueCommentAuthor(), caseQuery.getCommentAuthorIds()));

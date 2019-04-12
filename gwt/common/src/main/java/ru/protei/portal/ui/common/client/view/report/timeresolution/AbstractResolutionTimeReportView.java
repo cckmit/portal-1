@@ -24,6 +24,8 @@ public interface AbstractResolutionTimeReportView extends IsWidget {
 
     HasValue<Set<PersonShortView>> managers();
 
+    HasValue<Set<EntityOption>> tags();
+
     HasValue<Set<En_ImportanceLevel>> importances();
 
     HasValue<Set<En_CaseState>> states();

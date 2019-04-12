@@ -3,6 +3,7 @@
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
              xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.issueimportance.btngroup'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
@@ -29,6 +30,10 @@
             />
             <person:EmployeeMultiSelector ui:field="managers"
                                           header="{lang.issueManager}"
+                                          addStyleNames="form-group col-xs-12"
+            />
+            <casetag:CaseTagMultiSelector ui:field="tags"
+                                          header="{lang.tags}"
                                           addStyleNames="form-group col-xs-12"
             />
             <div class="form-group col-xs-12 resize-xs-6">

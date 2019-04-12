@@ -55,16 +55,17 @@ public class ReportCaseResolutionTime {
                 caseQuery.getCompanyIds(),
                 caseQuery.getProductIds(),
                 caseQuery.getManagerIds(),
-                caseQuery.getImportanceIds()
+                caseQuery.getImportanceIds(),
+                caseQuery.getCaseTagsIds()
         );
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();
 
         cases = groupBayIssues( comments );
 
-        Set<Integer> ignoredStates = new HashSet<Integer>( caseQuery.getStateIds() );
+        Set<Integer> acceptableStates = new HashSet<Integer>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {
-            interval.fill( cases, ignoredStates );
+            interval.fill( cases, acceptableStates );
         }
 
         log.info( "run(): Case comments processing time: {} ms", System.currentTimeMillis() - startProcessing );
@@ -122,14 +123,15 @@ public class ReportCaseResolutionTime {
                 map.put( comment.getCaseId(), aCase );
                 cases.add( aCase );
             }
-            mapCase( aCase, comment );
+            if (comment.getCaseStateId() != null){
+                mapCase( aCase, comment);
+            }
         }
         return cases;
     }
 
     public List<Interval> getIntervals() {
         return intervals;
-
     }
 
     private static Integer calcHours( Long value ) {
