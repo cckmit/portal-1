@@ -63,9 +63,9 @@ public class ReportCaseResolutionTime {
 
         cases = groupBayIssues( comments );
 
-        Set<Integer> ignoredStates = new HashSet<Integer>( caseQuery.getStateIds() );
+        Set<Integer> acceptableStates = new HashSet<Integer>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {
-            interval.fill( cases, ignoredStates );
+            interval.fill( cases, acceptableStates );
         }
 
         log.info( "run(): Case comments processing time: {} ms", System.currentTimeMillis() - startProcessing );
@@ -132,7 +132,6 @@ public class ReportCaseResolutionTime {
 
     public List<Interval> getIntervals() {
         return intervals;
-
     }
 
     private static Integer calcHours( Long value ) {
