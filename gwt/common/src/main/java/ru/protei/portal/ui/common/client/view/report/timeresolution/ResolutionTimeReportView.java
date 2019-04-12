@@ -39,11 +39,9 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     public void setActivity( AbstractIssueFilterParamActivity activity ) {
         this.activity = activity;
     }
-
-     @Override
-    public HasValue<DateInterval> dateRange() {
-        return dateRange;
-    }
+    @Inject
+    @UiField(provided = true)
+    ImportanceBtnGroupMulti importance;
 
     @Override
     public HasValue<Set<EntityOption>> companies() {
@@ -57,9 +55,14 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     public HasValue<Set<PersonShortView>> managers() {
         return managers;
     }
+
     @Inject
-    @UiField(provided = true)
-    ImportanceBtnGroupMulti importance;
+    public void init() {
+        initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
+        products.updateQuery(null, null);
+        tags.setCaseType(En_CaseType.CRM_SUPPORT);
+    }
 
     @Override
     public HasValue<Set<En_ImportanceLevel>> importances() {
@@ -71,12 +74,9 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
         return state;
     }
 
-    @Inject
-    public void init() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
-        ensureDebugIds();
-        products.updateQuery(null, null);
-        tags.setCaseType(En_CaseType.CRM_SUPPORT);
+    @Override
+    public HasValue<DateInterval> dateRange() {
+        return dateRange;
     }
 
     @UiHandler("dateRange")

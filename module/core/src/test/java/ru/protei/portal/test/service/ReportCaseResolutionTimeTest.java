@@ -27,8 +27,6 @@ import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTi
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
-    private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
-
     private void initCaseObjectsQueryTest() {
         if (productId == null) {
 
@@ -70,6 +68,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         makeComment( c3, DONE, addHours( day( 24 ), 11 ) );                 //2050-01-24 11:00:00
 
     }
+    private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
 
     @Test
     public void intervalsTest() {
@@ -300,7 +299,6 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     }
 
     private void clean() {
-
         if (!commentsIds.isEmpty() && caseIds != null) {
             String caseIdsString = caseIds.stream().map( String::valueOf ).collect( Collectors.joining( "," ) );
             caseCommentDAO.removeByCondition( "CASE_ID in (" + caseIdsString + ")" );
@@ -315,14 +313,14 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             personDAO.remove( person );
             companyDAO.removeByKey( person.getCompanyId() );
         }
-
     }
 
     private Date day( int day_of_month ) {
         return addHours( date1, (day_of_month - 1) * H_DAY );
     }
 
-    private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
+    private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
+    private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
 
     @Test
     public void caseObjectsQueryTest() throws Exception {
@@ -393,7 +391,6 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             clean();
         }
     }
-    private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
 
     private static List<Integer> activeStatesShort = Arrays.asList( 1, 2, 6, 16, 19, 30 );
     private static Long productId;
