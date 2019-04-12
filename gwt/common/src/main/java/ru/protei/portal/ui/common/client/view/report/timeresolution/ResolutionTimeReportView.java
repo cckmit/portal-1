@@ -30,18 +30,17 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import java.util.Set;
 
 public class ResolutionTimeReportView extends Composite implements AbstractResolutionTimeReportView {
-
     @Inject
-    @UiField(provided = true)
-    CaseTagMultiSelector tags;
-
+    public void init() {
+        initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
+        products.updateQuery(null, null);
+        tags.setCaseType(En_CaseType.CRM_SUPPORT);
+    }
     @Override
     public void setActivity( AbstractIssueFilterParamActivity activity ) {
         this.activity = activity;
     }
-    @Inject
-    @UiField(provided = true)
-    ImportanceBtnGroupMulti importance;
 
     @Override
     public HasValue<Set<EntityOption>> companies() {
@@ -56,12 +55,9 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
         return managers;
     }
 
-    @Inject
-    public void init() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
-        ensureDebugIds();
-        products.updateQuery(null, null);
-        tags.setCaseType(En_CaseType.CRM_SUPPORT);
+    @Override
+    public HasValue<Set<EntityOption>> tags() {
+        return tags;
     }
 
     @Override
@@ -77,6 +73,17 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     @Override
     public HasValue<DateInterval> dateRange() {
         return dateRange;
+    }
+
+    @Override
+    public void resetFilter() {
+        dateRange.setValue( null );
+        companies.setValue( null );
+        products.setValue( null );
+        managers.setValue( null );
+        tags.setValue( null );
+        importance.setValue( null );
+        state.setValue( null );
     }
 
     @UiHandler("dateRange")
@@ -97,9 +104,9 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
         onFilterChanged();
     }
 
-    @Override
-    public HasValue<Set<EntityOption>> tags() {
-        return tags;
+    @UiHandler("tags")
+    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        onFilterChanged();
     }
 
     @UiHandler("importance")
@@ -149,21 +156,13 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     @UiField(provided = true)
     EmployeeMultiSelector managers;
 
-    @Override
-    public void resetFilter() {
-        dateRange.setValue( null );
-        companies.setValue( null );
-        products.setValue( null );
-        managers.setValue( null );
-        tags.setValue( null );
-        importance.setValue( null );
-        state.setValue( null );
-    }
+    @Inject
+    @UiField(provided = true)
+    CaseTagMultiSelector tags;
 
-    @UiHandler("tags")
-    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
-        onFilterChanged();
-    }
+    @Inject
+    @UiField(provided = true)
+    ImportanceBtnGroupMulti importance;
 
     @Inject
     @UiField(provided = true)
