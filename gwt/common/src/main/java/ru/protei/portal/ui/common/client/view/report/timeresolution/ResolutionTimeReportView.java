@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -21,6 +22,7 @@ import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilte
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.issuestate.optionlist.IssueStatesOptionList;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
@@ -28,22 +30,17 @@ import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnit
 import java.util.Set;
 
 public class ResolutionTimeReportView extends Composite implements AbstractResolutionTimeReportView {
-
     @Inject
     public void init() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         products.updateQuery(null, null);
+        tags.setCaseType(En_CaseType.CRM_SUPPORT);
     }
 
     @Override
     public void setActivity( AbstractIssueFilterParamActivity activity ) {
         this.activity = activity;
-    }
-
-     @Override
-    public HasValue<DateInterval> dateRange() {
-        return dateRange;
     }
 
     @Override
@@ -60,6 +57,11 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     }
 
     @Override
+    public HasValue<Set<EntityOption>> tags() {
+        return tags;
+    }
+
+    @Override
     public HasValue<Set<En_ImportanceLevel>> importances() {
         return importance;
     }
@@ -70,11 +72,17 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     }
 
     @Override
+    public HasValue<DateInterval> dateRange() {
+        return dateRange;
+    }
+
+    @Override
     public void resetFilter() {
         dateRange.setValue( null );
         companies.setValue( null );
         products.setValue( null );
         managers.setValue( null );
+        tags.setValue( null );
         importance.setValue( null );
         state.setValue( null );
     }
@@ -94,6 +102,11 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
 
     @UiHandler("managers")
     public void onManagersSelected(ValueChangeEvent<Set<PersonShortView>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("tags")
+    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
         onFilterChanged();
     }
 
@@ -143,6 +156,10 @@ public class ResolutionTimeReportView extends Composite implements AbstractResol
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector managers;
+
+    @Inject
+    @UiField(provided = true)
+    CaseTagMultiSelector tags;
 
     @Inject
     @UiField(provided = true)
