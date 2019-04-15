@@ -1,0 +1,52 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    
+    <changeSet id="create-contract-table" author="ponomareva">
+        <createTable tableName="contract">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="contract_type" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cost" type="BIGINT"/>
+            <column name="date_signing" type="datetime"/>
+            <column name="date_valid" type="datetime"/>
+            <column name="contract_dates" type="JSON"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-contract_case_object_fk" author="ponomareva">
+        <addForeignKeyConstraint baseTableName="contract"
+                                 baseColumnNames="id"
+                                 constraintName="contract-case_object-id-fk"
+                                 referencedTableName="case_object"
+                                 referencedColumnNames="id"
+                                 onUpdate="CASCADE" onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="add-contract-case_type" author="ponomareva">
+        <insert tableName="case_type">
+            <column name="ID" valueNumeric="12"/>
+            <column name="CT_CODE" value="contract"/>
+            <column name="CT_INFO" value="Договора"/>
+            <column name="NEXT_ID" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-audit-type-for-contract" author="ponomareva">
+        <insert tableName="audit_type">
+            <column name="id" value="49"/>
+            <column name="code" value="CONTRACT_MODIFY"/>
+            <column name="info" value="Изменение договора"/>
+        </insert>
+        <insert tableName="audit_type">
+            <column name="id" value="50"/>
+            <column name="code" value="CONTRACT_CREATE"/>
+            <column name="info" value="Создание договора"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

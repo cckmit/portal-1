@@ -1,9 +1,11 @@
 package ru.protei.portal.core.model.dict;
 
+import ru.protei.winter.core.utils.enums.HasId;
+
 /**
  * Created by michael on 19.05.16.
  */
-public enum En_CaseType {
+public enum En_CaseType implements HasId {
     BUG(1, "bug"),
     TASK(2, "task"),
     FREQ(3, "freq"),
@@ -14,7 +16,10 @@ public enum En_CaseType {
     ORDER(8, "order"),
     PROJECT(9, "project"),
     OFFICIAL(10, "official"),
-    EMPLOYEE_REGISTRATION(11, "employee-reg");
+    EMPLOYEE_REGISTRATION(11, "employee-reg"),
+    CONTRACT(12, "contract"),
+    SF_PLATFORM(13, "sf-platform"),
+    ;
 
     En_CaseType (int id, String code) {
         this.id = id;
@@ -24,6 +29,7 @@ public enum En_CaseType {
     private final int id;
     private final String code;
 
+    @Override
     public int getId() {
         return id;
     }

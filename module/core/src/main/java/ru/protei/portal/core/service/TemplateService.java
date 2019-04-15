@@ -3,10 +3,7 @@ package ru.protei.portal.core.service;
 import freemarker.template.TemplateException;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
-import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.EmployeeRegistration;
-import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 
 import java.io.IOException;
@@ -29,6 +26,10 @@ public interface TemplateService {
     PreparedTemplate getUserLoginNotificationBody( UserLoginUpdateEvent event, String url);
 
     PreparedTemplate getUserLoginNotificationSubject( String url);
+
+    PreparedTemplate getContractRemainingOneDayNotificationBody(Contract contract, ContractDate contractDate, String urlTemplate, Collection<String> recipients);
+
+    PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate);
 
     String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException;
 

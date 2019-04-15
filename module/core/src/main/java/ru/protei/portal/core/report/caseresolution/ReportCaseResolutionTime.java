@@ -30,6 +30,7 @@ public class ReportCaseResolutionTime {
             columnNames.add( localizedLang.get( "averageColumn" ) );
             columnNames.add( localizedLang.get( "maximumColumn" ) );
             columnNames.add( localizedLang.get( "minimumColumn" ) );
+            columnNames.add( localizedLang.get( "numberUncompletedCases" ) );
         } else {
             columnNames.addAll( DEFAULT_COLUMN_NAMES );
         }
@@ -44,23 +45,27 @@ public class ReportCaseResolutionTime {
 
     public void run() {
         log.info( "run(): Start report. caseQuery: {}", caseQuery );
-        intervals = makeIntervals( caseQuery.getFrom(), caseQuery.getTo(), DAY );
+        intervals = makeIntervals( caseQuery.getCreatedFrom(), caseQuery.getCreatedTo(), DAY );
 
         long startQuery = System.currentTimeMillis();
         List<CaseComment> comments = caseCommentDAO.reportCaseResolutionTime(
-                caseQuery.getProductIds().get( 0 ),
-                caseQuery.getFrom(),
-                caseQuery.getTo(),
-                caseQuery.getStateIds()
+                caseQuery.getCreatedFrom(),
+                caseQuery.getCreatedTo(),
+                caseQuery.getStateIds(),
+                caseQuery.getCompanyIds(),
+                caseQuery.getProductIds(),
+                caseQuery.getManagerIds(),
+                caseQuery.getImportanceIds(),
+                caseQuery.getCaseTagsIds()
         );
         log.info( "run(): Case comments request time: {} ms", System.currentTimeMillis() - startQuery );
         long startProcessing = System.currentTimeMillis();
 
         cases = groupBayIssues( comments );
 
-        Set<Integer> ignoredStates = new HashSet<Integer>( caseQuery.getStateIds() );
+        Set<Integer> acceptableStates = new HashSet<Integer>( caseQuery.getStateIds() );
         for (Interval interval : intervals) {
-            interval.fill( cases, ignoredStates );
+            interval.fill( cases, acceptableStates );
         }
 
         log.info( "run(): Case comments processing time: {} ms", System.currentTimeMillis() - startProcessing );
@@ -87,7 +92,8 @@ public class ReportCaseResolutionTime {
             dateCell.setCellStyle( dateStyle );
             row.createCell( cellIndex++ ).setCellValue( calcAverage( interval ) );
             row.createCell( cellIndex++ ).setCellValue( calcHours( interval.maxTime ) );
-            row.createCell( cellIndex ).setCellValue( calcHours( interval.minTime ) );
+            row.createCell( cellIndex++ ).setCellValue( calcHours( interval.minTime ) );
+            row.createCell( cellIndex ).setCellValue( interval.casesCount );
         }
         return workbook;
     }
@@ -117,14 +123,15 @@ public class ReportCaseResolutionTime {
                 map.put( comment.getCaseId(), aCase );
                 cases.add( aCase );
             }
-            mapCase( aCase, comment );
+            if (comment.getCaseStateId() != null){
+                mapCase( aCase, comment);
+            }
         }
         return cases;
     }
 
     public List<Interval> getIntervals() {
         return intervals;
-
     }
 
     private static Integer calcHours( Long value ) {
@@ -148,7 +155,7 @@ public class ReportCaseResolutionTime {
     public static final long DAY = 24 * HOUR;
 
     public static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum" );
+    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count" );
 
     private List<Case> cases = new ArrayList<>();
     private List<Interval> intervals = new ArrayList<>();

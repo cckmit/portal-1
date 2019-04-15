@@ -8,11 +8,16 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
+import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
+import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.edit.AbstractPlatformEditActivity;
@@ -28,6 +33,16 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @Override
     public void setActivity(AbstractPlatformEditActivity activity) {
         this.activity = activity;
+    }
+
+    @Override
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
+        fileUploader.setUploadHandler(handler);
+    }
+
+    @Override
+    public void setCaseNumber(Long caseNumber) {
+        fileUploader.autoBindingToCase(En_CaseType.SF_PLATFORM, caseNumber);
     }
 
     @Override
@@ -100,6 +115,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         return contactsContainer;
     }
 
+    @Override
+    public HasAttachments attachmentsContainer() {
+        return attachmentContainer;
+    }
+
     @UiHandler("saveButton")
     public void saveButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -135,6 +155,13 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
         }
     }
 
+    @UiHandler("attachmentContainer")
+    public void attachmentContainerRemove(RemoveEvent event) {
+        if (activity != null) {
+            activity.onRemoveAttachment(event.getAttachment());
+        }
+    }
+
     @UiField
     ValidableTextBox name;
     @Inject
@@ -161,6 +188,11 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     Button openButton;
     @UiField
     CollapsablePanel contactsContainer;
+    @UiField
+    AttachmentUploader fileUploader;
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachmentContainer;
 
     private AbstractPlatformEditActivity activity;
 

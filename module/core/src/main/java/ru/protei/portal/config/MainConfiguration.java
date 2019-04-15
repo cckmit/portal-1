@@ -9,7 +9,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.CasePrivilegeValidator;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
@@ -439,6 +438,31 @@ public class MainConfiguration {
         return new CaseCommentTimeElapsedSumDAO_Impl();
     }
 
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+    @Bean
+    public ContractDateDAO getContractDateDAO() {
+        return new ContractDateDAO_Impl();
+    }
+
+    @Bean
+    public CaseTagDAO getCaseTagDAO() {
+        return new CaseTagDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectTagDAO getCaseObjectTagDAO() {
+        return new CaseObjectTagDAO_Impl();
+    }
+
+    @Bean
+    public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
+        return new CaseStateWorkflowDAO_Impl();
+    }
+
     /**
      * SERVICES
      **/
@@ -657,6 +681,26 @@ public class MainConfiguration {
         return new CaseCommentServiceImpl();
     }
 
+    @Bean
+    public ContractService getContractService() {
+        return new ContractServiceImpl();
+    }
+
+    @Bean
+    public ContractReminderService getContractReminderService() {
+        return new ContractReminderServiceImpl();
+    }
+
+    @Bean
+    public CaseTagService getCaseTagService() {
+        return new CaseTagServiceImpl();
+    }
+
+    @Bean
+    public CaseStateWorkflowService getCaseStateWorkflowService() {
+        return new CaseStateWorkflowServiceImpl();
+    }
+
 
     @Bean
     public ReportCase getReportCase() {
@@ -671,11 +715,6 @@ public class MainConfiguration {
     @Bean
     public MarkdownServer getMarkdownServer() {
         return new MarkdownServer();
-    }
-
-    @Bean
-    public CasePrivilegeValidator getCasePrivilegeValidator() {
-        return new CasePrivilegeValidator();
     }
 
     /**

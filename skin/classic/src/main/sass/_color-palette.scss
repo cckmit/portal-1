@@ -1,0 +1,35 @@
+.bootstrap-colorpalette {
+  padding-left:4px;
+  padding-right:4px;
+  white-space: normal;
+  line-height:1;
+}
+
+.bootstrap-colorpalette div {
+  line-height:0;
+}
+
+.bootstrap-colorpalette .btn-color {
+  width: 17px;
+  height: 17px;
+  border: 1px solid #fff;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.bootstrap-colorpalette .btn-color:hover {
+  border: 1px solid #000;
+}
+
+.color-picker {
+  .input-group-btn {
+    .btn {
+      border-color: #ced2d7 #c5cad0 #ced2d7;
+    }
+  }
+}
+
+.color-picker-popup {
+  padding: 0;
+}

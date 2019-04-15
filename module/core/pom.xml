@@ -70,6 +70,8 @@
                         <argument>notification/email/employee.registration.body.ftl</argument>
                         <argument>notification/email/user.login.subject.ftl</argument>
                         <argument>notification/email/user.login.body.ftl</argument>
+                        <argument>notification/email/contract.remaining.one.day.subject.ftl</argument>
+                        <argument>notification/email/contract.remaining.one.day.body.ftl</argument>
                     </arguments>
                 </configuration>
             </plugin>

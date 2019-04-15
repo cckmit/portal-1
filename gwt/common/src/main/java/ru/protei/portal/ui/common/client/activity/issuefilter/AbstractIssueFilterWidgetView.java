@@ -29,7 +29,9 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasValue<Boolean> searchByComments();
 
-    HasValue<DateInterval> dateRange();
+    HasValue<DateInterval> dateCreatedRange();
+
+    HasValue<DateInterval> dateModifiedRange();
 
     HasValue<En_SortField> sortField();
 
@@ -45,6 +47,8 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
 
     HasValue<Set<PersonShortView>> commentAuthors();
 
+    HasValue<Set<EntityOption>> tags();
+
     HasValue<Boolean> searchPrivate();
 
     HasValue<Set<En_ImportanceLevel>> importances();
@@ -59,6 +63,8 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     HasVisibility managersVisibility();
 
     HasVisibility commentAuthorsVisibility();
+
+    HasVisibility tagsVisibility();
 
     HasVisibility searchPrivateVisibility();
 

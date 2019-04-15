@@ -11,6 +11,7 @@
 @import "region";
 @import "confirm";
 @import "auth";
+@import "color-palette";
 //@import "select2";
 //@import "select2-bootstrap";
 
@@ -19,6 +20,10 @@
 .date {
   .form-control {
     @extend .input-field;
+    min-height: auto;
+    border-radius: 0;
+    background-clip: initial;
+    -webkit-background-clip: initial;
   }
 
   .btn-default {
@@ -71,7 +76,14 @@
     text-align: center;
     background-color: #eee;
     border: 1px solid #ccc;
+  }
+
+  .input-group-addon:first-child {
     border-right: 0;
+  }
+
+  .input-group-addon:last-child {
+    border-left: 0;
   }
 }
 

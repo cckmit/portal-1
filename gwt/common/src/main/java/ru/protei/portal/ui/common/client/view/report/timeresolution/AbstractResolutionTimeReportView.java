@@ -4,6 +4,9 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 
@@ -15,7 +18,15 @@ public interface AbstractResolutionTimeReportView extends IsWidget {
 
     HasValue<DateInterval> dateRange();
 
-    HasValue<ProductShortView> products();
+    HasValue<Set<EntityOption>> companies();
+
+    HasValue<Set<ProductShortView>> products();
+
+    HasValue<Set<PersonShortView>> managers();
+
+    HasValue<Set<EntityOption>> tags();
+
+    HasValue<Set<En_ImportanceLevel>> importances();
 
     HasValue<Set<En_CaseState>> states();
 

@@ -2,6 +2,7 @@ package ru.protei.portal.core.service;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
+import ru.protei.portal.core.model.annotations.CasePrivileged;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -32,7 +33,7 @@ public interface CaseService {
     @Auditable( En_AuditType.ISSUE_CREATE )
     CoreResponse<CaseObject> saveCaseObject( AuthToken token, CaseObject p, Person initiator );
 
-    @Privileged({ En_Privilege.ISSUE_CREATE })
+    @Privileged({ En_Privilege.ISSUE_EDIT })
     @Auditable( En_AuditType.ISSUE_MODIFY )
     CoreResponse<CaseObject> updateCaseObject( AuthToken token, CaseObject p );
 
@@ -43,6 +44,13 @@ public interface CaseService {
 
     CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified);
 
+    @Privileged(forCases = {
+            @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.OFFICIAL, requireAll = {En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
+            @CasePrivileged(caseType = En_CaseType.SF_PLATFORM, requireAll = {En_Privilege.SITE_FOLDER_VIEW, En_Privilege.SITE_FOLDER_EDIT})
+    })
     CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber);
 
     CoreResponse<Long> attachToCaseId(Attachment attachment, long caseId);
@@ -52,7 +60,7 @@ public interface CaseService {
     CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId);
 
     CoreResponse<Long> getEmailLastId(Long caseId);
-    CoreResponse<Boolean> updateEmailLastId(CaseObject caseObject);
+    CoreResponse<Boolean> updateEmailLastId(Long caseId, Long emailLastId);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber);

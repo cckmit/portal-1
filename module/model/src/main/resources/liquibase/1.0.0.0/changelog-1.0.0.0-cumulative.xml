@@ -86,7 +86,12 @@
   <include file="2018-12-10-add-type-column-into-report.xml" relativeToChangelogFile="true"/>
   <include file="2019-01-25-add-parent-company-column.xml" relativeToChangelogFile="true"/>
   <include file="2019-01-30-add-dev-unit-columns.xml" relativeToChangelogFile="true"/>
+  <include file="2019-01-30-create-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-02-25-add-employee-curator-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-04-add-audit-type.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-06-add-case-comment-time-type.xml" relativeToChangelogFile="true"/>
+  <include file="2019-03-11-add-case-tag-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-03-18-modify-contract-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-03-25-modify-sf-platform-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-03-25-add-case-state-workflow-tables.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

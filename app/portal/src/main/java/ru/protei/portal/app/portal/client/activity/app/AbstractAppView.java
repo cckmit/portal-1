@@ -3,7 +3,7 @@ package ru.protei.portal.app.portal.client.activity.app;
 import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.app.portal.client.widget.localeselector.LocaleImage;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 
 /**
  * Created by frost on 9/23/16.

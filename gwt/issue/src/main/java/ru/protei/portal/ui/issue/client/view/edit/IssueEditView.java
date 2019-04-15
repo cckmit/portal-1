@@ -6,16 +6,17 @@ import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -28,8 +29,9 @@ import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
+import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -45,7 +47,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
-import ru.protei.portal.ui.issue.client.widget.state.buttonselector.IssueStatesButtonSelector;
 
 import java.util.Set;
 
@@ -59,7 +60,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
-        state.setDefaultValue(lang.selectIssueState());
+        // state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
@@ -145,7 +146,24 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public HasValue<Set<CaseLink>> links() {
-        return links;
+        return new HasValue<Set<CaseLink>>() {
+            @Override public Set<CaseLink> getValue() { return caseMetaView.getLinks(); }
+            @Override public void setValue(Set<CaseLink> value) { caseMetaView.setLinks(value); }
+            @Override public void setValue(Set<CaseLink> value, boolean fireEvents) { caseMetaView.setLinks(value); }
+            @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) { return null; }
+            @Override public void fireEvent(GwtEvent<?> event) {}
+        };
+    }
+
+    @Override
+    public HasValue<Set<CaseTag>> tags() {
+        return new HasValue<Set<CaseTag>>() {
+            @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
+            @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
+            @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
+            @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
+            @Override public void fireEvent(GwtEvent<?> event) {}
+        };
     }
 
     @Override
@@ -309,6 +327,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         company.applyValueIfOneOption();
     }
 
+    @Override
+    public void setTagsEnabled(boolean enabled) {
+        caseMetaView.setTagsEnabled(enabled);
+    }
+
+    @Override
+    public void setStateWorkflow(En_CaseStateWorkflow workflow) {
+        state.setWorkflow(workflow);
+    }
+
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
         if ( activity != null ) {
@@ -362,12 +390,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         local.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
         number.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
         name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
-        links.setEnsureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
-        links.setEnsureDebugIdContainer(DebugIds.ISSUE.LINKS_CONTAINER);
-        links.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
-        links.setEnsureDebugIdTextBox(DebugIds.ISSUE.LINKS_INPUT);
-        links.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
-        links.setEnsureDebugIdErrorLabel(DebugIds.ISSUE.LINKS_ERROR_LABEL);
+        caseMetaView.setEnsureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
+        caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE.LINKS_CONTAINER);
+        caseMetaView.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
+        caseMetaView.setEnsureDebugIdTextBox(DebugIds.ISSUE.LINKS_INPUT);
+        caseMetaView.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
@@ -385,7 +412,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
-        links.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
+        caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
         stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.STATE);
         importanceLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.IMPORTANCE);
         companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.COMPANY);
@@ -416,7 +443,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Inject
     @UiField(provided = true)
-    IssueStatesButtonSelector state;
+    IssueStateButtonSelector state;
 
     @Inject
     @UiField(provided = true)
@@ -481,7 +508,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     HTMLPanel caseSubscriptionContainers;
     @Inject
     @UiField(provided = true)
-    IssueLinks links;
+    CaseMetaView caseMetaView;
     @UiField
     HTMLPanel timeElapsedContainer;
 

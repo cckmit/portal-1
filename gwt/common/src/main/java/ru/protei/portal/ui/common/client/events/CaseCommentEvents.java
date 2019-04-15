@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
 
+import java.util.function.Consumer;
+
 public class CaseCommentEvents {
 
     /**
@@ -47,5 +49,52 @@ public class CaseCommentEvents {
         public Long caseId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
+    }
+
+    /**
+     * Сохранить комментарий
+     */
+    public static class SaveComment {
+
+        public SaveComment(Long caseId, SaveComment.SaveCommentCompleteHandler handler) {
+            this.caseId = caseId;
+            this.handler = handler;
+        }
+
+        public Long caseId;
+        public SaveComment.SaveCommentCompleteHandler handler;
+
+        public interface SaveCommentCompleteHandler {
+            void onSuccess();
+            void onError(Throwable throwable, String message);
+        }
+    }
+
+    /**
+     * Провалидировать комментарий
+     */
+    public static class ValidateComment {
+
+        public ValidateComment(Consumer<Boolean> onValidate) {
+            this.onValidate = onValidate;
+        }
+
+        public void validate(boolean isValid) {
+            onValidate.accept(isValid);
+        }
+
+        private Consumer<Boolean> onValidate;
+    }
+
+    /**
+     * Удалить черновик комментария из хранилища
+     */
+    public static class RemoveDraft {
+
+        public RemoveDraft(Long caseId) {
+            this.caseId = caseId;
+        }
+
+        public Long caseId;
     }
 }

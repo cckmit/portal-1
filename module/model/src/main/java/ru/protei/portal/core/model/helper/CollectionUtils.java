@@ -38,6 +38,10 @@ public class CollectionUtils {
         return collection == null ? Collections.<T>emptyList() : collection;
     }
 
+    public static <T> Set<T> emptyIfNull( Set<T> set ) {
+        return set == null ? Collections.<T>emptySet() : set;
+    }
+
     public static <I, O> void transform( final Iterable<I> iterable, final Collection<O> output,
                                          final Function<? super I, ? extends O> mapper ) {
         if ( iterable == null || mapper == null || output == null ) {
@@ -110,5 +114,11 @@ public class CollectionUtils {
             result.put( keyMapper.apply( next ), valueMapper.apply( next ) );
         }
         return result;
+    }
+
+    public static <T> List<T> singleValueList(T value) {
+        List<T> list = new ArrayList<>();
+        list.add(value);
+        return list;
     }
 }

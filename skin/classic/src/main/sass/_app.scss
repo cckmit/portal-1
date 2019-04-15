@@ -198,8 +198,10 @@ body {
   position: fixed;
   top: 0;
   left: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding-top: 50px;
-  min-height: 100%;
+  height: 100%;
   width: 240px;
   z-index: 810;
   background-color: #293545;

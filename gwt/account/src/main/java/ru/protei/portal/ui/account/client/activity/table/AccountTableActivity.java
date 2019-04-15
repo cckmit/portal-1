@@ -149,18 +149,13 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     @Override
-    public void onPageChanged( int page ) {
-        pagerView.setCurrentPage( page+1 );
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
     }
 
     @Override
-    public void onFirstClicked() {
-        view.scrollTo( 0 );
-    }
-
-    @Override
-    public void onLastClicked() {
-        view.scrollTo( view.getPageCount()-1 );
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
     }
 
     private void requestTotalCount() {

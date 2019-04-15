@@ -59,6 +59,7 @@
                 <module>gwt/sitefolder</module>
                 <module>gwt/employee</module>
                 <module>gwt/employeeregistration</module>
+                <module>gwt/contract</module>
 
                 <module>app/portal</module>
             </modules>

@@ -73,7 +73,11 @@ public enum En_AuditType {
 
     PROJECT_REMOVE(47),
 
-    EMPLOYEE_REGISTRATION_MODIFY(48);
+    EMPLOYEE_REGISTRATION_MODIFY(48),
+
+    CONTRACT_MODIFY(49),
+    CONTRACT_CREATE(50),
+    ;
 
     En_AuditType(int id ) {
         this.id = id;

@@ -17,7 +17,7 @@ public class IssueStatesOptionList extends OptionList<En_CaseState> implements S
 
     @Inject
     public void init( StateModel stateModel) {
-        stateModel.subscribe( this );
+        stateModel.subscribeNoWorkflow(this);
     }
 
     @Override

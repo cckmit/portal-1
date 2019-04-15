@@ -23,9 +23,7 @@ public class AttachmentUploader extends FileUploader{
 
     @Override
     public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
-        form.removeStyleName("attachment-uploading");
-        form.reset();
-        fileUpload.setEnabled(true);
+        resetForm();
         onUploaded(event.getResults());
     }
 
@@ -45,17 +43,27 @@ public class AttachmentUploader extends FileUploader{
 
     public void uploadBase64File(String json) {
         try {
+            if (!fileUpload.isEnabled()) {
+                return;
+            }
+            form.addStyleName("attachment-uploading");
+            fileUpload.setEnabled(false);
             RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(UPLOAD_BASE_64_FILE_URL));
             builder.setHeader("Content-type", "application/json");
             builder.sendRequest(json, new RequestCallback() {
                 @Override
                 public void onResponseReceived(Request request, Response response) {
+                    resetForm();
                     onUploaded(response.getText());
                 }
                 @Override
-                public void onError(Request request, Throwable exception) {}
+                public void onError(Request request, Throwable exception) {
+                    resetForm();
+                }
             });
-        } catch (RequestException e) {}
+        } catch (RequestException e) {
+            resetForm();
+        }
     }
 
     /**
@@ -69,6 +77,12 @@ public class AttachmentUploader extends FileUploader{
 
     public void setUploadHandler(FileUploadHandler fileUploadHandler){
         this.uploadHandler = fileUploadHandler;
+    }
+
+    private void resetForm() {
+        form.removeStyleName("attachment-uploading");
+        form.reset();
+        fileUpload.setEnabled(true);
     }
 
     private void onUploaded(String response) {

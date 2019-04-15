@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
@@ -244,6 +245,34 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
+    @Override
+    public PreparedTemplate getContractRemainingOneDayNotificationBody(Contract contract, ContractDate contractDate, String urlTemplate, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("contractNumber", contract.getNumber());
+        templateModel.put("contractDateType", contractDate.getType());
+        templateModel.put("contractDateDate", contractDate.getDate());
+        templateModel.put("contractDateComment", escapeText(contractDate.getComment()));
+        templateModel.put("contractDateCommentExists", StringUtils.isNotBlank(contractDate.getComment()));
+        templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.remaining.one.day.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("contractNumber", contract.getNumber());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.remaining.one.day.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
     private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment){
         return comments
                 .stream()
@@ -271,7 +300,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        text = HTMLHelper.htmlEscape(text);
+        text = HTMLHelper.htmlEscapeWOThreeBackticks(text);
         text = markdownServer.plain2markdown(text);
         text = replaceLineBreaks( text );
         return text;

@@ -5,7 +5,6 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 
 /**
  * Представление одного комментария
@@ -38,7 +37,7 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setIcon( String iconSrc );
 
-    HasTime timeElapsed();
+    void setTimeElapsed( String timeTypeString );
 
     void clearElapsedTime();
 
