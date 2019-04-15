@@ -15,6 +15,8 @@ import com.atlassian.renderer.v2.components.phrase.ForceNewLineRendererComponent
 import com.atlassian.renderer.v2.components.phrase.NewLineRendererComponent;
 import com.atlassian.renderer.v2.components.phrase.PhraseRendererComponent;
 import com.atlassian.renderer.v2.components.table.TableBlockRenderer;
+import com.atlassian.renderer.v2.macro.DefaultMacroManager;
+import com.atlassian.renderer.v2.macro.MacroManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -76,17 +78,14 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         if (CollectionUtils.isNotEmpty(components)) {
             return components;
         }
-        // Order does matter! Components will be executed one by one
+        // Order does matter! Components will be executed one by one. Components may conflict with each other.
         components = new ArrayList<>();
+        components.add(new BackslashEscapeRendererComponent());
         components.add(new LinkRendererComponent(makeLinkResolver()));
         components.add(new UrlRendererComponent(makeLinkResolver()));
         components.add(new EmbeddedImageRendererComponent());
         components.add(new EmbeddedUnembeddableRendererComponent());
         components.add(new EmbeddedObjectRendererComponent());
-        components.add(new BackslashEscapeRendererComponent());
-        components.add(new DashRendererComponent());
-        components.add(new ForceNewLineRendererComponent());
-        components.add(new NewLineRendererComponent()); /* Remove if new line on "\n" no needed */
         components.add(PhraseRendererComponent.getDefaultRenderer("citation"));
         components.add(PhraseRendererComponent.getDefaultRenderer("strong"));
         components.add(PhraseRendererComponent.getDefaultRenderer("superscript"));
@@ -95,6 +94,10 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         components.add(PhraseRendererComponent.getDefaultRenderer("deleted"));
         components.add(PhraseRendererComponent.getDefaultRenderer("inserted"));
         components.add(PhraseRendererComponent.getDefaultRenderer("monospaced"));
+        components.add(new ForceNewLineRendererComponent());
+        components.add(new MacroRendererComponent(getMacroManager(), getSubRenderer()));
+        components.add(new DashRendererComponent());
+        components.add(new NewLineRendererComponent()); /* Remove if new line on "\n" no needed */
         List<BlockRenderer> blockRendererList = new ArrayList<>();
         blockRendererList.add(new HeadingBlockRenderer());
         blockRendererList.add(new TableBlockRenderer());
@@ -112,7 +115,7 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         return renderer = new V2Renderer(getComponents());
     }
 
-    private SubRenderer getSubRenderer() {
+    private V2SubRenderer getSubRenderer() {
         if (subRenderer != null) {
             return subRenderer;
         }
@@ -126,6 +129,13 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         rendererFacade = new V2RendererFacade();
         rendererFacade.setRenderer(getRenderer());
         return rendererFacade;
+    }
+
+    private MacroManager getMacroManager() {
+        if (macroManager != null) {
+            return macroManager;
+        }
+        return macroManager = new DefaultMacroManager(getSubRenderer());
     }
 
     private RenderContext makeRenderContext() {
@@ -145,18 +155,13 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
             public Link createLink(RenderContext renderContext, String s) {
                 return new UrlLink(new GenericLinkParser(s));
             }
+            /* UrlRendererComponent and LinkRendererComponent dont use following methods */
             @Override
-            public List extractLinkTextList(String s) {
-                return null;
-            }
+            public List extractLinkTextList(String s) { return null; }
             @Override
-            public List extractLinks(RenderContext renderContext, String s) {
-                return null;
-            }
+            public List extractLinks(RenderContext renderContext, String s) { return null; }
             @Override
-            public String removeLinkBrackets(String s) {
-                return null;
-            }
+            public String removeLinkBrackets(String s) { return null; }
         };
     }
 
@@ -170,6 +175,7 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
                 }
                 return null;
             }
+            /* Following methods dont matter without EmoticonRendererComponent */
             @Override
             public Icon getEmoticon(String s) { return null; }
             @Override
@@ -196,7 +202,8 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
     private PortalConfig config;
     private List<RendererComponent> components;
     private Renderer renderer;
-    private SubRenderer subRenderer;
+    private V2SubRenderer subRenderer;
     private V2RendererFacade rendererFacade;
+    private MacroManager macroManager;
     private static final String CHARACTER_ENCODING = StandardCharsets.UTF_8.name();
 }

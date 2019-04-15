@@ -218,7 +218,7 @@ public abstract class CaseCommentListActivity
 
         comment = null;
 
-        String message = CaseCommentUtils.appendQuote(view.message().getValue(), value.getText());
+        String message = CaseCommentUtils.appendQuote(view.message().getValue(), value.getText(), view.messageMarkup().getValue());
         view.message().setValue( message, true );
         view.focus();
     }
@@ -467,6 +467,10 @@ public abstract class CaseCommentListActivity
             return;
         }
 
+        if (comment.getTextMarkup() == null) {
+            comment.setTextMarkup(view.messageMarkup().getValue());
+        }
+
         comment.setCaseId( id != null ? id : caseId );
         comment.setText( message );
         comment.setTimeElapsed(view.timeElapsed().getTime());
@@ -479,22 +483,19 @@ public abstract class CaseCommentListActivity
         );
 
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
-                .withError(throwable -> {
+                .withResult(() -> {
                     requesting = false;
                     view.sendEnabled().setEnabled(true);
-
+                })
+                .withError(throwable -> {
                     if (saveCommentCompleteHandler != null) {
                         saveCommentCompleteHandler.onError(throwable, null);
                         return;
                     }
-
                     fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(result -> {
                     storage.remove(makeStorageKey(result.getCaseId()));
-
-                    requesting = false;
-                    view.sendEnabled().setEnabled(true);
 
                     if (saveCommentCompleteHandler != null) {
                         saveCommentCompleteHandler.onSuccess();
@@ -503,7 +504,7 @@ public abstract class CaseCommentListActivity
                     result.setCaseAttachments(comment.getCaseAttachments());
 
                     if (isEdit) {
-                        convertTextAsync(result.getText(), result.getTextMarkup(), lastCommentView::setMessage);
+                        renderTextAsync(result.getText(), result.getTextMarkup(), lastCommentView::setMessage);
                         lastCommentView.clearElapsedTime();
                         fillTimeElapsed( comment, lastCommentView );
 
@@ -520,6 +521,7 @@ public abstract class CaseCommentListActivity
                         AbstractCaseCommentItemView itemView = makeCommentView(result);
                         lastCommentView = itemView;
                         view.addCommentToFront(itemView.asWidget());
+                        renderTextAsync(result.getText(), result.getTextMarkup(), itemView::setMessage);
                     }
 
                     comment = null;
@@ -563,7 +565,7 @@ public abstract class CaseCommentListActivity
             return;
         }
 
-        convertTextAsync(text, textMarkup, converted -> {
+        renderTextAsync(text, textMarkup, converted -> {
             if (StringUtils.isBlank(converted)) {
                 view.setPreviewVisible(false);
                 return;
@@ -582,7 +584,7 @@ public abstract class CaseCommentListActivity
         return STORAGE_CASE_COMMENT_PREFIX + id;
     }
 
-    private void convertTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
+    private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
         String escapedText = HTMLHelper.htmlEscapeWOThreeBackticks(text);
         textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(escapedText))
