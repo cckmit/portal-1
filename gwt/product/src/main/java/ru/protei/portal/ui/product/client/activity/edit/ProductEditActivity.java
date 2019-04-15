@@ -120,8 +120,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void renderMarkdownText(String text, Consumer<String> consumer) {
-        String escapedText = HTMLHelper.htmlEscapeWOThreeBackticks(text);
-        textRenderController.render(escapedText, En_TextMarkup.MARKDOWN, new FluentCallback<String>()
+        En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
+        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
+        textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(escapedText))
                 .withSuccess(consumer));
     }

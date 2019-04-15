@@ -16,7 +16,10 @@ import com.atlassian.renderer.v2.components.phrase.NewLineRendererComponent;
 import com.atlassian.renderer.v2.components.phrase.PhraseRendererComponent;
 import com.atlassian.renderer.v2.components.table.TableBlockRenderer;
 import com.atlassian.renderer.v2.macro.DefaultMacroManager;
+import com.atlassian.renderer.v2.macro.Macro;
 import com.atlassian.renderer.v2.macro.MacroManager;
+import com.atlassian.renderer.v2.macro.code.CodeMacro;
+import com.atlassian.renderer.v2.macro.code.formatter.AbstractFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -25,6 +28,7 @@ import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -135,7 +139,11 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         if (macroManager != null) {
             return macroManager;
         }
-        return macroManager = new DefaultMacroManager(getSubRenderer());
+        DefaultMacroManager macroManager = new DefaultMacroManager(getSubRenderer());
+        Macro codeMacro = new CodeMacro(getSubRenderer(), Collections.singletonList(new JiraWikiMarkupMacroNoneFormatter()));
+        macroManager.unregisterMacro("code");
+        macroManager.registerMacro("code", codeMacro);
+        return this.macroManager = macroManager;
     }
 
     private RenderContext makeRenderContext() {
@@ -206,4 +214,17 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
     private V2RendererFacade rendererFacade;
     private MacroManager macroManager;
     private static final String CHARACTER_ENCODING = StandardCharsets.UTF_8.name();
+
+    /**
+     * "java" language used by default when no language defined
+     * @see com.atlassian.renderer.v2.macro.code.formatter.NoneFormatter
+     * @see com.atlassian.renderer.v2.macro.code.CodeMacro#getLanguage(java.util.Map)
+     */
+    private class JiraWikiMarkupMacroNoneFormatter extends AbstractFormatter {
+        private final String[] SUPPORTED_LANGUAGES = new String[]{"none", "java"};
+        @Override
+        public String[] getSupportedLanguages() {
+            return SUPPORTED_LANGUAGES;
+        }
+    }
 }

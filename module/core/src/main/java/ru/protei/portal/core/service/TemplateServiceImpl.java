@@ -301,9 +301,8 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        text = HTMLHelper.htmlEscapeWOThreeBackticks(text);
+        text = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
         text = htmlRenderer.plain2html(text, textMarkup);
-        text = replaceLineBreaks( text );
         return text;
     }
 

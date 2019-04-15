@@ -323,7 +323,8 @@ public abstract class CaseCommentListActivity
             AbstractCaseCommentItemView itemView = makeCommentView( value );
             if (StringUtils.isNotEmpty(value.getText())) {
                 views.add(itemView);
-                values.add(new TextWithMarkup(value.getText(), value.getTextMarkup()));
+                String text = HTMLHelper.htmlEscapeWOCodeBlock(value.getText(), value.getTextMarkup());
+                values.add(new TextWithMarkup(text, value.getTextMarkup()));
             }
             view.addCommentToFront( itemView.asWidget() );
         }
@@ -358,7 +359,7 @@ public abstract class CaseCommentListActivity
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
 
         if ( StringUtils.isNotEmpty( value.getText() ) ) {
-            itemView.setMessage(value.getText());
+            itemView.setMessage(HTMLHelper.htmlEscapeWOCodeBlock(value.getText(), value.getTextMarkup()));
         }
 
         if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
@@ -585,7 +586,7 @@ public abstract class CaseCommentListActivity
     }
 
     private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
-        String escapedText = HTMLHelper.htmlEscapeWOThreeBackticks(text);
+        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
         textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(escapedText))
                 .withSuccess(consumer));
