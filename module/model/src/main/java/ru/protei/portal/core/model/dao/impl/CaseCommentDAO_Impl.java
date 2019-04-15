@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.CrmConstants;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -66,7 +67,19 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
         String acceptableStates = makeInArg( terminatedStates);
 
-        String products = makeAndPartFromListIds(productIds, "ob.product_id");
+        String products = "";
+        if ( productIds != null && !productIds.isEmpty() ) {
+            if (productIds.remove(CrmConstants.Product.UNDEFINED)) {
+                products += " and (ob.product_id is null";
+                if (!productIds.isEmpty()) {
+                    products += " or ob.product_id in " + makeInArg(productIds);
+                }
+                products += ")";
+            } else {
+                products += " and ob.product_id in " + makeInArg(productIds);
+            }
+        }
+
         String companies = makeAndPartFromListIds(companiesIds, "ob.initiator_company");
         String managers = makeAndPartFromListIds(managersIds, "ob.manager");
         String importance = makeAndPartFromListIds(importanceIds, "ob.importance");
