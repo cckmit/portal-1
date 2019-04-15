@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.view.casecomment.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -167,6 +168,12 @@ public class CaseCommentItemView
         this.remoteLink.setVisible(remoteLink != null);
     }
 
+    @Override
+    public void setPrivateComment(Boolean value) {
+        privateComment.setClassName(value ? "fa fa-fw fa-lg fa-lock text-danger pull-left"
+                                          : "fa fa-fw fa-lg fa-unlock-alt text-success pull-left");
+    }
+
     @UiHandler( "remove" )
     public void onRemoveClicked( ClickEvent event ) {
         event.preventDefault();
@@ -202,6 +209,8 @@ public class CaseCommentItemView
     CaseMetaView remoteLink;
     @UiField
     HTMLPanel message;
+    @UiField
+    Element privateComment;
     @UiField
     Anchor remove;
     @UiField

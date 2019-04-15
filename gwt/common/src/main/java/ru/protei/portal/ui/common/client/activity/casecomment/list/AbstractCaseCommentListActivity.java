@@ -16,4 +16,6 @@ public interface AbstractCaseCommentListActivity {
     void onDetachView();
 
     void onCommentChanged(String text);
+
+    void onPrivateCommentClicked();
 }

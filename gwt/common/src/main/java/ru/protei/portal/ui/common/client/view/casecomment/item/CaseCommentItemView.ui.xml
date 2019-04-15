@@ -18,6 +18,7 @@
             <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">
+                    <i ui:field="privateComment" class="fa fa-lg fa-unlock-alt pull-left"/>
                     <g:Anchor href="javascript:;" ui:field="reply">
                         <i class="fa fa-reply"/>
                     </g:Anchor>

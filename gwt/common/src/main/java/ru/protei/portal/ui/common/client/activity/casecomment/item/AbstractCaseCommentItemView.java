@@ -42,4 +42,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void clearElapsedTime();
 
     void setRemoteLink(CaseLink remoteLink);
+
+    void setPrivateComment(Boolean value);
 }

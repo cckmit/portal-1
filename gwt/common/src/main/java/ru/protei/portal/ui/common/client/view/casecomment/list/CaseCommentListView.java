@@ -185,6 +185,13 @@ public class CaseCommentListView
         fileUploader.uploadBase64File(event.getJson());
     }
 
+    @UiHandler("privateComment")
+    public void onLocalClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onPrivateCommentClicked();
+        }
+    }
+
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
@@ -199,12 +206,34 @@ public class CaseCommentListView
         }
     }
 
+    @Override
+    public HasVisibility privacyVisibility() {
+        return new HasVisibility() {
+            @Override
+            public boolean isVisible() {
+                return privateComment.isVisible();
+            }
+
+            @Override
+            public void setVisible( boolean b ) {
+                privateComment.setVisible( b );
+            }
+        };
+    }
+
+    @Override
+    public HasValue<Boolean> isPrivateComment() {
+        return privateComment;
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
     AutoResizeTextArea comment;
     @UiField
     FlowPanel commentsContainer;
+    @UiField
+    ToggleButton privateComment;
     @UiField
     Button send;
     @Inject

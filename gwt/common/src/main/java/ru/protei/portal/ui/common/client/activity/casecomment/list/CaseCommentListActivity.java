@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -289,6 +290,27 @@ public abstract class CaseCommentListActivity
         });
     }
 
+    @Override
+    public void onPrivateCommentClicked() {
+        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
+    }
+
+    private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
+        this.subscriptionsList = subscriptionsList;
+        this.subscriptionsListEmptyMessage = emptyMessage;
+        return subscriptionsList == null || subscriptionsList.isEmpty()
+                ? subscriptionsListEmptyMessage
+                : subscriptionsList.stream()
+                .map(CompanySubscription::getEmail)
+                .filter(mail -> !view.isPrivateComment().getValue() || CompanySubscription.isProteiRecipient(mail))
+                .collect(Collectors.joining(", "));
+    }
+
+    private void setSubscriptionEmails(String value) {
+//        view.setSubscriptionEmails(value);
+//        view.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
+    }
+
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -338,6 +360,7 @@ public abstract class CaseCommentListActivity
 
         itemView.clearElapsedTime();
         fillTimeElapsed( value, itemView );
+        itemView.setPrivateComment(value.isPrivateComment());
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
@@ -457,6 +480,7 @@ public abstract class CaseCommentListActivity
         comment.setTimeElapsed(view.timeElapsed().getTime());
         En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
         comment.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
+        comment.setPrivateComment(view.isPrivateComment().getValue());
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))
@@ -581,6 +605,9 @@ public abstract class CaseCommentListActivity
     AttachmentServiceAsync attachmentService;
     @Inject
     MarkdownClient markdownClient;
+
+    private List<CompanySubscription> subscriptionsList;
+    private String subscriptionsListEmptyMessage;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;
