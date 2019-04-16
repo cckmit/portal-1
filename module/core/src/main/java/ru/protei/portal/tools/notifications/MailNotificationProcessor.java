@@ -162,12 +162,20 @@ public class MailNotificationProcessor {
     }
 
     private void performCaseObjectNotification(
-            AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
+            AssembledCaseEvent event, List<CaseComment> allComments, Long lastMessageId, List<String> recipients,
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
         if (notifiers == null || notifiers.size() == 0) {
             return;
+        }
+
+        List<CaseComment> comments;
+        if (isProteiRecipients) {
+            comments = allComments;
+        } else {
+            comments = (allComments != null) ? allComments.stream().filter(comment -> !comment.isPrivateComment()).collect(toList())
+                                             : null;
         }
 
         CaseObject caseObject = event.getCaseObject();
