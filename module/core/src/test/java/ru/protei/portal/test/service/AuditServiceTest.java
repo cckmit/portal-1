@@ -6,14 +6,15 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.AuditQuery;
+import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.service.AuditService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -30,7 +31,7 @@ public class AuditServiceTest {
 
     @BeforeClass
     public static void init() {
-        ctx = new AnnotationConfigApplicationContext( CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class );
+        ctx = new AnnotationConfigApplicationContext( CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class );
     }
 
     @Test

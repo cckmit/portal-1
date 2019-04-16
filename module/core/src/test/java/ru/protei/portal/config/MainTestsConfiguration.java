@@ -3,6 +3,7 @@ package ru.protei.portal.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
@@ -18,28 +19,23 @@ import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.mock.TestAuthService;
+import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.portal.mock.ReportControlServiceMock;
 import ru.protei.portal.util.MarkdownServer;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
-
 @Configuration
+@EnableAspectJAutoProxy
 public class MainTestsConfiguration {
 
-
-    /**
-     * Config
-     * @return
-     */
     @Bean
-    public PortalConfig getPortalConfig () throws ConfigException {
-        return new PortalConfig("portal_test.properties");
+    public PortalConfig getPortalConfig() throws ConfigException {
+        return new PortalConfig("portal.properties");
     }
 
     @Bean
@@ -60,6 +56,8 @@ public class MainTestsConfiguration {
         messageSource.setDefaultEncoding("UTF-8");
         return new Lang(messageSource);
     }
+
+    /* DAO SQL builders */
 
     @Bean
     public CaseObjectSqlBuilder sqlDefaultBuilder () {
@@ -371,15 +369,8 @@ public class MainTestsConfiguration {
         return new CaseStateWorkflowDAO_Impl();
     }
 
-/**
- *
- *
- *
- * SERVICES
- *
- *
- *
- **/
+    /* SERVICES */
+
     @Bean
     public SessionIdGen getSessionIdGenerator() {
         return new SimpleSidGenerator();
@@ -387,7 +378,7 @@ public class MainTestsConfiguration {
 
     @Bean
     public AuthService getAuthService() {
-        return new TestAuthService();
+        return new AuthServiceMock();
     }
 
     @Bean
@@ -476,11 +467,6 @@ public class MainTestsConfiguration {
     public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
 
     @Bean
-    public BootstrapService getBootstrapService() {
-        return new BootstrapService();
-    }
-
-    @Bean
     public EventAssemblerService getEventAssemblerService() {
         return new EventAssemblerServiceImpl();
     }
@@ -527,7 +513,7 @@ public class MainTestsConfiguration {
 
     @Bean
     public ReportControlService getReportControlService() {
-        return new ReportControlServiceImpl();
+        return new ReportControlServiceMock();
     }
 
     @Bean
@@ -589,7 +575,8 @@ public class MainTestsConfiguration {
         return new MarkdownServer();
     }
 
-    /** ASPECT/INTERCEPTORS **/
+    /* ASPECT/INTERCEPTORS */
+
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {
         return new ServiceLayerInterceptor();
@@ -599,5 +586,4 @@ public class MainTestsConfiguration {
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
     }
-
 }

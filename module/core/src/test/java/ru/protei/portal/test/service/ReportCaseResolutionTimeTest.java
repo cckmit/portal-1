@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
@@ -24,7 +25,7 @@ import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTi
 import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.DAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
     private void initCaseObjectsQueryTest() {

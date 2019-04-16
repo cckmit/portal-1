@@ -6,7 +6,8 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupItemDAO;
@@ -30,7 +31,7 @@ public class CompanyServiceTest {
 
     @BeforeClass
     public static void init () {
-         ctx = new AnnotationConfigApplicationContext (CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
+         ctx = new AnnotationConfigApplicationContext (CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class);
     }
 
 

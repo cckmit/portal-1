@@ -6,10 +6,11 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.config.ServiceInterceptorConfiguration;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.service.SmokeyService;
-import ru.protei.portal.test.config.TestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -22,7 +23,7 @@ public class ServiceInterceptorTest {
 
     @BeforeClass
     public static void init () {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class,  TestConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class, ServiceInterceptorConfiguration.class);
     }
 
     @Test

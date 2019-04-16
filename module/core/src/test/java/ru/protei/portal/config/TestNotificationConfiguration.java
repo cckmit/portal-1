@@ -1,10 +1,9 @@
-package ru.protei.portal.test.notification;
+package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import ru.protei.portal.config.MainConfiguration;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.ReferenceableMimeMessage;
@@ -22,7 +21,7 @@ import java.util.Properties;
  * Фабрика для тестирования уведомлений
  */
 @Configuration
-@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class, NotificationConfiguration.class})
+@Import({CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class, NotificationConfiguration.class})
 public class TestNotificationConfiguration {
 
     @Bean

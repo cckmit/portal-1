@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TestAuthService implements AuthService {
+public class AuthServiceMock implements AuthService {
     UserSessionDescriptor descriptor = new UserSessionDescriptor();
 
 

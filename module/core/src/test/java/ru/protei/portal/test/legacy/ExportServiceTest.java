@@ -6,7 +6,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ExportSybEntryDAO;
@@ -16,7 +17,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
@@ -50,7 +50,7 @@ public class ExportServiceTest {
 
     @BeforeClass
     public static void init () throws Exception {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class);
         exportService = ctx.getBean(ExportDataService.class);
         legacySystemDAO = ctx.getBean(LegacySystemDAO.class);
         companyDAO = ctx.getBean(CompanyDAO.class);

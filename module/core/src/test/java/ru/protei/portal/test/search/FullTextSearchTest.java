@@ -1,4 +1,4 @@
-package ru.protei.portal.search;
+package ru.protei.portal.test.search;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;

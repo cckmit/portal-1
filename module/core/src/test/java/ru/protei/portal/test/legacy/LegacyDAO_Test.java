@@ -5,7 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.ent.LegacyEntity;
 import ru.protei.portal.tools.migrate.struct.*;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
@@ -14,7 +14,6 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class LegacyDAO_Test {
@@ -25,7 +24,7 @@ public class LegacyDAO_Test {
 
     @BeforeClass
     public static void init () {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class);
     }
 
     @Test

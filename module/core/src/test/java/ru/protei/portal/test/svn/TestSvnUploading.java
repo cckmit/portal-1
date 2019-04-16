@@ -1,4 +1,4 @@
-package ru.protei.portal.svn;
+package ru.protei.portal.test.svn;
 
 import org.junit.Assert;
 import org.junit.Test;
