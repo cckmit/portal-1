@@ -199,19 +199,21 @@ public class CaseCommentListView
         }
     }
 
-    @Override
-    public HasVisibility privacyVisibility() {
-        return new HasVisibility() {
-            @Override
-            public boolean isVisible() {
-                return privateComment.isVisible();
-            }
+    private HasVisibility privacyVisibility = new HasVisibility() {
+        @Override
+        public boolean isVisible() {
+            return privateComment.isVisible();
+        }
 
-            @Override
-            public void setVisible( boolean b ) {
-                privateComment.setVisible( b );
-            }
-        };
+        @Override
+        public void setVisible( boolean b ) {
+            privateComment.setVisible( b );
+        }
+    };
+
+    @Override
+    public HasVisibility getPrivacyVisibility() {
+        return privacyVisibility;
     }
 
     @Override
