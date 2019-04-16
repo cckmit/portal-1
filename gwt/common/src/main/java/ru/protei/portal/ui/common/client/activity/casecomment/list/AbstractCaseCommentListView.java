@@ -52,5 +52,5 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     HasVisibility privacyVisibility();
 
-    HasValue<Boolean> isPrivateComment();
+    HasValue<Boolean> privateComment();
 }

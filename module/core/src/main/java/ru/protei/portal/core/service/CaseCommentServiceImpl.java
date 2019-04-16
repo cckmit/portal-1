@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -32,11 +33,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (checkAccessStatus != null) {
             return new CoreResponse<List<CaseComment>>().error(checkAccessStatus);
         }
-        return getList(new CaseCommentQuery(caseObjectId));
+        CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
+        applyFilterByScope( token, query );
+        return getList(query);
     }
 
     @Override
     public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
+        applyFilterByScope( token, query );
         return getList(query);
     }
 
@@ -187,6 +191,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     private CoreResponse<List<CaseComment>> getList(CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
         return getList(comments);
+    }
+
+    private void applyFilterByScope( AuthToken token, CaseCommentQuery query ) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
+            query.setAllowViewPrivate( false );
+        }
     }
 
     private CoreResponse<List<CaseComment>> getList(List<CaseComment> comments) {
@@ -360,6 +372,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     AttachmentService attachmentService;
     @Autowired
     EventPublisherService publisherService;
+
+    @Autowired
+    PolicyService policyService;
+    @Autowired
+    AuthService authService;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;

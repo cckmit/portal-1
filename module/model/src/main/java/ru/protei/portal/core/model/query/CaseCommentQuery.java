@@ -14,6 +14,11 @@ public class CaseCommentQuery extends BaseQuery {
     private Boolean caseStateNotNull;
     private List<Long> caseObjectIds;
     private List<Long> authorIds;
+    /**
+     * if true then both states otherwise only non-private state
+     */
+    private boolean allowViewPrivate;
+    private Boolean viewPrivate = null;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -31,6 +36,7 @@ public class CaseCommentQuery extends BaseQuery {
     public CaseCommentQuery(Long id, String searchString, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         addCaseObjectId(id);
+        this.allowViewPrivate = true;
     }
 
     public Date getCreatedBefore() {
@@ -91,5 +97,21 @@ public class CaseCommentQuery extends BaseQuery {
             authorIds = new ArrayList<>();
         }
         authorIds.add(authorId);
+    }
+
+    public boolean isAllowViewPrivate() {
+        return allowViewPrivate;
+    }
+
+    public void setAllowViewPrivate(boolean isAllowViewPrivate) {
+        this.allowViewPrivate = isAllowViewPrivate;
+    }
+
+    public Boolean isViewPrivate() {
+        return viewPrivate;
+    }
+
+    public void setViewPrivate(Boolean viewOnlyPrivate) {
+        this.viewPrivate = viewOnlyPrivate;
     }
 }

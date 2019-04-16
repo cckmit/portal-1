@@ -100,6 +100,7 @@ public abstract class CaseCommentListActivity
         view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
         view.enabledNewComment(isModifyEnabled);
+        view.privateComment().setValue(false);
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
@@ -290,27 +291,6 @@ public abstract class CaseCommentListActivity
         });
     }
 
-    @Override
-    public void onPrivateCommentClicked() {
-        setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
-    }
-
-    private String getSubscriptionsBasedOnPrivacy(List<CompanySubscription> subscriptionsList, String emptyMessage) {
-        this.subscriptionsList = subscriptionsList;
-        this.subscriptionsListEmptyMessage = emptyMessage;
-        return subscriptionsList == null || subscriptionsList.isEmpty()
-                ? subscriptionsListEmptyMessage
-                : subscriptionsList.stream()
-                .map(CompanySubscription::getEmail)
-                .filter(mail -> !view.isPrivateComment().getValue() || CompanySubscription.isProteiRecipient(mail))
-                .collect(Collectors.joining(", "));
-    }
-
-    private void setSubscriptionEmails(String value) {
-//        view.setSubscriptionEmails(value);
-//        view.companyEnabled().setEnabled(isCompanyChangeAllowed(issue));
-    }
-
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -480,7 +460,7 @@ public abstract class CaseCommentListActivity
         comment.setTimeElapsed(view.timeElapsed().getTime());
         En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
         comment.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
-        comment.setPrivateComment(view.isPrivateComment().getValue());
+        comment.setPrivateComment(view.privateComment().getValue());
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))

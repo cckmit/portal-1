@@ -185,13 +185,6 @@ public class CaseCommentListView
         fileUploader.uploadBase64File(event.getJson());
     }
 
-    @UiHandler("privateComment")
-    public void onLocalClick(ClickEvent event) {
-        if (activity != null) {
-            activity.onPrivateCommentClicked();
-        }
-    }
-
     @Override
     public HandlerRegistration addRemoveHandler(RemoveHandler handler) {
         return addHandler( handler, RemoveEvent.getType() );
@@ -222,7 +215,7 @@ public class CaseCommentListView
     }
 
     @Override
-    public HasValue<Boolean> isPrivateComment() {
+    public HasValue<Boolean> privateComment() {
         return privateComment;
     }
 
