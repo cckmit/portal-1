@@ -51,6 +51,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (checkAccessStatus != null) {
             return new CoreResponse<CaseComment>().error(checkAccessStatus);
         }
+        if (prohibitedPrivateComment(token, comment)) {
+            return new CoreResponse<CaseComment>().error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
+        }
 
         CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
         CoreResponse<CaseComment> response = add(token, comment);
@@ -84,6 +87,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
             return new CoreResponse<CaseComment>().error(checkAccessStatus);
+        }
+        if (prohibitedPrivateComment(token, comment)) {
+            return new CoreResponse<CaseComment>().error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
         CaseComment prevComment = caseCommentDAO.get(comment.getId());
@@ -199,6 +205,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
             query.setAllowViewPrivate( false );
         }
+    }
+    private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
     }
 
     private CoreResponse<List<CaseComment>> getList(List<CaseComment> comments) {

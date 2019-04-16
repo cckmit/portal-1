@@ -448,6 +448,13 @@ public abstract class CaseCommentListActivity
             return;
         }
 
+        if (view.privateComment().getValue() && !policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW)){
+            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
+            requesting = false;
+            view.sendEnabled().setEnabled(true);
+            return;
+        }
+
         comment.setCaseId( id != null ? id : caseId );
         comment.setText( message );
         comment.setTimeElapsed(view.timeElapsed().getTime());

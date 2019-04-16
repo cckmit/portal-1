@@ -113,5 +113,10 @@ public enum En_ResultStatus {
     /**
      * уже существует такой инвентарный номер
      */
-    DECIMAL_NUMBER_ALREADY_EXIST
+    DECIMAL_NUMBER_ALREADY_EXIST,
+
+    /**
+     * запрещено создавать приватные сообщения
+     */
+    PROHIBITED_PRIVATE_COMMENT
 }
