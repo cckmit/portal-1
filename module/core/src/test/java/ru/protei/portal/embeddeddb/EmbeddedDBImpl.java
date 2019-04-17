@@ -6,6 +6,8 @@ import com.wix.mysql.config.MysqldConfig;
 import com.wix.mysql.config.SchemaConfig;
 import com.wix.mysql.distribution.Version;
 import liquibase.integration.spring.SpringLiquibase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -22,6 +24,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
     private static final String DB_USERNAME = "admin";
     private static final String DB_PASSWORD = "sql";
     private static final SchemaConfig SCHEMA_CONFIG = SchemaConfig.aSchemaConfig(DB_SCHEMA_NAME).build();
+    private static final Logger log = LoggerFactory.getLogger(EmbeddedDBImpl.class);
     private static boolean isInitialized = false;
     private static EmbeddedMysql mysqld;
     private static ApplicationContext context;
@@ -35,6 +38,7 @@ public class EmbeddedDBImpl implements EmbeddedDB, ApplicationContextAware {
     @PostConstruct
     public void onInit() {
         if (isInitialized) {
+            log.error("Attempt to initialize already initialized EmbeddedDB");
             return;
         }
         isInitialized = true;

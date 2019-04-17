@@ -19,11 +19,14 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 
 public class FullTextSearchTest {
+    private static final Logger log = LoggerFactory.getLogger(FullTextSearchTest.class);
     public static final String[] TEST_PDF_FILE_PATHS = {
             "scoring.pdf"
     };
@@ -107,7 +110,7 @@ public class FullTextSearchTest {
 
     public String getPdfContent(String path) throws IOException {
         File pdfFile = new File(getClass().getClassLoader().getResource(path).getFile());
-        System.out.println(new File(".").getAbsolutePath());
+        log.info(new File(".").getAbsolutePath());
         PDDocument doc = PDDocument.load(pdfFile);
         String content = new PDFTextStripper().getText(doc);
         doc.close();

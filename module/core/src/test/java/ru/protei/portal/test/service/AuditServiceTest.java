@@ -3,6 +3,8 @@ package ru.protei.portal.test.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -69,7 +71,7 @@ public class AuditServiceTest {
 
         Assert.assertTrue( ((DevUnit)result.getData().get( 0 ).getEntryInfo()).getName().equals( "Test Product" ) );
 
-        System.out.println( result.getData().get( 0 ).getEntryInfo() );
+        log.info( "{}", result.getData().get( 0 ).getEntryInfo() );
 
         Assert.assertTrue( auditObjectDAO.remove( auditObject ) );
     }
@@ -78,4 +80,6 @@ public class AuditServiceTest {
     AuditService auditService;
     @Autowired
     AuditObjectDAO auditObjectDAO;
+
+    private static final Logger log = LoggerFactory.getLogger(AuditServiceTest.class);
 }

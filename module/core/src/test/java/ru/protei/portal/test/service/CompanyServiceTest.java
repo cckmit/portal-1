@@ -3,6 +3,8 @@ package ru.protei.portal.test.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -98,7 +100,7 @@ public class CompanyServiceTest extends BaseServiceTest {
             CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
-            System.out.println(company.getId());
+            log.info("Company id = {}", company.getId());
 
             dupCompany = companyDAO.getCompanyByName(company.getCname());
             if (company.getId() == null) {
@@ -136,4 +138,6 @@ public class CompanyServiceTest extends BaseServiceTest {
     CompanyGroupDAO companyGroupDAO;
     @Autowired
     CompanyGroupItemDAO companyGroupItemDAO;
+
+    private static final Logger log = LoggerFactory.getLogger(CompanyServiceTest.class);
 }

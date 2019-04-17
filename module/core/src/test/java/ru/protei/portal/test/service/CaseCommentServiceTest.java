@@ -3,6 +3,8 @@ package ru.protei.portal.test.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -64,19 +66,19 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         List<CaseComment> comments = caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()));
         Assert.assertNotNull(comments);
-        System.out.println("case " + caseObject.getId() + " comment list size = " + comments.size());
+        log.info("case " + caseObject.getId() + " comment list size = " + comments.size());
 
         CoreResponse<List<CaseComment>> result = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
-        System.out.println(" size = " + result.getData().size());
+        log.info(" size = " + result.getData().size());
         Assert.assertTrue(result.getData().size() > 0);
 
         for (CaseComment comment : result.getData()) {
-            System.out.println(comment.toString());
-            System.out.println("----------------------");
+            log.info(comment.toString());
+            log.info("----------------------");
         }
 
         Assert.assertTrue(removeCaseObjectAndComments(caseObject));
@@ -108,10 +110,10 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
         comment = result.getData();
-        System.out.println(comment);
+        log.info("{}", comment);
 
         resultList = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
-        System.out.println("Size after add = " + resultList.getData().size());
+        log.info("Size after add = " + resultList.getData().size());
 
         // update
         comment.setText("Unit-test - тестовый комментарий (update)");
@@ -121,19 +123,19 @@ public class CaseCommentServiceTest extends BaseServiceTest {
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
         comment = result.getData();
-        System.out.println(comment);
+        log.info("{}", comment);
 
         resultList = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
-        System.out.println("Size after update = " + resultList.getData().size());
+        log.info("Size after update = " + resultList.getData().size());
 
         // delete
         CoreResponse<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment, person.getId());
         Assert.assertNotNull(result2);
         Assert.assertTrue(result2.isOk());
-        System.out.println(result2.getData());
+        log.info("{}", result2.getData());
 
         resultList = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
-        System.out.println("Size after remove = " + resultList.getData().size());
+        log.info("Size after remove = " + resultList.getData().size());
 
         // cleanup
         Assert.assertTrue(removeCaseObjectAndComments(caseObject));
@@ -189,4 +191,5 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
     private final static long MINUTE = 1L;
     private final static En_CaseType caseType = En_CaseType.CRM_SUPPORT;
+    private static final Logger log = LoggerFactory.getLogger(CaseCommentServiceTest.class);
 }

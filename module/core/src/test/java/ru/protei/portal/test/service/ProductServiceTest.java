@@ -3,6 +3,8 @@ package ru.protei.portal.test.service;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -50,7 +52,7 @@ public class ProductServiceTest {
         Assert.assertNotNull(result.getData());
         Assert.assertTrue(result.getData().size() > 0);
 
-        System.out.println(result.getData().get(0).getName());
+        log.info(result.getData().get(0).getName());
 
         Assert.assertTrue(devUnitDAO.remove(product));
     }
@@ -64,14 +66,14 @@ public class ProductServiceTest {
         DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
         Assert.assertNull(product);
 
-        System.out.println(" product with " + name + " is not exist | product " + product);
+        log.info(" product with " + name + " is not exist | product " + product);
 
         CoreResponse<Boolean> result = productService.checkUniqueProductByName( null, name, 1L);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
 
-        System.out.println(" product name " + name + " is uniq = " + result.getData());
+        log.info(" product name " + name + " is uniq = " + result.getData());
 
 
         name = "OMS3456";
@@ -79,14 +81,14 @@ public class ProductServiceTest {
         product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
         Assert.assertNull(product);
 
-        System.out.println(" product with " + name + " is not exist");
+        log.info(" product with " + name + " is not exist");
 
         result = productService.checkUniqueProductByName( null, name, null);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
 
-        System.out.println(" product name " + name + " is uniq = " + result.getData());
+        log.info(" product name " + name + " is uniq = " + result.getData());
 
     }
 
@@ -94,4 +96,6 @@ public class ProductServiceTest {
     ProductService productService;
     @Autowired
     DevUnitDAO devUnitDAO;
+
+    private static final Logger log = LoggerFactory.getLogger(ProductServiceTest.class);
 }

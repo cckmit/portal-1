@@ -4,7 +4,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcBeforeContextInitializer;
 import ru.protei.winter.jdbc.config.JdbcConfigData;
 
-public class JdbcConfigDataMutator implements JdbcBeforeContextInitializer {
+public class JdbcConfigDataAdapter implements JdbcBeforeContextInitializer {
 
     @Override
     public void initialize(JdbcConfigData configData) {

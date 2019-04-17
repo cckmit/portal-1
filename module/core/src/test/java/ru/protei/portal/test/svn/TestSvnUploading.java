@@ -2,6 +2,8 @@ package ru.protei.portal.test.svn;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tmatesoft.svn.core.SVNCommitInfo;
 import org.tmatesoft.svn.core.SVNURL;
 import org.tmatesoft.svn.core.internal.io.dav.DAVRepositoryFactory;
@@ -14,6 +16,8 @@ import java.io.FileInputStream;
 import java.util.Date;
 
 public class TestSvnUploading {
+
+    private static final Logger log = LoggerFactory.getLogger(TestSvnUploading.class);
     private final String REPO_URL = "https://svn.riouxsvn.com/portal-document";
     private final String USERNAME = "portal";
     private final String PASSWORD = "shutdown";
@@ -43,7 +47,7 @@ public class TestSvnUploading {
             editor.closeDir();
 
             SVNCommitInfo info = editor.closeEdit();
-            System.out.println("Successfully committed: " + info);
+            log.info("Successfully committed: " + info);
 
         } catch (Throwable t) {
             t.printStackTrace();

@@ -3,6 +3,8 @@ package ru.protei.portal.test.dao;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -61,7 +63,7 @@ public class PersonDAOTest {
 
             ContactItem item = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
 
-            System.out.println(item.comment());
+            log.info(item.comment());
         } finally {
             personDAO.removeByKey(testId);
         }
@@ -109,4 +111,6 @@ public class PersonDAOTest {
 
     @Autowired
     PersonDAO personDAO;
+
+    private static final Logger log = LoggerFactory.getLogger(PersonDAOTest.class);
 }

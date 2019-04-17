@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import ru.protei.portal.bean.JdbcConfigDataMutator;
+import ru.protei.portal.bean.JdbcConfigDataAdapter;
 import ru.protei.portal.embeddeddb.EmbeddedDB;
 import ru.protei.portal.embeddeddb.EmbeddedDBImpl;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -32,12 +32,11 @@ public class DatabaseConfiguration {
     }
 
     @Bean
-    public JdbcConfigDataMutator getJdbcConfigDataMutator() {
-        return new JdbcConfigDataMutator();
+    public JdbcConfigDataAdapter getJdbcConfigDataMutator() {
+        return new JdbcConfigDataAdapter();
     }
 
     /**
-     * Откладываем инициализацию бина на ручное управление.
      * Чейнджсеты ликвибейза применяются при инициализации его бина.
      * В нашем случае инициализируем бин вручную после разворачивания базы данных.
      */

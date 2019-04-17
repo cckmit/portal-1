@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.MainTestsConfiguration;
@@ -19,6 +21,7 @@ import java.util.List;
 
 @Ignore
 public class LegacyDAO_Test {
+    private static final Logger log = LoggerFactory.getLogger(LegacyDAO_Test.class);
     static ApplicationContext ctx;
 
     static long TEST_PERSON_EXISTS = 18L;
@@ -38,16 +41,16 @@ public class LegacyDAO_Test {
         ExternalPerson person = dao.getExternalPerson(TEST_PERSON_EXISTS);
 
         Assert.assertNotNull(person);
-        System.out.println(person);
+        log.info("{}", person);
 
         ExternalCompany company = dao.getExternalCompany(person.getCompanyId());
         Assert.assertNotNull(company);
-        System.out.println(company);
+        log.info("{}", company);
 
         ExternalProduct product = dao.getExternalProduct(TEST_PRODUCT_EXISTS);
 
         Assert.assertNotNull(product);
-        System.out.println(product);
+        log.info("{}", product);
     }
 
     @Test
