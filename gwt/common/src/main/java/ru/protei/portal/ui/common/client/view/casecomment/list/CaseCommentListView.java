@@ -199,12 +199,36 @@ public class CaseCommentListView
         }
     }
 
+    private HasVisibility privacyVisibility = new HasVisibility() {
+        @Override
+        public boolean isVisible() {
+            return privateComment.isVisible();
+        }
+
+        @Override
+        public void setVisible( boolean b ) {
+            privateComment.setVisible( b );
+        }
+    };
+
+    @Override
+    public HasVisibility getPrivacyVisibility() {
+        return privacyVisibility;
+    }
+
+    @Override
+    public HasValue<Boolean> privateComment() {
+        return privateComment;
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
     AutoResizeTextArea comment;
     @UiField
     FlowPanel commentsContainer;
+    @UiField
+    ToggleButton privateComment;
     @UiField
     Button send;
     @Inject
