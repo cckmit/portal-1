@@ -1,12 +1,12 @@
 package ru.protei.portal.test.service;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.config.ServiceInterceptorConfiguration;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -17,23 +17,20 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 /**
  * Created by Mike on 06.11.2016.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class, ServiceInterceptorConfiguration.class})
 public class ServiceInterceptorTest {
-
-    static ApplicationContext ctx;
-
-    @BeforeClass
-    public static void init () {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class, ServiceInterceptorConfiguration.class);
-    }
 
     @Test
     public void testHandleWrongRequest() {
-        SmokeyService service = ctx.getBean(SmokeyService.class);
 
-        CoreResponse<Boolean> response = service.throwException();
+        CoreResponse<Boolean> response = smokeyService.throwException();
 
         Assert.assertNotNull(response);
         Assert.assertTrue(response.isError());
         Assert.assertEquals(En_ResultStatus.INTERNAL_ERROR, response.getStatus());
     }
+
+    @Autowired
+    SmokeyService smokeyService;
 }

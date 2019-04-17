@@ -1,10 +1,13 @@
-package ru.protei.portal.test.model;
+package ru.protei.portal.test.dao;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
@@ -12,7 +15,6 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
-import ru.protei.portal.test.model.config.TestConfiguration;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
@@ -21,18 +23,11 @@ import java.util.Date;
 /**
  * Created by Mike on 03.11.2016.
  */
-public class PersonDAO_Test {
-
-    static ApplicationContext ctx;
-
-    @BeforeClass
-    public static void init () {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, TestConfiguration.class);
-    }
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+public class PersonDAOTest {
 
     public Person createTestPerson () {
-        PersonDAO dao = ctx.getBean(PersonDAO.class);
         Person p = new Person();
         p.setCompanyId(1L);
         p.setFirstName("Test Create Person");
@@ -50,22 +45,16 @@ public class PersonDAO_Test {
         p.getContactInfo().addItem(En_ContactItemType.JABBER).modify("dev@jabber.protei.ru");
         p.getContactInfo().addItem(En_ContactItemType.WEB_SITE).modify("http://www.protei.ru");
 
-        dao.persist(p);
-
+        personDAO.persist(p);
         return p;
     }
 
     @Test
     public void testGetPerson () {
 
-        PersonDAO dao = ctx.getBean(PersonDAO.class);
-
-        //  System.out.println(dao.getPojoColumns());
-
         Long testId  = createTestPerson().getId();
         try {
-
-            Person person = dao.get(testId);
+            Person person = personDAO.get(testId);
 
             Assert.assertNotNull(person);
             Assert.assertNotNull(person.getCompany());
@@ -73,36 +62,26 @@ public class PersonDAO_Test {
             ContactItem item = person.getContactInfo().findFirst(En_ContactItemType.EMAIL, En_ContactDataAccess.PUBLIC);
 
             System.out.println(item.comment());
-
-        }
-        finally {
-            dao.removeByKey(testId);
+        } finally {
+            personDAO.removeByKey(testId);
         }
     }
-
 
     @Test
     public void testGetPlainPerson () {
 
-        PersonDAO dao = ctx.getBean(PersonDAO.class);
-
         Long testId  = createTestPerson().getId();
         try {
-
-            Person person = dao.plainGet(testId);
+            Person person = personDAO.plainGet(testId);
             Assert.assertNotNull(person);
             Assert.assertNull(person.getCompany());
-
-        }
-        finally {
-            dao.removeByKey(testId);
+        } finally {
+            personDAO.removeByKey(testId);
         }
     }
 
-
     @Test
     public void testInsert () {
-        PersonDAO dao = ctx.getBean(PersonDAO.class);
 
         Person p = createTestPerson();
         Long id = p.getId();
@@ -112,7 +91,7 @@ public class PersonDAO_Test {
 
         Assert.assertNotNull(p.getId());
 
-        Person readPerson = dao.get(p.getId());
+        Person readPerson = personDAO.get(p.getId());
 
         Assert.assertNotNull(readPerson);
         Assert.assertNotNull(readPerson.getCompany());
@@ -125,7 +104,9 @@ public class PersonDAO_Test {
         Assert.assertEquals("8(812)-4494727", infoFacade.getWorkPhone());
         Assert.assertEquals("+7-921-555-44-33", infoFacade.getMobilePhone());
 
-        dao.remove(readPerson);
+        personDAO.remove(readPerson);
     }
 
+    @Autowired
+    PersonDAO personDAO;
 }

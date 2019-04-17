@@ -1,24 +1,14 @@
 package ru.protei.portal.mock;
 
-import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.service.ReportControlService;
+import ru.protei.portal.core.service.ReportControlServiceImpl;
 
-public class ReportControlServiceMock implements ReportControlService {
-
-    @Override
-    public CoreResponse processNewReports() {
-        return new CoreResponse().success();
-    }
+/**
+ * Disable automated report processing
+ */
+public class ReportControlServiceMock extends ReportControlServiceImpl {
 
     @Override
-    public CoreResponse processOldReports() {
-        return new CoreResponse().success();
-    }
-
-    @Override
-    public CoreResponse processHangReports() {
-        return new CoreResponse().success();
-    }
+    public void init() {}
 
     @Override
     public void processNewReportsSchedule() {}

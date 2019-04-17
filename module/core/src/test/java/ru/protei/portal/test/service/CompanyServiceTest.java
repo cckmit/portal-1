@@ -1,10 +1,11 @@
 package ru.protei.portal.test.service;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
@@ -25,33 +26,18 @@ import java.util.List;
 /**
  * Created by michael on 11.10.16.
  */
-public class CompanyServiceTest {
-
-    static ApplicationContext ctx;
-
-    @BeforeClass
-    public static void init () {
-         ctx = new AnnotationConfigApplicationContext (CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class);
-    }
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+public class CompanyServiceTest extends BaseServiceTest {
 
     @Test
     public void testGetCompanyList () {
 
-        CompanyService service = ctx.getBean(CompanyService.class);
-
-        Assert.assertNotNull(service);
-
-        CoreResponse<List<Company>> result = service.companyList(null, new CompanyQuery() );
+        CoreResponse<List<Company>> result = companyService.companyList(getAuthToken(), new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getData());
-        Assert.assertTrue(result.getDataAmountTotal() > 0);
-
-//        for (Company company : result.getItems())
-//            System.out.println(company.getCname());
     }
-
 
 //    @Test
 //    public void testCompanyGroups () {
@@ -90,43 +76,42 @@ public class CompanyServiceTest {
 
         try {
 
-            CompanyService service = ctx.getBean(CompanyService.class);
-
             Company company = new Company();
             company.setCreated(new Date());
             company.setCname("Тестовая компания");
 
             PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
-
             infoFacade.setLegalAddress("Тестовый адрес");
             infoFacade.setFactAddress("Тестовый адрес");
 
-            Company dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
+            Company dupCompany = companyDAO.getCompanyByName(company.getCname());
             Assert.assertNull(dupCompany);
 
-            CompanyGroup group = ctx.getBean(CompanyGroupDAO.class).get(new Long(1));
+            CompanyGroup group = new CompanyGroup();
+            group.setId(1L);
+            group.setCreated(new Date());
+            group.setName("test");
+            group.setInfo("test");
+            companyGroupDAO.persist(group);
+            company.setGroupId(group.getId());
 
-            company.setGroupId( group.getId() );
-
-            CoreResponse<Company> response = service.createCompany( null, company );
+            CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
-
             System.out.println(company.getId());
 
-
-            dupCompany = ctx.getBean(CompanyDAO.class).getCompanyByName(company.getCname());
+            dupCompany = companyDAO.getCompanyByName(company.getCname());
             if (company.getId() == null) {
                 Assert.assertNull(dupCompany);
             } else {
                 Assert.assertEquals(dupCompany.getId(), company.getId());
             }
 
-            response = service.getCompany( null, company.getId() );
+            response = companyService.getCompany(getAuthToken(), company.getId());
             Assert.assertNotNull(response.getData());
 
             company.setCname("Моя тестовая компания");
-            response =  service.updateCompany( null, company );
+            response = companyService.updateCompany(getAuthToken(), company);
             Assert.assertTrue(response.isOk());
             Assert.assertNotNull(response.getData());
 
@@ -134,12 +119,21 @@ public class CompanyServiceTest {
 
         } finally {
             if (companyId != null) {
-                ctx.getBean(CompanyGroupItemDAO.class).getCompanyToGroupLinks(companyId, null).forEach(item -> {
-                    ctx.getBean(CompanyGroupItemDAO.class).remove(item);
-                });
+                companyGroupItemDAO.getCompanyToGroupLinks(companyId, null)
+                        .forEach(item -> companyGroupItemDAO.remove(item));
             }
-            if (companyId != null)
-                ctx.getBean(CompanyDAO.class).removeByCondition("id=?", companyId);
+            if (companyId != null) {
+                companyDAO.removeByCondition("id=?", companyId);
+            }
         }
     }
+
+    @Autowired
+    CompanyService companyService;
+    @Autowired
+    CompanyDAO companyDAO;
+    @Autowired
+    CompanyGroupDAO companyGroupDAO;
+    @Autowired
+    CompanyGroupItemDAO companyGroupItemDAO;
 }

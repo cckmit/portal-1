@@ -1,9 +1,6 @@
 package ru.protei.portal.test.legacy;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ru.protei.portal.config.DatabaseConfiguration;
@@ -30,6 +27,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+@Ignore
 public class ExportServiceTest {
     public static final String JUNIT_TEST_NAME = "junit-test";
     public static final String EXPORT_INSTANCE_ID = "junit";

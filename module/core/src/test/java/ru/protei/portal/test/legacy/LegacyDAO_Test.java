@@ -2,6 +2,7 @@ package ru.protei.portal.test.legacy;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -16,6 +17,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+@Ignore
 public class LegacyDAO_Test {
     static ApplicationContext ctx;
 

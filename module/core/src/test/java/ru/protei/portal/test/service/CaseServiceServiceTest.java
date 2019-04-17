@@ -22,8 +22,7 @@ public class CaseServiceServiceTest extends BaseServiceTest {
     @Test
     public void getCaseObjectsTest() throws Exception {
         assertNotNull(caseService);
-        List<CaseShortView> all = checkResultAndGetData(caseService.caseObjectList(TEST_AUTH_TOKEN, new CaseQuery()));
+        List<CaseShortView> all = checkResultAndGetData(caseService.caseObjectList(getAuthToken(), new CaseQuery()));
         assertNotNull(all);
     }
-
 }

@@ -1,10 +1,11 @@
 package ru.protei.portal.test.service;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
@@ -25,14 +26,9 @@ import java.util.List;
 /**
  * Created by butusov on 07.08.17.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
 public class AuditServiceTest {
-
-    static ApplicationContext ctx;
-
-    @BeforeClass
-    public static void init() {
-        ctx = new AnnotationConfigApplicationContext( CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class );
-    }
 
     @Test
     public void testCreateAndGetAudit() {
@@ -56,12 +52,12 @@ public class AuditServiceTest {
 
         auditObject.setEntryInfo( product );
 
-        Long id = ctx.getBean( AuditObjectDAO.class ).insertAudit( auditObject );
+        Long id = auditObjectDAO.insertAudit( auditObject );
         Assert.assertNotNull( id );
 
         AuditQuery auditQuery = new AuditQuery(  );
         auditQuery.setId( id );
-        CoreResponse< List< AuditObject > > result = ctx.getBean( AuditService.class ).auditObjectList( auditQuery );
+        CoreResponse< List< AuditObject > > result = auditService.auditObjectList( auditQuery );
 
         Assert.assertNotNull( result );
         Assert.assertTrue( result.getDataAmountTotal() > 0 );
@@ -75,6 +71,11 @@ public class AuditServiceTest {
 
         System.out.println( result.getData().get( 0 ).getEntryInfo() );
 
-        Assert.assertNotNull( ctx.getBean( AuditObjectDAO.class ).remove( auditObject ) );
+        Assert.assertTrue( auditObjectDAO.remove( auditObject ) );
     }
+
+    @Autowired
+    AuditService auditService;
+    @Autowired
+    AuditObjectDAO auditObjectDAO;
 }

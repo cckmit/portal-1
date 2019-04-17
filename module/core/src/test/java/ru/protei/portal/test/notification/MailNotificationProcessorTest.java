@@ -12,21 +12,25 @@ import ru.protei.portal.core.mail.VirtualMailSendChannel;
 import ru.protei.portal.core.model.dao.CompanySubscriptionDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.CompanyService;
+import ru.protei.portal.test.service.BaseServiceTest;
 
 import javax.mail.internet.MimeMessage;
+import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Тесты для
  */
 @RunWith( SpringJUnit4ClassRunner.class )
 @ContextConfiguration(classes = TestNotificationConfiguration.class)
-public class MailNotificationProcessorTest {
+public class MailNotificationProcessorTest extends BaseServiceTest {
 
     public static final String JUNIT_EVENT_PUB_01 = "junit-event-pub-02";
     private En_CaseType caseType = En_CaseType.CRM_SUPPORT;
@@ -49,71 +53,63 @@ public class MailNotificationProcessorTest {
     @Autowired
     CompanySubscriptionDAO subscriptionDAO;
 
-    CompanySubscription subscription;
-
     @Test
     public void test001() throws Exception {
         VirtualMailSendChannel mockChannel = (VirtualMailSendChannel) sendChannel;
 
-        subscription = new CompanySubscription();
-        subscription.setCompanyId( 1L );
-        subscription.setEmail( "dsh99@mail.ru" );
+        Company company = makeCustomerCompany();
+        Person initiator = makePerson(company);
+
+        CompanySubscription subscription = new CompanySubscription();
+        subscription.setCompanyId( company.getId() );
+        subscription.setEmail( "junit-test@protei.ru" );
         subscription.setLangCode( "ru" );
         subscription.setId( subscriptionDAO.persist( subscription ) );
 
-        Person initiator = new Person();
-        initiator.setId( -10L );
-        initiator.setDisplayShortName( "vassili" );
-//        initiator.setDisplayName(  );
-
         CaseObject object = new CaseObject();
         object.setCaseType( caseType );
-        object.setInitiatorCompanyId( 1L );
-        object.setInitiatorId( 1L );
-        object.setCreatorId( 1L );
+        object.setInitiatorCompany( company );
+        object.setInitiator( initiator );
+        object.setCreator( initiator );
         object.setState( En_CaseState.CREATED );
-        object.setImpLevel( 1 );
+        object.setImpLevel( En_ImportanceLevel.BASIC.getId() );
         object.setCreated( new Date() );
         object.setCreatorInfo( "junit-test-events" );
         object.setName( "Event-publisher test" );
         object.setInfo( "some text is here" );
-        object.setExtAppType( "junit" );
-        object.setProductId( 18827L ); // космос
+        object.setExtAppType( "junit-test" );
 
-        CoreResponse<CaseObject> response = caseService.saveCaseObject(null, object, initiator );
+        CoreResponse<CaseObject> response = caseService.saveCaseObject(getAuthToken(), object, initiator);
+        Assert.assertTrue(response.isOk());
+        object = response.getData();
 
-        // wait 500ms for async event
-        Thread.sleep(1000);
+        // wait for async event
+        Thread.sleep(2000);
 
         MimeMessage msg = mockChannel.get();
         Assert.assertNotNull( msg );
 
         CaseComment comment = new CaseComment();
-        comment.setCaseId(response.getData().getId());
+        comment.setCaseId(object.getId());
         comment.setCreated(new Date());
-        comment.setClientIp("-");
-        comment.setCaseStateId(response.getData().getStateId());
-        comment.setAuthorId(response.getData().getInitiatorId());
+        comment.setClientIp(getAuthToken().getIp());
+        comment.setCaseStateId(object.getStateId());
+        comment.setAuthorId(object.getInitiatorId());
         comment.setText("A new comment, publishing test");
+        comment.setCaseAttachments(Collections.emptyList());
 
-        CoreResponse<CaseComment> r2 = caseCommentService.addCaseComment( null, caseType, comment, initiator );
-
+        CoreResponse<CaseComment> r2 = caseCommentService.addCaseComment( getAuthToken(), caseType, comment, initiator );
         Assert.assertTrue(r2.isOk());
 
-        // wait 500ms for async event
-        Thread.sleep(500);
+        // wait for async event
+        Thread.sleep(2000);
 
         msg = mockChannel.get();
         Assert.assertNotNull(msg);
-    }
 
-
-    @Before
-    @After
-    public void cleanup () {
-        caseControlService.deleteByExtAppId( JUNIT_EVENT_PUB_01 );
-        if ( subscription != null && subscription.getId() != null ) {
-            subscriptionDAO.remove( subscription );
-        }
+        Assert.assertTrue(removeCaseObjectAndComments(object));
+        Assert.assertTrue(personDAO.remove(initiator));
+        Assert.assertTrue(subscriptionDAO.remove(subscription));
+        Assert.assertTrue(companyDAO.remove(company));
     }
 }
