@@ -119,7 +119,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                         .withCaseId(issueId)
                         .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                         .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                        .withCasePrivate(isPrivateCase)
+                        .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                        .withPrivateCase(isPrivateCase)
                         .build());
             }
         });
@@ -171,7 +172,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
-                .withCasePrivate(value.isPrivateCase())
+                .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                .withPrivateCase(isPrivateCase)
                 .build());
     }
 

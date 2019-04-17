@@ -203,7 +203,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setAllowViewPrivate( false );
+            query.setViewPrivate( false );
         }
     }
     private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {

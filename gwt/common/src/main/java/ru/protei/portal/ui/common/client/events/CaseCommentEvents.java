@@ -33,8 +33,12 @@ public class CaseCommentEvents {
                 event.isElapsedTimeEnabled = isElapsedTimeEnabled;
                 return this;
             }
-            public Builder withCasePrivate(boolean b) {
-                event.isCasePrivate = b;
+            public Builder withPrivateVisible(boolean b) {
+                event.isPrivateVisible = b;
+                return this;
+            }
+            public Builder withPrivateCase(boolean b) {
+                event.isPrivateCase = b;
                 return this;
             }
             public Show build() {
@@ -53,7 +57,8 @@ public class CaseCommentEvents {
         public Long caseId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
-        public boolean isCasePrivate = false;
+        public boolean isPrivateVisible = false;
+        public boolean isPrivateCase = false;
     }
 
     /**
