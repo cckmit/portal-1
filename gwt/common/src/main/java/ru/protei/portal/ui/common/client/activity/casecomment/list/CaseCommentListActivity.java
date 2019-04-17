@@ -5,18 +5,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_TimeElapsedType;
-import ru.protei.portal.core.model.ent.Attachment;
-import ru.protei.portal.core.model.ent.CaseAttachment;
-import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
@@ -34,12 +30,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -84,6 +75,8 @@ public abstract class CaseCommentListActivity
         this.caseId = event.caseId;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
+        this.isPrivateVisible = event.isPrivateVisible;
+        this.isPrivateCase = event.isPrivateCase;
 
         comment = null;
         lastCommentView = null;
@@ -99,6 +92,9 @@ public abstract class CaseCommentListActivity
         view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
         view.enabledNewComment(isModifyEnabled);
+
+        view.privateComment().setValue(false);
+        view.getPrivacyVisibility().setVisible(isPrivateVisible);
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
@@ -338,6 +334,9 @@ public abstract class CaseCommentListActivity
 
         itemView.clearElapsedTime();
         fillTimeElapsed( value, itemView );
+        itemView.setPrivateComment(value.isPrivateComment());
+
+        itemView.getPrivacyVisibility().setVisible(isPrivateVisible);
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
@@ -452,11 +451,22 @@ public abstract class CaseCommentListActivity
             return;
         }
 
+        if (caseType == En_CaseType.CRM_SUPPORT) {
+            if (view.privateComment().getValue() && !policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW)){
+                fireEvent(new NotifyEvents.Show(lang.errIssueCommentProhibitedPrivate(), NotifyEvents.NotifyType.ERROR));
+                requesting = false;
+                view.sendEnabled().setEnabled(true);
+                return;
+            }
+        }
+
         comment.setCaseId( id != null ? id : caseId );
         comment.setText( message );
         comment.setTimeElapsed(view.timeElapsed().getTime());
         En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
         comment.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
+
+        comment.setPrivateComment(isPrivateCase || view.privateComment().getValue());
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))
@@ -581,6 +591,8 @@ public abstract class CaseCommentListActivity
     AttachmentServiceAsync attachmentService;
     @Inject
     MarkdownClient markdownClient;
+    @Inject
+    PolicyService policyService;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;
@@ -593,7 +605,9 @@ public abstract class CaseCommentListActivity
     private boolean isElapsedTimeEnabled = false;
     private boolean isModifyEnabled = true;
     private Long caseId;
-    
+    private boolean isPrivateVisible = false;
+    private boolean isPrivateCase = false;
+
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
 
