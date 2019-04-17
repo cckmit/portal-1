@@ -186,6 +186,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                             .withCaseId(issue.getId())
                             .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                             .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                            .withCasePrivate(issue.isPrivateCase())
                             .build());
                 }
             }
@@ -286,6 +287,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     .withCaseId(issue.getId())
                     .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                     .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                    .withCasePrivate(issue.isPrivateCase())
                     .build());
         }
 

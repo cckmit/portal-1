@@ -6,7 +6,7 @@
 
     <changeSet id="add-private_flag-column-to-case_comment-table" author="porubov">
         <addColumn tableName="case_comment">
-            <column defaultValueNumeric="0" name="private_flag" type="INT">
+            <column name="private_flag" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
         </addColumn>

@@ -49,6 +49,7 @@ public class En_ResultStatusLang {
             case SESSION_NOT_FOUND: return lang.errSessionNotFound();
             case INVENTORY_NUMBER_ALREADY_EXIST: return lang.errInventoryNumberAlreadyExist();
             case DECIMAL_NUMBER_ALREADY_EXIST: return lang.errDecimalNumberAlreadyExist();
+            case PROHIBITED_PRIVATE_COMMENT: return lang.errIssueCommentProhibitedPrivate();
             default: return lang.errUnknownResult();
         }
     }

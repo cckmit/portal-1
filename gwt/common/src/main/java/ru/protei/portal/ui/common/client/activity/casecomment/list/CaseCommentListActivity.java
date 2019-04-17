@@ -75,6 +75,7 @@ public abstract class CaseCommentListActivity
         this.caseId = event.caseId;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
+        this.isCasePrivate = event.isCasePrivate;
 
         comment = null;
         lastCommentView = null;
@@ -92,7 +93,9 @@ public abstract class CaseCommentListActivity
         view.enabledNewComment(isModifyEnabled);
 
         view.privateComment().setValue(false);
-        view.getPrivacyVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+
+        boolean privacyVisible = (caseType == En_CaseType.CRM_SUPPORT && !isCasePrivate && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW) );
+        view.getPrivacyVisibility().setVisible(privacyVisible);
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
@@ -333,7 +336,9 @@ public abstract class CaseCommentListActivity
         itemView.clearElapsedTime();
         fillTimeElapsed( value, itemView );
         itemView.setPrivateComment(value.isPrivateComment());
-        itemView.getPrivacyVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+
+        boolean privacyVisible = (caseType == En_CaseType.CRM_SUPPORT && !isCasePrivate && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        itemView.getPrivacyVisibility().setVisible(privacyVisible);
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
@@ -448,11 +453,13 @@ public abstract class CaseCommentListActivity
             return;
         }
 
-        if (view.privateComment().getValue() && !policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW)){
-            fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
-            requesting = false;
-            view.sendEnabled().setEnabled(true);
-            return;
+        if (caseType == En_CaseType.CRM_SUPPORT) {
+            if (view.privateComment().getValue() && !policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW)){
+                fireEvent(new NotifyEvents.Show(lang.errIssueCommentProhibitedPrivate(), NotifyEvents.NotifyType.ERROR));
+                requesting = false;
+                view.sendEnabled().setEnabled(true);
+                return;
+            }
         }
 
         comment.setCaseId( id != null ? id : caseId );
@@ -460,7 +467,9 @@ public abstract class CaseCommentListActivity
         comment.setTimeElapsed(view.timeElapsed().getTime());
         En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
         comment.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
-        comment.setPrivateComment(view.privateComment().getValue());
+
+        boolean privacyComment = (caseType == En_CaseType.CRM_SUPPORT && (isCasePrivate || view.privateComment().getValue()));
+        comment.setPrivateComment(privacyComment);
         comment.setCaseAttachments(
                 tempAttachments.stream()
                         .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))
@@ -599,7 +608,8 @@ public abstract class CaseCommentListActivity
     private boolean isElapsedTimeEnabled = false;
     private boolean isModifyEnabled = true;
     private Long caseId;
-    
+    private boolean isCasePrivate = false;
+
     private Map<AbstractCaseCommentItemView, CaseComment> itemViewToModel = new HashMap<>();
     private Collection<Attachment> tempAttachments = new ArrayList<>();
 

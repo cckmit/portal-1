@@ -51,7 +51,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (checkAccessStatus != null) {
             return new CoreResponse<CaseComment>().error(checkAccessStatus);
         }
-        if (prohibitedPrivateComment(token, comment)) {
+        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
             return new CoreResponse<CaseComment>().error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
@@ -88,7 +88,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (checkAccessStatus != null) {
             return new CoreResponse<CaseComment>().error(checkAccessStatus);
         }
-        if (prohibitedPrivateComment(token, comment)) {
+        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
             return new CoreResponse<CaseComment>().error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
         }
 
