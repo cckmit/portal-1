@@ -39,11 +39,11 @@ public class AuthControllerImpl implements AuthController {
                 log.debug( "authentificate: autoLogin, sessionDescriptior={}", descriptor );
                 return makeProfileByDescriptor(descriptor);
             }
+        }
 
-            if (login == null && password == null) {
-                log.debug( "authentificate: autoLogin, neither login nor password provided" );
-                return null;
-            }
+        if (login == null && password == null) {
+            log.debug( "authentificate: neither login nor password provided" );
+            return null;
         }
 
         log.debug( "authentificate: login={}", login );
