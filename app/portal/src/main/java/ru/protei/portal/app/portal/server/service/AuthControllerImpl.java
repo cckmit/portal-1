@@ -28,20 +28,33 @@ import java.util.*;
 public class AuthControllerImpl implements AuthController {
 
     @Override
-    public Profile authentificate( String login, String password ) throws RequestFailedException {
+    public Profile authentificate(String login, String password, boolean autoLogin) throws RequestFailedException {
 
-        if ( login == null && password == null ) {
-            log.debug( "authentificate: empty auth params" );
+        if (autoLogin) {
+            log.debug( "authentificate: autoLogin" );
 
             UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-            log.debug( "authentificate: sessionDescriptior={}", descriptor );
 
-            return descriptor == null ? null : makeProfileByDescriptor( descriptor );
+            if (descriptor != null) {
+                log.debug( "authentificate: autoLogin, sessionDescriptior={}", descriptor );
+                return makeProfileByDescriptor(descriptor);
+            }
+
+            if (login == null && password == null) {
+                log.debug( "authentificate: autoLogin, neither login nor password provided" );
+                return null;
+            }
         }
 
         log.debug( "authentificate: login={}", login );
 
-        CoreResponse< UserSessionDescriptor > result = authService.login( httpRequest.getSession().getId(), login, password, httpRequest.getRemoteAddr(), httpRequest.getHeader( CrmConstants.Header.USER_AGENT ) );
+        CoreResponse< UserSessionDescriptor > result = authService.login(
+                httpRequest.getSession().getId(),
+                login,
+                password,
+                httpRequest.getRemoteAddr(),
+                httpRequest.getHeader(CrmConstants.Header.USER_AGENT)
+        );
         if ( result.isError() ) {
             throw new RequestFailedException( result.getStatus() );
         }

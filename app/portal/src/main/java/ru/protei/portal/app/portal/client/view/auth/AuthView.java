@@ -21,6 +21,7 @@ import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthActivity;
 import ru.protei.portal.app.portal.client.activity.auth.AbstractAuthView;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 
 /**
  * Вид формы авторизации
@@ -39,21 +40,19 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
         this.activity = activity;
     }
 
-    public String getUserName() {
-        return login.getText ();
+    @Override
+    public HasValue<String> login() {
+        return login;
     }
 
-    public void setUserName(String userName) {
-        login.setText (userName);
+    @Override
+    public HasValue<String> password() {
+        return password;
     }
 
-    public String getPassword() {
-        return password.getText ();
-    }
-
-    public void setPassword(String password) {
-        this.password.setText (password);
-
+    @Override
+    public HasValue<Boolean> rememberMe() {
+        return rememberMe;
     }
 
     @UiHandler ("loginButton")
@@ -121,6 +120,8 @@ public class AuthView extends Composite implements AbstractAuthView, KeyPressHan
     TextBox login;
     @UiField
     TextBox password;
+    @UiField
+    OptionItem rememberMe;
     @UiField
     Button loginButton;
     @UiField

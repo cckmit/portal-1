@@ -1629,4 +1629,6 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderAttachments();
 
     String numberUncompletedCases();
+
+    String rememberMe();
 }

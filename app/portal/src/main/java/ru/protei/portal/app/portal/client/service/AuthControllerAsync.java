@@ -1,6 +1,5 @@
 package ru.protei.portal.app.portal.client.service;
 
-
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 
@@ -8,6 +7,7 @@ import ru.protei.portal.ui.common.shared.model.Profile;
  * Сервис авторизации
  */
 public interface AuthControllerAsync {
+
     /**
      * Авторизация пользователя
      *
@@ -15,7 +15,7 @@ public interface AuthControllerAsync {
      * @param password пароль (не пустая строка)
      * @return профиль пользователя
      */
-    void authentificate( String login, String password, AsyncCallback< Profile > async );
+    void authentificate(String login, String password, boolean autoLogin, AsyncCallback<Profile> async);
 
     /**
      * Выход пользователя
