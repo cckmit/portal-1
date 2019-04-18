@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.config.TestEventConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -20,6 +22,8 @@ import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.test.service.BaseServiceTest;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Collections;
 import java.util.Date;
@@ -28,7 +32,10 @@ import java.util.Date;
  * Created by michael on 04.05.17.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestEventConfiguration.class})
+@ContextConfiguration(classes = {
+        CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class,
+        MainTestsConfiguration.class, TestEventConfiguration.class
+})
 public class TestCaseEvents extends BaseServiceTest {
 
     private static final String JUNIT_EVENT_PUB_01 = "junit-event-pub-01";

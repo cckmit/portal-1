@@ -32,7 +32,7 @@ public class DatabaseConfiguration {
     }
 
     @Bean
-    public JdbcConfigDataAdapter getJdbcConfigDataMutator() {
+    public JdbcConfigDataAdapter getJdbcConfigDataAdapter() {
         return new JdbcConfigDataAdapter();
     }
 

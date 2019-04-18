@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.config.TestNotificationConfiguration;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.mail.VirtualMailSendChannel;
@@ -19,6 +21,9 @@ import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.test.service.BaseServiceTest;
+import ru.protei.portal.tools.notifications.NotificationConfiguration;
+import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Collections;
@@ -29,7 +34,10 @@ import java.util.concurrent.TimeUnit;
  * Тесты для
  */
 @RunWith( SpringJUnit4ClassRunner.class )
-@ContextConfiguration(classes = TestNotificationConfiguration.class)
+@ContextConfiguration(classes = {
+        CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class,
+        MainTestsConfiguration.class, NotificationConfiguration.class, TestNotificationConfiguration.class
+})
 public class MailNotificationProcessorTest extends BaseServiceTest {
 
     public static final String JUNIT_EVENT_PUB_01 = "junit-event-pub-02";
