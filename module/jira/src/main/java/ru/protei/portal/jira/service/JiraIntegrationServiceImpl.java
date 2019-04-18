@@ -148,6 +148,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         caseObj.setCreated(issue.getCreationDate().toDate());
         caseObj.setModified(issue.getUpdateDate().toDate());
 
+        // TODO for what? initiator is null at the moment
         caseObj.setCreatorId(caseObj.getInitiatorId());
 
         caseObj.setExtAppType("jira");
@@ -336,6 +337,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
         our.setText(comment.getBody());
+        // TODO set markup type after merge PORTAL-564
         return our;
     }
 

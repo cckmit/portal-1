@@ -49,7 +49,7 @@
 
         <addForeignKeyConstraint constraintName="FK_JIRA_EP_STATUS_ENTRY" onDelete="CASCADE"
                                  baseColumnNames="MAP_ID" baseTableName="jira_status_map_entry"
-                                 referencedColumnNames="id" referencedTableName="redmine_status_map"/>
+                                 referencedColumnNames="id" referencedTableName="redmine_status_map"/>  <!-- fixed at 2019-04-18-fix-jira-status-map-entry-fk.xml -->
         <addForeignKeyConstraint constraintName="FK_JIRA_EP_PRIORITY_ENTRY" onDelete="CASCADE"
                                  baseColumnNames="MAP_ID" baseTableName="jira_priority_map_entry"
                                  referencedColumnNames="id" referencedTableName="jira_priority_map"/>
