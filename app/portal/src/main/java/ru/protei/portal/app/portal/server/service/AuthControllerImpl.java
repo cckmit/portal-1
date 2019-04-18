@@ -28,17 +28,13 @@ import java.util.*;
 public class AuthControllerImpl implements AuthController {
 
     @Override
-    public Profile authentificate(String login, String password, boolean autoLogin) throws RequestFailedException {
+    public Profile authentificate(String login, String password) throws RequestFailedException {
 
-        if (autoLogin) {
-            log.debug( "authentificate: autoLogin" );
+        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpRequest);
 
-            UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpRequest );
-
-            if (descriptor != null) {
-                log.debug( "authentificate: autoLogin, sessionDescriptior={}", descriptor );
-                return makeProfileByDescriptor(descriptor);
-            }
+        if (descriptor != null) {
+            log.debug("authentificate: sessionDescriptior={}", descriptor);
+            return makeProfileByDescriptor(descriptor);
         }
 
         if (login == null && password == null) {

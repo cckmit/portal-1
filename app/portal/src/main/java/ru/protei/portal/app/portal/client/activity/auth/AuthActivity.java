@@ -54,7 +54,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     public void onLoginClicked() {
         String login = view.login().getValue();
         String pwd = view.password().getValue();
-        authService.authentificate(login, pwd, false, new FluentCallback<Profile>()
+        authService.authentificate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> view.showError(lang.errLoginOrPwd()))
                 .withSuccess(profile -> {
                     view.hideError();
@@ -69,16 +69,16 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     }
 
     private void tryAutoLogin() {
-        String login = StringUtils.nullIfEmpty(storage.get(REMEMBER_ME_PREFIX + "login"));
-        String pwd = StringUtils.nullIfEmpty(storage.get(REMEMBER_ME_PREFIX + "pwd"));
-        if (login != null && pwd != null) {
+        String login = storage.getOrDefault(REMEMBER_ME_PREFIX + "login", null);
+        String pwd = storage.getOrDefault(REMEMBER_ME_PREFIX + "pwd", null);
+        if (pwd != null) {
             pwd = decrypt(pwd);
         }
         if (login == null || pwd == null) {
             login = null;
             pwd = null;
         }
-        authService.authentificate(login, pwd, true, new FluentCallback<Profile>()
+        authService.authentificate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> {
                     resetRememberMe();
                     placeView();
