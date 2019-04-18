@@ -200,16 +200,22 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private void applyFilterByScope( AuthToken token, CaseCommentQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setViewPrivate( false );
+        if (token != null) {
+            UserSessionDescriptor descriptor = authService.findSession(token);
+            Set<UserRole> roles = descriptor.getLogin().getRoles();
+            if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+                query.setViewPrivate(false);
+            }
         }
     }
     private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
+        if (token != null) {
+            UserSessionDescriptor descriptor = authService.findSession( token );
+            Set< UserRole > roles = descriptor.getLogin().getRoles();
+            return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
+        } else {
+            return false;
+        }
     }
 
     private CoreResponse<List<CaseComment>> getList(List<CaseComment> comments) {
