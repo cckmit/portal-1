@@ -1631,4 +1631,6 @@ public interface Lang extends Messages, ContactItemLang {
     String numberUncompletedCases();
 
     String errIssueCommentProhibitedPrivate();
+
+    String rememberMe();
 }

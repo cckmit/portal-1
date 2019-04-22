@@ -60,7 +60,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (response.isError()) {
             return response;
         }
-        CaseComment result = response.getData();
+        comment = response.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
@@ -78,7 +78,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, addedAttachments, person));
         }
 
-        return new CoreResponse<CaseComment>().success(result);
+        return new CoreResponse<CaseComment>().success(comment);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (response.isError()) {
             return response;
         }
-        CaseComment result = response.getData();
+        comment = response.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
@@ -119,7 +119,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, prevComment, removedAttachments, comment, addedAttachments, person));
         }
 
-        return new CoreResponse<CaseComment>().success(result);
+        return new CoreResponse<CaseComment>().success(comment);
     }
 
     @Override
