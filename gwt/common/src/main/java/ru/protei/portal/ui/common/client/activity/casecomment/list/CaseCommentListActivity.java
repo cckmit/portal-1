@@ -267,7 +267,11 @@ public abstract class CaseCommentListActivity
 
     @Override
     public void onCommentChanged(String text) {
-        storage.set(makeStorageKey(caseId), text);
+        if (StringUtils.isNotEmpty(text)) {
+            storage.set(makeStorageKey(caseId), text);
+        } else {
+            storage.remove(makeStorageKey(caseId));
+        }
         scheduleChangedPreview();
     }
 

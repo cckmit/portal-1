@@ -11,18 +11,17 @@ public interface AbstractAuthView extends IsWidget {
 
     void setActivity( AbstractAuthActivity activity );
 
-    String getUserName();
-    void setUserName(String userName);
+    HasValue<String> login();
 
-    String getPassword();
-    void setPassword(String password);
+    HasValue<String> password();
+
+    HasValue<Boolean> rememberMe();
 
     void setFocus();
 
     void showError(String msg);
 
     void hideError();
-
 
     void reset();
 
