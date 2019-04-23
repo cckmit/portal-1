@@ -100,4 +100,5 @@
   <include file="2019-03-18-modify-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-25-modify-sf-platform-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-25-add-case-state-workflow-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2019-04-15-modify-case_comment-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

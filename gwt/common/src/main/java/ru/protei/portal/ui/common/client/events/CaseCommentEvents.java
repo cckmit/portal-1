@@ -34,6 +34,14 @@ public class CaseCommentEvents {
                 event.isElapsedTimeEnabled = isElapsedTimeEnabled;
                 return this;
             }
+            public Builder withPrivateVisible(boolean b) {
+                event.isPrivateVisible = b;
+                return this;
+            }
+            public Builder withPrivateCase(boolean b) {
+                event.isPrivateCase = b;
+                return this;
+            }
             public Builder withTextMarkup(En_TextMarkup textMarkup) {
                 event.textMarkup = textMarkup;
                 return this;
@@ -54,6 +62,8 @@ public class CaseCommentEvents {
         public Long caseId;
         public boolean isElapsedTimeEnabled = false;
         public boolean isModifyEnabled = false;
+        public boolean isPrivateVisible = false;
+        public boolean isPrivateCase = false;
         public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
 

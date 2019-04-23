@@ -154,6 +154,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
     //app types for eager push
     private final static Set<String> EAGER_PUSH = new HashSet<String>() {{
+        add("junit-test");
         add("redmine");
     }};
 

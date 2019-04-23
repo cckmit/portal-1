@@ -72,6 +72,9 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name = "original_author_full_name")
     private String originalAuthorFullName;
 
+    @JdbcColumn(name = "private_flag")
+    private boolean privateComment;
+
     public CaseComment() {}
 
     public CaseComment(String text) {
@@ -241,6 +244,14 @@ public class CaseComment extends AuditableObject {
         this.timeElapsedType = timeElapsedType;
     }
 
+    public boolean isPrivateComment() {
+        return privateComment;
+    }
+
+    public void setPrivateComment(boolean privateComment) {
+        this.privateComment = privateComment;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -265,6 +276,7 @@ public class CaseComment extends AuditableObject {
                 ", remoteLinkId=" + remoteLinkId +
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
+                ", privateComment='" + privateComment + '\'' +
                 '}';
     }
 }

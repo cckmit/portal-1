@@ -1,19 +1,16 @@
-package ru.protei.portal.test.config;
+package ru.protei.portal.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import ru.protei.portal.core.service.SmokeyService;
 
-/**
- * Created by Mike on 06.11.2016.
- */
-@EnableAspectJAutoProxy
 @Configuration
-public class TestConfiguration {
+@EnableAspectJAutoProxy
+public class ServiceInterceptorConfiguration {
 
     @Bean
-    public SmokeyService getSmokeyService () {
+    public SmokeyService getSmokeyService() {
         return new SmokeyService();
     }
 }

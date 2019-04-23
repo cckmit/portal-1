@@ -34,7 +34,7 @@ public interface CompanyService {
     CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
-    CoreResponse getCompany(AuthToken token, Long id );
+    CoreResponse<Company> getCompany(AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )
     @Auditable( En_AuditType.COMPANY_CREATE )

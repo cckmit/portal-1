@@ -134,7 +134,7 @@ public class MailNotificationProcessor {
 
             performCaseObjectNotification(
                     event,
-                    comments.getData(),
+                    comments.getData().stream().filter(comment -> !comment.isPrivateComment()).collect(toList()),
                     lastMessageId,
                     recipients,
                     false,

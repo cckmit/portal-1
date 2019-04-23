@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -42,4 +43,8 @@ public interface AbstractCaseCommentItemView extends IsWidget {
     void clearElapsedTime();
 
     void setRemoteLink(CaseLink remoteLink);
+
+    void setPrivateComment(Boolean value);
+
+    HasVisibility getPrivacyVisibility();
 }

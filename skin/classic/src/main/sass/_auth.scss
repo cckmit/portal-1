@@ -218,6 +218,14 @@ body {
   padding: 6px 17px;
 }
 
+.auth-remember-me {
+  .checkbox.single {
+    label::after {
+      padding-left: 3px !important;
+    }
+  }
+}
+
 @media (max-width: 768px) {
   .login-wrapper .login-container {
     width: 100%;

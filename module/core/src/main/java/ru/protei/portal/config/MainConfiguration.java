@@ -485,9 +485,8 @@ public class MainConfiguration {
         return new CaseStateWorkflowDAO_Impl();
     }
 
-    /**
-     * SERVICES
-     **/
+    /* SERVICES */
+
     @Bean
     public SessionIdGen getSessionIdGenerator() {
         return new SimpleSidGenerator();
@@ -749,9 +748,8 @@ public class MainConfiguration {
         return new JiraWikiMarkupRendererImpl();
     }
 
-    /**
-     * ASPECT/INTERCEPTORS
-     **/
+    /* ASPECT/INTERCEPTORS */
+
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor() {
         return new ServiceLayerInterceptor();

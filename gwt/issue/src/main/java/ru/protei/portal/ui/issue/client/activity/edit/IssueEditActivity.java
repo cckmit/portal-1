@@ -187,6 +187,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                             .withCaseId(issue.getId())
                             .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                             .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                            .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                            .withPrivateCase(issue.isPrivateCase())
                             .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
                             .build());
                 }
@@ -288,6 +290,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     .withCaseId(issue.getId())
                     .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                     .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                    .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                    .withPrivateCase(issue.isPrivateCase())
                     .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
                     .build());
         }
