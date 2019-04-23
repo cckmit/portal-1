@@ -101,4 +101,6 @@
   <include file="2019-03-25-modify-sf-platform-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-25-add-case-state-workflow-tables.xml" relativeToChangelogFile="true"/>
   <include file="2019-04-15-modify-case_comment-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-04-18-fix-jira-status-map-entry-fk.xml" relativeToChangelogFile="true"/>
+  <include file="2019-04-18-change-nx-jira-workflow-set.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

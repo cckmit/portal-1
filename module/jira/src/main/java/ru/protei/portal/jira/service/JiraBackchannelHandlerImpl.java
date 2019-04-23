@@ -67,6 +67,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             return;
         }
 
+        // TODO why no check if its jira issue (by ExternalCaseAppData.extAppType)
+
         final CommonUtils.IssueData issueData = CommonUtils.convert(extCaseData);
 
         final JiraEndpoint endpoint = endpointDAO.get(issueData.endpointId);
