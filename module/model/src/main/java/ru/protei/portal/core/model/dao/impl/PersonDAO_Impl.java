@@ -40,14 +40,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     @Autowired
     EmployeeSqlBuilder employeeSqlBuilder;
 
-    EntityCache<CompanyHomeGroupItem> homeGroupCache;
-
     private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
-
-    @PostConstruct
-    protected void postConstruct () {
-        homeGroupCache = new EntityCache<>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
-    }
 
     @Override
     public boolean existsByLegacyId(Long legacyId) {
@@ -123,7 +116,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
     @Override
     public List<Person> getContacts(ContactQuery query) {
-        if (query.getCompanyId() != null && homeGroupCache.exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
+        if (query.getCompanyId() != null && homeGroupCache().exists(entity -> entity.getCompanyId().equals(query.getCompanyId())))
             return Collections.emptyList();
 
         return listByQuery(query);
@@ -218,7 +211,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     }
 
     private boolean ifPersonIsEmployee(final Person employee) {
-        return homeGroupCache.exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );
+        return homeGroupCache().exists( entity -> employee.getCompanyId().equals(entity.getCompanyId()) );
     }
 
     private Person findFirst(SqlCondition sql) {
@@ -252,7 +245,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     private StringBuilder buildHomeCompanyFilter(boolean inverse) {
         final StringBuilder expr = new StringBuilder();
 
-        homeGroupCache.walkThrough( ( idx, item ) -> {
+        homeGroupCache().walkThrough( ( idx, item ) -> {
             if (idx == 0) {
                 expr.append("Person.company_id ").append(inverse ? "not in" : "in").append (" (");
             }
@@ -267,4 +260,13 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
 
         return expr;
     }
+
+    private EntityCache<CompanyHomeGroupItem> homeGroupCache() {
+        if (homeGroupCache == null) {
+            homeGroupCache = new EntityCache<>(groupHomeDAO, TimeUnit.MINUTES.toMillis(10));
+        }
+        return homeGroupCache;
+    }
+
+    private EntityCache<CompanyHomeGroupItem> homeGroupCache;
 }
