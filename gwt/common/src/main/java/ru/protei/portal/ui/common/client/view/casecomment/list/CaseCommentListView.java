@@ -12,16 +12,14 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.TakesValue;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -58,28 +56,6 @@ public class CaseCommentListView
     @Override
     public HasValue< String > message() {
         return comment;
-    }
-
-    @Override
-    public TakesValue<En_TextMarkup> messageMarkup() {
-        return new TakesValue<En_TextMarkup>() {
-            @Override
-            public void setValue(En_TextMarkup value) {
-                textMarkup = value;
-                if (value == null) {
-                    textMarkupLabel.addClassName("hide");
-                } else {
-                    textMarkupLabel.setInnerText(value == En_TextMarkup.MARKDOWN ?
-                            lang.textMarkdownSupport() :
-                            lang.textJiraWikiMarkupSupport());
-                    textMarkupLabel.removeClassName("hide");
-                }
-            }
-            @Override
-            public En_TextMarkup getValue() {
-                return textMarkup;
-            }
-        };
     }
 
     @Override
@@ -153,6 +129,16 @@ public class CaseCommentListView
     }
 
     @Override
+    public void setTextMarkupLabel(String label) {
+        if (label == null) {
+            textMarkupLabel.addClassName("hide");
+        } else {
+            textMarkupLabel.setInnerText(label);
+            textMarkupLabel.removeClassName("hide");
+        }
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );
@@ -201,7 +187,7 @@ public class CaseCommentListView
     @UiHandler("comment")
     public void onCommentChanged(ValueChangeEvent<String> event) {
         if (activity != null) {
-            activity.onCommentChanged(event.getValue(), textMarkup);
+            activity.onCommentChanged(event.getValue());
         }
     }
 
@@ -260,7 +246,6 @@ public class CaseCommentListView
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
     private AbstractCaseCommentListActivity activity;
-    private En_TextMarkup textMarkup;
 
     private static CaseCommentListUiBinder ourUiBinder = GWT.create(CaseCommentListUiBinder.class);
     interface CaseCommentListUiBinder extends UiBinder<HTMLPanel, CaseCommentListView> {}

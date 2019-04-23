@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.model.struct.TextWithMarkup;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
@@ -80,6 +79,7 @@ public abstract class CaseCommentListActivity
 
         this.caseType = event.caseType;
         this.caseId = event.caseId;
+        this.textMarkup = event.textMarkup;
         this.isElapsedTimeEnabled = event.isElapsedTimeEnabled;
         this.isModifyEnabled = event.isModifyEnabled;
 
@@ -90,7 +90,6 @@ public abstract class CaseCommentListActivity
 
         view.sendEnabled().setEnabled(true);
         view.message().setValue(makeCommentText(null), true);
-        view.messageMarkup().setValue(event.textMarkup);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
         view.clearTimeElapsed();
@@ -98,6 +97,9 @@ public abstract class CaseCommentListActivity
         view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
         view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
         view.enabledNewComment(isModifyEnabled);
+        view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?
+                        lang.textMarkdownSupport() :
+                        lang.textJiraWikiMarkupSupport());
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
@@ -218,7 +220,7 @@ public abstract class CaseCommentListActivity
 
         comment = null;
 
-        String message = CaseCommentUtils.appendQuote(view.message().getValue(), value.getText(), view.messageMarkup().getValue());
+        String message = CaseCommentUtils.appendQuote(view.message().getValue(), value.getText(), textMarkup);
         view.message().setValue( message, true );
         view.focus();
     }
@@ -265,7 +267,7 @@ public abstract class CaseCommentListActivity
     }
 
     @Override
-    public void onCommentChanged(String text, En_TextMarkup textMarkup) {
+    public void onCommentChanged(String text) {
         storage.set(makeStorageKey(caseId), text);
         scheduleChangedPreview();
     }
@@ -317,29 +319,29 @@ public abstract class CaseCommentListActivity
         view.enabledNewComment(isModifyEnabled);
 
         List<AbstractCaseCommentItemView> views = new ArrayList<>();
-        List<TextWithMarkup> values = new ArrayList<>();
+        List<String> textList = new ArrayList<>();
 
-        for (CaseComment value : comments) {
-            AbstractCaseCommentItemView itemView = makeCommentView( value );
-            if (StringUtils.isNotEmpty(value.getText())) {
+        for (CaseComment comment : comments) {
+            AbstractCaseCommentItemView itemView = makeCommentView(comment);
+            if (StringUtils.isNotEmpty(comment.getText())) {
                 views.add(itemView);
-                String text = HTMLHelper.htmlEscapeWOCodeBlock(value.getText(), value.getTextMarkup());
-                values.add(new TextWithMarkup(text, value.getTextMarkup()));
+                String text = HTMLHelper.htmlEscapeWOCodeBlock(comment.getText(), textMarkup);
+                textList.add(text);
             }
             view.addCommentToFront( itemView.asWidget() );
         }
 
-        textRenderController.render(values, new FluentCallback<List<String>>()
-                .withSuccess(textList -> {
-                    for (int i = 0; i < textList.size(); i++) {
-                        views.get(i).setMessage(textList.get(i));
+        textRenderController.render(textMarkup, textList, new FluentCallback<List<String>>()
+                .withSuccess(converted -> {
+                    for (int i = 0; i < converted.size(); i++) {
+                        views.get(i).setMessage(converted.get(i));
                     }
                     views.clear();
-                    values.clear();
+                    textList.clear();
                 }));
     }
 
-    private AbstractCaseCommentItemView makeCommentView(CaseComment value ) {
+    private AbstractCaseCommentItemView makeCommentView(CaseComment value) {
         AbstractCaseCommentItemView itemView = issueProvider.get();
         itemView.setActivity( this );
 
@@ -359,7 +361,7 @@ public abstract class CaseCommentListActivity
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
 
         if ( StringUtils.isNotEmpty( value.getText() ) ) {
-            itemView.setMessage(HTMLHelper.htmlEscapeWOCodeBlock(value.getText(), value.getTextMarkup()));
+            itemView.setMessage(HTMLHelper.htmlEscapeWOCodeBlock(value.getText(), textMarkup));
         }
 
         if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
@@ -468,10 +470,6 @@ public abstract class CaseCommentListActivity
             return;
         }
 
-        if (comment.getTextMarkup() == null) {
-            comment.setTextMarkup(view.messageMarkup().getValue());
-        }
-
         comment.setCaseId( id != null ? id : caseId );
         comment.setText( message );
         comment.setTimeElapsed(view.timeElapsed().getTime());
@@ -505,7 +503,7 @@ public abstract class CaseCommentListActivity
                     result.setCaseAttachments(comment.getCaseAttachments());
 
                     if (isEdit) {
-                        renderTextAsync(result.getText(), result.getTextMarkup(), lastCommentView::setMessage);
+                        renderTextAsync(result.getText(), textMarkup, lastCommentView::setMessage);
                         lastCommentView.clearElapsedTime();
                         fillTimeElapsed( comment, lastCommentView );
 
@@ -522,7 +520,7 @@ public abstract class CaseCommentListActivity
                         AbstractCaseCommentItemView itemView = makeCommentView(result);
                         lastCommentView = itemView;
                         view.addCommentToFront(itemView.asWidget());
-                        renderTextAsync(result.getText(), result.getTextMarkup(), itemView::setMessage);
+                        renderTextAsync(result.getText(), textMarkup, itemView::setMessage);
                     }
 
                     comment = null;
@@ -559,7 +557,6 @@ public abstract class CaseCommentListActivity
     private void fireChangedPreview() {
 
         String text = view.message().getValue();
-        En_TextMarkup textMarkup = view.messageMarkup().getValue();
 
         if (StringUtils.isBlank(text)) {
             view.setPreviewVisible(false);
@@ -621,6 +618,7 @@ public abstract class CaseCommentListActivity
     private Profile profile;
 
     private En_CaseType caseType;
+    private En_TextMarkup textMarkup;
     private boolean requesting = false;
     private boolean isElapsedTimeEnabled = false;
     private boolean isModifyEnabled = true;

@@ -26,8 +26,6 @@ public interface AbstractCaseCommentListView extends IsWidget {
 
     HasValue<String> message();
 
-    TakesValue<En_TextMarkup> messageMarkup();
-
     void focus();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
@@ -53,4 +51,6 @@ public interface AbstractCaseCommentListView extends IsWidget {
     void setPreviewText(String text);
 
     void setPreviewVisible(boolean isVisible);
+
+    void setTextMarkupLabel(String label);
 }

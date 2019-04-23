@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.list;
 
-import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.Attachment;
 
 /**
@@ -16,5 +15,5 @@ public interface AbstractCaseCommentListActivity {
 
     void onDetachView();
 
-    void onCommentChanged(String text, En_TextMarkup textMarkup);
+    void onCommentChanged(String text);
 }
