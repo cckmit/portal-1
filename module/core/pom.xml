@@ -282,6 +282,17 @@
             <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
             <version>0.12.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.atlassian.renderer</groupId>
+            <artifactId>atlassian-renderer</artifactId>
+            <version>8.0.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
         <dependency>
             <groupId>com.googlecode.juniversalchardet</groupId>
@@ -304,4 +315,20 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <!-- https://developer.atlassian.com/server/framework/atlassian-sdk/working-with-maven/ -->
+            <id>atlassian-public</id>
+            <url>https://packages.atlassian.com/maven/repository/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+        </repository>
+    </repositories>
 </project>

@@ -10,6 +10,7 @@ import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.service.template.PreparedTemplate;
@@ -30,7 +31,7 @@ public class TemplateServiceImplTest {
 
     @Test
     public void escapeTextComment_ReplaceLineBreaks() {
-        String result = ((TemplateServiceImpl) templateService).escapeTextComment( commentTextWithBreaks );
+        String result = ((TemplateServiceImpl) templateService).escapeTextComment( commentTextWithBreaks, En_TextMarkup.MARKDOWN );
         assertEquals( "<pre><code>ls -l<br/>total 38999<br/>-rw-rw-rw 1 user <br/></code></pre><br/><p>перенос<br/>строки<br/>работает <br />\n" +
                 "как-то<br/>так</p><br/>", result );
     }

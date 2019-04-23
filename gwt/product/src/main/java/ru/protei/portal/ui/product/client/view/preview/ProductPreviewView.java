@@ -11,7 +11,6 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
 
@@ -62,17 +61,17 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setConfiguration(String value ) {
-        this.configuration.setInnerHTML(markdownClient.plain2escaped2markdown(value));
+        this.configuration.setInnerHTML(value);
     }
 
     @Override
     public void setHistoryVersion(String value ) {
-        this.historyVersion.setInnerHTML(markdownClient.plain2escaped2markdown(value));
+        this.historyVersion.setInnerHTML(value);
     }
 
     @Override
     public void setCdrDescription(String value ) {
-        this.cdrDescription.setInnerHTML(markdownClient.plain2escaped2markdown(value));
+        this.cdrDescription.setInnerHTML(value);
     }
 
     @Override
@@ -110,8 +109,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Inject
     FixedPositioner positioner;
-    @Inject
-    MarkdownClient markdownClient;
 
     AbstractProductPreviewActivity activity;
 

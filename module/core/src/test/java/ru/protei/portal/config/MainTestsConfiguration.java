@@ -14,6 +14,12 @@ import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
+import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
+import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
+import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
 import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
@@ -24,7 +30,6 @@ import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
 import ru.protei.portal.mock.AuthServiceMock;
 import ru.protei.portal.mock.ReportControlServiceMock;
-import ru.protei.portal.util.MarkdownServer;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
@@ -571,8 +576,18 @@ public class MainTestsConfiguration {
     }
 
     @Bean
-    public MarkdownServer getMarkdownServer() {
-        return new MarkdownServer();
+    public HTMLRenderer getHTMLRenderer() {
+        return new HTMLRendererImpl();
+    }
+
+    @Bean
+    public MarkdownRenderer getMarkdownRenderer() {
+        return new MarkdownRendererImpl();
+    }
+
+    @Bean
+    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
+        return new JiraWikiMarkupRendererImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

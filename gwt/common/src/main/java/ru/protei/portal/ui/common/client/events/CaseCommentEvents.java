@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 
 import java.util.function.Consumer;
 
@@ -41,6 +42,10 @@ public class CaseCommentEvents {
                 event.isPrivateCase = b;
                 return this;
             }
+            public Builder withTextMarkup(En_TextMarkup textMarkup) {
+                event.textMarkup = textMarkup;
+                return this;
+            }
             public Show build() {
                 return event;
             }
@@ -59,6 +64,7 @@ public class CaseCommentEvents {
         public boolean isModifyEnabled = false;
         public boolean isPrivateVisible = false;
         public boolean isPrivateCase = false;
+        public En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
     }
 
     /**

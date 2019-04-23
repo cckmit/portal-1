@@ -7,7 +7,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -16,11 +18,14 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
+import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -111,6 +116,15 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     @Override
     public void onCancelClicked() {
         goBack();
+    }
+
+    @Override
+    public void renderMarkdownText(String text, Consumer<String> consumer) {
+        En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
+        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
+        textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
+                .withError(throwable -> consumer.accept(escapedText))
+                .withSuccess(consumer));
     }
 
     private void goBack() {
@@ -226,6 +240,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     ProductControllerAsync productService;
     @Inject
     PolicyService policyService;
+    @Inject
+    TextRenderControllerAsync textRenderController;
 
     private Long productId;
     private DevUnit product;
