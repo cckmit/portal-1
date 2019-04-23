@@ -6,7 +6,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
@@ -121,6 +123,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                         .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                         .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                         .withPrivateCase(isPrivateCase)
+                        .withTextMarkup(textMarkup)
                         .build());
             }
         });
@@ -174,6 +177,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                 .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                 .withPrivateCase(isPrivateCase)
+                .withTextMarkup(textMarkup)
                 .build());
     }
 
@@ -204,10 +208,11 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             @Override
             public void onSuccess( CaseObject caseObject ) {
                 fireEvent( new AppEvents.InitPanelName( caseObject.getCaseNumber().toString() ) );
-                if(caseObject!=null) {
-                    issueId = caseObject.getId();
-                    isPrivateCase = caseObject.isPrivateCase();
-                }
+
+                issueId = caseObject.getId();
+                isPrivateCase = caseObject.isPrivateCase();
+                textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(caseObject);
+
                 fillView( caseObject );
             }
         } );
@@ -252,5 +257,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private Long issueCaseNumber;
     private Long issueId;
     private boolean isPrivateCase;
+    private En_TextMarkup textMarkup;
     private AppEvents.InitDetails initDetails;
 }

@@ -18,9 +18,8 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-
 import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -38,7 +37,12 @@ import java.util.Set;
 public class ProductEditView extends Composite implements AbstractProductEditView {
 
     @Inject
-    public void onInit() { initWidget(ourUiBinder.createAndBindUi(this)); }
+    public void onInit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+        historyVersion.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
+        configuration.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
+        cdrDescription.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
+    }
 
     @Override
     public void setActivity(AbstractProductEditActivity activity) {

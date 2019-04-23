@@ -5,10 +5,13 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
+import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -16,7 +19,6 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
-import ru.protei.portal.util.MarkdownServer;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -38,7 +40,7 @@ public class TemplateServiceImpl implements TemplateService {
     Configuration templateConfiguration;
 
     @Inject
-    MarkdownServer markdownServer;
+    HTMLRenderer htmlRenderer;
 
     @PostConstruct
     public void onInit() {
@@ -109,7 +111,8 @@ public class TemplateServiceImpl implements TemplateService {
                         event.getRemovedAttachments())
         );
 
-        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment()));
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment(), textMarkup));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -273,7 +276,7 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment){
+    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, En_TextMarkup textMarkup){
         return comments
                 .stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
@@ -281,14 +284,14 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > caseComment = new HashMap<>();
                     caseComment.put( "created", comment.getCreated() );
                     caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", escapeTextComment( comment.getText() ) );
+                    caseComment.put( "text", escapeTextComment( comment.getText(), textMarkup ) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     caseComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
                     if(isChanged && oldCaseComment != null){
-                        caseComment.put( "oldText", escapeTextComment( oldCaseComment.getText() ) );
+                        caseComment.put( "oldText", escapeTextComment( oldCaseComment.getText(), textMarkup ) );
                     }
 
                     return caseComment;
@@ -296,13 +299,12 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    String escapeTextComment( String text) {
+    String escapeTextComment(String text, En_TextMarkup textMarkup) {
         if (text == null) {
             return null;
         }
-        text = HTMLHelper.htmlEscapeWOThreeBackticks(text);
-        text = markdownServer.plain2markdown(text);
-        text = replaceLineBreaks( text );
+        text = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
+        text = htmlRenderer.plain2html(text, textMarkup);
         return text;
     }
 

@@ -60,7 +60,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (response.isError()) {
             return response;
         }
-        CaseComment result = response.getData();
+        comment = response.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
@@ -78,7 +78,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, addedAttachments, person));
         }
 
-        return new CoreResponse<CaseComment>().success(result);
+        return new CoreResponse<CaseComment>().success(comment);
     }
 
     @Override
@@ -99,7 +99,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (response.isError()) {
             return response;
         }
-        CaseComment result = response.getData();
+        comment = response.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
@@ -119,7 +119,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, prevComment, removedAttachments, comment, addedAttachments, person));
         }
 
-        return new CoreResponse<CaseComment>().success(result);
+        return new CoreResponse<CaseComment>().success(comment);
     }
 
     @Override
@@ -200,16 +200,22 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     private void applyFilterByScope( AuthToken token, CaseCommentQuery query ) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setViewPrivate( false );
+        if (token != null) {
+            UserSessionDescriptor descriptor = authService.findSession(token);
+            Set<UserRole> roles = descriptor.getLogin().getRoles();
+            if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+                query.setViewPrivate(false);
+            }
         }
     }
     private boolean prohibitedPrivateComment(AuthToken token, CaseComment comment) {
-        UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
+        if (token != null) {
+            UserSessionDescriptor descriptor = authService.findSession( token );
+            Set< UserRole > roles = descriptor.getLogin().getRoles();
+            return comment.isPrivateComment() && !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW );
+        } else {
+            return false;
+        }
     }
 
     private CoreResponse<List<CaseComment>> getList(List<CaseComment> comments) {

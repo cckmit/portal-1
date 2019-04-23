@@ -311,3 +311,7 @@
     padding: 0 16px;
     margin-bottom: 16px;
 }
+
+.markup .rendericon {
+    padding-left: 2px;
+}

@@ -5,10 +5,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.service.template.PreparedTemplate;
@@ -24,14 +26,13 @@ import static org.junit.Assert.assertNotNull;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
 public class TemplateServiceImplTest {
 
     @Test
     public void escapeTextComment_ReplaceLineBreaks() {
-        String result = ((TemplateServiceImpl) templateService).escapeTextComment( commentTextWithBreaks );
-        assertEquals( "<pre><code>ls -l<br/>total 38999<br/>-rw-rw-rw 1 user <br/></code></pre><br/><p>перенос<br/>строки<br/>работает <br />\n" +
-                "как-то<br/>так</p><br/>", result );
+        String result = ((TemplateServiceImpl) templateService).escapeTextComment( commentTextWithBreaks, En_TextMarkup.MARKDOWN );
+        assertEquals( commentTextWithBreaksFormatted, result );
     }
 
     @Test
@@ -68,7 +69,7 @@ public class TemplateServiceImplTest {
     }
 
     private CaseObject createNewCaseObject(Company company, Person person, Long timeElapsed) {
-        CaseObject caseObject = CaseCommentServiceTest.createNewCaseObject(person);
+        CaseObject caseObject = CaseCommentServiceTest.createNewCaseObject(person, 1L);
         caseObject.setCaseNumber(111L);
         caseObject.setTimeElapsed(timeElapsed);
         caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
@@ -91,5 +92,12 @@ public class TemplateServiceImplTest {
             " работает \\\n" +
             "как-то \n" +
             "так";
+
+    private String commentTextWithBreaksFormatted = "<pre><code>ls -l\n" +
+            "total 38999\n" +
+            "-rw-rw-rw 1 user \n" +
+            "</code></pre>\n" +
+            "<p>перенос<br/>строки<br/>работает <br />\n" +
+            "как-то<br/>так</p>\n";
 
 }

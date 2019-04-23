@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
+import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -188,6 +189,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                             .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                             .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                             .withPrivateCase(issue.isPrivateCase())
+                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
                             .build());
                 }
             }
@@ -290,6 +292,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
                     .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
                     .withPrivateCase(issue.isPrivateCase())
+                    .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
                     .build());
         }
 

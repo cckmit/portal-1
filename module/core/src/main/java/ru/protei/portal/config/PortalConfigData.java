@@ -105,6 +105,7 @@ public class PortalConfigData {
         public CommonConfig( PropertiesWrapper properties ) {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
+            crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -114,8 +115,13 @@ public class PortalConfigData {
             return crmUrlExternal;
         }
 
+        public String getCrmUrlCurrent() {
+            return crmUrlCurrent;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
+        private final String crmUrlCurrent;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
