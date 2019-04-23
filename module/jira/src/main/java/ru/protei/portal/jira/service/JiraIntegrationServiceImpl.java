@@ -337,7 +337,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         our.setOriginalAuthorFullName(comment.getAuthor().getDisplayName());
         our.setOriginalAuthorName(comment.getAuthor().getDisplayName());
         our.setText(comment.getBody());
-        // TODO set markup type after merge PORTAL-564
         return our;
     }
 
