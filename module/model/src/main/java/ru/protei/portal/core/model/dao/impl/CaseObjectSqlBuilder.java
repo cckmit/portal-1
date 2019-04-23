@@ -26,7 +26,8 @@ public class CaseObjectSqlBuilder {
                         .append(StringUtils.join(query.getMemberIds(), ","))
                         .append("))");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
-                condition.append(" and case_object.id in (select case_id from case_object_tag where tag_id in (")
+                condition.append(" and case_object.id in (select case_id from case_object_tag where tag_id")
+                        .append(query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED) ? " is null or tag_id not in (" : " in (" )
                         .append(StringUtils.join(query.getCaseTagsIds(), ","))
                         .append("))");
             }

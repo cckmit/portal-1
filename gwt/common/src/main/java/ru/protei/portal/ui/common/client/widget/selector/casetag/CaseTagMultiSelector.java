@@ -2,8 +2,8 @@ package ru.protei.portal.ui.common.client.widget.selector.casetag;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
@@ -27,6 +27,10 @@ public class CaseTagMultiSelector extends MultipleInputSelector<EntityOption> im
         subscribeIfReady();
     }
 
+    public void setHasNullValue(boolean hasNullValue) {
+        this.hasNullValue = hasNullValue;
+    }
+
     private void subscribeIfReady() {
         if (isSubscribed || model == null || caseType == null) {
             return;
@@ -41,10 +45,17 @@ public class CaseTagMultiSelector extends MultipleInputSelector<EntityOption> im
         if (CollectionUtils.isEmpty(options)) {
             return;
         }
+        if (hasNullValue) {
+            addOption(lang.tagNotSpecified(), new EntityOption(lang.tagNotSpecified(), CrmConstants.CaseTag.NOT_SPECIFIED));
+        }
         options.forEach(caseTag -> addOption(caseTag.getDisplayText(), caseTag));
     }
+
+    @Inject
+    private Lang lang;
 
     private boolean isSubscribed = false;
     private CaseTagModel model;
     private En_CaseType caseType;
+    private boolean hasNullValue = true;
 }

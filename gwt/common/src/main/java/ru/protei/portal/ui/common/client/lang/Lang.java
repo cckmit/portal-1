@@ -1633,4 +1633,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errIssueCommentProhibitedPrivate();
 
     String rememberMe();
+
+    String tagNotSpecified();
 }
