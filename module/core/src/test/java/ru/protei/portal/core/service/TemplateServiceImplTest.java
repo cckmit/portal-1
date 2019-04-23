@@ -32,8 +32,7 @@ public class TemplateServiceImplTest {
     @Test
     public void escapeTextComment_ReplaceLineBreaks() {
         String result = ((TemplateServiceImpl) templateService).escapeTextComment( commentTextWithBreaks, En_TextMarkup.MARKDOWN );
-        assertEquals( "<pre><code>ls -l<br/>total 38999<br/>-rw-rw-rw 1 user <br/></code></pre><br/><p>перенос<br/>строки<br/>работает <br />\n" +
-                "как-то<br/>так</p><br/>", result );
+        assertEquals( commentTextWithBreaksFormatted, result );
     }
 
     @Test
@@ -93,5 +92,12 @@ public class TemplateServiceImplTest {
             " работает \\\n" +
             "как-то \n" +
             "так";
+
+    private String commentTextWithBreaksFormatted = "<pre><code>ls -l\n" +
+            "total 38999\n" +
+            "-rw-rw-rw 1 user \n" +
+            "</code></pre>\n" +
+            "<p>перенос<br/>строки<br/>работает <br />\n" +
+            "как-то<br/>так</p>\n";
 
 }
