@@ -225,4 +225,29 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public boolean isCoreModuleEvent () {
         return serviceModule == null || serviceModule == ServiceModule.GENERAL;
     }
+
+    public boolean isSendToCustomers() {
+        return isCreateEvent()
+                || !isCaseCommentAttached()
+                || isCommentNotPrivate()
+                || isChangedWithOutComments();
+
+    }
+
+    private boolean isCommentNotPrivate() {
+        return comment != null && !comment.isPrivateComment();
+    }
+
+    private boolean isChangedWithOutComments() {
+        return  isCaseImportanceChanged()
+                || isCaseStateChanged()
+                || isInfoChanged()
+                || isInitiatorChanged()
+                || isInitiatorCompanyChanged()
+                || isManagerChanged()
+                || isNameChanged()
+                || isPrivacyChanged()
+                || isProductChanged()
+                || isTimeElapsedChanged();
+    }
 }
