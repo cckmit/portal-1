@@ -1637,4 +1637,6 @@ public interface Lang extends Messages, ContactItemLang {
     String textMarkdownSupport();
 
     String textJiraWikiMarkupSupport();
+
+    String tagNotSpecified();
 }
