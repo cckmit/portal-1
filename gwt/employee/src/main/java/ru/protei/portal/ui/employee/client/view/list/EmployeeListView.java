@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -32,12 +33,22 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
 
+    @Override
+    public void showLoader( boolean isShow ){
+        if( isShow )
+            loader.addClassName( "active" );
+        else
+            loader.removeClassName( "active" );
+    }
 
     @UiField
     PlateList childContainer;
 
     @UiField
     HTMLPanel filterContainer;
+
+    @UiField
+    DivElement loader;
 
     @Inject
     @UiField

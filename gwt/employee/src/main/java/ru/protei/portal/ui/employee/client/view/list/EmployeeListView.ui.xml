@@ -9,6 +9,7 @@
             <platelist:PlateList ui:field="childContainer"
                                  styleName="plate-list"
                                  createButtonVisible="false"/>
+            <div ui:field="loader" class="Loader"/>
         </div>
         <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
     </g:HTMLPanel>

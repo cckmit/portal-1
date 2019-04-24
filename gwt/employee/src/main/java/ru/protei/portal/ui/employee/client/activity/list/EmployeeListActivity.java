@@ -79,6 +79,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     private void requestEmployees() {
+
+        view.showLoader( true );
+
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
@@ -94,6 +97,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             @Override
             public void onSuccess( List< EmployeeShortView > employees ) {
                 fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
+                view.showLoader( false );
             }
         });
     }
