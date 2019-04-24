@@ -133,12 +133,9 @@ public class MailNotificationProcessor {
             );
 
             if (event.isSendToCustomers()) {
-                List<CaseComment> publicComments = comments.getData().stream()
-                        .filter(comment -> !comment.isPrivateComment())
-                        .collect(toList());
                 performCaseObjectNotification(
                         event,
-                        publicComments,
+                        selectPublicComments(comments.getData()),
                         lastMessageId,
                         recipients,
                         false,
@@ -154,6 +151,11 @@ public class MailNotificationProcessor {
         } finally {
             semaphore.release();
         }
+    }
+    private List<CaseComment> selectPublicComments(List<CaseComment> comments) {
+        return comments.stream()
+                .filter(comment -> !comment.isPrivateComment())
+                .collect(toList());
     }
 
     private MimeMessageHeadersFacade makeHeaders( Long caseNumber, Long lastMessageId, int recipientAddressHashCode ) {

@@ -229,15 +229,25 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public boolean isSendToCustomers() {
         return isCreateEvent()
                 || !isCaseCommentAttached()
-                || !getCaseComment().isPrivateComment()
+                || isCommentNotPrivate()
                 || isChangedWithOutComments();
 
     }
+
+    private boolean isCommentNotPrivate() {
+        return comment != null && !comment.isPrivateComment();
+    }
+
     private boolean isChangedWithOutComments() {
-        return  isCaseImportanceChanged() || isCaseStateChanged()
-                || isInfoChanged() || isInitiatorChanged()
-                || isInitiatorCompanyChanged() || isManagerChanged()
-                || isNameChanged() || isPrivacyChanged()
-                || isProductChanged() || isTimeElapsedChanged();
+        return  isCaseImportanceChanged()
+                || isCaseStateChanged()
+                || isInfoChanged()
+                || isInitiatorChanged()
+                || isInitiatorCompanyChanged()
+                || isManagerChanged()
+                || isNameChanged()
+                || isPrivacyChanged()
+                || isProductChanged()
+                || isTimeElapsedChanged();
     }
 }
