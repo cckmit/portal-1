@@ -132,17 +132,22 @@ public class MailNotificationProcessor {
                             .collect(toList())
             );
 
-            performCaseObjectNotification(
-                    event,
-                    comments.getData().stream().filter(comment -> !comment.isPrivateComment()).collect(toList()),
-                    lastMessageId,
-                    recipients,
-                    false,
-                    config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                    notifiers.stream()
-                            .filter(this::isNotProteiRecipient)
-                            .collect(toList())
-            );
+            if (event.isSendToCustomers()) {
+                List<CaseComment> publicComments = comments.getData().stream()
+                        .filter(comment -> !comment.isPrivateComment())
+                        .collect(toList());
+                performCaseObjectNotification(
+                        event,
+                        publicComments,
+                        lastMessageId,
+                        recipients,
+                        false,
+                        config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
+                        notifiers.stream()
+                                .filter(this::isNotProteiRecipient)
+                                .collect(toList())
+                );
+            }
 
             caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
 
