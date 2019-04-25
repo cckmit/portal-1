@@ -34,11 +34,8 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
-    public void showLoader( boolean isShow ){
-        if( isShow )
-            loader.addClassName( "active" );
-        else
-            loader.removeClassName( "active" );
+    public void showLoader( boolean isShow ) {
+        loader.setVisible( isShow );
     }
 
     @UiField
@@ -48,7 +45,7 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     HTMLPanel filterContainer;
 
     @UiField
-    DivElement loader;
+    HTMLPanel loader;
 
     @Inject
     @UiField

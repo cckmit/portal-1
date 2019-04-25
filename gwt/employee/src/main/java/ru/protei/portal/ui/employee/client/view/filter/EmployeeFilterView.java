@@ -107,7 +107,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     private void fireChangeTimer() {
         timer.cancel();
-        timer.schedule( 300 );
+        timer.schedule( 400 );
     }
 
     Timer timer = new Timer() {
