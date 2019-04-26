@@ -11,16 +11,8 @@
                     <span class="col-xs-7 col-md-7" ui:field="login"></span>
                 </div>
                 <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountLastName}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="lastName"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountFirstName}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="firstName"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountSecondName}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="secondName"></span>
+                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountPerson}"/></label>
+                    <span class="col-xs-7 col-md-7" ui:field="displayName"></span>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.accountCompany}"/></label>
