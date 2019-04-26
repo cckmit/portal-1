@@ -35,12 +35,24 @@ public class EmployeeSqlBuilder {
                         .append(")");
             }
 
-            if ( HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and (Person.displayName like ? or JSON_EXTRACT(Person.contactInfo, '$.items[*].v') like ? or Person.ipaddress like ?)");
-                String likeArg = HelperFunc.makeLikeArg(query.getSearchString(), true);
-                args.add(likeArg);
-                args.add(likeArg);
-                args.add(likeArg);
+            if (HelperFunc.isLikeRequired(query.getSearchString())) {
+                condition.append(" and Person.displayName like ?");
+                args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
+                condition.append(" and JSON_SEARCH(Person.contactInfo, 'one', ?, '', substr(JSON_UNQUOTE(JSON_SEARCH(person.contactInfo, 'one','Рабочий')),1,10)) is not null");
+                args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
+                condition.append(" and JSON_SEARCH(Person.contactInfo, 'one', ?, '', substr(JSON_UNQUOTE(JSON_SEARCH(person.contactInfo, 'one','MOBILE_PHONE')),1,10)) is not null");
+                args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getIpAddress())) {
+                condition.append(" and Person.ipaddress like ?");
+                args.add(HelperFunc.makeLikeArg(query.getIpAddress(), true));
             }
         });
     }

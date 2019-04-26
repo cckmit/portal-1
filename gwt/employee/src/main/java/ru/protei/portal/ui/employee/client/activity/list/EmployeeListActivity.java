@@ -106,6 +106,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         return new EmployeeQuery( false, false, true,
                 filterView.homeCompanies().getValue(),
                 filterView.searchPattern().getValue(),
+                filterView.workPhone().getValue(),
+                filterView.mobilePhone().getValue(),
+                filterView.ipAddress().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
     }

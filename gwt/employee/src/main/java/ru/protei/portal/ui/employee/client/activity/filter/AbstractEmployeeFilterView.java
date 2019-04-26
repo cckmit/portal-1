@@ -15,6 +15,10 @@ public interface AbstractEmployeeFilterView extends IsWidget {
     HasValue< En_SortField > sortField();
     HasValue< Boolean > sortDir();
     HasValue< String > searchPattern();
+    HasValue< String > workPhone();
+    HasValue< String > mobilePhone();
+    HasValue< String > ipAddress();
+
     HasValue< Set< EntityOption > > homeCompanies();
     void resetFilter();
 }

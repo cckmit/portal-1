@@ -10,6 +10,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -65,6 +66,21 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue< String > workPhone() {
+        return workPhone;
+    }
+
+    @Override
+    public HasValue< String > mobilePhone() {
+        return mobilePhone;
+    }
+
+    @Override
+    public HasValue< String > ipAddress() {
+        return ipAddress;
+    }
+
+    @Override
     public HasValue< Set< EntityOption > > homeCompanies() {
         return homeCompanies;
     }
@@ -74,6 +90,9 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setValue( "" );
+        workPhone.setValue( "" );
+        mobilePhone.setValue( "" );
+        ipAddress.setValue( "" );
         homeCompanies.setValue( null );
     }
 
@@ -97,6 +116,23 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent< String > event ) {
+        if ( HelperFunc.isNotEmpty( event.getValue() ) ) {
+            fireChangeTimer();
+        }
+    }
+
+    @UiHandler( "workPhone" )
+    public void onWorkPhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "mobilePhone" )
+    public void onMobilePhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "ipAddress" )
+    public void onIPAddressChanged( ValueChangeEvent< String > event ) {
         fireChangeTimer();
     }
 
@@ -128,6 +164,15 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     CleanableSearchBox search;
+
+    @UiField
+    CleanableSearchBox workPhone;
+
+    @UiField
+    CleanableSearchBox mobilePhone;
+
+    @UiField
+    CleanableSearchBox ipAddress;
 
     @Inject
     @UiField(provided = true)

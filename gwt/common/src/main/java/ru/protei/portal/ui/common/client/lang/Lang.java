@@ -1635,4 +1635,12 @@ public interface Lang extends Messages, ContactItemLang {
     String rememberMe();
 
     String tagNotSpecified();
+
+    String employeeEmployeeFullNameColumnHeader();
+
+    String employeeWorkPhoneColumnHeader();
+
+    String employeeMobilePhoneColumnHeader();
+
+    String employeeIPAddressColumnHeader();
 }

@@ -3885,3 +3885,15 @@ div.select2-container {
     line-height: 16px;
   }
 }
+
+.text-primary {
+  color: #303030;
+}
+
+.text-info {
+  color: $success_dark_color;
+}
+
+.text-bold {
+  font-weight: bold !important;
+}

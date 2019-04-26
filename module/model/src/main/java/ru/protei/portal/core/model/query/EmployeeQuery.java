@@ -19,20 +19,29 @@ public class EmployeeQuery extends BaseQuery {
 
     private Set<EntityOption> homeCompanies;
 
+    private String workPhone;
+
+    private String mobilePhone;
+
+    private String ipAddress;
+
     public EmployeeQuery() {
         fired = false;
     }
 
     public EmployeeQuery(Boolean fired, Boolean onlyPeople, String searchString, En_SortField sortField, En_SortDir sortDir) {
-        this(fired, null, onlyPeople, null, searchString, sortField, sortDir);
+        this(fired, null, onlyPeople, null, searchString, null, null, null, sortField, sortDir);
     }
 
-    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, En_SortField sortField, En_SortDir sortDir) {
+    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         this.fired = fired;
         this.deleted = deleted;
         this.onlyPeople = onlyPeople;
         this.homeCompanies = homeCompanies;
+        this.workPhone = workPhone;
+        this.mobilePhone = mobilePhone;
+        this.ipAddress = ipAddress;
         this.limit = 1000;
     }
 
@@ -68,6 +77,30 @@ public class EmployeeQuery extends BaseQuery {
         this.homeCompanies = homeCompanies;
     }
 
+    public String getWorkPhone() {
+        return workPhone;
+    }
+
+    public void setWorkPhone( String workPhone ) {
+        this.workPhone = workPhone;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public void setMobilePhone( String mobilePhone ) {
+        this.mobilePhone = mobilePhone;
+    }
+
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress( String ipAddress ) {
+        this.ipAddress = ipAddress;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
@@ -75,6 +108,9 @@ public class EmployeeQuery extends BaseQuery {
                 ", deleted=" + deleted +
                 ", onlyPeople=" + onlyPeople +
                 ", homeCompanies=" + homeCompanies +
+                ", workPhone='" + workPhone + '\'' +
+                ", mobilePhone='" + mobilePhone + '\'' +
+                ", ipAddress='" + ipAddress + '\'' +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

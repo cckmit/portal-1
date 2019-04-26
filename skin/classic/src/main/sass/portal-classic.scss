@@ -75,8 +75,9 @@
     font-weight: 400;
     line-height: 1;
     text-align: center;
-    background-color: #eee;
+    background-color: #fff;
     border: 1px solid #ccc;
+    color: $success_dark_color;
   }
 
   .input-group-addon:first-child {

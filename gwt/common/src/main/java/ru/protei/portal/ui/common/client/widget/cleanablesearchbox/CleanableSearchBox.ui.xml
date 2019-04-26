@@ -3,8 +3,13 @@
 
     <g:HTMLPanel>
         <div class="cleanable-search">
-            <g:Anchor ui:field="textBoxAction" styleName="icon cleanable-search-icon"/>
-            <g:TextBox ui:field="textBox" styleName="input-field"/>
+            <div class="input-group">
+                <span ui:field="addon" class="input-group-addon input-group-addon-fix text-bold hide">
+                    <i ui:field="addonIcon" class="hide"/>
+                </span>
+                <g:Anchor ui:field="textBoxAction" styleName="icon cleanable-search-icon"/>
+                <g:TextBox ui:field="textBox" styleName="input-field"/>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
