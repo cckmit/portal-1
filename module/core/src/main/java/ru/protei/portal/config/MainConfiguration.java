@@ -369,9 +369,26 @@ public class MainConfiguration {
     }
 
     @Bean
+    public JiraPriorityMapEntryDAO getJiraPriorityMapEntryDAO() {
+        return new JiraPriorityMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public JiraEndpointDAO getJiraEndpointDAO() {
+        return new JiraEnpointDAO_Impl();
+    }
+
+    @Bean
+    public JiraStatusMapEntryDAO getJiraStatusMapEntryDAO() {
+        return new JiraStatusMapEntryDAO_Impl();
+    }
+
+    @Bean
     public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
         return new RedminePriorityMapEntryDAO_Impl();
     }
+
+
 
     @Bean
     public CaseFilterDAO getIssueFilterDAO() {

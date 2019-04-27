@@ -1,0 +1,35 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="svitkov" id="jira-001">
+        <createTable  tableName="jira_endpoint">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true"/>
+            </column>
+
+            <column name="server_addr" type="varchar(64)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="project_id" type="varchar(128)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="COMPANY_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="STATUS_MAP_ID" type="BIGINT" />
+
+            <column name="PRIORITY_MAP_ID" type="BIGINT"/>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_JIRA_EP_COMPANY" onDelete="CASCADE"
+                                 baseColumnNames="COMPANY_ID" baseTableName="jira_endpoint"
+                                 referencedColumnNames="ID" referencedTableName="COMPANY"/>
+    </changeSet>
+
+</databaseChangeLog>

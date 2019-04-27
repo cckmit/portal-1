@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.YearMonth;
 import java.util.Base64;
 
@@ -181,7 +182,7 @@ public class FileStorage {
             lastDotPos = path.length();
         }
         return path.substring(0, firstUnderscorePos + 1)
-                + enc.encodeToString(path.substring(firstUnderscorePos + 1, lastDotPos).getBytes())
+                + enc.encodeToString(path.substring(firstUnderscorePos + 1, lastDotPos).getBytes(StandardCharsets.UTF_8))
                 + path.substring(lastDotPos);
     }
 

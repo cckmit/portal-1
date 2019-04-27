@@ -5,7 +5,5 @@ package ru.protei.portal.app.portal.client.activity.auth;
  */
 public interface AbstractAuthActivity {
     void onLocaleChanged(String locale);
-
     void onLoginClicked();
-    void onResetClicked();
 }

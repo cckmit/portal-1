@@ -26,6 +26,8 @@
                                     minRows="5" maxRows="20"/>
 
                             <div class="attachments">
+                                <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn"/>
+
                                 <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
 
                                 <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">

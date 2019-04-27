@@ -158,4 +158,13 @@ public class AttachmentServiceImpl implements AttachmentService {
 
         return new CoreResponse<Long>().success(id);
     }
+
+    @Override
+    public CoreResponse<String> getAttachmentNameByExtLink(String extLink) {
+        Attachment attachment = attachmentDAO.partialGetByCondition("ext_link = ?", Collections.singletonList(extLink), "file_name");
+        if (attachment == null) {
+            return new CoreResponse<String>().error(En_ResultStatus.NOT_FOUND);
+        }
+        return new CoreResponse<String>().success(attachment.getFileName());
+    }
 }

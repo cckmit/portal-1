@@ -26,9 +26,14 @@ public class CaseObjectSqlBuilder {
                         .append(StringUtils.join(query.getMemberIds(), ","))
                         .append("))");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
-                condition.append(" and case_object.id in (select case_id from case_object_tag where tag_id in (")
-                        .append(StringUtils.join(query.getCaseTagsIds(), ","))
-                        .append("))");
+                boolean notSpecified = query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED);
+                if (!query.getCaseTagsIds().isEmpty()) {
+                    condition.append(" and case_object.id")
+                            .append(notSpecified ? " not in" : " in")
+                            .append(" (select case_id from case_object_tag where tag_id in (")
+                            .append(StringUtils.join(query.getCaseTagsIds(), ","))
+                            .append("))");
+                }
             }
 
             if ( !query.isAllowViewPrivate() ) {

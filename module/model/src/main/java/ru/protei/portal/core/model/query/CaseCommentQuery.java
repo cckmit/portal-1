@@ -14,6 +14,7 @@ public class CaseCommentQuery extends BaseQuery {
     private Boolean caseStateNotNull;
     private List<Long> caseObjectIds;
     private List<Long> authorIds;
+    private Boolean viewPrivate = null;
 
     public CaseCommentQuery() {
         this(null, null, En_SortField.creation_date, En_SortDir.ASC);
@@ -91,5 +92,13 @@ public class CaseCommentQuery extends BaseQuery {
             authorIds = new ArrayList<>();
         }
         authorIds.add(authorId);
+    }
+
+    public Boolean isViewPrivate() {
+        return viewPrivate;
+    }
+
+    public void setViewPrivate(Boolean viewOnlyPrivate) {
+        this.viewPrivate = viewOnlyPrivate;
     }
 }

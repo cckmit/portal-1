@@ -30,4 +30,8 @@ public class CrmConstants {
     public interface FileUpload {
         String FILE_ITEM_DESC = "file-item";
     }
+
+    public interface CaseTag {
+        Long NOT_SPECIFIED = -1L;
+    }
 }

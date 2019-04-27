@@ -8,3 +8,4 @@ syntax: glob
 **.iml
 **.orig
 
+debug/

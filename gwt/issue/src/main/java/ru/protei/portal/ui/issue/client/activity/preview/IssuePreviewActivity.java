@@ -70,6 +70,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         this.issueCaseNumber = event.issueCaseNumber;
         issueId = null;
+        isPrivateCase = false;
 
         fillView(issueCaseNumber);
         view.watchForScroll( true );
@@ -83,6 +84,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         this.issueCaseNumber = event.issueCaseNumber;
         issueId = null;
+        isPrivateCase = false;
 
         fillView(issueCaseNumber);
         view.showFullScreen( true );
@@ -117,6 +119,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                         .withCaseId(issueId)
                         .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                         .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                        .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                        .withPrivateCase(isPrivateCase)
                         .build());
             }
         });
@@ -168,6 +172,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                 .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                .withPrivateVisible(!isPrivateCase && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                .withPrivateCase(isPrivateCase)
                 .build());
     }
 
@@ -198,7 +204,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             @Override
             public void onSuccess( CaseObject caseObject ) {
                 fireEvent( new AppEvents.InitPanelName( caseObject.getCaseNumber().toString() ) );
-                if(caseObject!=null) issueId = caseObject.getId();
+                if(caseObject!=null) {
+                    issueId = caseObject.getId();
+                    isPrivateCase = caseObject.isPrivateCase();
+                }
                 fillView( caseObject );
             }
         } );
@@ -242,5 +251,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     private Long issueCaseNumber;
     private Long issueId;
+    private boolean isPrivateCase;
     private AppEvents.InitDetails initDetails;
 }

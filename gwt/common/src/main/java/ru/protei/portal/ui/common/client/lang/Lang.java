@@ -1629,4 +1629,10 @@ public interface Lang extends Messages, ContactItemLang {
     String siteFolderAttachments();
 
     String numberUncompletedCases();
+
+    String errIssueCommentProhibitedPrivate();
+
+    String rememberMe();
+
+    String tagNotSpecified();
 }
