@@ -38,23 +38,23 @@ public class UserLogin extends AuditableObject implements Removable {
     private Long personId;
 
     @JdbcJoinedColumn( mappedColumn = "displayname", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
     })
     private String displayName;
 
     @JdbcJoinedColumn( mappedColumn = "isfired", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
     })
     private boolean isFired;
 
     @JdbcJoinedColumn( mappedColumn = "company_id", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id" ),
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
     })
     private Long companyId;
 
     @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
-            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id" ),
-            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id" )
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c" )
     })
     private String companyName;
 
