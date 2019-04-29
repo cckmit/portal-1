@@ -24,10 +24,12 @@ import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilte
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Активность списка сотрудников
@@ -82,9 +84,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         view.showLoader( true );
 
+/*
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
+*/
 
         view.getChildContainer().clear();
         itemViewToModel.clear();
@@ -96,8 +100,17 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
             @Override
             public void onSuccess( List< EmployeeShortView > employees ) {
-                fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
+                long startTime = ( new Date() ).getTime();
+                employees.forEach( employee -> {
+                    AbstractEmployeeItemView itemView = makeView( employee );
+
+                    itemViewToModel.put( itemView, employee );
+                    view.getChildContainer().add( itemView.asWidget() );
+                } );
+                //fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
                 view.showLoader( false );
+                long stopTime = (new Date()).getTime();
+                log.info( "Execution time in onSuccess: " + ( stopTime - startTime ) );
             }
         });
     }
@@ -171,4 +184,5 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
+    private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

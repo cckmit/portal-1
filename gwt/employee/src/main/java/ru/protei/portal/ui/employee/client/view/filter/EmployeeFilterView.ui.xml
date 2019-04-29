@@ -25,6 +25,7 @@
             </div>
         </div>
         <div class="footer">
+            <g:Button ui:field="applyBtn" styleName="btn btn-white" text="{lang.buttonApply}"/>
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
