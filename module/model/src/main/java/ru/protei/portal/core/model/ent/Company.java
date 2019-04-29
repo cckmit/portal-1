@@ -51,6 +51,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcColumn(name = "old_id")
     private Long oldId;
 
+    @JdbcColumn(name = "is_hidden")
+    private Boolean isHidden;
+
     @JdbcOneToMany(table = "CompanySubscription", localColumn = "id", remoteColumn = "company_id" )
     private List<CompanySubscription> subscriptions;
 
@@ -204,6 +207,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     public void setChildCompanies( List<Company> childCompanies ) {
         this.childCompanies = childCompanies;
+    }
+
+    public Boolean getHideden() {
+        return isHidden;
+    }
+
+    public void setHideden(Boolean hideden) {
+        isHidden = hideden;
     }
 
     @Override

@@ -21,12 +21,19 @@ public class CompanyQuery extends BaseQuery {
 
     private boolean sortHomeCompaniesAtBegin;
 
+    private boolean onlyVisibleFields;
+
     private List<Long> companyIds;
 
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
     }
 
+
+    public CompanyQuery onlyVisibleFields() {
+        this.onlyVisibleFields = true;
+        return this;
+    }
     public CompanyQuery(boolean onlyHome) {
         super("", En_SortField.comp_name, En_SortDir.ASC);
         this.onlyHome = onlyHome;
@@ -68,7 +75,15 @@ public class CompanyQuery extends BaseQuery {
         this.sortHomeCompaniesAtBegin = sortHomeCompaniesAtBegin;
     }
 
-    public void setCompanyIds( List<Long> companyIds) {
+    public boolean isOnlyVisibleFields() {
+        return onlyVisibleFields;
+    }
+
+    public void setOnlyVisibleFields(boolean onlyVisibleFields) {
+        this.onlyVisibleFields = onlyVisibleFields;
+    }
+
+    public void setCompanyIds(List<Long> companyIds) {
         this.companyIds = companyIds;
     }
 
@@ -85,6 +100,5 @@ public class CompanyQuery extends BaseQuery {
                 ", companyIds=" + companyIds +
                 '}';
     }
-
 }
 
