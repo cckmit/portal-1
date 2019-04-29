@@ -103,4 +103,5 @@
   <include file="2019-04-15-modify-case_comment-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-04-18-fix-jira-status-map-entry-fk.xml" relativeToChangelogFile="true"/>
   <include file="2019-04-18-change-nx-jira-workflow-set.xml" relativeToChangelogFile="true"/>
+  <include file="2019-04-29-add-hidden-column-to-company.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
