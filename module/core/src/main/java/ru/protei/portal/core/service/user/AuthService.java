@@ -19,7 +19,7 @@ public interface AuthService {
 
     public UserSessionDescriptor findSession (String appSessionId, String ip, String userAgent);
     public UserSessionDescriptor findSession (AuthToken token);
-    public CoreResponse login (String appSessionID, String login, String pwd, String ip, String userAgent);
+    public CoreResponse<UserSessionDescriptor> login (String appSessionID, String login, String pwd, String ip, String userAgent);
     public boolean logout (String appSessionId, String ip, String userAgent);
     public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request);
 }
