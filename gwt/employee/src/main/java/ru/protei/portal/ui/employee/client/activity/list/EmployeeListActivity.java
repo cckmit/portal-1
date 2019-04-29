@@ -24,7 +24,6 @@ import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilte
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,11 +83,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         view.showLoader( true );
 
-/*
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
-*/
 
         view.getChildContainer().clear();
         itemViewToModel.clear();
@@ -100,17 +97,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
             @Override
             public void onSuccess( List< EmployeeShortView > employees ) {
-                long startTime = ( new Date() ).getTime();
-                employees.forEach( employee -> {
-                    AbstractEmployeeItemView itemView = makeView( employee );
-
-                    itemViewToModel.put( itemView, employee );
-                    view.getChildContainer().add( itemView.asWidget() );
-                } );
-                //fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
+                fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
                 view.showLoader( false );
-                long stopTime = (new Date()).getTime();
-                log.info( "Execution time in onSuccess: " + ( stopTime - startTime ) );
             }
         });
     }
