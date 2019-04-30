@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.winter.core.utils.mime.MimeUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -30,7 +31,10 @@ public class AvatarController {
     @Autowired
     PolicyService policyService;
 
-    private final String nophotoFileName = "nophoto.png";
+    @Autowired
+    ServletContext context;
+
+    private static final String NOPHOTO_PATH = "/images/nophoto.png";
 
     private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
 
@@ -52,18 +56,18 @@ public class AvatarController {
             return;
         }
 
-        if ( loadFile( fileName , response ) ) return;
+        if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
-        loadFile( nophotoFileName, response );
+        loadFile( context.getRealPath( "" ) + NOPHOTO_PATH, response );
     }
 
     private UserSessionDescriptor getDescriptor( HttpServletRequest request ) {
         return  (UserSessionDescriptor) request.getSession().getAttribute( CrmConstants.Auth.SESSION_DESC );
     }
 
-    private boolean loadFile( String fileName, HttpServletResponse response ) throws IOException {
+    private boolean loadFile( String pathname, HttpServletResponse response ) throws IOException {
 
-        File file = new File( portalConfig.data().getEmployee().getAvatarPath() + fileName );
+        File file = new File( pathname );
 
         if ( file.exists() ) {
 
