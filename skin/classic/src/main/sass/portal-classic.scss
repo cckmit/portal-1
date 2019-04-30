@@ -5,7 +5,7 @@
 @import "attachment";
 @import "region";
 @import "confirm";
-
+@import "color-palette";
 
 /**
  * Overrides
@@ -74,10 +74,6 @@
       vertical-align: middle;
     }
   }
-}
-
-.attachments .btn {
-  text-transform: initial;
 }
 
 .inherit-color-checkbox-group .checkbox >*, .inherit-color, .inherit-color.toggle >* {

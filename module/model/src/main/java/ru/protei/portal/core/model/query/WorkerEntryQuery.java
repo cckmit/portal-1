@@ -9,7 +9,7 @@ public class WorkerEntryQuery extends BaseQuery {
 
     public WorkerEntryQuery() {}
 
-    public WorkerEntryQuery(Long personId, Integer active) {
+    public WorkerEntryQuery(Long personId) {
         this.personId = personId;
         this.active = active;
     }

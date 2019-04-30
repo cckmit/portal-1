@@ -1,0 +1,19 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="add-parent-company-id-in-company" author="eliseev">
+        <addColumn tableName="company">
+            <column name="parent_company_id" type="BIGINT"  defaultValue="NULL"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="fk-company-parent-company-id-to-company-id" author="eliseev">
+        <addForeignKeyConstraint constraintName="FK_PARENT_COMPANY" onDelete="SET NULL"
+                                 baseTableName="company"  baseColumnNames="parent_company_id"
+                                 referencedTableName="company" referencedColumnNames="id" />
+    </changeSet>
+
+
+</databaseChangeLog>

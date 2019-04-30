@@ -8,12 +8,15 @@ import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseC
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.CaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
+import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateView;
+import ru.protei.portal.ui.common.client.activity.casetag.CaseTagCreateActivity;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.AbstractConfirmDialogView;
 import ru.protei.portal.ui.common.client.activity.confirmdialog.ConfirmDialogActivity;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemListView;
 import ru.protei.portal.ui.common.client.activity.contactitem.AbstractContactItemView;
 import ru.protei.portal.ui.common.client.activity.contactitem.ContactItemActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.notify.AbstractNotifyView;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
@@ -28,6 +31,7 @@ import ru.protei.portal.ui.common.client.common.IssueStates;
 import ru.protei.portal.ui.common.client.view.attachment.AttachmentView;
 import ru.protei.portal.ui.common.client.view.casecomment.item.CaseCommentItemView;
 import ru.protei.portal.ui.common.client.view.casecomment.list.CaseCommentListView;
+import ru.protei.portal.ui.common.client.view.casetag.CaseTagCreateView;
 import ru.protei.portal.ui.common.client.view.confirmdialog.ConfirmDialogView;
 import ru.protei.portal.ui.common.client.view.contactitem.item.ContactItemView;
 import ru.protei.portal.ui.common.client.view.contactitem.list.ContactItemListView;
@@ -37,13 +41,21 @@ import ru.protei.portal.ui.common.client.view.pathitem.item.PathItemView;
 import ru.protei.portal.ui.common.client.view.pathitem.list.PathItemListView;
 import ru.protei.portal.ui.common.client.view.pager.PagerView;
 import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyModel;
+import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
+import ru.protei.portal.ui.common.client.widget.issuestate.StateModel;
 import ru.protei.portal.ui.common.client.widget.privilege.list.PrivilegeModel;
+import ru.protei.portal.ui.common.client.view.report.caseobjects.AbstractCaseObjectsReportView;
+import ru.protei.portal.ui.common.client.view.report.caseobjects.CaseObjectsReportView;
+import ru.protei.portal.ui.common.client.view.report.timeelapsed.AbstractTimeElapsedReportView;
+import ru.protei.portal.ui.common.client.view.report.timeelapsed.TimeElapsedReportView;
+import ru.protei.portal.ui.common.client.view.report.timeresolution.AbstractResolutionTimeReportView;
+import ru.protei.portal.ui.common.client.view.report.timeresolution.ResolutionTimeReportView;
+import ru.protei.portal.ui.common.client.widget.selector.casetag.CaseTagModel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.InitiatorModel;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitModel;
-import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentModel;
-import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductModel;
+
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionModel;
 import ru.protei.portal.ui.common.shared.model.DefaultErrorHandler;
 import ru.protei.portal.ui.common.shared.model.DefaultNotificationHandler;
@@ -74,6 +86,7 @@ public class CommonClientModule extends AbstractGinModule {
         bind( CompanyModel.class ).asEagerSingleton();
         bind( HomeCompanyModel.class ).asEagerSingleton();
         bind( EmployeeModel.class ).asEagerSingleton();
+        bind( StateModel.class ).asEagerSingleton();
 
         bind( DateFormatter.class ).in( Singleton.class );
 
@@ -96,21 +109,26 @@ public class CommonClientModule extends AbstractGinModule {
         bind( AbstractCaseCommentListView.class ).to( CaseCommentListView.class ).in( Singleton.class );
         bind( AbstractCaseCommentItemView.class ).to( CaseCommentItemView.class );
 
+        bind( CaseTagCreateActivity.class ).asEagerSingleton();
+        bind( AbstractCaseTagCreateView.class ).to( CaseTagCreateView.class ).in( Singleton.class );
+
         // Models
-        bind( CompanyModel.class ).asEagerSingleton();
-        bind( EmployeeModel.class ).asEagerSingleton();
         bind( InitiatorModel.class ).asEagerSingleton();
         bind( PrivilegeModel.class ).asEagerSingleton();
-        bind( DevUnitModel.class ).asEagerSingleton();
-        bind( ComponentModel.class ).asEagerSingleton();
         bind( ProductModel.class ).asEagerSingleton();
         bind( ProductDirectionModel.class ).asEagerSingleton();
+        bind( CaseTagModel.class ).asEagerSingleton();
 
         requestStaticInjection(DefaultNotificationHandler.class);
         requestStaticInjection(DefaultErrorHandler.class);
         requestStaticInjection(RequestCallback.class);
         requestStaticInjection(FluentCallback.class);
         requestStaticInjection(DecimalNumberFormatter.class);
+
+        bind( AbstractResolutionTimeReportView.class ).to( ResolutionTimeReportView.class ).in( Singleton.class );
+        bind( AbstractTimeElapsedReportView.class ).to( TimeElapsedReportView.class ).in( Singleton.class );
+        bind( AbstractIssueFilterWidgetView.class ).to( IssueFilterParamView.class ).in( Singleton.class );
+        bind( AbstractCaseObjectsReportView.class ).to( CaseObjectsReportView.class ).in( Singleton.class );
     }
 }
 

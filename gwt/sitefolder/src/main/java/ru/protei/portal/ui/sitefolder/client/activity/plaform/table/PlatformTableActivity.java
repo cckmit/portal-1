@@ -186,17 +186,12 @@ public abstract class PlatformTableActivity implements
 
     @Override
     public void onPageChanged(int page) {
-        pagerView.setCurrentPage(page + 1);
+        pagerView.setCurrentPage(page);
     }
 
     @Override
-    public void onFirstClicked() {
-        view.scrollTo(0);
-    }
-
-    @Override
-    public void onLastClicked() {
-        view.scrollTo(view.getPageCount() - 1);
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
     }
 
     @Override

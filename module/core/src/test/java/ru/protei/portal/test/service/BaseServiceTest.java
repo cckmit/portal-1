@@ -1,0 +1,171 @@
+package ru.protei.portal.test.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dao.*;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.service.CaseService;
+import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
+
+import java.util.Collections;
+import java.util.Date;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class BaseServiceTest {
+
+    public Long makeProduct( String productName ) {
+        DevUnit product = createProduct( productName );
+
+        Long productId = devUnitDAO.persist( product );
+        return productId;
+    }
+
+    private static DevUnit createProduct( String productName ) {
+        DevUnit product = new DevUnit();
+        product.setName( productName );
+        product.setCreated( new Date() );
+        product.setTypeId( En_DevUnitType.PRODUCT.getId() );
+        product.setStateId( En_DevUnitState.ACTIVE.getId() );
+        return product;
+    }
+
+    public static CaseObject createNewCaseObject( Person person, Long caseNo ) {
+        return createNewCaseObject(En_CaseType.CRM_SUPPORT, caseNo, person);
+    }
+
+    public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setName( "Test_Case_Name" );
+        caseObject.setCaseNumber(caseNo);
+        caseObject.setState( En_CaseState.CREATED );
+        caseObject.setCaseType( caseType );
+        caseObject.setCreator( person );
+        caseObject.setCreated( new Date() );
+        caseObject.setModified( new Date() );
+        return caseObject;
+    }
+
+    public static Person createNewPerson( Company company ) {
+        Person person = new Person();
+        person.setCreated( new Date() );
+        person.setCreator( "TEST" );
+        person.setCompanyId( company.getId() );
+        person.setDisplayName( "Test_Person" );
+        person.setGender( En_Gender.MALE );
+        return person;
+    }
+
+    public static Company createNewCustomerCompany() {
+        return createNewCompany(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+    }
+
+    public static Company createNewCompany( CompanyCategory category ) {
+        Company company = new Company();
+        company.setCname( "Test_Company" );
+        company.setCategory( category );
+        return company;
+    }
+
+    protected static CaseComment createNewComment( Person person, Long caseObjectId, String text ) {
+        return createNewComment( person, caseObjectId, text, null );
+    }
+
+    protected static CaseComment createNewComment( Person person, Long caseObjectId, String text, Long caseStateId ) {
+        CaseComment comment = new CaseComment( text );
+        comment.setCreated( new Date() );
+        comment.setCaseId( caseObjectId );
+        comment.setAuthorId( person.getId() );
+        comment.setText( text );
+        if (caseStateId != null) comment.setCaseStateId( caseStateId );
+        comment.setCaseAttachments( Collections.emptyList() );
+        return comment;
+    }
+
+    public static void checkResult( CoreResponse result ) {
+        assertNotNull( "Expected result", result );
+        assertTrue( "Expected ok result", result.isOk() );
+    }
+
+    public static <T> T checkResultAndGetData( CoreResponse<T> result ) {
+        checkResult( result );
+        return result.getData();
+    }
+
+    protected UserSessionDescriptor getDescriptor() {
+        return authService.findSession(null);
+    }
+
+    protected AuthToken getAuthToken() {
+        return getDescriptor().makeAuthToken();
+    }
+
+
+    // Create and persist
+
+    protected CaseObject makeCaseObject( Long caseNo, Person person ) {
+        return makeCaseObject(En_CaseType.CRM_SUPPORT, caseNo, person);
+    }
+
+    protected CaseObject makeCaseObject( En_CaseType caseType, Long caseNo, Person person) {
+        return checkResultAndGetData(
+                caseService.saveCaseObject( getAuthToken(), createNewCaseObject( caseType, caseNo, person ), person )
+        );
+    }
+
+    protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text) {
+        return makeCaseComment(person, caseObjectId, text, null);
+    }
+
+    protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text, Long caseStateId) {
+        CaseComment caseComment = createNewComment(person, caseObjectId, text, caseStateId);
+        caseComment.setId(caseCommentDAO.persist(caseComment));
+        return caseComment;
+    }
+
+    protected Person makePerson( Company company ) {
+        Person person = createNewPerson( company );
+        person.setId( personDAO.persist( person ) );
+        return person;
+    }
+
+    protected Company makeCustomerCompany() {
+        return makeCompany(new CompanyCategory(En_CompanyCategory.CUSTOMER.getId()));
+    }
+
+    protected Company makeCompany( CompanyCategory category ) {
+        Company company = createNewCompany( category );
+        company.setId( companyDAO.persist( company ) );
+        return company;
+    }
+
+    // Remove
+
+    protected boolean removeCaseObjectAndComments(CaseObject caseObject) {
+        caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()))
+                .forEach(caseComment -> caseCommentDAO.remove(caseComment));
+        return caseObjectDAO.remove(caseObject);
+    }
+
+    @Autowired
+    protected CaseService caseService;
+    @Autowired
+    protected AuthService authService;
+
+    @Autowired
+    protected CompanyDAO companyDAO;
+    @Autowired
+    protected PersonDAO personDAO;
+    @Autowired
+    protected DevUnitDAO devUnitDAO;
+    @Autowired
+    protected CaseObjectDAO caseObjectDAO;
+    @Autowired
+    protected CaseCommentDAO caseCommentDAO;
+    @Autowired
+    protected JdbcManyRelationsHelper jdbcManyRelationsHelper;
+}

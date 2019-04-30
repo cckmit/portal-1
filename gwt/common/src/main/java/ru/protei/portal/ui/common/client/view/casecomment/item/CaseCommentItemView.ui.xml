@@ -1,7 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
-             xmlns:issuelink='urn:import:ru.protei.portal.ui.common.client.widget.issuelinks.list'
+             xmlns:issuelink='urn:import:ru.protei.portal.ui.common.client.widget.casemeta'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -10,15 +9,16 @@
 
         <ul class="list-inline m-b-10">
             <li class="issue-link">
-                <issuelink:IssueLinks ui:field="remoteLink" visible="false" enabled="false" showLabel="false"/>
+                <issuelink:CaseMetaView ui:field="remoteLink" visible="false" enabled="false" showLabel="false"/>
             </li>
             <li ui:field="date" class="date-time"/>
             <li ui:field="owner" class="name"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
-            <timefield:TimeLabel ui:field="timeElapsed" displayFormat="( +%time )" styleName="time-label"/>
+            <li ui:field="timeElapsed" class="time-label"/>
             <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">
+                    <i ui:field="privateComment" class="fa fa-lg fa-unlock-alt pull-left"/>
                     <g:Anchor href="javascript:;" ui:field="reply">
                         <i class="fa fa-reply"/>
                     </g:Anchor>
@@ -40,7 +40,7 @@
             </div>
 
             <div class="message">
-                <g:InlineLabel ui:field="message"/>
+                <g:HTMLPanel ui:field="message" styleName="markdown"/>
                 <div class="attachment-block" ui:field="attachBlock">
                     <label style="font-size: 11px;font-weight: bold;">
                         <ui:text from="{lang.issueAttachments}"/>

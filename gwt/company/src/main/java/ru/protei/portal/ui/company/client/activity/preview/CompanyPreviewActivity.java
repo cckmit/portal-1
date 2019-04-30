@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
+import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -54,7 +55,7 @@ public abstract class CompanyPreviewActivity
         }
         view.setCategory( categoryImage );
 
-        view.setGroupCompany( value.getCompanyGroup() == null ? "" : value.getCompanyGroup().getName() );
+        view.setParentCompany(  value.getParentCompanyName() );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
@@ -68,8 +69,19 @@ public abstract class CompanyPreviewActivity
         view.setInfo( value.getInfo() );
 
         requestSubscriptionEmails(value.getId());
+        requestParentAndChildCompanies(value.getId());
 
         fireEvent( new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()).readOnly() );
+        fireEvent( new SiteFolderPlatformEvents.ShowConciseTable(view.getSiteFolderContainer(), value.getId()));
+    }
+
+    private void requestParentAndChildCompanies( Long parentCompanyId ) {
+        companyController.getCompany( parentCompanyId, new ShortRequestCallback<Company>()
+                .setOnSuccess( company-> {
+                    view.setParentCompany( company.getParentCompanyName() );
+                    view.setChildrenCompanies(  CollectionUtils.stream( company.getChildCompanies() ).map( Company::getCname).collect( Collectors.joining(", ")) );
+                } ) );
+
     }
 
     private void requestSubscriptionEmails(Long companyId) {

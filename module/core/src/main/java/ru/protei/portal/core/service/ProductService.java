@@ -32,7 +32,7 @@ public interface ProductService {
 
     @Privileged( En_Privilege.PRODUCT_CREATE )
     @Auditable( En_AuditType.PRODUCT_CREATE )
-    CoreResponse<Long> createProduct( AuthToken token, DevUnit product);
+    CoreResponse createProduct( AuthToken token, DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )

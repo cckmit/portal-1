@@ -46,9 +46,13 @@ public class CaseQuery extends BaseQuery {
 
     private Boolean viewPrivate = null;
 
-    private Date from;
+    private Date createdFrom;
 
-    private Date to;
+    private Date createdTo;
+
+    private Date modifiedFrom;
+
+    private Date modifiedTo;
 
     private boolean searchStringAtComments = false;
 
@@ -57,6 +61,10 @@ public class CaseQuery extends BaseQuery {
     private List<Long> memberIds;
 
     private List<Long> commentAuthorIds;
+
+    private List<Long> caseTagsIds;
+
+    private boolean findRecordByCaseComments;
 
     public CaseQuery() {}
 
@@ -83,13 +91,17 @@ public class CaseQuery extends BaseQuery {
         setType(query.getType());
         setStateIds(query.getStateIds());
         setImportanceIds(query.getImportanceIds());
-        setFrom(query.getFrom());
-        setTo(query.getTo());
+        setCreatedFrom(query.getCreatedFrom());
+        setCreatedTo(query.getCreatedTo());
+        setModifiedFrom(query.getModifiedFrom());
+        setModifiedTo(query.getModifiedTo());
         setManagerIds(query.getManagerIds());
         setOrWithoutManager(query.isOrWithoutManager());
         setAllowViewPrivate(query.isAllowViewPrivate());
         setViewPrivate(query.isViewPrivate());
         setCommentAuthorIds(query.getCommentAuthorIds());
+        setCaseTagsIds(query.getCaseTagsIds());
+        setFindRecordByCaseComments(query.isFindRecordByCaseComments());
     }
 
     public Long getId() {
@@ -162,13 +174,21 @@ public class CaseQuery extends BaseQuery {
 
     public void setImportanceIds(List<Integer> importanceIds) { this.importanceIds = importanceIds; }
 
-    public Date getFrom() { return from; }
+    public Date getCreatedFrom() { return createdFrom; }
 
-    public void setFrom( Date from ) { this.from = from; }
+    public void setCreatedFrom( Date createdFrom ) { this.createdFrom = createdFrom; }
 
-    public Date getTo() { return to; }
+    public Date getModifiedFrom() { return modifiedFrom; }
 
-    public void setTo( Date to ) { this.to = to; }
+    public void setModifiedFrom( Date modifiedFrom ) { this.modifiedFrom = modifiedFrom; }
+
+    public Date getCreatedTo() { return createdTo; }
+
+    public void setCreatedTo( Date createdTo ) { this.createdTo = createdTo; }
+
+    public Date getModifiedTo() { return modifiedTo; }
+
+    public void setModifiedTo( Date modifiedTo ) { this.modifiedTo = modifiedTo; }
 
     public List<Long> getManagerIds() { return managerIds; }
 
@@ -230,6 +250,22 @@ public class CaseQuery extends BaseQuery {
         this.commentAuthorIds = commentAuthorIds;
     }
 
+    public List<Long> getCaseTagsIds() {
+        return caseTagsIds;
+    }
+
+    public void setCaseTagsIds(List<Long> caseTagsIds) {
+        this.caseTagsIds = caseTagsIds;
+    }
+
+    public boolean isFindRecordByCaseComments() {
+        return findRecordByCaseComments;
+    }
+
+    public void setFindRecordByCaseComments(boolean findRecordByCaseComments) {
+        this.findRecordByCaseComments = findRecordByCaseComments;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -241,11 +277,14 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(managerIds) ||
                 CollectionUtils.isNotEmpty(stateIds) ||
                 CollectionUtils.isNotEmpty(importanceIds) ||
-                from != null ||
-                to != null ||
+                createdFrom != null ||
+                createdTo != null ||
+                modifiedFrom != null ||
+                modifiedTo != null ||
                 StringUtils.isNotBlank(searchCasenoString) ||
                 CollectionUtils.isNotEmpty(memberIds) ||
-                CollectionUtils.isNotEmpty(commentAuthorIds);
+                CollectionUtils.isNotEmpty(commentAuthorIds) ||
+                CollectionUtils.isNotEmpty(caseTagsIds);
     }
 
     @Override
@@ -259,14 +298,18 @@ public class CaseQuery extends BaseQuery {
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
-                ", from=" + from +
-                ", to=" + to +
+                ", createdFrom=" + createdFrom +
+                ", createdTo=" + createdTo +
+                ", modifiedFrom=" + modifiedFrom +
+                ", modifiedTo=" + modifiedTo +
                 ", showPrivate=" + allowViewPrivate +
                 ", searchStringAtComments=" + searchStringAtComments +
                 ", searchCasenoString=" + searchCasenoString +
                 ", viewPrivate=" + viewPrivate +
                 ", memberIds=" + memberIds +
                 ", commentAuthorIds=" + commentAuthorIds +
+                ", caseTagsIds=" + caseTagsIds +
+                ", findRecordByCaseComments=" + findRecordByCaseComments +
                 '}';
     }
 }

@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.product.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -56,6 +58,26 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
+    public void setWikiLink(String value) {
+        this.wikiLink.setInnerText(value);
+    }
+
+    @Override
+    public void setConfiguration(String value ) {
+        this.configuration.setInnerHTML(value);
+    }
+
+    @Override
+    public void setHistoryVersion(String value ) {
+        this.historyVersion.setInnerHTML(value);
+    }
+
+    @Override
+    public void setCdrDescription(String value ) {
+        this.cdrDescription.setInnerHTML(value);
+    }
+
+    @Override
     public Widget asWidget(boolean isForTableView) {
         if(isForTableView){
             rootWrapper.addStyleName("preview-wrapper");
@@ -72,11 +94,19 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     Label info;
     @UiField
+    ImageElement typeImage;
+    @UiField
     HTMLPanel rootWrapper;
     @UiField
     HeadingElement productName;
     @UiField
-    ImageElement typeImage;
+    SpanElement wikiLink;
+    @UiField
+    DivElement configuration;
+    @UiField
+    DivElement historyVersion;
+    @UiField
+    DivElement cdrDescription;
 
     @Inject
     FixedPositioner positioner;

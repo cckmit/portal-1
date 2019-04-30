@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel styleName="main-content row">
+        <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-md-12 prodoc-list"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

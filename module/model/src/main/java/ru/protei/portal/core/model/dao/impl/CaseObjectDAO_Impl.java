@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
  */
 public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements CaseObjectDAO {
 
+    private static final String COLUMN_EMAIL_LAST_ID = "email_last_id";
+
     @Autowired
     CaseTypeDAO caseTypeDAO;
 
@@ -89,6 +91,18 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
                 .map(String::valueOf)
                 .collect(Collectors.joining(", ")) + ")", Collections.emptyList(), "id", "CASENO"
         );
+    }
+
+    @Override
+    public boolean updateEmailLastId(Long caseId, Long emailLastId) {
+        String sql = "UPDATE " + getTableName() + " SET " + COLUMN_EMAIL_LAST_ID + " = " + emailLastId + " WHERE " + getIdColumnName() + " = " + caseId;
+        return jdbcTemplate.update(sql) > 0;
+    }
+
+    @Override
+    public Long getEmailLastId(Long caseId) {
+        String sql = "SELECT " + COLUMN_EMAIL_LAST_ID + " FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
+        return jdbcTemplate.queryForObject(sql, Long.class, caseId);
     }
 
     @SqlConditionBuilder

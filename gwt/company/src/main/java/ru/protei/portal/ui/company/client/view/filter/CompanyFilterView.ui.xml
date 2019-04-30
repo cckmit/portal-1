@@ -22,9 +22,6 @@
                     </div>
                 </div>
                 <div class="form-group col-md-12">
-                    <companygroup:GroupButtonSelector ui:field="group" header="{lang.companyGroup}"/>
-                </div>
-                <div class="form-group col-md-12">
                     <label>
                         <ui:text from="{lang.companyCategory}"/>
                     </label>

@@ -4,13 +4,13 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.ui.common.client.lang.En_DocumentExecutionTypeLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class DocumentExecutionTypeSelector extends ButtonSelector<En_DocumentExecutionType> implements ModelSelector<En_DocumentExecutionType> {
+public class DocumentExecutionTypeSelector extends ButtonSelector<En_DocumentExecutionType> implements SelectorWithModel<En_DocumentExecutionType> {
 
     @Inject
     void init() {

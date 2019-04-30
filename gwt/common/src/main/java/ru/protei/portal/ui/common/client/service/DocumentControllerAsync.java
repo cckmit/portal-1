@@ -15,4 +15,6 @@ public interface DocumentControllerAsync {
     void getDocument(Long id, AsyncCallback<Document> callback);
 
     void saveDocument(Document document, AsyncCallback<Document> callback);
+
+    void getProjectDocuments(Long projectId, AsyncCallback<List<Document>> callback);
 }

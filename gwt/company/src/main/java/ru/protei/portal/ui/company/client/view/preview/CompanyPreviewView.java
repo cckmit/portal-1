@@ -80,8 +80,13 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
-    public void setGroupCompany( String value ) {
-        this.groupCompany.setText( value );
+    public void setParentCompany( String value ) {
+        this.parentCompany.setInnerText( value );
+    }
+
+    @Override
+    public void setChildrenCompanies( String value ) {
+        this.childrenCompanies.setInnerText( value );
     }
 
     @Override
@@ -116,6 +121,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public HasWidgets getSiteFolderContainer() {
+        return siteFolderContainer;
+    }
+
+    @Override
     public void setSubscriptionEmails(String value) {
         subscription.setText(value);
     }
@@ -127,7 +137,9 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     SpanElement email;
     @UiField
-    InlineLabel groupCompany;
+    SpanElement parentCompany;
+    @UiField
+    SpanElement childrenCompanies;
     @UiField
     SpanElement addressDejure;
     @UiField
@@ -144,6 +156,8 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     InlineLabel subscription;
     @UiField
     ImageElement categoryImage;
+    @UiField
+    HTMLPanel siteFolderContainer;
 
     @Inject
     FixedPositioner positioner;

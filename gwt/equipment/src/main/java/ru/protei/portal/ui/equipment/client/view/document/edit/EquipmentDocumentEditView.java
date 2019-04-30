@@ -20,6 +20,7 @@ import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSel
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.text.RawTextButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -79,8 +80,9 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     }
 
     @Override
-    public void setDocumentTypeCategoryFilter(En_DocumentCategory documentCategory) {
-        documentType.setCategoryFilter(documentCategory);
+    public void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter) {
+        documentType.setFilter(filter);
+        documentType.refreshValue();
     }
 
     @Override

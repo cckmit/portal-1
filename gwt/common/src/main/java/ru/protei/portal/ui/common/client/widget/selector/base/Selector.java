@@ -12,6 +12,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -21,7 +22,9 @@ import ru.protei.portal.ui.common.client.widget.selector.event.SelectorChangeVal
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 import ru.protei.portal.ui.common.client.widget.selector.popup.SelectorPopup;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,10 +36,20 @@ public abstract class Selector<T>
         ClickHandler, ValueChangeHandler<String>,
         Window.ScrollHandler,
         HasSelectorChangeValHandlers,
-        HasAddHandlers {
+        HasAddHandlers,
+        SelectorWithModel<T>
+{
 
     public interface SelectorFilter<T> {
         boolean isDisplayed( T value );
+    }
+
+    public Collection<T> getValues() {
+        return itemToDisplayOptionModel.keySet();
+    }
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
     }
 
     public void setValue(T value) {
@@ -96,6 +109,15 @@ public abstract class Selector<T>
 
     public void setAddButtonText(String addButtonText) {
         this.addButtonText = addButtonText;
+    }
+
+    @Override
+    public void fillOptions( List<T> options ) {
+        clearOptions();
+
+        for ( T option : options ) {
+            addOption( option );
+        }
     }
 
     public void addOption( T value ) {
@@ -162,7 +184,11 @@ public abstract class Selector<T>
 
     @Override
     public void onValueChange(ValueChangeEvent<String> event) {
-        String searchText = event.getValue().toLowerCase();
+        onSearchChanged(event.getValue());
+    }
+
+    protected void onSearchChanged( String searchString ) {
+        String searchText = searchString.toLowerCase();
 
         boolean isEmptyResult = true;
         boolean exactMatch = false;
@@ -194,7 +220,7 @@ public abstract class Selector<T>
         if (exactMatch) {
             SelectorChangeValEvent.fire(this, null);
         } else {
-            SelectorChangeValEvent.fire(this, event.getValue());
+            SelectorChangeValEvent.fire(this, searchString);
         }
 
         if (isEmptyResult) {
@@ -228,11 +254,17 @@ public abstract class Selector<T>
     @Override
     protected void onLoad() {
         scrollRegistration = Window.addWindowScrollHandler(this);
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorLoad(this);
+        }
     }
 
     @Override
     protected void onUnload() {
         scrollRegistration.removeHandler();
+        if ( selectorModel != null ) {
+            selectorModel.onSelectorUnload(this);
+        }
     }
 
 
@@ -271,6 +303,7 @@ public abstract class Selector<T>
         }
         popupValueChangeHandlerRegistration = popup.addValueChangeHandler(this);
         popup.clearSearchField();
+        onSearchChanged("");
 
         if (!searchEnabled && autoSelectFirst) {
             selectFirstElement();
@@ -299,7 +332,7 @@ public abstract class Selector<T>
     private void addEmptyListGhostOption(String name) {
         SelectorItem itemView = itemFactory.get();
         itemView.setName(name);
-        itemView.addStyleName("search-no-result");
+        itemView.addStyleName( UiConstants.Styles.SEARCH_NO_RESULT );
         popup.getChildContainer().add(itemView.asWidget());
     }
 
@@ -353,6 +386,8 @@ public abstract class Selector<T>
     private SelectorItem nullItemView;
     protected DisplayOptionCreator<T> displayOptionCreator;
     private HandlerRegistration popupValueChangeHandlerRegistration;
+
+    private SelectorModel<T> selectorModel;
 
     private HandlerRegistration scrollRegistration;
     protected Map<SelectorItem, T> itemViewToModel = new HashMap<>();

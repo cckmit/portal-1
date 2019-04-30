@@ -3,6 +3,7 @@
              xmlns:fileuploader='urn:import:ru.protei.portal.ui.common.client.widget.uploader'
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
+             xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -21,10 +22,13 @@
                             <autoresizetextarea:AutoResizeTextArea
                                     ui:field="comment"
                                     styleName="form-control form-group message-input resize-vertical"
+                                    enablePasteImage="true"
                                     minRows="5" maxRows="20"/>
 
                             <div class="attachments">
-                                <g:Button styleName="btn btn-complete" ui:field="send" text="{lang.commentSendMessage}"/>
+                                <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn"/>
+
+                                <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
 
                                 <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
                                     <div class="btn btn-white attach-add-btn">
@@ -34,15 +38,24 @@
                                     </div>
                                 </fileuploader:AttachmentUploader>
 
-                                <timefield:TimeTextBox ui:field="timeElapsed" styleName="form-control inline-block time-elapsed" notNull="false"/>
-
+                                <div class="inline-block ">
+                                    <timefield:TimeTextBox ui:field="timeElapsed" styleName="form-control inline-block time-elapsed" notNull="false"/>
+                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" styleName="inline-block" />
+                                </div>
                                 <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
                             </div>
 
                             <div class="hints">
                                 <span class="icon fa fa-info-circle"/>
                                 <span class="hint"><ui:text from='{lang.sendOnCtrlEnter}'/></span>
+                                <span class="hint hide" ui:field="textMarkupLabel"/>
                             </div>
+
+                            <div ui:field="commentPreviewContainer" class="message-preview hide">
+                                <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/></div>
+                                <div ui:field="commentPreview" class="message-preview-content markdown"/>
+                            </div>
+
                         </div>
                     </div>
                 </g:HTMLPanel>

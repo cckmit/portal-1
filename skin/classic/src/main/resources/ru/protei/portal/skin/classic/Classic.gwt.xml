@@ -12,6 +12,7 @@
     <stylesheet src="css/select2.css"/>
     <stylesheet src="css/gritter.css"/>
     <stylesheet src="css/portal-classic.css"/>
+    <stylesheet src="css/markdown.css"/>
 
     <source path='client'/>
     <source path='shared'/>

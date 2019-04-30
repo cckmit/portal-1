@@ -15,6 +15,10 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
+import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
@@ -29,6 +33,7 @@ import ru.protei.portal.core.service.user.AuthServiceImpl;
 import ru.protei.portal.core.service.user.LDAPAuthProvider;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
+import ru.protei.portal.schedule.PortalScheduleTasks;
 import ru.protei.portal.tools.migrate.export.ActiveExportDataService;
 import ru.protei.portal.tools.migrate.export.DummyExportDataService;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
@@ -38,6 +43,8 @@ import ru.protei.portal.tools.migrate.imp.MigrationRunner;
 import ru.protei.portal.tools.migrate.sybase.LegacySystemDAO;
 import ru.protei.portal.tools.migrate.sybase.SybConnProvider;
 import ru.protei.portal.tools.migrate.sybase.SybConnWrapperImpl;
+import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
@@ -100,6 +107,11 @@ public class MainConfiguration {
         );
     }
 
+
+    @Bean(name = "portalScheduler")
+    public PortalScheduleTasks getPortalScheduleTasks() {
+        return new PortalScheduleTasks();
+    }
 
     @Bean
     public LegacySystemDAO getLegacySystemDAO() {
@@ -362,9 +374,26 @@ public class MainConfiguration {
     }
 
     @Bean
+    public JiraPriorityMapEntryDAO getJiraPriorityMapEntryDAO() {
+        return new JiraPriorityMapEntryDAO_Impl();
+    }
+
+    @Bean
+    public JiraEndpointDAO getJiraEndpointDAO() {
+        return new JiraEnpointDAO_Impl();
+    }
+
+    @Bean
+    public JiraStatusMapEntryDAO getJiraStatusMapEntryDAO() {
+        return new JiraStatusMapEntryDAO_Impl();
+    }
+
+    @Bean
     public RedminePriorityMapEntryDAO getRedminePriorityMapEntryDAO() {
         return new RedminePriorityMapEntryDAO_Impl();
     }
+
+
 
     @Bean
     public CaseFilterDAO getIssueFilterDAO() {
@@ -431,9 +460,33 @@ public class MainConfiguration {
         return new CaseCommentTimeElapsedSumDAO_Impl();
     }
 
-    /**
-     * SERVICES
-     **/
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+    @Bean
+    public ContractDateDAO getContractDateDAO() {
+        return new ContractDateDAO_Impl();
+    }
+
+    @Bean
+    public CaseTagDAO getCaseTagDAO() {
+        return new CaseTagDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectTagDAO getCaseObjectTagDAO() {
+        return new CaseObjectTagDAO_Impl();
+    }
+
+    @Bean
+    public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
+        return new CaseStateWorkflowDAO_Impl();
+    }
+
+    /* SERVICES */
+
     @Bean
     public SessionIdGen getSessionIdGenerator() {
         return new SimpleSidGenerator();
@@ -640,8 +693,33 @@ public class MainConfiguration {
     }
 
     @Bean
+    public EmployeeRegistrationReminderService getEmployeeRegistrationReminderService() {
+        return new EmployeeRegistrationReminderServiceImpl();
+    }
+
+    @Bean
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
+    }
+
+    @Bean
+    public ContractService getContractService() {
+        return new ContractServiceImpl();
+    }
+
+    @Bean
+    public ContractReminderService getContractReminderService() {
+        return new ContractReminderServiceImpl();
+    }
+
+    @Bean
+    public CaseTagService getCaseTagService() {
+        return new CaseTagServiceImpl();
+    }
+
+    @Bean
+    public CaseStateWorkflowService getCaseStateWorkflowService() {
+        return new CaseStateWorkflowServiceImpl();
     }
 
 
@@ -655,9 +733,23 @@ public class MainConfiguration {
         return new ReportCaseTimeElapsedImpl();
     }
 
-    /**
-     * ASPECT/INTERCEPTORS
-     **/
+    @Bean
+    public HTMLRenderer getHTMLRenderer() {
+        return new HTMLRendererImpl();
+    }
+
+    @Bean
+    public MarkdownRenderer getMarkdownRenderer() {
+        return new MarkdownRendererImpl();
+    }
+
+    @Bean
+    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
+        return new JiraWikiMarkupRendererImpl();
+    }
+
+    /* ASPECT/INTERCEPTORS */
+
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor() {
         return new ServiceLayerInterceptor();

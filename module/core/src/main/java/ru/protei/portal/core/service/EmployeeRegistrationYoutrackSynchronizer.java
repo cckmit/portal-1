@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.dict.En_MigrationEntry;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.DateUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.yt.Change;
 import ru.protei.portal.core.model.yt.ChangeResponse;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public class EmployeeRegistrationYoutrackSynchronizer {
     private final Logger log = LoggerFactory.getLogger(EmployeeRegistrationYoutrackSynchronizer.class);
 
-    private String EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME;
+    private Set<String> YOUTRACK_PROJECTS = new LinkedHashSet<>();
     private Long YOUTRACK_USER_ID;
 
     @Autowired
@@ -75,20 +76,30 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             log.debug("employee registration youtrack synchronizer is not started because YouTrack integration is disabled in configuration");
             return;
         }
-        EQUIPMENT_PROJECT_NAME = config.data().youtrack().getEquipmentProject();
-        ADMIN_PROJECT_NAME = config.data().youtrack().getAdminProject();
-        YOUTRACK_USER_ID = config.data().youtrack().getYoutrackUserId();
 
-        if (EQUIPMENT_PROJECT_NAME == null) {
-            log.warn("bad youtrack configuration: equipment project name not set. Employee registration youtrack synchronizer not started");
-            return;
-        }
-        if (ADMIN_PROJECT_NAME == null) {
-            log.warn("bad youtrack configuration: admin project name not set. Employee registration youtrack synchronizer not started");
-            return;
-        }
+        YOUTRACK_USER_ID = config.data().youtrack().getYoutrackUserId();
         if (YOUTRACK_USER_ID == null) {
             log.warn("bad youtrack configuration: user id for synchronization not set. Employee registration youtrack synchronizer not started");
+            return;
+        }
+
+        String equipmentProjectName = config.data().youtrack().getEquipmentProject();
+        if (StringUtils.isNotBlank(equipmentProjectName)) {
+            YOUTRACK_PROJECTS.add(equipmentProjectName);
+        }
+
+        String adminProjectName = config.data().youtrack().getAdminProject();
+        if (StringUtils.isNotBlank(adminProjectName)) {
+            YOUTRACK_PROJECTS.add(adminProjectName);
+        }
+
+        String phoneProjectName = config.data().youtrack().getPhoneProject();
+        if (StringUtils.isNotBlank(phoneProjectName)) {
+            YOUTRACK_PROJECTS.add(phoneProjectName);
+        }
+
+        if (YOUTRACK_PROJECTS.isEmpty()) {
+            log.warn("bad youtrack configuration: project set is empty. Employee registration youtrack synchronizer not started");
             return;
         }
 
@@ -96,8 +107,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         scheduler.schedule(this::synchronizeAll, new CronTrigger(syncCronSchedule));
 
         log.debug("employee registration youtrack synchronizer was started: " +
-                "schedule={}, project for equipment={}, project for admin={}, youtrack user id={}",
-                syncCronSchedule, EQUIPMENT_PROJECT_NAME, ADMIN_PROJECT_NAME, YOUTRACK_USER_ID);
+                "schedule={}, project for equipment={}, project for admin={}, project for phone={}, youtrack user id={}",
+                syncCronSchedule, equipmentProjectName, adminProjectName, phoneProjectName, YOUTRACK_USER_ID);
     }
 
     private static En_CaseState toCaseState(String ytStateId) {
@@ -105,21 +116,17 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             return null;
         switch (ytStateId) {
             case "New":
-                return En_CaseState.CREATED;
             case "Новый":
                 return En_CaseState.CREATED;
             case "Done":
-                return En_CaseState.DONE;
-            case "Complete":
-                return En_CaseState.DONE;
             case "Выдан заказчику":
+            case "Complete":
                 return En_CaseState.DONE;
             case "Ignore":
                 return En_CaseState.IGNORED;
             case "Closed":
                 return En_CaseState.CLOSED;
             case "Canceled":
-                return En_CaseState.CANCELED;
             case "Отменен":
                 return En_CaseState.CANCELED;
             default:
@@ -164,11 +171,11 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     }
 
     private Set<String> getUpdatedIssueIds(Date lastUpdate) {
-        Set<String> adminIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(ADMIN_PROJECT_NAME, lastUpdate);
-        Set<String> equipmentIssues = youtrackService.getIssueIdsByProjectAndUpdatedAfter(EQUIPMENT_PROJECT_NAME, lastUpdate);
-
-        adminIssues.addAll(equipmentIssues);
-        return adminIssues;
+        Set<String> issueIds = new HashSet<>();
+        for (String project : YOUTRACK_PROJECTS) {
+            issueIds.addAll(youtrackService.getIssueIdsByProjectAndUpdatedAfter(project, lastUpdate));
+        }
+        return issueIds;
     }
 
     private void synchronizeEmployeeRegistration(EmployeeRegistration employeeRegistration, Date lastYtSynchronization) {
@@ -209,6 +216,9 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             ChangeResponse changes = issueToChanges.get(caseLink);
             if (changes == null)
                 continue;
+
+            log.info("updateIssues(): caseId={}, caseLink={}, changes={}", employeeRegistration.getId(), caseLink, changes);
+
             parseStateChanges(employeeRegistration, lastYtSynchronization, caseLink.getId(), changes.getChange());
             parseAndUpdateComments(employeeRegistration.getId(), lastYtSynchronization, caseLink.getId(), changes.getIssue().getComment());
         }
@@ -287,15 +297,31 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     }
 
     private void parseAndUpdateComments(Long caseId, Date lastSynchronization, Long caseLinkId, List<Comment> comments) {
-        List<CaseComment> commentsToAdd = new LinkedList<>();
-        List<CaseComment> commentsToMerge = new LinkedList<>();
-        List<Long> commentsToDelete = new LinkedList<>();
+
+        if (CollectionUtils.isEmpty(comments)) {
+            return;
+        }
+
+        comments = comments.stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        Set<CaseComment> commentsToAdd = new LinkedHashSet<>();
+        Set<CaseComment> commentsToMerge = new LinkedHashSet<>();
+        Set<Long> commentsToDelete = new LinkedHashSet<>();
+
+        List<CaseComment> caseComments = caseCommentDAO.listByRemoteIds(comments.stream()
+                .map(Comment::getId)
+                .collect(Collectors.toList()));
+
+        List<CaseComment> caseCommentsWithoutDup = makeCaseCommentListWithoutDuplicates(caseComments);
 
         for (Comment comment : comments) {
-            if (comment == null)
-                continue;
 
-            CaseComment caseComment = caseCommentDAO.getByRemoteId(comment.getId());
+            CaseComment caseComment = caseCommentsWithoutDup.stream()
+                    .filter(cc -> Objects.equals(cc.getRemoteId(), comment.getId()))
+                    .findFirst()
+                    .orElse(null);
 
             Boolean isDeleted = comment.getDeleted();
             boolean existInDb = caseComment != null;
@@ -332,6 +358,10 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 log.debug("parseAndUpdateComments(): update comment text: YT: {}, PORTAL: {}", comment, caseComment);
             }
         }
+
+        log.info("parseAndUpdateComments(): caseId={}, commentsToAdd={}, commentsToMerge={}, commentsToDelete={}",
+                caseId, commentsToAdd, commentsToMerge, commentsToDelete);
+
         caseCommentDAO.persistBatch(commentsToAdd);
         caseCommentDAO.mergeBatch(commentsToMerge);
         caseCommentDAO.removeByKeys(commentsToDelete);
@@ -379,5 +409,20 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
     private void fireEmployeeRegistrationEvent(EmployeeRegistration employeeRegistration) {
         publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
+    }
+
+    private List<CaseComment> makeCaseCommentListWithoutDuplicates(List<CaseComment> caseComments) {
+        List<CaseComment> checkedCaseComments = new ArrayList<>();
+        List<String> checkedRemoteIds = new ArrayList<>();
+        for (CaseComment caseComment : caseComments) {
+            if (checkedRemoteIds.contains(caseComment.getRemoteId())) {
+                log.warn("makeCaseCommentListWithoutDuplicates(): comment duplication detected at database: " +
+                        "[remoteId={}], [caseComment={}]", caseComment.getRemoteId(), caseComment);
+                continue;
+            }
+            checkedRemoteIds.add(caseComment.getRemoteId());
+            checkedCaseComments.add(caseComment);
+        }
+        return checkedCaseComments;
     }
 }

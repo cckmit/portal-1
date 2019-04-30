@@ -1,9 +1,6 @@
 package ru.protei.portal.core.model.view;
 
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyCategory;
-import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.Location;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 
 import java.io.Serializable;

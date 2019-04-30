@@ -31,6 +31,13 @@ public class DateFormatter {
 
         return dateMonthFormat.format( date );
     }
+    public static String formatTimeOnly( Date date ) {
+        if ( date == null ) {
+            return "";
+        }
+
+        return timeFormat.format( date );
+    }
 
     public static String formatYear(Date date) {
         return date == null ? "" : yearFormat.format(date);
@@ -40,4 +47,5 @@ public class DateFormatter {
     private static DateTimeFormat format = DateTimeFormat.getFormat( "dd.MM.yyyy" );
     private static DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat( "dd.MM.yyyy HH:mm" );
     private static DateTimeFormat dateMonthFormat = DateTimeFormat.getFormat( "dd MMMM" );
+    private static DateTimeFormat timeFormat = DateTimeFormat.getFormat( "HH:mm" );
 }

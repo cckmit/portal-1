@@ -81,6 +81,17 @@
                         </div>
                     </div>
                 </div>
+
+
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <h5>
+                            <ui:text from="{lang.equipmentDocuments}"/>
+                        </h5>
+                        <g:HTMLPanel ui:field="documents" styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
+                    </div>
+                </div>
+
                 <div class="row form-group">
                     <div class="col-md-12">
                         <h5>
@@ -89,6 +100,8 @@
                         <g:HTMLPanel ui:field="commentsContainer"/>
                     </div>
                 </div>
+
+
             </div>
         </div>
     </g:HTMLPanel>

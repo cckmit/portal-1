@@ -63,4 +63,13 @@ public class NotificationEntry implements Serializable {
     public static NotificationEntry email (String email, String langCode) {
         return new NotificationEntry(email, En_ContactItemType.EMAIL, langCode);
     }
+
+    @Override
+    public String toString() {
+        return "NotificationEntry{" +
+                "address='" + address + '\'' +
+                ", contactItemType=" + contactItemType +
+                ", langCode='" + langCode + '\'' +
+                '}';
+    }
 }

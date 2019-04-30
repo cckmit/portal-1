@@ -1,11 +1,11 @@
 package ru.protei.portal.ui.common.client.activity.casecomment.item;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 
 /**
  * Представление одного комментария
@@ -38,9 +38,13 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setIcon( String iconSrc );
 
-    HasTime timeElapsed();
+    void setTimeElapsed( String timeTypeString );
 
     void clearElapsedTime();
 
     void setRemoteLink(CaseLink remoteLink);
+
+    void setPrivateComment(Boolean value);
+
+    HasVisibility getPrivacyVisibility();
 }

@@ -20,8 +20,6 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhoto ( String photo );
 
-    void setCompany( String value );
-
     void setDepartment( String value );
 
     void setPosition( String value );

@@ -10,7 +10,7 @@ import ru.protei.portal.ui.common.client.events.DocumentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentTypeControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.LinkedList;
@@ -28,7 +28,7 @@ public abstract class DocumentTypeModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe(ModelSelector<DocumentType> documentTypeSelector) {
+    public void subscribe( SelectorWithModel<DocumentType> documentTypeSelector) {
         subscribers.add(documentTypeSelector);
         documentTypeSelector.fillOptions(list);
     }
@@ -65,5 +65,5 @@ public abstract class DocumentTypeModel implements Activity {
     private List<DocumentType> list = new LinkedList<>();
     private DocumentTypeQuery query = new DocumentTypeQuery();
 
-    List<ModelSelector<DocumentType>> subscribers = new LinkedList<>();
+    List<SelectorWithModel<DocumentType>> subscribers = new LinkedList<>();
 }

@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseFilter;
@@ -316,23 +317,18 @@ public abstract class IssueTableActivity
     }
 
     @Override
-    public void onPageChanged( int page ) {
-        pagerView.setCurrentPage( page+1 );
+    public void onPageChanged(int page) {
+        pagerView.setCurrentPage(page);
     }
 
     @Override
-    public void onFirstClicked() {
-        view.scrollTo( 0 );
-    }
-
-    @Override
-    public void onLastClicked() {
-        view.scrollTo( view.getPageCount()-1 );
+    public void onPageSelected(int page) {
+        view.scrollTo(page);
     }
 
     @Override
     public void onAttachClicked(CaseShortView value, IsWidget widget) {
-        attachmentService.getAttachmentsByCaseId(value.getId(), new RequestCallback<List<Attachment>>() {
+        attachmentService.getAttachmentsByCaseId(En_CaseType.CRM_SUPPORT, value.getId(), new RequestCallback<List<Attachment>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent( new NotifyEvents.Show( lang.attachmentsNotLoaded(), NotifyEvents.NotifyType.ERROR ) );
@@ -445,10 +441,10 @@ public abstract class IssueTableActivity
     }
 
     private void applyFilterViewPrivileges() {
-        filterParamView.companiesVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_COMPANY_VIEW ) );
         filterParamView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterParamView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
         filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
+        filterParamView.tagsVisibility().setVisible( policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ) );
     }
 
     private void showUserFilterName(){

@@ -5,14 +5,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
-import ru.protei.portal.ui.common.client.widget.issuefilter.IssueFilterParamView;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.ReportTypeButtonSelector;
@@ -22,7 +17,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        issueFilterParamView.addBodyStyles("row");
     }
 
     @Override
@@ -41,15 +35,14 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public AbstractIssueFilterWidgetView getIssueFilterWidget() {
-        return issueFilterParamView;
+    public void resetFilter() {
+        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
+        name.setValue(null);
     }
 
     @Override
-    public void resetFilter() {
-        issueFilterParamView.resetFilter();
-        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
-        name.setValue(null);
+    public HasWidgets getReportContainer() {
+        return reportContainer;
     }
 
     @UiHandler("reportType")
@@ -65,9 +58,8 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @UiField
     TextBox name;
 
-    @Inject
-    @UiField(provided = true)
-    IssueFilterParamView issueFilterParamView;
+    @UiField
+    HTMLPanel reportContainer;
 
     private AbstractIssueReportCreateActivity activity;
 

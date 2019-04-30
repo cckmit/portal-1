@@ -100,8 +100,11 @@ public interface CompanyController extends RemoteService {
      */
     List<CompanySubscription> getCompanySubscription( Long companyId ) throws RequestFailedException;
 
+    List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException;
+
     /**
      * Получить список доступных статусов обращения
      */
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
+
 }

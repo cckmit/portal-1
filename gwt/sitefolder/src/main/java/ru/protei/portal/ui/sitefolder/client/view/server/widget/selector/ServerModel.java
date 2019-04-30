@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public abstract class ServerModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe(ModelSelector<EntityOption> selector) {
+    public void subscribe( SelectorWithModel<EntityOption> selector) {
         subscribers.add(selector);
         selector.fillOptions(list);
     }
@@ -37,7 +37,7 @@ public abstract class ServerModel implements Activity {
     }
 
     private void notifySubscribers() {
-        for (ModelSelector<EntityOption> selector : subscribers) {
+        for (SelectorWithModel<EntityOption> selector : subscribers) {
             selector.fillOptions(list);
             selector.refreshValue();
         }
@@ -64,5 +64,5 @@ public abstract class ServerModel implements Activity {
 
     private Long platformId = null;
     private List<EntityOption> list = new ArrayList<>();
-    private List<ModelSelector<EntityOption>> subscribers = new ArrayList<>();
+    private List<SelectorWithModel<EntityOption>> subscribers = new ArrayList<>();
 }

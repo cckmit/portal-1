@@ -105,6 +105,7 @@ public class PortalConfigData {
         public CommonConfig( PropertiesWrapper properties ) {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
+            crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -114,18 +115,25 @@ public class PortalConfigData {
             return crmUrlExternal;
         }
 
+        public String getCrmUrlCurrent() {
+            return crmUrlCurrent;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
+        private final String crmUrlCurrent;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
         private final String crmCaseUrl;
+        private final String contractUrl;
         private final String crmEmployeeRegistrationUrl;
         private final String[] crmEmployeeRegistrationNotificationsRecipients;
 
         public MailNotificationConfig(PropertiesWrapper properties) throws ConfigException {
             super(properties);
             crmCaseUrl = properties.getProperty( "crm.case.url", "#issues/issue:id=%d;" );
+            contractUrl = properties.getProperty( "crm.contract.url", "#contracts/contract:id=%d;" );
             crmEmployeeRegistrationUrl = properties.getProperty( "crm.employee_registration.url");
             crmEmployeeRegistrationNotificationsRecipients = properties.getProperty( "crm.employee_registration.recipients", "" ).split(",");
         }
@@ -133,6 +141,10 @@ public class PortalConfigData {
 
         public String getCrmCaseUrl() {
             return crmCaseUrl;
+        }
+
+        public String getContractUrl() {
+            return contractUrl;
         }
 
         public String getCrmEmployeeRegistrationUrl() {
@@ -314,11 +326,13 @@ public class PortalConfigData {
         private final boolean hpsmEnabled;
         private final boolean redmineEnabled;
         private final boolean youtrackEnabled;
+        private final boolean jiraEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
+            jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
         }
 
 
@@ -332,6 +346,10 @@ public class PortalConfigData {
 
         public boolean isYoutrackEnabled() {
             return youtrackEnabled;
+        }
+
+        public boolean isJiraEnabled() {
+            return jiraEnabled;
         }
     }
 

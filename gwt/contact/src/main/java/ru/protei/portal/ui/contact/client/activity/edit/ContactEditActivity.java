@@ -156,6 +156,8 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
     @Override
     public void onChangeContactLogin() {
+        view.sendWelcomeEmailVisibility().setVisible(true);
+
         String value = view.login().getText().trim();
 
         if (value.isEmpty()){
@@ -176,6 +178,11 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
                     }
                 }
         );
+    }
+
+    @Override
+    public void onChangeContactPassword() {
+        view.sendWelcomeEmailVisibility().setVisible(true);
     }
 
     @Override
@@ -225,7 +232,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         infoFacade.setFactAddress(view.workAddress().getText());
         infoFacade.setHomeAddress(view.homeAddress().getText());
         infoFacade.setFax(view.workFax().getText());
-//        contact.setFaxHome(view.homeFax().getText());
+        infoFacade.setFaxHome(view.homeFax().getText());
         contact.setPosition(view.displayPosition().getText());
         contact.setDepartment(view.displayDepartment().getText());
 
@@ -281,6 +288,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.homeAddress().setText(infoFacade.getHomeAddress());
 
         view.workFax().setText(infoFacade.getFax());
+        view.homeFax().setText(infoFacade.getFaxHome());
         view.displayPosition().setText(person.getPosition());
         view.displayDepartment().setText(person.getDepartment());
 
@@ -291,7 +299,7 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         view.deletedMsgVisibility().setVisible(person.isDeleted());
         view.firedMsgVisibility().setVisible(person.isFired());
         view.fireBtnVisibility().setVisible(person.getId() != null && !person.isFired());
-        view.sendWelcomeEmailVisibility().setVisible(person.getId() == null);
+        view.sendWelcomeEmailVisibility().setVisible(false);
         view.sendWelcomeEmail().setValue(false);
 
         view.showInfo(userLogin.getId() != null);

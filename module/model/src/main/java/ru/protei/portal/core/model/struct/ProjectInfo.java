@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 

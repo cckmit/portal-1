@@ -13,11 +13,11 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.app.portal.client.widget.localeselector.LocaleImage;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
-import ru.protei.portal.app.portal.client.widget.localeselector.LocaleSelector;
+import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 
 /**
  * Вид основной формы приложения

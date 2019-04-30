@@ -1,20 +1,23 @@
 package ru.protei.portal.ui.common.client.widget.selector.product.component;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ComponentMultiSelector extends MultipleInputSelector<ProductShortView> implements ModelSelector<ProductShortView> {
+public class ComponentMultiSelector extends MultipleInputSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
 
     @Inject
-    public void init(ComponentModel model, Lang lang) {
-        model.subscribe(this);
+    public void init(ProductModel model, Lang lang) {
+        model.subscribe(this, null, En_DevUnitType.COMPONENT);
+        setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
     }
@@ -25,9 +28,6 @@ public class ComponentMultiSelector extends MultipleInputSelector<ProductShortVi
         options.addAll(o);
         fillOptions();
     }
-
-    @Override
-    public void refreshValue() {}
 
     public void exclude(ProductShortView exclude) {
         this.exclude = exclude;

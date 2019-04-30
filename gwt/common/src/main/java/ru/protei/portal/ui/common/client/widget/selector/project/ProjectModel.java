@@ -6,9 +6,10 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
@@ -16,14 +17,18 @@ import java.util.*;
 
 public abstract class ProjectModel implements Activity {
 
-
     @Event
     public void onInit(AuthEvents.Success event) {
         this.profile = event.profile;
         refreshOptions();
     }
 
-    public void subscribe(ModelSelector<ProjectInfo> documentTypeSelector) {
+    @Event
+    public void onProjectChanged(ProjectEvents.ChangeModel event) {
+        refreshOptions();
+    }
+
+    public void subscribe( SelectorWithModel<ProjectInfo> documentTypeSelector) {
         subscribers.add(documentTypeSelector);
         documentTypeSelector.fillOptions(list);
     }
@@ -62,5 +67,5 @@ public abstract class ProjectModel implements Activity {
     private Profile profile;
     private List<ProjectInfo> list = new LinkedList<>();
 
-    List<ModelSelector<ProjectInfo>> subscribers = new LinkedList<>();
+    List<SelectorWithModel<ProjectInfo>> subscribers = new LinkedList<>();
 }

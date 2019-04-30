@@ -27,7 +27,9 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setCategory( String value );
 
-    void setGroupCompany( String value );
+    void setParentCompany( String value );
+
+    void setChildrenCompanies( String value );
 
     void setInfo( String value );
 
@@ -36,6 +38,8 @@ public interface AbstractCompanyPreviewView extends IsWidget {
     Widget asWidget(boolean isForTableView);
 
     HasWidgets getContactsContainer();
+
+    HasWidgets getSiteFolderContainer();
 
     void setSubscriptionEmails(String value);
 }

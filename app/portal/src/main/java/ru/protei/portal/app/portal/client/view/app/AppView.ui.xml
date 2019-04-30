@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:locale="urn:import:ru.protei.portal.app.portal.client.widget.localeselector">
+             xmlns:locale="urn:import:ru.protei.portal.app.portal.client.widget.localeselector"
+             xmlns:locale2="urn:import:ru.protei.portal.app.portal.client.widget.locale">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -34,7 +35,7 @@
 
             <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="navbar-nav flex-row"/>
             <div class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
-                <locale:LocaleSelector ui:field="locale"/>
+                <locale2:LocaleSelector ui:field="locale"/>
 
                 <li>
                     <a>

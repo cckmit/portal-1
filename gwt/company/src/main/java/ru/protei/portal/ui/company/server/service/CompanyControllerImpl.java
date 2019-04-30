@@ -14,6 +14,7 @@ import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -37,8 +38,8 @@ public class CompanyControllerImpl implements CompanyController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug( "getCompanies(): searchPattern={} | categories={} | group={} | sortField={} | sortDir={}",
-                companyQuery.getSearchString(), categoryIds, companyQuery.getGroupId(),
+        log.debug( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
+                companyQuery.getSearchString(), categoryIds,
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
         CoreResponse< List<Company>> result = companyService.companyList( descriptor.makeAuthToken(), companyQuery );
@@ -220,6 +221,13 @@ public class CompanyControllerImpl implements CompanyController {
             throw new RequestFailedException( result.getStatus() );
         }
         return result.getData();
+    }
+
+    @Override
+    public List< CompanySubscription > getCompanyWithParentCompanySubscriptions( Long companyId ) throws RequestFailedException {
+        log.info( "getCompanyWithParentCompanySubscriptions() companyId={}", companyId );
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        return ServiceUtils.checkResultAndGetData( companyService.getCompanyWithParentCompanySubscriptions( authToken, companyId ));
     }
 
     @Override

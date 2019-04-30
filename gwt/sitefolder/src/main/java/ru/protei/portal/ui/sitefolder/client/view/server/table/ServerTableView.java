@@ -148,10 +148,12 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     private ClickColumn<Server> accessParams = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.addClassName("column-hidable");
             columnHeader.setInnerText(lang.serverAccessParamsColumn());
         }
         @Override
         public void fillColumnValue(Element cell, Server value) {
+            cell.addClassName("column-hidable");
             cell.setInnerText(value.getParams());
         }
     };

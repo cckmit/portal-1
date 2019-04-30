@@ -2,6 +2,8 @@ package ru.protei.portal.core.service.template;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -12,6 +14,8 @@ import java.util.Map;
  * Предварительно подготовленный шаблон (почти готовая модель данных)
  */
 public class PreparedTemplate {
+    private static Logger logger = LoggerFactory.getLogger(PreparedTemplate.class);
+
     private Configuration templateConfiguration;
     private Map< String, Object > model;
 
@@ -43,7 +47,7 @@ public class PreparedTemplate {
             template.process( model, writer );
             return writer.toString();
         } catch ( Exception e ) {
-            e.printStackTrace();
+            logger.error("unable to create text by template", e);
         }
 
         return null;

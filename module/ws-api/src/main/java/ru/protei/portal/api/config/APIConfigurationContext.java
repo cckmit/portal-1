@@ -81,7 +81,12 @@ public class APIConfigurationContext extends WebMvcConfigurerAdapter {
         return new AuditObjectDAO_Impl();
     }
 
-/**
+    @Bean
+    public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
+        return new EmployeeRegistrationDAO_Impl();
+    }
+
+    /**
      * Config
      * @return
      */

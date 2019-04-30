@@ -42,7 +42,15 @@ public interface AbstractProductEditView extends IsWidget {
 
     void setIsProduct(boolean isProduct);
 
-    HasEnabled save();
+    HasValue<String> wikiLink();
+
+    HasValue<String> historyVersion();
+
+    HasValue<String> configuration();
+
+    HasValue<String> cdrDescription();
+
+    HasEnabled saveEnabled();
 
     HasValue<List<Subscription>> productSubscriptions();
     HasValidable productSubscriptionsValidator();

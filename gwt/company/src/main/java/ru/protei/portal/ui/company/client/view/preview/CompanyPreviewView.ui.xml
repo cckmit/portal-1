@@ -1,51 +1,66 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-<ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-<g:HTMLPanel ui:field="rootWrapper">
-    <div class="card card-default">
-        <div class="card-block">
-            <h4 class="col-md-12 no-margin no-padding" ui:field="companyName"/>
-            <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
-            <div class="small hint-text no-margin">
-                <a class="col-md-7" ui:field="site" href="#" target="_blank"/>
-            </div>
-            <div class="small hint-text">
-                <g:InlineLabel>
-                    <ui:text from="{lang.companyGroup} "/>
-                </g:InlineLabel>
-                <g:InlineLabel ui:field="groupCompany"/>
-            </div>
-            <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
+    <g:HTMLPanel ui:field="rootWrapper">
+        <div class="card card-default">
+            <div class="card-block">
+                <h4 class="col-md-12 no-margin no-padding" ui:field="companyName"/>
+                <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
+                <div class="small hint-text no-margin">
+                    <a class="col-md-7" ui:field="site" href="#" target="_blank"/>
+                </div>
+                <div class="small hint-text">
+                    <g:InlineLabel>
+                        <ui:text from="{lang.companyGroup} "/>
+                    </g:InlineLabel>
+                </div>
+                <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
 
-            <p class="small">
-                <span class="bold"><ui:text from="{lang.companySubscription}: "/></span>
-                <g:InlineLabel ui:field="subscription"/>
-            </p>
+                <div class="col-md-12">
+                    <label><ui:text from="{lang.companyParentLabel}"/></label>
+                    <span ui:field="parentCompany"></span>
+                </div>
+                <div class="col-md-12">
+                    <label><ui:text from="{lang.companyChildrenLabel}"/>
+                    </label>
+                    <span ui:field="childrenCompanies"></span>
+                </div>
 
-            <h5><ui:text from="{lang.companyContactsHeader}"/></h5>
+                <p class="small">
+                    <span class="bold"><ui:text from="{lang.companySubscription}: "/></span>
+                    <g:InlineLabel ui:field="subscription"/>
+                </p>
 
-            <div class="small">
-                <b><ui:text from="{lang.phone}: "/></b>
-                <span ui:field="phone"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.email}: "/></b>
-                <span ui:field="email"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.companyActualAddress}: "/></b>
-                <span ui:field="addressFact"/>
-            </div>
-            <div class="small">
-                <b><ui:text from="{lang.companyLegalAddress}: "/></b>
-                <span ui:field="addressDejure"/>
+                <h5><ui:text from="{lang.companyContactsHeader}"/></h5>
+
+                <div class="small">
+                    <b><ui:text from="{lang.phone}: "/></b>
+                    <span ui:field="phone"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.email}: "/></b>
+                    <span ui:field="email"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.companyActualAddress}: "/></b>
+                    <span ui:field="addressFact"/>
+                </div>
+                <div class="small">
+                    <b><ui:text from="{lang.companyLegalAddress}: "/></b>
+                    <span ui:field="addressDejure"/>
+                </div>
+
+                <h5><ui:text from="{lang.contacts}"/></h5>
+                <g:HTMLPanel ui:field="contactsContainer" styleName="col-md-12"/>
             </div>
 
-            <h5><ui:text from="{lang.contacts}"/></h5>
-            <g:HTMLPanel ui:field="contactsContainer" styleName="col-md-12"/>
+            <fieldset class="header">
+                <legend><ui:text from="{lang.siteFolder}"/></legend>
+
+                <g:HTMLPanel ui:field="siteFolderContainer" styleName="col-xs-12"/>
+            </fieldset>
         </div>
-    </div>
-</g:HTMLPanel>
+    </g:HTMLPanel>
 </ui:UiBinder>

@@ -13,19 +13,20 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.issuelinks.list.IssueLinks;
+import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
 import ru.protei.portal.ui.common.client.widget.timefield.TimeLabel;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -110,7 +111,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setLinks( Set<CaseLink> value ) {
-        this.links.setValue( value );
+        this.caseMetaView.setLinks( value );
+    }
+
+    @Override
+    public void setTags(Set<CaseTag> value) {
+        this.caseMetaView.setTags(value);
     }
 
     @Override
@@ -166,7 +172,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setCaseNumber(Long caseNumber) {
-        fileUploader.autoBindingToCase(caseNumber);
+        fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
     @Override
@@ -214,7 +220,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         fullScreen.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.TITLE_LABEL);
-        links.setEnsureDebugIdContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
+        caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
         creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED_LABEL);
         criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE_LABEL);
         product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT_LABEL);
@@ -281,7 +287,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     TimeLabel timeElapsed;
     @Inject
     @UiField(provided = true)
-    IssueLinks links;
+    CaseMetaView caseMetaView;
     @UiField
     Button backButton;
     @Inject

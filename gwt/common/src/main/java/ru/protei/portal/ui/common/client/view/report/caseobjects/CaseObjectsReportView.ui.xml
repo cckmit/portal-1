@@ -1,0 +1,91 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
+             xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
+             xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.issueimportance.btngroup'
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
+             xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
+             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
+             xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
+             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel>
+
+        <g:HTMLPanel ui:field="body" styleName="body grid grid-indent">
+            <div class="col-xs-12 m-b-10">
+                <label><ui:text from="{lang.filters}"/></label>
+                <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
+            </div>
+
+            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
+            <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-xs-12 local-search-options-container">
+                <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
+                <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
+            </g:HTMLPanel>
+
+            <div class="col-xs-12 resize-xs-6">
+                <label class="bold"><ui:text from="{lang.created}"/></label>
+                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            </div>
+
+            <div class="col-xs-12 resize-xs-6">
+                <label class="bold"><ui:text from="{lang.updated}"/></label>
+                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            </div>
+
+            <div class="form-group col-xs-12 resize-xs-6">
+                <label><ui:text from="{lang.sortBy}"/></label>
+                <div class="control-group">
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
+                    <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
+                </div>
+            </div>
+
+            <productselector:devunit.DevUnitMultiSelector ui:field="products"
+                                                          header="{lang.issueProduct}"
+                                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <companyselector:CompanyMultiSelector ui:field="companies"
+                                                  header="{lang.issueCompany}"
+                                                  addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <person:InitiatorMultiSelector ui:field="initiators"
+                                           header="{lang.issueInitiator}"
+                                           addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <person:EmployeeMultiSelector ui:field="managers"
+                                          header="{lang.issueManager}"
+                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <person:EmployeeMultiSelector ui:field="commentAuthors"
+                                          header="{lang.issueCommentAuthor}"
+                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <casetag:CaseTagMultiSelector ui:field="tags"
+                                          caseType="CRM_SUPPORT"
+                                          header="{lang.tags}"
+                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+
+            <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-xs-12 resize-xs-6">
+                <label><ui:text from="{lang.searchPrivate}"/></label>
+                <threestate:ThreeStateButton ui:field="searchPrivate"/>
+            </g:HTMLPanel>
+
+            <div class="form-group col-xs-12 resize-xs-6">
+                <label><ui:text from="{lang.issueImportance}"/></label>
+                <importance:ImportanceBtnGroupMulti ui:field="importance" styleName="btn-group btn-group-justified"/>
+            </div>
+
+            <div class="form-group col-xs-12">
+                <label><ui:text from="{lang.issueState}"/></label>
+                <optionlist:IssueStatesOptionList ui:field="state"/>
+            </div>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

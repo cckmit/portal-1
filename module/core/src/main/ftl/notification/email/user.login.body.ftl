@@ -4,6 +4,7 @@
 
 <@set name="_greetings" value="${greetings}"/>
 <@set name="_your_account_is_ready" value="${your_account_is_ready}"/>
+<@set name="_your_account_is_updated" value="${your_account_is_updated}"/>
 <@set name="_your_login" value="${your_login}"/>
 <@set name="_your_password" value="${your_password}"/>
 <@set name="_you" value="${you}"/>
@@ -17,7 +18,7 @@
 <body bgcolor="#FFFFFF" text="#000000">
     <div style="padding: 8px 0 4px;">
         <div style="font-family: sans-serif;font-size: 14px;">${_greetings}<#if hasDisplayName>, ${displayName!'?'}</#if>!</div>
-        <div style="font-family: sans-serif;font-size: 14px;">%{_your_account_is_ready} ${url}</div>
+        <div style="font-family: sans-serif;font-size: 14px;"><#if isNewAccount>${_your_account_is_ready}<#else>${_your_account_is_updated}</#if> ${url}</div>
         <div style="font-family: sans-serif;font-size: 14px;">${_your_login}: ${login}</div>
         <div style="font-family: sans-serif;font-size: 14px;">${_your_password}: ${password}</div>
     </div>

@@ -80,6 +80,14 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         clearButton.setVisible(!selectedItems.isEmpty());
     }
 
+    @Override
+    public void fillOptions( List<T> options ) {
+        clearOptions();
+        for ( T option : options ) {
+            addOption( String.valueOf( option ), option );
+        }
+    }
+
     public void setAddName( String text ) {
         setAddName(null, text);
     }

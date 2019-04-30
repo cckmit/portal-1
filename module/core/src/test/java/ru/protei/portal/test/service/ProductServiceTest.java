@@ -1,43 +1,34 @@
 package ru.protei.portal.test.service;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.service.ProductService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by michael on 11.10.16.
  */
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
 public class ProductServiceTest {
-
-    static ApplicationContext ctx;
-
-//    static DevUnit activeProduct;
-
-    @BeforeClass
-    public static void init () {
-         ctx = new AnnotationConfigApplicationContext (CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
-
-
-    }
 
     @Test
     public void testCreateAndGetProduct () {
@@ -51,9 +42,9 @@ public class ProductServiceTest {
         product.setStateId(En_DevUnitState.ACTIVE.getId());
         product.setTypeId(En_DevUnitType.PRODUCT.getId());
 
-        Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).persist(product));
+        Assert.assertNotNull(devUnitDAO.persist(product));
 
-        CoreResponse<List<DevUnit>> result = ctx.getBean(ProductService.class).productList( null, new ProductQuery() );
+        CoreResponse<List<DevUnit>> result = productService.productList( null, new ProductQuery() );
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getDataAmountTotal() > 0);
@@ -61,9 +52,9 @@ public class ProductServiceTest {
         Assert.assertNotNull(result.getData());
         Assert.assertTrue(result.getData().size() > 0);
 
-        System.out.println(result.getData().get(0).getName());
+        log.info(result.getData().get(0).getName());
 
-        Assert.assertNotNull(ctx.getBean(DevUnitDAO.class).remove(product));
+        Assert.assertTrue(devUnitDAO.remove(product));
     }
 
     @Test
@@ -72,33 +63,39 @@ public class ProductServiceTest {
         String name = "Billing";
 
 
-        DevUnit product = ctx.getBean(DevUnitDAO.class).checkExistsByName(En_DevUnitType.PRODUCT, name);
+        DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
         Assert.assertNull(product);
 
-        System.out.println(" product with " + name + " is not exist | product " + product);
+        log.info(" product with " + name + " is not exist | product " + product);
 
-        CoreResponse<Boolean> result = ctx.getBean(ProductService.class).checkUniqueProductByName( null, name, new Long(1));
+        CoreResponse<Boolean> result = productService.checkUniqueProductByName( null, name, 1L);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
 
-        System.out.println(" product name " + name + " is uniq = " + result.getData());
+        log.info(" product name " + name + " is uniq = " + result.getData());
 
 
         name = "OMS3456";
 
-        product = ctx.getBean(DevUnitDAO.class).checkExistsByName(En_DevUnitType.PRODUCT, name);
+        product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
         Assert.assertNull(product);
 
-        System.out.println(" product with " + name + " is not exist");
+        log.info(" product with " + name + " is not exist");
 
-        result = ctx.getBean(ProductService.class).checkUniqueProductByName( null, name, null);
+        result = productService.checkUniqueProductByName( null, name, null);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
 
-        System.out.println(" product name " + name + " is uniq = " + result.getData());
+        log.info(" product name " + name + " is uniq = " + result.getData());
 
     }
 
+    @Autowired
+    ProductService productService;
+    @Autowired
+    DevUnitDAO devUnitDAO;
+
+    private static final Logger log = LoggerFactory.getLogger(ProductServiceTest.class);
 }

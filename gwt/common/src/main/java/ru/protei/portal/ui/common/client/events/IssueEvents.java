@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Omit;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 
@@ -95,20 +96,6 @@ public class IssueEvents {
      * Добавление / изменение / удаление обращений
      */
     public static class ChangeModel {}
-
-    public static class SaveComment {
-        public interface SaveCommentCompleteHandler {
-            void onSuccess();
-            void onError(Throwable throwable);
-        }
-
-        public SaveComment( Long id, SaveCommentCompleteHandler handler ) {
-            this.id = id;
-            this.handler = handler;
-        }
-        public Long id;
-        public SaveCommentCompleteHandler handler;
-    }
 
     /**
      * Изменилась модель фильтров пользователя

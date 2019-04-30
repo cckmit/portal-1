@@ -55,14 +55,15 @@ public class DocumentStorageIndexImpl implements DocumentStorageIndex {
             index = NIOFSDirectory.open(Paths.get(indexPath));
             indexWriter = new IndexWriter(index, indexWriterConfig);
         } catch (IOException e) {
-            log.error("Failed to init index directory (path: " + indexPath + ")", e);
+             log.error("Failed to init index directory (path: " + indexPath + ")", e);
         }
     }
 
     @PreDestroy
     public void destroy() {
         try {
-            indexWriter.close();
+            if (indexWriter != null)
+                indexWriter.close();
         } catch (IOException e) {
             log.error("Failed to close index writer", e);
         }

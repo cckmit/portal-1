@@ -48,21 +48,28 @@
             </div>
         </div>
 
-        <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.companyContactInfoTitle}"/>
+        <div class="form-group col-xs-12">
+            <label ui:field="attachmentsLabel"><ui:text from="{lang.siteFolderAttachments}"/></label>
+            <div class="col-xs-12 col-md-12">
+                <div class="panel">
+                    <div class="body">
+                        <div class="attach attach-add">
+                            <w:uploader.AttachmentUploader ui:field="fileUploader">
+                                <div class="attach-add-circle">
+                                    <i class="ion-plus"/>
+                                    <i class="icon-verifiable"/>
+                                </div>
+                            </w:uploader.AttachmentUploader>
+                        </div>
+                        <w:attachment.list.AttachmentList ui:field="attachmentContainer"/>
                     </div>
-                </div>
-                <div class="card-block">
-                    <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable form-group col-md-12 main-content-padding-0"
-                                                 legend="{lang.siteFolderCompanyContacts}"/>
-
-
                 </div>
             </div>
         </div>
+
+        <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable form-group col-xs-12 main-content-padding-0"
+                                     legend="{lang.siteFolderCompanyContacts}"/>
+
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
                 <div class="card-header">
@@ -73,7 +80,7 @@
                     </g:HTMLPanel>
                 </div>
                 <div class="card-block">
-                     <g:HTMLPanel styleName="form-group col-md-12" ui:field="listContainer"/>
+                    <g:HTMLPanel styleName="form-group col-md-12" ui:field="listContainer"/>
                 </div>
             </div>
         </div>

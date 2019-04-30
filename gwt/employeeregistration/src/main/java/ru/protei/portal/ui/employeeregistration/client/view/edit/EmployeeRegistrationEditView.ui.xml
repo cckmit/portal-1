@@ -48,7 +48,8 @@
                                 <ui:text from="{lang.employeeRegistrationEmploymentType}"/>
                             </label>
                             <selector:EmploymentTypeSelector ui:field="employmentType" hasNullValue="false"/>
-                            <g:CheckBox ui:field="withRegistration" styleName="checkbox" text="{lang.employeeRegistrationWithRegistration}"/>
+                            <g:CheckBox ui:field="withRegistration" styleName="checkbox"
+                                        text="{lang.employeeRegistrationWithRegistration}"/>
                         </div>
 
                         <div class="form-group col-md-6">
@@ -128,6 +129,15 @@
                 </div>
             </div>
         </div>
+
+        <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-xs-12">
+            <label ui:field="notifiersLabel">
+                <ui:text from="{lang.employeeRegistrationCurators}"/>
+            </label>
+            <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="curators"/>
+        </g:HTMLPanel>
+
+
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
                 <div class="card-header">
@@ -148,12 +158,14 @@
                                                                       styleName="inherit-color-checkbox-group"/>
                         </div>
                         <div class="form-group col-md-8">
-                            <label><!--Прочие ресурсы-->
-                                <ui:text from="{lang.employeeRegistrationResourceOtherComment}"/>
-                            </label>
-                            <textarea:AutoResizeTextArea ui:field="resourceComment" minRows="1"
-                                                         placeholder="{lang.employeeRegistrationInternalResourceOtherCommentPlaceholder}"
-                                                         styleName="form-control"/>
+                            <div class="form-group col-md-8">
+                                <label><!--Прочие ресурсы-->
+                                    <ui:text from="{lang.employeeRegistrationResourceOtherComment}"/>
+                                </label>
+                                <textarea:AutoResizeTextArea ui:field="resourceComment" minRows="1"
+                                                             placeholder="{lang.employeeRegistrationInternalResourceOtherCommentPlaceholder}"
+                                                             styleName="form-control"/>
+                            </div>
                         </div>
                     </div>
                 </div>

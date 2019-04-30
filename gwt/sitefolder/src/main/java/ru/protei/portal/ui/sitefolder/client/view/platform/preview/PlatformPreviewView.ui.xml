@@ -41,13 +41,21 @@
 
             </fieldset>
 
+            <fieldset class="header">
+                <legend><ui:text from="{lang.siteFolderAttachments}"/></legend>
+                <div class="col-xs-12 col-md-12">
+                    <div class="panel">
+                        <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
+                    </div>
+                </div>
+            </fieldset>
+
             <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
                                          legend="{lang.siteFolderCompanyContacts}"/>
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.siteFolderServers}"/></legend>
-                <g:HTMLPanel styleName="col-md-12" ui:field="serversContainer"/>
-            </fieldset>
+            <w:collapse.CollapsablePanel ui:field="serversContainer" styleName="collapsable header"
+                                         legend="{lang.siteFolderServers}"/>
+
 
         </g:HTMLPanel>
     </g:HTMLPanel>

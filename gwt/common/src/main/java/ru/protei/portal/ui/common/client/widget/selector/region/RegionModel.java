@@ -8,7 +8,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -24,13 +24,13 @@ public abstract class RegionModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector< EntityOption > selector ) {
+    public void subscribe( SelectorWithModel< EntityOption > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector< EntityOption > selector : subscribers ) {
+        for ( SelectorWithModel< EntityOption > selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -60,5 +60,5 @@ public abstract class RegionModel implements Activity {
 
     private List< EntityOption > list = new ArrayList<>();
 
-    List< ModelSelector< EntityOption > > subscribers = new ArrayList<>();
+    List<SelectorWithModel< EntityOption >> subscribers = new ArrayList<>();
 }

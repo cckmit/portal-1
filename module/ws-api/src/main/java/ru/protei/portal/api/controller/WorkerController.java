@@ -59,6 +59,9 @@ public class WorkerController {
     private WorkerEntryDAO workerEntryDAO;
 
     @Autowired
+    private EmployeeRegistrationDAO employeeRegistrationDAO;
+
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Autowired
@@ -70,8 +73,12 @@ public class WorkerController {
     @Autowired
     AuditObjectDAO auditObjectDAO;
 
+    /**
+     * Получить данные о физическом лице
+     * @param id идентификатор физического лица на портале
+     * @return WorkerRecord
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.person")
-    public @ResponseBody
     WorkerRecord getPerson(@RequestParam(name = "id") Long id) {
 
         logger.debug("getPerson(): id={}", id);
@@ -84,16 +91,24 @@ public class WorkerController {
         return null;
     }
 
+    /**
+     * Получить данные о сотруднике
+     * @param id идентификатор сотрудника в 1С
+     * @param companyCode код компании
+     * @return WorkerRecord
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.worker")
-    public @ResponseBody
     WorkerRecord getWorker(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("getWorker(): id={}, companyCode={}", id, companyCode);
 
         try {
-
             return withHomeCompany(companyCode,
-                    item -> new WorkerRecord(workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId())));
+                    item -> {
+                        WorkerEntry entry = workerEntryDAO.getByExternalId(id.trim(), item.getCompanyId());
+                        EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(entry.getPersonId());
+                        return new WorkerRecord(entry, registration);
+                    });
 
         } catch (Throwable e) {
             logger.error("error while get worker", e.getMessage());
@@ -101,8 +116,13 @@ public class WorkerController {
         return null;
     }
 
+    /**
+     * Получить данные об отделе
+     * @param id идентификатор отдела в 1С
+     * @param companyCode код компании
+     * @return DepartmentRecord
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.department")
-    public @ResponseBody
     DepartmentRecord getDepartment(@RequestParam(name = "id") String id, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("getDepartment(): id={}, companyCode={}", id, companyCode);
@@ -119,8 +139,12 @@ public class WorkerController {
         return null;
     }
 
+    /**
+     * Получить список физических лиц
+     * @param expr строка для поиска с использованием шаблонных символов
+     * @return WorkerRecordList
+     */
     @RequestMapping(method = RequestMethod.GET, value = "/get.persons")
-    public @ResponseBody
     WorkerRecordList getPersons(@RequestParam(name = "expr") String expr) {
 
         logger.debug("getPersons(): expr={}", expr);
@@ -142,9 +166,12 @@ public class WorkerController {
         return persons;
     }
 
-
+    /**
+     * Добавить сотрудника
+     * @param rec данные о сотруднике
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/add.worker")
-    public @ResponseBody
     ServiceResult addWorker(@RequestBody WorkerRecord rec) {
 
         logger.debug("addWorker(): rec={}", rec);
@@ -166,7 +193,8 @@ public class WorkerController {
                     .requireHomeItem()
                     .requireDepartment(null)
                     .requireNotExistsWorker()
-                    .requireAccount(null);
+                    .requireAccount(null)
+                    .requireRegistration(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
@@ -206,6 +234,13 @@ public class WorkerController {
                         saveAccount(userLogin);
                     }
 
+                    EmployeeRegistration employeeRegistration = operationData.registration();
+                    if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
+                        employeeRegistration.setPerson(person);
+                        mergeEmployeeRegistration(employeeRegistration);
+                    }
+
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
 
                     WorkerEntry worker = new WorkerEntry();
@@ -222,9 +257,9 @@ public class WorkerController {
                     persistWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        ActiveWorkers activeWorkers = new ActiveWorkers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : activeWorkers.requireWorkers().getDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : activeWorkers.getPosition(position.getName());
+                        Workers workers = new Workers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
@@ -244,8 +279,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_CREATE.getCode(), En_ErrorCode.NOT_CREATE.getMessage(), null);
     }
 
+    /**
+     * Обновить сотрудника
+     * @param rec данные о сотруднике
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.worker")
-    public @ResponseBody
     ServiceResult updateWorker(@RequestBody WorkerRecord rec) {
 
         logger.debug("updateWorker(): rec={}", rec);
@@ -263,7 +302,8 @@ public class WorkerController {
                     .requireDepartment(null)
                     .requirePerson(null)
                     .requireWorker(null)
-                    .requireAccount(null);
+                    .requireAccount(null)
+                    .requireRegistration(null);
 
             if (!operationData.isValid())
                 return operationData.failResult();
@@ -275,6 +315,7 @@ public class WorkerController {
                     Person person = operationData.person();
                     WorkerEntry worker = operationData.worker();
                     UserLogin userLogin = operationData.account();
+                    EmployeeRegistration employeeRegistration = operationData.registration();
 
                     convert(rec, person);
 
@@ -286,21 +327,24 @@ public class WorkerController {
                             person.setFired(rec.isFired());
                             person.setDeleted(rec.isDeleted());
                             person.setIpAddress(person.getIpAddress() == null ? null : person.getIpAddress().replace(".", "_"));
+
+                            if(userLogin != null) {
+                                if (person.isDeleted()) {
+                                    removeAccount(userLogin);
+                                } else {
+                                    userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
+                                    saveAccount(userLogin);
+                                }
+                            }
                         }
 
                         mergePerson(person);
 
-                        if(userLogin != null) {
-                            if (person.isDeleted()) {
-                                removeAccount(userLogin);
-                            } else {
-                                userLogin.setAdminStateId(En_AdminState.LOCKED.getId());
-                                saveAccount(userLogin);
-                            }
-                        }
-
                         if (WSConfig.getInstance().isEnableMigration()) {
-                            migrationManager.saveExternalEmployee(person, "", "");
+                            Workers workers = new Workers(person.getId());
+                            String departmentName = workers.requireWorkers().getAnyDepartment("");
+                            String positionName = workers.requireWorkers().getAnyPosition("");
+                            migrationManager.saveExternalEmployee(person, departmentName, positionName);
                         }
 
                         logger.debug("success result, workerRowId={}", worker.getId());
@@ -315,6 +359,12 @@ public class WorkerController {
                         saveAccount(userLogin);
                     }
 
+                    if (employeeRegistration != null) {
+                        checkRegistrationByPerson(person.getId());
+                        employeeRegistration.setPerson(person);
+                        mergeEmployeeRegistration(employeeRegistration);
+                    }
+
                     WorkerPosition position = getValidPosition(rec.getPositionName(), operationData.homeItem().getCompanyId());
 
                     worker.setDepartmentId(operationData.department().getId());
@@ -326,9 +376,9 @@ public class WorkerController {
                     mergeWorker(worker);
 
                     if (WSConfig.getInstance().isEnableMigration()) {
-                        ActiveWorkers activeWorkers = new ActiveWorkers(person.getId());
-                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : activeWorkers.requireWorkers().getDepartment(operationData.department().getName());
-                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : activeWorkers.getPosition(position.getName());
+                        Workers workers = new Workers(person.getId());
+                        String departmentName = worker.getActiveFlag() == 1 ? operationData.department().getName() : workers.requireWorkers().getActiveDepartment(operationData.department().getName());
+                        String positionName = worker.getActiveFlag() == 1 ? position.getName() : workers.requireWorkers().getActivePosition(position.getName());
                         migrationManager.saveExternalEmployee(person, departmentName, positionName);
                     }
 
@@ -347,8 +397,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getCode(), null);
     }
 
+    /**
+     * Обновить сотрудников
+     * @param list список сотрудников
+     * @return ServiceResultList
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.workers")
-    public @ResponseBody
     ServiceResultList updateWorkers(@RequestBody WorkerRecordList list) {
 
         logger.debug("updateWorkers(): list={}", list);
@@ -367,8 +421,13 @@ public class WorkerController {
         return results;
     }
 
+    /**
+     * Удалить сотрудника
+     * @param externalId идентификатор сотрудника в 1С
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.worker")
-    public @ResponseBody
     ServiceResult deleteWorker(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("deleteWorker(): externalId={}, companyCode={}", externalId, companyCode);
@@ -421,8 +480,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_DELETE.getCode(), En_ErrorCode.NOT_DELETE.getMessage(), null);
     }
 
+    /**
+     * Обновить фотографию сотрудника
+     * @param photo фоторгафия
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.photo")
-    public @ResponseBody
     ServiceResult updatePhoto(@RequestBody Photo photo) {
 
         logger.debug("updatePhoto(): photo={}", photo);
@@ -458,8 +521,12 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
     }
 
+    /**
+     * Получить фотографии сотрудников
+     * @param list список идентификаторов физических лиц
+     * @return PhotoList
+     */
     @RequestMapping(method = RequestMethod.POST, value = "/get.photos")
-    public @ResponseBody
     PhotoList getPhotos(@RequestBody IdList list) {
 
         logger.debug("getPhotos(): list={}", list);
@@ -501,8 +568,12 @@ public class WorkerController {
         return photos;
     }
 
+    /**
+     * Создать/обновить отдел
+     * @param rec данные об отделе
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.department")
-    public @ResponseBody
     ServiceResult updateDepartment(@RequestBody DepartmentRecord rec) {
 
         logger.debug("updateDepartment(): rec={}", rec);
@@ -549,8 +620,13 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
     }
 
+    /**
+     * Удалить отдел
+     * @param externalId идентификатор отдела в 1С
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.department")
-    public @ResponseBody
     ServiceResult deleteDepartment(@RequestParam(name = "externalId") String externalId, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("deleteDepartment(): externalId={}, companyCode={}", externalId, companyCode);
@@ -579,8 +655,14 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_DELETE.getCode(), En_ErrorCode.NOT_DELETE.getMessage(), null);
     }
 
+    /**
+     * Обновить должность
+     * @param oldName наименование должности
+     * @param newName новое наименование должности
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.PUT, value = "/update.position")
-    public @ResponseBody
     ServiceResult updatePosition(@RequestParam(name = "oldName") String oldName, @RequestParam(name = "newName") String newName, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("updatePosition(): oldName={}, newName={}, companyCode={}", oldName, newName, companyCode);
@@ -615,8 +697,13 @@ public class WorkerController {
         return ServiceResult.failResult(En_ErrorCode.NOT_UPDATE.getCode(), En_ErrorCode.NOT_UPDATE.getMessage(), null);
     }
 
+    /**
+     * Удалить должность
+     * @param name наименование должности
+     * @param companyCode код компании
+     * @return ServiceResult
+     */
     @RequestMapping(method = RequestMethod.DELETE, value = "/delete.position")
-    public @ResponseBody
     ServiceResult deletePosition(@RequestParam(name = "name") String name, @RequestParam(name = "companyCode") String companyCode) {
 
         logger.debug("deletePosition(): name={}, companyCode={}", name, companyCode);
@@ -775,6 +862,14 @@ public class WorkerController {
         return fileName;
     }
 
+    private void checkRegistrationByPerson(Long personId) throws Exception {
+        EmployeeRegistration registration = employeeRegistrationDAO.getByPersonId(personId);
+        if (registration != null) {
+            registration.setPerson(null);
+            mergeEmployeeRegistration(registration);
+        }
+    }
+
     private void persistPerson(Person person) throws Exception {
         personDAO.persist(person);
         makeAudit(person, En_AuditType.EMPLOYEE_CREATE);
@@ -842,6 +937,11 @@ public class WorkerController {
             makeAudit(new LongAuditableObject(userLogin.getId()), En_AuditType.ACCOUNT_REMOVE);
     }
 
+    private void mergeEmployeeRegistration(EmployeeRegistration employeeRegistration) throws Exception {
+        employeeRegistrationDAO.merge(employeeRegistration);
+        makeAudit(employeeRegistration, En_AuditType.EMPLOYEE_REGISTRATION_MODIFY);
+    }
+
     private void makeAudit(AuditableObject object, En_AuditType type) throws Exception {
         AuditObject auditObject = new AuditObject();
         auditObject.setCreated( new Date() );
@@ -868,6 +968,7 @@ public class WorkerController {
         Person person;
         WorkerPosition position;
         UserLogin account;
+        EmployeeRegistration registration;
 
         Record record;
 
@@ -952,6 +1053,13 @@ public class WorkerController {
                 this.account = handle(userLoginDAO.findLDAPByPersonId(record.getPersonId()), optional, null, true);
                 jdbcManyRelationsHelper.fill(account, "roles");
             }
+
+            return this;
+        }
+
+        public OperationData requireRegistration(Supplier<EmployeeRegistration> optional) {
+            if (isValid() && record.registrationId != null)
+                this.registration = handle(employeeRegistrationDAO.get(record.getRegistrationId()), optional, En_ErrorCode.UNKNOWN_REG);
 
             return this;
         }
@@ -1079,6 +1187,10 @@ public class WorkerController {
             return account;
         }
 
+        public EmployeeRegistration registration() {
+            return registration;
+        }
+
         public class Record {
             String companyCode;
             String departmentId;
@@ -1088,12 +1200,14 @@ public class WorkerController {
             Long personId;
             String positionName;
             String newPositionName;
+            Long registrationId;
 
             public Record(WorkerRecord workerRecord) {
                 this.companyCode = workerRecord.getCompanyCode();
                 this.departmentId = workerRecord.getDepartmentId();
                 this.workerId = workerRecord.getWorkerId();
                 this.personId = workerRecord.getId();
+                this.registrationId = workerRecord.getRegistrationId();
             }
 
             public Record(DepartmentRecord departmentRecord) {
@@ -1143,33 +1257,59 @@ public class WorkerController {
             public String getNewPositionName() {
                 return newPositionName;
             }
+
+            public Long getRegistrationId() {
+                return registrationId;
+            }
         }
     }
 
-    public class ActiveWorkers {
+    public class Workers {
 
-        List<WorkerEntry> activeWorkers;
+        List<WorkerEntry> workers;
         Long personId;
 
-        public ActiveWorkers(Long personId) {
+        public Workers(Long personId) {
             this.personId = personId;
         }
 
-        public ActiveWorkers requireWorkers() {
-            if (activeWorkers == null)
-                activeWorkers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId, 1));
+        public Workers requireWorkers() {
+            if (workers == null)
+                workers = workerEntryDAO.getWorkers(new WorkerEntryQuery(personId));
 
             return this;
         }
 
-        public String getDepartment(String def) {
-            if (activeWorkers == null || activeWorkers.isEmpty()) return def;
-            return activeWorkers.get(0).getDepartmentName();
+        public String getActiveDepartment(String def) {
+            WorkerEntry activeEntry = getActiveEntry();
+            return activeEntry == null ? def : activeEntry.getDepartmentName();
         }
 
-        public String getPosition(String def) {
-            if (activeWorkers == null || activeWorkers.isEmpty()) return def;
-            return activeWorkers.get(0).getPositionName();
+        public String getActivePosition(String def) {
+            WorkerEntry activeEntry = getActiveEntry();
+            return activeEntry == null ? def : activeEntry.getPositionName();
+        }
+
+        public String getAnyDepartment(String def) {
+            WorkerEntry anyEntry = getAnyEntry();
+            return anyEntry == null ? def : anyEntry.getDepartmentName();
+        }
+
+        public String getAnyPosition(String def) {
+            WorkerEntry anyEntry = getAnyEntry();
+            return anyEntry == null ? def : anyEntry.getPositionName();
+        }
+
+        private WorkerEntry getActiveEntry() {
+            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(null);
+        }
+
+        private WorkerEntry getAnyEntry() {
+            return workers == null ? null : workers.stream().filter(WorkerEntry::isMain).findFirst().orElse(getFirstEntry());
+        }
+
+        private WorkerEntry getFirstEntry() {
+            return workers == null ? null : workers.stream().findFirst().orElse(null);
         }
     }
 }

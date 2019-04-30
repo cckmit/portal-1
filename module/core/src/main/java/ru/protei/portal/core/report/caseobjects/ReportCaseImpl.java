@@ -40,8 +40,13 @@ public class ReportCaseImpl implements ReportCase {
 
         Long count = caseObjectDAO.count(report.getCaseQuery());
 
+        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
+
         if (count == null || count < 1) {
             log.debug("writeReport : reportId={} has no corresponding case objects", report.getId());
+            ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
+            writer.createSheet();
+            writer.collect(buffer);
             return true;
         }
 
@@ -51,8 +56,6 @@ public class ReportCaseImpl implements ReportCase {
         }
 
         log.debug("writeReport : reportId={} has {} case objects to procees", report.getId(), count);
-
-        Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
 
         ReportWriter<CaseObjectComments> writer = new ExcelReportWriter(localizedLang, dateFormat, timeFormatter);
 

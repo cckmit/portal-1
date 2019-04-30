@@ -1,0 +1,59 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="svitkov" id="2019-02-20-jira-002">
+
+        <createTable tableName="jira_status_map">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" uniqueConstraintName="PK_jira_status_map" />
+            </column>
+            <column name="name" type="varchar(128)" />
+        </createTable>
+
+        <createTable tableName="jira_priority_map">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" uniqueConstraintName="PK_jira_priority_map" />
+            </column>
+            <column name="name" type="varchar(128)" />
+        </createTable>
+
+        <createTable tableName="jira_status_map_entry">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" uniqueConstraintName="PK_jira_status_map_entry"/>
+            </column>
+            <column name="MAP_ID" type="BIGINT" />
+            <column name="Jira_status_name" type="varchar(256)"/>
+            <column name="LOCAL_status_id" type="BIGINT"/>
+            <column name="LOCAL_status_name" type="varchar(256)"/>
+        </createTable>
+
+        <createTable tableName="jira_priority_map_entry">
+            <column name="id" autoIncrement="true" type="BIGINT">
+                <constraints primaryKey="true" uniqueConstraintName="PK_jira_priority_map_entry"/>
+            </column>
+            <column name="MAP_ID" type="BIGINT" />
+            <column name="Jira_priority_id" type="BIGINT"/>
+            <column name="LOCAL_priority_id" type="BIGINT"/>
+            <column name="LOCAL_priority_name" type="varchar(128)"/>
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="FK_JIRA_EP_STATUS" onDelete="CASCADE"
+                                 baseColumnNames="STATUS_MAP_ID" baseTableName="jira_endpoint"
+                                 referencedColumnNames="id" referencedTableName="jira_status_map"/>
+        <addForeignKeyConstraint constraintName="FK_JIRA_EP_PRIORITY" onDelete="CASCADE"
+                                 baseColumnNames="PRIORITY_MAP_ID" baseTableName="jira_endpoint"
+                                 referencedColumnNames="id" referencedTableName="jira_priority_map"/>
+
+        <addForeignKeyConstraint constraintName="FK_JIRA_EP_STATUS_ENTRY" onDelete="CASCADE"
+                                 baseColumnNames="MAP_ID" baseTableName="jira_status_map_entry"
+                                 referencedColumnNames="id" referencedTableName="redmine_status_map"/>  <!-- fixed at 2019-04-18-fix-jira-status-map-entry-fk.xml -->
+        <addForeignKeyConstraint constraintName="FK_JIRA_EP_PRIORITY_ENTRY" onDelete="CASCADE"
+                                 baseColumnNames="MAP_ID" baseTableName="jira_priority_map_entry"
+                                 referencedColumnNames="id" referencedTableName="jira_priority_map"/>
+
+    </changeSet>
+
+</databaseChangeLog>

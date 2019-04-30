@@ -3,35 +3,44 @@ package ru.protei.portal.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
+import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
+import ru.protei.portal.core.renderer.HTMLRenderer;
+import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.MarkdownRenderer;
+import ru.protei.portal.core.renderer.impl.HTMLRendererImpl;
+import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
+import ru.protei.portal.core.renderer.impl.MarkdownRendererImpl;
+import ru.protei.portal.core.report.caseobjects.ReportCase;
+import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsed;
+import ru.protei.portal.core.report.casetimeelapsed.ReportCaseTimeElapsedImpl;
 import ru.protei.portal.core.service.*;
-import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.portal.core.utils.SimpleSidGenerator;
-import ru.protei.portal.mock.TestAuthService;
+import ru.protei.portal.mock.AuthServiceMock;
+import ru.protei.portal.mock.ReportControlServiceMock;
 import ru.protei.winter.core.utils.config.exception.ConfigException;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.impl.LockServiceImpl;
 
-
 @Configuration
+@EnableAspectJAutoProxy
 public class MainTestsConfiguration {
 
-
-    /**
-     * Config
-     * @return
-     */
     @Bean
-    public PortalConfig getPortalConfig () throws ConfigException {
-        return new PortalConfig("portal_test.properties");
+    public PortalConfig getPortalConfig() throws ConfigException {
+        return new PortalConfig("portal.properties");
     }
 
     @Bean
@@ -46,12 +55,41 @@ public class MainTestsConfiguration {
     }
 
     @Bean
+    public Lang lang() {
+        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+        messageSource.setBasenames("Lang");
+        messageSource.setDefaultEncoding("UTF-8");
+        return new Lang(messageSource);
+    }
+
+    /* DAO SQL builders */
+
+    @Bean
     public CaseObjectSqlBuilder sqlDefaultBuilder () {
         return new CaseObjectSqlBuilder();
     }
 
+    @Bean
+    public CaseCommentSqlBuilder getCaseCommentSqlBuilder() {
+        return new CaseCommentSqlBuilder();
+    }
+
+    @Bean
+    public ServerSqlBuilder serverSqlBuilder() {
+        return new ServerSqlBuilder();
+    }
+
+    @Bean
+    public EmployeeSqlBuilder employeeSqlBuilder() {
+        return new EmployeeSqlBuilder();
+    }
 
     /* DAO */
+
+    @Bean
+    public MigrationEntryDAO getMigrationEntryDAO() {
+        return new MigrationEntryDAO_Impl();
+    }
 
     @Bean
     public CompanyGroupHomeDAO getCompanyGroupHomeDAO() {
@@ -286,15 +324,58 @@ public class MainTestsConfiguration {
         return new ApplicationDAO_Impl();
     }
 
-/**
- *
- *
- *
- * SERVICES
- *
- *
- *
- **/
+    @Bean
+    public ServerApplicationDAO getServerApplicationDAO() {
+        return new ServerApplicationDAO_Impl();
+    }
+
+    @Bean
+    public DevUnitChildRefDAO getDevUnitChildRefDAO() {
+        return new DevUnitChildRefDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeShortViewDAO getEmployeeShortViewDAO() {
+        return new EmployeeShortViewDAO_Impl();
+    }
+
+    @Bean
+    public EmployeeRegistrationDAO getEmployeeRegistrationDAO() {
+        return new EmployeeRegistrationDAO_Impl();
+    }
+
+    @Bean
+    public CaseCommentTimeElapsedSumDAO getCaseCommentCaseObjectDAO() {
+        return new CaseCommentTimeElapsedSumDAO_Impl();
+    }
+
+    @Bean
+    public ContractDAO getContractDAO() {
+        return new ContractDAO_Impl();
+    }
+
+    @Bean
+    public ContractDateDAO getContractDateDAO() {
+        return new ContractDateDAO_Impl();
+    }
+
+    @Bean
+    public CaseTagDAO getCaseTagDAO() {
+        return new CaseTagDAO_Impl();
+    }
+
+    @Bean
+    public CaseObjectTagDAO getCaseObjectTagDAO() {
+        return new CaseObjectTagDAO_Impl();
+    }
+
+    @Bean
+    public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
+        return new CaseStateWorkflowDAO_Impl();
+    }
+
+    /* SERVICES */
+
     @Bean
     public SessionIdGen getSessionIdGenerator() {
         return new SimpleSidGenerator();
@@ -302,7 +383,7 @@ public class MainTestsConfiguration {
 
     @Bean
     public AuthService getAuthService() {
-        return new TestAuthService();
+        return new AuthServiceMock();
     }
 
     @Bean
@@ -391,11 +472,6 @@ public class MainTestsConfiguration {
     public OfficialService getOfficialService() { return new OfficialServiceImpl(); }
 
     @Bean
-    public BootstrapService getBootstrapService() {
-        return new BootstrapService();
-    }
-
-    @Bean
     public EventAssemblerService getEventAssemblerService() {
         return new EventAssemblerServiceImpl();
     }
@@ -442,7 +518,7 @@ public class MainTestsConfiguration {
 
     @Bean
     public ReportControlService getReportControlService() {
-        return new ReportControlServiceImpl();
+        return new ReportControlServiceMock();
     }
 
     @Bean
@@ -454,13 +530,75 @@ public class MainTestsConfiguration {
     }
 
     @Bean
+    public YoutrackService getYoutrackService() {
+        return new YoutrackServiceImpl();
+    }
+
+    @Bean
+    public EmployeeRegistrationService getEmployeeRegistrationService() {
+        return new EmployeeRegistrationServiceImpl();
+    }
+
+    @Bean
     public CaseCommentService getCaseCommentService() {
         return new CaseCommentServiceImpl();
     }
 
-    /** ASPECT/INTERCEPTORS **/
+    @Bean
+    public ContractService getContractService() {
+        return new ContractServiceImpl();
+    }
+
+    @Bean
+    public ContractReminderService getContractReminderService() {
+        return new ContractReminderServiceImpl();
+    }
+
+    @Bean
+    public CaseTagService getCaseTagService() {
+        return new CaseTagServiceImpl();
+    }
+
+    @Bean
+    public CaseStateWorkflowService getCaseStateWorkflowService() {
+        return new CaseStateWorkflowServiceImpl();
+    }
+
+
+    @Bean
+    public ReportCase getReportCase() {
+        return new ReportCaseImpl();
+    }
+
+    @Bean
+    public ReportCaseTimeElapsed getReportCaseTimeElapsed() {
+        return new ReportCaseTimeElapsedImpl();
+    }
+
+    @Bean
+    public HTMLRenderer getHTMLRenderer() {
+        return new HTMLRendererImpl();
+    }
+
+    @Bean
+    public MarkdownRenderer getMarkdownRenderer() {
+        return new MarkdownRendererImpl();
+    }
+
+    @Bean
+    public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
+        return new JiraWikiMarkupRendererImpl();
+    }
+
+    /* ASPECT/INTERCEPTORS */
+
     @Bean
     public ServiceLayerInterceptor getServiceLayerInterceptor () {
         return new ServiceLayerInterceptor();
+    }
+
+    @Bean
+    public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
+        return new ServiceLayerInterceptorLogging();
     }
 }

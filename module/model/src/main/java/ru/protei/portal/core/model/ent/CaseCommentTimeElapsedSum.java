@@ -8,15 +8,21 @@ import java.util.Date;
 
 @JdbcEntity(table = "case_comment", selectSql = "" +
         "case_comment.case_id case_id, case_comment.author_id author_id, " +
-        "author.displayshortname author_display_name, sum(case_comment.time_elapsed) time_elapsed_sum, " +
+        "author.displayshortname author_display_name, " +
+        "sum(case_comment.time_elapsed) time_elapsed_sum, " +
+        "sum(IF(case_comment.time_elapsed_type IS NUll or case_comment.time_elapsed_type = 0, case_comment.time_elapsed, 0)) time_elapsed_none, " +
+        "sum(IF(case_comment.time_elapsed_type = 1, case_comment.time_elapsed, 0)) time_elapsed_watch, " +
+        "sum(IF(case_comment.time_elapsed_type = 2, case_comment.time_elapsed, 0)) time_elapsed_night_work, " +
         "case_object.caseno case_no, case_object.private_flag private_flag, case_object.case_name case_name, " +
         "company.cname case_company_name, manager.displayshortname manager_display_name, " +
-        "case_object.importance importance, case_object.state state, case_object.created created " +
+        "case_object.importance importance, case_object.state state, case_object.created created, " +
+        "product.UNIT_NAME product_name " +
         "from case_comment " +
         "left outer join Person author on case_comment.author_id = author.id " +
         "left outer join case_object case_object on case_comment.case_id = case_object.id " +
         "left outer join company company on case_object.initiator_company = company.id " +
-        "left outer join Person manager on case_object.manager = manager.id "
+        "left outer join Person manager on case_object.manager = manager.id " +
+        "left outer join dev_unit product on case_object.product_id = product.id"
 )
 public class CaseCommentTimeElapsedSum implements Serializable {
 
@@ -26,11 +32,23 @@ public class CaseCommentTimeElapsedSum implements Serializable {
     @JdbcColumn(name = "author_id", permType = PermType.READ_ONLY)
     private Long authorId;
 
+    @JdbcColumn(name = "product_name", permType = PermType.READ_ONLY)
+    private String productName;
+
     @JdbcColumn(name = "author_display_name", permType = PermType.READ_ONLY)
     private String authorDisplayName;
 
     @JdbcColumn(name = "time_elapsed_sum", permType = PermType.READ_ONLY)
     private Long timeElapsedSum;
+
+    @JdbcColumn(name = "time_elapsed_none", permType = PermType.READ_ONLY)
+    private Long timeElapsedNone;
+
+    @JdbcColumn(name = "time_elapsed_watch", permType = PermType.READ_ONLY)
+    private Long timeElapsedWatch;
+
+    @JdbcColumn(name = "time_elapsed_night_work", permType = PermType.READ_ONLY)
+    private Long timeElapsedNightWork;
 
     @JdbcColumn(name = "case_no", permType = PermType.READ_ONLY)
     private Long caseNumber;
@@ -70,6 +88,22 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     public Long getTimeElapsedSum() {
         return timeElapsedSum;
+    }
+
+    public Long getTimeElapsedNone() {
+        return timeElapsedNone;
+    }
+
+    public Long getTimeElapsedWatch() {
+        return timeElapsedWatch;
+    }
+
+    public Long getTimeElapsedNightWork() {
+        return timeElapsedNightWork;
+    }
+
+    public String getProductName() {
+        return productName;
     }
 
     public Long getCaseNumber() {

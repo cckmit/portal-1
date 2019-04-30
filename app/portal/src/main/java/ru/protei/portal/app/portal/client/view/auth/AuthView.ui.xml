@@ -1,7 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:localeselector="urn:import:ru.protei.portal.app.portal.client.widget.locale"
+             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="login-wrapper">
 
@@ -25,25 +27,34 @@
             <div class="login-container-wrapper">
                 <div class="login-header">
                     <div class="brand">
-                        <img src="./images/logo_blue.png" width="50" height="50"/>
+                        <img src="./images/logo_blue.png" width="40" height="40"/>
                         <span ui:field="header"><ui:text from="{lang.proteiTitleShort}"/></span>
                     </div>
                     <div class="icon">
                         <i class="ion-ios-locked"/>
                     </div>
                 </div>
-                <p class="p-t-35"><ui:text from="{lang.authDescription}"/></p>
+                <p class="p-t-35">
+                    <span><ui:text from="{lang.authDescription}"/></span>
+                    <localeselector:LocaleBtnGroup ui:field="locale" addStyleNames="pull-right"/>
+                </p>
+
                 <div class="p-t-15">
-                    <div class="form-group form-group-default">
+                    <div class="form-group form-group-default width-auto">
                         <label><ui:text from="{lang.accountLogin}"/></label>
                         <g:TextBox ui:field="login" styleName="form-control"/>
                     </div>
-                    <div class="form-group form-group-default">
+                    <div class="form-group form-group-default width-auto">
                         <label><ui:text from="{lang.accountPassword}"/></label>
                         <g:PasswordTextBox ui:field="password" styleName="form-control"/>
                     </div>
+
+                    <div class="form-group width-auto auth-remember-me">
+                        <option:OptionItem ui:field="rememberMe" styleName="checkbox single" name="{lang.rememberMe}"/>
+                    </div>
+
                     <g:Button ui:field="loginButton" text="{lang.buttonLogin}"
-                              styleName="btn btn-complete btn-cons m-t-10"/>
+                              styleName="btn-auth m-t-10"/>
 
                     <div class="alert alert-danger fade in m-t-15 text-center hide" ui:field="errorMessage">
                         <span ui:field="errorText"/>
@@ -52,4 +63,5 @@
             </div>
         </g:HTMLPanel>
     </g:HTMLPanel>
+
 </ui:UiBinder>

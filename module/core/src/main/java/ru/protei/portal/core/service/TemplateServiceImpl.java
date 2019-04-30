@@ -1,33 +1,46 @@
 package ru.protei.portal.core.service;
 
-
 import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
+import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.core.service.template.TextUtils;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * Реализация сервиса управления проектами
  */
 public class TemplateServiceImpl implements TemplateService {
-    private static Logger log = LoggerFactory.getLogger(TemplateServiceImpl.class);
+    public static final String BASE_TEMPLATE_PATH = "notification/email/";
+    private static Logger log = getLogger(TemplateServiceImpl.class);
 
     Configuration templateConfiguration;
+
+    @Inject
+    HTMLRenderer htmlRenderer;
 
     @PostConstruct
     public void onInit() {
@@ -98,7 +111,8 @@ public class TemplateServiceImpl implements TemplateService {
                         event.getRemovedAttachments())
         );
 
-        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment()));
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment(), textMarkup));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -118,6 +132,69 @@ public class TemplateServiceImpl implements TemplateService {
         template.setModel( templateModel );
         template.setTemplateConfiguration( templateConfiguration );
         return template;
+    }
+
+
+    @Override
+    public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "userName", employeeName);
+
+        return getText( model, "employee.registration.employee.feedback.body.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject() throws IOException, TemplateException {
+        return getText( new HashMap<>(), "employee.registration.employee.feedback.subject.%s.ftl" );
+    }
+
+    @Override
+    public  String getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody( String employeeName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "userName", employeeName);
+
+        return getText( model, "employee.registration.development.agenda.body.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject() throws IOException, TemplateException {
+        return getText( new HashMap<>(), "employee.registration.development.agenda.subject.%s.ftl" );
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employee_registration_name", employeeFullName );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
+        model.put( "userName", recipientName);
+
+        return getText(model, "employee.registration.probation.body.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employeeFullName", employeeFullName );
+
+        return getText(model, "employee.registration.probation.subject.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationCuratorsEmailNotificationBody( Long employeeRegistrationId, String employeeFullName, String urlTemplate, String recipientName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employee_registration_name", employeeFullName );
+        model.put( "linkToEmployeeRegistration", String.format( urlTemplate, employeeRegistrationId ) );
+        model.put( "userName", recipientName);
+
+        return getText(model, "employee.registration.probation.curators.body.%s.ftl");
+    }
+
+    @Override
+    public String getEmployeeRegistrationProbationCuratorsEmailNotificationSubject( String employeeFullName ) throws IOException, TemplateException {
+        Map<String, Object> model = new HashMap<>();
+        model.put( "employeeFullName", employeeFullName );
+
+        return getText(model, "employee.registration.probation.curators.subject.%s.ftl");
     }
 
     @Override
@@ -145,10 +222,11 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     @Override
-    public PreparedTemplate getUserLoginNotificationBody(UserLoginCreatedEvent event, String url) {
+    public PreparedTemplate getUserLoginNotificationBody(UserLoginUpdateEvent event, String url) {
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("url", url);
         templateModel.put("hasDisplayName", HelperFunc.isNotEmpty(event.getDisplayName()));
+        templateModel.put("isNewAccount", event.isNewAccount());
         templateModel.put("displayName", event.getDisplayName());
         templateModel.put("login", event.getLogin());
         templateModel.put("password", event.getPasswordRaw());
@@ -170,7 +248,35 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment){
+    @Override
+    public PreparedTemplate getContractRemainingOneDayNotificationBody(Contract contract, ContractDate contractDate, String urlTemplate, Collection<String> recipients) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("contractNumber", contract.getNumber());
+        templateModel.put("contractDateType", contractDate.getType());
+        templateModel.put("contractDateDate", contractDate.getDate());
+        templateModel.put("contractDateComment", escapeText(contractDate.getComment()));
+        templateModel.put("contractDateCommentExists", StringUtils.isNotBlank(contractDate.getComment()));
+        templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
+        templateModel.put("recipients", recipients);
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.remaining.one.day.body.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    @Override
+    public PreparedTemplate getContractRemainingOneDayNotificationSubject(Contract contract, ContractDate contractDate) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("contractNumber", contract.getNumber());
+
+        PreparedTemplate template = new PreparedTemplate("notification/email/contract.remaining.one.day.subject.%s.ftl");
+        template.setModel(templateModel);
+        template.setTemplateConfiguration(templateConfiguration);
+        return template;
+    }
+
+    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, En_TextMarkup textMarkup){
         return comments
                 .stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
@@ -178,19 +284,28 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > caseComment = new HashMap<>();
                     caseComment.put( "created", comment.getCreated() );
                     caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", escapeTextComment( comment.getText() ) );
+                    caseComment.put( "text", escapeTextComment( comment.getText(), textMarkup ) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     caseComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
                     if(isChanged && oldCaseComment != null){
-                        caseComment.put( "oldText", escapeTextComment( oldCaseComment.getText() ) );
+                        caseComment.put( "oldText", escapeTextComment( oldCaseComment.getText(), textMarkup ) );
                     }
 
                     return caseComment;
                 } )
                 .collect( toList() );
+    }
+
+    String escapeTextComment(String text, En_TextMarkup textMarkup) {
+        if (text == null) {
+            return null;
+        }
+        text = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
+        text = htmlRenderer.plain2html(text, textMarkup);
+        return text;
     }
 
     private String escapeText(String text) {
@@ -202,28 +317,11 @@ public class TemplateServiceImpl implements TemplateService {
         return text;
     }
 
-    private String escapeTextComment(String text) {
-        if (text == null) {
-            return null;
-        }
-        text = escapeText( text );
-        text = prewrapBlockquote( text ); // HTMLHelper.prewrapBlockquote( text );
-        return text;
-    }
-
     private String replaceLineBreaks(String text) {
         if (text == null) {
             return null;
         }
-        return text.replaceAll("(\r\n|\n|\r)", "<br/>");
-    }
-
-    private String prewrapBlockquote(String text) {
-        if (text == null) {
-            return null;
-        }
-        return text.replaceAll("\\[quote\\]", "<blockquote style=\"margin-left: 0;border-left: 2px solid #015d5d;padding-left: 5px;color: #015d5d;\">")
-                .replaceAll("\\[/quote\\]", "</blockquote>");
+        return text.replaceAll("((?<!<br \\/>)[\r\n|\n|\r])", "<br/>");
     }
 
     private Map<String, Object> buildAttachmentModelKeys(Collection<Attachment> existing, Collection<Attachment> added, Collection<Attachment> removed){
@@ -236,5 +334,24 @@ public class TemplateServiceImpl implements TemplateService {
         model.put( "addedAttachments", added);
 
         return model;
+    }
+
+    private String getText( Map<String, Object> model, String nameTemplate ) throws IOException, TemplateException  {
+        return getText( model, nameTemplate, null );
+    }
+
+    private String getText( Map<String, Object> model, String nameTemplate, Locale lang  ) throws IOException, TemplateException {
+        Writer writer = new StringWriter();
+
+        if (lang == null) {
+            lang = new Locale( "ru" );
+        }
+
+        nameTemplate = String.format( nameTemplate, lang.getLanguage() );
+
+        Template template = templateConfiguration.getTemplate( BASE_TEMPLATE_PATH + nameTemplate, lang );
+        template.process( model, writer );
+        return writer.toString();
+
     }
 }

@@ -27,6 +27,11 @@ public class UiConstants {
         String SITE_FOLDER = "fa fa-folder";
         String EMPLOYEE = "fa fa-user-circle";
         String EMPLOYEE_REGISTRATION = "fa fa-clipboard";
+        String CONTRACT = "fa fa-file-text";
+    }
+    public interface Icons {
+        String APPROVED = "fa-check-circle-o";
+        String NOT_APPROVED = "fa-file-text-o";
     }
 
     public interface ActionBarIcons {
@@ -56,6 +61,7 @@ public class UiConstants {
         String SITE_FOLDER_SERVER = "site_folder_server";
         String SITE_FOLDER_APP = "site_folder_app";
         String EMPLOYEE_REGISTRATION = "employee_registration";
+        String CONTRACT = "contract";
     }
 
     public interface UserIcon {
@@ -67,6 +73,8 @@ public class UiConstants {
         String HIDE = "hide";
         String REQUIRED = "required";
         String TEXT_CENTER = "text-center";
+        String SEARCH_NO_RESULT = "search-no-result";
+        String MULTIPLE_ANY = "multiple-any";
     }
 
     /**

@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.ui.common.client.widget.optionlist.item.OptionItem;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 
 import java.util.*;
 
@@ -45,6 +46,14 @@ public class OptionList<T>
         if ( fireEvents ) {
             ValueChangeEvent.fire( this, selected );
         }
+    }
+
+    public Collection<T> getValues() {
+        return itemViewToModel.values();
+    }
+
+    public void setSelectorModel( SelectorModel<T> selectorModel ) {
+        this.selectorModel = selectorModel;
     }
 
     public void setHeader( String header ) {
@@ -175,6 +184,7 @@ public class OptionList<T>
     private boolean isEnabled = true;
     protected Selector.SelectorFilter<T> filter = null;
     private List<T> mandatoryOptions;
+    private SelectorModel<T> selectorModel;
 
     interface OptionListUiBinder extends UiBinder< HTMLPanel, OptionList > {}
     private static OptionListUiBinder ourUiBinder = GWT.create( OptionListUiBinder.class );

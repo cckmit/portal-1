@@ -52,14 +52,15 @@ public class PersonServiceImpl implements PersonService {
     private PersonQuery processQueryByPolicyScope(AuthToken token, PersonQuery personQuery ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set<UserRole> roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW ) ) {
-            if(personQuery.getCompanyIds()!=null){
-                Set<Long> companyIds = new HashSet<>();
-                companyIds.add(descriptor.getPerson().getCompanyId());
-                personQuery.setCompanyIds(companyIds);
-            }
-            log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
+        if (policyService.hasGrantAccessFor( roles, En_Privilege.COMPANY_VIEW )) {
+            return personQuery;
         }
+
+        if (personQuery.getCompanyIds() != null) {
+            personQuery.getCompanyIds().retainAll( descriptor.getAllowedCompaniesIds() );
+        }
+
+        log.info("processQueryByPolicyScope(): PersonQuery modified: {}", personQuery);
         return personQuery;
     }
 

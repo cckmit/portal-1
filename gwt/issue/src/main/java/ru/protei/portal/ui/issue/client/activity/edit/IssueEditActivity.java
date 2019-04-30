@@ -6,11 +6,11 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
+import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
@@ -105,7 +106,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             issue.setInitiator(event.person);
             issue.setInitiatorId(event.person.getId());
             if (issue.getInitiator() != null) {
-                view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
+                view.initiator().setValue(issue.getInitiator().toFullNameShortView());
             }
         }
     }
@@ -120,38 +121,42 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.saveEnabled().setEnabled(false);
 
-        issueService.saveIssue(issue, new RequestCallback<CaseObject>() {
-            @Override
-            public void onError(Throwable throwable) {
+        fireEvent(new CaseCommentEvents.ValidateComment(isValid -> {
+            if (!isValid) {
+                fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
                 view.saveEnabled().setEnabled(true);
-                fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                return;
             }
+            issueService.saveIssue(issue, new FluentCallback<CaseObject>()
+                    .withResult(() -> {
+                        view.saveEnabled().setEnabled(true);
+                    })
+                    .withError(throwable -> {
+                        fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                    })
+                    .withSuccess(caseObject -> {
+                        fireEvent(new CaseCommentEvents.RemoveDraft(caseObject.getId()));
 
-            @Override
-            public void onSuccess(CaseObject caseObject) {
-                view.saveEnabled().setEnabled(true);
-                if (isNew(issue)) {
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new IssueEvents.ChangeModel());
-                    fireEvent(new IssueEvents.Show());
-                } else {
-                    fireEvent(new IssueEvents.SaveComment(caseObject.getId(), new IssueEvents.SaveComment.SaveCommentCompleteHandler() {
-                        @Override
-                        public void onError(Throwable throwable) {
-                            fireEvent( new NotifyEvents.Show( lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR ) );
-                        }
-
-                        @Override
-                        public void onSuccess() {
+                        if (isNew(issue)) {
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new IssueEvents.ChangeModel());
-                            fireEvent(new Back());
+                            fireEvent(new IssueEvents.Show());
+                            return;
                         }
+                        fireEvent(new CaseCommentEvents.SaveComment(caseObject.getId(), new CaseCommentEvents.SaveComment.SaveCommentCompleteHandler() {
+                            @Override
+                            public void onError(Throwable throwable, String message) {
+                                fireEvent(new NotifyEvents.Show(message != null ? message : lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
+                            }
+                            @Override
+                            public void onSuccess() {
+                                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                                fireEvent(new IssueEvents.ChangeModel());
+                                fireEvent(new Back());
+                            }
+                        }));
                     }));
-
-                }
-            }
-        });
+        }));
     }
 
     @Override
@@ -161,7 +166,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void removeAttachment(Attachment attachment) {
-        attachmentService.removeAttachmentEverywhere(attachment.getId(), new RequestCallback<Boolean>() {
+        attachmentService.removeAttachmentEverywhere(En_CaseType.CRM_SUPPORT, attachment.getId(), new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
@@ -176,13 +181,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 view.attachmentsContainer().remove(attachment);
                 issue.getAttachments().remove(attachment);
                 issue.setAttachmentExists(!issue.getAttachments().isEmpty());
-                if(!isNew(issue))
-                    fireEvent(new CaseCommentEvents.Show(
-                            view.getCommentsContainer(),
-                            En_CaseType.CRM_SUPPORT,
-                            issue.getId(),
-                            policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-                    ));
+                if (!isNew(issue)) {
+                    fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                            .withCaseType(En_CaseType.CRM_SUPPORT)
+                            .withCaseId(issue.getId())
+                            .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                            .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                            .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                            .withPrivateCase(issue.isPrivateCase())
+                            .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
+                            .build());
+                }
             }
         });
     }
@@ -199,7 +208,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.initiator().setValue(null);
         } else {
             Long selectedCompanyId = companyOption.getId();
-            companyService.getCompanySubscription(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
+            companyService.getCompanyWithParentCompanySubscriptions(selectedCompanyId, new ShortRequestCallback<List<CompanySubscription>>()
                     .setOnSuccess(subscriptions -> setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptions, lang.issueCompanySubscriptionNotDefined()))));
 
             companyService.getCompanyCaseStates(selectedCompanyId, new ShortRequestCallback<List<CaseState>>()
@@ -276,12 +285,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         } else {
             view.showComments(true);
             view.attachmentsContainer().add(issue.getAttachments());
-            fireEvent(new CaseCommentEvents.Show(
-                    view.getCommentsContainer(),
-                    En_CaseType.CRM_SUPPORT,
-                    issue.getId(),
-                    policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW)
-            ));
+            fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                    .withCaseType(En_CaseType.CRM_SUPPORT)
+                    .withCaseId(issue.getId())
+                    .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
+                    .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                    .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                    .withPrivateCase(issue.isPrivateCase())
+                    .withTextMarkup(CaseTextMarkupUtil.recognizeTextMarkup(issue))
+                    .build());
         }
 
         if(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW)) { //TODO change rule
@@ -292,7 +304,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             view.caseSubscriptionContainer().setVisible(false);
         }
 
-        view.links().setValue(issue.getLinks() == null ? null : new HashSet<>(issue.getLinks()));
+        view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+        view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
+        view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
 
         view.name().setValue(issue.getName());
 
@@ -300,8 +314,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.number().setValue( isNew(issue) ? null : issue.getCaseNumber().intValue() );
 
         view.isLocal().setValue(issue.isPrivateCase());
+
         view.description().setText(issue.getInfo());
 
+        view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
         view.stateEnabled().setEnabled(!isNew(issue) || policyService.personBelongsToHomeCompany());
         view.importance().setValue(isNew(issue) && !isRestoredIssue ? En_ImportanceLevel.BASIC : En_ImportanceLevel.getById(issue.getImpLevel()));
@@ -309,18 +325,23 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
         view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
         if (hasPrivilegeForTimeElapsed) {
-            if (isNew(issue) && !isRestoredIssue) {
+            if (isNew(issue)) {
                 boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
                 view.timeElapsedLabel().setTime(null);
-                view.timeElapsedInput().setTime(0L);
+                if ( !isRestoredIssue ) {
+                    view.timeElapsedInput().setTime(0L);
+                }
                 view.timeElapsedLabelVisibility().setVisible(!timeElapsedEditAllowed);
                 view.timeElapsedInputVisibility().setVisible(timeElapsedEditAllowed);
+                view.setTimeElapseTypeVisibility(true);
+                view.timeElapsedType().setValue( En_TimeElapsedType.NONE );
             } else {
                 Long timeElapsed = issue.getTimeElapsed();
                 view.timeElapsedLabel().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
                 view.timeElapsedInput().setTime(timeElapsed);
                 view.timeElapsedLabelVisibility().setVisible(true);
                 view.timeElapsedInputVisibility().setVisible(false);
+                view.setTimeElapseTypeVisibility(false);
             }
         }
 
@@ -331,9 +352,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             if ( initiatorCompany == null ) {
                 initiatorCompany = policyService.getUserCompany();
             }
-            view.company().setValue(EntityOption.fromCompany(initiatorCompany));
+            view.company().setValue(EntityOption.fromCompany(initiatorCompany), true);
         }
-        onCompanyChanged();
 
         view.product().setValue( ProductShortView.fromProduct( issue.getProduct() ) );
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
@@ -357,9 +377,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         issue.setManager( Person.fromPersonShortView( view.manager().getValue() ) );
         issue.setNotifiers(view.notifiers().getValue().stream().map(Person::fromPersonShortView).collect(Collectors.toSet()));
         issue.setLinks(view.links().getValue() == null ? new ArrayList<>() : new ArrayList<>(view.links().getValue()));
+        issue.setTags(view.tags().getValue() == null ? new HashSet<>() : view.tags().getValue());
 
         if (isNew(issue) && policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW) && policyService.personBelongsToHomeCompany()) {
             issue.setTimeElapsed(view.timeElapsedInput().getTime());
+            En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
+            issue.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
         }
     }
 
@@ -423,6 +446,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         ) {
             return true;
         }
+
+        if (isNew( issue )) return true;
+
         return subscriptionsList == null || subscriptionsList.stream()
                 .map(CompanySubscription::getEmail)
                 .allMatch(CompanySubscription::isProteiRecipient);

@@ -10,16 +10,12 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.homecompany.HomeCompanyBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
-
-import java.util.Set;
 
 /**
  * Представление фильтра сотрудников
@@ -65,16 +61,10 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
-    public HasValue< Set< EntityOption > > homeCompanies() {
-        return homeCompanies;
-    }
-
-    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setValue( "" );
-        homeCompanies.setValue( null );
     }
 
     @UiHandler( "resetBtn" )
@@ -100,24 +90,11 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         fireChangeTimer();
     }
 
-    @UiHandler( "homeCompanies" )
-    public void onSelectHomeCompany( ValueChangeEvent< Set< EntityOption > > event ) {
-        fireChangeTimer();
-    }
-
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
     }
 
-    Timer timer = new Timer() {
-        @Override
-        public void run() {
-            if ( activity != null ) {
-                activity.onFilterChanged();
-            }
-        }
-    };
 
     @Inject
     @UiField( provided = true )
@@ -129,10 +106,6 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @UiField
     CleanableSearchBox search;
 
-    @Inject
-    @UiField(provided = true)
-    HomeCompanyBtnGroupMulti homeCompanies;
-
     @UiField
     Button resetBtn;
 
@@ -143,8 +116,16 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     @Inject
     FixedPositioner positioner;
 
+    private AbstractEmployeeFilterActivity activity;
 
-    AbstractEmployeeFilterActivity activity;
+    private Timer timer = new Timer() {
+        @Override
+        public void run() {
+            if ( activity != null ) {
+                activity.onFilterChanged();
+            }
+        }
+    };
 
     private static EmployeeFilterViewUiBinder ourUiBinder = GWT.create( EmployeeFilterViewUiBinder.class );
     interface EmployeeFilterViewUiBinder extends UiBinder< HTMLPanel, EmployeeFilterView > {}

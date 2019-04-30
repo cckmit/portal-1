@@ -7,9 +7,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.EmployeeRegistrationEvent;
-import ru.protei.portal.core.event.UserLoginCreatedEvent;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.mail.MailMessageFactory;
 import ru.protei.portal.core.mail.MailSendChannel;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -24,6 +22,7 @@ import ru.protei.portal.core.service.*;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import static java.util.stream.Collectors.toList;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
  * Created by shagaleev on 30/05/17.
@@ -84,6 +84,7 @@ public class MailNotificationProcessor {
                         event.getCaseObject().getManager(),
                         event.getCaseObject().isPrivateCase());
 
+        log.info( "subscribers: filter private: {}", join( notifiers, ni->ni.getAddress(), ",") );
         if(!notifiers.isEmpty())
             performCaseObjectNotification( event, notifiers );
     }
@@ -131,24 +132,31 @@ public class MailNotificationProcessor {
                             .collect(toList())
             );
 
-            performCaseObjectNotification(
-                    event,
-                    comments.getData(),
-                    lastMessageId,
-                    recipients,
-                    false,
-                    config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                    notifiers.stream()
-                            .filter(this::isNotProteiRecipient)
-                            .collect(toList())
-            );
+            if (event.isSendToCustomers()) {
+                performCaseObjectNotification(
+                        event,
+                        selectPublicComments(comments.getData()),
+                        lastMessageId,
+                        recipients,
+                        false,
+                        config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
+                        notifiers.stream()
+                                .filter(this::isNotProteiRecipient)
+                                .collect(toList())
+                );
+            }
 
-            caseObject.setEmailLastId(lastMessageId + 1);
-            caseService.updateEmailLastId(caseObject);
+            caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
 
         } finally {
             semaphore.release();
         }
+    }
+
+    private List<CaseComment> selectPublicComments(List<CaseComment> comments) {
+        return comments.stream()
+                .filter(comment -> !comment.isPrivateComment())
+                .collect(toList());
     }
 
     private MimeMessageHeadersFacade makeHeaders( Long caseNumber, Long lastMessageId, int recipientAddressHashCode ) {
@@ -215,12 +223,12 @@ public class MailNotificationProcessor {
             allNotifiers.add(initiatorEmail);
         }
 
-        NotificationEntry creatorEmail = fetchNotificationEntryFromPerson(initiator);
+        NotificationEntry creatorEmail = fetchNotificationEntryFromPerson(creator);
         if (creatorEmail != null) {
             allNotifiers.add(creatorEmail);
         }
 
-        NotificationEntry managerEmail = fetchNotificationEntryFromPerson(initiator);
+        NotificationEntry managerEmail = fetchNotificationEntryFromPerson(manager);
         if (managerEmail != null) {
             allNotifiers.add(managerEmail);
         }
@@ -239,13 +247,13 @@ public class MailNotificationProcessor {
     // -----------------------
 
     @EventListener
-    public void onUserLoginCreated(UserLoginCreatedEvent event) {
+    public void onUserLoginCreated(UserLoginUpdateEvent event) {
         if (event.getNotificationEntry() != null) {
             performUserLoginNotification(event, event.getNotificationEntry());
         }
     }
 
-    private void performUserLoginNotification(UserLoginCreatedEvent event, NotificationEntry notificationEntry) {
+    private void performUserLoginNotification(UserLoginUpdateEvent event, NotificationEntry notificationEntry) {
 
         if (event.getLogin() == null || event.getLogin().isEmpty()) {
             log.info("Failed send notification to userLogin with login={}: login is empty", event.getLogin());
@@ -277,16 +285,15 @@ public class MailNotificationProcessor {
         String subject = subjectTemplate.getText(notificationEntry.getAddress(), notificationEntry.getLangCode(), false);
 
         try {
-            MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
-            msg.setSubject(subject);
-            msg.setFrom(getFromAddress());
-            msg.setText(HelperFunc.nvlt(body, ""), true);
-            msg.setTo(notificationEntry.getAddress());
-            mailSendChannel.send(msg.getMimeMessage());
+            sendMail(notificationEntry.getAddress(), subject, body);
         } catch (Exception e) {
             log.error("Failed to make MimeMessage", e);
         }
     }
+
+    // -----------------------
+    // EmployeeRegistration notifications
+    // -----------------------
 
     @EventListener
     public void onEmployeeRegistrationEvent(EmployeeRegistrationEvent event) {
@@ -302,8 +309,7 @@ public class MailNotificationProcessor {
 
         List<String> recipients = getNotifiersAddresses(notifiers);
 
-        String urlTemplate = config.data().getMailNotificationConfig().getCrmUrlInternal() +
-                config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
+        String urlTemplate = getEmployeeRegistrationUrl();
 
         PreparedTemplate bodyTemplate = templateService.getEmployeeRegistrationEmailNotificationBody(employeeRegistration, urlTemplate, recipients);
         if (bodyTemplate == null) {
@@ -320,16 +326,166 @@ public class MailNotificationProcessor {
         notifiers.forEach(entry -> {
             String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
             String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
-
             try {
-                MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
-                msg.setSubject(subject);
-                msg.setFrom(getFromAddress());
-                msg.setText(HelperFunc.nvlt(body, ""), true);
-                msg.setTo(entry.getAddress());
-                mailSendChannel.send(msg.getMimeMessage());
+                sendMail(entry.getAddress(), subject, body);
             } catch (Exception e) {
                 log.error("Failed to make MimeMessage", e);
+            }
+        });
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationEmployeeFeedbackEvent( EmployeeRegistrationEmployeeFeedbackEvent event) {
+        log.info( "onEmployeeRegistrationEmployeeFeedbackEvent(): {}", event );
+
+        try {
+            String subject = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationEmployeeFeedbackEmailNotificationBody(
+                    event.getPerson().getDisplayName()
+            );
+
+            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee feedback notification: {}", event.getPerson().getDisplayName(), e );
+        }
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationDevelopmentAgendaEvent( EmployeeRegistrationDevelopmentAgendaEvent event) {
+        log.info( "onEmployeeRegistrationDevelopmentAgendaEvent(): {}", event );
+
+        try {
+            String subject = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationSubject();
+
+            String body = templateService.getEmployeeRegistrationDevelopmentAgendaEmailNotificationBody(
+                    event.getPerson().getDisplayName()
+            );
+
+            sendMail( new PlainContactInfoFacade( event.getPerson().getContactInfo() ).getEmail(), subject, body );
+        } catch (Exception e) {
+            log.warn( "Failed to sent development agenda notification: {}", event.getPerson().getDisplayName(), e );
+        }
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationProbationEvent( EmployeeRegistrationProbationHeadOfDepartmentEvent event) {
+        log.info( "onEmployeeRegistrationProbationEvent(): {}", event );
+
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
+        Person headOfDepartment = event.getHeadOfDepartment();
+
+        try {
+            String body = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationBody(
+                    employeeId, employeeFullName,
+                    getEmployeeRegistrationUrl(), headOfDepartment.getDisplayName() );
+
+            String subject = templateService.getEmployeeRegistrationProbationHeadOfDepartmentEmailNotificationSubject(
+                    employeeFullName );
+
+            sendMail( new PlainContactInfoFacade( headOfDepartment.getContactInfo() ).getEmail(), subject, body );
+
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee probation notification: employeeId={}", employeeId, e );
+        }
+    }
+
+    @EventListener
+    public void onEmployeeRegistrationProbationCuratorsEvent( EmployeeRegistrationProbationCuratorsEvent event) {
+        log.info( "onEmployeeRegistrationProbationCuratorsEvent(): {}", event );
+
+        String employeeFullName = event.getEmployeeFullName();
+        Long employeeId = event.getEmployeeId();
+        Person curator = event.getCurator();
+
+        try {
+            String body = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationBody(
+                    employeeId, employeeFullName,
+                    getEmployeeRegistrationUrl(), curator.getDisplayName() );
+
+            String subject = templateService.getEmployeeRegistrationProbationCuratorsEmailNotificationSubject(
+                    employeeFullName );
+
+            sendMail( new PlainContactInfoFacade( curator.getContactInfo() ).getEmail(), subject, body );
+
+        } catch (Exception e) {
+            log.warn( "Failed to sent employee probation (for curator) notification: employeeId={}", employeeId, e );
+        }
+    }
+
+    // -----------------------
+    // Contract notifications
+    // -----------------------
+
+    @EventListener
+    public void onContractDateOneDayRemainingEvent(ContractDateOneDayRemainingEvent event) {
+        Contract contract = event.getContract();
+        ContractDate contractDate = event.getContractDate();
+        Set<NotificationEntry> notifiers = event.getNotificationEntrySet();
+        if (contract == null || contractDate == null || notifiers == null) {
+            log.error("Failed to send contract notification: incomplete data provided: " +
+                    "contract={}, contractDate={}, notifiers={}", contract, contractDate, notifiers);
+            return;
+        }
+
+        if (CollectionUtils.isEmpty(notifiers)) {
+            log.info("Failed to send contract notification: empty notifiers set: contract={}, contractDate={}", contract, contractDate);
+            return;
+        }
+
+        List<String> recipients = getNotifiersAddresses(notifiers);
+
+        performContractDateOneDayRemainingNotification(
+                contract,
+                contractDate,
+                config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                        config.data().getMailNotificationConfig().getContractUrl(),
+                recipients,
+                notifiers.stream()
+                        .filter(this::isProteiRecipient)
+                        .collect(Collectors.toSet())
+        );
+
+        performContractDateOneDayRemainingNotification(
+                contract,
+                contractDate,
+                config.data().getMailNotificationConfig().getCrmUrlExternal() +
+                        config.data().getMailNotificationConfig().getContractUrl(),
+                recipients,
+                notifiers.stream()
+                        .filter(this::isNotProteiRecipient)
+                        .collect(Collectors.toSet())
+        );
+    }
+
+    private void performContractDateOneDayRemainingNotification(Contract contract, ContractDate contractDate,
+                                        String urlTemplate, List<String> recipients, Set<NotificationEntry> notifiers) {
+
+        if (CollectionUtils.isEmpty(notifiers)) {
+            return;
+        }
+
+        PreparedTemplate bodyTemplate = templateService.getContractRemainingOneDayNotificationBody(contract, contractDate, urlTemplate, recipients);
+        if (bodyTemplate == null) {
+            log.error("Failed to prepare body template for contractId={} and contractDateId={}", contract.getId(), contractDate.getId());
+            return;
+        }
+
+        PreparedTemplate subjectTemplate = templateService.getContractRemainingOneDayNotificationSubject(contract, contractDate);
+        if (subjectTemplate == null) {
+            log.error("Failed to prepare subject template for contractId={} and contractDateId={}", contract.getId(), contractDate.getId());
+            return;
+        }
+
+        notifiers.forEach(entry -> {
+            try {
+                String body = bodyTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+                String subject = subjectTemplate.getText(entry.getAddress(), entry.getLangCode(), true);
+                sendMail(entry.getAddress(), subject, body);
+            } catch (Exception exception) {
+                log.error("Failed to send message to entry={} for contractId={} and contractDateId={}: exception={}",
+                        entry, contract.getId(), contractDate.getId(), exception);
             }
         });
     }
@@ -338,6 +494,15 @@ public class MailNotificationProcessor {
     // -----
     // Utils
     // -----
+
+    private void sendMail(String address, String subject, String body) throws MessagingException {
+        MimeMessageHelper msg = new MimeMessageHelper(messageFactory.createMailMessage(), true, config.data().smtp().getDefaultCharset());
+        msg.setSubject(subject);
+        msg.setFrom(getFromAddress());
+        msg.setText(HelperFunc.nvlt(body, ""), true);
+        msg.setTo(address);
+        mailSendChannel.send(msg.getMimeMessage());
+    }
 
     private boolean isProteiRecipient(NotificationEntry entry) {
         return CompanySubscription.isProteiRecipient(entry.getAddress());
@@ -370,6 +535,11 @@ public class MailNotificationProcessor {
         }
         String locale = person.getLocale() == null ? "ru" : person.getLocale();
         return NotificationEntry.email(email, locale);
+    }
+
+    private String getEmployeeRegistrationUrl() {
+        return config.data().getMailNotificationConfig().getCrmUrlInternal() +
+                config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
     }
 
     private class MimeMessageHeadersFacade {

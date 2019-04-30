@@ -1,6 +1,8 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -15,9 +17,23 @@ public class CaseObjectSqlBuilder {
         return new SqlCondition().build((condition, args) -> {
             condition.append("1=1 and deleted = 0");
 
+            // TODO merge ids to use queries simultaneously
             if ( query.getId() != null ) {
                 condition.append( " and case_object.id=?" );
                 args.add( query.getId() );
+            } else if (CollectionUtils.isNotEmpty(query.getMemberIds())) {
+                condition.append(" and case_object.id in (select case_id from case_member where member_id in (")
+                        .append(StringUtils.join(query.getMemberIds(), ","))
+                        .append("))");
+            } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
+                boolean notSpecified = query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED);
+                if (!query.getCaseTagsIds().isEmpty()) {
+                    condition.append(" and case_object.id")
+                            .append(notSpecified ? " not in" : " in")
+                            .append(" (select case_id from case_object_tag where tag_id in (")
+                            .append(StringUtils.join(query.getCaseTagsIds(), ","))
+                            .append("))");
+                }
             }
 
             if ( !query.isAllowViewPrivate() ) {
@@ -80,14 +96,24 @@ public class CaseObjectSqlBuilder {
                 condition.append(" and importance in (" + query.getImportanceIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
             }
 
-            if ( query.getFrom() != null ) {
+            if ( query.getCreatedFrom() != null ) {
                 condition.append( " and case_object.created >= ?" );
-                args.add( query.getFrom() );
+                args.add( query.getCreatedFrom() );
             }
 
-            if ( query.getTo() != null ) {
+            if ( query.getCreatedTo() != null ) {
                 condition.append( " and case_object.created < ?" );
-                args.add( query.getTo() );
+                args.add( query.getCreatedTo() );
+            }
+
+            if ( query.getModifiedFrom() != null ) {
+                condition.append( " and case_object.modified >= ?" );
+                args.add( query.getModifiedFrom() );
+            }
+
+            if ( query.getModifiedTo() != null ) {
+                condition.append( " and case_object.modified < ?" );
+                args.add( query.getModifiedTo() );
             }
 
             if (query.getSearchString() != null && !query.getSearchString().trim().isEmpty()) {
@@ -107,12 +133,26 @@ public class CaseObjectSqlBuilder {
                 args.add(HelperFunc.makeLikeArg(query.getSearchCasenoString(), true));
             }
 
-            if (query.getMemberIds() != null && !query.getMemberIds().isEmpty()) {
-                condition.append(" and case_object.id in (select case_id from case_member where member_id in (")
-                        .append(query.getMemberIds().stream()
-                                .map(Object::toString)
-                                .collect(Collectors.joining(",")))
-                        .append("))");
+            if (query.isFindRecordByCaseComments()) {
+                condition.append(" and case_object.id in (SELECT case_comment.case_id FROM case_comment " +
+                        "WHERE 2=2");
+
+                if ( query.getModifiedFrom() != null ) {
+                    condition.append( " and case_comment.created >= ?" );
+                    args.add(query.getModifiedFrom());
+                }
+                if ( query.getModifiedTo() != null ) {
+                    condition.append( " and case_comment.created < ?" );
+                    args.add(query.getModifiedTo());
+                }
+                if ( query.getStateIds() != null ) {
+                    condition.append( " and case_comment.cstate_id in " + HelperFunc.makeInArg(query.getStateIds()));
+                }
+                if ( query.getManagerIds() != null ) {
+                    condition.append( " and manager in " +  HelperFunc.makeInArg(query.getManagerIds()));
+                }
+
+                condition.append(")");
             }
         });
     }

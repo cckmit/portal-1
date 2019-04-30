@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.ent;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -119,14 +120,17 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "time_elapsed")
     private Long timeElapsed;
 
-    @JdbcColumn(name = "email_last_id")
-    private Long emailLastId;
-
     @JdbcManyToMany(linkTable = "project_to_product", localLinkColumn = "project_id", remoteLinkColumn = "product_id")
     private Set<DevUnit> products;
 
+    @JdbcManyToMany(linkTable = "case_object_tag", localLinkColumn = "case_id", remoteLinkColumn = "tag_id")
+    private Set<CaseTag> tags;
+
     // not db column
     private List<CaseLink> links;
+
+    // not db column
+    private En_TimeElapsedType timeElapsedType;
 
     public CaseObject() {
 
@@ -346,6 +350,11 @@ public class CaseObject extends AuditableObject {
         return creator;
     }
 
+    public void setCreator (Person person) {
+        this.creator = person;
+        this.creatorId = person != null ? person.getId() : null;
+    }
+
     public Person getInitiator() {
         return initiator;
     }
@@ -445,20 +454,28 @@ public class CaseObject extends AuditableObject {
         this.links = links;
     }
 
-    public Long getEmailLastId() {
-        return emailLastId;
-    }
-
-    public void setEmailLastId(Long emailLastId) {
-        this.emailLastId = emailLastId;
-    }
-
     public Set<DevUnit> getProducts() {
         return products;
     }
 
     public void setProducts(Set<DevUnit> products) {
         this.products = products;
+    }
+
+    public En_TimeElapsedType getTimeElapsedType() {
+        return timeElapsedType;
+    }
+
+    public void setTimeElapsedType( En_TimeElapsedType timeElapsedType ) {
+        this.timeElapsedType = timeElapsedType;
+    }
+
+    public Set<CaseTag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<CaseTag> tags) {
+        this.tags = tags;
     }
 
     @Override
@@ -499,8 +516,8 @@ public class CaseObject extends AuditableObject {
                 ", locations=" + locations +
                 ", members=" + members +
                 ", links=" + links +
-                ", emailLastId=" + emailLastId +
                 ", timeElapsed=" + timeElapsed +
+                ", tags=" + tags +
                 '}';
     }
 }

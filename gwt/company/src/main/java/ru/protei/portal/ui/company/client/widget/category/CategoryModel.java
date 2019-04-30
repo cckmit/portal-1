@@ -6,7 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -22,13 +22,13 @@ public abstract class CategoryModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelSelector< EntityOption > selector ) {
+    public void subscribe( SelectorWithModel< EntityOption > selector ) {
         subscribers.add( selector );
         selector.fillOptions( list );
     }
 
     private void notifySubscribers() {
-        for ( ModelSelector selector : subscribers ) {
+        for ( SelectorWithModel selector : subscribers ) {
             selector.fillOptions( list );
             selector.refreshValue();
         }
@@ -57,6 +57,6 @@ public abstract class CategoryModel implements Activity {
 
     private List< EntityOption > list = new ArrayList<>();
 
-    List< ModelSelector > subscribers = new ArrayList< ModelSelector >();
+    List<SelectorWithModel> subscribers = new ArrayList<SelectorWithModel>();
 
 }

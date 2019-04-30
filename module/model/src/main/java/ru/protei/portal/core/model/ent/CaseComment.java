@@ -1,5 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.winter.jdbc.annotations.*;
 
@@ -51,6 +53,10 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="time_elapsed")
     private Long timeElapsed;
 
+    @JdbcColumn(name="time_elapsed_type")
+    @JdbcEnumerated(EnumType.ID)
+    private En_TimeElapsedType timeElapsedType;
+
     @JdbcColumn(name = "remote_id")
     private String remoteId;
 
@@ -65,6 +71,9 @@ public class CaseComment extends AuditableObject {
 
     @JdbcColumn(name = "original_author_full_name")
     private String originalAuthorFullName;
+
+    @JdbcColumn(name = "private_flag")
+    private boolean privateComment;
 
     public CaseComment() {}
 
@@ -227,6 +236,22 @@ public class CaseComment extends AuditableObject {
         this.originalAuthorFullName = originalAuthorFullName;
     }
 
+    public En_TimeElapsedType getTimeElapsedType() {
+        return timeElapsedType;
+    }
+
+    public void setTimeElapsedType( En_TimeElapsedType timeElapsedType ) {
+        this.timeElapsedType = timeElapsedType;
+    }
+
+    public boolean isPrivateComment() {
+        return privateComment;
+    }
+
+    public void setPrivateComment(boolean privateComment) {
+        this.privateComment = privateComment;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseComment";
@@ -251,6 +276,7 @@ public class CaseComment extends AuditableObject {
                 ", remoteLinkId=" + remoteLinkId +
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
+                ", privateComment='" + privateComment + '\'' +
                 '}';
     }
 }

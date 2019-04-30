@@ -12,14 +12,18 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
+import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewView;
 
 public class PlatformPreviewView extends Composite implements AbstractPlatformPreviewView {
 
-    public PlatformPreviewView() {
+    @Inject
+    public void init() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        attachmentContainer.setHiddenControls(true);
     }
 
     @Override
@@ -74,6 +78,11 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
         return serversContainer;
     }
 
+    @Override
+    public HasAttachments attachmentsContainer() {
+        return attachmentContainer;
+    }
+
     @UiHandler("openServersButton")
     public void openButtonClick(ClickEvent event) {
         if (activity != null) {
@@ -94,9 +103,12 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     CollapsablePanel contactsContainer;
     @UiField
-    HTMLPanel serversContainer;
+    CollapsablePanel serversContainer;
     @UiField
     Button openServersButton;
+    @Inject
+    @UiField(provided = true)
+    AttachmentList attachmentContainer;
 
     @Inject
     FixedPositioner positioner;

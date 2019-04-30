@@ -3,7 +3,7 @@ package ru.protei.portal.ui.company.client.widget.group.buttonselector;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Селектор списка групп компаний
  */
-public class GroupButtonSelector extends ButtonSelector< EntityOption > implements ModelSelector< EntityOption > {
+public class GroupButtonSelector extends ButtonSelector< EntityOption > implements SelectorWithModel< EntityOption > {
 
     @Inject
     public void init( GroupModel groupModel) {

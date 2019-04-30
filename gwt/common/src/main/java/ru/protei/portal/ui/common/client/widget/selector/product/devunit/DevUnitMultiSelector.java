@@ -1,11 +1,16 @@
 package ru.protei.portal.ui.common.client.widget.selector.product.devunit;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.selector.base.ModelSelector;
+import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanyModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.ProductModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +19,13 @@ import java.util.Objects;
 /**
  * Мультиселектор продуктов
  */
-public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements ModelSelector< ProductShortView > {
+public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortView > implements SelectorWithModel< ProductShortView > {
 
     @Inject
-    public void init(DevUnitModel model, Lang lang ) {
-        model.subscribe( this );
+    public void init(ProductModel model, Lang lang ) {
+        this.model = model;
+        model.subscribe(this, null, null);
+        setSelectorModel(model);
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
     }
@@ -29,9 +36,6 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         fillOptions();
     }
 
-    @Override
-    public void refreshValue() {}
-
     public void setHasNullValue(boolean hasNullValue) {
         this.hasNullValue = hasNullValue;
     }
@@ -40,7 +44,11 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
         this.exclude = exclude;
         fillOptions();
     }
-
+    public void updateQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
+        if ( model != null ) {
+            model.updateQuery(this, enDevUnitState, enDevUnitType);
+        }
+    }
     private void fillOptions() {
         clearOptions();
         if (hasNullValue) {
@@ -57,4 +65,5 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
     private List<ProductShortView> options = new ArrayList<>();
     private ProductShortView exclude = null;
     private boolean hasNullValue = true;
+    protected ProductModel model;
 }

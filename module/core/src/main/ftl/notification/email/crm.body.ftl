@@ -33,14 +33,16 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
     <span style="color:#11731d;background:#dff7e2;padding:2px 4px">${new}</span>
 </#macro>
 <#macro diff old, new>${TextUtils.diff(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
+<#macro diffHTML old, new>${TextUtils.diffHTML(old, new, "color:#11731d;background:#dff7e2;text-decoration:none", "color:#bd1313;text-decoration:line-through")}</#macro>
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <style><#include "/ru/protei/portal/skin/classic/public/css/markdown.css" parse=false></style>
 </head>
 <body bgcolor="#FFFFFF" text="#000000">
 <div>
     <div style="padding: 5px;font-size: 14px;<#if isCreated>background:#dff7e2;color:#11731d;<#else>background:#f0f0f0;color:#666666;</#if>">
-        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayShortName)!'?'}</#if> <span style="padding-left: 4px"><#if case.created??>${case.created}<#else>?</#if></span>
+        ${_createdBy} <#if createdByMe == true>${_yourself}<#else>${(case.creator.displayShortName)!'?'}</#if> <span style="padding-left: 4px"><#if case.created??>${case.created?datetime}<#else>?</#if></span>
     </div>
     <div style="margin-top: 12px">
         <table>
@@ -222,7 +224,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         <div style="font-size:14px;margin-top:15px">
             <#list caseComments?reverse as caseComment>
                 <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.changed>#dff7e2<#else>#f0f0f0</#if>;">
-                    <span style="color:#666666;line-height: 17px;margin-right:10px">${caseComment.created}</span>
+                    <span style="color:#666666;line-height: 17px;margin-right:10px">${caseComment.created?datetime}</span>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
                         <#if caseComment.author??>${(caseComment.author.displayName)!''}</#if>
                     </span>
@@ -233,9 +235,9 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
-                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap"><@diff old="${caseComment.oldText}" new="${caseComment.text}"/></div>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em"><@diffHTML old="${caseComment.oldText}" new="${caseComment.text}"/></div>
                         <#else>
-                            <div style="margin-top:4px;line-height:1.5em;white-space:pre-wrap">${caseComment.text}</div>
+                            <div class="markdown" style="margin-top:4px;line-height:1.5em">${caseComment.text}</div>
                         </#if>
                     </#if>
                 </div>

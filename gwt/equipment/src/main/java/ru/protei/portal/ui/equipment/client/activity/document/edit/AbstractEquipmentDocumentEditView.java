@@ -2,12 +2,12 @@ package ru.protei.portal.ui.equipment.client.activity.document.edit;
 
 import com.google.gwt.user.client.ui.HasEnabled;
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocumentUploader;
+import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public interface AbstractEquipmentDocumentEditView extends IsWidget {
 
     HasValue<DocumentType> documentType();
 
-    void setDocumentTypeCategoryFilter(En_DocumentCategory documentCategory);
+    void setDocumentTypeCategoryFilter(Selector.SelectorFilter<DocumentType> filter);
 
     HasValue<String> version();
 

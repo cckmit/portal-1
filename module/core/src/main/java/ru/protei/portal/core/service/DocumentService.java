@@ -40,4 +40,7 @@ public interface DocumentService {
     @Privileged(requireAny = {En_Privilege.EQUIPMENT_REMOVE})
     @Auditable(En_AuditType.DOCUMENT_REMOVE)
     CoreResponse<Document> removeDocument(AuthToken token, Document document);
+
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.PROJECT_VIEW})
+    CoreResponse<List<Document>> getProjectDocuments(AuthToken token, Long projectId);
 }

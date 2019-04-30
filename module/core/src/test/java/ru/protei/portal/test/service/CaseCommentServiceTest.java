@@ -1,68 +1,51 @@
 package ru.protei.portal.test.service;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
-import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.dao.CompanyDAO;
-import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseCommentService;
-import ru.protei.portal.core.service.CaseService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
-import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
-public class CaseCommentServiceTest {
-
-    public static final AuthToken TEST_AUTH_TOKEN = new AuthToken("TEST_SID", "127.0.0.1");
-    private En_CaseType caseType = En_CaseType.CRM_SUPPORT;
-
-    @Inject
-    private CaseCommentDAO caseCommentDAO;
-    @Inject
-    CompanyDAO companyDAO;
-    @Inject
-    PersonDAO personDAO;
-    @Inject
-    private CaseService caseService;
-    @Inject
-    CaseCommentService caseCommentService;
-
-    @Inject
-    private JdbcManyRelationsHelper jdbcManyRelationsHelper;
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+public class CaseCommentServiceTest extends BaseServiceTest {
 
     @Test
-    public void getCaseObjectsTest() throws Exception {
+    public void getCaseObjectsTest() {
         assertNotNull(caseService);
-        List<CaseShortView> all = checkResultAndGetData(caseService.caseObjectList(TEST_AUTH_TOKEN, new CaseQuery()));
+        List<CaseShortView> all = checkResultAndGetData(caseService.caseObjectList(getAuthToken(), new CaseQuery()));
         assertNotNull(all);
     }
 
     @Test
-    public void getCaseCommentsDaoTest() throws Exception {
-        Company company = makeCompany(new CompanyCategory(2L));
+    public void getCaseCommentsDaoTest() {
+        Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        CaseObject caseObject = makeCaseObject(person);
+        CaseObject caseObject = makeCaseObject(1L, person);
 
-        CaseComment comment = createNewComment(person, caseObject, "Test_Comment");
+        CaseComment comment = createNewComment(person, caseObject.getId(), "Test_Comment");
         comment.setTimeElapsed(2 * MINUTE);
 
         Long commentId = caseCommentDAO.persist(comment);
@@ -72,112 +55,141 @@ public class CaseCommentServiceTest {
     }
 
     @Test
-    public void changeTimeElapsedTest() throws Exception {
-        Company company = makeCompany(new CompanyCategory(2L));
-        Person person = makePerson(company);
-        CaseObject caseObject = makeCaseObject(person);
+    public void getCaseCommentListTest () {
 
-        CaseComment comment1 = createNewComment(person, caseObject, "Comment1");
+        Company company = makeCustomerCompany();
+        Person person = makePerson(company);
+        CaseObject caseObject = makeCaseObject(caseType, 1L, person);
+
+        makeCaseComment(person, caseObject.getId(), "Test message");
+        makeCaseComment(person, caseObject.getId(), null, (long) En_CaseState.CREATED.getId());
+
+        List<CaseComment> comments = caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()));
+        Assert.assertNotNull(comments);
+        log.info("case " + caseObject.getId() + " comment list size = " + comments.size());
+
+        CoreResponse<List<CaseComment>> result = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
+
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isOk());
+        Assert.assertNotNull(result.getData());
+        log.info(" size = " + result.getData().size());
+        Assert.assertTrue(result.getData().size() > 0);
+
+        for (CaseComment comment : result.getData()) {
+            log.info(comment.toString());
+            log.info("----------------------");
+        }
+
+        Assert.assertTrue(removeCaseObjectAndComments(caseObject));
+        Assert.assertTrue(personDAO.remove(person));
+        Assert.assertTrue(companyDAO.remove(company));
+    }
+
+    @Test
+    public void CRUDCaseCommentTest () {
+
+        CoreResponse<CaseComment> result;
+        CoreResponse<List<CaseComment>> resultList;
+
+        Company company = makeCustomerCompany();
+        Person person = makePerson(company);
+        CaseObject caseObject = makeCaseObject(caseType, 1L, person);
+
+        // create
+        CaseComment comment = new CaseComment();
+        comment.setCaseId(caseObject.getId());
+        comment.setAuthorId(person.getId());
+        comment.setClientIp(getAuthToken().getIp());
+        comment.setCreated(new Date());
+        comment.setText("Unit-test - тестовый комментарий");
+        comment.setCaseAttachments(Collections.emptyList());
+
+        result = caseCommentService.addCaseComment(getAuthToken(), caseType, comment, person);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isOk());
+        Assert.assertNotNull(result.getData());
+        comment = result.getData();
+        log.info("{}", comment);
+
+        resultList = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
+        log.info("Size after add = " + resultList.getData().size());
+
+        // update
+        comment.setText("Unit-test - тестовый комментарий (update)");
+
+        result = caseCommentService.updateCaseComment(getAuthToken(), caseType, comment, person);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.isOk());
+        Assert.assertNotNull(result.getData());
+        comment = result.getData();
+        log.info("{}", comment);
+
+        resultList = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
+        log.info("Size after update = " + resultList.getData().size());
+
+        // delete
+        CoreResponse<Boolean> result2 = caseCommentService.removeCaseComment(getAuthToken(), caseType, comment, person.getId());
+        Assert.assertNotNull(result2);
+        Assert.assertTrue(result2.isOk());
+        log.info("{}", result2.getData());
+
+        resultList = caseCommentService.getCaseCommentList(getAuthToken(), caseType, caseObject.getId());
+        log.info("Size after remove = " + resultList.getData().size());
+
+        // cleanup
+        Assert.assertTrue(removeCaseObjectAndComments(caseObject));
+        Assert.assertTrue(personDAO.remove(person));
+        Assert.assertTrue(companyDAO.remove(company));
+    }
+
+    @Test
+    public void changeTimeElapsedTest() {
+        Company company = makeCustomerCompany();
+        Person person = makePerson(company);
+        CaseObject caseObject = makeCaseObject(1L, person);
+
+        CaseComment comment1 = createNewComment(person, caseObject.getId(), "Comment1");
         Long timeElapsed1 = 4 * MINUTE;
         comment1.setTimeElapsed(timeElapsed1);
 
-        CaseComment saved = checkResultAndGetData(caseCommentService.addCaseComment(TEST_AUTH_TOKEN, caseType, comment1, person));
+        CaseComment saved = checkResultAndGetData(caseCommentService.addCaseComment(getAuthToken(), caseType, comment1, person));
         CaseComment fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1, fromDb.getTimeElapsed());
 
-        CaseObject caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(TEST_AUTH_TOKEN, caseObject.getCaseNumber()));
+        CaseObject caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", timeElapsed1, caseObjectWithComment.getTimeElapsed());
 
         // Comment 2
-        CaseComment comment2 = createNewComment(person, caseObject, "Comment2");
+        CaseComment comment2 = createNewComment(person, caseObject.getId(), "Comment2");
         Long timeElapsed2 = 5 * MINUTE;
         comment2.setTimeElapsed(timeElapsed2);
 
-        saved = checkResultAndGetData(caseCommentService.addCaseComment(TEST_AUTH_TOKEN, caseType, comment2, person));
+        saved = checkResultAndGetData(caseCommentService.addCaseComment(getAuthToken(), caseType, comment2, person));
         fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment2.getText(), timeElapsed2, fromDb.getTimeElapsed());
 
-        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(TEST_AUTH_TOKEN, caseObject.getCaseNumber()));
+        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", new Long(timeElapsed1 + timeElapsed2), caseObjectWithComment.getTimeElapsed());
 
         //  Change comment 1
         Long timeElapsed1Changed = 18 * MINUTE;
         comment1.setTimeElapsed(timeElapsed1Changed);
-        saved = checkResultAndGetData(caseCommentService.updateCaseComment(TEST_AUTH_TOKEN, caseType, comment1, person));
+        saved = checkResultAndGetData(caseCommentService.updateCaseComment(getAuthToken(), caseType, comment1, person));
         fromDb = caseCommentDAO.get(saved.getId());
 
         assertEquals("Expected elapsed time for " + comment1.getText(), timeElapsed1Changed, fromDb.getTimeElapsed());
 
-        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(TEST_AUTH_TOKEN, caseObject.getCaseNumber()));
+        caseObjectWithComment = checkResultAndGetData(caseService.getCaseObject(getAuthToken(), caseObject.getCaseNumber()));
         assertEquals("Expected elapsed time of case object", new Long(timeElapsed1Changed + timeElapsed2), caseObjectWithComment.getTimeElapsed());
     }
 
+    @Inject
+    CaseCommentService caseCommentService;
 
-    public static CaseComment createNewComment(Person person, CaseObject caseObject, String text) {
-        CaseComment comment = new CaseComment(text);
-        comment.setCreated(new Date());
-        comment.setCaseId(caseObject.getId());
-        comment.setAuthorId(person.getId());
-        comment.setText(text);
-        comment.setCaseAttachments(Collections.emptyList());
-        return comment;
-    }
-
-    public static CaseObject createNewCaseObject(Person person) {
-        CaseObject caseObject = new CaseObject();
-        caseObject.setCaseType(En_CaseType.TASK);
-        caseObject.setName("Test_Case_Name");
-        caseObject.setState(En_CaseState.CREATED);
-        caseObject.setCaseType(En_CaseType.CRM_SUPPORT);
-        return caseObject;
-    }
-
-    private CaseObject makeCaseObject(Person person) {
-        return checkResultAndGetData(
-                caseService.saveCaseObject(TEST_AUTH_TOKEN, createNewCaseObject(person), person)
-        );
-    }
-
-    public static Person createNewPerson(Company company) {
-        Person person = new Person();
-        person.setCreated(new Date());
-        person.setCreator("TEST");
-        person.setCompanyId(company.getId());
-        person.setDisplayName("Test_Person");
-        person.setGender(En_Gender.MALE);
-        return person;
-    }
-
-    private Person makePerson(Company company) {
-        Person person = createNewPerson(company);
-        person.setId(personDAO.persist(person));
-        return person;
-    }
-
-    public static Company createNewCompany(CompanyCategory category) {
-        Company company = new Company();
-        company.setCname("Test_Company");
-        company.setCategory(category);
-        return company;
-    }
-
-    private Company makeCompany(CompanyCategory category) {
-        Company company = createNewCompany(category);
-        company.setId(companyDAO.persist(company));
-        return company;
-    }
-
-    public static void checkResult(CoreResponse result) {
-        assertNotNull("Expected result", result);
-        assertTrue("Expected ok result", result.isOk());
-    }
-
-    public static <T> T checkResultAndGetData(CoreResponse<T> result) {
-        checkResult(result);
-        return result.getData();
-    }
-
-    long MINUTE = 1L;
+    private final static long MINUTE = 1L;
+    private final static En_CaseType caseType = En_CaseType.CRM_SUPPORT;
+    private static final Logger log = LoggerFactory.getLogger(CaseCommentServiceTest.class);
 }

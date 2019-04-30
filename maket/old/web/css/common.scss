@@ -31,9 +31,9 @@ $mainMinWidth: 1024px-$mainLrMargin*2;
       .profileBar {
         float: right;
         height: 100%;
-
         @mixin button($img, $h: 23px, $w: 23px){
           display: inline-block;
+
           background: transparent url($img) no-repeat center center/ $w $h;
           height: 100%;
           width: $w;
