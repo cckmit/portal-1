@@ -8,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -24,6 +25,7 @@ import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilte
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +83,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private void requestEmployees() {
 
+        marker = ( new Date() ).getTime();
+
         view.showLoader( true );
 
         if ( fillViewHandler != null ) {
@@ -90,15 +94,17 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getChildContainer().clear();
         itemViewToModel.clear();
 
-        employeeService.getEmployees( makeQuery(), new RequestCallback< List< EmployeeShortView > >() {
+        employeeService.getEmployees( makeQuery(), marker, new RequestCallback< MarkedResult< List< EmployeeShortView > > >() {
 
             @Override
             public void onError( Throwable throwable ) {}
 
             @Override
-            public void onSuccess( List< EmployeeShortView > employees ) {
-                fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
-                view.showLoader( false );
+            public void onSuccess( MarkedResult< List< EmployeeShortView > > result ) {
+                if ( marker == result.getMarker() ) {
+                    fillViewHandler = taskService.startPeriodicTask( result.getData(), fillViewer, 50, 50 );
+                    view.showLoader( false );
+                }
             }
         });
     }
@@ -169,6 +175,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     @Inject
     Lang lang;
 
+    private long marker;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();

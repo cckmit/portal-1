@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.ContactService;
@@ -78,12 +79,12 @@ public class ContactControllerImpl implements ContactController {
     }
 
     @Override
-    public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
+    public MarkedResult< Long > getContactsCount( ContactQuery query, long marker ) throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "getContactsCount(): query={}", query );
-        return contactService.count( descriptor.makeAuthToken(), query ).getData();
+        return new MarkedResult<>( marker, contactService.count( descriptor.makeAuthToken(), query ).getData() );
     }
 
     @Override

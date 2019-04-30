@@ -8,6 +8,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.EmployeeService;
@@ -25,7 +26,7 @@ import java.util.List;
 public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
-    public List< EmployeeShortView > getEmployees( EmployeeQuery query ) throws RequestFailedException {
+    public MarkedResult< List< EmployeeShortView > > getEmployees( EmployeeQuery query, long marker ) throws RequestFailedException {
         log.debug( "getEmployees(): query={}", query );
 
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
@@ -42,7 +43,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         log.debug( "getEmployees(): isOk={}, size={}", response.isOk(), response.getData().size() );
 
-        return response.getData();
+        return new MarkedResult<>( marker, response.getData() );
     }
 
     public List< PersonShortView > getEmployeeViewList( EmployeeQuery query ) throws RequestFailedException {

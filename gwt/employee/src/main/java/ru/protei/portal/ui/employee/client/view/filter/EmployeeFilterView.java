@@ -104,26 +104,54 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         }
     }
 
-    @UiHandler( "applyBtn" )
-    public void onApplyClicked ( ClickEvent event ) {
-        fireChange();
-    }
-
     @UiHandler( "sortField" )
     public void onSortFieldSelected( ValueChangeEvent< En_SortField > event ) {
-        fireChange();
+        fireChangeTimer();
     }
 
     @UiHandler( "sortDir" )
     public void onSortDirClicked( ClickEvent event ) {
-        fireChange();
+        fireChangeTimer();
     }
 
-    private void fireChange() {
+    @UiHandler( "search" )
+    public void onSearchChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "workPhone" )
+    public void onWorkPhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "mobilePhone" )
+    public void onMobilePhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "ipAddress" )
+    public void onIPAddressChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "homeCompanies" )
+    public void onSelectHomeCompany( ValueChangeEvent< Set< EntityOption > > event ) {
+        fireChangeTimer();
+    }
+
+    private void fireChangeTimer() {
+        timer.cancel();
+        timer.schedule( 400 );
+    }
+
+    Timer timer = new Timer() {
+        @Override
+        public void run() {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
     }
+    };
 
     @Inject
     @UiField( provided = true )
@@ -150,9 +178,6 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     Button resetBtn;
-
-    @UiField
-    Button applyBtn;
 
     @Inject
     @UiField

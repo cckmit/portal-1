@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.ContactQuery;
+import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
@@ -27,7 +28,7 @@ public interface ContactController extends RemoteService {
 
     Person saveContact ( Person p ) throws RequestFailedException;
 
-    Long getContactsCount( ContactQuery query ) throws RequestFailedException;
+    MarkedResult< Long > getContactsCount( ContactQuery query, long marker ) throws RequestFailedException;
 
     boolean fireContact( long id ) throws RequestFailedException;
 
