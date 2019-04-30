@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface AccountController extends RemoteService {
      * @param query запрос
      * @return список учетных записей
      */
-    List< UserLogin > getAccounts ( AccountQuery query ) throws RequestFailedException;
+    MarkedResult< List< UserLogin > > getAccounts ( AccountQuery query, long marker ) throws RequestFailedException;
 
     UserLogin getAccount ( long id ) throws RequestFailedException;
 
@@ -27,7 +28,7 @@ public interface AccountController extends RemoteService {
 
     UserLogin saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail ) throws RequestFailedException;
 
-    Long getAccountsCount( AccountQuery query ) throws RequestFailedException;
+    MarkedResult<Long> getAccountsCount( AccountQuery query, long marker ) throws RequestFailedException;
 
     boolean isLoginUnique( String login, Long exceptId ) throws RequestFailedException;
 

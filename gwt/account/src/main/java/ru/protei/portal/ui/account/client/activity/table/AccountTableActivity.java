@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterActivity;
 import ru.protei.portal.ui.account.client.activity.filter.AbstractAccountFilterView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -24,8 +25,10 @@ import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /**
@@ -130,11 +133,13 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void loadData( int offset, int limit, AsyncCallback< List< UserLogin > > asyncCallback ) {
+        log.info( " data :: marker = " + marker );
+
         AccountQuery query = makeQuery();
         query.setOffset( offset );
         query.setLimit( limit );
 
-        accountService.getAccounts( query, new RequestCallback< List< UserLogin > >() {
+        accountService.getAccounts( query, marker, new RequestCallback< MarkedResult< List< UserLogin > > >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
@@ -142,8 +147,11 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
             }
 
             @Override
-            public void onSuccess( List< UserLogin > logins ) {
-                asyncCallback.onSuccess( logins );
+            public void onSuccess( MarkedResult< List< UserLogin > > result ) {
+                log.info( " data :: marker = " + marker + " | result marker = " + result.getMarker() );
+                if ( marker == result.getMarker() ) {
+                    asyncCallback.onSuccess( result.getData() );
+                }
             }
         } );
     }
@@ -159,20 +167,26 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     private void requestTotalCount() {
+        marker = new Date().getTime();
+        log.info( " count :: marker = " + marker );
+
         view.clearRecords();
         animation.closeDetails();
 
-        accountService.getAccountsCount( makeQuery(), new RequestCallback< Long >() {
+        accountService.getAccountsCount( makeQuery(), marker, new RequestCallback< MarkedResult< Long > >() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Long count ) {
-                view.setRecordCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
+            public void onSuccess( MarkedResult<Long> result ) {
+                if ( marker == result.getMarker() ) {
+                    log.info( " count :: marker = " + marker + " | result marker = " + result.getMarker() );
+                    view.setRecordCount( result.getData() );
+                    pagerView.setTotalPages( view.getPageCount() );
+                    pagerView.setTotalCount( result.getData() );
+                }
             }
         });
     }
@@ -209,6 +223,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         );
     }
 
+
     @Inject
     Lang lang;
 
@@ -230,9 +245,13 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     @Inject
     PolicyService policyService;
 
+    private long marker;
+
     private Long accountId;
 
     private AppEvents.InitDetails init;
 
     private static String CREATE_ACTION;
+
+    private static final Logger log = Logger.getLogger(AccountTableActivity.class.getName());
 }

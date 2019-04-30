@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.ui.common.client.service.AccountController;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -24,9 +25,9 @@ import java.util.List;
 public class AccountControllerImpl implements AccountController {
 
     @Override
-    public List< UserLogin > getAccounts( AccountQuery query ) throws RequestFailedException {
+    public MarkedResult<List< UserLogin >> getAccounts( AccountQuery query, long marker ) throws RequestFailedException {
 
-        log.debug( "getAccounts(): query={}", query);
+        log.debug( "getAccounts(): query={} | maker={}", query, marker);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
@@ -35,7 +36,7 @@ public class AccountControllerImpl implements AccountController {
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
-        return response.getData();
+        return new MarkedResult<>( marker, response.getData());
     }
 
     @Override
@@ -90,12 +91,12 @@ public class AccountControllerImpl implements AccountController {
     }
 
     @Override
-    public Long getAccountsCount( AccountQuery query ) throws RequestFailedException {
+    public MarkedResult<Long> getAccountsCount( AccountQuery query, long marker ) throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug( "getAccountsCount(): query={}", query );
-        return accountService.count( descriptor.makeAuthToken(), query ).getData();
+        log.debug( "getAccountsCount(): query={} | marker={}", query, marker );
+        return new MarkedResult<>( marker, accountService.count( descriptor.makeAuthToken(), query ).getData());
     }
 
     @Override
