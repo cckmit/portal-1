@@ -17,7 +17,7 @@ public class RoleMultiSelector
 {
     @Inject
     public void init( RoleModel model, Lang lang ) {
-        model.subscribe( this );
+        setSelectorModel(model);
         setAddName( lang.roleAdd() );
         setClearName( lang.buttonClear() );
     }
