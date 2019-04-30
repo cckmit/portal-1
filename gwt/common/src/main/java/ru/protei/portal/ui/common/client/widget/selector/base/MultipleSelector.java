@@ -133,7 +133,7 @@ public abstract class MultipleSelector<T>
     @Override
     public void onWindowScroll( Window.ScrollEvent event ) {
         if ( popup.isAttached() ) {
-            showPopup( relative );
+            showPopup( relative, false );
         }
     }
 
@@ -156,12 +156,17 @@ public abstract class MultipleSelector<T>
     }
 
     protected void showPopup( IsWidget relative ) {
+        showPopup(relative, true);
+    }
+    private void showPopup( IsWidget relative, boolean clearSearchString ) {
         this.relative = relative;
         popup.showNear( relative );
         popup.setSearchVisible( true );
         popup.setSearchAutoFocus( true );
-        popup.clearSearchField();
-        onSearchChanged( "" );
+        if (clearSearchString) {
+            popup.clearSearchField();
+            onSearchChanged( "" );
+        }
         if (popupValueChangeHandlerRegistration != null) {
             popupValueChangeHandlerRegistration.removeHandler();
         }
