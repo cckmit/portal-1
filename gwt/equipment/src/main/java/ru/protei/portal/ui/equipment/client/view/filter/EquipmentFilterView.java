@@ -19,7 +19,7 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.organization.OrganizationBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.equipment.client.activity.filter.AbstractEquipmentFilterActivity;
@@ -203,7 +203,7 @@ public class EquipmentFilterView extends Composite implements AbstractEquipmentF
     ToggleButton sortDir;
     @Inject
     @UiField(provided = true)
-    EquipmentSelector equipment;
+    EquipmentButtonSelector equipment;
 
     @Inject
     FixedPositioner positioner;

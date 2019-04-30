@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
+import ru.protei.portal.core.aspect.DAOConnectionTracker;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
@@ -760,4 +761,8 @@ public class MainConfiguration {
         return new ServiceLayerInterceptorLogging();
     }
 
+    @Bean
+    public DAOConnectionTracker getDAOConnectionTracker() {
+        return new DAOConnectionTracker();
+    }
 }

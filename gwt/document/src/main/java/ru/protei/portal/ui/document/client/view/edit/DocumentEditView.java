@@ -25,7 +25,7 @@ import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocume
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -341,7 +341,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Inject
     @UiField(provided = true)
-    EquipmentSelector equipment;
+    EquipmentButtonSelector equipment;
 
     @UiField
     HTMLPanel equipmentSelectorContainer;

@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -191,7 +191,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EquipmentTypeBtnGroup type;
     @Inject
     @UiField(provided = true)
-    EquipmentSelector linkedEquipment;
+    EquipmentButtonSelector linkedEquipment;
     @Inject
     @UiField(provided = true)
     MultipleDecimalNumberInput numbers;

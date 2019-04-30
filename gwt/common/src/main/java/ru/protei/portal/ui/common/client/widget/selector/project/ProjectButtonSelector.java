@@ -14,7 +14,7 @@ public class ProjectButtonSelector
 
     @Inject
     public void init(ProjectModel model) {
-        model.subscribe(this);
+        setSelectorModel(model);
         setSearchEnabled(true);
         setHasNullValue(false);
         setDisplayOptionCreator(val ->

@@ -17,17 +17,16 @@ import java.util.stream.Collectors;
 /**
  * Виджет связанных устройств
  */
-public class EquipmentSelector
+public class EquipmentButtonSelector
         extends ButtonSelector<EquipmentShortView >
         implements SelectorWithModel<EquipmentShortView> {
 
     @Inject
     public void init( EquipmentModel model, Lang lang ) {
         this.model = model;
-        model.subscribe( this );
+        setSelectorModel(model);
         setSearchEnabled( true );
         setSearchAutoFocus(true);
-
         setDisplayOptionCreator( value -> {
             StringBuilder sb = new StringBuilder();
             if ( value == null ) {
@@ -44,6 +43,7 @@ public class EquipmentSelector
 
             return new DisplayOption( sb.toString() );
         } );
+        model.subscribe(this, projectId, types);
     }
 
     @Override
@@ -66,8 +66,10 @@ public class EquipmentSelector
     }
 
     public void setVisibleTypes(Set<En_EquipmentType> types) {
-        if (model != null)
-            model.setEquipmentTypes(types);
+        this.types = types;
+        if (model != null) {
+            model.subscribe(this, projectId, types);
+        }
     }
 
     public void setPrintDecimalNumbers(boolean isPrintDecimalNumbers) {
@@ -76,7 +78,10 @@ public class EquipmentSelector
     }
 
     public void setProjectId(Long projectId) {
-        model.setProjectId(projectId);
+        this.projectId = projectId;
+        if (model != null) {
+            model.subscribe(this, projectId, types);
+        }
     }
 
     private void refillOptions() {
@@ -87,4 +92,6 @@ public class EquipmentSelector
     private boolean hasNullValue = true;
     private boolean printDecimalNumbers = true;
     private EquipmentModel model;
+    private Long projectId = null;
+    private Set<En_EquipmentType> types = null;
 }
