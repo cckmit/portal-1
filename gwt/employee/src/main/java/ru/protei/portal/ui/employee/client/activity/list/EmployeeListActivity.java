@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -139,7 +140,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setPosition( mainEntry.getPositionName() );
         }
 
-        itemView.setPhoto( "/avatars/" + employee.getId() + ".jpg" );
+        itemView.setPhoto( LOAD_AVATAR_URL + employee.getId() + ".jpg" );
 
         return itemView;
     }
@@ -179,5 +180,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
+    private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

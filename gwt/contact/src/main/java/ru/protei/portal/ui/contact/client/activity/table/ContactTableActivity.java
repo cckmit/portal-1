@@ -10,7 +10,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
-import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -23,7 +22,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -177,25 +175,20 @@ public abstract class ContactTableActivity
     }
 
     private void requestTotalCount() {
-
-        marker = ( new Date() ).getTime();
-
         view.clearRecords();
         animation.closeDetails();
 
-        contactService.getContactsCount( query, marker, new RequestCallback<MarkedResult< Long > >() {
+        contactService.getContactsCount(query, new RequestCallback<Long>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( MarkedResult< Long > result ) {
-                if ( marker == result.getMarker() ) {
-                    view.setRecordCount( result.getData() );
+            public void onSuccess(Long count) {
+                view.setRecordCount( count );
                     pagerView.setTotalPages( view.getPageCount() );
-                    pagerView.setTotalCount( result.getData() );
-                }
+                pagerView.setTotalCount( count );
             }
         });
     }
@@ -243,7 +236,6 @@ public abstract class ContactTableActivity
     @Inject
     PolicyService policyService;
 
-    private long marker;
     private boolean isShowTable = false;
     private Long contactId = null;
 
