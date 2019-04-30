@@ -68,11 +68,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<List<Platform>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
+        Map<Long, Long> map = serverDAO.countByPlatformIds(result.stream()
+                .map(Platform::getId)
+                .collect(Collectors.toList()));
+
         result.forEach(platform -> {
-            ServerQuery serverQuery = new ServerQuery();
-            serverQuery.setPlatformId(platform.getId());
-            Long count = serverDAO.count(serverQuery);
-            platform.setServersCount(count == null ? 0L : count);
+            Long count = map.getOrDefault(platform.getId(), 0L);
+            platform.setServersCount(count);
             // RESET PRIVACY INFO
             if (platform.getManager() != null) {
                 platform.getManager().resetPrivacyInfo();
@@ -91,11 +93,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             return new CoreResponse<List<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
+        Map<Long, Long> map = applicationDAO.countByServerIds(result.stream()
+                .map(Server::getId)
+                .collect(Collectors.toList()));
+
         result.forEach(server -> {
-            ApplicationQuery applicationQuery = new ApplicationQuery();
-            applicationQuery.setServerId(server.getId());
-            Long count = applicationDAO.count(applicationQuery);
-            server.setApplicationsCount(count == null ? 0L : count);
+            Long count = map.getOrDefault(server.getId(), 0L);
+            server.setApplicationsCount(count);
         });
 
         return new CoreResponse<List<Server>>().success(result);
