@@ -94,4 +94,5 @@
   <include file="2019-03-18-modify-contract-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-25-modify-sf-platform-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-03-25-add-case-state-workflow-tables.xml" relativeToChangelogFile="true"/>
+  <include file="2019-04-29-add-hidden-column-to-company.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
