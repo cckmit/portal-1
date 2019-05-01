@@ -58,7 +58,7 @@ public class AvatarController {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
-        loadFile( context.getRealPath( "" ) + NOPHOTO_PATH, response );
+        loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
 
     private UserSessionDescriptor getDescriptor( HttpServletRequest request ) {
@@ -77,8 +77,8 @@ public class AvatarController {
                 response.setContentType( MimeUtils.getContentType( file.getName() ) );
                 IOUtils.copy( is, response.getOutputStream() );
 
-                response.setHeader("Cache-control", "");
-                response.setHeader("Pragma", "");
+                response.setHeader( "Cache-control", "" );
+                response.setHeader( "Pragma", "" );
 
                 response.flushBuffer();
 
