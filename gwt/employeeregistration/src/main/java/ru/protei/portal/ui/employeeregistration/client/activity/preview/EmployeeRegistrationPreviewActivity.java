@@ -72,8 +72,7 @@ public abstract class EmployeeRegistrationPreviewActivity implements AbstractEmp
     }
 
     private void fillView( EmployeeRegistration value ) {
-        view.setHeader( lang.employeeRegistrationCommonHeader() + (value.getId() == null ? "" : " #" + value.getId()) );
-        view.setFullName(value.getEmployeeFullName());
+        view.setFullName(value.getEmployeeFullName() + " (" + (value.getId() == null ? "" : " #" + value.getId()) + ")");
         view.setComment(value.getComment());
         view.setWorkplace(value.getWorkplace());
         view.setEmploymentDate(DateFormatter.formatDateOnly(value.getEmploymentDate()));

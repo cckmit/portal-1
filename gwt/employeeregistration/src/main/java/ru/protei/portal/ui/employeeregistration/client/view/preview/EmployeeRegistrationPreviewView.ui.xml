@@ -6,7 +6,6 @@
 
     <g:HTMLPanel styleName="card card-default">
         <div class="card-block">
-            <span ui:field="header"/>
             <div class="row">
                 <h4 class="col-md-12 m-t-0 m-b-0" ui:field="fullName"/>
             </div>
@@ -108,9 +107,11 @@
                 </b>
                 <span ui:field="comment"/>
             </div>
-            <div class="col-xs-12">
-                <label class="col-xs-5 col-md-5"><ui:text from="{lang.employeeRegistrationCurators}"/></label>
-                <span class="col-xs-7 col-md-7" ui:field="curators"></span>
+            <div class="small">
+                <b>
+                    <ui:text from="{lang.employeeRegistrationCurators}: "/>
+                </b>
+                <span ui:field="curators"/>
             </div>
             <h5><ui:text from="{lang.employeeRegistrationResourceTitle}"/></h5>
 

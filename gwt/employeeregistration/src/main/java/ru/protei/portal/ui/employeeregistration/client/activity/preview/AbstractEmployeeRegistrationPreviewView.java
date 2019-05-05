@@ -49,6 +49,4 @@ public interface AbstractEmployeeRegistrationPreviewView extends IsWidget {
     void setResourceComment( String resourceComment );
 
     void setAdditionalSoft( String additionalSoft );
-
-    void setHeader( String value );
 }

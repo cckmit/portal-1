@@ -22,7 +22,7 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.employeeRegistrationEmploymentDate}"/></label>
-                    <range:RangePicker ui:field="dateRange" type="DATE" formatValue="dd.MM.yyyy"/>
+                    <range:RangePicker ui:field="dateRange" type="DATE" formatValue="dd.MM.yyyy" styleName=""/>
                 </div>
 
                 <div class="form-group col-md-12">

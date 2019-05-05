@@ -151,13 +151,6 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         this.additionalSoft.setInnerText( additionalSoft );
     }
 
-    @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
-    }
-
-    @UiField
-    Element header;
     @Inject
     @UiField(provided = true)
     CaseMetaView caseMetaView;

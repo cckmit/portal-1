@@ -1379,6 +1379,8 @@ td.info {
   white-space: nowrap;
   border-radius: .25em;
   font-size: 76%;
+  position: relative;
+  top: -6px;
 }
 
 .label-report-created,
@@ -3217,4 +3219,8 @@ label {
     text-align: center;
     line-height: 16px;
   }
+}
+
+.checkbox label {
+  margin-right: 0px !important;
 }
