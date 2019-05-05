@@ -62,7 +62,7 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
 
     @Override
     public void setAnimation(TableAnimation animation) {
-        animation.setContainers(tableContainer, previewContainer, filterContainer);
+        animation.setContainers(tableContainer, previewContainer, null);
     }
 
     @Override
@@ -155,8 +155,6 @@ public class CaseStateTableView extends Composite implements AbstractCaseStateTa
     HTMLPanel tableContainer;
     @UiField
     HTMLPanel previewContainer;
-    @UiField
-    HTMLPanel filterContainer;
 
     @UiField
     Lang lang;

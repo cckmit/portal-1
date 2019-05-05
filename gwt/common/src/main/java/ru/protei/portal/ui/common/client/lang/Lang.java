@@ -1681,4 +1681,6 @@ public interface Lang extends Messages, ContactItemLang {
     String roleMainTitle();
 
     String rolePrivilegesHint();
+
+    String caseStateDescription();
 }

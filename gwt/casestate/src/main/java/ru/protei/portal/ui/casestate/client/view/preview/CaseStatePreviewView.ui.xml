@@ -2,46 +2,40 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:companyselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:bg='urn:import:ru.protei.portal.ui.casestate.client.view.btngroup'
-
->
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid case-state-preview">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
-            <fieldset class="header">
-                <legend ui:field="header"><ui:text from="{lang.caseStatesPreviewHeader}"/></legend>
-                <div class="col-md-12">
-                    <label class="col-md-5 col-md-5"><ui:text from="{lang.roleName}"/></label>
-                    <span class="col-md-7 col-md-7" ui:field="name"/>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5 col-md-5"><ui:text from="{lang.roleDescription}"/></label>
-                    <g:TextArea styleName="col-md-7 col-md-7 pre-formatted-info project-details" ui:field="description"/>
-                </div>
+    <g:HTMLPanel styleName="card card-default">
 
-            </fieldset>
+        <div class="card-block">
+            <h4 class="col-md-12 no-margin no-padding" ui:field="name"/>
 
-            <fieldset class="header">
-                <div class="col-md-12">
-                    <legend>
-                        <ui:text from="{lang.caseStatesPreviewCompanies}"/>
-                    </legend>
-                    <bg:UsageInCompaniesBtnGroup ui:field="usageInCompanies" />
-                    <companyselector:CompanyMultiSelector ui:field="companies" visible="false"
-                                                          header="{lang.issueCompany}"
-                                                          addStyleNames="form-group col-md-12"/>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.caseStateDescription}"/></label>
+                    <autoresizetextarea:AutoResizeTextArea ui:field="description"
+                                                           styleName="form-control" minRows="2" maxRows="10"/>
                 </div>
-                <div class="col-md-12">
-                    <span class="col-md-7 col-md-7" ui:field="usageInCompaniesTxt"/>
-                </div>
-            </fieldset>
-
-            <div class="footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-complete pull-right" text="{lang.buttonApply}"/>
             </div>
-        </g:HTMLPanel>
 
+            <h5><ui:text from="{lang.caseStatesPreviewCompanies}"/></h5>
+
+            <div class="row">
+                <bg:UsageInCompaniesBtnGroup ui:field="usageInCompanies" addStyleNames="form-group col-md-12"/>
+
+                <companyselector:CompanyMultiSelector ui:field="companies" visible="false"
+                                                      header="{lang.issueCompany}"
+                                                      addStyleNames="form-group col-md-12"/>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <div class="text-right">
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
+            </div>
+        </div>
     </g:HTMLPanel>
 
 </ui:UiBinder>

@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.casestate.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.LegendElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -93,21 +94,19 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
         activity.onSaveClicked();
     }
 
-    private static final Logger log = getLogger(CaseStatePreviewView.class.getName());
+
+    @UiHandler("cancelButton")
+    public void onCancelClicked(ClickEvent event) {
+        activity.onCancelClicked();
+    }
 
     @Inject
     @UiField
     Lang lang;
     @UiField
-    SpanElement name;
+    HeadingElement name;
     @UiField
     TextArea description;
-    @UiField
-    SpanElement usageInCompaniesTxt;
-    @UiField
-    LegendElement header;
-    @UiField
-    HTMLPanel preview;
     @Inject
     @UiField( provided = true )
     CompanyMultiSelector companies;
@@ -121,7 +120,9 @@ public class CaseStatePreviewView extends Composite implements AbstractCaseState
     @Inject
     FixedPositioner positioner;
 
-    AbstractCaseStatePreviewActivity activity;
+    private AbstractCaseStatePreviewActivity activity;
+
+    private static final Logger log = getLogger(CaseStatePreviewView.class.getName());
 
     interface ContactPreviewViewUiBinder extends UiBinder<HTMLPanel, CaseStatePreviewView > { }
     private static ContactPreviewViewUiBinder ourUiBinder = GWT.create(ContactPreviewViewUiBinder.class);

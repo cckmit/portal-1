@@ -8,12 +8,14 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 public class TableAnimation {
 
     public void showDetails() {
-        tableContainer.removeStyleName( "col-md-9" );
+        tableContainer.removeStyleName( tableStyleWithoutDetails );
         tableContainer.removeStyleName( "filter-collapsed" );
         tableContainer.addStyleName( "col-md-5 short-table-view" );
 
         detailsContainer.removeStyleName( "no-width" );
         detailsContainer.addStyleName( "col-md-7" );
+
+        if ( noFilter ) return;
 
         filterContainer.removeStyleName( "col-md-3" );
         filterContainer.removeStyleName( "collapsed" );
@@ -26,19 +28,23 @@ public class TableAnimation {
         tableContainer.removeStyleName( "col-md-5" );
         tableContainer.removeStyleName( "short-table-view" );
 
-        tableContainer.addStyleName( "col-md-9" );
+        tableContainer.addStyleName( tableStyleWithoutDetails );
 
         detailsContainer.removeStyleName( "col-md-7" );
         detailsContainer.addStyleName( "no-width" );
 
+        if ( noFilter ) return;
         filterContainer.removeStyleName( "no-display" );
         filterContainer.addStyleName( filterCollapsed ? "collapsed" : "col-md-3" );
     }
 
     public void filterCollapse() {
         filterCollapsed = true;
-        tableContainer.removeStyleName( "col-md-9" );
+        tableContainer.removeStyleName( tableStyleWithoutDetails );
         tableContainer.addStyleName( "filter-collapsed" );
+
+        if ( noFilter ) return;
+
         filterContainer.removeStyleName( "col-md-3" );
         filterContainer.addStyleName( "collapsed" );
     }
@@ -46,7 +52,9 @@ public class TableAnimation {
     public void filterRestore() {
         filterCollapsed = false;
         tableContainer.removeStyleName( "filter-collapsed" );
-        tableContainer.addStyleName( "col-md-9" );
+        tableContainer.addStyleName( tableStyleWithoutDetails );
+
+        if ( noFilter ) return;
         filterContainer.removeStyleName( "collapsed" );
         filterContainer.addStyleName( "col-md-3" );
     }
@@ -55,10 +63,21 @@ public class TableAnimation {
         this.tableContainer = tableContainer;
         this.detailsContainer = detailsContainer;
         this.filterContainer = filterContainer;
+        this.noFilter = filterContainer == null;
+
+        if ( noFilter ) {
+            tableStyleWithoutDetails = "col-md-12";
+        } else {
+            tableStyleWithoutDetails = "col-md-9";
+        }
+
     }
 
     private HTMLPanel tableContainer;
     private HTMLPanel detailsContainer;
     private HTMLPanel filterContainer;
     private boolean filterCollapsed = false;
+
+    private boolean noFilter = false;
+    private String tableStyleWithoutDetails;
 }
