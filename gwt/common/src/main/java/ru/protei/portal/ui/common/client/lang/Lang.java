@@ -1677,4 +1677,8 @@ public interface Lang extends Messages, ContactItemLang {
     String companyIsAHeadOfCompany(String names);
 
     String in();
+
+    String roleMainTitle();
+
+    String rolePrivilegesHint();
 }
