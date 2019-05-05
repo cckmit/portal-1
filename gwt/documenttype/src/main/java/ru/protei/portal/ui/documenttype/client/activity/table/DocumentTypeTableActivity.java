@@ -51,26 +51,18 @@ public abstract class DocumentTypeTableActivity
     }
 
     @Event
+    public void onClosePreview(DocumentTypeEvents.ClosePreview event) {
+        animation.closeDetails();
+    }
+
+    @Event
     public void onCreateClicked(ActionBarEvents.Clicked event) {
         if (!UiConstants.ActionBarIdentity.DOCUMENT_TYPE.equals(event.identity)) {
             return;
         }
 
-        if ( !policyService.hasPrivilegeFor( En_Privilege.DOCUMENT_TYPE_CREATE ) ) {
-            return;
-        }
-
-        DocumentType newType = new DocumentType();
-        newType.setName(lang.documentNameNew());
-        documentTypeService.saveDocumentType( newType, new RequestCallback<DocumentType>(){
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( DocumentType type ) {
-                updateListAndSelect( type );
-            }
-        });
+        animation.showDetails();
+        fireEvent(new DocumentTypeEvents.ShowPreview(view.getPreviewContainer(), null));
     }
 
     @Event
@@ -80,6 +72,11 @@ public abstract class DocumentTypeTableActivity
 
     @Event
     public void onChanged(DocumentTypeEvents.Changed event) {
+        if ( event.needRefreshList ) {
+            updateListAndSelect(event.doctype);
+            return;
+        }
+
         view.updateRow(event.doctype);
     }
 
@@ -150,7 +147,6 @@ public abstract class DocumentTypeTableActivity
     @Inject
     AbstractDocumentTypeFilterView filterView;
 
-    private Long forRemoveId;
     private static String CREATE_ACTION;
     private AppEvents.InitDetails initDetails;
 }
