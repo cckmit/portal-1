@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.product.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -59,6 +56,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setWikiLink(String value) {
+        this.wikiLink.setHref(value);
         this.wikiLink.setInnerText(value);
     }
 
@@ -100,7 +98,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     HeadingElement productName;
     @UiField
-    SpanElement wikiLink;
+    AnchorElement wikiLink;
     @UiField
     DivElement configuration;
     @UiField

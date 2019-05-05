@@ -9,7 +9,7 @@
                 <h4 class="col-md-12 no-margin no-padding" ui:field="companyName"/>
                 <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
                 <div class="small hint-text no-margin">
-                    <a class="col-md-7" ui:field="site" href="#" target="_blank"/>
+                    <a ui:field="site" href="#" target="_blank"/>
                 </div>
 
                 <g:Label styleName="small hint-text pre-formatted-info" ui:field="info"/>
