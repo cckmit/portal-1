@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="main-content row">
+    <g:HTMLPanel styleName="row">
         <div class="form-group col-md-3">
             <label><ui:text from="{lang.kdDocumentCategory}"/></label>
             <g:HTMLPanel ui:field="kdDocumentsContainer" styleName="eqdoc-list"/>

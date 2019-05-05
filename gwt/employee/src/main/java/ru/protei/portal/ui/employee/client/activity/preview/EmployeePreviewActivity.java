@@ -32,7 +32,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
     }
 
     private void fillView( EmployeeShortView employee ) {
-
         view.setID( employee.getId().toString() );
         view.setIP( employee.getIpAddress() );
 

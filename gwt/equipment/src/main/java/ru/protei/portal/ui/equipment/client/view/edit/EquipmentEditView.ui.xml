@@ -95,9 +95,9 @@
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
                 <div class="card-header">
-                    <div class="card-title">
+                    <div class="card-title col-md-12">
                         <ui:text from="{lang.equipmentDocuments}"/>
-                        <g:Button ui:field="createDocumentButton" styleName="btn btn-primary header-button-right"
+                        <g:Button ui:field="createDocumentButton" styleName="btn btn-xs btn-info pull-right"
                                   text="{lang.equipmentDocumentCreate}"/>
                     </div>
                 </div>

@@ -56,13 +56,12 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         fireEvent( new ContactEvents.ShowFullScreen( contactId ) );
     }
 
-
     private void fillView( Person value ) {
         view.firedMsgVisibility().setVisible(value.isFired());
         view.deletedMsgVisibility().setVisible(value.isDeleted());
         view.setDisplayName( value.getDisplayName() );
         view.setCompany( value.getCompany().getCname() );
-        String positionDisplay = StringUtils.isEmpty(value.getPosition()) ? "" : value.getPosition();
+        String positionDisplay = StringUtils.isEmpty(value.getPosition()) ? "" : ", " + value.getPosition();
         if (!StringUtils.isEmpty( value.getDepartment() )) {
             positionDisplay += " (" + lang.department() + " " + value.getDepartment() + " )";
         }

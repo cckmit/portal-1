@@ -24,7 +24,7 @@
                     <g:InlineLabel>
                         <ui:text from="{lang.company} "/>
                     </g:InlineLabel>
-                    <g:InlineLabel styleName="bold" ui:field="company"/>,
+                    <g:InlineLabel styleName="bold" ui:field="company"/>
                     <g:InlineLabel styleName="small" ui:field="position"/>
                 </p>
                 <div class="small hint-text pre-formatted-info">

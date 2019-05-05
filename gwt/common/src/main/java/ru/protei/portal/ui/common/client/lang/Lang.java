@@ -1675,4 +1675,6 @@ public interface Lang extends Messages, ContactItemLang {
     String companyIsAPartOfCompany(String name);
 
     String companyIsAHeadOfCompany(String names);
+
+    String in();
 }

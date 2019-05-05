@@ -3,78 +3,59 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
-            <div class="pull-right">
-                <g:Button styleName="btn btn-white" ui:field="copy" title="{lang.buttonCopy}">
-                    <i class="fa fa-copy"></i>
-                </g:Button>
-                <g:Button styleName="btn btn-danger" ui:field="remove" title="{lang.buttonRemove}">
-                    <i class="fa fa-trash-o"></i>
-                </g:Button>
-                <g:Button styleName="btn btn-white" ui:field="fullScreen" title="{lang.fullScreen}">
-                    <i class="fa fa-external-link"></i>
-                </g:Button>
+    <g:HTMLPanel ui:field="preview">
+        <div class="card card-default">
+            <div class="card-block">
+                <h4>
+                    <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
+                </h4>
+
+                <img ui:field="typeImage" src="" class="preview-title-image_right"/>
+
+                <div class="inline">
+                    <small>
+                        <ui:text from="{lang.createBy}"/>
+                    </small>
+                    <small ui:field="author" class="name no-margin bold"/>
+                    <small class="m-l-5 m-r-5"><ui:text from="{lang.in}"/></small>
+                    <small ui:field="created" class="datetime no-margin"/>
+                </div>
+
+                <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
+
+                <h5><ui:text from="{lang.equipmentCommonHeader}"/></h5>
+                <div class="small">
+                    <b><ui:text from="{lang.equipmentNameBySldWrks}: "/></b>
+                    <span ui:field="nameBySldWrks"/>
+                </div>
+
+                <div class="small">
+                    <b><ui:text from="{lang.equipmentProject}: "/></b>
+                    <span ui:field="project"/>
+                </div>
+
+                <div class="small">
+                    <b><ui:text from="{lang.equipmentManager}: "/></b>
+                    <span ui:field="manager"/>
+                </div>
+
+                <h5><ui:text from="{lang.equipmentDecimalNumber}"/></h5>
+                <div class="decimal-number" ui:field="number"/>
+
+                <h5><ui:text from="{lang.equipmentPrimaryUse}"/></h5>
+                <div>
+                    <g:Anchor ui:field="primaryUse" styleName="decimal-number full-screen-link" target="_blank" href="#"/>
+                </div>
+
+                <h5><ui:text from="{lang.equipmentDocuments}"/></h5>
+                <g:HTMLPanel ui:field="documents" styleName="equipment-document-preview"/>
             </div>
-
-            <fieldset class="header">
-                <legend ui:field="header"></legend>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.equipmentNameBySpecification}"/></label>
-                    <span class="col-md-7" ui:field="name"></span>
+            <div class="card-footer">
+                <div class="text-right">
+                    <g:Button styleName="btn btn-xs btn-info" ui:field="copy" text="{lang.buttonCopy}"/>
+                    <g:Button styleName="btn btn-xs btn-danger" ui:field="remove" text="{lang.buttonRemove}"/>
                 </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.created}"/></label>
-                    <span class="col-md-7" ui:field="created"></span>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.equipmentNameBySldWrks}"/></label>
-                    <span class="col-md-7" ui:field="nameBySldWrks"></span>
-                </div>
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.equipmentType}"/></label>
-                    <span class="col-md-7" ui:field="type"></span>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.equipmentProject}"/></label>
-                    <span class="col-md-7" ui:field="project"></span>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-5"><ui:text from="{lang.equipmentManager}"/></label>
-                    <span class="col-md-7" ui:field="manager"></span>
-                </div>
-
-            </fieldset>
-            <fieldset class="header">
-                <legend><ui:text from="{lang.equipmentDecimalNumber}"/></legend>
-                <div class="col-md-12 decimal-number" ui:field="number"></div>
-            </fieldset>
-
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.equipmentPrimaryUse}"/></legend>
-                <div class="col-md-12">
-                    <g:Anchor styleName="m-r-5" ui:field="primaryUseLink" target="_blank" href="">
-                        <i class="fa fa-external-link"/>
-                    </g:Anchor>
-                    <span class="decimal-number" ui:field="primaryUse"></span>
-                </div>
-            </fieldset>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.equipmentComment}"/></legend>
-                <div class="col-md-12">
-                    <span class="col-md-12 col-md-12 pre-formatted-info" ui:field="comment"></span>
-                </div>
-            </fieldset>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
-                <g:HTMLPanel ui:field="documents" styleName="form-group col-md-12 main-content-padding-0 equipment-document-preview"/>
-            </fieldset>
-
-        </g:HTMLPanel>
+            </div>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>
