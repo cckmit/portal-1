@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.view.table;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
@@ -25,7 +26,7 @@ public abstract class ContactTableViewBase extends Composite {
                 cell.appendChild(root);
 
                 Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML("<b>" + value.getDisplayName() + "<b>");
+                fioElement.setInnerHTML(value.getDisplayName());
                 root.appendChild(fioElement);
 
                 if (value.isFired() || value.isDeleted()) {
@@ -33,19 +34,35 @@ public abstract class ContactTableViewBase extends Composite {
                     stateElement.setInnerHTML( makeFiredOrDeleted(value, lang));
                     root.appendChild(stateElement);
                 }
+            }
+        };
+    }
+
+    protected ClickColumn<Person> getContactColumn(Lang lang) {
+        return new ClickColumn<Person>() {
+            @Override
+            protected void fillColumnHeader(Element element) {
+                element.setInnerText(lang.contactContactInfoTitle());
+                element.getStyle().setWidth(40, Style.Unit.PCT );
+            }
+
+            @Override
+            public void fillColumnValue(Element cell, Person value) {
+                Element root = DOM.createDiv();
+                cell.appendChild(root);
 
                 PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
                 String phones = infoFacade.allPhonesAsString();
                 if (StringUtils.isNotBlank(phones)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-call", phones)
+                    root.appendChild(ContactColumnBuilder.make().add("ion ion-md-call m-r-5", phones)
                             .toElement());
                 }
 
 
                 String emails = infoFacade.allEmailsAsString();
                 if (StringUtils.isNotBlank(emails)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-mail", emails)
+                    root.appendChild(ContactColumnBuilder.make().add("ion ion-md-mail m-r-5", emails)
                             .toElement());
                 }
             }
@@ -78,17 +95,12 @@ public abstract class ContactTableViewBase extends Composite {
 
             @Override
             public void fillColumnValue(Element cell, Person value) {
-                Element root = DOM.createDiv();
-                cell.appendChild(root);
-
-                Element fioElement = DOM.createDiv();
-                fioElement.setInnerHTML("<b>" + value.getCompany().getCname() + "<b>");
-                root.appendChild(fioElement);
-
-                Element posElement = DOM.createDiv();
-                posElement.addClassName("contact-position");
-                posElement.setInnerHTML(value.getPosition());
-                root.appendChild(posElement);
+                String html = "<div><div>" +  value.getCompany().getCname() + "<div>";
+                if ( value.getPosition() != null ) {
+                    html += "<small><i>" + value.getPosition() + "</i></small>";
+                }
+                html += "</div>";
+                cell.setInnerHTML(html);
             }
         };
     }

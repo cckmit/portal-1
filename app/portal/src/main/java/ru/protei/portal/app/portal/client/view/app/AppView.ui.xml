@@ -44,7 +44,7 @@
                 </li>
                 <li>
                     <g:Anchor ui:field="logout" title="{lang.buttonLogout}" href="#">
-                        <i class="fa-lg ion-log-out"/>
+                        <i class="fa-lg ion ion-md-log-out"/>
                     </g:Anchor>
                 </li>
             </div>

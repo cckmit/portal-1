@@ -68,6 +68,14 @@
 
                                           styleName="form-control"/>
                         </div>
+
+                        <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-md-12">
+                            <label ui:field="notifiersLabel">
+                                <ui:text from="{lang.employeeRegistrationCurators}"/>
+                            </label>
+                            <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="curators"/>
+                        </g:HTMLPanel>
+
                         <div class="form-group col-md-12">
                             <label>
                                 <ui:text from="{lang.employeeRegistrationComment}"/>
@@ -129,14 +137,6 @@
                 </div>
             </div>
         </div>
-
-        <g:HTMLPanel ui:field="caseSubscriptionContainers" styleName="form-group col-xs-12">
-            <label ui:field="notifiersLabel">
-                <ui:text from="{lang.employeeRegistrationCurators}"/>
-            </label>
-            <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="curators"/>
-        </g:HTMLPanel>
-
 
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">

@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="preview">
+    <g:HTMLPanel>
         <div class="card card-default no-border">
             <div class="card-block">
                 <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete" ui:field="contactFired">
@@ -14,9 +14,10 @@
                     <i class="fa fa-info-circle"/>
                     <label><ui:text from="{lang.contactDeleted}"/></label>
                 </g:HTMLPanel>
-                <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link m-t-10 pull-left" href="#"/>
+                <h4>
+                    <g:Anchor ui:field="displayName" styleName="full-screen-link" href="#"/>
+                </h4>
 
-                <h4 class="col-md-12 no-margin no-padding" ui:field="displayName"/>
                 <img ui:field="genderImage" src="" class="preview-title-image_right"/>
 
                 <p>

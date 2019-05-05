@@ -39,7 +39,6 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         this.contactId = event.contact.getId();
 
         fillView( event.contact );
-        view.showFullScreen( false );
     }
 
     @Event
@@ -50,7 +49,6 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         this.contactId = event.contactId;
 
         fillView( contactId );
-        view.showFullScreen( true );
     }
 
     @Override

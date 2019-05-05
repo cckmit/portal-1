@@ -50,8 +50,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         name.setColumnProvider( columnProvider );
         category.setHandler( activity );
         category.setColumnProvider( columnProvider );
-        group.setHandler( activity );
-        group.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
         table.setPagerListener( activity );
     }
@@ -126,15 +124,8 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
                 }
         );
 
-        group = new DynamicColumn<>(
-                lang.companyGroup(),
-                "company-group",
-                company -> company.getCompanyGroup() != null ? company.getCompanyGroup().getName(): ""
-        );
-
         table.addColumn( category.header, category.values );
         table.addColumn( name.header, name.values );
-        table.addColumn( group.header, group.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
@@ -212,7 +203,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     EditClickColumn< Company > editClickColumn;
     DynamicColumn<Company> name;
     DynamicColumn<Company> category;
-    DynamicColumn<Company> group;
 
     AbstractCompanyTableActivity activity;
 

@@ -237,7 +237,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     TextBox wikiLink;
 
-
     AbstractProductEditActivity activity;
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);

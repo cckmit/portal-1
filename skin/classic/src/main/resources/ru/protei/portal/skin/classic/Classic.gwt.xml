@@ -13,6 +13,7 @@
     <stylesheet src="css/gritter.css"/>
     <stylesheet src="css/portal-classic.css"/>
     <stylesheet src="css/markdown.css"/>
+    <stylesheet src="dataTables.bootstrap.min.css"/>
 
     <source path='client'/>
     <source path='shared'/>

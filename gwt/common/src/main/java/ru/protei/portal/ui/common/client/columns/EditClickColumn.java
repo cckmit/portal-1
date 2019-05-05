@@ -33,7 +33,8 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
         cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
-        a.addClassName( "fa-2x ion-compose" );
+        a.addClassName( "btn btn-xs btn-default" );
+        a.setInnerHTML("<i class=\"ion ion-md-create\"></i>");
         a.setTitle( lang.edit() );
         setEditEnabled( a );
         cell.appendChild( a );

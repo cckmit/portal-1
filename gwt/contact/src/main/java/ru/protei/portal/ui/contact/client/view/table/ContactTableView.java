@@ -117,7 +117,6 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     private void initTable () {
-
         editClickColumn.setPrivilege( En_Privilege.CONTACT_EDIT );
 
         ClickColumn<Person> displayName = getDisplayNameColumn( lang );
@@ -126,9 +125,12 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
         ClickColumn<Person> company = getCompanyColumn( lang );
         columns.add( company );
 
-        //hideColumn = table.addColumn( selectionColumn.header, selectionColumn.values );
-        table.addColumn( company.header, company.values );
+        ClickColumn<Person> contact = getContactColumn( lang );
+        columns.add(contact);
+
         table.addColumn( displayName.header, displayName.values );
+        table.addColumn( company.header, company.values );
+        table.addColumn( contact.header, contact.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
         table.addColumn( removeClickColumn.header, removeClickColumn.values );
     }

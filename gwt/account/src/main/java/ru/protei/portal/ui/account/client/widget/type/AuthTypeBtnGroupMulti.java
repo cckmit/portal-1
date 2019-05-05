@@ -19,7 +19,7 @@ public class AuthTypeBtnGroupMulti extends ToggleBtnGroupMulti< En_AuthType > {
         clear();
 
         for ( En_AuthType type : En_AuthType.values() ) {
-            addBtnWithImage( "./images/auth_" + type.name().toLowerCase() + ".png", "btn btn-white btn-without-border auth-type", null, type, typeLang.getName( type ) );
+            addBtnWithImage( "./images/auth_" + type.name().toLowerCase() + ".png", "btn btn-white no-border auth-type", null, type, typeLang.getName( type ) );
         }
     }
 

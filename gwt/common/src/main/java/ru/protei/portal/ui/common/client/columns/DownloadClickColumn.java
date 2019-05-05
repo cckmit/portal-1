@@ -1,6 +1,8 @@
 package ru.protei.portal.ui.common.client.columns;
 
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
@@ -11,6 +13,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
+
 
     public interface DownloadHandler<T> extends AbstractColumnHandler<T> {
         void onDownloadClicked(T value);
@@ -33,7 +36,14 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
 
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
-        a.addClassName("fa fa-lg fa-cloud-download");
+        if ( imageUrl == null ) {
+            a.addClassName("fa fa-lg fa-cloud-download");
+        } else {
+            ImageElement img = DOM.createImg().cast();
+            img.setSrc(imageUrl);
+            img.setHeight(40);
+            a.appendChild(img);
+        }
         a.setTitle(lang.download());
         setDownloadEnabled(a);
         cell.appendChild(a);
@@ -47,6 +57,10 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         setActionHandler(downloadHandler::onDownloadClicked);
     }
 
+    public void setDownloadCustomImage(String url) {
+        this.imageUrl = url;
+    }
+
     private void setDownloadEnabled(AnchorElement a) {
         if (privilege == null) {
             return;
@@ -58,9 +72,11 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         }
     }
 
+
     @Inject
     PolicyService policyService;
 
-    Lang lang;
-    En_Privilege privilege;
+    private Lang lang;
+    private En_Privilege privilege;
+    private String imageUrl;
 }

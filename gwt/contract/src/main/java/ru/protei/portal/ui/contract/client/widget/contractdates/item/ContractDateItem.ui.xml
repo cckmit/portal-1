@@ -13,7 +13,7 @@
         <single:SinglePicker ui:field="date" styleName="col-xs-2"/>
 
         <div class="col-xs-5">
-            <g:TextBox ui:field="comment" styleName="input-field"/>
+            <g:TextBox ui:field="comment" styleName="form-control"/>
         </div>
 
         <div class="col-xs-2">

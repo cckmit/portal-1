@@ -20,6 +20,7 @@ import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPrevie
  */
 public class ContactPreviewView extends Composite implements AbstractContactPreviewView {
 
+
     public ContactPreviewView() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
@@ -42,7 +43,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @Override
-    public void setDisplayName(String value) { this.displayName.setInnerHTML( value ); }
+    public void setDisplayName(String value) { this.displayName.setText( value ); }
 
     @Override
     public void setBirthday(String value) { this.birthday.setInnerText( value ); }
@@ -69,19 +70,6 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setInfo(String value) { this.info.setText( value ); }
 
     @Override
-    public void showFullScreen ( boolean value ) {
-
-        fullScreen.setVisible( !value );
-        if (value)
-            preview.addStyleName( "col-md-12 col-lg-6" );
-        else
-            preview.setStyleName( "" );
-    }
-
-    @Override
-    public HTMLPanel preview () { return preview; }
-
-    @Override
     public HasVisibility firedMsgVisibility() {
         return contactFired;
     }
@@ -96,7 +84,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
         genderImage.setSrc(icon);
     }
 
-    @UiHandler( "fullScreen" )
+    @UiHandler( "displayName" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
 
@@ -106,9 +94,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     }
 
     @UiField
-    HTMLPanel preview;
-    @UiField
-    HeadingElement displayName;
+    Anchor displayName;
     @UiField
     SpanElement birthday;
     @UiField
@@ -126,8 +112,6 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @UiField
     InlineLabel position;
     @UiField
-    Anchor fullScreen;
-    @UiField
     HTMLPanel contactFired;
     @UiField
     HTMLPanel contactDeleted;
@@ -141,7 +125,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @Inject
     FixedPositioner positioner;
 
-    AbstractContactPreviewActivity activity;
+    private AbstractContactPreviewActivity activity;
 
     interface ContactPreviewViewUiBinder extends UiBinder<HTMLPanel, ContactPreviewView> { }
     private static ContactPreviewViewUiBinder ourUiBinder = GWT.create(ContactPreviewViewUiBinder.class);

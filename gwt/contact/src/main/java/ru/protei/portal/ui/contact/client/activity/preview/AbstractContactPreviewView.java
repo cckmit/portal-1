@@ -24,9 +24,6 @@ public interface AbstractContactPreviewView extends IsWidget {
     void setAddress( String value );
     void setHomeAddress( String value );
 
-    void showFullScreen ( boolean value );
-    HTMLPanel preview ();
-
     HasVisibility firedMsgVisibility();
     HasVisibility deletedMsgVisibility();
 

@@ -27,13 +27,9 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     void setCategory( String value );
 
-    void setParentCompany( String value );
-
-    void setChildrenCompanies( String value );
+    void setCompanyLinksMessage(String value );
 
     void setInfo( String value );
-
-    void setGroupVisible( boolean value );
 
     Widget asWidget(boolean isForTableView);
 

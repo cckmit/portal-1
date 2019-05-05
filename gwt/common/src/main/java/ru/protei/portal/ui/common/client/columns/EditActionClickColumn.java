@@ -92,14 +92,12 @@ public abstract class EditActionClickColumn< T > {
         protected SelectRowHandler<T> selectRowHandler;
     }
 
-    protected void fillColumnHeader(Element columnHeader) {
-
-    };
+    protected void fillColumnHeader(Element columnHeader) {}
 
     public void fillColumnValue( Element cell, T value ) {
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
-        a.addClassName( "icon edit-icon" );
+        a.addClassName( "fa fa-pencil-square-o" );
         a.setTitle( lang.edit() );
         cell.appendChild( a );
     }

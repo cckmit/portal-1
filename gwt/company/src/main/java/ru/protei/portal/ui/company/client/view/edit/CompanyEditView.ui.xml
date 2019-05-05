@@ -123,17 +123,6 @@
 
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
-                    <div class="text-right">
-                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                        <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
                 <div class="card-header">
                     <div class="card-title">
                         <ui:text from="{lang.siteFolder}"/>
@@ -144,5 +133,17 @@
                 </div>
             </div>
         </div>
+
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-block">
+                    <div class="text-right">
+                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                        <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </g:HTMLPanel>
 </ui:UiBinder>

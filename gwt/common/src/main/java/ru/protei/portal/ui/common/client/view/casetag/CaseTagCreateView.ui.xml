@@ -8,7 +8,7 @@
         <div class="form-group grid grid-indent">
             <div class="form-group col-md-6">
                 <label><ui:text from="{lang.tagName}"/></label>
-                <g:TextBox ui:field="name" styleName="input-field"/>
+                <g:TextBox ui:field="name" styleName="form-control"/>
             </div>
             <div class="form-group col-md-6">
                 <label><ui:text from="{lang.tagColor}"/></label>

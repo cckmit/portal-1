@@ -83,23 +83,17 @@ $error_color: #f54646;
 
 /* DROPDOWN */
 .dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 2000;
-  float: left;
-  min-width: 160px;
-  text-align: left;
-  list-style: none;
-  box-sizing: border-box;
+  display: block !important;
   background: #fff;
+  padding-top: 0px;
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 0 0 3px 3px;
   box-shadow: 1px 1px 3px -1px rgba(136, 153, 178, 0.68);
   -webkit-box-shadow: 1px 1px 3px -1px rgba(136, 153, 178, 0.68);
   border: 1px solid #ced2d7;
-  border-top: 0;
-  margin-top: 1px;
-  max-height: 300px;
-  overflow-y: auto;
+  margin-top: -1px;
+  width: 100%;
 }
 
 .dropdown-menu ul > li > a {
@@ -616,21 +610,17 @@ label.bordered:after {
     tbody {
       tr {
         td {
-          height: 70px;
+          height: 40px;
 
           > div {
-            height: 70px;
-            max-height: 70px;
+            height: 40px;
+            max-height: 40px;
             white-space: pre-line;
             overflow: hidden;
             text-overflow: ellipsis;
           }
         }
       }
-    }
-
-    .company {
-      width: 40%;
     }
   }
 }
@@ -765,7 +755,7 @@ label.bordered:after {
       font-weight: bold;
     }
     .company-main-info {
-      width: 50%;
+      width: 80%;
     }
     .company-category {
       vertical-align: top !important;
@@ -1415,34 +1405,6 @@ td.info {
 
 .width-xs {
   min-width: 100px;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.bold {
-  font-weight: bold;
-}
-
-.contact-record {
-  line-height: 25px;
-
-  label {
-    font-size: 0.9em;
-    color: #797979;
-  }
-
-  i {
-    padding-right: 7px;
-    font-size: 1.2em;
-    color: #365c92;
-  }
-}
-
-.contact-position {
-  font-size: 0.9em;
-  color: #8b8b8b;
 }
 
 .private-btn {

@@ -48,6 +48,11 @@
                         </div>
 
                         <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.productWikiLink}"/></label>
+                            <g:TextBox ui:field="wikiLink" styleName="form-control"/>
+                        </div>
+
+                        <div class="form-group col-md-12">
                             <label>
                                 <ui:text from="{lang.companySubscription}"/>
                             </label>
@@ -84,14 +89,6 @@
                 </div>
             </div>
         </div>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-block">
-                    <label><ui:text from="{lang.productWikiLink}"/></label>
-                    <g:TextBox ui:field="wikiLink" styleName="input-field"/>
-                </div>
-            </div>
-        </div>
 
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
@@ -119,6 +116,9 @@
                 </div>
             </div>
         </div>
+
+        <g:TabBar ui:field="tabPanel">
+        </g:TabBar>
 
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">

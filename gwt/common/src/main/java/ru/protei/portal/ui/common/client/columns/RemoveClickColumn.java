@@ -31,7 +31,8 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
         if ( ((Removable) value).isAllowedRemove() ) {
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref( "#" );
-            a.addClassName( "fa-1-9x fa fa-trash-o" );
+            a.addClassName( "btn btn-xs btn-default" );
+            a.setInnerHTML("<i class=\"ion ion-md-close\"></i>");
             a.setTitle( lang.remove() );
             setRemoveEnabled( a );
             cell.appendChild( a );

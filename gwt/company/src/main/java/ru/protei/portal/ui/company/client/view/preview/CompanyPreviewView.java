@@ -80,13 +80,8 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
-    public void setParentCompany( String value ) {
-        this.parentCompany.setInnerText( value );
-    }
-
-    @Override
-    public void setChildrenCompanies( String value ) {
-        this.childrenCompanies.setInnerText( value );
+    public void setCompanyLinksMessage(String value ) {
+        this.companyLinksMessage.setText( value );
     }
 
     @Override
@@ -95,23 +90,13 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
-    public void setGroupVisible( boolean value ) {
-//        groupContainer.setVisible( value );
-    }
-
-    @Override
     public Widget asWidget(boolean isForTableView) {
         if(isForTableView){
             rootWrapper.addStyleName("preview-wrapper");
-//            contacts.setClassName("header");
-//            comments.setClassName("header");
         }else {
             rootWrapper.removeStyleName("preview-wrapper");
-//            contacts.setClassName("contacts");
-//            comments.setClassName("comments");
         }
 
-//        companyNameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
@@ -137,9 +122,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     @UiField
     SpanElement email;
     @UiField
-    SpanElement parentCompany;
-    @UiField
-    SpanElement childrenCompanies;
+    InlineLabel companyLinksMessage;
     @UiField
     SpanElement addressDejure;
     @UiField

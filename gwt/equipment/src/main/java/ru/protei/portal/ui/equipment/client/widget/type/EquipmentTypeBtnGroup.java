@@ -19,7 +19,7 @@ public class EquipmentTypeBtnGroup extends ToggleBtnGroup< En_EquipmentType > {
     private void fillOptions() {
         clear();
         for ( En_EquipmentType type : En_EquipmentType.values() ) {
-            addBtnWithImage( "./images/eq_" + type.name().toLowerCase() + ".png", "btn btn-white btn-without-border eq-type", null, type, typeLang.getName( type ) );
+            addBtnWithImage( "./images/eq_" + type.name().toLowerCase() + ".png", "btn btn-white no-border eq-type", null, type, typeLang.getName( type ) );
         }
     }
 

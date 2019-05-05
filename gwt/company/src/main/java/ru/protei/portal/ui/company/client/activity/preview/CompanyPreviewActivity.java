@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
@@ -41,11 +42,6 @@ public abstract class CompanyPreviewActivity
     }
 
     private void fillView( Company value ) {
-
-        if ( value.getCompanyGroup() == null ) {
-            view.setGroupVisible( false );
-        }
-
         view.setName(value.getCname());
 
         String categoryImage = null;
@@ -54,8 +50,6 @@ public abstract class CompanyPreviewActivity
             categoryImage = "./images/company_" + enCategory.name().toLowerCase() + ".svg";
         }
         view.setCategory( categoryImage );
-
-        view.setParentCompany(  value.getParentCompanyName() );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
@@ -75,11 +69,18 @@ public abstract class CompanyPreviewActivity
         fireEvent( new SiteFolderPlatformEvents.ShowConciseTable(view.getSiteFolderContainer(), value.getId()));
     }
 
-    private void requestParentAndChildCompanies( Long parentCompanyId ) {
-        companyController.getCompany( parentCompanyId, new ShortRequestCallback<Company>()
+    private void requestParentAndChildCompanies( Long companyId ) {
+        companyController.getCompany( companyId, new ShortRequestCallback<Company>()
                 .setOnSuccess( company-> {
-                    view.setParentCompany( company.getParentCompanyName() );
-                    view.setChildrenCompanies(  CollectionUtils.stream( company.getChildCompanies() ).map( Company::getCname).collect( Collectors.joining(", ")) );
+
+                    if (StringUtils.isNotEmpty( company.getParentCompanyName()) ) {
+                        view.setCompanyLinksMessage( lang.companyIsAPartOfCompany( company.getParentCompanyName() ));
+                    }
+
+                    if ( CollectionUtils.isNotEmpty(company.getChildCompanies() )) {
+                        String companyNames = CollectionUtils.stream(company.getChildCompanies()).map(Company::getCname).collect(Collectors.joining(", "));
+                        view.setCompanyLinksMessage( lang.companyIsAHeadOfCompany( companyNames ));
+                    }
                 } ) );
 
     }
