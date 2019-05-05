@@ -1,13 +1,15 @@
 package ru.protei.portal.ui.document.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LegendElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -43,11 +45,6 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
     }
 
     @Override
-    public void setName(String name) {
-        this.name.setInnerText(name);
-    }
-
-    @Override
     public void setVersion(String text) {
         this.version.setInnerText(text);
     }
@@ -64,7 +61,7 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
 
     @Override
     public void setAnnotation(String annotation) {
-        this.annotation.setInnerText(annotation);
+        this.annotation.setText(annotation);
     }
 
     @Override
@@ -114,20 +111,31 @@ public class DocumentPreviewView extends Composite implements AbstractDocumentPr
 
 
     @UiField Anchor downloadButton;
-    @UiField LegendElement header;
-    @UiField SpanElement name;
-    @UiField SpanElement version;
-    @UiField SpanElement created;
+    @UiField
+    HeadingElement header;
+    @UiField
+    Element version;
+    @UiField
+    Element created;
     @UiField SpanElement type;
-    @UiField SpanElement annotation;
-    @UiField SpanElement project;
-    @UiField SpanElement manager;
-    @UiField SpanElement registrar;
-    @UiField SpanElement contractor;
-    @UiField SpanElement numberDecimal;
-    @UiField SpanElement numberInventory;
-    @UiField SpanElement keyWords;
-    @UiField SpanElement executionType;
+    @UiField
+    Label annotation;
+    @UiField
+    SpanElement project;
+    @UiField
+    SpanElement manager;
+    @UiField
+    SpanElement registrar;
+    @UiField
+    SpanElement contractor;
+    @UiField
+    SpanElement numberDecimal;
+    @UiField
+    SpanElement numberInventory;
+    @UiField
+    SpanElement keyWords;
+    @UiField
+    SpanElement executionType;
 
     @Inject
     @UiField
