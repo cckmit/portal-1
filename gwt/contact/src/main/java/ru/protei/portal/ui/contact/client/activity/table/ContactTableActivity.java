@@ -52,7 +52,6 @@ public abstract class ContactTableActivity
 
     @Event
     public void onShow( ContactEvents.Show event ) {
-
         this.fireEvent( new AppEvents.InitPanelName( lang.contacts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );

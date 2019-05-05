@@ -4,11 +4,11 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-md-12">
             <div class="pull-right">
-                <g:Button ui:field="add" styleName="btn btn-white" text="{lang.buttonAdd}"/>
+                <g:Button ui:field="add" styleName="btn btn-xs btn-info" text="{lang.buttonAdd}"/>
             </div>
         </div>
-        <g:FlowPanel ui:field="container" styleName="form-group col-xs-12"/>
+        <g:FlowPanel ui:field="container" styleName="form-group col-md-12"/>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -6,22 +6,21 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="form-group grid grid-indent">
+    <g:HTMLPanel styleName="form-group row">
+        <selector:ContractDatesTypeSelector ui:field="type" addStyleNames="col-md-2"/>
 
-        <selector:ContractDatesTypeSelector ui:field="type" addStyleNames="col-xs-2"/>
+        <single:SinglePicker ui:field="date" styleName="col-md-2"/>
 
-        <single:SinglePicker ui:field="date" styleName="col-xs-2"/>
-
-        <div class="col-xs-5">
+        <div class="col-md-5">
             <g:TextBox ui:field="comment" styleName="form-control"/>
         </div>
 
-        <div class="col-xs-2">
+        <div class="col-md-2">
             <label class="m-r-5"><ui:text from="{lang.contractDatesNotify}"/></label>
             <switcher:Switcher ui:field="notify"/>
         </div>
 
-        <div class="col-xs-1">
+        <div class="col-md-1">
             <g:Button ui:field="remove" styleName="btn btn-danger">
                 <i class="fa fa-trash"/>
             </g:Button>

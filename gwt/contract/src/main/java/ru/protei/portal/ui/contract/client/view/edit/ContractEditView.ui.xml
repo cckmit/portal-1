@@ -14,93 +14,121 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="main-content">
-        <div class="panel panel-default">
-            <div class="body">
-
-                <legend class="header">
-                    <ui:text from="{lang.contractCommonHeader}"/>
-                </legend>
-                <div class="grid grid-indent">
-
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractNumber}"/></label>
-                        <validatefield:ValidableTextBox ui:field="number" styleName="form-control" notNull="true"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractDirection}"/></label>
-                        <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractParent}"/></label>
-                        <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
-                    </div>
-
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractType}"/></label>
-                        <selector:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractState}"/></label>
-                        <selector:ContractStateSelector ui:field="state"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractCost}"/></label>
-                        <money:CostWithCurrencyView ui:field="costWithCurrency" defaultCurrency="RUB"/>
-                    </div>
-
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractOrganization}"/></label>
-                        <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization" reverseOrder="true"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractCurator}"/></label>
-                        <person:EmployeeButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
-                    </div>
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractManager}"/></label>
-                        <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" defaultValue="{lang.selectAccountPerson}"/>
-                    </div>
-
-                    <div class="form-group col-xs-4">
-                        <label><ui:text from="{lang.contractContragent}"/></label>
-                        <company:CompanySelector hasNullValue="false" ui:field="contragent" defaultValue="{lang.selectAccountCompany}"/>
-                    </div>
-
-                    <div class="form-group col-xs-12">
-                        <label><ui:text from="{lang.contractDescription}"/></label>
-                        <textarea:AutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
+    <g:HTMLPanel>
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.contractCommonHeader}"/>
                     </div>
                 </div>
+                <div class="card-block">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.contractNumber}"/></label>
+                            <validatefield:ValidableTextBox ui:field="number" styleName="form-control" notNull="true"/>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.contractType}"/></label>
+                            <selector:ContractTypeSelector ui:field="type" searchEnabled="true" defaultValue="{lang.contractSelectType}"/>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.contractState}"/></label>
+                            <selector:ContractStateSelector ui:field="state"/>
+                        </div>
 
-                <legend class="header">
-                    <ui:text from="{lang.contractPeriodHeader}"/>
-                </legend>
-                <div class="grid grid-indent">
-                    <div class="form-group col-xs-6">
-                        <label class="">
-                            <ui:text from="{lang.contractDateSigning}"/>
-                        </label>
-                        <single:SinglePicker ui:field="dateSigning" formatValue="dd.MM.yyyy" />
-                    </div>
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.contractDescription}"/></label>
+                            <textarea:AutoResizeTextArea ui:field="description" minRows="1" styleName="form-control"/>
+                        </div>
 
+                        <div class="form-group col-md-6">
+                            <label>
+                                <ui:text from="{lang.contractDateSigning}"/>
+                            </label>
+                            <single:SinglePicker ui:field="dateSigning" formatValue="dd.MM.yyyy" />
+                        </div>
 
-                    <div class="form-group col-xs-6">
-                        <label class="">
-                            <ui:text from="{lang.contractDateValid}"/>
-                        </label>
-                        <single:SinglePicker ui:field="dateValid" formatValue="dd.MM.yyyy" />
+                        <div class="form-group col-md-6">
+                            <label class="">
+                                <ui:text from="{lang.contractDateValid}"/>
+                            </label>
+                            <single:SinglePicker ui:field="dateValid" formatValue="dd.MM.yyyy" />
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.contractDirection}"/></label>
+                            <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}"/>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.contractParent}"/></label>
+                            <contract:ContractButtonSelector ui:field="contractParent" searchEnabled="true" defaultValue="{lang.contractParentWithout}"/>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.contractCost}"/></label>
+                            <money:CostWithCurrencyView ui:field="costWithCurrency" defaultCurrency="RUB"/>
+                        </div>
                     </div>
                 </div>
-
-                <legend class="header">
-                    <ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/>
-                </legend>
-                <list:ContractDatesList ui:field="dateList" addStyleNames="grid grid-indent"/>
             </div>
-            <div class="footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-                <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
+        </div>
+
+
+        <div class="container-fluid padding-15 bg-white">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.contractWorkGroup}"/>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label><ui:text from="{lang.contractOrganization}"/></label>
+                            <homecompany:HomeCompanyButtonSelector hasNullValue="false" ui:field="organization" reverseOrder="true"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label><ui:text from="{lang.contractCurator}"/></label>
+                            <person:EmployeeButtonSelector hasNullValue="false" ui:field="curator" defaultValue="{lang.selectAccountPerson}"/>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label><ui:text from="{lang.contractManager}"/></label>
+                            <person:EmployeeButtonSelector hasNullValue="false" ui:field="manager" defaultValue="{lang.selectAccountPerson}"/>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label><ui:text from="{lang.contractContragent}"/></label>
+                            <company:CompanySelector hasNullValue="false" ui:field="contragent" defaultValue="{lang.selectAccountCompany}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-header">
+                    <div class="card-title">
+                        <ui:text from="{lang.contractDeliveryAndPaymentsPeriodHeader}"/>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <list:ContractDatesList ui:field="dateList" addStyleNames="row"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid padding-15 bg-white">
+            <div class="card card-transparent no-margin">
+                <div class="card-block">
+                    <div class="text-right">
+                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                        <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"
+                                  text="{lang.buttonCancel}"/>
+                    </div>
+                </div>
             </div>
         </div>
     </g:HTMLPanel>

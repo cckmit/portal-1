@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.ContractDate;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -57,7 +58,12 @@ public abstract class ContractPreviewActivity implements AbstractContractPreview
 
     private void fillView( Contract value ) {
         view.setHeader(lang.contractNum(value.getNumber()));
-        view.setState(stateLang.getName(value.getState()));
+        String stateImage = null;
+        if ( value.getState() != null ) {
+            stateImage = "./images/contract_" + value.getState().name().toLowerCase() + ".png";
+        }
+        view.setState( stateImage );
+
         view.setType(typeLang.getName(value.getContractType()));
         view.setDateSigning(formatDate(value.getDateSigning()));
         view.setDateValid(formatDate(value.getDateValid()));
