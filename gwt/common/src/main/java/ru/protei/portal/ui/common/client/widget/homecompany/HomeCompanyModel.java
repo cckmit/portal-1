@@ -50,7 +50,7 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
 
     private void refreshOptions() {
 
-        companyService.getCompanyOptionList( new CompanyQuery(true), new RequestCallback< List< EntityOption > >() {
+        companyService.getCompanyOptionList( new CompanyQuery(true).onlyVisibleFields(), new RequestCallback< List< EntityOption > >() {
             @Override
             public void onError( Throwable throwable ) {
             }
