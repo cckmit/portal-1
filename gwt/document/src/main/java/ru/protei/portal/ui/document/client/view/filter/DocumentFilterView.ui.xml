@@ -27,7 +27,7 @@
 
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.created}"/></label>
-                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+                    <range:RangePicker ui:field="dateRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
                 </div>
 
                 <div class="form-group col-md-12">

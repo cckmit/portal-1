@@ -1,15 +1,13 @@
 package ru.protei.portal.ui.sitefolder.client.view.platform.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
@@ -65,7 +63,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void setComment(String value) {
-        comment.setInnerText(value);
+        comment.setText(value);
     }
 
     @Override
@@ -91,7 +89,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @UiField
-    SpanElement name;
+    HeadingElement name;
     @UiField
     SpanElement company;
     @UiField
@@ -99,7 +97,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     SpanElement parameters;
     @UiField
-    SpanElement comment;
+    Label comment;
     @UiField
     CollapsablePanel contactsContainer;
     @UiField

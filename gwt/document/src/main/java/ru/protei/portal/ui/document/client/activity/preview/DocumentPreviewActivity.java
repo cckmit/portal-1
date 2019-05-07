@@ -43,7 +43,7 @@ public abstract class DocumentPreviewActivity implements Activity, AbstractDocum
 
     private void fillView(Document document) {
         view.setHeader(document.getName() + " (#" + document.getId() + ")");
-        view.setVersion("v" +document.getVersion());
+        view.setVersion(lang.documentVersion() + " " + document.getVersion());
         view.setCreatedDate(document.getCreated() == null ? "" : DateFormatter.formatDateTime(document.getCreated()));
         view.setType(document.getType().getName());
         view.setAnnotation(document.getAnnotation());

@@ -4,11 +4,9 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="preview">
-
         <div class="card card-default">
             <div class="card-block">
                 <h4 ui:field="header"/>
-                <div ui:field="version"/>
                 <g:Anchor href="javascript:void(0)" ui:field="downloadButton" target="_blank">
                     <img src="./images/pdficon.png" class="preview-title-image_right"/>
                 </g:Anchor>
@@ -25,6 +23,7 @@
                 </div>
 
                 <g:Label styleName="small hint-text pre-formatted-info" ui:field="annotation"/>
+                <div ui:field="version"/>
 
                 <h5><ui:text from="{lang.documentCommonHeader}"/></h5>
                 <div class="small">
@@ -73,7 +72,6 @@
 
                 <h5><ui:text from="{lang.documentKeywords}"/></h5>
                 <span ui:field="keyWords"/>
-
             </div>
         </div>
     </g:HTMLPanel>

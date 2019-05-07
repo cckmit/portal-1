@@ -3,8 +3,7 @@
              xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
-             xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'
->
+             xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -67,7 +66,7 @@
             </div>
         </div>
 
-        <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable form-group col-xs-12 main-content-padding-0"
+        <w:collapse.CollapsablePanel ui:field="contactsContainer"
                                      legend="{lang.siteFolderCompanyContacts}"/>
 
         <div class="container-fluid padding-15">

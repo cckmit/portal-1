@@ -4,10 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -20,7 +17,20 @@ import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPrevie
 public class ProductPreviewView extends Composite implements AbstractProductPreviewView {
 
     @Inject
-    public void onInit() { initWidget(ourUiBinder.createAndBindUi(this)); }
+    public void onInit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+        DecoratedTabBar bar = new DecoratedTabBar();
+        bar.addTab("foo");
+        bar.addTab("bar");
+        bar.addTab("baz");
+        rootWrapper.add(bar);
+
+
+        DecoratedTabPanel panel = new DecoratedTabPanel();
+        panel.add(new Button("1"), "1");
+        panel.add(new Button( "2"), "2");
+        rootWrapper.add(panel);
+    }
 
     @Override
     protected void onDetach() {
