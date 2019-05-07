@@ -16,9 +16,9 @@ public interface AbstractProductTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
 
-    void setProductsCount(Long issuesCount );
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

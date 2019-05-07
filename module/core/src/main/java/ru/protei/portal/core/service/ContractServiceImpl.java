@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -34,23 +35,15 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
 
     @Override
-    public CoreResponse<Integer> count(AuthToken token, ContractQuery query) {
+    public CoreResponse<SearchResult<Contract>> getSearchResult(AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
             query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
         }
-        return new CoreResponse<Integer>().success(contractDAO.countByQuery(query));
-    }
-
-    @Override
-    public CoreResponse<List<Contract>> contractList(AuthToken token, ContractQuery query) {
-        if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
+        SearchResult<Contract> sr = contractDAO.getSearchResult(query);
+        if (sr == null) {
+            return new CoreResponse<SearchResult<Contract>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
-        List<Contract> list = contractDAO.getListByQuery(query);
-        if (list == null) {
-            return new CoreResponse<List<Contract>>().error(En_ResultStatus.INTERNAL_ERROR);
-        }
-        return new CoreResponse<List<Contract>>().success(list);
+        return new CoreResponse<SearchResult<Contract>>().success(sr);
     }
 
     @Override

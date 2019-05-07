@@ -2,7 +2,9 @@ package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcDAO;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
 import ru.protei.winter.jdbc.JdbcSort;
 
 import java.util.Collection;
@@ -142,6 +144,19 @@ public interface PortalBaseDAO<T> extends JdbcDAO<Long,T> {
      */
     List<T> listByQuery (DataQuery query);
 
+    /**
+     * Возвращает данные и:
+     * 1. Общее число строк в базе данных, если offset не установлен и limit установлен
+     * 2. Количество возвращаемых данных в любом другом случае
+     */
+    SearchResult<T> getSearchResultByQuery(DataQuery query);
+
+    /**
+     * Возвращает данные и:
+     * 1. Общее число строк в базе данных, если offset не установлен и limit установлен
+     * 2. Количество возвращаемых данных в любом другом случае
+     */
+    SearchResult<T> getSearchResult(JdbcQueryParameters parameters);
 
 
     <K> List<T> listByColumnIn (String column, Collection<K> values);

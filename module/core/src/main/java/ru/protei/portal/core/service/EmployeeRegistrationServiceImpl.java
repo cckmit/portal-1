@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.annotation.PostConstruct;
@@ -59,17 +60,14 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     @Override
-    public CoreResponse<Integer> count(AuthToken token, EmployeeRegistrationQuery query) {
-        return new CoreResponse<Integer>().success(employeeRegistrationDAO.countByQuery(query));
-    }
+    public CoreResponse<SearchResult<EmployeeRegistration>> getSearchResult(AuthToken token, EmployeeRegistrationQuery query) {
 
-    @Override
-    public CoreResponse<List<EmployeeRegistration>> employeeRegistrationList(AuthToken token, EmployeeRegistrationQuery query) {
-        List<EmployeeRegistration> list = employeeRegistrationDAO.getListByQuery(query);
-        if (list == null) {
-            return new CoreResponse<List<EmployeeRegistration>>().error(En_ResultStatus.INTERNAL_ERROR);
+        SearchResult<EmployeeRegistration> sr = employeeRegistrationDAO.getSearchResult(query);
+        if (sr == null) {
+            return new CoreResponse<SearchResult<EmployeeRegistration>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
-        return new CoreResponse<List<EmployeeRegistration>>().success(list);
+
+        return new CoreResponse<SearchResult<EmployeeRegistration>>().success(sr);
     }
 
     @Override

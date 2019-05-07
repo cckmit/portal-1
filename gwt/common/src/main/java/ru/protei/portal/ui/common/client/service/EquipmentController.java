@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public interface EquipmentController extends RemoteService {
      * @param query запрос
      * @return список контактов
      */
-    List< Equipment > getEquipments( EquipmentQuery query ) throws RequestFailedException;
+    SearchResult< Equipment > getEquipments( EquipmentQuery query ) throws RequestFailedException;
 
     List< EquipmentShortView > equipmentOptionList( EquipmentQuery query ) throws RequestFailedException;
 
@@ -34,8 +35,6 @@ public interface EquipmentController extends RemoteService {
     Long copyEquipment( Long equipmentId, String newName ) throws RequestFailedException;
 
     boolean removeEquipment( Long equipmentId ) throws RequestFailedException;
-
-    Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException;
 
     List<DecimalNumber> getDecimalNumbersOfEquipment( long equipmentId ) throws RequestFailedException;
 
@@ -59,7 +58,7 @@ public interface EquipmentController extends RemoteService {
     Integer getNextAvailableRegisterNumberModification( DecimalNumberQuery filter ) throws RequestFailedException;
 
 
-    List<Document> getDocuments(Long equipmentId) throws RequestFailedException;
+    SearchResult<Document> getDocuments(Long equipmentId) throws RequestFailedException;
 
     Document getDocument(Long id) throws RequestFailedException;
 

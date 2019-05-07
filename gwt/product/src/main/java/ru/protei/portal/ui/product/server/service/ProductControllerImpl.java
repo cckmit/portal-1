@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
@@ -13,8 +14,10 @@ import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.service.ProductController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -26,28 +29,13 @@ import java.util.List;
 public class ProductControllerImpl implements ProductController {
 
     @Override
-    public long getProductsCount(ProductQuery query) throws RequestFailedException{
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug( "getProductsCount(): query={}", query );
-        CoreResponse<Long> result = productService.count( descriptor.makeAuthToken(), query );
-        return result.isOk() ? result.getData() : 0L;
-    }
-
-    @Override
-    public List< DevUnit > getProductList( ProductQuery productQuery ) throws RequestFailedException {
+    public SearchResult< DevUnit > getProductList( ProductQuery productQuery ) throws RequestFailedException {
 
         log.debug( "getProductList(): search={} | showDeprecated={} | sortField={} | order={}",
                 productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse < List< DevUnit > > result = productService.productList( descriptor.makeAuthToken(), productQuery );
-
-        if ( result.isError() )
-            throw new RequestFailedException( result.getStatus() );
-
-        return result.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(productService.getSearchResult(token, productQuery));
 
    }
 

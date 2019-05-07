@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.table.AbstractEmployeeRegistrationTableView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -53,8 +54,13 @@ public class EmployeeRegistrationTableView extends Composite implements Abstract
     }
 
     @Override
-    public void setRecordCount(int count) {
-        table.setTotalRecords(count);
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.DecimalNumber;
-import ru.protei.portal.core.model.ent.Document;
-import ru.protei.portal.core.model.ent.Equipment;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
@@ -18,8 +15,10 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.service.DocumentService;
 import ru.protei.portal.core.service.EquipmentService;
 import ru.protei.portal.ui.common.client.service.EquipmentController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -31,20 +30,14 @@ import java.util.List;
 public class EquipmentControllerImpl implements EquipmentController {
 
     @Override
-    public List<Equipment> getEquipments( EquipmentQuery query ) throws RequestFailedException {
+    public SearchResult<Equipment> getEquipments(EquipmentQuery query ) throws RequestFailedException {
 
         log.debug( "get equipments: name={} | types={} | organizationCodes={} | classifierCode={} | regNum={}",
                 query.getSearchString(), query.getTypes(), query.getOrganizationCodes(), query.getClassifierCode(),
                 query.getRegisterNumber() );
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<Equipment>> response = equipmentService.equipmentList( descriptor.makeAuthToken(), query );
-
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(equipmentService.getSearchResult(token, query));
     }
 
     @Override
@@ -144,15 +137,6 @@ public class EquipmentControllerImpl implements EquipmentController {
     }
 
     @Override
-    public Long getEquipmentCount( EquipmentQuery query ) throws RequestFailedException {
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug( "get equipment count(): query={}", query );
-        return equipmentService.count( descriptor.makeAuthToken(), query ).getData();
-    }
-
-    @Override
     public List<DecimalNumber> getDecimalNumbersOfEquipment(long equipmentId) throws RequestFailedException {
 
         log.debug("get decimal numbers of equipment, id: {}", equipmentId);
@@ -233,18 +217,12 @@ public class EquipmentControllerImpl implements EquipmentController {
     }
 
     @Override
-    public List<Document> getDocuments(Long equipmentId) throws RequestFailedException {
+    public SearchResult<Document> getDocuments(Long equipmentId) throws RequestFailedException {
 
         log.debug("getDocuments: equipmentId={}", equipmentId);
 
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<Document>> response = documentService.documentList(descriptor.makeAuthToken(), equipmentId);
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(documentService.getSearchResult(token, equipmentId));
     }
 
     @Override

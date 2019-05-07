@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface EquipmentControllerAsync {
     /**
      * Получение списка оборудования
      */
-    void getEquipments( EquipmentQuery query, AsyncCallback<List<Equipment>> async );
+    void getEquipments( EquipmentQuery query, AsyncCallback<SearchResult<Equipment>> async );
 
     /**
      * Получение данных об оборудовании
@@ -29,11 +30,6 @@ public interface EquipmentControllerAsync {
      * Сохранение изменения
      */
     void saveEquipment( Equipment p, AsyncCallback<Equipment> callback );
-
-    /**
-     * Получение счетчика по оборудованию
-     */
-    void getEquipmentCount( EquipmentQuery query, AsyncCallback<Long> callback );
 
     void getDecimalNumbersOfEquipment(long equipmentId, AsyncCallback<List<DecimalNumber>> async);
 
@@ -64,7 +60,7 @@ public interface EquipmentControllerAsync {
     void equipmentOptionList( EquipmentQuery query, AsyncCallback< List< EquipmentShortView > > async );
 
 
-    void getDocuments(Long equipmentId, AsyncCallback<List<Document>> async);
+    void getDocuments(Long equipmentId, AsyncCallback<SearchResult<Document>> async);
 
     void getDocument(Long id, AsyncCallback<Document> async);
 

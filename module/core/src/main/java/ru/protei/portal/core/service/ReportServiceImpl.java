@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.BaseQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -110,26 +111,15 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse<List<Report>> getReportsByQuery(AuthToken token, ReportQuery query) {
+    public CoreResponse<SearchResult<Report>> getSearchResult(AuthToken token, ReportQuery query) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
-        List<Report> reports = reportDAO.getReportsByQuery(descriptor.getPerson().getId(), query, null);
-
-        return new CoreResponse<List<Report>>().success(reports);
-    }
-
-    @Override
-    public CoreResponse<Long> countReportsByQuery(AuthToken token, ReportQuery query) {
-
-        UserSessionDescriptor descriptor = authService.findSession(token);
-
-        Long count = reportDAO.countReportsByQuery(descriptor.getPerson().getId(), query, null);
-
-        if (count == null) {
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
+        SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, null);
+        if (sr == null) {
+            return new CoreResponse<SearchResult<Report>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return new CoreResponse<Long>().success(count);
+        return new CoreResponse<SearchResult<Report>>().success(sr);
     }
 
     @Override
@@ -165,8 +155,8 @@ public class ReportServiceImpl implements ReportService {
     public CoreResponse removeReports(AuthToken token, ReportQuery query, Set<Long> exclude) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
-        List<Report> reports = reportDAO.getReportsByQuery(descriptor.getPerson().getId(), query, exclude);
-        removeReports(reports);
+        SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, exclude);
+        removeReports(sr.getResults());
 
         return new CoreResponse<>().success(null);
     }

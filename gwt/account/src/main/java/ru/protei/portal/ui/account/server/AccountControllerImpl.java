@@ -6,16 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.ui.common.client.service.AccountController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * Реализация сервиса по работе с учетными записями
@@ -24,18 +26,11 @@ import java.util.List;
 public class AccountControllerImpl implements AccountController {
 
     @Override
-    public List< UserLogin > getAccounts( AccountQuery query ) throws RequestFailedException {
-
-        log.debug( "getAccounts(): query={}", query);
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse< List< UserLogin > > response = accountService.accountList( descriptor.makeAuthToken(), query );
-
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
+    public SearchResult<UserLogin> getAccounts(AccountQuery query) throws RequestFailedException {
+        log.debug("getAccounts(): query={}", query);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        CoreResponse<SearchResult<UserLogin>> result = accountService.getSearchResult(token, query);
+        return ServiceUtils.checkResultAndGetData(result);
     }
 
     @Override
@@ -87,15 +82,6 @@ public class AccountControllerImpl implements AccountController {
         }
 
         throw new RequestFailedException( response.getStatus() );
-    }
-
-    @Override
-    public Long getAccountsCount( AccountQuery query ) throws RequestFailedException {
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug( "getAccountsCount(): query={}", query );
-        return accountService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     @Override

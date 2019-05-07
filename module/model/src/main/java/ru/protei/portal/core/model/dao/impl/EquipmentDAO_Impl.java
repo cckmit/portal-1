@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
@@ -23,23 +24,9 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
     private final static String DECIMAL_NUMBER_JOIN = "LEFT JOIN decimal_number DN ON DN.entity_id = equipment.id";
 
     @Override
-    public List<Equipment> getListByQuery(EquipmentQuery query) {
-        SqlCondition where = createSqlCondition(query);
-        return getList(
-                new JdbcQueryParameters().
-                        withJoins(DECIMAL_NUMBER_JOIN).
-                        withCondition(where.condition, where.args).
-                        withDistinct(true).
-                        withOffset(query.getOffset()).
-                        withLimit(query.getLimit()).
-                        withSort( TypeConverters.createSort( query ) )
-        );
-    }
-
-    @Override
-    public Long countByQuery( EquipmentQuery query ) {
-        SqlCondition where = createSqlCondition(query);
-        return (long) getObjectsCount( where.condition, where.args, DECIMAL_NUMBER_JOIN, true );
+    public SearchResult<Equipment> getSearchResult(EquipmentQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
     }
 
     @Override
@@ -53,6 +40,17 @@ public class EquipmentDAO_Impl extends PortalBaseJdbcDAO<Equipment> implements E
         }
 
         return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(EquipmentQuery query) {
+        SqlCondition where = createSqlCondition(query);
+        return new JdbcQueryParameters().
+                withJoins(DECIMAL_NUMBER_JOIN).
+                withCondition(where.condition, where.args).
+                withDistinct(true).
+                withOffset(query.getOffset()).
+                withLimit(query.getLimit()).
+                withSort(TypeConverters.createSort(query));
     }
 
     @SqlConditionBuilder

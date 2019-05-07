@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -72,16 +73,17 @@ public class CaseServiceImpl implements CaseService {
     CaseStateWorkflowService caseStateWorkflowService;
 
     @Override
-    public CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query ) {
+    public CoreResponse<SearchResult<CaseShortView>> getSearchResult(AuthToken token, CaseQuery query) {
 
-        applyFilterByScope( token, query );
+        applyFilterByScope(token, query);
 
-        List<CaseShortView> list = caseShortViewDAO.getCases( query );
+        SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
 
-        if ( list == null )
-            return new CoreResponse<List<CaseShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+        if (sr == null) {
+            return new CoreResponse<SearchResult<CaseShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
 
-        return new CoreResponse<List<CaseShortView>>().success(list);
+        return new CoreResponse<SearchResult<CaseShortView>>().success(sr);
     }
 
     @Override
@@ -307,19 +309,6 @@ public class CaseServiceImpl implements CaseService {
             return new CoreResponse<List<En_CaseState>>().error(En_ResultStatus.GET_DATA_ERROR);
 
         return new CoreResponse<List<En_CaseState>>().success(states);
-    }
-
-    @Override
-    public CoreResponse<Long> count( AuthToken token, CaseQuery query ) {
-
-        applyFilterByScope( token, query );
-
-        Long count = caseShortViewDAO.count(query);
-
-        if (count == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
-
-        return new CoreResponse<Long>().success(count);
     }
 
     @Override

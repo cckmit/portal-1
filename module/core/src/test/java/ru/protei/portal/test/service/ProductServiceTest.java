@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.service.ProductService;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
@@ -44,15 +45,16 @@ public class ProductServiceTest {
 
         Assert.assertNotNull(devUnitDAO.persist(product));
 
-        CoreResponse<List<DevUnit>> result = productService.productList( null, new ProductQuery() );
+        CoreResponse<SearchResult<DevUnit>> result = productService.getSearchResult( null, new ProductQuery() );
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getDataAmountTotal() > 0);
 
         Assert.assertNotNull(result.getData());
-        Assert.assertTrue(result.getData().size() > 0);
+        Assert.assertNotNull(result.getData().getResults());
+        Assert.assertTrue(result.getData().getResults().size() > 0);
 
-        log.info(result.getData().get(0).getName());
+        log.info(result.getData().getResults().get(0).getName());
 
         Assert.assertTrue(devUnitDAO.remove(product));
     }

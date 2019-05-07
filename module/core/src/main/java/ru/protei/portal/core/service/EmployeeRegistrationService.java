@@ -8,16 +8,14 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 public interface EmployeeRegistrationService {
 
     @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
-    CoreResponse<Integer> count(AuthToken token, EmployeeRegistrationQuery query);
-
-    @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
-    CoreResponse<List<EmployeeRegistration>> employeeRegistrationList(AuthToken token, EmployeeRegistrationQuery query);
+    CoreResponse<SearchResult<EmployeeRegistration>> getSearchResult(AuthToken token, EmployeeRegistrationQuery query);
 
     @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
     CoreResponse<EmployeeRegistration> getEmployeeRegistration(AuthToken token, Long id);

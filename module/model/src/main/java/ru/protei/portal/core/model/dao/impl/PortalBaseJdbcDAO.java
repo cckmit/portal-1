@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DataQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
@@ -111,6 +112,27 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
     @Override
     public List<T> listByQuery(DataQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getList(parameters);
+    }
+
+    @Override
+    public SearchResult<T> getSearchResultByQuery(DataQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
+    }
+
+    @Override
+    public SearchResult<T> getSearchResult(JdbcQueryParameters parameters) {
+        if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
+            return super.getSearchResult(parameters);
+        } else {
+            return new SearchResult<>(getList(parameters));
+        }
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(DataQuery query) {
+
         SqlCondition where = createSqlCondition(query);
 
         JdbcQueryParameters parameters = new JdbcQueryParameters();
@@ -119,10 +141,10 @@ public abstract class PortalBaseJdbcDAO<T> extends JdbcBaseDAO<Long,T> implement
 
         parameters.withOffset(query.getOffset());
         parameters.withLimit(query.getLimit());
-        parameters.withSort(TypeConverters.createSort( query ));
-        return getList(parameters);
-    }
+        parameters.withSort(TypeConverters.createSort(query));
 
+        return parameters;
+    }
 
     public Long getMaxId () {
         return getMaxValue(getIdColumnName(), Long.class, null, (Object[])null);

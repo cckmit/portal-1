@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.service.ContactService;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.List;
@@ -58,12 +59,13 @@ public class ContactServiceTest extends BaseServiceTest {
         Assert.assertNotNull(person.getId());
 
         ContactQuery query = new ContactQuery((Long) null, null, person.getDisplayName(), En_SortField.person_full_name, En_SortDir.ASC);
-        CoreResponse<List<Person>> result = service.contactList(getAuthToken(), query);
+        CoreResponse<SearchResult<Person>> result = service.getContactsSearchResult(getAuthToken(), query);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
-        Assert.assertTrue(result.getData().size() > 0);
+        Assert.assertNotNull(result.getData().getResults());
+        Assert.assertTrue(result.getData().getResults().size() > 0);
 
         for (Person p : result.getData()) {
             CoreResponse<Person> x = service.getContact(getAuthToken(), p.getId());

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +16,11 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Реализация сервиса управления контактами
@@ -43,6 +42,15 @@ public class ContactServiceImpl implements ContactService {
     PolicyService policyService;
 
     @Override
+    public CoreResponse<SearchResult<Person>> getContactsSearchResult(AuthToken token, ContactQuery query) {
+        SearchResult<Person> sr = personDAO.getContactsSearchResult(query);
+        if (sr == null) {
+            return new CoreResponse<SearchResult<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+        return new CoreResponse<SearchResult<Person>>().success(sr);
+    }
+
+    @Override
     public CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query) {
         List<Person> list = personDAO.getContacts(query);
 
@@ -55,16 +63,6 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public CoreResponse<List<Person>> contactList(AuthToken token, ContactQuery query) {
-        List<Person> list = personDAO.getContacts(query);
-
-        if (list == null)
-            return new CoreResponse<List<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        return new CoreResponse<List<Person>>().success(list);
-    }
-
-    @Override
     public CoreResponse<Person> getContact( AuthToken token, long id ) {
 
         Person person = personDAO.getContact(id);
@@ -72,7 +70,6 @@ public class ContactServiceImpl implements ContactService {
         return person != null ? new CoreResponse<Person>().success(person)
                 : new CoreResponse<Person>().error(En_ResultStatus.NOT_FOUND);
     }
-
 
     @Override
     public CoreResponse<Person> saveContact( AuthToken token, Person p ) {
@@ -170,13 +167,6 @@ public class ContactServiceImpl implements ContactService {
         }
 
         return new CoreResponse<Boolean>().success(result);
-    }
-
-
-    @Override
-    public CoreResponse<Long> count( AuthToken token, ContactQuery query ) {
-
-        return new CoreResponse<Long>().success(personDAO.count(query));
     }
 
     private void removePersonEmailsFromCompany(Person person) {

@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.service.CompanyController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -32,22 +33,16 @@ import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 public class CompanyControllerImpl implements CompanyController {
 
     @Override
-    public List< Company > getCompanies( CompanyQuery companyQuery) throws RequestFailedException {
+    public SearchResult< Company > getCompanies(CompanyQuery companyQuery) throws RequestFailedException {
 
         List< Long > categoryIds = companyQuery.getCategoryIds();
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
         log.debug( "getCompanies(): searchPattern={} | categories={} | sortField={} | sortDir={}",
                 companyQuery.getSearchString(), categoryIds,
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
-        CoreResponse< List<Company>> result = companyService.companyList( descriptor.makeAuthToken(), companyQuery );
-
-        if (result.isError())
-            throw new RequestFailedException(result.getStatus());
-
-        return result.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(companyService.getSearchResult(token, companyQuery));
     }
 
     @Override
@@ -200,15 +195,6 @@ public class CompanyControllerImpl implements CompanyController {
         descriptor.getCompany().setSubscriptions(companySubscriptionResult.getData());
 
         return companySubscriptionResult.getData();
-    }
-
-    @Override
-    public long getCompaniesCount(CompanyQuery query) throws RequestFailedException{
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug( "getCompaniesCount(): query={}", query );
-        CoreResponse<Long> result = companyService.countCompanies( descriptor.makeAuthToken(), query );
-        return result.isOk() ? result.getData() : 0L;
     }
 
     @Override

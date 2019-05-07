@@ -24,6 +24,7 @@ import ru.protei.portal.ui.issue.client.view.table.columns.ContactColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.ManagerColumn;
 import ru.protei.portal.ui.issue.client.view.table.columns.NumberColumn;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 
 /**
@@ -72,7 +73,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     @Override
     public HasWidgets getFilterContainer () { return filterContainer; }
 
-
     @Override
     public void hideElements() {
         hideContact.setVisibility( false );
@@ -102,16 +102,6 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     }
 
     @Override
-    public void setIssuesCount( Long issuesCount ) {
-        table.setTotalRecords( issuesCount.intValue() );
-    }
-
-    @Override
-    public int getPageSize() {
-        return table.getPageSize();
-    }
-
-    @Override
     public int getPageCount() {
         return table.getPageCount();
     }
@@ -125,6 +115,16 @@ public class IssueTableView extends Composite implements AbstractIssueTableView 
     public void updateRow(CaseShortView item) {
         if(item != null)
             table.updateRow(item);
+    }
+
+    @Override
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     private void initTable () {

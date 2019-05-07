@@ -9,6 +9,7 @@ import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class CaseServiceServiceTest extends BaseServiceTest {
     @Test
     public void getCaseObjectsTest() throws Exception {
         assertNotNull(caseService);
-        List<CaseShortView> all = checkResultAndGetData(caseService.caseObjectList(getAuthToken(), new CaseQuery()));
+        SearchResult<CaseShortView> all = checkResultAndGetData(caseService.getSearchResult(getAuthToken(), new CaseQuery()));
         assertNotNull(all);
     }
 }

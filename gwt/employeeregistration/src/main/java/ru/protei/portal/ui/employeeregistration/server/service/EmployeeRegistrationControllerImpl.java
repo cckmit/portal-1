@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
@@ -13,33 +14,21 @@ import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.service.EmployeeRegistrationService;
 import ru.protei.portal.core.service.EmployeeRegistrationServiceImpl;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Service("EmployeeRegistrationController")
 public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationController {
+
     @Override
-    public List<EmployeeRegistration> getEmployeeRegistrations(EmployeeRegistrationQuery query) throws RequestFailedException {
+    public SearchResult<EmployeeRegistration> getEmployeeRegistrations(EmployeeRegistrationQuery query) throws RequestFailedException {
         log.debug(" get employee registrations: offset={} | limit={}", query.getOffset(), query.getLimit());
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<EmployeeRegistration>> response = employeeRegistrationService.employeeRegistrationList(descriptor.makeAuthToken(), query);
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
-    }
-
-    @Override
-    public Integer getEmployeeRegistrationCount(EmployeeRegistrationQuery query) throws RequestFailedException {
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug(" get employee registration count(): query={}", query);
-        return employeeRegistrationService.count(descriptor.makeAuthToken(), query).getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(employeeRegistrationService.getSearchResult(token, query));
     }
 
     @Override

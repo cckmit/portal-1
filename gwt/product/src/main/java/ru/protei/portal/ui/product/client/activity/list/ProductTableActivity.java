@@ -16,9 +16,12 @@ import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Активность таблицы продуктов
@@ -49,7 +52,7 @@ public abstract class ProductTableActivity implements
         view.getPagerContainer().add( pagerView.asWidget() );
 
         view.getFilterContainer().add(event.filter);
-        requestProductsCount();
+        loadTable();
     }
 
     @Event
@@ -59,7 +62,7 @@ public abstract class ProductTableActivity implements
         }
 
         this.query = event.query;
-        requestProductsCount();
+        loadTable();
     }
 
     @Override
@@ -94,40 +97,28 @@ public abstract class ProductTableActivity implements
 
     @Override
     public void loadData( int offset, int limit, AsyncCallback<List<DevUnit>> asyncCallback ) {
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        productService.getProductList(query, new RequestCallback< List <DevUnit> >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess( List< DevUnit > products ) {
-                asyncCallback.onSuccess( products );
-            }
-        });
-
+        boolean isFirstChunk = offset == 0;
+        query.setOffset(offset);
+        query.setLimit(limit);
+        productService.getProductList(query, new FluentCallback<SearchResult<DevUnit>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                    }
+                }));
     }
 
-    private void requestProductsCount() {
-        view.clearRecords();
+    private void loadTable() {
         animation.closeDetails();
-
-        productService.getProductsCount(query, new RequestCallback< Long >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess( Long count ) {
-                view.setProductsCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-            }
-        });
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     @Inject

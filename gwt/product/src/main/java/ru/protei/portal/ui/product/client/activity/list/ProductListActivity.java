@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemActivity;
 import ru.protei.portal.ui.product.client.activity.item.AbstractProductItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -112,15 +113,15 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
         itemViewToModel.clear();
 
         productService.getProductList(query,
-                new RequestCallback<List<DevUnit>>() {
+                new RequestCallback<SearchResult<DevUnit>>() {
                     @Override
                     public void onError(Throwable throwable) {
                         fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                     }
 
                     @Override
-                    public void onSuccess(List<DevUnit> result) {
-                        fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
+                    public void onSuccess(SearchResult<DevUnit> result) {
+                        fillViewHandler = taskService.startPeriodicTask( result.getResults(), fillViewer, 50, 50 );
                     }
                 });
     }

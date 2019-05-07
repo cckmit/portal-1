@@ -17,6 +17,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -51,31 +52,31 @@ public class EquipmentServiceImpl implements EquipmentService {
     DocumentService documentService;
 
     @Override
-    public CoreResponse<List<Equipment>> equipmentList(AuthToken token, EquipmentQuery query ) {
+    public CoreResponse<SearchResult<Equipment>> getSearchResult(AuthToken token, EquipmentQuery query) {
 
-        List<Equipment> list = equipmentDAO.getListByQuery(query);
-
-        if (list == null) {
-            return new CoreResponse<List<Equipment>>().error(En_ResultStatus.GET_DATA_ERROR);
+        SearchResult<Equipment> sr = equipmentDAO.getSearchResult(query);
+        if (sr == null) {
+            return new CoreResponse<SearchResult<Equipment>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        fillDecimalNumbers(list);
+        fillDecimalNumbers(sr.getResults());
 
-        return new CoreResponse<List<Equipment>>().success(list);
+        return new CoreResponse<SearchResult<Equipment>>().success(sr);
     }
 
     @Override
     public CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query ) {
 
-        List<Equipment > list = equipmentDAO.getListByQuery(query);
-
-        if (list == null) {
+        SearchResult<Equipment> sr = equipmentDAO.getSearchResult(query);
+        if (sr == null) {
             return new CoreResponse<List<EquipmentShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        fillDecimalNumbersWithoutLinkedEquipmentDN(list);
+        fillDecimalNumbersWithoutLinkedEquipmentDN(sr.getResults());
 
-        List<EquipmentShortView> result = list.stream().map(EquipmentShortView::fromEquipment).collect(Collectors.toList());
+        List<EquipmentShortView> result = sr.getResults().stream()
+                .map(EquipmentShortView::fromEquipment)
+                .collect(Collectors.toList());
 
         return new CoreResponse<List<EquipmentShortView>>().success(result,result.size());
     }
@@ -209,12 +210,6 @@ public class EquipmentServiceImpl implements EquipmentService {
         return new CoreResponse<Boolean>().success( removeStatus );
     }
 
-    @Override
-    public CoreResponse<Long> count( AuthToken token, EquipmentQuery query ) {
-
-        return new CoreResponse<Long>().success(equipmentDAO.countByQuery(query));
-    }
-
     private boolean updateDecimalNumbers( Equipment equipment ) {
         Long equipmentId = equipment.getId();
         log.info( "binding update to linked decimal numbers for equipmentId = {}", equipmentId );
@@ -325,13 +320,13 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private void removeLinkedDocuments(AuthToken token, Long equipmentId) {
 
-        CoreResponse<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
+        CoreResponse<SearchResult<Document>> documentsResponse = documentService.getSearchResult(token, equipmentId);
 
         if (documentsResponse.isError()) {
             return;
         }
 
-        List<Document> documents = documentsResponse.getData();
+        List<Document> documents = documentsResponse.getData().getResults();
 
         if (CollectionUtils.isEmpty(documents)) {
             return;

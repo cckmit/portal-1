@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableActivity;
 import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 public class ProductTableView extends Composite implements AbstractProductTableView{
 
@@ -75,13 +76,13 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     }
 
     @Override
-    public void setProductsCount(Long issuesCount) {
-        table.setTotalRecords( issuesCount.intValue() );
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

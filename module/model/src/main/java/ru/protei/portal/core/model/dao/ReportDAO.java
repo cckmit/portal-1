@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_ReportStatus;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
@@ -22,24 +23,14 @@ public interface ReportDAO extends PortalBaseDAO<Report> {
     Report getReport(Long creatorId, Long reportId);
 
     /**
-     * Получить информацию об отчетах по фильтру
+     * Получить {@code SearchResult} по фильтру
      *
      * @param creatorId  идентификатор профиля, который является создателем отчетов
      * @param query      фильтр для выборки отчетов
      * @param excludeIds не выбирать указанные идентификаторы
      * @return список отчетов
      */
-    List<Report> getReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds);
-
-    /**
-     * Получить количество отчетов по фильтру
-     *
-     * @param creatorId  идентификатор профиля, который является создателем отчетов
-     * @param query      фильтр для выборки отчетов
-     * @param excludeIds не выбирать указанные идентификаторы
-     * @return количество отчетов
-     */
-    Long countReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds);
+    SearchResult<Report> getSearchResult(Long creatorId, ReportQuery query, Set<Long> excludeIds);
 
     /**
      * Получить информацию об отчетах по фильтру

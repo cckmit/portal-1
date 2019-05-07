@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -21,13 +22,11 @@ public interface ContactController extends RemoteService {
      * @param query запрос
      * @return список контактов
      */
-    List< Person > getContacts ( ContactQuery query ) throws RequestFailedException;
+    SearchResult< Person > getContacts (ContactQuery query ) throws RequestFailedException;
 
     Person getContact ( long id ) throws RequestFailedException;
 
     Person saveContact ( Person p ) throws RequestFailedException;
-
-    Long getContactsCount( ContactQuery query ) throws RequestFailedException;
 
     boolean fireContact( long id ) throws RequestFailedException;
 

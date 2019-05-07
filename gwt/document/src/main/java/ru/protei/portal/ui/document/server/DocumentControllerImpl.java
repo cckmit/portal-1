@@ -7,33 +7,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.service.DocumentService;
 import ru.protei.portal.ui.common.client.service.DocumentController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Service("DocumentController")
 public class DocumentControllerImpl implements DocumentController {
+
     @Override
-    public List<Document> getDocuments(DocumentQuery query) throws RequestFailedException {
-        log.debug("get documents: offset={} | limit={}",
-                query.getOffset(), query.getLimit());
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<Document>> response = documentService.documentList(descriptor.makeAuthToken(), query);
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
+    public SearchResult<Document> getDocuments(DocumentQuery query) throws RequestFailedException {
+        log.debug("get documents: offset={} | limit={}", query.getOffset(), query.getLimit());
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(documentService.getSearchResult(token, query));
     }
 
     @Override
@@ -85,26 +80,12 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
-    public Integer getDocumentCount(DocumentQuery query) throws RequestFailedException {
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug("get document count(): query={}", query);
-        return documentService.count(descriptor.makeAuthToken(), query).getData();
-    }
-
-    @Override
-    public List<Document> getProjectDocuments(Long projectId) throws RequestFailedException {
+    public SearchResult<Document> getProjectDocuments(Long projectId) throws RequestFailedException {
         log.debug("get projectDocuments, id: {}", projectId);
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<Document>> response = documentService.getProjectDocuments(descriptor.makeAuthToken(), projectId);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        CoreResponse<SearchResult<Document>> response = documentService.getProjectDocuments(token, projectId);
         log.debug("get ProjectDocuments, id: {} -> {} ", projectId, response.isError() ? "error" : response.getData());
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
+        return ServiceUtils.checkResultAndGetData(response);
     }
 
 

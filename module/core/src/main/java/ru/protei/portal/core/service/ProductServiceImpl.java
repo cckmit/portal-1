@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -53,6 +54,17 @@ public class ProductServiceImpl implements ProductService {
     ProductSubscriptionDAO productSubscriptionDAO;
 
     @Override
+    public CoreResponse<SearchResult<DevUnit>> getSearchResult(AuthToken token, ProductQuery query) {
+
+        SearchResult<DevUnit> sr = devUnitDAO.getSearchResultByQuery(query);
+        if (sr == null) {
+            return new CoreResponse<SearchResult<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        return new CoreResponse<SearchResult<DevUnit>>().success(sr);
+    }
+
+    @Override
     public CoreResponse<List<ProductShortView>> shortViewList(AuthToken token, ProductQuery query ) {
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
@@ -63,17 +75,6 @@ public class ProductServiceImpl implements ProductService {
         List<ProductShortView> result = list.stream().map(DevUnit::toProductShortView).collect(Collectors.toList());
 
         return new CoreResponse<List<ProductShortView>>().success(result,result.size());
-    }
-
-    @Override
-    public CoreResponse<List<DevUnit>> productList( AuthToken token, ProductQuery query ) {
-
-        List<DevUnit> list = devUnitDAO.listByQuery(query);
-
-        if (list == null)
-            return new CoreResponse<List<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        return new CoreResponse<List<DevUnit>>().success(list);
     }
 
     @Override
@@ -183,12 +184,6 @@ public class ProductServiceImpl implements ProductService {
 
     private <T> CoreResponse<T> createUndefinedError() {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
-    }
-
-
-    @Override
-    public CoreResponse<Long> count(AuthToken token, ProductQuery query) {
-        return new CoreResponse<Long>().success(devUnitDAO.count(query));
     }
 
     private boolean updateProductSubscriptions( Long devUnitId, List<DevUnitSubscription> devUnitSubscriptions ) {

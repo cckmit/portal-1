@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,16 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
+    }
+
+    @Override
     public HasWidgets getPagerContainer() {
         return pagerContainer;
     }
@@ -84,16 +95,6 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     public void clearRecords() {
         table.clearCache();
         table.clearRows();
-    }
-
-    @Override
-    public void setRecordCount( Long count ) {
-        table.setTotalRecords( count.intValue() );
-    }
-
-    @Override
-    public int getPageSize() {
-        return table.getPageSize();
     }
 
     @Override
