@@ -48,7 +48,6 @@ public abstract class EmployeePreviewActivity implements AbstractEmployeePreview
         AbstractPositionItemView itemView = factory.get();
         itemView.setActivity( this );
 
-        itemView.setCompany( workerEntry.getCompanyName() );
         itemView.setDepartment( workerEntry.getDepartmentName() );
         itemView.setPosition( workerEntry.getPositionName() );
         //itemView.showMainInfo( workerEntry.isMain() );
