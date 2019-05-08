@@ -41,6 +41,7 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasWidgets emailsContainer();
 
     HasWidgets tableContainer();
+    HasWidgets siteFolderContainer();
 
     void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter );
 

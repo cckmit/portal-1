@@ -52,4 +52,15 @@ public class SiteFolderPlatformEvents {
     }
 
     public static class ChangeModel {}
+
+    public static class ShowConciseTable {
+
+        public ShowConciseTable(HasWidgets parent, Long companyId) {
+            this.parent = parent;
+            this.companyId = companyId;
+        }
+
+        public HasWidgets parent;
+        public Long companyId;
+    }
 }

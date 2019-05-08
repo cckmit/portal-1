@@ -1647,6 +1647,7 @@ td.info {
 
 .dropdown-searchbox {
   position: relative;
+  z-index: 2000;
 }
 
 .dropdown-addbutton {
@@ -1897,11 +1898,12 @@ td.info {
   font-weight: bold;
 }
 
-.option-canceled .option-name, .label-canceled {
+.option-canceled .option-name, .label-canceled,
+.label-paused, .option-paused {
   background-color: #868686;
 }
 
-.case-canceled {
+.case-canceled, .case-paused {
   color: #868686;
   font-weight: bold;
 }

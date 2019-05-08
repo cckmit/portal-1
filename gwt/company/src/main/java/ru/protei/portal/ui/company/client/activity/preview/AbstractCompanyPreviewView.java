@@ -39,5 +39,7 @@ public interface AbstractCompanyPreviewView extends IsWidget {
 
     HasWidgets getContactsContainer();
 
+    HasWidgets getSiteFolderContainer();
+
     void setSubscriptionEmails(String value);
 }

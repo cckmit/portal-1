@@ -54,6 +54,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         view.tableContainer().clear();
+        view.siteFolderContainer().clear();
 
         if(event.getCompanyId() == null) {
             fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
@@ -61,6 +62,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }else {
             fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
             fireEvent( new ContactEvents.ShowConciseTable( view.tableContainer(), event.getCompanyId() ) );
+            fireEvent( new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), event.getCompanyId()));
             requestCompany(event.getCompanyId());
         }
     }

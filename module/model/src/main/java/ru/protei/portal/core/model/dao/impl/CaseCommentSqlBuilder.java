@@ -48,6 +48,11 @@ public class CaseCommentSqlBuilder {
                         )
                         .append(")");
             }
+
+            if (query.isViewPrivate() != null) {
+                condition.append( " and case_comment.private_flag=?" );
+                args.add( query.isViewPrivate() ? 1 : 0 );
+            }
         });
     }
 }

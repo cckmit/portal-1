@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="add-audit-type-for-employee-registration" author="turik">
+    <changeSet id="add-audit-type-for-employee-registration" author="turik" failOnError="false">
         <insert tableName="audit_type">
             <column name="id" value="48"/>
             <column name="code" value="EMPLOYEE_REGISTRATION_MODIFY"/>

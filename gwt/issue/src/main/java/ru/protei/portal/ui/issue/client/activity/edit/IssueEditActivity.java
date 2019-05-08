@@ -105,7 +105,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             issue.setInitiator(event.person);
             issue.setInitiatorId(event.person.getId());
             if (issue.getInitiator() != null) {
-                view.initiator().setValue(PersonShortView.fromPerson(issue.getInitiator()));
+                view.initiator().setValue(issue.getInitiator().toFullNameShortView());
             }
         }
     }
@@ -186,6 +186,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                             .withCaseId(issue.getId())
                             .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                             .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                            .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                            .withPrivateCase(issue.isPrivateCase())
                             .build());
                 }
             }
@@ -286,6 +288,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     .withCaseId(issue.getId())
                     .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT))
                     .withElapsedTimeEnabled(policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW))
+                    .withPrivateVisible(!issue.isPrivateCase() && policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW))
+                    .withPrivateCase(issue.isPrivateCase())
                     .build());
         }
 
@@ -298,7 +302,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
-        view.tags().setValue(CollectionUtils.emptyIfNull(issue.getTags()));
+        view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
         view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
 
         view.name().setValue(issue.getName());
@@ -318,7 +322,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         boolean hasPrivilegeForTimeElapsed = policyService.hasPrivilegeFor(En_Privilege.ISSUE_WORK_TIME_VIEW);
         view.timeElapsedContainerVisibility().setVisible(hasPrivilegeForTimeElapsed);
         if (hasPrivilegeForTimeElapsed) {
-            if (isNew(issue) && !isRestoredIssue) {
+            if (isNew(issue)) {
                 boolean timeElapsedEditAllowed = policyService.personBelongsToHomeCompany();
                 view.timeElapsedLabel().setTime(null);
                 if ( !isRestoredIssue ) {
