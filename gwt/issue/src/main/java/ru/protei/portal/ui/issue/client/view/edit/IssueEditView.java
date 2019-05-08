@@ -87,7 +87,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasText description() {
+    public HasValue<String> description() {
         return description;
     }
 

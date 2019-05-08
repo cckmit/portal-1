@@ -326,7 +326,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isLocal().setValue(issue.isPrivateCase());
 
-        view.description().setText(issue.getInfo());
+        view.description().setValue(issue.getInfo());
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
@@ -377,7 +377,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private void fillIssueObject(CaseObject issue){
         issue.setName(view.name().getValue());
         issue.setPrivateCase( view.isLocal().getValue() );
-        issue.setInfo(view.description().getText());
+        issue.setInfo(view.description().getValue());
 
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());

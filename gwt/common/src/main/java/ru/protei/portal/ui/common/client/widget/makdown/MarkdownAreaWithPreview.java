@@ -11,7 +11,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -19,7 +18,7 @@ import ru.protei.portal.ui.common.shared.model.HTMLRenderer;
 
 public class MarkdownAreaWithPreview
         extends Composite
-        implements HasValue<String>, HasText {
+        implements HasValue<String> {
 
     public MarkdownAreaWithPreview() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -42,16 +41,6 @@ public class MarkdownAreaWithPreview
         if ( fireEvent ) {
             ValueChangeEvent.fire(this, text.getValue());
         }
-    }
-
-    @Override
-    public String getText() {
-        return getValue();
-    }
-
-    @Override
-    public void setText(String text) {
-        setValue(text);
     }
 
     @Override
