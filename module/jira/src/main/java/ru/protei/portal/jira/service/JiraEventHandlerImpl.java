@@ -1,9 +1,11 @@
 package ru.protei.portal.jira.service;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.AssembledCaseEvent;
@@ -15,12 +17,14 @@ import ru.protei.portal.jira.utils.JiraHookEventType;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 public class JiraEventHandlerImpl {
     private static final Logger logger = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
+    private static final int EVENT_SEND_DELAY_SEC = 3;
 
     interface JiraEventHandler {
         void handle (JiraEndpoint endpoint, JiraHookEventData event);
@@ -38,6 +42,8 @@ public class JiraEventHandlerImpl {
     @Autowired
     EventPublisherService eventPublisherService;
 
+    @Autowired
+    ThreadPoolTaskScheduler scheduler;
 
     Map<JiraHookEventType, JiraEventHandler> handlersMap;
     JiraEventHandler defaultHandler;
@@ -50,10 +56,30 @@ public class JiraEventHandlerImpl {
     @PostConstruct
     private void init () {
         handlersMap = new HashMap<>();
-        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> sendEvent(integrationService.create(ep, event)));
-        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> sendEvent(integrationService.updateOrCreate(ep, event)));
+        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> scheduleSendEvent(integrationService.create(ep, event)));
+        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> scheduleSendEvent(integrationService.updateOrCreate(ep, event)));
         handlersMap.put(JiraHookEventType.COMMENT_CREATED, (ep, event) -> logger.debug("skip comment-created event"));
         defaultHandler = (ep, evt) -> logger.debug("has no handler for event {}, skip", evt.getEventType());
+    }
+
+    private void scheduleSendEvent(AssembledCaseEvent event) {
+        /*
+         * Задержка добавлена из-за того, что в рассылке писем отсутствуют новые комменты, которые выгребаются из бд.
+         * Возможно, транзакция не успевает закончиться к моменту выгреба комментов. (время по логам - 4 тысячных секунды
+         * между #sendEvent и выгребом комментов в MailNotificationProcessor)
+         * https://youtrack.protei.ru/issue/PORTAL-571#focus=streamItem-85-143880-0-0
+         */
+        if (event == null) {
+            return;
+        }
+        logger.debug("schedule send assembled event {}", event.getCaseObject().defGUID());
+        try {
+            Date execTime = DateUtils.addSeconds(new Date(), EVENT_SEND_DELAY_SEC);
+            scheduler.schedule(() -> sendEvent(event), execTime);
+        } catch (Exception e) {
+            logger.debug("failed to schedule send assembled event " + event.getCaseObject().defGUID(), e);
+            sendEvent(event);
+        }
     }
 
     private void sendEvent (AssembledCaseEvent event) {
