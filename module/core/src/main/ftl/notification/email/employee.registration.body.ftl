@@ -28,6 +28,7 @@
 <@set name="_employee_equipment_chair" value="${employee_equipment_chair}"/>
 <@set name="_employee_equipment_computer" value="${employee_equipment_computer}"/>
 <@set name="_employee_equipment_monitor" value="${employee_equipment_monitor}"/>
+<@set name="_employee_equipment_telephone" value="${employee_equipment_telephone}"/>
 
 <@set name="_employee_resource_youtrack" value="${employee_resource_youtrack}"/>
 <@set name="_employee_resource_cvs" value="${employee_resource_cvs}"/>
@@ -158,6 +159,7 @@
                             <#case "CHAIR">${_employee_equipment_chair}<#break>
                             <#case "COMPUTER">${_employee_equipment_computer}<#break>
                             <#case "MONITOR">${_employee_equipment_monitor}<#break>
+                            <#case "TELEPHONE">${_employee_equipment_telephone}<#break>
                         </#switch><#sep>, </#sep><#rt>
                     </#list><#rt>
                 </#if><#rt>
