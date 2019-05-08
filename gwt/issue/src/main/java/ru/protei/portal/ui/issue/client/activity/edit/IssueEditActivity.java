@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -21,6 +22,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -241,6 +243,15 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onLocalClicked() {
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
+    }
+
+    @Override
+    public void renderMarkupText(String text, Consumer<String> consumer) {
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
+        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
+        textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
+                .withError(throwable -> consumer.accept(null))
+                .withSuccess(consumer));
     }
 
     private void initialView(CaseObject issue){
@@ -478,6 +489,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CompanyControllerAsync companyService;
     @Inject
     CaseStateFilterProvider caseStateFilter;
+    @Inject
+    TextRenderControllerAsync textRenderController;
 
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;

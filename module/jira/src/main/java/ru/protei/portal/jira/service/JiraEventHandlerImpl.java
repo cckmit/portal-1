@@ -63,6 +63,12 @@ public class JiraEventHandlerImpl {
     }
 
     private void scheduleSendEvent(AssembledCaseEvent event) {
+        /*
+         * Задержка добавлена из-за того, что в рассылке писем отсутствуют новые комменты, которые выгребаются из бд.
+         * Возможно, транзакция не успевает закончиться к моменту выгреба комментов. (время по логам - 4 тысячных секунды
+         * между #sendEvent и выгребом комментов в MailNotificationProcessor)
+         * https://youtrack.protei.ru/issue/PORTAL-571#focus=streamItem-85-143880-0-0
+         */
         if (event == null) {
             return;
         }

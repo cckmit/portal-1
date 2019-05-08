@@ -11,6 +11,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasText;
 import com.google.gwt.user.client.ui.HasValue;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
@@ -18,7 +19,7 @@ import ru.protei.portal.ui.common.shared.model.HTMLRenderer;
 
 public class MarkdownAreaWithPreview
         extends Composite
-        implements HasValue<String> {
+        implements HasValue<String>, HasText {
 
     public MarkdownAreaWithPreview() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
@@ -44,12 +45,34 @@ public class MarkdownAreaWithPreview
     }
 
     @Override
+    public String getText() {
+        return getValue();
+    }
+
+    @Override
+    public void setText(String text) {
+        setValue(text);
+    }
+
+    @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<String> valueChangeHandler) {
         return addHandler(valueChangeHandler, ValueChangeEvent.getType());
     }
 
     public void setRenderer(HTMLRenderer renderer) {
         this.renderer = renderer;
+    }
+
+    public void setMinRows(int rows) {
+        text.setMinRows(rows);
+    }
+
+    public void setMaxRows(int rows) {
+        text.setMaxRows(rows);
+    }
+
+    public void setExtraRows(int rows) {
+        text.setExtraRows(rows);
     }
 
     @UiHandler("text")
@@ -73,7 +96,7 @@ public class MarkdownAreaWithPreview
         }
 
         renderer.render(value, text -> {
-            if (StringUtils.isBlank(value)) {
+            if (StringUtils.isBlank(text)) {
                 previewContainer.setVisible(false);
                 return;
             }
