@@ -64,7 +64,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                 condition.append( " and parent_company_id IS NULL" );
             }
 
-            if(query.isSortHomeCompaniesAtBegin()){
+            if(query.isOnlyVisibleFields()){
                 condition.append( " and is_hidden = false" );
             }
 
