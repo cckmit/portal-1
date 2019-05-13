@@ -34,7 +34,7 @@ public class IssueControllerImpl implements IssueController {
                 query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(),
                 query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        CoreResponse<SearchResult<CaseShortView>> result = caseService.getSearchResult(token, query);
+        CoreResponse<SearchResult<CaseShortView>> result = caseService.getCaseObjects(token, query);
         return ServiceUtils.checkResultAndGetData(result);
     }
 

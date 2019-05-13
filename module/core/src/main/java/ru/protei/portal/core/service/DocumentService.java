@@ -16,10 +16,13 @@ import java.util.List;
 public interface DocumentService {
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
-    CoreResponse<SearchResult<Document>> getSearchResult(AuthToken token, DocumentQuery query);
+    CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, DocumentQuery query);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
-    CoreResponse<SearchResult<Document>> getSearchResult(AuthToken token, Long equipmentId);
+    CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, Long equipmentId);
+
+    @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
+    CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_VIEW, En_Privilege.EQUIPMENT_VIEW})
     CoreResponse<Document> getDocument(AuthToken token, Long id);

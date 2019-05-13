@@ -15,7 +15,7 @@ import java.util.List;
 public interface EmployeeRegistrationService {
 
     @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
-    CoreResponse<SearchResult<EmployeeRegistration>> getSearchResult(AuthToken token, EmployeeRegistrationQuery query);
+    CoreResponse<SearchResult<EmployeeRegistration>> getEmployeeRegistrations(AuthToken token, EmployeeRegistrationQuery query);
 
     @Privileged(En_Privilege.EMPLOYEE_REGISTRATION_VIEW)
     CoreResponse<EmployeeRegistration> getEmployeeRegistration(AuthToken token, Long id);

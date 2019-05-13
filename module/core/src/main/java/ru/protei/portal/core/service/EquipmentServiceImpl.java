@@ -52,7 +52,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     DocumentService documentService;
 
     @Override
-    public CoreResponse<SearchResult<Equipment>> getSearchResult(AuthToken token, EquipmentQuery query) {
+    public CoreResponse<SearchResult<Equipment>> getEquipments(AuthToken token, EquipmentQuery query) {
 
         SearchResult<Equipment> sr = equipmentDAO.getSearchResult(query);
         if (sr == null) {
@@ -320,13 +320,13 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private void removeLinkedDocuments(AuthToken token, Long equipmentId) {
 
-        CoreResponse<SearchResult<Document>> documentsResponse = documentService.getSearchResult(token, equipmentId);
+        CoreResponse<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
 
         if (documentsResponse.isError()) {
             return;
         }
 
-        List<Document> documents = documentsResponse.getData().getResults();
+        List<Document> documents = documentsResponse.getData();
 
         if (CollectionUtils.isEmpty(documents)) {
             return;

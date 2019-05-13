@@ -54,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
     ProductSubscriptionDAO productSubscriptionDAO;
 
     @Override
-    public CoreResponse<SearchResult<DevUnit>> getSearchResult(AuthToken token, ProductQuery query) {
+    public CoreResponse<SearchResult<DevUnit>> getProducts(AuthToken token, ProductQuery query) {
 
         SearchResult<DevUnit> sr = devUnitDAO.getSearchResultByQuery(query);
         if (sr == null) {

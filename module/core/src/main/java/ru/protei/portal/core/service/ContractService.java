@@ -11,7 +11,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 public interface ContractService {
 
     @Privileged({ En_Privilege.CONTRACT_VIEW })
-    CoreResponse<SearchResult<Contract>> getSearchResult(AuthToken token, ContractQuery query);
+    CoreResponse<SearchResult<Contract>> getContracts(AuthToken token, ContractQuery query);
 
     @Privileged(En_Privilege.CONTRACT_VIEW)
     CoreResponse<Contract> getContract(AuthToken token, Long id);

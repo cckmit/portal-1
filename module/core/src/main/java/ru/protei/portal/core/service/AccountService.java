@@ -18,7 +18,7 @@ import java.util.List;
 public interface AccountService {
 
     @Privileged({ En_Privilege.ACCOUNT_VIEW })
-    CoreResponse<SearchResult<UserLogin>> getSearchResult(AuthToken token, AccountQuery query);
+    CoreResponse<SearchResult<UserLogin>> getAccounts(AuthToken token, AccountQuery query);
 
     @Privileged({ En_Privilege.ACCOUNT_VIEW })
     CoreResponse< UserLogin > getAccount( AuthToken authToken, long id );

@@ -71,7 +71,7 @@ public class ReportControllerImpl implements ReportController {
     public SearchResult<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException {
         log.debug("getReportsByQuery(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(reportService.getSearchResult(token, query));
+        return ServiceUtils.checkResultAndGetData(reportService.getReports(token, query));
     }
 
     @Override

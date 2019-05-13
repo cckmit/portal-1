@@ -55,7 +55,7 @@ public interface ReportService {
      * @return
      */
     @Privileged({ En_Privilege.ISSUE_REPORT })
-    CoreResponse<SearchResult<Report>> getSearchResult(AuthToken token, ReportQuery query);
+    CoreResponse<SearchResult<Report>> getReports(AuthToken token, ReportQuery query);
 
     /**
      * Получение файла отчета

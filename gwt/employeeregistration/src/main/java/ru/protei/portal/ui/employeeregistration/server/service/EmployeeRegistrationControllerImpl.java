@@ -28,7 +28,7 @@ public class EmployeeRegistrationControllerImpl implements EmployeeRegistrationC
     public SearchResult<EmployeeRegistration> getEmployeeRegistrations(EmployeeRegistrationQuery query) throws RequestFailedException {
         log.debug(" get employee registrations: offset={} | limit={}", query.getOffset(), query.getLimit());
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(employeeRegistrationService.getSearchResult(token, query));
+        return ServiceUtils.checkResultAndGetData(employeeRegistrationService.getEmployeeRegistrations(token, query));
     }
 
     @Override

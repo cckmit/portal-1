@@ -24,7 +24,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by michael on 11.10.16.
@@ -36,7 +35,7 @@ public class CompanyServiceTest extends BaseServiceTest {
     @Test
     public void testGetCompanyList () {
 
-        CoreResponse<SearchResult<Company>> result = companyService.getSearchResult(getAuthToken(), new CompanyQuery());
+        CoreResponse<SearchResult<Company>> result = companyService.getCompanies(getAuthToken(), new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getData());

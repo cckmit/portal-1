@@ -22,7 +22,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by michael on 11.10.16.
@@ -45,7 +44,7 @@ public class ProductServiceTest {
 
         Assert.assertNotNull(devUnitDAO.persist(product));
 
-        CoreResponse<SearchResult<DevUnit>> result = productService.getSearchResult( null, new ProductQuery() );
+        CoreResponse<SearchResult<DevUnit>> result = productService.getProducts( null, new ProductQuery() );
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.getDataAmountTotal() > 0);

@@ -111,7 +111,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse<SearchResult<Report>> getSearchResult(AuthToken token, ReportQuery query) {
+    public CoreResponse<SearchResult<Report>> getReports(AuthToken token, ReportQuery query) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, null);

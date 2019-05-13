@@ -21,7 +21,7 @@ import java.util.List;
 public interface ProductService {
 
     @Privileged(En_Privilege.PRODUCT_VIEW)
-    CoreResponse<SearchResult<DevUnit>> getSearchResult(AuthToken token, ProductQuery query);
+    CoreResponse<SearchResult<DevUnit>> getProducts(AuthToken token, ProductQuery query);
 
     CoreResponse<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
 

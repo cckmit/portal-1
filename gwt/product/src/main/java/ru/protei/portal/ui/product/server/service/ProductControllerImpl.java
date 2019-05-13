@@ -35,7 +35,7 @@ public class ProductControllerImpl implements ProductController {
                 productQuery.getSearchString(), productQuery.getState(), productQuery.getSortField(), productQuery.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(productService.getSearchResult(token, productQuery));
+        return ServiceUtils.checkResultAndGetData(productService.getProducts(token, productQuery));
 
    }
 

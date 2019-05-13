@@ -21,7 +21,7 @@ import java.util.List;
 public interface EquipmentService {
 
     @Privileged(En_Privilege.EQUIPMENT_VIEW)
-    CoreResponse<SearchResult<Equipment>> getSearchResult(AuthToken token, EquipmentQuery query);
+    CoreResponse<SearchResult<Equipment>> getEquipments(AuthToken token, EquipmentQuery query);
 
     CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query );
 

@@ -60,7 +60,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     @Override
-    public CoreResponse<SearchResult<EmployeeRegistration>> getSearchResult(AuthToken token, EmployeeRegistrationQuery query) {
+    public CoreResponse<SearchResult<EmployeeRegistration>> getEmployeeRegistrations(AuthToken token, EmployeeRegistrationQuery query) {
 
         SearchResult<EmployeeRegistration> sr = employeeRegistrationDAO.getSearchResult(query);
         if (sr == null) {

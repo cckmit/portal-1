@@ -25,6 +25,12 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
+    public List<Document> getListByQuery(DocumentQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getList(parameters);
+    }
+
+    @Override
     public boolean checkInventoryNumberExists(long inventoryNumber) {
         return checkExistsByCondition(" inventory_number=?", inventoryNumber);
     }

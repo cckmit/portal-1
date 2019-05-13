@@ -36,7 +36,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     @Test
     public void getCaseObjectsTest() {
         assertNotNull(caseService);
-        SearchResult<CaseShortView> all = checkResultAndGetData(caseService.getSearchResult(getAuthToken(), new CaseQuery()));
+        SearchResult<CaseShortView> all = checkResultAndGetData(caseService.getCaseObjects(getAuthToken(), new CaseQuery()));
         assertNotNull(all);
     }
 

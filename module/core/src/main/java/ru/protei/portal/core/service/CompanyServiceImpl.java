@@ -54,7 +54,7 @@ public class CompanyServiceImpl implements CompanyService {
     AuthService authService;
 
     @Override
-    public CoreResponse<SearchResult<Company>> getSearchResult(AuthToken token, CompanyQuery query) {
+    public CoreResponse<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query) {
 
         applyFilterByScope(token, query);
 
@@ -322,8 +322,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {
         applyFilterByScope( token, query );
-        SearchResult<Company> sr = companyDAO.getSearchResultByQuery(query);
-        return sr.getResults();
+        return companyDAO.listByQuery(query);
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {

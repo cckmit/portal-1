@@ -12,8 +12,6 @@ import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.ContractService;
-import ru.protei.portal.core.service.ContractServiceImpl;
-import ru.protei.portal.ui.common.client.service.ContractController;
 import ru.protei.portal.ui.common.client.service.ContractController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
@@ -21,7 +19,6 @@ import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Service("ContractController")
 public class ContractControllerImpl implements ContractController {
@@ -30,7 +27,7 @@ public class ContractControllerImpl implements ContractController {
     public SearchResult<Contract> getContracts(ContractQuery query) throws RequestFailedException {
         log.debug(" get contracts: offset={} | limit={}", query.getOffset(), query.getLimit());
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(contractService.getSearchResult(token, query));
+        return ServiceUtils.checkResultAndGetData(contractService.getContracts(token, query));
     }
 
     @Override

@@ -12,8 +12,6 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import java.util.List;
-
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -23,7 +21,7 @@ public class CaseServiceServiceTest extends BaseServiceTest {
     @Test
     public void getCaseObjectsTest() throws Exception {
         assertNotNull(caseService);
-        SearchResult<CaseShortView> all = checkResultAndGetData(caseService.getSearchResult(getAuthToken(), new CaseQuery()));
+        SearchResult<CaseShortView> all = checkResultAndGetData(caseService.getCaseObjects(getAuthToken(), new CaseQuery()));
         assertNotNull(all);
     }
 }

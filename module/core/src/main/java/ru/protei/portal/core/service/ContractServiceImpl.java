@@ -35,7 +35,7 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
 
     @Override
-    public CoreResponse<SearchResult<Contract>> getSearchResult(AuthToken token, ContractQuery query) {
+    public CoreResponse<SearchResult<Contract>> getContracts(AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
             query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
         }

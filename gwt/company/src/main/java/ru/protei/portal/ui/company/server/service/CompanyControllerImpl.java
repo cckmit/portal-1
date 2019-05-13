@@ -42,7 +42,7 @@ public class CompanyControllerImpl implements CompanyController {
                 companyQuery.getSortField(), companyQuery.getSortDir() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(companyService.getSearchResult(token, companyQuery));
+        return ServiceUtils.checkResultAndGetData(companyService.getCompanies(token, companyQuery));
     }
 
     @Override

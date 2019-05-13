@@ -73,7 +73,7 @@ public class CaseServiceImpl implements CaseService {
     CaseStateWorkflowService caseStateWorkflowService;
 
     @Override
-    public CoreResponse<SearchResult<CaseShortView>> getSearchResult(AuthToken token, CaseQuery query) {
+    public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
         applyFilterByScope(token, query);
 

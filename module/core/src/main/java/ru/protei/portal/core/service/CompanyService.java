@@ -22,7 +22,7 @@ import java.util.List;
 public interface CompanyService {
 
     @Privileged({ En_Privilege.COMPANY_VIEW })
-    CoreResponse<SearchResult<Company>> getSearchResult(AuthToken token, CompanyQuery query);
+    CoreResponse<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query);
 
     CoreResponse<Long> countGroups (CompanyGroupQuery query);
 

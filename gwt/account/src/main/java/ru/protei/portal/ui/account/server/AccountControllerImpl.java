@@ -29,7 +29,7 @@ public class AccountControllerImpl implements AccountController {
     public SearchResult<UserLogin> getAccounts(AccountQuery query) throws RequestFailedException {
         log.debug("getAccounts(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        CoreResponse<SearchResult<UserLogin>> result = accountService.getSearchResult(token, query);
+        CoreResponse<SearchResult<UserLogin>> result = accountService.getAccounts(token, query);
         return ServiceUtils.checkResultAndGetData(result);
     }
 

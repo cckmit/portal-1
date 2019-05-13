@@ -57,7 +57,7 @@ public class AccountServiceImpl implements AccountService {
     EventPublisherService publisherService;
 
     @Override
-    public CoreResponse<SearchResult<UserLogin>> getSearchResult(AuthToken token, AccountQuery query) {
+    public CoreResponse<SearchResult<UserLogin>> getAccounts(AuthToken token, AccountQuery query) {
 
         applyFilterByScope(token, query);
 

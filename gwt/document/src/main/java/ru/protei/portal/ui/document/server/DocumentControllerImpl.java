@@ -28,7 +28,7 @@ public class DocumentControllerImpl implements DocumentController {
     public SearchResult<Document> getDocuments(DocumentQuery query) throws RequestFailedException {
         log.debug("get documents: offset={} | limit={}", query.getOffset(), query.getLimit());
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(documentService.getSearchResult(token, query));
+        return ServiceUtils.checkResultAndGetData(documentService.getDocuments(token, query));
     }
 
     @Override

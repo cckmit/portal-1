@@ -37,7 +37,7 @@ public class EquipmentControllerImpl implements EquipmentController {
                 query.getRegisterNumber() );
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(equipmentService.getSearchResult(token, query));
+        return ServiceUtils.checkResultAndGetData(equipmentService.getEquipments(token, query));
     }
 
     @Override
@@ -222,7 +222,7 @@ public class EquipmentControllerImpl implements EquipmentController {
         log.debug("getDocuments: equipmentId={}", equipmentId);
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
-        return ServiceUtils.checkResultAndGetData(documentService.getSearchResult(token, equipmentId));
+        return ServiceUtils.checkResultAndGetData(documentService.getDocuments(token, equipmentId));
     }
 
     @Override

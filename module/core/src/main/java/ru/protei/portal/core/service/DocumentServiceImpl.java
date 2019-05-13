@@ -50,14 +50,14 @@ public class DocumentServiceImpl implements DocumentService {
     DocumentSvnService documentSvnService;
 
     @Override
-    public CoreResponse<SearchResult<Document>> getSearchResult(AuthToken token, Long equipmentId) {
+    public CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, Long equipmentId) {
         DocumentQuery query = new DocumentQuery();
         query.setEquipmentIds(Collections.singletonList(equipmentId));
-        return getSearchResult(token, query);
+        return getDocuments(token, query);
     }
 
     @Override
-    public CoreResponse<SearchResult<Document>> getSearchResult(AuthToken token, DocumentQuery query) {
+    public CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, DocumentQuery query) {
 
         try {
             checkApplyFullTextSearchFilter(query);
@@ -73,6 +73,27 @@ public class DocumentServiceImpl implements DocumentService {
         sr.getResults().forEach(this::resetDocumentPrivacyInfo);
 
         return new CoreResponse<SearchResult<Document>>().success(sr);
+    }
+
+    @Override
+    public CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId) {
+        DocumentQuery query = new DocumentQuery();
+        query.setEquipmentIds(Collections.singletonList(equipmentId));
+
+        try {
+            checkApplyFullTextSearchFilter(query);
+        } catch (IOException e) {
+            return new CoreResponse<List<Document>>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        List<Document> list = documentDAO.getListByQuery(query);
+        if (list == null) {
+            return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
+        }
+
+        list.forEach(this::resetDocumentPrivacyInfo);
+
+        return new CoreResponse<List<Document>>().success(list);
     }
 
     @Override
@@ -257,7 +278,7 @@ public class DocumentServiceImpl implements DocumentService {
     public CoreResponse<SearchResult<Document>> getProjectDocuments(AuthToken token, Long projectId) {
         DocumentQuery query = new DocumentQuery();
         query.setProjectId(projectId);
-        return getSearchResult(token, query);
+        return getDocuments(token, query);
     }
 
     private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {

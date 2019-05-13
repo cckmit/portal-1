@@ -22,7 +22,7 @@ import java.util.List;
 public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    CoreResponse<SearchResult<CaseShortView>> getSearchResult(AuthToken token, CaseQuery query);
+    CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse<CaseObject> getCaseObject( AuthToken token, long number );
