@@ -98,7 +98,7 @@ public abstract class CaseCommentListActivity
 
         caseCommentController.getCaseComments(caseType, caseId, new FluentCallback<List<CaseComment>>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(this::fillView)
+                .withSuccess((result, m) ->  fillView(result))
         );
     }
 
@@ -154,7 +154,7 @@ public abstract class CaseCommentListActivity
         if (caseComment.getCaseStateId() != null) {
             caseComment.setText(null);
             caseCommentController.saveCaseComment(caseType, caseComment, new FluentCallback<CaseComment>()
-                    .withSuccess(comment -> itemView.setMessage(null))
+                    .withSuccess((comment, m) -> itemView.setMessage(null))
             );
             return;
         }
@@ -163,7 +163,7 @@ public abstract class CaseCommentListActivity
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errRemoveIssueComment(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess(v -> {
+                .withSuccess((v, m) -> {
                     Collection<Attachment> commentAttachments = itemView.attachmentContainer().getAll();
                     if (CollectionUtils.isNotEmpty(commentAttachments)) {
                         fireEvent(new AttachmentEvents.Remove(caseId, commentAttachments));
@@ -489,7 +489,7 @@ public abstract class CaseCommentListActivity
 
                     fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess(result -> {
+                .withSuccess((result, m) -> {
                     storage.remove(makeStorageKey(result.getCaseId()));
 
                     requesting = false;

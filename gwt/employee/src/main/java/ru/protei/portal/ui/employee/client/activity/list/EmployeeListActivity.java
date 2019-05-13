@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.struct.MarkedResult;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -20,7 +19,7 @@ import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
@@ -47,12 +46,12 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onAuthSuccess ( AuthEvents.Success event) {
+    public void onAuthSuccess ( AuthEvents.Success event ) {
         filterView.resetFilter();
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails event) {
+    public void onInitDetails( AppEvents.InitDetails event ) {
         this.init = event;
     }
 
@@ -84,10 +83,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private void requestEmployees() {
 
-        marker = ( new Date() ).getTime();
-
-        view.showLoader( true );
-
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
@@ -95,19 +90,17 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getChildContainer().clear();
         itemViewToModel.clear();
 
-        employeeService.getEmployees( makeQuery(), marker, new RequestCallback< MarkedResult< List< EmployeeShortView > > >() {
+        view.showLoader( true );
+        marker = new Date().getTime();
 
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( MarkedResult< List< EmployeeShortView > > result ) {
-                if ( marker == result.getMarker() ) {
-                    fillViewHandler = taskService.startPeriodicTask( result.getData(), fillViewer, 50, 50 );
-                    view.showLoader( false );
-                }
-            }
-        });
+        employeeService.getEmployees( makeQuery(), new FluentCallback< List< EmployeeShortView > >()
+                .withMarker( marker )
+                .withSuccess( ( result, m ) -> {
+                    if ( marker == m ) {
+                        fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
+                        view.showLoader( false );
+                    }
+                } ) );
     }
 
     private EmployeeQuery makeQuery() {

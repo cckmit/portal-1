@@ -34,7 +34,7 @@ public abstract class ContractModel extends LifecycleSelectorModel<EntityOption>
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess(contracts -> {
+                .withSuccess((contracts, m) -> {
                     notifySubscribers(contracts.stream()
                             .map(Contract::toEntityOption)
                             .collect(Collectors.toList()));

@@ -62,7 +62,7 @@ public abstract class EquipmentEditActivity
 
         equipmentService.getEquipment(event.id, new FluentCallback<Equipment>()
                 .withErrorMessage(lang.errGetList())
-                .withSuccess(this::fillView)
+                .withSuccess((equipment, m) -> fillView(equipment))
         );
     }
 
@@ -111,7 +111,7 @@ public abstract class EquipmentEditActivity
                     defaultErrorHandler.accept(t);
                     fireEvent(new NotifyEvents.Show(t.getMessage(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess(result -> {
+                .withSuccess((result, m) -> {
                     fireEvent(new EquipmentEvents.ChangeModel());
                     fireEvent(new Back());
                 })

@@ -73,7 +73,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
 
         siteFolderController.saveServer(server, serverIdOfAppsToBeCloned, new FluentCallback<Server>()
                 .withErrorMessage(lang.siteFolderPlatformNotSaved())
-                .withSuccess(result -> {
+                .withSuccess((result, m) -> {
                     serverIdOfAppsToBeCloned = null;
                     fireEvent(new SiteFolderServerEvents.ChangeModel());
                     fireEvent(new SiteFolderServerEvents.Changed(result));
@@ -111,7 +111,7 @@ public abstract class ServerEditActivity implements Activity, AbstractServerEdit
     private void requestServer(Long serverId, Consumer<Server> successConsumer) {
         siteFolderController.getServer(serverId, new FluentCallback<Server>()
                 .withErrorMessage(lang.errGetObject())
-                .withSuccess(successConsumer)
+                .withSuccess((server, m) ->  successConsumer.accept(server))
         );
     }
 

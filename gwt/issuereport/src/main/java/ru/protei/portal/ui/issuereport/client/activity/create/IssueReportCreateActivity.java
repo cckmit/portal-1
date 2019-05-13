@@ -76,7 +76,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         reportController.createReport(report, new FluentCallback<Long>()
                 .withResult(() -> isSaving = false)
-                .withSuccess(result -> {
+                .withSuccess((result, m) -> {
                     dialogView.hidePopup();
                     fireEvent(new NotifyEvents.Show(lang.reportRequested(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueReportEvents.Show());
@@ -136,7 +136,7 @@ public abstract class IssueReportCreateActivity implements Activity,
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess( caseFilter ->{
+                .withSuccess((caseFilter, m) -> {
                     caseObjectReportView.fillFilterFields(caseFilter.getParams());
                     caseObjectReportView.toggleMsgSearchThreshold();
                 })

@@ -95,7 +95,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
         contractService.getContracts(query, new FluentCallback<List<Contract>>()
                 .withError(throwable -> errorHandler.accept(throwable))
-                .withSuccess(asyncCallback::onSuccess));
+                .withSuccess((result, m) ->  asyncCallback.onSuccess(result)));
     }
 
     private ContractQuery makeQuery() {
@@ -128,7 +128,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
         contractService.getContractCount(query, new FluentCallback<Integer>()
                 .withError(throwable -> errorHandler.accept(throwable))
-                .withSuccess(count -> view.setRecordCount(count)));
+                .withSuccess((count, m) -> view.setRecordCount(count)));
     }
 
 

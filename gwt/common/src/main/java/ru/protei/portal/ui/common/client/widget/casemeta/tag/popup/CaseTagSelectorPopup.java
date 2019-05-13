@@ -55,7 +55,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     public void init(En_CaseType caseType) {
         resetSearchFilter();
         caseTagController.getCaseTagsForCaseType(caseType, new FluentCallback<List<CaseTag>>()
-                .withSuccess(tags -> {
+                .withSuccess((tags, m) -> {
                     caseTags = tags;
                     displayTags();
                 })

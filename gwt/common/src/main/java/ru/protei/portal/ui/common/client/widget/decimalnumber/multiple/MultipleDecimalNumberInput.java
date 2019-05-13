@@ -22,7 +22,6 @@ import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberB
 import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBoxHandler;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.provider.DecimalNumberDataProvider;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
@@ -74,7 +73,7 @@ public class MultipleDecimalNumberInput
 
         dataProvider.getNextAvailableRegisterNumber(query, new FluentCallback<Integer>()
                 .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
-                .withSuccess(registerNumber -> {
+                .withSuccess((registerNumber, m) -> {
                     DecimalNumber number = box.getValue();
                     number.setRegisterNumber(registerNumber);
                     number.setModification(null);
@@ -201,7 +200,7 @@ public class MultipleDecimalNumberInput
 
         dataProvider.getNextAvailableModification(query, new FluentCallback<Integer>()
                 .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
-                .withSuccess(successAction)
+                .withSuccess((i, m) -> successAction.accept(i))
         );
     }
 
@@ -255,7 +254,7 @@ public class MultipleDecimalNumberInput
 
         dataProvider.checkIfExistDecimalNumber(box.getValue(), new FluentCallback<Boolean>()
                 .withError(throwable -> box.showMessage(lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER))
-                .withSuccess(result -> {
+                .withSuccess((result, m) -> {
                     if (result) {
                         occupiedNumbers.add(new DecimalNumber(box.getValue()));
                     } else {

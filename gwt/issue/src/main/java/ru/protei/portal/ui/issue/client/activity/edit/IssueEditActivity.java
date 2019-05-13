@@ -133,7 +133,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                     .withError(throwable -> {
                         fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
                     })
-                    .withSuccess(caseObject -> {
+                    .withSuccess((caseObject, m) -> {
                         fireEvent(new CaseCommentEvents.RemoveDraft(caseObject.getId()));
 
                         if (isNew(issue)) {

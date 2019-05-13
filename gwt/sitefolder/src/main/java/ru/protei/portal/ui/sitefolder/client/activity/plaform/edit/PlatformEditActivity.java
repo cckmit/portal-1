@@ -142,7 +142,7 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
     public void onRemoveAttachment(Attachment attachment) {
         attachmentService.removeAttachmentEverywhere(En_CaseType.SF_PLATFORM, attachment.getId(), new FluentCallback<Boolean>()
                 .withError(throwable -> fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR)))
-                .withSuccess(result -> {
+                .withSuccess((result, m) -> {
                     if (!result) {
                         fireEvent(new NotifyEvents.Show(lang.removeFileError(), NotifyEvents.NotifyType.ERROR));
                         return;

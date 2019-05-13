@@ -8,7 +8,6 @@ import com.googlecode.gwt.crypto.client.TripleDesCipher;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
@@ -39,7 +38,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     @Event
     public void onLogout( AppEvents.Logout event ) {
         resetRememberMe();
-        authService.logout(new FluentCallback<Void>().withSuccess(v -> {
+        authService.logout(new FluentCallback<Void>().withSuccess((v, m) -> {
             view.reset();
             fireEvent(new AuthEvents.Show());
         }));
@@ -56,7 +55,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         String pwd = view.password().getValue();
         authService.authentificate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> view.showError(lang.errLoginOrPwd()))
-                .withSuccess(profile -> {
+                .withSuccess((profile, m) -> {
                     view.hideError();
                     fireAuthSuccess(profile);
                     fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
@@ -83,7 +82,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                     resetRememberMe();
                     placeView();
                 })
-                .withSuccess(profile -> {
+                .withSuccess((profile, m) -> {
                     if (profile != null) {
                         fireAuthSuccess(profile);
                         return;

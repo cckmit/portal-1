@@ -63,7 +63,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                         errorHandler.accept(throwable);
                         fireEvent(new Back());
                     })
-                    .withSuccess(this::fillView)
+                    .withSuccess((document, m) -> fillView(document))
             );
             return;
         }
@@ -145,7 +145,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     errorHandler.accept(throwable);
                     andThen.run();
                 })
-                .withSuccess(numbers -> {
+                .withSuccess((numbers, m) -> {
                     decimalNumbers = DecimalNumberFormatter.formatNumbersWithoutModification(numbers);
                     andThen.run();
                 })
@@ -240,7 +240,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
                     }
                     errorHandler.accept(throwable);
                 })
-                .withSuccess(doc -> {
+                .withSuccess((doc, m) -> {
                     fireEvent(new NotifyEvents.Show(lang.documentSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new DocumentEvents.ChangeModel());
                     fireEvent(new Back());

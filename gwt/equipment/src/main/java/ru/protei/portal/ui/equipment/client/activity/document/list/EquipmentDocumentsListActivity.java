@@ -55,7 +55,7 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
             return;
         }
 
-        equipmentController.getDocuments(event.equipmentId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
+        equipmentController.getDocuments(event.equipmentId, new FluentCallback<List<Document>>().withSuccess((result, m) -> handleDocuments(result)));
     }
 
     @Override

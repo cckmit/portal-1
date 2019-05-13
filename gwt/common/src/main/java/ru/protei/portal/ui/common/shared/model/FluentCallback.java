@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -16,8 +17,9 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     private String errorMessage = null;
     private NotifyEvents.NotifyType notifyType = NotifyEvents.NotifyType.ERROR;
     private Consumer<Throwable> errorHandler = null;
-    private Consumer<T> successHandler = null;
+    private BiConsumer<T, Long> successHandler = null;
     private Runnable resultHandler = null;
+    private Long marker = null;
 
     /**
      * Обработчик, который будет вызван при любом ответе сервера
@@ -26,6 +28,11 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
      */
     public FluentCallback<T> withResult(Runnable resultHandler) {
         this.resultHandler = resultHandler;
+        return this;
+    }
+
+    public FluentCallback<T> withMarker(long marker) {
+        this.marker = marker;
         return this;
     }
 
@@ -49,7 +56,7 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     }
 
     @Override
-    public AsyncCallback<T> withSuccess(Consumer<T> successHandler) {
+    public AsyncCallback<T> withSuccess(BiConsumer<T, Long> successHandler) {
         this.successHandler = successHandler;
         return this;
     }
@@ -82,7 +89,7 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
         }
 
         if (successHandler != null) {
-            successHandler.accept(result);
+            successHandler.accept(result, marker);
         }
     }
 
