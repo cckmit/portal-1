@@ -79,10 +79,6 @@ public class CaseServiceImpl implements CaseService {
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
 
-        if (sr == null) {
-            return new CoreResponse<SearchResult<CaseShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
         return new CoreResponse<SearchResult<CaseShortView>>().success(sr);
     }
 

@@ -62,9 +62,6 @@ public class AccountServiceImpl implements AccountService {
         applyFilterByScope(token, query);
 
         SearchResult<UserLogin> sr = userLoginDAO.getSearchResult(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<UserLogin>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
 
         jdbcManyRelationsHelper.fill(sr.getResults(), "roles");
 

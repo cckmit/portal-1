@@ -60,10 +60,6 @@ public class CompanyServiceImpl implements CompanyService {
 
         SearchResult<Company> sr = companyDAO.getSearchResultByQuery(query);
 
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
         return new CoreResponse<SearchResult<Company>>().success(sr);
     }
 

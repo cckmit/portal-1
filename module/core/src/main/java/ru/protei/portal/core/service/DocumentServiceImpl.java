@@ -66,9 +66,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         SearchResult<Document> sr = documentDAO.getSearchResult(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
 
         sr.getResults().forEach(this::resetDocumentPrivacyInfo);
 

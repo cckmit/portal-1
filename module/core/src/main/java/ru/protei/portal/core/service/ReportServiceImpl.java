@@ -115,10 +115,6 @@ public class ReportServiceImpl implements ReportService {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, null);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Report>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
-
         return new CoreResponse<SearchResult<Report>>().success(sr);
     }
 

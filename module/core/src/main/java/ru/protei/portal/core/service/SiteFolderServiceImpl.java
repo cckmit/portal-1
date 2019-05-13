@@ -27,9 +27,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     public CoreResponse<SearchResult<Platform>> getPlatforms(AuthToken token, PlatformQuery query) {
 
         SearchResult<Platform> sr = platformDAO.getSearchResultByQuery(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Platform>>().error(En_ResultStatus.GET_DATA_ERROR, null);
-        }
 
         Map<Long, Long> map = serverDAO.countByPlatformIds(sr.getResults().stream()
                 .map(Platform::getId)
@@ -51,9 +48,6 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     public CoreResponse<SearchResult<Server>> getServers(AuthToken token, ServerQuery query) {
 
         SearchResult<Server> sr = serverDAO.getSearchResultByQuery(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
-        }
 
         Map<Long, Long> map = applicationDAO.countByServerIds(sr.getResults().stream()
                 .map(Server::getId)
@@ -69,12 +63,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Override
     public CoreResponse<SearchResult<Application>> getApplications(AuthToken token, ApplicationQuery query) {
-
         SearchResult<Application> sr = applicationDAO.getSearchResultByQuery(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Application>>().error(En_ResultStatus.GET_DATA_ERROR, null);
-        }
-
         return new CoreResponse<SearchResult<Application>>().success(sr);
     }
 

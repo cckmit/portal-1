@@ -55,9 +55,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     public CoreResponse<SearchResult<Equipment>> getEquipments(AuthToken token, EquipmentQuery query) {
 
         SearchResult<Equipment> sr = equipmentDAO.getSearchResult(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Equipment>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
 
         fillDecimalNumbers(sr.getResults());
 
@@ -68,9 +65,6 @@ public class EquipmentServiceImpl implements EquipmentService {
     public CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query ) {
 
         SearchResult<Equipment> sr = equipmentDAO.getSearchResult(query);
-        if (sr == null) {
-            return new CoreResponse<List<EquipmentShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
 
         fillDecimalNumbersWithoutLinkedEquipmentDN(sr.getResults());
 

@@ -57,9 +57,6 @@ public class ProductServiceImpl implements ProductService {
     public CoreResponse<SearchResult<DevUnit>> getProducts(AuthToken token, ProductQuery query) {
 
         SearchResult<DevUnit> sr = devUnitDAO.getSearchResultByQuery(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<DevUnit>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
 
         return new CoreResponse<SearchResult<DevUnit>>().success(sr);
     }

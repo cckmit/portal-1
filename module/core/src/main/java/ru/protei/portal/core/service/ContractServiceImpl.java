@@ -40,9 +40,6 @@ public class ContractServiceImpl implements ContractService {
             query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
         }
         SearchResult<Contract> sr = contractDAO.getSearchResult(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Contract>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
         return new CoreResponse<SearchResult<Contract>>().success(sr);
     }
 

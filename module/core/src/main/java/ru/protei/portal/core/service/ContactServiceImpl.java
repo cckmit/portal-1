@@ -44,9 +44,6 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public CoreResponse<SearchResult<Person>> getContactsSearchResult(AuthToken token, ContactQuery query) {
         SearchResult<Person> sr = personDAO.getContactsSearchResult(query);
-        if (sr == null) {
-            return new CoreResponse<SearchResult<Person>>().error(En_ResultStatus.GET_DATA_ERROR);
-        }
         return new CoreResponse<SearchResult<Person>>().success(sr);
     }
 
