@@ -2,8 +2,7 @@ package ru.protei.portal.test.jira;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ru.protei.portal.jira.service.IssueMergeState;
-import ru.protei.portal.jira.utils.CommonUtils;
+import ru.protei.portal.jira.utils.IssueMergeState;
 
 public class UtilityTest {
 

@@ -1,4 +1,4 @@
-package ru.protei.portal.jira.service;
+package ru.protei.portal.jira.utils;
 
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;

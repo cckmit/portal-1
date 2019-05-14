@@ -23,7 +23,10 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.jira.factory.JiraClientFactory;
+import ru.protei.portal.jira.mapper.CachedPersonMapper;
+import ru.protei.portal.jira.mapper.PersonMapper;
 import ru.protei.portal.jira.utils.CommonUtils;
+import ru.protei.portal.jira.utils.IssueMergeState;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 
 import java.io.IOException;

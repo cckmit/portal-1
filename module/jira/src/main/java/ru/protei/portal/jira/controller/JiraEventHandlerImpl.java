@@ -1,4 +1,4 @@
-package ru.protei.portal.jira.service;
+package ru.protei.portal.jira.controller;
 
 import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.apache.commons.lang3.time.DateUtils;
@@ -12,6 +12,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.jira.service.JiraIntegrationService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
 
@@ -32,16 +33,12 @@ public class JiraEventHandlerImpl {
 
     @Autowired
     JiraIntegrationService integrationService;
-
     @Autowired
     JiraEndpointDAO jiraEndpointDAO;
-
     @Autowired
     PortalConfig portalConfig;
-
     @Autowired
     EventPublisherService eventPublisherService;
-
     @Autowired
     ThreadPoolTaskScheduler scheduler;
 
@@ -51,7 +48,6 @@ public class JiraEventHandlerImpl {
     public JiraEventHandlerImpl() {
         logger.debug("jira webhook handler installed");
     }
-
 
     @PostConstruct
     private void init () {

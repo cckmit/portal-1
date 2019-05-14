@@ -3,6 +3,7 @@ package ru.protei.portal.jira.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import ru.protei.portal.jira.controller.JiraEventHandlerImpl;
 import ru.protei.portal.jira.factory.JiraClientFactory;
 import ru.protei.portal.jira.factory.JiraClientFactoryImpl;
 import ru.protei.portal.jira.service.*;
