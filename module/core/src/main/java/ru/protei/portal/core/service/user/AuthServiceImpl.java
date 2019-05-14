@@ -170,8 +170,9 @@ public class AuthServiceImpl implements AuthService {
 
         En_ResultStatus loginResponse;
         UserLogin login = userLoginDAO.findByLogin(ulogin);
+        boolean loginHasSuffix = ulogin.contains("@");
 
-        if (isEmpty(loginSuffix)) {
+        if (isEmpty(loginSuffix) || loginHasSuffix) {
             loginResponse = authentificate(login, ulogin, pwd);
         } else {
             // PORTAL-490 feature
