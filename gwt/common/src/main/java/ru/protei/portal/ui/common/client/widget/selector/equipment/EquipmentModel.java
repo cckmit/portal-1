@@ -1,86 +1,73 @@
 package ru.protei.portal.ui.common.client.widget.selector.equipment;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EquipmentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorModel;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-/**
- * Модель контактов домашней компании
- */
-public abstract class EquipmentModel implements Activity {
+public abstract class EquipmentModel extends LifecycleSelectorModel<EquipmentShortView> {
 
     @Event
-    public void onInit( AuthEvents.Success event ) {
+    public void onInit(AuthEvents.Success event) {
+        clear();
+    }
+
+    @Event
+    public void onEquipmentListChanged(EquipmentEvents.ChangeModel event) {
         refreshOptions();
     }
 
-    @Event
-    public void onEmployeeListChanged( EquipmentEvents.ChangeModel event ) {
-        refreshOptions();
+    @Override
+    protected void refreshOptions() {
+        EquipmentQuery query = makeQuery();
+        equipmentService.equipmentOptionList(query, new FluentCallback<List<EquipmentShortView>>()
+                .withErrorMessage(lang.errGetList())
+                .withSuccess(this::notifySubscribers));
     }
 
-    public void subscribe( SelectorWithModel< EquipmentShortView > selector ) {
-        subscribers.add( selector );
-        selector.fillOptions( list );
-    }
-
-    private void notifySubscribers() {
-        for ( SelectorWithModel< EquipmentShortView > selector : subscribers ) {
-            selector.fillOptions( list );
-            selector.refreshValue();
+    private EquipmentQuery makeQuery() {
+        EquipmentQuery query = new EquipmentQuery();
+        if (projectId != null) {
+            query.setProjectId(projectId);
         }
+        if (types != null) {
+            query.setTypes(types);
+        } else {
+            query.setTypes(defaultEquipmentTypes);
+        }
+        return query;
     }
 
-    private void refreshOptions() {
-        equipmentService.equipmentOptionList(query, callback);
-    }
-
-    public void setEquipmentTypes(Set<En_EquipmentType> equipmentTypes) {
-        query.setTypes(equipmentTypes);
+    public void setVisibleTypes(Set<En_EquipmentType> types) {
+        this.types = types;
         refreshOptions();
     }
 
     public void setProjectId(Long projectId) {
-        query.setProjectId(projectId);
+        this.projectId = projectId;
         refreshOptions();
     }
 
     @Inject
     EquipmentControllerAsync equipmentService;
-
     @Inject
     Lang lang;
 
-    private EquipmentQuery query = new EquipmentQuery(new HashSet<>(
-            Arrays.asList( En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT)
-    ));
-
-    private final RequestCallback<List<EquipmentShortView>> callback = new RequestCallback<List<EquipmentShortView>>() {
-        @Override
-        public void onError( Throwable throwable ) {
-            fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-        }
-
-        @Override
-        public void onSuccess( List< EquipmentShortView > options ) {
-            list.clear();
-            list.addAll( options );
-            notifySubscribers();
-        }
-    };
-
-    private List< EquipmentShortView > list = new ArrayList<>();
-    List<SelectorWithModel< EquipmentShortView >> subscribers = new ArrayList<>();
+    private Long projectId = null;
+    private Set<En_EquipmentType> types = null;
+    private Set<En_EquipmentType> defaultEquipmentTypes = new HashSet<>(
+            Arrays.asList(En_EquipmentType.ASSEMBLY_UNIT, En_EquipmentType.COMPLEX, En_EquipmentType.PRODUCT)
+    );
 }

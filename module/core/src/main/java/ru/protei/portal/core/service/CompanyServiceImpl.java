@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
@@ -53,22 +54,19 @@ public class CompanyServiceImpl implements CompanyService {
     AuthService authService;
 
     @Override
-    public CoreResponse<Long> countCompanies(AuthToken token, CompanyQuery query) {
+    public CoreResponse<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query) {
 
         applyFilterByScope(token, query);
 
-        Long count = companyDAO.count(query);
-        if (count == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
+        SearchResult<Company> sr = companyDAO.getSearchResultByQuery(query);
 
-        return new CoreResponse<Long>().success(count);
+        return new CoreResponse<SearchResult<Company>>().success(sr);
     }
 
     @Override
     public CoreResponse<Long> countGroups(CompanyGroupQuery query) {
         return new CoreResponse<Long>().success(companyGroupDAO.count(query));
     }
-
 
     @Override
     public CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query) {
@@ -83,17 +81,6 @@ public class CompanyServiceImpl implements CompanyService {
                 .map(Company::toEntityOption).collect(Collectors.toList());
 
         return new CoreResponse<List<EntityOption>>().success(result,result.size());
-    }
-
-    @Override
-    public CoreResponse<List<Company>> companyList( AuthToken token, CompanyQuery query ) {
-
-        List<Company> list = getCompanyList(token, query);
-
-        if (list == null)
-            return new CoreResponse<List<Company>>().error(En_ResultStatus.GET_DATA_ERROR);
-
-        return new CoreResponse<List<Company>>().success(list);
     }
 
     @Override
@@ -331,8 +318,7 @@ public class CompanyServiceImpl implements CompanyService {
 
     private List<Company> getCompanyList( AuthToken token, CompanyQuery query ) {
         applyFilterByScope( token, query );
-
-        return companyDAO.getListByQuery( query );
+        return companyDAO.listByQuery(query);
     }
 
     private boolean checkCompanyExists (String name, Long excludeId) {

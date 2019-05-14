@@ -55,13 +55,13 @@ public class ApplicationTableView extends Composite implements AbstractApplicati
     }
 
     @Override
-    public void setAppsCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

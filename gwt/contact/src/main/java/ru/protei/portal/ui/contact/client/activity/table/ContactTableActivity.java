@@ -18,11 +18,14 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Активность таблицы контактов
@@ -68,7 +71,7 @@ public abstract class ContactTableActivity
         contactId = null;
 
         query = makeQuery( null );
-        requestTotalCount();
+        loadTable();
     }
 
     @Event
@@ -142,26 +145,7 @@ public abstract class ContactTableActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery( null );
-        requestTotalCount();
-    }
-
-    @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<Person>> asyncCallback ) {
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        contactService.getContacts( query, new RequestCallback<List<Person>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                asyncCallback.onFailure( throwable );
-            }
-
-            @Override
-            public void onSuccess( List<Person> persons ) {
-                asyncCallback.onSuccess( persons );
-            }
-        } );
+        loadTable();
     }
 
     @Override
@@ -174,23 +158,30 @@ public abstract class ContactTableActivity
         view.scrollTo(page);
     }
 
-    private void requestTotalCount() {
-        view.clearRecords();
+    @Override
+    public void loadData( int offset, int limit, AsyncCallback<List<Person>> asyncCallback ) {
+        boolean isFirstChunk = offset == 0;
+        query.setOffset(offset);
+        query.setLimit(limit);
+        contactService.getContacts(query, new FluentCallback<SearchResult<Person>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                    }
+                }));
+    }
+
+    private void loadTable() {
         animation.closeDetails();
-
-        contactService.getContactsCount(query, new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Long count) {
-                view.setRecordCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-            }
-        });
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private void showPreview ( Person value ) {

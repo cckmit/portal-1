@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.events.SiteFolderServerEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.table.AbstractPlatformTableView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -59,13 +60,13 @@ public class PlatformTableView extends Composite implements AbstractPlatformTabl
     }
 
     @Override
-    public void setPlatformsCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

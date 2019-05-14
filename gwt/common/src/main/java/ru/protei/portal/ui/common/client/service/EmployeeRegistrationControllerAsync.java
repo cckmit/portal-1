@@ -3,13 +3,11 @@ package ru.protei.portal.ui.common.client.service;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.ent.EmployeeRegistration;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
-
-import java.util.List;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface EmployeeRegistrationControllerAsync {
-    void getEmployeeRegistrations(EmployeeRegistrationQuery query, AsyncCallback<List<EmployeeRegistration>> callback);
 
-    void getEmployeeRegistrationCount(EmployeeRegistrationQuery query, AsyncCallback<Integer> callback);
+    void getEmployeeRegistrations(EmployeeRegistrationQuery query, AsyncCallback<SearchResult<EmployeeRegistration>> callback);
 
     void getEmployeeRegistration(Long id, AsyncCallback<EmployeeRegistration> callback);
 

@@ -18,9 +18,9 @@ public interface AbstractContactTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
 
-    void setRecordCount( Long count );
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

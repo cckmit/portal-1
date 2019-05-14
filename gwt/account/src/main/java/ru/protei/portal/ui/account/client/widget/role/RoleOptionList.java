@@ -13,10 +13,11 @@ import java.util.List;
 public class RoleOptionList extends OptionList< UserRole > implements ModelList< UserRole > {
 
     @Inject
-    public void init( RoleModel roleModel ) {
-        roleModel.subscribe( this );
+    public void init( RoleModel model ) {
+        setSelectorModel(model);
     }
 
+    @Override
     public void fillOptions( List< UserRole > userRoles ) {
         clearOptions();
         userRoles.forEach( option -> addOption( option.getCode(), option, "list-item" ) );

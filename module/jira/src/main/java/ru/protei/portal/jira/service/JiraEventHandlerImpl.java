@@ -101,6 +101,7 @@ public class JiraEventHandlerImpl {
             return;
         }
 
+        long timeStart = System.currentTimeMillis();
         logger.info("got request from JIRA, companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
         logger.debug("data: {}", jsonString);
 
@@ -144,6 +145,9 @@ public class JiraEventHandlerImpl {
         }
         catch (Exception e) {
             logger.error("unable to parse json-data", e);
+        } finally {
+            long total = System.currentTimeMillis() - timeStart;
+            logger.info("request from JIRA completed, companyId={}, src-ip={}, host={}, query={}, time={}ms", companyId, realIP, fromHost, request.getQueryString(), total);
         }
     }
 }

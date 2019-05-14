@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.account.client.widget.role;
 
 import com.google.inject.Inject;
-import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -12,17 +11,16 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.RoleEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RoleControllerAsync;
-import ru.protei.portal.ui.common.client.widget.optionlist.base.ModelList;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.client.widget.selector.base.LifecycleSelectorModel;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public abstract class RoleModel implements Activity {
+public abstract class RoleModel extends LifecycleSelectorModel<UserRole> {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        refreshOptions();
+        clear();
     }
 
     @Event
@@ -30,45 +28,20 @@ public abstract class RoleModel implements Activity {
         refreshOptions();
     }
 
-    public void subscribe( ModelList< UserRole > list ) {
-        subscribers.add( list );
-        list.fillOptions( this.list );
-    }
-
-    private void notifySubscribers() {
-        for ( ModelList< UserRole > list : subscribers ) {
-            list.fillOptions( this.list );
-        }
-    }
-
-    private void refreshOptions() {
+    @Override
+    protected void refreshOptions() {
         UserRoleQuery query = new UserRoleQuery();
         query.setSortField( En_SortField.role_name );
         query.setSortDir( En_SortDir.ASC );
-
-        roleService.getRoles( query, new RequestCallback< List< UserRole > >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess( List< UserRole > options ) {
-                list.clear();
-                list.addAll( options );
-
-                notifySubscribers();
-            }
-        } );
+        roleService.getRoles(query, new FluentCallback<List<UserRole>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                })
+                .withSuccess(this::notifySubscribers));
     }
 
     @Inject
     RoleControllerAsync roleService;
-
     @Inject
     Lang lang;
-
-    private List< UserRole > list = new ArrayList<>();
-
-    List< ModelList< UserRole > > subscribers = new ArrayList<>();
 }

@@ -31,7 +31,6 @@ public class InitiatorMultiSelector
     public void init(InitiatorModel model, Lang lang) {
         this.model = model;
         this.lang = lang;
-        model.subscribe( this );
         setAddName( lang.buttonAdd() );
         setClearName( lang.buttonClear() );
     }
@@ -81,7 +80,7 @@ public class InitiatorMultiSelector
             setValue(null);
         }
 
-        model.updateCompanies(companyIds, fired);
+        model.updateCompanies(this, companyIds, fired);
 
     }
 

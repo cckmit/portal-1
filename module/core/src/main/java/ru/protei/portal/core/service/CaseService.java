@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
@@ -21,10 +22,7 @@ import java.util.List;
 public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
-    CoreResponse<Long> count( AuthToken token, CaseQuery query );
-
-    @Privileged({ En_Privilege.ISSUE_VIEW })
-    CoreResponse<List<CaseShortView>> caseObjectList( AuthToken token, CaseQuery query );
+    CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query);
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse<CaseObject> getCaseObject( AuthToken token, long number );

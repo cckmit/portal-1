@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -17,9 +18,7 @@ import java.util.List;
 @RemoteServiceRelativePath( "springGwtServices/ProductController" )
 public interface ProductController extends RemoteService {
 
-    long getProductsCount(ProductQuery query) throws RequestFailedException;
-
-    List<DevUnit> getProductList (ProductQuery query) throws RequestFailedException;
+    SearchResult<DevUnit> getProductList (ProductQuery query) throws RequestFailedException;
 
     DevUnit getProduct( Long productId ) throws RequestFailedException;
 

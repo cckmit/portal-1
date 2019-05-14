@@ -759,5 +759,4 @@ public class MainConfiguration {
     public ServiceLayerInterceptorLogging getServiceLayerInterceptorLogging() {
         return new ServiceLayerInterceptorLogging();
     }
-
 }

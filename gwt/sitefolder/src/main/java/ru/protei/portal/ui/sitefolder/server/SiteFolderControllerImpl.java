@@ -13,8 +13,10 @@ import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.SiteFolderService;
 import ru.protei.portal.ui.common.client.service.SiteFolderController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -23,78 +25,31 @@ import java.util.List;
 public class SiteFolderControllerImpl implements SiteFolderController {
 
     @Override
-    public long getPlatformsCount(PlatformQuery query) throws RequestFailedException {
-
-        log.debug("getPlatformsCount(): query={}", query);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Long> result = siteFolderService.countPlatforms(descriptor.makeAuthToken(), query);
-        return result.isOk() ? result.getData() : 0L;
-    }
-
-    @Override
-    public long getServersCount(ServerQuery query) throws RequestFailedException {
-
-        log.debug("getServersCount(): query={}", query);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Long> result = siteFolderService.countServers(descriptor.makeAuthToken(), query);
-        return result.isOk() ? result.getData() : 0L;
-    }
-
-    @Override
-    public long getApplicationsCount(ApplicationQuery query) throws RequestFailedException {
-
-        log.debug("getApplicationsCount(): query={}", query);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Long> result = siteFolderService.countApplications(descriptor.makeAuthToken(), query);
-        return result.isOk() ? result.getData() : 0L;
-    }
-
-    @Override
-    public List<Platform> getPlatforms(PlatformQuery query) throws RequestFailedException {
-
+    public SearchResult<Platform> getPlatforms(PlatformQuery query) throws RequestFailedException {
         log.debug("getPlatforms(): query={}", query);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<Platform>> response = siteFolderService.listPlatforms(descriptor.makeAuthToken(), query);
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(siteFolderService.getPlatforms(token, query));
     }
 
     @Override
-    public List<Server> getServers(ServerQuery query) throws RequestFailedException {
-
+    public SearchResult<Server> getServers(ServerQuery query) throws RequestFailedException {
         log.debug("getServers(): query={}", query);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<Server>> response = siteFolderService.listServers(descriptor.makeAuthToken(), query);
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(siteFolderService.getServers(token, query));
     }
 
     @Override
-    public List<Application> getApplications(ApplicationQuery query) throws RequestFailedException {
-
+    public SearchResult<Application> getApplications(ApplicationQuery query) throws RequestFailedException {
         log.debug("getApplications(): query={}", query);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<Application>> response = siteFolderService.listApplications(descriptor.makeAuthToken(), query);
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(siteFolderService.getApplications(token, query));
     }
 
     @Override
-    public List<Server> getServersWithAppsNames(ServerQuery query) throws RequestFailedException {
-
+    public SearchResult<Server> getServersWithAppsNames(ServerQuery query) throws RequestFailedException {
         log.debug("getServersWithAppsNames(): query={}", query);
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<List<Server>> response = siteFolderService.listServersWithAppsNames(descriptor.makeAuthToken(), query);
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(siteFolderService.getServersWithAppsNames(token, query));
     }
 
 

@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -18,13 +19,11 @@ public interface ContactControllerAsync {
      * @param query запрос
      * @return список контактов
      */
-    void getContacts( ContactQuery query, AsyncCallback< List< Person > > async );
+    void getContacts( ContactQuery query, AsyncCallback< SearchResult< Person > > async );
 
     void getContact ( long id, AsyncCallback<Person> callback );
 
     void saveContact ( Person p, AsyncCallback<Person> callback );
-
-    void getContactsCount( ContactQuery query, AsyncCallback<Long> async );
 
     void fireContact(long id, AsyncCallback<Boolean> async);
 

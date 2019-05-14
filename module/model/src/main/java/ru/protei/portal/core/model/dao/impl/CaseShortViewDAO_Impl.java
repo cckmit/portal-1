@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
@@ -26,22 +27,9 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     private CaseObjectSqlBuilder caseObjectSqlBuilder;
 
     @Override
-    public List< CaseShortView > getCases( CaseQuery query ) {
-        SqlCondition where = createSqlCondition(query);
-
-        JdbcQueryParameters parameters = new JdbcQueryParameters();
-        if (where.isConditionDefined())
-            parameters.withCondition(where.condition, where.args);
-
-        parameters.withOffset(query.getOffset());
-        parameters.withLimit(query.getLimit());
-        parameters.withSort(TypeConverters.createSort( query ));
-        if (isSearchAtComments(query)) {
-            parameters.withDistinct(true);
-            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
-        }
-
-        return getList(parameters);
+    public SearchResult<CaseShortView> getSearchResult(CaseQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
     }
 
     @Override
@@ -59,23 +47,6 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
         return getByCondition("case_object.caseno=?", caseNo);
     }
 
-    @Override
-    public Long count(CaseQuery query) {
-        if (!isSearchAtComments(query)) {
-            return super.count(query);
-        }
-        StringBuilder sql = new StringBuilder("select count(distinct case_object.id) from ").append(getTableName())
-                .append(LEFT_JOIN_CASE_COMMENT);
-
-        SqlCondition whereCondition = createSqlCondition(query);
-
-        if (!whereCondition.condition.isEmpty()) {
-            sql.append(" where ").append(whereCondition.condition);
-        }
-
-        return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray());
-    }
-
     @SqlConditionBuilder
     public SqlCondition caseQueryCondition ( CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);
@@ -84,5 +55,25 @@ public class CaseShortViewDAO_Impl extends PortalBaseJdbcDAO<CaseShortView> impl
     public static boolean isSearchAtComments(CaseQuery query) {
         return query.isSearchStringAtComments()
                 && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(CaseQuery query) {
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+
+        SqlCondition where = createSqlCondition(query);
+        if (where.isConditionDefined()) {
+            parameters.withCondition(where.condition, where.args);
+        }
+
+        parameters.withOffset(query.getOffset());
+        parameters.withLimit(query.getLimit());
+        parameters.withSort(TypeConverters.createSort( query ));
+        if (isSearchAtComments(query)) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+        }
+
+        return parameters;
     }
 }

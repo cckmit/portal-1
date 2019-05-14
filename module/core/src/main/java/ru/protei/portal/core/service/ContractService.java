@@ -6,16 +6,12 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.query.ContractQuery;
-
-import java.util.List;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface ContractService {
 
-    @Privileged(En_Privilege.CONTRACT_VIEW)
-    CoreResponse<Integer> count(AuthToken token, ContractQuery query);
-
-    @Privileged(En_Privilege.CONTRACT_VIEW)
-    CoreResponse<List<Contract>> contractList(AuthToken token, ContractQuery query);
+    @Privileged({ En_Privilege.CONTRACT_VIEW })
+    CoreResponse<SearchResult<Contract>> getContracts(AuthToken token, ContractQuery query);
 
     @Privileged(En_Privilege.CONTRACT_VIEW)
     CoreResponse<Contract> getContract(AuthToken token, Long id);

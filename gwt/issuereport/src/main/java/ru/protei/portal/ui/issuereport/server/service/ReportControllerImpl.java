@@ -6,16 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import protei.utils.common.CollectionUtils;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.query.ReportQuery;
-import ru.protei.portal.ui.common.client.service.ReportController;
-import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.core.service.ReportService;
+import ru.protei.portal.ui.common.client.service.ReportController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
+import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -66,29 +68,10 @@ public class ReportControllerImpl implements ReportController {
     }
 
     @Override
-    public List<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException {
+    public SearchResult<Report> getReportsByQuery(ReportQuery query) throws RequestFailedException {
         log.debug("getReportsByQuery(): query={}", query);
-
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
-
-        CoreResponse<List<Report>> response = reportService.getReportsByQuery(descriptor.makeAuthToken(), query);
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-
-        return response.getData();
-    }
-
-    @Override
-    public Long getReportsCount(ReportQuery query) {
-        log.debug("getReportsByQuery(): query={}", query);
-
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor(httpServletRequest);
-
-        CoreResponse<Long> result = reportService.countReportsByQuery(descriptor.makeAuthToken(), query);
-
-        return result.isOk() ? result.getData() : 0L;
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(reportService.getReports(token, query));
     }
 
     @Override
