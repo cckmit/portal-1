@@ -11,18 +11,17 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dao.JiraEndpointDAO;
 import ru.protei.portal.core.model.ent.JiraEndpoint;
 import ru.protei.portal.core.service.EventPublisherService;
+import ru.protei.portal.core.utils.EntityCache;
 import ru.protei.portal.jira.utils.JiraHookEventData;
 import ru.protei.portal.jira.utils.JiraHookEventType;
 import ru.protei.winter.core.utils.Pair;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueService {
 
@@ -81,7 +80,10 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
             log.info("Event for company={} contains data={}", companyId, eventData.toDebugString());
 
             Issue issue = eventData.getIssue();
-            JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(companyId, issue.getProject().getId());
+            JiraEndpoint endpoint = jiraEndpointCache().findFirst(ep ->
+                    Objects.equals(ep.getCompanyId(), companyId) &&
+                    Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
+            );
 
             if (endpoint == null) {
                 log.warn("Unable to find end-point record for jira-issue company={}, project={}", companyId, issue.getProject());
@@ -116,6 +118,13 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         eventPublisherService.publishEvent(event);
     }
 
+    private EntityCache<JiraEndpoint> jiraEndpointCache() {
+        if (jiraEndpointCache == null) {
+            jiraEndpointCache = new EntityCache<>(jiraEndpointDAO, TimeUnit.MINUTES.toMillis(10));
+        }
+        return jiraEndpointCache;
+    }
+
     @Autowired
     PortalConfig config;
     @Autowired
@@ -131,6 +140,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         AssembledCaseEvent handle(JiraEndpoint endpoint, JiraHookEventData event);
     }
 
+    private EntityCache<JiraEndpoint> jiraEndpointCache;
     private JiraEventHandler defaultHandler;
     private Map<JiraHookEventType, JiraEventHandler> handlersMap = new HashMap<>();
     private final Queue<Pair<Long, JiraHookEventData>> queue = new ConcurrentLinkedDeque<>();
