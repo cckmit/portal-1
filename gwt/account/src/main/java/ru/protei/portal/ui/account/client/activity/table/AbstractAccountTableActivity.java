@@ -12,7 +12,6 @@ import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
  */
 public interface AbstractAccountTableActivity extends
         ClickColumn.Handler< UserLogin >,
-        EditClickColumn.EditHandler< UserLogin >, RemoveClickColumn.RemoveHandler< UserLogin >,
-        InfiniteLoadHandler< UserLogin >, InfiniteTableWidget.PagerListener
+        EditClickColumn.EditHandler< UserLogin >, RemoveClickColumn.RemoveHandler< UserLogin >
 {
 }

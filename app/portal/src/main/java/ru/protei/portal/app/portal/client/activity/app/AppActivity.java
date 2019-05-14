@@ -117,7 +117,7 @@ public abstract class AppActivity
 
     private void requestsAppVersion() {
         appService.getClientConfig(new FluentCallback<ClientConfigData>()
-                .withSuccess((config, m) -> {
+                .withSuccess(config -> {
                     if (config != null) {
                         view.setAppVersion(lang.version() + " " + config.appVersion);
                     }

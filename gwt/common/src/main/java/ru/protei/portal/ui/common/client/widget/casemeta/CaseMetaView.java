@@ -242,7 +242,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
                 .withError(throwable -> {
                     showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
                 })
-                .withSuccess((caseInfo, m) -> {
+                .withSuccess(caseInfo -> {
                     if (caseInfo == null) {
                         showError(lang.issueLinkIncorrectCrmCaseNotFound(crmRemoteId));
                         return;

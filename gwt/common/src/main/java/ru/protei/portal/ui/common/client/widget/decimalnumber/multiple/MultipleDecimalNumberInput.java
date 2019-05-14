@@ -73,7 +73,7 @@ public class MultipleDecimalNumberInput
 
         dataProvider.getNextAvailableRegisterNumber(query, new FluentCallback<Integer>()
                 .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
-                .withSuccess((registerNumber, m) -> {
+                .withSuccess(registerNumber -> {
                     DecimalNumber number = box.getValue();
                     number.setRegisterNumber(registerNumber);
                     number.setModification(null);
@@ -200,7 +200,7 @@ public class MultipleDecimalNumberInput
 
         dataProvider.getNextAvailableModification(query, new FluentCallback<Integer>()
                 .withError(throwable -> box.showMessage(lang.equipmentErrorGetNextAvailableNumber(), DisplayStyle.DANGER))
-                .withSuccess((i, m) -> successAction.accept(i))
+                .withSuccess(successAction)
         );
     }
 
@@ -254,7 +254,7 @@ public class MultipleDecimalNumberInput
 
         dataProvider.checkIfExistDecimalNumber(box.getValue(), new FluentCallback<Boolean>()
                 .withError(throwable -> box.showMessage(lang.equipmentErrorCheckNumber(), DisplayStyle.DANGER))
-                .withSuccess((result, m) -> {
+                .withSuccess(result -> {
                     if (result) {
                         occupiedNumbers.add(new DecimalNumber(box.getValue()));
                     } else {

@@ -17,9 +17,10 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     private String errorMessage = null;
     private NotifyEvents.NotifyType notifyType = NotifyEvents.NotifyType.ERROR;
     private Consumer<Throwable> errorHandler = null;
-    private BiConsumer<T, Long> successHandler = null;
+    private Consumer<T> successHandler = null;
     private Runnable resultHandler = null;
-    private Long marker = null;
+    private long marker;
+    private BiConsumer<Long, T> markedSuccessHandler = null;
 
     /**
      * Обработчик, который будет вызван при любом ответе сервера
@@ -31,8 +32,9 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
         return this;
     }
 
-    public FluentCallback<T> withMarker(long marker) {
+    public FluentCallback<T> withMarkedSuccess(long marker, BiConsumer<Long, T> markedSuccessHandler) {
         this.marker = marker;
+        this.markedSuccessHandler = markedSuccessHandler;
         return this;
     }
 
@@ -56,7 +58,7 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
     }
 
     @Override
-    public AsyncCallback<T> withSuccess(BiConsumer<T, Long> successHandler) {
+    public AsyncCallback<T> withSuccess(Consumer<T> successHandler) {
         this.successHandler = successHandler;
         return this;
     }
@@ -88,8 +90,13 @@ public class FluentCallback<T> implements MessageOnError<T>, HandleOnError<T>
             resultHandler.run();
         }
 
+        if (markedSuccessHandler != null) {
+            markedSuccessHandler.accept(marker, result);
+            return;
+        }
+
         if (successHandler != null) {
-            successHandler.accept(result, marker);
+            successHandler.accept(result);
         }
     }
 

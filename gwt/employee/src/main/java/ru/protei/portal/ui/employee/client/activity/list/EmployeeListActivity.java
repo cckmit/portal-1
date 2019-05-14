@@ -94,8 +94,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         marker = new Date().getTime();
 
         employeeService.getEmployees( makeQuery(), new FluentCallback< List< EmployeeShortView > >()
-                .withMarker( marker )
-                .withSuccess( ( result, m ) -> {
+                .withMarkedSuccess( marker, ( m, result ) -> {
                     if ( marker == m ) {
                         fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
                         view.showLoader( false );

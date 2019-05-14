@@ -71,7 +71,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         }
 
         regionService.removeProject(project.getId(), new FluentCallback<Boolean>()
-                .withSuccess((result, m) -> {
+                .withSuccess(result -> {
                     fireEvent(new ProjectEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());

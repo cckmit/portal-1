@@ -58,7 +58,7 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess((caseTags, m) -> {
+                .withSuccess(caseTags -> {
                     valuesMap.put(caseType, caseTags.stream().map(CaseTag::toEntityOption).collect(Collectors.toList()));
                     notifySubscribers(caseType);
                 })

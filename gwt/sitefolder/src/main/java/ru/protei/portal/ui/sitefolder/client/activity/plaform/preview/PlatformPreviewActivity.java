@@ -31,7 +31,7 @@ public abstract class PlatformPreviewActivity implements Activity, AbstractPlatf
     }
 
     private void request(Long platformId, Consumer<Platform> consumer) {
-        siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess((platform, m) -> consumer.accept(platform)));
+        siteFolderController.getPlatform(platformId, new FluentCallback<Platform>().withSuccess(consumer));
     }
 
     private void fillView( Platform value ) {

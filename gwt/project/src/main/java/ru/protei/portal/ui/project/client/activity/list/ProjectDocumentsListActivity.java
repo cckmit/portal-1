@@ -41,7 +41,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
             handleDocuments(new ArrayList<>());
             return;
         }
-        documentController.getProjectDocuments(event.projectId, new FluentCallback<List<Document>>().withSuccess((result, m) -> handleDocuments(result)));
+        documentController.getProjectDocuments(event.projectId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
     }
 
 

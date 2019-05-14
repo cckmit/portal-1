@@ -70,7 +70,7 @@ public abstract class ProjectTableActivity
         }
 
         regionService.createNewProject(new FluentCallback<Long>()
-                .withSuccess((projectId, m) -> {
+                .withSuccess(projectId -> {
                     updateListAndSelect(projectId);
                     fireEvent(new ProjectEvents.ChangeModel());
                 })
@@ -119,7 +119,7 @@ public abstract class ProjectTableActivity
                 .withResult(() -> {
                     projectIdForRemove = null;
                 })
-                .withSuccess((result, m) -> {
+                .withSuccess(result -> {
                     fireEvent(new ProjectEvents.Show());
                     fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
                 })

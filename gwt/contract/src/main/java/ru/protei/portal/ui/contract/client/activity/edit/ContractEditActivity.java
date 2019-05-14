@@ -83,7 +83,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
 
     private void requestData(Long id){
         contractService.getContract(id, new FluentCallback<Contract>()
-                .withSuccess((result, m) -> fillView(result)));
+                .withSuccess(this::fillView));
     }
 
     private void fillView(Contract value) {
@@ -161,7 +161,7 @@ public abstract class ContractEditActivity implements Activity, AbstractContract
                 .withResult(() -> {
                     view.saveEnabled().setEnabled(true);
                 })
-                .withSuccess((value, m) -> {
+                .withSuccess(value -> {
                     fireEvent(new ContractEvents.ChangeModel());
                     fireEvent(new Back());
                 }));

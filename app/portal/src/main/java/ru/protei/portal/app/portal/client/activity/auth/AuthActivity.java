@@ -38,7 +38,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     @Event
     public void onLogout( AppEvents.Logout event ) {
         resetRememberMe();
-        authService.logout(new FluentCallback<Void>().withSuccess((v, m) -> {
+        authService.logout(new FluentCallback<Void>().withSuccess(v -> {
             view.reset();
             fireEvent(new AuthEvents.Show());
         }));
@@ -55,7 +55,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
         String pwd = view.password().getValue();
         authService.authentificate(login, pwd, new FluentCallback<Profile>()
                 .withError(throwable -> view.showError(lang.errLoginOrPwd()))
-                .withSuccess((profile, m) -> {
+                .withSuccess(profile -> {
                     view.hideError();
                     fireAuthSuccess(profile);
                     fireEvent(new NotifyEvents.Show(lang.msgHello(), NotifyEvents.NotifyType.SUCCESS));
@@ -82,7 +82,7 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
                     resetRememberMe();
                     placeView();
                 })
-                .withSuccess((profile, m) -> {
+                .withSuccess(profile -> {
                     if (profile != null) {
                         fireAuthSuccess(profile);
                         return;

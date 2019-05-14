@@ -68,7 +68,7 @@ public abstract class StateModel implements Activity {
                     isRefreshing = false;
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
-                .withSuccess((caseStateAndWorkflowList, m) -> {
+                .withSuccess(caseStateAndWorkflowList -> {
                     caseStateWorkflowList.clear();
                     caseStateWorkflowList.addAll(caseStateAndWorkflowList.getCaseStateWorkflowList());
                     caseStatesList.clear();

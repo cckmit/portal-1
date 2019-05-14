@@ -21,9 +21,11 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,8 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Активность создания и редактирования учетной записи
  */
-public abstract class AccountTableActivity implements AbstractAccountTableActivity, AbstractAccountFilterActivity,
-        AbstractPagerActivity, Activity {
+public abstract class AccountTableActivity implements AbstractAccountTableActivity, AbstractAccountFilterActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -43,8 +44,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
-
-        pagerView.setActivity( this );
     }
 
     @Event
@@ -58,14 +57,13 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         this.fireEvent( new AppEvents.InitPanelName( lang.accounts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
-        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ACCOUNT ) :
                 new ActionBarEvents.Clear()
         );
 
-        requestTotalCount();
+        requestAccounts();
     }
 
     @Event
@@ -125,56 +123,22 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onFilterChanged() {
-        requestTotalCount();
+        requestAccounts();
     }
 
-    @Override
-    public void loadData( int offset, int limit, AsyncCallback< List< UserLogin > > asyncCallback ) {
-        AccountQuery query = makeQuery();
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        accountService.getAccounts( query, new RequestCallback< List< UserLogin > >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                asyncCallback.onFailure( throwable );
-            }
-
-            @Override
-            public void onSuccess( List< UserLogin > logins ) {
-                asyncCallback.onSuccess( logins );
-            }
-        } );
-    }
-
-    @Override
-    public void onPageChanged(int page) {
-        pagerView.setCurrentPage(page);
-    }
-
-    @Override
-    public void onPageSelected(int page) {
-        view.scrollTo(page);
-    }
-
-    private void requestTotalCount() {
+    private void requestAccounts() {
         view.clearRecords();
         animation.closeDetails();
 
-        accountService.getAccountsCount( makeQuery(), new RequestCallback< Long >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
+        marker = new Date().getTime();
 
-            @Override
-            public void onSuccess( Long count ) {
-                view.setRecordCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-            }
-        });
+        accountService.getAccounts( makeQuery(), new FluentCallback< List< UserLogin > >()
+                .withMarkedSuccess( marker, ( m, result ) -> {
+                    if ( marker == m ) {
+                        view.addRecords( result );
+                    }
+                } )
+                .withErrorMessage( lang.errGetList() ) );
     }
 
     private void showPreview ( UserLogin value ) {
@@ -225,9 +189,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     TableAnimation animation;
 
     @Inject
-    AbstractPagerView pagerView;
-
-    @Inject
     PolicyService policyService;
 
     private Long accountId;
@@ -235,4 +196,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     private AppEvents.InitDetails init;
 
     private static String CREATE_ACTION;
+
+    private long marker;
 }
