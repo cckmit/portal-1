@@ -112,7 +112,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     }
 
     private void sendEvent(AssembledCaseEvent event) {
-        log.debug("Send assembled event {}", event.getCaseObject().defGUID());
+        log.info("Send assembled event {}", event.getCaseObject().defGUID());
         eventPublisherService.publishEvent(event);
     }
 

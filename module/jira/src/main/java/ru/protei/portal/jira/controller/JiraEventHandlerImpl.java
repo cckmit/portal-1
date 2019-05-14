@@ -77,7 +77,7 @@ public class JiraEventHandlerImpl {
         } catch (JSONException e) {
             logger.error("Failed to parse json-data", e);
             if (!logger.isDebugEnabled()) {
-                logger.warn("Data: {}", jsonString);
+                logger.error("Data: {}", jsonString);
             }
         }
     }
