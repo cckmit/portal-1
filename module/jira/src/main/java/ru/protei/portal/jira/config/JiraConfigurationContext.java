@@ -23,6 +23,12 @@ public class JiraConfigurationContext {
         return new JiraEventHandlerImpl();
     }
 
+
+    @Bean
+    public JiraIntegrationQueueService getJiraIntegrationQueueService() {
+        return new JiraIntegrationQueueServiceImpl();
+    }
+
     @Bean
     public JiraIntegrationService getJiraService () {
         return new JiraIntegrationServiceImpl();
@@ -32,6 +38,7 @@ public class JiraConfigurationContext {
     public JiraBackchannelHandler getJiraBackchannelHandler() {
         return new JiraBackchannelHandlerImpl();
     }
+
 
     @Bean
     public JiraServiceLayerInterceptorLogging getJiraServiceLayerInterceptorLogging() {

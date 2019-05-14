@@ -29,6 +29,7 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final JiraConfig jiraConfig;
 
     private final String loginSuffixConfig;
 
@@ -45,6 +46,7 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        jiraConfig = new JiraConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
@@ -99,6 +101,10 @@ public class PortalConfigData {
 
     public YoutrackConfig youtrack() {
         return youtrackConfig;
+    }
+
+    public JiraConfig jiraConfig() {
+        return jiraConfig;
     }
 
     public static class CommonConfig {
@@ -511,6 +517,25 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+    }
+
+    public static class JiraConfig {
+
+        private final int queueLimit;
+        private final int threadLimit;
+
+        public JiraConfig(PropertiesWrapper properties) throws ConfigException {
+            queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 60);
+            threadLimit = properties.getProperty("integration.jira.thread.limit", Integer.class, 3);
+        }
+
+        public int getQueueLimit() {
+            return queueLimit;
+        }
+
+        public int getThreadLimit() {
+            return threadLimit;
         }
     }
 }

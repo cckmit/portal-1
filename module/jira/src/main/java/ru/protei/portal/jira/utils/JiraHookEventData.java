@@ -87,6 +87,16 @@ public class JiraHookEventData {
                 + "]";
     }
 
+    public String toFullString() {
+        return "jira-event: " + this.eventType.name() + "/" + this.timestamp
+                + "[user=" + user
+                + ", issue=" + issue
+                + ", log-id=" + changelogId
+                + ", log-items-count=" + (changelogItems != null ? changelogItems.size() : 0)
+                + ", log-items=" + changelogItems
+                + ", comment=" + comment
+                + "]";
+    }
 
     public static JiraHookEventData parse (String val) throws JSONException {
         JSONObject jsonObject = new JSONObject(val);

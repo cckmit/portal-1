@@ -1,88 +1,28 @@
 package ru.protei.portal.jira.controller;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
-import org.apache.commons.lang3.time.DateUtils;
+import org.codehaus.jettison.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.model.dao.JiraEndpointDAO;
-import ru.protei.portal.core.model.ent.JiraEndpoint;
-import ru.protei.portal.core.service.EventPublisherService;
-import ru.protei.portal.jira.service.JiraIntegrationService;
+import ru.protei.portal.jira.service.JiraIntegrationQueueService;
 import ru.protei.portal.jira.utils.JiraHookEventData;
-import ru.protei.portal.jira.utils.JiraHookEventType;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 public class JiraEventHandlerImpl {
+
     private static final Logger logger = LoggerFactory.getLogger(JiraEventHandlerImpl.class);
-    private static final int EVENT_SEND_DELAY_SEC = 3;
 
-    interface JiraEventHandler {
-        void handle (JiraEndpoint endpoint, JiraHookEventData event);
-    }
-
-    @Autowired
-    JiraIntegrationService integrationService;
-    @Autowired
-    JiraEndpointDAO jiraEndpointDAO;
     @Autowired
     PortalConfig portalConfig;
     @Autowired
-    EventPublisherService eventPublisherService;
-    @Autowired
-    ThreadPoolTaskScheduler scheduler;
-
-    Map<JiraHookEventType, JiraEventHandler> handlersMap;
-    JiraEventHandler defaultHandler;
+    JiraIntegrationQueueService jiraIntegrationQueueService;
 
     public JiraEventHandlerImpl() {
-        logger.debug("jira webhook handler installed");
-    }
-
-    @PostConstruct
-    private void init () {
-        handlersMap = new HashMap<>();
-        handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> scheduleSendEvent(integrationService.create(ep, event)));
-        handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> scheduleSendEvent(integrationService.updateOrCreate(ep, event)));
-        handlersMap.put(JiraHookEventType.COMMENT_CREATED, (ep, event) -> logger.debug("skip comment-created event"));
-        defaultHandler = (ep, evt) -> logger.debug("has no handler for event {}, skip", evt.getEventType());
-    }
-
-    private void scheduleSendEvent(AssembledCaseEvent event) {
-        /*
-         * Задержка добавлена из-за того, что в рассылке писем отсутствуют новые комменты, которые выгребаются из бд.
-         * Возможно, транзакция не успевает закончиться к моменту выгреба комментов. (время по логам - 4 тысячных секунды
-         * между #sendEvent и выгребом комментов в MailNotificationProcessor)
-         * https://youtrack.protei.ru/issue/PORTAL-571#focus=streamItem-85-143880-0-0
-         */
-        if (event == null) {
-            return;
-        }
-        logger.debug("schedule send assembled event {}", event.getCaseObject().defGUID());
-        try {
-            Date execTime = DateUtils.addSeconds(new Date(), EVENT_SEND_DELAY_SEC);
-            scheduler.schedule(() -> sendEvent(event), execTime);
-        } catch (Exception e) {
-            logger.debug("failed to schedule send assembled event " + event.getCaseObject().defGUID(), e);
-            sendEvent(event);
-        }
-    }
-
-    private void sendEvent (AssembledCaseEvent event) {
-        if (event != null) {
-            logger.debug("send assembled event {}", event.getCaseObject().defGUID());
-            eventPublisherService.publishEvent(event);
-        }
+        logger.info("jira webhook handler installed");
     }
 
     @PostMapping("/jira/{companyId}/wh")
@@ -92,31 +32,29 @@ public class JiraEventHandlerImpl {
                              @RequestHeader(value = "X-Real-IP", required = false)String realIP,
                              HttpServletRequest request
                              ) {
-        if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
-            logger.debug("Jira integration is disabled, nothing happens");
-            return;
-        }
-
-        logger.info("got request from JIRA, companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
-        logger.debug("data: {}", jsonString);
-
         try {
+
+            if (!portalConfig.data().integrationConfig().isJiraEnabled()) {
+                logger.debug("Jira integration is disabled, nothing happens");
+                return;
+            }
+
+            logger.info("Got request from JIRA, companyId={}, src-ip={}, host={}, query={}", companyId, realIP, fromHost, request.getQueryString());
+            logger.debug("Data: {}", jsonString);
+
             JiraHookEventData eventData = JiraHookEventData.parse(jsonString);
-
             if (eventData == null || eventData.getIssue() == null) {
-                logger.warn("no valid data, return");
+                logger.warn("Failed to parse data, return");
+                if (!logger.isDebugEnabled()) {
+                    logger.warn("Data: {}", jsonString);
+                }
                 return;
             }
 
-            final Issue issue = eventData.getIssue();
-            final JiraEndpoint endpoint = jiraEndpointDAO.getByProjectId(companyId, issue.getProject().getId());
-
-            if (endpoint == null) {
-                logger.warn("unable to find end-point record for jira-issue project {}, company={}", issue.getProject(), companyId);
-                return;
+            if (!jiraIntegrationQueueService.enqueue(companyId, eventData)) {
+                logger.error("Event dropped: companyId={}, src-ip={}, host={}, query={}, eventData={}",
+                        companyId, realIP, fromHost, request.getQueryString(), eventData.toDebugString());
             }
-
-            logger.debug("parsed data: {}", eventData.toDebugString());
 
             /**
              * Важное замечание: в каждом событии приходит довольно много информации, но зато она очень подробная и полная
@@ -136,10 +74,11 @@ public class JiraEventHandlerImpl {
              * чтобы не получать петли, когда наш комментарий опять свалится к нам и мы его еще раз добавим.
              */
 
-            handlersMap.getOrDefault(eventData.getEventType(), defaultHandler).handle(endpoint, eventData);
-        }
-        catch (Exception e) {
-            logger.error("unable to parse json-data", e);
+        } catch (JSONException e) {
+            logger.error("Failed to parse json-data", e);
+            if (!logger.isDebugEnabled()) {
+                logger.warn("Data: {}", jsonString);
+            }
         }
     }
 }
