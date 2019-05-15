@@ -81,8 +81,7 @@ public class MailNotificationProcessor {
                 formNotifiers(defaultNotifiers,
                         event.getInitiator(),
                         event.getCaseObject().getCreator(),
-                        event.getCaseObject().getManager(),
-                        event.getCaseObject().isPrivateCase());
+                        event.getCaseObject().getManager());
 
         log.info( "subscribers: filter private: {}", join( notifiers, ni->ni.getAddress(), ",") );
         if(!notifiers.isEmpty())
@@ -108,8 +107,6 @@ public class MailNotificationProcessor {
             return;
         }
 
-        List<String> recipients = getNotifiersAddresses(notifiers);
-
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
@@ -120,19 +117,37 @@ public class MailNotificationProcessor {
         try {
             Long lastMessageId = getEmailLastId(caseObject.getId());
 
-            performCaseObjectNotification(
-                    event,
-                    comments.getData(),
-                    lastMessageId,
-                    recipients,
-                    true,
-                    config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                    notifiers.stream()
-                            .filter(this::isProteiRecipient)
-                            .collect(toList())
-            );
+            if ( isPrivate(event) ) {
 
-            if (event.isSendToCustomers()) {
+                List<NotificationEntry> proteiNotifiers = notifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList());
+                List<String> recipients = getNotifiersAddresses(proteiNotifiers);
+
+                performCaseObjectNotification(
+                        event,
+                        comments.getData(),
+                        lastMessageId,
+                        recipients,
+                        true,
+                        config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
+                        proteiNotifiers
+                );
+
+            } else {
+
+                List<NotificationEntry> proteiNotifiers = notifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList());
+                List<NotificationEntry> notProteiNotifiers = notifiers.stream().filter(this::isNotProteiRecipient).collect(Collectors.toList());
+
+                List<String> recipients = getNotifiersAddresses(notifiers);
+
+                performCaseObjectNotification(
+                        event,
+                        comments.getData(),
+                        lastMessageId,
+                        recipients,
+                        true,
+                        config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
+                        proteiNotifiers
+                );
                 performCaseObjectNotification(
                         event,
                         selectPublicComments(comments.getData()),
@@ -140,17 +155,21 @@ public class MailNotificationProcessor {
                         recipients,
                         false,
                         config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                        notifiers.stream()
-                                .filter(this::isNotProteiRecipient)
-                                .collect(toList())
+                        notProteiNotifiers
                 );
-            }
 
+            }
             caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
 
         } finally {
             semaphore.release();
         }
+    }
+
+    private boolean isPrivate(AssembledCaseEvent event) {
+        return event.getCaseObject().isPrivateCase()
+                || !event.isSendToCustomers()
+                || config.data().smtp().isBlockExternalRecipients();
     }
 
     private List<CaseComment> selectPublicComments(List<CaseComment> comments) {
@@ -216,7 +235,7 @@ public class MailNotificationProcessor {
     /**
      * Form case notifiers with initiator, creator and manager
      */
-    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager, boolean isPrivateCase){
+    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager){
 
         NotificationEntry initiatorEmail = fetchNotificationEntryFromPerson(initiator);
         if (initiatorEmail != null) {
@@ -233,9 +252,7 @@ public class MailNotificationProcessor {
             allNotifiers.add(managerEmail);
         }
 
-        return isPrivateCase || config.data().smtp().isBlockExternalRecipients() ?
-                allNotifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList()):
-                allNotifiers;
+        return allNotifiers;
     }
 
     private String makeCaseObjectMessageId( Long caseNumber, Long id, int recipientAddressHashCode ) {
