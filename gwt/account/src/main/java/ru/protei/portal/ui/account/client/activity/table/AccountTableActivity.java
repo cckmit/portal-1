@@ -33,7 +33,8 @@ import java.util.stream.Collectors;
 /**
  * Активность создания и редактирования учетной записи
  */
-public abstract class AccountTableActivity implements AbstractAccountTableActivity, AbstractAccountFilterActivity, Activity {
+public abstract class AccountTableActivity implements AbstractAccountTableActivity, AbstractAccountFilterActivity,
+        AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void onInit() {
@@ -44,26 +45,29 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+
+        pagerView.setActivity( this );
     }
 
     @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
+    public void onAuthSuccess ( AuthEvents.Success event ) {
         filterView.resetFilter();
     }
 
-    @Event(Type.FILL_CONTENT)
+    @Event( Type.FILL_CONTENT )
     public void onShow( AccountEvents.Show event ) {
 
         this.fireEvent( new AppEvents.InitPanelName( lang.accounts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ACCOUNT_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ACCOUNT ) :
                 new ActionBarEvents.Clear()
         );
 
-        requestAccounts();
+        requestTotalCount();
     }
 
     @Event
@@ -123,22 +127,57 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onFilterChanged() {
-        requestAccounts();
+        requestTotalCount();
     }
 
-    private void requestAccounts() {
+    @Override
+    public void onPageSelected( int page ) {
+        pagerView.setCurrentPage( page );
+        requestAccounts( page );
+    }
+
+    private void requestTotalCount() {
         view.clearRecords();
         animation.closeDetails();
 
         marker = new Date().getTime();
 
-        accountService.getAccounts( makeQuery(), new FluentCallback< List< UserLogin > >()
+        accountService.getAccountsCount( makeQuery(), new FluentCallback< Long >()
+                .withMarkedSuccess( marker, ( m, count ) -> {
+                    if ( marker == m ) {
+                        pagerView.setTotalCount( count );
+                        pagerView.setTotalPages( getTotalPages( count.intValue() ) );
+                        pagerView.setCurrentPage( 0 );
+                        if ( count > 0 ) {
+                            requestAccounts( 0 );
+                        }
+                    }
+                } )
+                .withErrorMessage( lang.errGetList() ) );
+    }
+
+    private void requestAccounts( int page ) {
+        view.clearRecords();
+        animation.closeDetails();
+
+        AccountQuery query = makeQuery();
+        query.setOffset( page*PAGE_SIZE );
+        query.setLimit( PAGE_SIZE );
+
+        accountService.getAccounts( query, new FluentCallback< List< UserLogin > >()
                 .withMarkedSuccess( marker, ( m, result ) -> {
                     if ( marker == m ) {
                         view.addRecords( result );
                     }
                 } )
                 .withErrorMessage( lang.errGetList() ) );
+    }
+
+    private int getTotalPages( int count ) {
+        int fullPages = count / PAGE_SIZE;
+        int rowsOnLastPage = count - fullPages * PAGE_SIZE;
+        int halfPages = rowsOnLastPage > 0 ? 1 : 0;
+        return fullPages + halfPages;
     }
 
     private void showPreview ( UserLogin value ) {
@@ -189,6 +228,9 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     TableAnimation animation;
 
     @Inject
+    AbstractPagerView pagerView;
+
+    @Inject
     PolicyService policyService;
 
     private Long accountId;
@@ -198,4 +240,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     private static String CREATE_ACTION;
 
     private long marker;
+
+    private int PAGE_SIZE = 50;
 }
