@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.account.client.activity.table;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -29,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 
 /**
  * Активность создания и редактирования учетной записи
@@ -173,13 +174,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 .withErrorMessage( lang.errGetList() ) );
     }
 
-    private int getTotalPages( int count ) {
-        int fullPages = count / PAGE_SIZE;
-        int rowsOnLastPage = count - fullPages * PAGE_SIZE;
-        int halfPages = rowsOnLastPage > 0 ? 1 : 0;
-        return fullPages + halfPages;
-    }
-
     private void showPreview ( UserLogin value ) {
 
         if ( value == null ) {
@@ -240,6 +234,4 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     private static String CREATE_ACTION;
 
     private long marker;
-
-    private int PAGE_SIZE = 50;
 }

@@ -27,10 +27,8 @@ public abstract class AccountPreviewActivity implements AbstractAccountPreviewAc
     private void fillView( UserLogin value ) {
 
         view.setLogin( value.getUlogin() );
-        view.setLastName( value.getPerson() == null ? "" : value.getPerson().getLastName() );
-        view.setFirstName( value.getPerson() == null ? "" : value.getPerson().getFirstName() );
-        view.setSecondName( value.getPerson() == null ? "" : value.getPerson().getSecondName() );
-        view.setCompany( value.getPerson() == null ? "" : value.getPerson().getCompany().getCname() );
+        view.setDisplayName( value.getDisplayName() );
+        view.setCompany( value.getCompanyName() );
         if( value.getRoles() != null ) {
             view.setRoles( value.getRoles().stream().map( UserRole::getCode ).collect( Collectors.joining(", ")) );
         }

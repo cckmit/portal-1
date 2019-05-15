@@ -53,4 +53,6 @@ public interface AbstractCaseCommentListView extends IsWidget {
     HasVisibility getPrivacyVisibility();
 
     HasValue<Boolean> privateComment();
+
+    void setTextMarkupLabel(String label);
 }

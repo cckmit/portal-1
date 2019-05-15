@@ -1,77 +1,81 @@
 package ru.protei.portal.test.service;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.config.MainConfiguration;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.service.ContactService;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by michael on 11.10.16.
  */
-public class ContactServiceTest {
-
-    static ApplicationContext ctx;
-
-    @BeforeClass
-    public static void init () {
-         ctx = new AnnotationConfigApplicationContext (CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
-    }
-
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+public class ContactServiceTest extends BaseServiceTest {
 
     @Test
-    public void testGetById () {
-        ContactService service = ctx.getBean(ContactService.class);
+    public void testGetById() {
 
-        Assert.assertNotNull(service);
+        Company company = createNewCustomerCompany();
+        company.setId(companyDAO.persist(company));
+        Person person = createNewPerson(company);
+        person.setId(personDAO.persist(person));
 
-        CoreResponse<Person> response = service.getContact( null, 1001L );
+        Assert.assertNotNull(person.getId());
+
+        CoreResponse<Person> response = service.getContact(getAuthToken(), person.getId());
 
         Assert.assertTrue(response.isOk());
-
         Assert.assertNotNull(response.getData());
-        Assert.assertNotNull(response.getData().getCompany());
 
-        System.out.println(response.getData().getCompany());
+        Assert.assertTrue(personDAO.remove(person));
+        Assert.assertTrue(companyDAO.remove(company));
     }
 
     @Test
     public void testGetByFilter() {
 
-        ContactService service = ctx.getBean(ContactService.class);
+        Company company = createNewCompany(new CompanyCategory(2L));
+        company.setId(companyDAO.persist(company));
+        Person person = createNewPerson(company);
+        person.setId(personDAO.persist(person));
 
-        Assert.assertNotNull(service);
+        Assert.assertNotNull(person.getId());
 
-        CoreResponse<List<Person>> result = service.contactList( null, new ContactQuery((Long)null, null, "Михаил", En_SortField.person_full_name, En_SortDir.ASC));
+        ContactQuery query = new ContactQuery((Long) null, null, person.getDisplayName(), En_SortField.person_full_name, En_SortDir.ASC);
+        CoreResponse<List<Person>> result = service.contactList(getAuthToken(), query);
 
         Assert.assertNotNull(result);
         Assert.assertTrue(result.isOk());
         Assert.assertNotNull(result.getData());
         Assert.assertTrue(result.getData().size() > 0);
 
-        for (Person person : result.getData()) {
-            CoreResponse<Person> x = service.getContact( null, person.getId() );
+        for (Person p : result.getData()) {
+            CoreResponse<Person> x = service.getContact(getAuthToken(), p.getId());
             Assert.assertTrue(x.isOk());
-            Assert.assertEquals(person.getId(), x.getData().getId());
-            Assert.assertEquals(person.getDisplayName(), x.getData().getDisplayName());
-
-//            Assert.assertNull(person.getCompany());
-            Assert.assertNotNull(x.getData().getCompany());
+            Assert.assertEquals(p.getId(), x.getData().getId());
+            Assert.assertEquals(p.getDisplayName(), x.getData().getDisplayName());
         }
+
+        Assert.assertTrue(personDAO.remove(person));
+        Assert.assertTrue(companyDAO.remove(company));
     }
+
+    @Autowired
+    ContactService service;
 }

@@ -11,8 +11,7 @@ import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
  * Активность таблицы контактов
  */
 public interface AbstractContactTableActivity
-        extends ClickColumn.Handler< Person >, EditClickColumn.EditHandler< Person >, RemoveClickColumn.RemoveHandler<Person>,
-        InfiniteLoadHandler< Person >, InfiniteTableWidget.PagerListener
+        extends ClickColumn.Handler< Person >, EditClickColumn.EditHandler< Person >, RemoveClickColumn.RemoveHandler<Person>
 {
     void onEditClicked(Person value );
 }

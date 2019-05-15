@@ -37,8 +37,26 @@ public class UserLogin extends AuditableObject implements Removable {
     @JdbcColumn(name = "personId")
     private Long personId;
 
-    @JdbcJoinedObject(localColumn = "personId", remoteColumn = "id", updateLocalColumn = false, sqlTableAlias = "p")
-    private Person person;
+    @JdbcJoinedColumn( mappedColumn = "displayname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private String displayName;
+
+    @JdbcJoinedColumn( mappedColumn = "isfired", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private boolean isFired;
+
+    @JdbcJoinedColumn( mappedColumn = "company_id", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+    })
+    private Long companyId;
+
+    @JdbcJoinedColumn( mappedColumn = "cname", joinPath = {
+            @JdbcJoinPath( table = "person", localColumn = "personId", remoteColumn = "id", sqlTableAlias = "p" ),
+            @JdbcJoinPath( table = "company", localColumn = "company_id", remoteColumn = "id", sqlTableAlias = "c" )
+    })
+    private String companyName;
 
     @JdbcColumn(name = "authType")
     private int authTypeId;
@@ -115,6 +133,22 @@ public class UserLogin extends AuditableObject implements Removable {
         this.personId = personId;
     }
 
+    public String getDisplayName () { return displayName; }
+
+    public void setDisplayName ( String displayName ) { this.displayName = displayName; }
+
+    public boolean isFired () { return isFired; }
+
+    public void setFired ( boolean fired ) { isFired = fired; }
+
+    public Long getCompanyId () { return companyId; }
+
+    public void setCompanyId ( Long companyId ) { this.companyId = companyId; }
+
+    public String getCompanyName () { return companyName; }
+
+    public void setCompanyName ( String companyName ) { this.companyName = companyName; }
+
     public int getAuthTypeId() {
         return authTypeId;
     }
@@ -135,20 +169,26 @@ public class UserLogin extends AuditableObject implements Removable {
         return this.authTypeId == En_AuthType.LDAP.getId();
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson( Person person ) {
-        this.person = person;
-    }
-
     public Set< UserRole > getRoles() {
         return roles;
     }
 
     public void setRoles( Set< UserRole > roles ) {
         this.roles = roles;
+    }
+
+    public void setPerson(Person person) {
+        if (person == null)
+            return;
+
+        personId = person.getId();
+        displayName = person.getDisplayName();
+
+        if (person.getCompanyId() == null || person.getCompany() == null)
+            return;
+
+        companyId = person.getCompanyId();
+        companyName = person.getCompany().getCname();
     }
 
     @Override
@@ -162,7 +202,7 @@ public class UserLogin extends AuditableObject implements Removable {
     }
 
     @Override
-    public String toString() {
+    public String toString () {
         return "UserLogin{" +
                 "id=" + id +
                 ", ulogin='" + ulogin + '\'' +
@@ -171,7 +211,10 @@ public class UserLogin extends AuditableObject implements Removable {
                 ", pwdExpired=" + pwdExpired +
                 ", adminStateId=" + adminStateId +
                 ", personId=" + personId +
-                ", person=" + person +
+                ", displayName='" + displayName + '\'' +
+                ", isFired=" + isFired +
+                ", companyId=" + companyId +
+                ", companyName='" + companyName + '\'' +
                 ", authTypeId=" + authTypeId +
                 ", info='" + info + '\'' +
                 ", roles=" + roles +

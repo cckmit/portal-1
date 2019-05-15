@@ -7,7 +7,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
@@ -54,8 +54,6 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
-        table.setLoadHandler( activity );
-        table.setPagerListener( activity );
     }
     
     @Override
@@ -91,29 +89,13 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     @Override
+    public void addRecords( List< Person > persons ) {
+        persons.forEach( person -> table.addRow( person ) );
+    }
+
+    @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
-    }
-
-    @Override
-    public void setRecordCount( Long count ) {
-        table.setTotalRecords( count.intValue() );
-    }
-
-    @Override
-    public int getPageSize() {
-        return table.getPageSize();
-    }
-
-    @Override
-    public int getPageCount() {
-        return table.getPageCount();
-    }
-
-    @Override
-    public void scrollTo( int page ) {
-        table.scrollToPage( page );
     }
 
     private void initTable () {
@@ -134,7 +116,7 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     @UiField
-    InfiniteTableWidget<Person> table;
+    TableWidget<Person> table;
 
     @UiField
     HTMLPanel tableContainer;

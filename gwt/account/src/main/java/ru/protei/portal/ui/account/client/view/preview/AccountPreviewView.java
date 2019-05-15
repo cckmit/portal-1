@@ -1,13 +1,9 @@
 package ru.protei.portal.ui.account.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.SpanElement;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -42,13 +38,7 @@ public class AccountPreviewView extends Composite implements AbstractAccountPrev
     public void setLogin( String value ) { this.login.setInnerHTML( value ); }
 
     @Override
-    public void setLastName( String value ) { this.lastName.setInnerHTML( value ); }
-
-    @Override
-    public void setFirstName( String value ) { this.firstName.setInnerHTML( value ); }
-
-    @Override
-    public void setSecondName( String value ) { this.secondName.setInnerHTML( value ); }
+    public void setDisplayName( String value ) { this.displayName.setInnerHTML( value ); }
 
     @Override
     public void setCompany ( String value ) { this.company.setInnerHTML( value ); }
@@ -60,13 +50,7 @@ public class AccountPreviewView extends Composite implements AbstractAccountPrev
     SpanElement login;
 
     @UiField
-    SpanElement lastName;
-
-    @UiField
-    SpanElement firstName;
-
-    @UiField
-    SpanElement secondName;
+    SpanElement displayName;
 
     @UiField
     SpanElement company;

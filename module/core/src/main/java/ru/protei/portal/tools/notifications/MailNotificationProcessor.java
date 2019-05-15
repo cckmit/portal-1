@@ -132,23 +132,31 @@ public class MailNotificationProcessor {
                             .collect(toList())
             );
 
-            performCaseObjectNotification(
-                    event,
-                    comments.getData().stream().filter(comment -> !comment.isPrivateComment()).collect(toList()),
-                    lastMessageId,
-                    recipients,
-                    false,
-                    config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                    notifiers.stream()
-                            .filter(this::isNotProteiRecipient)
-                            .collect(toList())
-            );
+            if (event.isSendToCustomers()) {
+                performCaseObjectNotification(
+                        event,
+                        selectPublicComments(comments.getData()),
+                        lastMessageId,
+                        recipients,
+                        false,
+                        config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
+                        notifiers.stream()
+                                .filter(this::isNotProteiRecipient)
+                                .collect(toList())
+                );
+            }
 
             caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
 
         } finally {
             semaphore.release();
         }
+    }
+
+    private List<CaseComment> selectPublicComments(List<CaseComment> comments) {
+        return comments.stream()
+                .filter(comment -> !comment.isPrivateComment())
+                .collect(toList());
     }
 
     private MimeMessageHeadersFacade makeHeaders( Long caseNumber, Long lastMessageId, int recipientAddressHashCode ) {
