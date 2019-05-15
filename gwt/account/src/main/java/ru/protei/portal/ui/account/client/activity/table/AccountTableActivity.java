@@ -165,6 +165,8 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
+        marker = new Date().getTime();
+
         accountService.getAccounts( query, new FluentCallback< List< UserLogin > >()
                 .withMarkedSuccess( marker, ( m, result ) -> {
                     if ( marker == m ) {
@@ -175,7 +177,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     private void showPreview ( UserLogin value ) {
-
         if ( value == null ) {
             animation.closeDetails();
         } else {

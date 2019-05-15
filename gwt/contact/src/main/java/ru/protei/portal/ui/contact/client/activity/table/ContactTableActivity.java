@@ -180,6 +180,8 @@ public abstract class ContactTableActivity
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
+        marker = new Date().getTime();
+
         contactService.getContacts( query, new FluentCallback< List< Person > >()
                 .withMarkedSuccess( marker, ( m, result ) -> {
                     if ( marker == m ) {
