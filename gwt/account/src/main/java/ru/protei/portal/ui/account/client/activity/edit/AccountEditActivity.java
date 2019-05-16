@@ -147,9 +147,9 @@ public abstract class AccountEditActivity implements AbstractAccountEditActivity
 
     private void fillView( UserLogin userLogin ) {
         view.login().setValue( userLogin.getUlogin() );
-        view.company().setValue( userLogin.getPerson() == null ? null : EntityOption.fromCompany( userLogin.getPerson().getCompany() ) );
-        view.setCompaniesForInitiator( userLogin.getPerson() == null ? null : InitiatorModel.makeCompanyIds(userLogin.getPerson().getCompany() ));
-        view.person().setValue( PersonShortView.fromPerson( userLogin.getPerson() ) );
+        view.company().setValue( new EntityOption(userLogin.getCompanyName(), userLogin.getCompanyId()) );
+        view.setCompaniesForInitiator( InitiatorModel.makeCompanyIds(userLogin.getCompanyId() ));
+        view.person().setValue( new PersonShortView(userLogin.getDisplayName(), userLogin.getPersonId()), userLogin.isFired() );
         view.password().setText( "" );
         view.confirmPassword().setText( "" );
         view.roles().setValue( userLogin.getRoles() );

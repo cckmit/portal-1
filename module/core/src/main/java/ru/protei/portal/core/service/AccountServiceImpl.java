@@ -14,10 +14,7 @@ import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
@@ -132,11 +129,12 @@ public class AccountServiceImpl implements AccountService {
 
             if (sendWelcomeEmail) {
 
-                userLogin.setPerson(personDAO.get(userLogin.getPersonId()));
+                Person person = personDAO.get(userLogin.getPersonId());
+                userLogin.setPerson(person);
 
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
                 String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
-                NotificationEntry notificationEntry = NotificationEntry.email(address, userLogin.getPerson().getLocale());
+                NotificationEntry notificationEntry = NotificationEntry.email(address, person.getLocale());
                 UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry);
 
                 publisherService.publishEvent(userLoginUpdateEvent);
