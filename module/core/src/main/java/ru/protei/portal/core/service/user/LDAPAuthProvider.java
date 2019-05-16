@@ -2,6 +2,8 @@ package ru.protei.portal.core.service.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import javax.naming.AuthenticationException;
@@ -18,9 +20,11 @@ import java.util.Hashtable;
  * Created by michael on 30.06.16.
  */
 public class LDAPAuthProvider {
-    public static String LDAP_URL = "ldap://ldap_1.protei";
-    public static String BASE_DN = "ou=Users,dc=protei,dc=ru";
 
+    @Autowired
+    PortalConfig config;
+
+    public static String BASE_DN = "ou=Users,dc=protei,dc=ru";
 
     Logger logger = LoggerFactory.getLogger("logger-security");
 
@@ -28,7 +32,7 @@ public class LDAPAuthProvider {
         Hashtable<Object,Object> env = new Hashtable<>();
 
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, LDAP_URL);
+        env.put(Context.PROVIDER_URL, config.data().getLdapConfig().getUrl());
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
 
         env.put(Context.SECURITY_PRINCIPAL, "uid="+username+",ou=Users,dc=protei,dc=ru");

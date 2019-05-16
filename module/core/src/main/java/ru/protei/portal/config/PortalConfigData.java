@@ -29,6 +29,7 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final LdapConfig ldapConfig;
 
     private final String loginSuffixConfig;
 
@@ -45,6 +46,7 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
@@ -99,6 +101,10 @@ public class PortalConfigData {
 
     public YoutrackConfig youtrack() {
         return youtrackConfig;
+    }
+
+    public LdapConfig getLdapConfig() {
+        return ldapConfig;
     }
 
     public static class CommonConfig {
@@ -511,6 +517,18 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+    }
+
+    public static class LdapConfig {
+        private final String url;
+
+        public LdapConfig(PropertiesWrapper properties) {
+            url = properties.getProperty("ldap.url");
+        }
+
+        public String getUrl() {
+            return url;
         }
     }
 }
