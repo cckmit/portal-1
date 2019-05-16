@@ -27,7 +27,6 @@ public class LdapAuthTest {
         try {
             rootCtx = new InitialDirContext(env);
 
-/*
             NamingEnumeration< SearchResult > renum = rootCtx.search("ou=Users,dc=protei,dc=ru", "(&(uid={0})(objectClass={1}))", new Object[]{"support","posixAccount"}, null);
 
             while (renum.hasMoreElements()) {
@@ -39,7 +38,6 @@ public class LdapAuthTest {
                         && ((String)uidAttr.get()).equals("support"))
                     System.out.println("OK!");
             }
-*/
         }
         catch ( AuthenticationException e) {
             System.out.println("invalid login or password for support, "+ e.getMessage());
