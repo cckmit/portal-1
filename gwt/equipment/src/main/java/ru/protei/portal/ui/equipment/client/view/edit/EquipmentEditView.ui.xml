@@ -34,7 +34,7 @@
                         <label>
                             <ui:text from="{lang.equipmentPrimaryUse}"/>
                         </label>
-                        <equipment:EquipmentSelector ui:field="linkedEquipment" hasNullValue="true"/>
+                        <equipment:EquipmentButtonSelector ui:field="linkedEquipment" hasNullValue="true"/>
                     </div>
 
                     <g:HTMLPanel styleName="form-group" ui:field="projectBox">

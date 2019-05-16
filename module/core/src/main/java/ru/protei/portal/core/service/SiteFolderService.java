@@ -8,32 +8,23 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
 public interface SiteFolderService {
 
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
-    CoreResponse<Long> countPlatforms(AuthToken token, PlatformQuery query);
+    CoreResponse<SearchResult<Platform>> getPlatforms(AuthToken token, PlatformQuery query);
 
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
-    CoreResponse<Long> countServers(AuthToken token, ServerQuery query);
+    CoreResponse<SearchResult<Server>> getServers(AuthToken token, ServerQuery query);
 
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
-    CoreResponse<Long> countApplications(AuthToken token, ApplicationQuery query);
-
-
-    @Privileged(En_Privilege.SITE_FOLDER_VIEW)
-    CoreResponse<List<Platform>> listPlatforms(AuthToken token, PlatformQuery query);
+    CoreResponse<SearchResult<Application>> getApplications(AuthToken token, ApplicationQuery query);
 
     @Privileged(En_Privilege.SITE_FOLDER_VIEW)
-    CoreResponse<List<Server>> listServers(AuthToken token, ServerQuery query);
-
-    @Privileged(En_Privilege.SITE_FOLDER_VIEW)
-    CoreResponse<List<Application>> listApplications(AuthToken token, ApplicationQuery query);
-
-    @Privileged(En_Privilege.SITE_FOLDER_VIEW)
-    CoreResponse<List<Server>> listServersWithAppsNames(AuthToken token, ServerQuery query);
+    CoreResponse<SearchResult<Server>> getServersWithAppsNames(AuthToken token, ServerQuery query);
 
 
     CoreResponse<List<EntityOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query);

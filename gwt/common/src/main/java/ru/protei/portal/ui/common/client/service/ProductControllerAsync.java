@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -15,9 +16,7 @@ import java.util.List;
  */
 public interface ProductControllerAsync {
 
-    void getProductsCount( ProductQuery query, AsyncCallback<Long> callback );
-
-    void getProductList(ProductQuery query, AsyncCallback<List<DevUnit>> async);
+    void getProductList(ProductQuery query, AsyncCallback<SearchResult<DevUnit>> async);
 
     void getProduct( Long productId, AsyncCallback<DevUnit> async );
 

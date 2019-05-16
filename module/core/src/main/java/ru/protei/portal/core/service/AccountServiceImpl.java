@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -53,26 +54,15 @@ public class AccountServiceImpl implements AccountService {
     EventPublisherService publisherService;
 
     @Override
-    public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
+    public CoreResponse<SearchResult<UserLogin>> getAccounts(AuthToken token, AccountQuery query) {
+
         applyFilterByScope(token, query);
-        List< UserLogin > list = userLoginDAO.getAccounts( query );
 
-        if (list == null)
-            return new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
-        jdbcManyRelationsHelper.fill( list, "roles" );
+        SearchResult<UserLogin> sr = userLoginDAO.getSearchResult(query);
 
-        return new CoreResponse< List< UserLogin > >().success( list );
-    }
+        jdbcManyRelationsHelper.fill(sr.getResults(), "roles");
 
-    @Override
-    public CoreResponse< Long > count( AuthToken authToken, AccountQuery query ) {
-        applyFilterByScope(authToken, query);
-        Long count = userLoginDAO.count( query );
-
-        if ( count == null )
-            return new CoreResponse< Long >().error( En_ResultStatus.GET_DATA_ERROR );
-
-        return new CoreResponse< Long >().success( count );
+        return new CoreResponse<SearchResult<UserLogin>>().success(sr);
     }
 
     @Override

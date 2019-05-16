@@ -31,7 +31,7 @@ public class TemplateServiceImplTest {
 
     @Test
     public void escapeTextComment_ReplaceLineBreaks() {
-        String result = ((TemplateServiceImpl) templateService).escapeTextComment( commentTextWithBreaks, En_TextMarkup.MARKDOWN );
+        String result = ((TemplateServiceImpl) templateService).escapeTextAndRenderHTML( commentTextWithBreaks, En_TextMarkup.MARKDOWN );
         assertEquals( commentTextWithBreaksFormatted, result );
     }
 

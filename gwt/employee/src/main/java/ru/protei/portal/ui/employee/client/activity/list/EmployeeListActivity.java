@@ -104,7 +104,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery( false, false, true,
-                filterView.homeCompanies().getValue(),
+                null,
                 filterView.searchPattern().getValue(),
                 filterView.workPhone().getValue(),
                 filterView.mobilePhone().getValue(),
@@ -127,7 +127,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
         if ( mainEntry != null ) {
-            itemView.setCompany( mainEntry.getCompanyName() );
             itemView.setDepartment( mainEntry.getDepartmentName() );
             itemView.setPosition( mainEntry.getPositionName() );
         }

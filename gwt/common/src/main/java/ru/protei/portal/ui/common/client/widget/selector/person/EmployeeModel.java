@@ -41,7 +41,6 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
         if(!CollectionUtils.isEmpty( list )){
             selector.clearOptions();
             selector.fillOptions( list );
-            selector.refreshValue();
             return;
         }
         if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
@@ -65,24 +64,26 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
         }
     }
 
+    private boolean requested;
+
     private void refreshOptions() {
-        if(requested) return;
+        if (requested) return;
         requested = true;
         employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, null, null, null, null, null, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
                 requested = false;
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
             public void onSuccess( List< PersonShortView > options ) {
                 requested = false;
-                int value = options.indexOf( new PersonShortView("", myId, false ) );
-                if ( value > 0 ) {
-                    options.add(0, options.remove(value));
-                }
+                    int value = options.indexOf( new PersonShortView("", myId, false ) );
+                    if ( value > 0 ) {
+                        options.add(0, options.remove(value));
+                    }
 
                 list.clear();
                 list.addAll( options );
@@ -93,13 +94,12 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
 
     @Inject
     EmployeeControllerAsync employeeService;
-
     @Inject
     Lang lang;
 
-    private Long myId;
-    private boolean requested;
-
     private List< PersonShortView > list = new ArrayList<>();
-    protected Set<SelectorWithModel< PersonShortView >> subscribers = new HashSet<>();
+
+    Set<SelectorWithModel< PersonShortView >> subscribers = new HashSet<>();
+
+    Long myId;
 }

@@ -21,9 +21,9 @@ import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
-import java.util.List;
 
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 /**
@@ -70,7 +70,7 @@ public abstract class ContactTableActivity
         contactId = null;
 
         query = makeQuery( null );
-        requestTotalCount();
+        requestContacts( 0 );
     }
 
     @Event
@@ -144,7 +144,7 @@ public abstract class ContactTableActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery( null );
-        requestTotalCount();
+        requestContacts( 0 );
     }
 
     @Override
@@ -153,39 +153,25 @@ public abstract class ContactTableActivity
         requestContacts( page );
     }
 
-    private void requestTotalCount() {
-        view.clearRecords();
-        animation.closeDetails();
-
-        marker = new Date().getTime();
-
-        contactService.getContactsCount( query, new FluentCallback< Long >()
-                .withMarkedSuccess( marker,( m, count ) -> {
-                    if ( marker == m ) {
-                        pagerView.setTotalCount( count );
-                        pagerView.setTotalPages( getTotalPages( count.intValue() ) );
-                        pagerView.setCurrentPage( 0 );
-                        if ( count > 0 ) {
-                            requestContacts( 0 );
-                        }
-                    }
-                }  )
-                .withErrorMessage( lang.errGetList() ) );
-    }
-
     private void requestContacts( int page ) {
         view.clearRecords();
         animation.closeDetails();
 
+        boolean isFirstChunk = page == 0;
+        marker = new Date().getTime();
+
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
-        marker = new Date().getTime();
-
-        contactService.getContacts( query, new FluentCallback< List< Person > >()
-                .withMarkedSuccess( marker, ( m, result ) -> {
+        contactService.getContacts( query, new FluentCallback< SearchResult< Person> >()
+                .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
-                        view.addRecords( result );
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
+                            pagerView.setCurrentPage( 0 );
+                        }
+                        view.addRecords( r.getResults() );
                     }
                 })
                 .withErrorMessage( lang.errGetList() ) );

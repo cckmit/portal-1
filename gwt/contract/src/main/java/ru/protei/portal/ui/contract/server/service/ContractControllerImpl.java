@@ -6,41 +6,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.ContractService;
-import ru.protei.portal.core.service.ContractServiceImpl;
 import ru.protei.portal.ui.common.client.service.ContractController;
-import ru.protei.portal.ui.common.client.service.ContractController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Service("ContractController")
 public class ContractControllerImpl implements ContractController {
+
     @Override
-    public List<Contract> getContracts(ContractQuery query) throws RequestFailedException {
+    public SearchResult<Contract> getContracts(ContractQuery query) throws RequestFailedException {
         log.debug(" get contracts: offset={} | limit={}", query.getOffset(), query.getLimit());
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<Contract>> response = contractService.contractList(descriptor.makeAuthToken(), query);
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
-        }
-        return response.getData();
-    }
-
-    @Override
-    public Integer getContractCount(ContractQuery query) throws RequestFailedException {
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug(" get contract count(): query={}", query);
-        return contractService.count(descriptor.makeAuthToken(), query).getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);
+        return ServiceUtils.checkResultAndGetData(contractService.getContracts(token, query));
     }
 
     @Override

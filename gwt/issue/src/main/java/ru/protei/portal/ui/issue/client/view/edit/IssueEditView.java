@@ -30,6 +30,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
+import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
@@ -67,6 +68,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         manager.setDefaultValue(lang.selectIssueManager());
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
+        description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
     }
 
     @Override
@@ -85,7 +87,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasText description() {
+    public HasValue<String> description() {
         return description;
     }
 
@@ -433,7 +435,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     ValidableTextBox name;
 
     @UiField
-    TextArea description;
+    MarkdownAreaWithPreview description;
 
     @UiField
     ToggleButton local;

@@ -8,27 +8,16 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
-import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
-import java.util.List;
-
-public class ContractDAO_Impl extends JdbcBaseDAO<Long, Contract> implements ContractDAO {
+public class ContractDAO_Impl extends PortalBaseJdbcDAO<Contract> implements ContractDAO {
 
     @Override
-    public List<Contract> getListByQuery(ContractQuery query) {
-        SqlCondition where = createSqlCondition(query);
-        JdbcQueryParameters queryParameters = new JdbcQueryParameters();
-
-        queryParameters.withCondition(where.condition, where.args)
-                .withDistinct(true)
-                .withSort(TypeConverters.createSort(query, "CO"))
-                .withOffset(query.getOffset());
-        if (query.limit > 0) {
-            queryParameters = queryParameters.withLimit(query.getLimit());
-        }
-        return getList(queryParameters);
+    public SearchResult<Contract> getSearchResult(ContractQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
     }
 
     @Override
@@ -40,6 +29,21 @@ public class ContractDAO_Impl extends JdbcBaseDAO<Long, Contract> implements Con
     public int countByQuery(ContractQuery query) {
         SqlCondition where = createSqlCondition(query);
         return getObjectsCount(where.condition, where.args);
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(ContractQuery query) {
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+        SqlCondition where = createSqlCondition(query);
+        parameters.withCondition(where.condition, where.args)
+                .withDistinct(true)
+                .withSort(TypeConverters.createSort(query, "CO"))
+                .withOffset(query.getOffset());
+        if (query.limit > 0) {
+            parameters = parameters.withLimit(query.getLimit());
+        }
+
+        return parameters;
     }
 
     @SqlConditionBuilder

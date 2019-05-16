@@ -15,7 +15,7 @@ public class RegionButtonSelector extends ButtonSelector<EntityOption> implement
 
     @Inject
     public void init( RegionModel regionModel ) {
-        regionModel.subscribe(this);
+        setSelectorModel(regionModel);
         setSearchEnabled( true );
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getDisplayText() ) );

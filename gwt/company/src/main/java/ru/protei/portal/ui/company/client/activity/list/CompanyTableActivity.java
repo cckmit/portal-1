@@ -16,9 +16,12 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Активность таблицы компаний
@@ -49,7 +52,7 @@ public abstract class CompanyTableActivity implements
         view.getPagerContainer().add( pagerView.asWidget() );
 
         view.getFilterContainer().add(event.filter);
-        requestCompaniesCount();
+        loadTable();
     }
 
     @Event
@@ -58,7 +61,7 @@ public abstract class CompanyTableActivity implements
             return;
 
         this.query = event.query;
-        requestCompaniesCount();
+        loadTable();
     }
 
     @Override
@@ -93,40 +96,28 @@ public abstract class CompanyTableActivity implements
 
     @Override
     public void loadData( int offset, int limit, AsyncCallback<List<Company>> asyncCallback ) {
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        companyService.getCompanies(query, new RequestCallback< List <Company> >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess( List< Company > companies ) {
-                asyncCallback.onSuccess( companies );
-            }
-        });
-
+        boolean isFirstChunk = offset == 0;
+        query.setOffset(offset);
+        query.setLimit(limit);
+        companyService.getCompanies(query, new FluentCallback<SearchResult<Company>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                    }
+                }));
     }
 
-    private void requestCompaniesCount() {
-        view.clearRecords();
+    private void loadTable() {
         animation.closeDetails();
-
-        companyService.getCompaniesCount(query, new RequestCallback< Long >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess( Long count ) {
-                view.setCompaniesCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-            }
-        });
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     @Inject

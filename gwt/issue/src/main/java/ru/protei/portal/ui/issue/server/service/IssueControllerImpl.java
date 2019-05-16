@@ -8,16 +8,15 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.CaseInfo;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -29,17 +28,14 @@ import java.util.List;
 public class IssueControllerImpl implements IssueController {
 
     @Override
-    public List<CaseShortView> getIssues( CaseQuery query ) throws RequestFailedException {
-        log.debug( "getIssues(): caseNo={} | companyId={} | productId={} | managerId={} | searchPattern={} | state={} | importance={} | sortField={} | sortDir={} | caseService={}",
-                query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(), query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService );
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        CoreResponse<List<CaseShortView>> response = caseService.caseObjectList( descriptor.makeAuthToken(), query );
-        if (response.isError()) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
+    public SearchResult<CaseShortView> getIssues(CaseQuery query) throws RequestFailedException {
+        log.debug("getIssues(): caseNo={} | companyId={} | productId={} | managerId={} | searchPattern={} | " +
+                        "state={} | importance={} | sortField={} | sortDir={} | caseService={}",
+                query.getCaseNumbers(), query.getCompanyIds(), query.getProductIds(), query.getManagerIds(), query.getSearchString(),
+                query.getStateIds(), query.getImportanceIds(), query.getSortField(), query.getSortDir(), caseService);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        CoreResponse<SearchResult<CaseShortView>> result = caseService.getCaseObjects(token, query);
+        return ServiceUtils.checkResultAndGetData(result);
     }
 
     @Override
@@ -78,16 +74,6 @@ public class IssueControllerImpl implements IssueController {
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
         log.debug( "saveIssue(): id", response.getData().getId() );
         return response.getData();
-    }
-
-    @Override
-    public long getIssuesCount( CaseQuery query ) throws RequestFailedException {
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug( "getIssuesCount(): query={}", query );
-        CoreResponse<Long> result = caseService.count( descriptor.makeAuthToken(), query );
-        return result.isOk() ? result.getData() : 0L;
     }
 
     @Override

@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -84,13 +85,13 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     }
 
     @Override
-    public void setRecordCount(int count) {
-        table.setTotalRecords(count);
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

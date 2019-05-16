@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collections;
 import java.util.Date;
@@ -68,7 +69,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 new ActionBarEvents.Clear()
         );
 
-        requestTotalCount();
+        requestAccounts( 0 );
     }
 
     @Event
@@ -128,7 +129,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onFilterChanged() {
-        requestTotalCount();
+        requestAccounts( 0 );
     }
 
     @Override
@@ -137,40 +138,26 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
         requestAccounts( page );
     }
 
-    private void requestTotalCount() {
-        view.clearRecords();
-        animation.closeDetails();
-
-        marker = new Date().getTime();
-
-        accountService.getAccountsCount( makeQuery(), new FluentCallback< Long >()
-                .withMarkedSuccess( marker, ( m, count ) -> {
-                    if ( marker == m ) {
-                        pagerView.setTotalCount( count );
-                        pagerView.setTotalPages( getTotalPages( count.intValue() ) );
-                        pagerView.setCurrentPage( 0 );
-                        if ( count > 0 ) {
-                            requestAccounts( 0 );
-                        }
-                    }
-                } )
-                .withErrorMessage( lang.errGetList() ) );
-    }
-
     private void requestAccounts( int page ) {
         view.clearRecords();
         animation.closeDetails();
+
+        boolean isFirstChunk = page == 0;
+        marker = new Date().getTime();
 
         AccountQuery query = makeQuery();
         query.setOffset( page*PAGE_SIZE );
         query.setLimit( PAGE_SIZE );
 
-        marker = new Date().getTime();
-
-        accountService.getAccounts( query, new FluentCallback< List< UserLogin > >()
-                .withMarkedSuccess( marker, ( m, result ) -> {
+        accountService.getAccounts( query, new FluentCallback< SearchResult< UserLogin > >()
+                .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
-                        view.addRecords( result );
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
+                            pagerView.setCurrentPage( 0 );
+                        }
+                        view.addRecords( r.getResults() );
                     }
                 } )
                 .withErrorMessage( lang.errGetList() ) );

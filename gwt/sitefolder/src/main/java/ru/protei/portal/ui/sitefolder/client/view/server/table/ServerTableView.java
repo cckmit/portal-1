@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.table.AbstractServerTableView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -56,13 +57,13 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     }
 
     @Override
-    public void setServersCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

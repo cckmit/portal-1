@@ -26,12 +26,13 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
@@ -81,10 +82,9 @@ public class MailNotificationProcessor {
                 formNotifiers(defaultNotifiers,
                         event.getInitiator(),
                         event.getCaseObject().getCreator(),
-                        event.getCaseObject().getManager(),
-                        event.getCaseObject().isPrivateCase());
+                        event.getCaseObject().getManager());
 
-        log.info( "subscribers: filter private: {}", join( notifiers, ni->ni.getAddress(), ",") );
+        log.info( "subscribers: {}", join( notifiers, ni->ni.getAddress(), ",") );
         if(!notifiers.isEmpty())
             performCaseObjectNotification( event, notifiers );
     }
@@ -108,8 +108,6 @@ public class MailNotificationProcessor {
             return;
         }
 
-        List<String> recipients = getNotifiersAddresses(notifiers);
-
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {
@@ -119,38 +117,45 @@ public class MailNotificationProcessor {
 
         try {
             Long lastMessageId = getEmailLastId(caseObject.getId());
+            Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
+            final boolean IS_PROTEI_RECIPIENT = true;
 
-            performCaseObjectNotification(
-                    event,
-                    comments.getData(),
-                    lastMessageId,
-                    recipients,
-                    true,
-                    config.data().getMailNotificationConfig().getCrmUrlInternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                    notifiers.stream()
-                            .filter(this::isProteiRecipient)
-                            .collect(toList())
-            );
+            if ( isSendOnlyProtei(event) ) {
+                List<String> recipients = getNotifiersAddresses(partitionNotifiers.get(IS_PROTEI_RECIPIENT));
 
-            if (event.isSendToCustomers()) {
-                performCaseObjectNotification(
-                        event,
-                        selectPublicComments(comments.getData()),
-                        lastMessageId,
-                        recipients,
-                        false,
-                        config.data().getMailNotificationConfig().getCrmUrlExternal() + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                        notifiers.stream()
-                                .filter(this::isNotProteiRecipient)
-                                .collect(toList())
-                );
+                toPerformCaseObjectNotification(event, comments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PROTEI_RECIPIENT);
+
+            } else {
+                List<String> recipients = getNotifiersAddresses(notifiers);
+
+                toPerformCaseObjectNotification(event, comments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PROTEI_RECIPIENT);
+                toPerformCaseObjectNotification(event, comments.getData(), lastMessageId, recipients, partitionNotifiers, !IS_PROTEI_RECIPIENT);
             }
-
             caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
 
         } finally {
             semaphore.release();
         }
+    }
+
+    private void toPerformCaseObjectNotification(AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
+                                                 Map<Boolean, List<NotificationEntry>> partitionNotifiers, boolean IS_PROTEI_RECIPIENT) {
+        performCaseObjectNotification(
+                event,
+                IS_PROTEI_RECIPIENT ? comments : selectPublicComments(comments),
+                lastMessageId,
+                recipients,
+                IS_PROTEI_RECIPIENT,
+                (IS_PROTEI_RECIPIENT ? config.data().getMailNotificationConfig().getCrmUrlInternal() : config.data().getMailNotificationConfig().getCrmUrlExternal())
+                        + config.data().getMailNotificationConfig().getCrmCaseUrl(),
+                partitionNotifiers.get(IS_PROTEI_RECIPIENT)
+        );
+    }
+
+    private boolean isSendOnlyProtei(AssembledCaseEvent event) {
+        return event.getCaseObject().isPrivateCase()
+                || !event.isSendToCustomers()
+                || config.data().smtp().isBlockExternalRecipients();
     }
 
     private List<CaseComment> selectPublicComments(List<CaseComment> comments) {
@@ -216,7 +221,7 @@ public class MailNotificationProcessor {
     /**
      * Form case notifiers with initiator, creator and manager
      */
-    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager, boolean isPrivateCase){
+    private Collection<NotificationEntry> formNotifiers(Set<NotificationEntry> allNotifiers, Person initiator, Person creator, Person manager){
 
         NotificationEntry initiatorEmail = fetchNotificationEntryFromPerson(initiator);
         if (initiatorEmail != null) {
@@ -233,9 +238,7 @@ public class MailNotificationProcessor {
             allNotifiers.add(managerEmail);
         }
 
-        return isPrivateCase || config.data().smtp().isBlockExternalRecipients() ?
-                allNotifiers.stream().filter(this::isProteiRecipient).collect(Collectors.toList()):
-                allNotifiers;
+        return allNotifiers;
     }
 
     private String makeCaseObjectMessageId( Long caseNumber, Long id, int recipientAddressHashCode ) {

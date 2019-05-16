@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.EquipmentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemActivity;
 import ru.protei.portal.ui.equipment.client.activity.document.list.item.AbstractEquipmentDocumentsListItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,8 @@ public abstract class EquipmentDocumentsListActivity implements Activity, Abstra
             return;
         }
 
-        equipmentController.getDocuments(event.equipmentId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
+        equipmentController.getDocuments(event.equipmentId, new FluentCallback<SearchResult<Document>>()
+                .withSuccess(documents -> handleDocuments(documents.getResults())));
     }
 
     @Override

@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
 import ru.protei.portal.core.model.struct.DecimalNumberQuery;
 import ru.protei.portal.core.model.view.EquipmentShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -19,11 +20,8 @@ import java.util.List;
  */
 public interface EquipmentService {
 
-    @Privileged( En_Privilege.EQUIPMENT_VIEW )
-    CoreResponse< Long > count(AuthToken token, EquipmentQuery query );
-
-    @Privileged( En_Privilege.EQUIPMENT_VIEW )
-    CoreResponse< List< Equipment > > equipmentList( AuthToken token, EquipmentQuery query );
+    @Privileged(En_Privilege.EQUIPMENT_VIEW)
+    CoreResponse<SearchResult<Equipment>> getEquipments(AuthToken token, EquipmentQuery query);
 
     CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query );
 

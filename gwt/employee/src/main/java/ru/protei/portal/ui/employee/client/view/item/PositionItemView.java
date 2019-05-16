@@ -25,11 +25,6 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     }
 
     @Override
-    public void setCompany( String value ) {
-        this.company.setInnerText( value );
-    }
-
-    @Override
     public void setDepartment( String value ) {
         this.department.setInnerText( value );
     }
@@ -43,9 +38,6 @@ public class PositionItemView extends Composite implements AbstractPositionItemV
     public void showMainInfo( boolean isMain ) {
         mainInfoContainer.setVisible( isMain );
     }
-
-    @UiField
-    DivElement company;
 
     @UiField
     DivElement department;
