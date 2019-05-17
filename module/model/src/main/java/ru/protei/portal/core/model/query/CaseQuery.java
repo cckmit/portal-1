@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -46,8 +47,10 @@ public class CaseQuery extends BaseQuery {
 
     private Boolean viewPrivate = null;
 
+    @JsonAlias({"from", "createdFrom" })
     private Date createdFrom;
 
+    @JsonAlias({"to", "createdTo" })
     private Date createdTo;
 
     private Date modifiedFrom;

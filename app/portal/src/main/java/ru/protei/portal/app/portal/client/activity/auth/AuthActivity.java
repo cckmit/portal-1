@@ -8,7 +8,6 @@ import com.googlecode.gwt.crypto.client.TripleDesCipher;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;

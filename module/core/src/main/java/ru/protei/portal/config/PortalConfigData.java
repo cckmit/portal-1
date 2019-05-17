@@ -29,6 +29,7 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final EmployeeConfig employeeConfig;
     private final LdapConfig ldapConfig;
 
     private final String loginSuffixConfig;
@@ -46,6 +47,7 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        employeeConfig = new EmployeeConfig(wrapper);
         ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
@@ -101,6 +103,10 @@ public class PortalConfigData {
 
     public YoutrackConfig youtrack() {
         return youtrackConfig;
+    }
+
+    public EmployeeConfig getEmployee() {
+        return employeeConfig;
     }
 
     public LdapConfig getLdapConfig() {
@@ -517,6 +523,19 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+    }
+
+    public static class EmployeeConfig {
+
+        private final String avatarPath;
+
+        public EmployeeConfig(PropertiesWrapper propertiesWrapper) {
+            avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars" );
+        }
+
+        public String getAvatarPath() {
+            return avatarPath;
         }
     }
 

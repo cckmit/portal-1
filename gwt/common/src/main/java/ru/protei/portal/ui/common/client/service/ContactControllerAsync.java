@@ -21,20 +21,20 @@ public interface ContactControllerAsync {
      */
     void getContacts( ContactQuery query, AsyncCallback< SearchResult< Person > > async );
 
-    void getContact ( long id, AsyncCallback<Person> callback );
+    void getContact ( long id, AsyncCallback< Person > callback );
 
-    void saveContact ( Person p, AsyncCallback<Person> callback );
+    void saveContact ( Person p, AsyncCallback< Person > callback );
 
-    void fireContact(long id, AsyncCallback<Boolean> async);
+    void fireContact( long id, AsyncCallback< Boolean > async );
 
-    void removeContact(long id, AsyncCallback<Boolean> async);
+    void removeContact( long id, AsyncCallback< Boolean > async );
 
     /**
      * Получение списка сокращенного представления контакта
      * @param query запрос
      * @param callback
      */
-    void getContactViewList( ContactQuery query, AsyncCallback< List<PersonShortView> > callback );
+    void getContactViewList( ContactQuery query, AsyncCallback< List< PersonShortView > > callback );
 
-    void saveAccount (UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< Boolean > callback );
+    void saveAccount ( UserLogin userLogin, Boolean sendWelcomeEmail, AsyncCallback< Boolean > callback );
 }

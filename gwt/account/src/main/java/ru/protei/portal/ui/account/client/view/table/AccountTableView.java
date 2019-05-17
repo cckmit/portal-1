@@ -10,7 +10,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
@@ -24,7 +24,6 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,9 +59,6 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
         removeClickColumn.setHandler( activity );
         removeClickColumn.setRemoveHandler( activity );
         removeClickColumn.setColumnProvider( columnProvider );
-
-        table.setLoadHandler( activity );
-        table.setPagerListener( activity );
     }
 
     @Override
@@ -77,34 +73,18 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
-    public void triggerTableLoad() {
-        table.setTotalRecords(table.getPageSize());
-    }
-
-    @Override
-    public void setTotalRecords(int totalRecords) {
-        table.setTotalRecords(totalRecords);
-    }
-
-    @Override
     public HasWidgets getPagerContainer() {
         return pagerContainer;
     }
 
     @Override
+    public void addRecords( List< UserLogin > accounts ) {
+        accounts.forEach( userLogin -> table.addRow( userLogin ) );
+    }
+
+    @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
-    }
-
-    @Override
-    public int getPageCount() {
-        return table.getPageCount();
-    }
-
-    @Override
-    public void scrollTo( int page ) {
-        table.scrollToPage( page );
     }
 
     private void initTable () {
@@ -165,16 +145,16 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
                 cell.appendChild( root );
 
                 Element personElement = DOM.createDiv();
-                personElement.setInnerHTML( value.getPerson() == null ? "" : value.getPerson().getDisplayName() );
+                personElement.setInnerHTML( value.getDisplayName() );
                 root.appendChild( personElement );
 
-                if ( value.getPerson() == null || value.getPerson().getCompany() == null ) {
+                if ( value.getCompanyName() == null ) {
                     return;
                 }
 
                 Element companyElement = DOM.createDiv();
                 root.appendChild( companyElement );
-                companyElement.setInnerHTML( "<i>" + value.getPerson().getCompany().getCname() + "</i>");
+                companyElement.setInnerHTML( "<i>" + value.getCompanyName() + "</i>");
             }
         };
 
@@ -195,7 +175,7 @@ public class AccountTableView extends Composite implements AbstractAccountTableV
     }
 
     @UiField
-    InfiniteTableWidget< UserLogin > table;
+    TableWidget< UserLogin > table;
 
     @UiField
     HTMLPanel tableContainer;

@@ -3,11 +3,10 @@ package ru.protei.portal.ui.contact.client.view.table;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.AbstractColumn;
-import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.brainworm.factory.widget.table.client.helper.SelectionColumn;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Person;
@@ -17,10 +16,8 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.widget.separator.Separator;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.AbstractContactTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +52,6 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
             clickColumn.setHandler( activity );
             clickColumn.setColumnProvider( columnProvider );
         });
-        table.setLoadHandler( activity );
-        table.setPagerListener( activity );
     }
     
     @Override
@@ -92,29 +87,13 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     @Override
+    public void addRecords( List< Person > persons ) {
+        persons.forEach( person -> table.addRow( person ) );
+    }
+
+    @Override
     public void clearRecords() {
-        table.clearCache();
         table.clearRows();
-    }
-
-    @Override
-    public void triggerTableLoad() {
-        table.setTotalRecords(table.getPageSize());
-    }
-
-    @Override
-    public void setTotalRecords(int totalRecords) {
-        table.setTotalRecords(totalRecords);
-    }
-
-    @Override
-    public int getPageCount() {
-        return table.getPageCount();
-    }
-
-    @Override
-    public void scrollTo( int page ) {
-        table.scrollToPage( page );
     }
 
     private void initTable () {
@@ -135,7 +114,7 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     }
 
     @UiField
-    InfiniteTableWidget<Person> table;
+    TableWidget<Person> table;
 
     @UiField
     HTMLPanel tableContainer;
@@ -149,9 +128,6 @@ public class ContactTableView extends ContactTableViewBase implements AbstractCo
     @Inject
     @UiField
     Lang lang;
-
-    @Inject
-    Separator separator;
 
 
     AbstractColumn hideColumn;

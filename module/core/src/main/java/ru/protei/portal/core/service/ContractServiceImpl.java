@@ -7,6 +7,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -25,6 +26,8 @@ public class ContractServiceImpl implements ContractService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     CaseTypeDAO caseTypeDAO;
+    @Autowired
+    PersonDAO personDAO;
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
@@ -148,6 +151,6 @@ public class ContractServiceImpl implements ContractService {
 
     private Person getCurrentPerson(AuthToken token) {
         UserSessionDescriptor descriptor = authService.findSession(token);
-        return descriptor.getLogin().getPerson();
+        return personDAO.get(descriptor.getLogin().getPersonId());
     }
 }

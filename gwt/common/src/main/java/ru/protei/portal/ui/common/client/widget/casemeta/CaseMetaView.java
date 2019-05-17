@@ -2,10 +2,8 @@ package ru.protei.portal.ui.common.client.widget.casemeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.HasErrorHandlers;
 import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;

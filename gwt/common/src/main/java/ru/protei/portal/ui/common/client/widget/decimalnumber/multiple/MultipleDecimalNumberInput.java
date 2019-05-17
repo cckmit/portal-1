@@ -22,7 +22,6 @@ import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberB
 import ru.protei.portal.ui.common.client.widget.decimalnumber.box.DecimalNumberBoxHandler;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.provider.DecimalNumberDataProvider;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
 import java.util.*;
