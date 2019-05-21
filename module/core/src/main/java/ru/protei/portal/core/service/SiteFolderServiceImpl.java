@@ -28,6 +28,10 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         SearchResult<Platform> sr = platformDAO.getSearchResultByQuery(query);
 
+        if ( CollectionUtils.isEmpty(sr.getResults())) {
+            return new CoreResponse<SearchResult<Platform>>().success(sr);
+        }
+
         Map<Long, Long> map = serverDAO.countByPlatformIds(sr.getResults().stream()
                 .map(Platform::getId)
                 .collect(Collectors.toList()));
