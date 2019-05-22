@@ -30,8 +30,8 @@ public final class RedmineServiceImpl implements RedmineService {
     @Override
     @EventListener
     public void onAssembledCaseEvent(AssembledCaseEvent event) {
-        if (event.getServiceModule() == ServiceModule.REDMINE || event.getServiceModule() == ServiceModule.HPSM) {
-            logger.debug("skip handle self-published event for {}", event.getCaseObject().getExtId());
+        if (!event.isCoreModuleEvent()) {
+            logger.debug("skip handle plugin-published event for {}", event.getCaseObject().getExtId());
             return;
         }
         try {
