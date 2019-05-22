@@ -4,10 +4,12 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
@@ -64,8 +66,21 @@ public abstract class CompanyPreviewActivity
         requestSubscriptionEmails(value.getId());
         requestParentAndChildCompanies(value.getId());
 
-        fireEvent( new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()).readOnly() );
-        fireEvent( new SiteFolderPlatformEvents.ShowConciseTable(view.getSiteFolderContainer(), value.getId()));
+        view.getContactsContainer().clear();
+        if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()).readOnly());
+            view.getContactsContainerVisibility().setVisible(true);
+        } else {
+            view.getContactsContainerVisibility().setVisible(false);
+        }
+
+        view.getSiteFolderContainer().clear();
+        if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+            fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.getSiteFolderContainer(), value.getId()));
+            view.getSiteFolderContainerVisibility().setVisible(true);
+        } else {
+            view.getSiteFolderContainerVisibility().setVisible(false);
+        }
     }
 
     private void requestParentAndChildCompanies( Long parentCompanyId ) {
@@ -95,7 +110,8 @@ public abstract class CompanyPreviewActivity
     Lang lang;
     @Inject
     AbstractCompanyPreviewView view;
-
     @Inject
     CompanyControllerAsync companyController;
+    @Inject
+    PolicyService policyService;
 }
