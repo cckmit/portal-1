@@ -133,16 +133,19 @@ public final class CommonServiceImpl implements CommonService {
             person.setCreator("redmine");
             person.setCompanyId(companyId);
             if (HelperFunc.isEmpty(user.getFirstName()) && HelperFunc.isEmpty(user.getLastName())) {
-                person.setFirstName("?");
-                person.setLastName("?");
+                person.setFirstName(STUB_NAME);
+                person.setLastName(STUB_NAME);
+                person.setSecondName(STUB_NAME);
+                person.setDisplayName(STUB_NAME);
+                person.setDisplayShortName(STUB_NAME);
             } else {
                 String[] np = user.getFullName().split("\\s+");
                 person.setLastName(np[0]);
-                person.setFirstName(np.length > 1 ? np[1] : "?");
+                person.setFirstName(np.length > 1 ? np[1] : STUB_NAME);
                 person.setSecondName(np.length > 2 ? np[2] : "");
+                person.setDisplayName(user.getFullName());
+                person.setDisplayShortName(getDisplayShortName(person));
             }
-
-            person.setDisplayName(user.getFullName());
 
             PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade();
 
@@ -159,6 +162,22 @@ public final class CommonServiceImpl implements CommonService {
 
         return person;
     }
+
+    private String getDisplayShortName(Person person) {
+        return person.getLastName() + " "
+               + getShortName(person.getFirstName())
+               + getShortName(person.getSecondName());
+    }
+    private String getShortName(String name) {
+        if (HelperFunc.isEmpty(name) || name.equals(STUB_NAME))
+            return "";
+        if (name.length() >= 1 ) {
+            return name.substring(0, 1) + ". ";
+        } else {
+            return name + " ";
+        }
+    }
+
 
     private Set<String> getExistingAttachmentsNames(long caseObjId) {
         return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
@@ -190,4 +209,6 @@ public final class CommonServiceImpl implements CommonService {
     private EventPublisherService eventPublisherService;
 
     private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
+
+    private final static String STUB_NAME = "?";
 }
