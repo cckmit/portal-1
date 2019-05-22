@@ -95,17 +95,25 @@ public class BackChannelHandlerFactoryImpl implements BackChannelHandlerFactory 
         @Override
         public void handle(AssembledCaseEvent event, HpsmMessage message, ServiceInstance instance) throws Exception {
             logger.debug("Applying back-channel handler for {} -> {} status", ACTIVE.getName(), WORKAROUND.getName());
+
             final CaseObject object = event.getCaseObject();
 
+            CaseComment comment = event.getCaseComment();
+            if (comment != null && comment.isPrivateComment()) {
+                comment = null;
+            }
+
             message.status(HpsmStatus.WORKAROUND);
-            message.setWorkaroundText(event.getCaseComment().getText());
             message.setOurWorkaroundTime(event.getEventDate());
             message.setWorkaroundTime(event.getEventDate());
-            message.setMessage(event.getCaseComment().getText());
+            if (comment != null) {
+                message.setWorkaroundText(comment.getText());
+                message.setMessage(comment.getText());
+            }
 
             instance.fillReplyMessageAttributes(message, object);
 
-            updateAppDataAndSend(message, instance, event.getLastState(), event.getCaseComment());
+            updateAppDataAndSend(message, instance, event.getLastState(), comment);
         }
     }
 
