@@ -6,10 +6,12 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -61,8 +63,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             initialView(new Company());
         }else {
             fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
-            fireEvent( new ContactEvents.ShowConciseTable( view.tableContainer(), event.getCompanyId() ) );
-            fireEvent( new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), event.getCompanyId()));
+            if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+                fireEvent(new ContactEvents.ShowConciseTable(view.tableContainer(), event.getCompanyId()));
+            }
+            if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+                fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), event.getCompanyId()));
+            }
             requestCompany(event.getCompanyId());
         }
     }
@@ -205,12 +211,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Inject
     AbstractCompanyEditView view;
-
     @Inject
     Lang lang;
-
     @Inject
     CompanyControllerAsync companyService;
+    @Inject
+    PolicyService policyService;
 
     private Company tempCompany;
 
