@@ -64,6 +64,7 @@ public class ReportServiceImpl implements ReportService {
         report.setCreated(now);
         report.setModified(now);
         report.setStatus(En_ReportStatus.CREATED);
+        report.setRestricted(!hasGrantAccessForReport(token));
         if (StringUtils.isBlank(report.getLocale())) {
             report.setLocale(LOCALE_RU);
         }
@@ -99,6 +100,7 @@ public class ReportServiceImpl implements ReportService {
 
         report.setStatus(En_ReportStatus.CREATED);
         report.setModified(new Date());
+        report.setRestricted(!hasGrantAccessForReport(token));
 
         reportDAO.merge(report);
 
@@ -202,5 +204,11 @@ public class ReportServiceImpl implements ReportService {
         ArrayList allowedCompanies = new ArrayList(companyIds);
         allowedCompanies.retainAll(allowedCompaniesIds);
         return allowedCompanies;
+    }
+
+    private boolean hasGrantAccessForReport(AuthToken token) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
     }
 }
