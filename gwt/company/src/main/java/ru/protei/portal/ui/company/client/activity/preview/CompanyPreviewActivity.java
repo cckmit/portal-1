@@ -66,11 +66,20 @@ public abstract class CompanyPreviewActivity
         requestSubscriptionEmails(value.getId());
         requestParentAndChildCompanies(value.getId());
 
+        view.getContactsContainer().clear();
         if (policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
             fireEvent(new ContactEvents.ShowConciseTable(view.getContactsContainer(), value.getId()).readOnly());
+            view.getContactsContainerVisibility().setVisible(true);
+        } else {
+            view.getContactsContainerVisibility().setVisible(false);
         }
+
+        view.getSiteFolderContainer().clear();
         if (policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.getSiteFolderContainer(), value.getId()));
+            view.getSiteFolderContainerVisibility().setVisible(true);
+        } else {
+            view.getSiteFolderContainerVisibility().setVisible(false);
         }
     }
 
