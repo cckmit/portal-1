@@ -53,6 +53,10 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         SearchResult<Server> sr = serverDAO.getSearchResultByQuery(query);
 
+        if (CollectionUtils.isEmpty(sr.getResults())) {
+            return new CoreResponse<SearchResult<Server>>().success(sr);
+        }
+
         Map<Long, Long> map = applicationDAO.countByServerIds(sr.getResults().stream()
                 .map(Server::getId)
                 .collect(Collectors.toList()));
