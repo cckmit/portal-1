@@ -191,7 +191,7 @@ public class ReportServiceImpl implements ReportService {
     private void applyFilterByScope( AuthToken token, Report report) {
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_REPORT)) {
             report.setReportType( En_ReportType.CASE_OBJECTS);
             CaseQuery query = report.getCaseQuery();
             query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds()));
@@ -209,6 +209,6 @@ public class ReportServiceImpl implements ReportService {
     private boolean hasGrantAccessForReport(AuthToken token) {
         UserSessionDescriptor descriptor = authService.findSession(token);
         Set< UserRole > roles = descriptor.getLogin().getRoles();
-        return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW);
+        return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_REPORT);
     }
 }

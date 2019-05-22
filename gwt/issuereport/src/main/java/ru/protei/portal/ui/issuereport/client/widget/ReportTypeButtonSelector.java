@@ -18,7 +18,7 @@ public class ReportTypeButtonSelector extends ButtonSelector<En_ReportType> {
 
     public void fillOptions() {
         clearOptions();
-        if (!policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW)) {
+        if (!policyService.hasGrantAccessFor(En_Privilege.ISSUE_REPORT)) {
             addOption(En_ReportType.CASE_OBJECTS);
             return;
         }
