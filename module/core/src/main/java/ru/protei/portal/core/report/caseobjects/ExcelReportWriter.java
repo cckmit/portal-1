@@ -13,6 +13,7 @@ import ru.protei.portal.core.utils.TimeFormatter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,12 +25,14 @@ public class ExcelReportWriter implements
     private final Lang.LocalizedLang lang;
     private final DateFormat dateFormat;
     private final TimeFormatter timeFormatter;
+    private final boolean isNotRestricted;
 
-    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter) {
+    public ExcelReportWriter(Lang.LocalizedLang localizedLang, DateFormat dateFormat, TimeFormatter timeFormatter, boolean isRestricted) {
         this.book = new JXLSHelper.ReportBook<>(localizedLang, this);
         this.lang = localizedLang;
         this.dateFormat = dateFormat;
         this.timeFormatter = timeFormatter;
+        this.isNotRestricted = !isRestricted;
     }
 
     @Override
@@ -59,26 +62,38 @@ public class ExcelReportWriter implements
 
     @Override
     public int[] getColumnsWidth() {
-        return new int[] {
-                3650, 3430, 8570,
-                4590, 4200, 4200,
-                6000, 3350, 4600,
-                4200, 5800, 5800,
-                5800, 5800, 5800,
-                5800, 5800, 5800
-        };
+        return isNotRestricted ?
+                new int[] {
+                        3650, 3430, 8570,
+                        4590, 4200, 4200,
+                        6000, 3350, 4600,
+                        4200, 5800, 5800,
+                        5800, 5800, 5800,
+                        5800, 5800, 5800 } :
+                new int[] {
+                        3650, 8570,
+                        4590, 4200, 4200,
+                        6000, 3350, 4600,
+                        4200, 5800, 5800,
+                        5800, 5800, 5800 };
     }
 
     @Override
     public String[] getColumnNames() {
-        return new String[] {
-                "ir_caseno", "ir_private", "ir_name",
-                "ir_company", "ir_initiator", "ir_manager",
-                "ir_product", "ir_importance", "ir_state",
-                "ir_date_created", "ir_date_opened", "ir_date_workaround",
-                "ir_date_customer_test", "ir_date_done", "ir_date_verify",
-                "ir_time_solution_first", "ir_time_solution_full", "ir_time_elapsed"
-        };
+        return isNotRestricted ?
+                new String[] {
+                        "ir_caseno", "ir_private", "ir_name",
+                        "ir_company", "ir_initiator", "ir_manager",
+                        "ir_product", "ir_importance", "ir_state",
+                        "ir_date_created", "ir_date_opened", "ir_date_workaround",
+                        "ir_date_customer_test", "ir_date_done", "ir_date_verify",
+                        "ir_time_solution_first", "ir_time_solution_full", "ir_time_elapsed" } :
+                new String[] {
+                        "ir_caseno", "ir_name",
+                        "ir_company", "ir_initiator", "ir_manager",
+                        "ir_product", "ir_importance", "ir_state",
+                        "ir_date_created", "ir_date_opened", "ir_date_workaround",
+                        "ir_date_customer_test", "ir_date_done", "ir_date_verify" };
     }
 
     @Override
@@ -113,31 +128,31 @@ public class ExcelReportWriter implements
             created = issue.getCreated();
         }
 
-        Long solutionDurationFirst = getDurationBetween(created, customerTest, workaround, done);
-        Long solutionDurationFull = getDurationBetween(created, done, verified);
+        Long solutionDurationFirst = isNotRestricted ? null : getDurationBetween(created, customerTest, workaround, done);
+        Long solutionDurationFull = isNotRestricted ? null : getDurationBetween(created, done, verified);
 
-        return new Object[] {
-                "CRM-" + issue.getCaseNumber(),
-                lang.get(issue.isPrivateCase() ? "yes" : "no"),
-                HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "",
-                issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? issue.getInitiatorCompany().getCname() : "",
-                issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? issue.getInitiator().getDisplayShortName() : "",
-                issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? issue.getManager().getDisplayShortName() : "",
-                issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "",
-                issue.getImpLevel() != null ? lang.get("importance_" + String.valueOf(issue.getImpLevel())) : "",
-                issue.getState() != null ? lang.get("case_state_" + String.valueOf(issue.getState().getId())) : "",
-                created != null ? dateFormat.format(created) : "",
-                opened != null ? dateFormat.format(opened) : "",
-                workaround != null ? dateFormat.format(workaround) : "",
-                customerTest != null ? dateFormat.format(customerTest) : "",
-                done != null ? dateFormat.format(done) : "",
-                verified != null ? dateFormat.format(verified) : "",
-                solutionDurationFirst != null ? timeFormatter.formatHourMinutes(solutionDurationFirst) : "",
-                solutionDurationFull != null ? timeFormatter.formatHourMinutes(solutionDurationFull) : "",
-                issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ?
-                        timeFormatter.formatHourMinutes(issue.getTimeElapsed())
-                        : ""
-        };
+        List<Object> values = new ArrayList<>();
+        values.add("CRM-" + issue.getCaseNumber());
+        if (isNotRestricted) values.add(lang.get(issue.isPrivateCase() ? "yes" : "no"));
+        values.add(HelperFunc.isNotEmpty(issue.getName()) ? issue.getName() : "");
+        values.add(issue.getInitiatorCompany() != null && HelperFunc.isNotEmpty(issue.getInitiatorCompany().getCname()) ? issue.getInitiatorCompany().getCname() : "");
+        values.add(issue.getInitiator() != null && HelperFunc.isNotEmpty(issue.getInitiator().getDisplayShortName()) ? issue.getInitiator().getDisplayShortName() : "");
+        values.add(issue.getManager() != null && HelperFunc.isNotEmpty(issue.getManager().getDisplayShortName()) ? issue.getManager().getDisplayShortName() : "");
+        values.add(issue.getProduct() != null && HelperFunc.isNotEmpty(issue.getProduct().getName()) ? issue.getProduct().getName() : "");
+        values.add(issue.getImpLevel() != null ? lang.get("importance_" + String.valueOf(issue.getImpLevel())) : "");
+        values.add(issue.getState() != null ? lang.get("case_state_" + String.valueOf(issue.getState().getId())) : "");
+        values.add(created != null ? dateFormat.format(created) : "");
+        values.add(opened != null ? dateFormat.format(opened) : "");
+        values.add(workaround != null ? dateFormat.format(workaround) : "");
+        values.add(customerTest != null ? dateFormat.format(customerTest) : "");
+        values.add(done != null ? dateFormat.format(done) : "");
+        values.add(verified != null ? dateFormat.format(verified) : "");
+        if (isNotRestricted) values.add(solutionDurationFirst != null ? timeFormatter.formatHourMinutes(solutionDurationFirst) : "");
+        if (isNotRestricted) values.add(solutionDurationFull != null ? timeFormatter.formatHourMinutes(solutionDurationFull) : "");
+        if (isNotRestricted) values.add(issue.getTimeElapsed() != null && issue.getTimeElapsed() > 0 ?
+                timeFormatter.formatHourMinutes(issue.getTimeElapsed()) : "");
+
+        return values.stream().toArray();
     }
 
     private Long getDurationBetween(Date from, Date... toList) {

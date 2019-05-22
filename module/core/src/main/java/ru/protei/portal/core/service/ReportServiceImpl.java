@@ -5,13 +5,17 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.ReportDAO;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ReportStatus;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Report;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.BaseQuery;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.struct.ReportContent;
 import ru.protei.portal.core.service.user.AuthService;
@@ -38,23 +42,29 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     ReportStorageService reportStorageService;
 
+    @Autowired
+    PolicyService policyService;
+
     @Override
     public CoreResponse<Long> createReport(AuthToken token, Report report) {
         if (report == null || report.getReportType() == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-
         if (isQueryNotValid(report.getCaseQuery())) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
+
+        applyFilterByScope(token, report);
+
+        UserSessionDescriptor descriptor = authService.findSession(token);
 
         Date now = new Date();
         report.setCreatorId(descriptor.getPerson().getId());
         report.setCreated(now);
         report.setModified(now);
         report.setStatus(En_ReportStatus.CREATED);
+        report.setRestricted(!hasGrantAccessForReport(token));
         if (StringUtils.isBlank(report.getLocale())) {
             report.setLocale(LOCALE_RU);
         }
@@ -90,6 +100,7 @@ public class ReportServiceImpl implements ReportService {
 
         report.setStatus(En_ReportStatus.CREATED);
         report.setModified(new Date());
+        report.setRestricted(!hasGrantAccessForReport(token));
 
         reportDAO.merge(report);
 
@@ -175,5 +186,29 @@ public class ReportServiceImpl implements ReportService {
 
     private <T extends BaseQuery> boolean isQueryNotValid(T query) {
         return query == null || !query.isParamsPresent();
+    }
+
+    private void applyFilterByScope( AuthToken token, Report report) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if (!policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_REPORT)) {
+            report.setReportType( En_ReportType.CASE_OBJECTS);
+            CaseQuery query = report.getCaseQuery();
+            query.setCompanyIds(acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds()));
+            query.setAllowViewPrivate(false);
+        }
+    }
+
+    private List<Long> acceptAllowedCompanies(List<Long> companyIds, Collection<Long> allowedCompaniesIds) {
+        if(companyIds==null) return new ArrayList<>(allowedCompaniesIds);
+        ArrayList allowedCompanies = new ArrayList(companyIds);
+        allowedCompanies.retainAll(allowedCompaniesIds);
+        return allowedCompanies;
+    }
+
+    private boolean hasGrantAccessForReport(AuthToken token) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        return policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_REPORT);
     }
 }
