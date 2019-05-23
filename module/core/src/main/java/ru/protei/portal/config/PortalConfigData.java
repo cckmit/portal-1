@@ -523,19 +523,13 @@ public class PortalConfigData {
     public static class JiraConfig {
 
         private final int queueLimit;
-        private final int threadLimit;
 
         public JiraConfig(PropertiesWrapper properties) throws ConfigException {
             queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 60);
-            threadLimit = properties.getProperty("integration.jira.thread.limit", Integer.class, 3);
         }
 
         public int getQueueLimit() {
             return queueLimit;
-        }
-
-        public int getThreadLimit() {
-            return threadLimit;
         }
     }
 }

@@ -17,16 +17,19 @@ import ru.protei.portal.jira.utils.JiraHookEventType;
 import ru.protei.winter.core.utils.Pair;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueService {
 
     @PostConstruct
     public void init() {
+
+        if (!config.data().integrationConfig().isJiraEnabled()) {
+            log.debug("Jira integration is disabled, queue service not started");
+            return;
+        }
 
         handlersMap.put(JiraHookEventType.ISSUE_CREATED, (ep, event) -> integrationService.create(ep, event));
         handlersMap.put(JiraHookEventType.ISSUE_UPDATED, (ep, event) -> integrationService.updateOrCreate(ep, event));
@@ -37,6 +40,26 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
             log.info("has no handler for event {}, skip", evt.getEventType());
             return null;
         };
+
+        startWorker();
+    }
+
+    @PreDestroy
+    private void destroy() {
+        executor.shutdownNow();
+        if (queue.size() > 0) {
+            log.warn("Bean is going to be destroyed!");
+            for (int i = 0; i < queue.size(); i++) {
+                Pair<Long, JiraHookEventData> event = queue.peek();
+                if (event == null) {
+                    continue;
+                }
+                Long companyId = event.getA();
+                JiraHookEventData eventData = event.getB();
+                log.error("Event for jira-issue has been dropped! company={}, eventData={} ", companyId, eventData.toDebugString());
+            }
+        }
+        queue.clear();
     }
 
     @Override
@@ -50,14 +73,14 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
             return false;
         }
 
+        int queueAlarmThreshold = (queueLimit / 100) * QUEUE_ALARM_THRESHOLD_PERCENT;
+        if (queueSize > queueAlarmThreshold) {
+            log.warn("Queue threshold alarm! Reached {}% of queue ({}/{})",
+                    QUEUE_ALARM_THRESHOLD_PERCENT, queueSize, queueLimit);
+        }
+
         boolean isEnqueued = queue.offer(new Pair<>(companyId, eventData));
-        if (isEnqueued) {
-            int threadLimit = config.data().jiraConfig().getThreadLimit();
-            int threadActive = executor.getActiveCount();
-            if (threadActive <= threadLimit) {
-                executor.execute(this::handleQueue);
-            }
-        } else {
+        if (!isEnqueued) {
             log.error("Event has not been enqueued, companyId={}, eventData={}",
                     companyId, eventData.toFullString());
         }
@@ -65,52 +88,76 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         return isEnqueued;
     }
 
-    private void handleQueue() {
+    private void startWorker() {
+        executor.submit(new JiraIntegrationQueueWorker());
+    }
 
-        for (;;) {
-
-            Pair<Long, JiraHookEventData> event = queue.poll();
-            if (event == null) {
-                break;
-            }
-
-            Long companyId = event.getA();
-            JiraHookEventData eventData = event.getB();
-
-            log.info("Event for company={} contains data={}", companyId, eventData.toDebugString());
-
-            Issue issue = eventData.getIssue();
-            JiraEndpoint endpoint = jiraEndpointCache().findFirst(ep ->
-                    Objects.equals(ep.getCompanyId(), companyId) &&
-                    Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
-            );
-
-            if (endpoint == null) {
-                log.warn("Unable to find end-point record for jira-issue company={}, project={}", companyId, issue.getProject());
-                continue;
-            }
-
-            JiraEventHandler handler = handlersMap.getOrDefault(eventData.getEventType(), defaultHandler);
-            AssembledCaseEvent caseEvent = handler.handle(endpoint, eventData);
-            if (caseEvent == null) {
-                continue;
-            }
-
-            /*
-             * Задержка добавлена из-за того, что в рассылке писем отсутствуют новые комменты, которые выгребаются из бд.
-             * Возможно, транзакция не успевает закончиться к моменту выгреба комментов. (время по логам - 4 тысячных секунды
-             * между #sendEvent и выгребом комментов в MailNotificationProcessor)
-             * https://youtrack.protei.ru/issue/PORTAL-571#focus=streamItem-85-143880-0-0
-             */
-            log.info("Schedule send assembled event {}", caseEvent.getCaseObject().defGUID());
+    public class JiraIntegrationQueueWorker implements Runnable {
+        @Override
+        public void run() {
             try {
-                Date execTime = DateUtils.addSeconds(new Date(), EVENT_SEND_DELAY_SEC);
-                scheduler.schedule(() -> sendEvent(caseEvent), execTime);
+                while (!Thread.currentThread().isInterrupted()) {
+
+                    Pair<Long, JiraHookEventData> event = queue.poll(30L, TimeUnit.SECONDS);
+                    if (event == null) {
+                        continue;
+                    }
+
+                    Long companyId = event.getA();
+                    JiraHookEventData eventData = event.getB();
+
+                    try {
+
+                        log.info("Event for company={} contains data={}", companyId, eventData.toDebugString());
+
+                        Issue issue = eventData.getIssue();
+                        JiraEndpoint endpoint = jiraEndpointCache().findFirst(ep ->
+                                Objects.equals(ep.getCompanyId(), companyId) &&
+                                Objects.equals(ep.getProjectId(), String.valueOf(issue.getProject().getId()))
+                        );
+
+                        if (endpoint == null) {
+                            log.warn("Unable to find end-point record for jira-issue company={}, project={}", companyId, issue.getProject());
+                            log.error("Event for jira-issue has been dropped! company={}, project={}", companyId, issue.getProject());
+                            continue;
+                        }
+
+                        JiraEventHandler handler = handlersMap.getOrDefault(eventData.getEventType(), defaultHandler);
+                        AssembledCaseEvent caseEvent = handler.handle(endpoint, eventData);
+                        if (caseEvent == null) {
+                            continue;
+                        }
+
+                        /*
+                         * Задержка добавлена из-за того, что в рассылке писем отсутствуют новые комменты, которые выгребаются из бд.
+                         * Возможно, транзакция не успевает закончиться к моменту выгреба комментов. (время по логам - 4 тысячных секунды
+                         * между #sendEvent и выгребом комментов в MailNotificationProcessor)
+                         * https://youtrack.protei.ru/issue/PORTAL-571#focus=streamItem-85-143880-0-0
+                         */
+                        log.info("Schedule send assembled event {}", caseEvent.getCaseObject().defGUID());
+                        try {
+                            Date execTime = DateUtils.addSeconds(new Date(), EVENT_SEND_DELAY_SEC);
+                            scheduler.schedule(() -> sendEvent(caseEvent), execTime);
+                        } catch (Exception e) {
+                            log.info("Failed to schedule send assembled event " + caseEvent.getCaseObject().defGUID() + ", sending now", e);
+                            sendEvent(caseEvent);
+                        }
+
+                    } catch (Exception e) {
+                        log.error("Exception occurred while handling event", e);
+                        log.error("Event for jira-issue has been dropped! company={}, eventData={} ", companyId, eventData.toDebugString());
+                    }
+                }
+                log.info("Worker execution is requested to exit");
+            } catch (InterruptedException e) {
+                log.error("InterruptedException occurred at worker execution, exit now", e);
             } catch (Exception e) {
-                log.info("Failed to schedule send assembled event " + caseEvent.getCaseObject().defGUID() + ", sending now", e);
-                sendEvent(caseEvent);
+                log.error("Exception occurred at worker execution, exit and restart now", e);
+                startWorker();
             }
         }
+
+        private final Logger log = LoggerFactory.getLogger(JiraIntegrationQueueWorker.class);
     }
 
     private void sendEvent(AssembledCaseEvent event) {
@@ -136,15 +183,18 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     @Autowired
     JiraIntegrationService integrationService;
 
-    interface JiraEventHandler {
+    private interface JiraEventHandler {
         AssembledCaseEvent handle(JiraEndpoint endpoint, JiraHookEventData event);
     }
 
     private EntityCache<JiraEndpoint> jiraEndpointCache;
     private JiraEventHandler defaultHandler;
     private Map<JiraHookEventType, JiraEventHandler> handlersMap = new HashMap<>();
-    private final Queue<Pair<Long, JiraHookEventData>> queue = new ConcurrentLinkedDeque<>();
-    private final ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newCachedThreadPool();
+
+    private final BlockingQueue<Pair<Long, JiraHookEventData>> queue = new LinkedBlockingQueue<>();
+    private final ExecutorService executor = (ThreadPoolExecutor) Executors.newSingleThreadExecutor();
+
+    private static final int QUEUE_ALARM_THRESHOLD_PERCENT = 80;
     private static final int EVENT_SEND_DELAY_SEC = 3;
     private static final Logger log = LoggerFactory.getLogger(JiraIntegrationQueueServiceImpl.class);
 }
