@@ -9,9 +9,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.view.ProductShortView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -121,9 +119,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     @Override
     public void renderMarkdownText(String text, Consumer<String> consumer) {
         En_TextMarkup textMarkup = En_TextMarkup.MARKDOWN;
-        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
-        textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
-                .withError(throwable -> consumer.accept(escapedText))
+        textRenderController.render(text, textMarkup, new FluentCallback<String>()
+                .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
     }
 
@@ -238,8 +235,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     Lang lang;
     @Inject
     ProductControllerAsync productService;
-    @Inject
-    PolicyService policyService;
     @Inject
     TextRenderControllerAsync textRenderController;
 

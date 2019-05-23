@@ -9,9 +9,7 @@ import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
 import ru.protei.portal.core.model.ent.CaseComment;
-import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
@@ -331,8 +329,7 @@ public abstract class CaseCommentListActivity
             AbstractCaseCommentItemView itemView = makeCommentView(comment);
             if (StringUtils.isNotEmpty(comment.getText())) {
                 views.add(itemView);
-                String text = HTMLHelper.htmlEscapeWOCodeBlock(comment.getText(), textMarkup);
-                textList.add(text);
+                textList.add(comment.getText());
             }
             view.addCommentToFront( itemView.asWidget() );
         }
@@ -368,10 +365,6 @@ public abstract class CaseCommentListActivity
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
-
-        if ( StringUtils.isNotEmpty( value.getText() ) ) {
-            itemView.setMessage(HTMLHelper.htmlEscapeWOCodeBlock(value.getText(), textMarkup));
-        }
 
         if ( HelperFunc.isEmpty( value.getText() ) && ( isStateChangeComment || isImportanceChangeComment)) {
             itemView.hideOptions();
@@ -603,9 +596,8 @@ public abstract class CaseCommentListActivity
     }
 
     private void renderTextAsync(String text, En_TextMarkup textMarkup, Consumer<String> consumer) {
-        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
-        textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
-                .withError(throwable -> consumer.accept(escapedText))
+        textRenderController.render(text, textMarkup, new FluentCallback<String>()
+                .withError(throwable -> consumer.accept(text))
                 .withSuccess(consumer));
     }
 
