@@ -9,7 +9,6 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
-import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -248,8 +247,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void renderMarkupText(String text, Consumer<String> consumer) {
         En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
-        String escapedText = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
-        textRenderController.render(escapedText, textMarkup, new FluentCallback<String>()
+        textRenderController.render(text, textMarkup, new FluentCallback<String>()
                 .withError(throwable -> consumer.accept(null))
                 .withSuccess(consumer));
     }
