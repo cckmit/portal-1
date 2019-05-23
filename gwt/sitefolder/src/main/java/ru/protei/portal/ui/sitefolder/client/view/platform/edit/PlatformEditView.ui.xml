@@ -55,9 +55,6 @@
                     </div>
                 </div>
 
-                <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable form-group col-xs-12 main-content-padding-0"
-                                             legend="{lang.siteFolderCompanyContacts}"/>
-
                 <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-xs-12">
                     <legend><ui:text from="{lang.siteFolderServers}"/></legend>
                     <g:Button ui:field="openButton" styleName="btn btn-white pull-right m-l-10" text="{lang.openTableView}"/>
@@ -65,6 +62,9 @@
                 </g:HTMLPanel>
 
                 <g:HTMLPanel styleName="form-group col-xs-12" ui:field="listContainer"/>
+
+                <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable form-group col-xs-12 main-content-padding-0"
+                                             legend="{lang.siteFolderCompanyContacts}"/>
 
             </div>
         </div>
