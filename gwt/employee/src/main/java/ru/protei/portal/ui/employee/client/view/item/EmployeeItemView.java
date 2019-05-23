@@ -52,9 +52,10 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
-    public void setEmail( String value ) {
-        emailContainer.setVisible( value != null && !value.isEmpty() );
-        email.setInnerText( value == null ? "" : value );
+    public void setEmail( String textValue, String value ) {
+        emailContainer.setVisible( textValue != null && !textValue.isEmpty() );
+        email.setInnerText( textValue == null ? "" : textValue );
+        email.setHref( value == null ? "#" : "mailto:" + value );
     }
 
     @Override

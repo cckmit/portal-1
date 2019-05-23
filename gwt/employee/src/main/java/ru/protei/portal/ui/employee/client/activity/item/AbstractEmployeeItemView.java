@@ -16,7 +16,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhone( String value );
 
-    void setEmail( String value );
+    void setEmail( String textValue, String value );
 
     void setPhoto ( String photo );
 
