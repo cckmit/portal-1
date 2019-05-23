@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.view.casecomment.list;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -17,8 +18,8 @@ import ru.protei.portal.core.model.dict.En_TimeElapsedType;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.view.selector.ElapsedTimeTypeSelector;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
@@ -124,6 +125,16 @@ public class CaseCommentListView
             commentPreviewContainer.removeClassName("hide");
         } else {
             commentPreviewContainer.addClassName("hide");
+        }
+    }
+
+    @Override
+    public void setTextMarkupLabel(String label) {
+        if (label == null) {
+            textMarkupLabel.addClassName("hide");
+        } else {
+            textMarkupLabel.setInnerText(label);
+            textMarkupLabel.removeClassName("hide");
         }
     }
 
@@ -253,6 +264,8 @@ public class CaseCommentListView
     DivElement commentPreviewContainer;
     @UiField
     DivElement commentPreview;
+    @UiField
+    SpanElement textMarkupLabel;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;

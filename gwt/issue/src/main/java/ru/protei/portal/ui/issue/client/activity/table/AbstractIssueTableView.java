@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
  * Представление таблицы контактов
@@ -16,9 +17,9 @@ public interface AbstractIssueTableView extends IsWidget {
     HasWidgets getPreviewContainer ();
     HasWidgets getFilterContainer ();
 
-    void setIssuesCount( Long issuesCount );
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -19,13 +20,10 @@ import java.util.List;
  */
 public interface ProductService {
 
-    @Privileged( En_Privilege.PRODUCT_VIEW )
-    CoreResponse<Long> count(AuthToken token, ProductQuery query);
+    @Privileged(En_Privilege.PRODUCT_VIEW)
+    CoreResponse<SearchResult<DevUnit>> getProducts(AuthToken token, ProductQuery query);
 
     CoreResponse<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query );
-
-    @Privileged( En_Privilege.PRODUCT_VIEW )
-    CoreResponse<List<DevUnit>> productList( AuthToken token, ProductQuery query );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<DevUnit> getProduct( AuthToken token, Long id );

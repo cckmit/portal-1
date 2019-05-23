@@ -29,6 +29,8 @@ public class PortalConfigData {
     private final CaseLinkConfig caseLinkConfig;
     private final MailNotificationConfig mailNotificationConfig;
     private final YoutrackConfig youtrackConfig;
+    private final EmployeeConfig employeeConfig;
+    private final LdapConfig ldapConfig;
 
     private final String loginSuffixConfig;
 
@@ -45,6 +47,8 @@ public class PortalConfigData {
         caseLinkConfig = new CaseLinkConfig(wrapper);
         mailNotificationConfig = new MailNotificationConfig(wrapper);
         youtrackConfig = new YoutrackConfig(wrapper);
+        employeeConfig = new EmployeeConfig(wrapper);
+        ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
     }
@@ -101,10 +105,19 @@ public class PortalConfigData {
         return youtrackConfig;
     }
 
+    public EmployeeConfig getEmployee() {
+        return employeeConfig;
+    }
+
+    public LdapConfig getLdapConfig() {
+        return ldapConfig;
+    }
+
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {
             crmUrlInternal = properties.getProperty( "crm.url.internal", "http://newportal/crm/" );
             crmUrlExternal = properties.getProperty( "crm.url.external", "http://newportal/crm/" );
+            crmUrlCurrent = properties.getProperty( "crm.url.current", "http://newportal/crm/" );
         }
         public String getCrmUrlInternal() {
             return crmUrlInternal;
@@ -114,8 +127,13 @@ public class PortalConfigData {
             return crmUrlExternal;
         }
 
+        public String getCrmUrlCurrent() {
+            return crmUrlCurrent;
+        }
+
         private final String crmUrlInternal;
         private final String crmUrlExternal;
+        private final String crmUrlCurrent;
     }
 
     public static class MailNotificationConfig extends CommonConfig {
@@ -505,6 +523,31 @@ public class PortalConfigData {
 
         public Long getYoutrackUserId() {
             return youtrackUserId;
+        }
+    }
+
+    public static class EmployeeConfig {
+
+        private final String avatarPath;
+
+        public EmployeeConfig(PropertiesWrapper propertiesWrapper) {
+            avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars" );
+        }
+
+        public String getAvatarPath() {
+            return avatarPath;
+        }
+    }
+
+    public static class LdapConfig {
+        private final String url;
+
+        public LdapConfig(PropertiesWrapper properties) {
+            url = properties.getProperty("ldap.url");
+        }
+
+        public String getUrl() {
+            return url;
         }
     }
 }

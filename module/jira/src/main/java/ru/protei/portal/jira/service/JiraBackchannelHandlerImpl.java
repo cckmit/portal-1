@@ -41,7 +41,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
         }
 
         if (!event.isCoreModuleEvent()) {
-            logger.debug("event from plugin-modules, skip handling");
+            logger.debug("skip handle plugin-published event for {}", event.getCaseObject().getExtId());
             return;
         }
 
@@ -67,6 +67,8 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
             return;
         }
 
+        // TODO why no check if its jira issue (by ExternalCaseAppData.extAppType)
+
         final CommonUtils.IssueData issueData = CommonUtils.convert(extCaseData);
 
         final JiraEndpoint endpoint = endpointDAO.get(issueData.endpointId);
@@ -89,7 +91,7 @@ public class JiraBackchannelHandlerImpl implements JiraBackchannelHandler {
                 generalUpdate(endpoint, event, issue, issueClient);
             }
 
-            if (event.getCaseComment() != null) {
+            if (event.getCaseComment() != null && !event.getCaseComment().isPrivateComment()) {
                 logger.debug("add comment {} to issue {}", event.getCaseComment().getId(), issue.getKey());
                 issueClient.addComment(issue.getCommentsUri(), convertComment(event.getCaseComment()))
                         .claim();

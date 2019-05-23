@@ -18,6 +18,7 @@ import ru.protei.portal.ui.issuereport.client.activity.table.AbstractIssueReport
 import ru.protei.portal.ui.issuereport.client.view.table.columns.FilterColumn;
 import ru.protei.portal.ui.issuereport.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.issuereport.client.view.table.columns.NumberColumn;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 public class IssueReportTableView extends Composite implements AbstractIssueReportTableView {
 
@@ -44,13 +45,13 @@ public class IssueReportTableView extends Composite implements AbstractIssueRepo
     }
 
     @Override
-    public void setReportsCount(Long issuesCount) {
-        table.setTotalRecords(issuesCount.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

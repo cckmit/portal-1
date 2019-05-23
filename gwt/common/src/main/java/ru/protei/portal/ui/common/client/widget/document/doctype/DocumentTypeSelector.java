@@ -12,8 +12,8 @@ public class DocumentTypeSelector
         implements SelectorWithModel<DocumentType> {
 
     @Inject
-    void init(DocumentTypeModel documentTypeModel) {
-        documentTypeModel.subscribe(this);
+    void init(DocumentTypeModel model) {
+        setSelectorModel(model);
         setSearchEnabled(false);
 
         setDisplayOptionCreator(val -> {

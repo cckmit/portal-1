@@ -74,19 +74,19 @@
 
                     <list:SubscriptionList ui:field="subscriptions"/>
 
-                    <div class="form-group col-xs-12">
+                    <g:HTMLPanel ui:field="tableContainerBlock" styleName="form-group col-xs-12">
                         <label class="bordered">
                             <ui:text from="{lang.contacts}"/>
                         </label>
                         <g:HTMLPanel ui:field="tableContainer"></g:HTMLPanel>
-                    </div>
+                    </g:HTMLPanel>
 
-                    <div class="form-group col-xs-12">
+                    <g:HTMLPanel ui:field="siteFolderContainerBlock" styleName="form-group col-xs-12">
                         <label class="bordered">
                             <ui:text from="{lang.siteFolder}"/>
                         </label>
                         <g:HTMLPanel ui:field="siteFolderContainer"></g:HTMLPanel>
-                    </div>
+                    </g:HTMLPanel>
                 </div>
             </div>
             <div class="footer">

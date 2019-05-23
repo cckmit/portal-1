@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -19,17 +20,11 @@ import java.util.List;
 public interface CompanyController extends RemoteService {
 
     /**
-     * Получение кол-ва компаний
-     * @param query запрос
-     */
-    long getCompaniesCount(CompanyQuery query) throws RequestFailedException;
-
-    /**
      * Получение списка компаний
      * @param query запрос
      * @return список компаний
      */
-    List<Company> getCompanies( CompanyQuery query ) throws RequestFailedException;
+    SearchResult<Company> getCompanies(CompanyQuery query ) throws RequestFailedException;
 
     /**
      * Получение списка групп компаний

@@ -1,12 +1,12 @@
 package ru.protei.portal.test.legacy;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ru.protei.portal.config.MainConfiguration;
+import ru.protei.portal.config.DatabaseConfiguration;
+import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ExportSybEntryDAO;
@@ -16,7 +16,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.tools.migrate.export.ExportDataService;
 import ru.protei.portal.tools.migrate.struct.ExternalCompany;
 import ru.protei.portal.tools.migrate.struct.ExternalPerson;
@@ -30,7 +29,9 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
+@Ignore
 public class ExportServiceTest {
+    private static final Logger log = LoggerFactory.getLogger(ExportServiceTest.class);
     public static final String JUNIT_TEST_NAME = "junit-test";
     public static final String EXPORT_INSTANCE_ID = "junit";
     static ApplicationContext ctx;
@@ -50,7 +51,7 @@ public class ExportServiceTest {
 
     @BeforeClass
     public static void init () throws Exception {
-        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, MainConfiguration.class);
+        ctx = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class);
         exportService = ctx.getBean(ExportDataService.class);
         legacySystemDAO = ctx.getBean(LegacySystemDAO.class);
         companyDAO = ctx.getBean(CompanyDAO.class);
@@ -199,7 +200,7 @@ public class ExportServiceTest {
         ExternalCompany extern = legacySystemDAO.getExternalCompany(company.getOldId());
         Assert.assertNotNull(extern);
 
-        System.out.println(company.getCname());
+        log.info(company.getCname());
 
         String origName = company.getCname();
 

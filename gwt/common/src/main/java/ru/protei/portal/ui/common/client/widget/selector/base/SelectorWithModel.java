@@ -17,4 +17,6 @@ public interface SelectorWithModel<T> {
     Collection<T> getValues();
 
     void setSelectorModel( SelectorModel<T> selectorModel );
+
+    boolean isAttached();
 }

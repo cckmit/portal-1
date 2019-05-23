@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.core.utils.services.lock.LockStrategy;
 
@@ -49,18 +50,32 @@ public class DocumentServiceImpl implements DocumentService {
     DocumentSvnService documentSvnService;
 
     @Override
-    public CoreResponse<Integer> count(AuthToken token, DocumentQuery query) {
-        try {
-            checkApplyFullTextSearchFilter(query);
-        } catch (IOException e) {
-            return new CoreResponse<Integer>().error(En_ResultStatus.INTERNAL_ERROR);
-        }
-      
-        return new CoreResponse<Integer>().success(documentDAO.countByQuery(query));
+    public CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, Long equipmentId) {
+        DocumentQuery query = new DocumentQuery();
+        query.setEquipmentIds(Collections.singletonList(equipmentId));
+        return getDocuments(token, query);
     }
 
     @Override
-    public CoreResponse<List<Document>> documentList(AuthToken token, DocumentQuery query) {
+    public CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, DocumentQuery query) {
+
+        try {
+            checkApplyFullTextSearchFilter(query);
+        } catch (IOException e) {
+            return new CoreResponse<SearchResult<Document>>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+
+        SearchResult<Document> sr = documentDAO.getSearchResult(query);
+
+        sr.getResults().forEach(this::resetDocumentPrivacyInfo);
+
+        return new CoreResponse<SearchResult<Document>>().success(sr);
+    }
+
+    @Override
+    public CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId) {
+        DocumentQuery query = new DocumentQuery();
+        query.setEquipmentIds(Collections.singletonList(equipmentId));
 
         try {
             checkApplyFullTextSearchFilter(query);
@@ -69,7 +84,6 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         List<Document> list = documentDAO.getListByQuery(query);
-
         if (list == null) {
             return new CoreResponse<List<Document>>().error(En_ResultStatus.GET_DATA_ERROR);
         }
@@ -77,13 +91,6 @@ public class DocumentServiceImpl implements DocumentService {
         list.forEach(this::resetDocumentPrivacyInfo);
 
         return new CoreResponse<List<Document>>().success(list);
-    }
-
-    @Override
-    public CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId) {
-        DocumentQuery query = new DocumentQuery();
-        query.setEquipmentIds(Collections.singletonList(equipmentId));
-        return documentList(token, query);
     }
 
     @Override
@@ -263,11 +270,12 @@ public class DocumentServiceImpl implements DocumentService {
             return new CoreResponse<Document>().success(document);
         });
     }
+
     @Override
-    public CoreResponse<List<Document>> getProjectDocuments(AuthToken token, Long projectId) {
+    public CoreResponse<SearchResult<Document>> getProjectDocuments(AuthToken token, Long projectId) {
         DocumentQuery query = new DocumentQuery();
         query.setProjectId(projectId);
-        return documentList(token, query);
+        return getDocuments(token, query);
     }
 
     private void checkApplyFullTextSearchFilter(DocumentQuery query) throws IOException {

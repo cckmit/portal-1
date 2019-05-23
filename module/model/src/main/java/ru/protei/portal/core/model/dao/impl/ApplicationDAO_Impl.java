@@ -8,7 +8,26 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.winter.jdbc.JdbcHelper;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class ApplicationDAO_Impl extends PortalBaseJdbcDAO<Application> implements ApplicationDAO {
+
+    @Override
+    public Map<Long, Long> countByServerIds(List<Long> serverIds) {
+        String sql = "SELECT server_id, COUNT(*) AS cnt FROM " + getTableName() + " " +
+                "WHERE server_id IN " + HelperFunc.makeInArg(serverIds, String::valueOf) + " " +
+                "GROUP BY server_id";
+        Map<Long, Long> result = new HashMap<>();
+        jdbcTemplate.query(sql, (rs, rowNum) -> {
+            long id = rs.getLong("server_id");
+            long count = rs.getLong("cnt");
+            result.put(id, count);
+            return null;
+        });
+        return result;
+    }
 
     @Override
     @SqlConditionBuilder

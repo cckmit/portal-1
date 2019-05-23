@@ -8,6 +8,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
 import ru.protei.portal.core.model.ent.DecimalNumber;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -15,7 +16,8 @@ import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.decimalnumber.multiple.MultipleDecimalNumberInput;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
@@ -34,6 +36,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        linkedEquipment.setModel(equipmentModelProvider.get());
     }
 
     @Override
@@ -172,6 +175,9 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     }
 
     @Inject
+    Provider<EquipmentModel> equipmentModelProvider;
+
+    @Inject
     @UiField
     Lang lang;
 
@@ -191,7 +197,7 @@ public class EquipmentEditView extends Composite implements AbstractEquipmentEdi
     EquipmentTypeBtnGroup type;
     @Inject
     @UiField(provided = true)
-    EquipmentSelector linkedEquipment;
+    EquipmentButtonSelector linkedEquipment;
     @Inject
     @UiField(provided = true)
     MultipleDecimalNumberInput numbers;

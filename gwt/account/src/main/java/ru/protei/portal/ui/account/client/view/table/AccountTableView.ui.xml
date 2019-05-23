@@ -7,7 +7,7 @@
     <g:HTMLPanel styleName="main-content">
         <div class="grid">
             <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container">
-                <table:InfiniteTableWidget ui:field="table" styleName="table-hover accounts"/>
+                <table:TableWidget ui:field="table" styleName="table-hover accounts"/>
                 <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>

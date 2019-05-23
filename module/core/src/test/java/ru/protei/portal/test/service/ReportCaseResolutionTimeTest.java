@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
@@ -24,7 +25,7 @@ import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTi
 import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.DAY;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
     private void initCaseObjectsQueryTest() {
@@ -42,7 +43,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                               ^x
-        Long caseId = makeCaseObject( person, productId, day( 9 ) );
+        Long caseId = makeCaseObject( 1L, person, productId, day( 9 ) );
         CaseComment c1 = createNewComment( person, caseId, "One day" );
         makeComment( c1, CREATED, day( 11 ) );                              //2050-01-11 00:00:00
         makeComment( c1, OPENED, addHours( day( 11 ), 2 ) );                //2050-01-11 02:00:00
@@ -50,7 +51,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                          ^----^n-^--------x     ^----------------------------------------
-        Long caseId2 = makeCaseObject( person, productId, day( 9 ) );
+        Long caseId2 = makeCaseObject( 2L, person, productId, day( 9 ) );
         CaseComment c2 = createNewComment( person, caseId2, "Week" );
         makeComment( c2, CREATED, day( 9 ) );                                      //2050-01-09 00:00:00
         makeComment( c2, null, addHours( day( 9 ), 2 ) );            //2050-01-09 02:00:00
@@ -60,7 +61,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                                     ^--------------^----------------^
-        Long caseId3 = makeCaseObject( person, productId, day( 9 ) );
+        Long caseId3 = makeCaseObject( 3L, person, productId, day( 9 ) );
         CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
         makeComment( c3, CREATED, day( 13 ) );                                     //2050-01-13 00:00:00
         makeComment( c3, OPENED, addHours( day( 18 ), 5 ) );                //2050-01-18 05:00:00
@@ -324,8 +325,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() ); // учтена строка с заголовком
     }
 
-    private Long makeCaseObject( Person person, Long productId, Date date ) {
-        CaseObject caseObject = createNewCaseObject( person );
+    private Long makeCaseObject( Long caseNo, Person person, Long productId, Date date ) {
+        CaseObject caseObject = createNewCaseObject( person, caseNo );
         caseObject.setProductId( productId );
         caseObject.setCreated( date );
         Long caseId = caseObjectDAO.insertCase( caseObject );

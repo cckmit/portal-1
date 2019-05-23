@@ -61,10 +61,28 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue< String > workPhone() {
+        return workPhone;
+    }
+
+    @Override
+    public HasValue< String > mobilePhone() {
+        return mobilePhone;
+    }
+
+    @Override
+    public HasValue< String > ipAddress() {
+        return ipAddress;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
         search.setValue( "" );
+        workPhone.setValue( "" );
+        mobilePhone.setValue( "" );
+        ipAddress.setValue( "" );
     }
 
     @UiHandler( "resetBtn" )
@@ -90,6 +108,21 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         fireChangeTimer();
     }
 
+    @UiHandler( "workPhone" )
+    public void onWorkPhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "mobilePhone" )
+    public void onMobilePhoneChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler( "ipAddress" )
+    public void onIPAddressChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
@@ -105,6 +138,15 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     CleanableSearchBox search;
+
+    @UiField
+    CleanableSearchBox workPhone;
+
+    @UiField
+    CleanableSearchBox mobilePhone;
+
+    @UiField
+    CleanableSearchBox ipAddress;
 
     @UiField
     Button resetBtn;

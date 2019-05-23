@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -15,8 +16,10 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.ContactService;
 import ru.protei.portal.ui.common.client.service.ContactController;
+import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -28,17 +31,13 @@ import java.util.List;
 public class ContactControllerImpl implements ContactController {
 
     @Override
-    public List<Person> getContacts( ContactQuery query ) throws RequestFailedException {
+    public SearchResult<Person> getContacts( ContactQuery query ) throws RequestFailedException {
 
         log.debug( "getContacts(): searchPattern={} | companyId={} | isFired={} | sortField={} | sortDir={}",
                 query.getSearchString(), query.getCompanyId(), query.getFired(), query.getSortField(), query.getSortDir() );
 
-        CoreResponse<List<Person>> response = contactService.contactList( getDescriptorAndCheckSession().makeAuthToken(), query );
-
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
-        }
-        return response.getData();
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        return ServiceUtils.checkResultAndGetData(contactService.getContactsSearchResult(token, query));
     }
 
     @Override
@@ -75,15 +74,6 @@ public class ContactControllerImpl implements ContactController {
         }
 
         throw new RequestFailedException(response.getStatus());
-    }
-
-    @Override
-    public Long getContactsCount( ContactQuery query ) throws RequestFailedException {
-
-        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-
-        log.debug( "getContactsCount(): query={}", query );
-        return contactService.count( descriptor.makeAuthToken(), query ).getData();
     }
 
     @Override

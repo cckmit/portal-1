@@ -18,7 +18,9 @@ public interface AbstractCompanyTableView extends IsWidget {
 
     void setCompaniesCount(Long issuesCount );
 
-    int getPageSize();
+    void triggerTableLoad();
+
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

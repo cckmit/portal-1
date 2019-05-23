@@ -21,11 +21,6 @@ import java.util.stream.Collectors;
 public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements CompanyDAO {
 
     @Override
-    public List<Company> getListByQuery(CompanyQuery query) {
-        return listByQuery(query);
-    }
-
-    @Override
     public Company getCompanyByName(String name) {
         return getByCondition(" cname=? ", name);
     }
@@ -64,7 +59,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
                 condition.append( " and parent_company_id IS NULL" );
             }
 
-            if(query.isOnlyVisibleFields()){
+            if(query.isSortHomeCompaniesAtBegin()){
                 condition.append( " and is_hidden = false" );
             }
 

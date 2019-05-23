@@ -120,3 +120,11 @@ textarea.input-field[disabled]{
     float: right;
   }
 }
+
+.input-group {
+  width: 100%;
+}
+
+.input-group-addon-fix {
+  width: 15px !important;
+}

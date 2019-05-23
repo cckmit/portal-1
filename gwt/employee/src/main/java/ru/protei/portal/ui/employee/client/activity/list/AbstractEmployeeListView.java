@@ -11,4 +11,5 @@ public interface AbstractEmployeeListView extends IsWidget {
     void setActivity( AbstractEmployeeListActivity activity );
     HasWidgets getChildContainer();
     HasWidgets getFilterContainer ();
+    void showLoader( boolean isShow );
 }

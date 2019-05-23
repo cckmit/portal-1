@@ -79,9 +79,9 @@
                         <label>
                             <ui:text from="{lang.documentEquipment}"/>
                         </label>
-                        <equipment:EquipmentSelector ui:field="equipment"
-                                                     printDecimalNumbers="false"
-                                                     hasNullValue="false"/>
+                        <equipment:EquipmentButtonSelector ui:field="equipment"
+                                                           printDecimalNumbers="false"
+                                                           hasNullValue="false"/>
                     </g:HTMLPanel>
                     <div class="form-group col-xs-3">
                         <label>

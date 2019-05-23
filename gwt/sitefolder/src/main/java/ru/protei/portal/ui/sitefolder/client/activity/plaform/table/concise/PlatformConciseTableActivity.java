@@ -15,6 +15,7 @@ import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Arrays;
 import java.util.List;
@@ -111,15 +112,15 @@ public abstract class PlatformConciseTableActivity implements AbstractPlatformCo
     private void request() {
         view.clearRecords();
 
-        platformController.getPlatforms(query, new RequestCallback<List<Platform>>() {
+        platformController.getPlatforms(query, new RequestCallback<SearchResult<Platform>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(List<Platform> result) {
-                view.setData(result);
+            public void onSuccess(SearchResult<Platform> result) {
+                view.setData(result.getResults());
             }
         });
     }

@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.List;
@@ -22,9 +23,7 @@ public interface UserLoginDAO extends PortalBaseDAO<UserLogin> {
 
     UserLogin checkExistsByLogin(String login);
 
-    List< UserLogin > getAccounts ( AccountQuery query );
-
-    Long count( AccountQuery query );
+    SearchResult<UserLogin> getSearchResult(AccountQuery query);
 
     boolean isUnique (String login);
 

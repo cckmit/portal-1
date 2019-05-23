@@ -9,10 +9,12 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.ui.common.client.util.MarkdownClient;
 import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.shared.model.HTMLRenderer;
 
 public class MarkdownAreaWithPreview
         extends Composite
@@ -46,6 +48,22 @@ public class MarkdownAreaWithPreview
         return addHandler(valueChangeHandler, ValueChangeEvent.getType());
     }
 
+    public void setRenderer(HTMLRenderer renderer) {
+        this.renderer = renderer;
+    }
+
+    public void setMinRows(int rows) {
+        text.setMinRows(rows);
+    }
+
+    public void setMaxRows(int rows) {
+        text.setMaxRows(rows);
+    }
+
+    public void setExtraRows(int rows) {
+        text.setExtraRows(rows);
+    }
+
     @UiHandler("text")
     public void onTextChanged(ValueChangeEvent<String> value) {
         scheduleChangedPreview();
@@ -59,16 +77,21 @@ public class MarkdownAreaWithPreview
     }
 
     private void previewChanged() {
+
         String value = text.getValue();
-        if (StringUtils.isNotBlank(value)) {
-            value = markdownClient.plain2escaped2markdown(value);
-        }
-        if (StringUtils.isBlank(value)) {
+
+        if (StringUtils.isBlank(value) || renderer == null) {
             previewContainer.setVisible(false);
-        } else {
-            previewContainer.setVisible(true);
-            preview.setInnerHTML(value);
         }
+
+        renderer.render(value, text -> {
+            if (StringUtils.isBlank(text)) {
+                previewContainer.setVisible(false);
+                return;
+            }
+            previewContainer.setVisible(true);
+            preview.setInnerHTML(text);
+        });
     }
 
     @UiField
@@ -78,7 +101,7 @@ public class MarkdownAreaWithPreview
     @UiField
     DivElement preview;
 
-    private MarkdownClient markdownClient = new MarkdownClient();
+    private HTMLRenderer renderer;
 
     private final Timer changedPreviewTimer = new Timer() {
         @Override

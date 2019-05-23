@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -17,13 +18,10 @@ import java.util.List;
  */
 public interface ContactService {
 
+    @Privileged({ En_Privilege.CONTACT_VIEW })
+    CoreResponse<SearchResult<Person>> getContactsSearchResult(AuthToken token, ContactQuery query);
+
     CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query);
-
-    @Privileged( En_Privilege.CONTACT_VIEW )
-    CoreResponse<Long> count( AuthToken token, ContactQuery query );
-
-    @Privileged( En_Privilege.CONTACT_VIEW )
-    CoreResponse<List<Person>> contactList(AuthToken token, ContactQuery query);
 
     @Privileged( En_Privilege.CONTACT_VIEW )
     CoreResponse<Person> getContact( AuthToken token, long id );

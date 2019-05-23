@@ -4,6 +4,7 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Platform;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 public interface AbstractPlatformTableView extends IsWidget {
 
@@ -13,9 +14,9 @@ public interface AbstractPlatformTableView extends IsWidget {
 
     void clearRecords();
 
-    void setPlatformsCount(Long count);
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

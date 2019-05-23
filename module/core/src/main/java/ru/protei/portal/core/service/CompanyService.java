@@ -12,6 +12,7 @@ import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -21,20 +22,17 @@ import java.util.List;
 public interface CompanyService {
 
     @Privileged({ En_Privilege.COMPANY_VIEW })
-    CoreResponse<Long> countCompanies (AuthToken token, CompanyQuery query);
+    CoreResponse<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query);
 
     CoreResponse<Long> countGroups (CompanyGroupQuery query);
 
     CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
-
-    @Privileged( En_Privilege.COMPANY_VIEW )
-    CoreResponse<List<Company>> companyList(AuthToken token, CompanyQuery query);
     CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
     CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
 
     @Privileged( En_Privilege.COMPANY_VIEW )
-    CoreResponse getCompany(AuthToken token, Long id );
+    CoreResponse<Company> getCompany(AuthToken token, Long id );
 
     @Privileged( En_Privilege.COMPANY_CREATE )
     @Auditable( En_AuditType.COMPANY_CREATE )

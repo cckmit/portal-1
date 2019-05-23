@@ -13,9 +13,9 @@ public interface AbstractApplicationTableView extends IsWidget {
 
     void clearRecords();
 
-    void setAppsCount(Long count);
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

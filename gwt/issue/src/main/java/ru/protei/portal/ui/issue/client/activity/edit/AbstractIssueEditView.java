@@ -27,7 +27,7 @@ public interface AbstractIssueEditView extends IsWidget {
     void setActivity( AbstractIssueEditActivity activity );
 
     HasValue<String> name();
-    HasText description();
+    HasValue<String> description();
     HasValue<En_CaseState> state();
     HasValue<En_ImportanceLevel> importance();
     HasTime timeElapsedLabel();

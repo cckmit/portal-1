@@ -11,8 +11,8 @@ import java.util.List;
 public class PlatformButtonSelector extends ButtonSelector<EntityOption> implements SelectorWithModel<EntityOption> {
 
     @Inject
-    void init() {
-        platformModel.subscribe(this);
+    void init(PlatformModel model) {
+        setSelectorModel(model);
         setSearchEnabled(true);
         setHasNullValue(true);
 
@@ -25,7 +25,4 @@ public class PlatformButtonSelector extends ButtonSelector<EntityOption> impleme
         options.forEach(this::addOption);
         reselectValueIfNeeded();
     }
-
-    @Inject
-    PlatformModel platformModel;
 }
