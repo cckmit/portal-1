@@ -525,7 +525,7 @@ public class PortalConfigData {
         private final int queueLimit;
 
         public JiraConfig(PropertiesWrapper properties) throws ConfigException {
-            queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 60);
+            queueLimit = properties.getProperty("integration.jira.queue.limit", Integer.class, 0);
         }
 
         public int getQueueLimit() {

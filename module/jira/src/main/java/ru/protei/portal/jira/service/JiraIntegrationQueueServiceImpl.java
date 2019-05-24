@@ -46,6 +46,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
 
     @PreDestroy
     private void destroy() {
+        isBeanDestroyed = true;
         executor.shutdownNow();
         if (queue.size() > 0) {
             log.warn("Bean is going to be destroyed!");
@@ -66,17 +67,19 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     public boolean enqueue(long companyId, JiraHookEventData eventData) {
 
         int queueLimit = config.data().jiraConfig().getQueueLimit();
-        int queueSize = queue.size();
-        if (queueSize > queueLimit) {
-            log.error("Event has not been enqueued, reached queue limit {}/{}, companyId={}, eventData={}",
-                    queueSize, queueLimit, companyId, eventData.toFullString());
-            return false;
-        }
+        if (queueLimit > 0) {
+            int queueSize = queue.size();
+            if (queueSize > queueLimit) {
+                log.error("Event has not been enqueued, reached queue limit {}/{}, companyId={}, eventData={}",
+                        queueSize, queueLimit, companyId, eventData.toFullString());
+                return false;
+            }
 
-        int queueAlarmThreshold = (queueLimit / 100) * QUEUE_ALARM_THRESHOLD_PERCENT;
-        if (queueSize > queueAlarmThreshold) {
-            log.warn("Queue threshold alarm! Reached {}% of queue ({}/{})",
-                    QUEUE_ALARM_THRESHOLD_PERCENT, queueSize, queueLimit);
+            int queueAlarmThreshold = (queueLimit / 100) * QUEUE_ALARM_THRESHOLD_PERCENT;
+            if (queueSize > queueAlarmThreshold) {
+                log.warn("Queue threshold alarm! Reached {}% of queue ({}/{})",
+                        (queueSize / queueLimit) * 100, queueSize, queueLimit);
+            }
         }
 
         boolean isEnqueued = queue.offer(new Pair<>(companyId, eventData));
@@ -96,7 +99,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         @Override
         public void run() {
             try {
-                while (!Thread.currentThread().isInterrupted()) {
+                while (!isBeanDestroyed && !Thread.currentThread().isInterrupted()) {
 
                     Pair<Long, JiraHookEventData> event = queue.poll(30L, TimeUnit.SECONDS);
                     if (event == null) {
@@ -148,9 +151,10 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
                         log.error("Event for jira-issue has been dropped! company={}, eventData={} ", companyId, eventData.toDebugString());
                     }
                 }
-                log.info("Worker execution is requested to exit");
+                log.info("Worker execution is requested to exit, {}", isBeanDestroyed ? "bean destroyed" : "thread interrupted");
             } catch (InterruptedException e) {
                 log.error("InterruptedException occurred at worker execution, exit now", e);
+                startWorker();
             } catch (Exception e) {
                 log.error("Exception occurred at worker execution, exit and restart now", e);
                 startWorker();
@@ -187,6 +191,7 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
         AssembledCaseEvent handle(JiraEndpoint endpoint, JiraHookEventData event);
     }
 
+    private boolean isBeanDestroyed = false;
     private EntityCache<JiraEndpoint> jiraEndpointCache;
     private JiraEventHandler defaultHandler;
     private Map<JiraHookEventType, JiraEventHandler> handlersMap = new HashMap<>();
