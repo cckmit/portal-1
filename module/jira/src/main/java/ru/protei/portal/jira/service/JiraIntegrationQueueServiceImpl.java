@@ -67,8 +67,8 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
     public boolean enqueue(long companyId, JiraHookEventData eventData) {
 
         int queueLimit = config.data().jiraConfig().getQueueLimit();
+        int queueSize = queue.size();
         if (queueLimit > 0) {
-            int queueSize = queue.size();
             if (queueSize > queueLimit) {
                 log.error("Event has not been enqueued, reached queue limit {}/{}, companyId={}, eventData={}",
                         queueSize, queueLimit, companyId, eventData.toFullString());
@@ -80,6 +80,8 @@ public class JiraIntegrationQueueServiceImpl implements JiraIntegrationQueueServ
                 log.warn("Queue threshold alarm! Reached {}% of queue ({}/{})",
                         (queueSize / queueLimit) * 100, queueSize, queueLimit);
             }
+        } else {
+            log.debug("Queue size is {}", queueSize);
         }
 
         boolean isEnqueued = queue.offer(new Pair<>(companyId, eventData));
