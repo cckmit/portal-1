@@ -64,6 +64,7 @@ public class MarkdownRendererImpl implements MarkdownRenderer {
                 .build();
         HtmlRenderer renderer = HtmlRenderer.builder()
                 .softbreak("<br/>")
+                .escapeHtml(true)
                 .extensions(extensions)
                 .build();
 
