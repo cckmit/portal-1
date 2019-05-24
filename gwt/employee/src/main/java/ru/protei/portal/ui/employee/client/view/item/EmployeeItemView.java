@@ -37,6 +37,7 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     @Override
     public void setName( String name ) {
         this.name.setInnerText( name );
+        this.name.setTitle( name );
     }
 
     @Override
