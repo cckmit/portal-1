@@ -40,8 +40,8 @@ public class SelectorPopup
         resizeHandler = new ResizeHandler() {
             @Override
             public void onResize(ResizeEvent resizeEvent) {
-                if ( isAttached() ) {
-                    showNear( relative );
+                if (SelectorPopup.this.isAttached()) {
+                    SelectorPopup.this.showNear(relative);
                 }
             }
         };

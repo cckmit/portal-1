@@ -85,7 +85,6 @@ $error_color: #f54646;
 
 /* DROPDOWN */
 .dropdown-menu {
-  display: block !important;
   background: #fff;
   padding-top: 0px;
   max-height: 300px;
@@ -95,7 +94,6 @@ $error_color: #f54646;
   -webkit-box-shadow: 1px 1px 3px -1px rgba(136, 153, 178, 0.68);
   border: 1px solid #ced2d7;
   margin-top: -1px;
-  width: 100%;
 }
 
 .dropdown-menu ul > li > a {
@@ -578,37 +576,6 @@ label.bordered:after {
 
 .table > tbody > tr.selected, tr.selected:hover {
   background-color: #ddd;
-}
-
-.table-pager {
-  position: fixed;
-  bottom: 0px;
-  height: 30px;
-  background-color: gray;
-  left: 0px;
-  width: 100%;
-  z-index: 100;
-
-  a {
-    color: #fff;
-  }
-}
-
-.sidebar-collapse .table-pager > div:first-child {
-  margin-left: 65px;
-  margin-right: 0px;
-}
-
-.table-pager > div:first-child {
-  margin-left: 255px;
-  margin-right: 0px;
-}
-
-.table-pager > div {
-  margin-left: 5px;
-  margin-right: 5px;
-  color: white;
-  margin-top: 6px;
 }
 
 .contacts {
@@ -3229,4 +3196,57 @@ label {
 
 .checkbox label {
   margin-right: 0px !important;
+}
+
+.pager-container {
+  position: fixed;
+  bottom: 0px;
+  height: 40px;
+  background-color: white;
+  width: 100%;
+  z-index: 100;
+  border-top: 1px solid #ededed;
+  left: 0;
+  -webkit-box-shadow: 0px -8px 7px -14px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px -8px 7px -14px rgba(0,0,0,0.75);
+  box-shadow: 0px -8px 7px -14px rgba(0,0,0,0.75);
+
+  .table-pager {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+
+    .table-pager_label {
+      line-height: 40px;
+      margin-right: 10px;
+      font-size: 13px;
+    }
+
+    ul {
+      line-height: 40px;
+      padding: 0;
+
+      .table-pager_button {
+        display: inline-block;
+        font-size: 12px;
+        padding: 0 10px;
+        color: #626262;
+        opacity: .45;
+        -webkit-transition: opacity .3s ease;
+        transition: opacity .3s ease;
+
+        &.active {
+          font-weight: 700;
+          color: #626262;
+          opacity: 1;
+          font-size: 14px;
+        }
+
+        &:hover {
+          background-color: lightgray;
+          font-size: 14px;
+          opacity: 1;
+        }
+      }
+    }
+  }
 }

@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.UserIconUtils;
+import ru.protei.portal.ui.common.client.common.AccountPhotoUtils;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -74,7 +74,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         view.setAddress( infoFacade.getFactAddress() );
         view.setHomeAddress( infoFacade.getHomeAddress() );
         view.setBirthday( value.getBirthday() != null ? DateFormatter.formatDateMonth(value.getBirthday()) : "" );
-        view.setGenderImage( UserIconUtils.getGenderIcon(value.getGender() ) );
+        view.setGenderImage( AccountPhotoUtils.getGenderIcon(value.getGender()) );
         view.setInfo( value.getInfo() );
     }
 

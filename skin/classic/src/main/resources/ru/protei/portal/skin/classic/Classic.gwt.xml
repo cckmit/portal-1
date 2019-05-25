@@ -16,6 +16,7 @@
 
     <stylesheet src="css/pages-icons.css"/>
     <stylesheet src="css/font-awesome.min.css"/>
+    <stylesheet src="css/advance-fonts.css"/>
 
     <source path='client'/>
     <source path='shared'/>

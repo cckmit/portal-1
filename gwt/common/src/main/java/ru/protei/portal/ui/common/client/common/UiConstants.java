@@ -83,6 +83,4 @@ public class UiConstants {
      */
     public static final String LOGIN_PAGE = "login";
     public static final String UNDEFINED_ENTRY = "undefined";
-
-    public static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
 }

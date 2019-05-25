@@ -1,6 +1,7 @@
 package ru.protei.portal.app.portal.client.view.app;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
@@ -92,6 +93,23 @@ public class AppView extends Composite
         }
     }
 
+    @UiHandler("settings")
+    public void settingsClick(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onSettingsClicked();
+        }
+    }
+
+    @UiHandler("profile")
+    public void profileClick(ClickEvent event) {
+        if ( menuBar.getClassName().contains("show") ) {
+            menuBar.removeClassName("show");
+        } else {
+            menuBar.addClassName("show");
+        }
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent event ) {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
@@ -151,6 +169,12 @@ public class AppView extends Composite
     HTMLPanel navbar;
     @UiField
     ImageElement photo;
+    @UiField
+    Anchor settings;
+    @UiField
+    DivElement menuBar;
+    @UiField
+    Button profile;
 
     AbstractAppActivity activity;
 

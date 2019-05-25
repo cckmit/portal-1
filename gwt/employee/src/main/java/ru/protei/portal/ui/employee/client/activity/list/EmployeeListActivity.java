@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -14,9 +13,9 @@ import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
+import ru.protei.portal.ui.common.client.common.AccountPhotoUtils;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
-import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
@@ -130,7 +129,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setPosition( mainEntry.getPositionName() );
         }
 
-        itemView.setPhoto(UiConstants.LOAD_AVATAR_URL + employee.getId() + ".jpg" );
+        itemView.setPhoto(AccountPhotoUtils.getPhotoUrl(employee.getId()));
 
         return itemView;
     }

@@ -5,9 +5,9 @@ package ru.protei.portal.app.portal.client.activity.app;
  */
 public interface AbstractAppActivity {
 
-    void onUserClicked();
-
     void onLogoutClicked();
 
     void onLogoClicked();
+
+    void onSettingsClicked();
 }

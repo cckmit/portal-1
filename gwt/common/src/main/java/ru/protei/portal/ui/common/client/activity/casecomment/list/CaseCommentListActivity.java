@@ -17,7 +17,7 @@ import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseC
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.UserIconUtils;
+import ru.protei.portal.ui.common.client.common.AccountPhotoUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
@@ -92,7 +92,7 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
         view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
-        view.setUserIcon(UserIconUtils.getGenderIcon(profile.getGender()));
+        view.setUserIcon(AccountPhotoUtils.getPhotoUrl(profile.getId()));
         view.enabledNewComment(isModifyEnabled);
         view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?
                         lang.textMarkdownSupport() :
@@ -354,7 +354,7 @@ public abstract class CaseCommentListActivity
 
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( getOwnerName(value) );
-        itemView.setIcon( UserIconUtils.getGenderIcon(value.getAuthor().getGender() ) );
+        itemView.setIcon( AccountPhotoUtils.getPhotoUrl(value.getAuthorId()) );
         itemView.setRemoteLink(value.getRemoteLink());
 
         itemView.clearElapsedTime();
