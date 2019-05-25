@@ -6,7 +6,7 @@
 
     <g:HTMLPanel styleName="p-3">
         <div class="card card-default no-border">
-            <div class="card-block no-padding">
+            <div class="card-body no-padding">
                 <table:InfiniteTableWidget ui:field="table" styleName="table table-hover issue-reports"/>
                 <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
             </div>

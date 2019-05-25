@@ -60,10 +60,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.siteFolderContainer().clear();
 
         if(event.getCompanyId() == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
             initialView(new Company());
         }else {
-            fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
             requestCompany(event.getCompanyId());
         }
     }

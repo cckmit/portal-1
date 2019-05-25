@@ -5,7 +5,7 @@
 
     <g:HTMLPanel>
         <div class="card card-default no-border">
-            <div class="card-block">
+            <div class="card-body">
                 <g:HTMLPanel styleName="col-md-12 m-l-10 m-b-5 text-complete" ui:field="contactFired">
                     <i class="fa fa-info-circle"/>
                     <label><ui:text from="{lang.contactFired}"/></label>

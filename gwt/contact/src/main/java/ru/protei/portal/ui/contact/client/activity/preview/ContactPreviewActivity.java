@@ -92,7 +92,6 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
 
             @Override
             public void onSuccess ( Person value ) {
-                fireEvent( new AppEvents.InitPanelName( value.getDisplayName() ) );
                 fillView( value );
             }
         } );

@@ -49,8 +49,6 @@ public abstract class ProjectTableActivity
 
     @Event
     public void onShow( ProjectEvents.Show event ) {
-
-        this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 

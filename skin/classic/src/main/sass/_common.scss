@@ -70,14 +70,16 @@ $error_color: #f54646;
 
   &.btn-down:after,
   &.btn-up-hovering:after {
-    font: normal normal normal 14px/1 FontAwesome;
+    font-family: "Font Awesome 5 Free";
     content: "\f160";
+    font-weight: 900;
   }
 
   &.btn-up:after,
   &.btn-down-hovering:after {
-    font: normal normal normal 14px/1 FontAwesome;
+    font-family: "Font Awesome 5 Free";
     content: "\f161";
+    font-weight: 900;
   }
 }
 
@@ -196,7 +198,7 @@ i.ban {
   top: 10px;
   right: 8px;
   font-weight: 600;
-  font-family: FontAwesome;
+  font-family: "Font Awesome 5 Free";
 }
 
 .local-search-icon:before {
@@ -323,7 +325,8 @@ i.ban {
   width: 30px;
   text-align: center;
   line-height: 34px;
-  font-family: FontAwesome;
+  font-family: "Font Awesome 5 Free";
+  z-index: 10;
 }
 
 .cleanable-search-icon.clear:before {
@@ -542,6 +545,9 @@ label.bordered:after {
     background-color: #dee4e5;
     color: black;
     vertical-align: bottom;
+  }
+  .edit, .remove {
+    width: 45px;
   }
 }
 
@@ -1141,7 +1147,7 @@ td.info {
 }
 
 .dropdown-addbutton > button:before {
-  font: normal normal normal 22px/1 FontAwesome;
+  font: normal normal normal 22px/1 Font Awesome 5 Free;
   content: "\002B";
   position: absolute;
   left: 0;
@@ -1212,7 +1218,7 @@ td.info {
 }
 
 .icon-partner:before {
-  font-family: FontAwesome, serif;
+  font-family: "Font Awesome 5 Free", serif;
   content: "\f2b5";
 }
 
@@ -2241,17 +2247,19 @@ td.info {
 
       &.btn-down:after,
       &.btn-up-hovering:after {
-        font-family: "FontAwesome";
+        font-family: "Font Awesome 5 Free", serif;
         content: "\f024";
         font-size: 1.6em;
         color: $danger_color;
+        font-weight: 900;
       }
 
       &.btn-up:after,
       &.btn-down-hovering:after {
-        font-family: "FontAwesome", serif;
-        content: "\f11d";
+        font-family: "Font Awesome 5 Free", serif;
+        content: "\f024";
         font-size: 1.6em;
+        font-weight: 400;
       }
     }
 
@@ -2336,7 +2344,7 @@ td.info {
 
 .privilege-entity-container > div > .checkbox, .privilege-entity-container > div > div {
   margin: auto;
-  width: 50px;
+  width: 16.6%;
   text-align: center;
   font-family: montserrat, serif;
   font-size: 10.5px;
@@ -2357,35 +2365,33 @@ ul.privileges {
 .privilege-entity-container:first-child {
   font-weight: bold;
 }
-
 .btn.privilege-btn {
   min-width: 30px;
   border: 0;
   height: 40px;
-  font-size: 2.2em;
+  font-size: 1.6em;
   text-align: center;
   padding-top: 9px;
+  font-weight: 900;
+  font-family: "Font Awesome 5 Free";
 }
 
 .btn.privilege-btn.btn-down:after,
-.btn.privilege-btn.btn-up-hovering:after {
-  font-family: "Ionicons";
-  content: "\f383";
+.btn.privilege-btn.btn-down-hovering:after {
+  content: "\f00c";
   color: teal !important;
 }
 
 .btn.privilege-btn.btn-up:after,
-.btn.privilege-btn.btn-down-hovering:after {
-  font-family: "Ionicons";
-  content: "\f2d7";
+.btn.privilege-btn.btn-up-hovering:after  {
+  content: "\f00d";
   color: #cc2424 !important;
 }
 
 .btn.privilege-btn.btn-up-disabled:after,
 .btn.privilege-btn.btn-down-disabled:after {
-  font-family: "Ionicons";
-  content: "\f2f4";
-  color: rgb(218, 217, 217) !important;
+  content: "\f068";
+  color: #dad9d9 !important;
 }
 
 .locked {
@@ -2422,9 +2428,6 @@ ul.privileges {
     }
     .person {
       width: 40%;
-    }
-    .edit {
-      width: 5%;
     }
   }
 }
@@ -2597,7 +2600,7 @@ div.select2-container {
       }
 
       a.select2-search-choice-close {
-        font: normal normal normal 14px/1 FontAwesome;
+        font-family: "Font Awesome 5 Free";
         display: inline-block;
 
         &:before {
@@ -3097,6 +3100,9 @@ label {
 }
 
 .contracts {
+  .contract-type-column {
+    width: 45px;
+  }
   .num-column {
     width: 20%;
   }

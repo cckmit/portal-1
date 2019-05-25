@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
+import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
@@ -57,8 +58,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     @Event
     public void onShow( EmployeeEvents.Show event ) {
-
-        fireEvent( new AppEvents.InitPanelName( lang.employees() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
@@ -131,7 +130,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setPosition( mainEntry.getPositionName() );
         }
 
-        itemView.setPhoto( LOAD_AVATAR_URL + employee.getId() + ".jpg" );
+        itemView.setPhoto(UiConstants.LOAD_AVATAR_URL + employee.getId() + ".jpg" );
 
         return itemView;
     }
@@ -171,6 +170,5 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
-    private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
     private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

@@ -18,7 +18,7 @@
                         <ui:text from="{lang.employeeRegistrationMainInfoTitle}"/>
                     </div>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <g:HTMLPanel styleName="form-group col-md-6">
                             <label>
@@ -96,7 +96,7 @@
                         <ui:text from="{lang.employeeRegistrationWorkplaceHint}"/>
                     </p>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <div class="form-group col-md-12">
                             <label>
@@ -148,7 +148,7 @@
                         <ui:text from="{lang.employeeRegistrationResourceHint}"/>
                     </p>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <div class="form-group col-md-4">
                             <label><!--Доступ к внутренним ресурсам-->
@@ -173,7 +173,7 @@
         </div>
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <div class="text-right">
                         <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn"

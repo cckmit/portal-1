@@ -217,8 +217,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
             @Override
             public void onSuccess( CaseObject caseObject ) {
-                fireEvent( new AppEvents.InitPanelName( caseObject.getCaseNumber().toString() ) );
-
                 issueId = caseObject.getId();
                 isPrivateCase = caseObject.isPrivateCase();
                 textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(caseObject);

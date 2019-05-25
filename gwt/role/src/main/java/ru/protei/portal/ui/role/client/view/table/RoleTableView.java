@@ -88,9 +88,6 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
             @Override
             public void fillColumnValue ( Element cell, UserRole value ) {
                 String htmlValue = "";
-                if ( value.isDefaultForContact() ) {
-                    htmlValue = "<i class=\"inline fa fa-lg fa-flag text-danger m-r-10\"></i>";
-                }
                 String scopeStyleName = "warning";
                 if ( value.getScope().equals( En_Scope.SYSTEM )) {
                     scopeStyleName = "inverse";
@@ -98,6 +95,9 @@ public class RoleTableView extends Composite implements AbstractRoleTableView {
                     scopeStyleName = "success";
                 }
                 htmlValue += "<p class=\"label label-" + scopeStyleName + "\">" + scopeLang.getName(value.getScope()) + "</p>";
+                if ( value.isDefaultForContact() ) {
+                    htmlValue += "<i class=\"inline fa fa-lg fa-flag text-danger m-l-10\"></i>";
+                }
                 cell.setInnerHTML( HTMLHelper.wrapDiv( htmlValue ));
             }
         };

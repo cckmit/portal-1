@@ -56,7 +56,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.platformId == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformNew()));
             Platform platform = new Platform();
             if (event.company != null) {
                 platform.setCompany(event.company);
@@ -64,7 +63,6 @@ public abstract class PlatformEditActivity implements Activity, AbstractPlatform
             fillView(platform);
             return;
         }
-        fireEvent(new AppEvents.InitPanelName(lang.siteFolderPlatformEdit()));
 
         siteFolderController.getPlatform(event.platformId, new RequestCallback<Platform>() {
             @Override

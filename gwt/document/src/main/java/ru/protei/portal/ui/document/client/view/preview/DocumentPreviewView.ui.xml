@@ -5,7 +5,7 @@
 
     <g:HTMLPanel ui:field="preview">
         <div class="card card-default">
-            <div class="card-block">
+            <div class="card-body">
                 <h4 ui:field="header"/>
                 <g:Anchor href="javascript:void(0)" ui:field="downloadButton" target="_blank">
                     <img src="./images/pdficon.png" class="preview-title-image_right"/>

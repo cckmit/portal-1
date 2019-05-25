@@ -18,7 +18,7 @@
                         <ui:text from="{lang.equipmentCommonHeader}"/>
                     </div>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <div class="form-group col-md-6">
                             <label>
@@ -87,7 +87,7 @@
                         <ui:text from="{lang.equipmentDecimalNumber}"/>
                     </div>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <list:MultipleDecimalNumberInput ui:field="numbers" styleName="row"/>
                 </div>
             </div>
@@ -101,7 +101,7 @@
                                   text="{lang.equipmentDocumentCreate}"/>
                     </div>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <g:HTMLPanel ui:field="documents" styleName="form-group col-md-12"/>
                     </div>
@@ -111,7 +111,7 @@
 
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <div class="text-right">
                         <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>

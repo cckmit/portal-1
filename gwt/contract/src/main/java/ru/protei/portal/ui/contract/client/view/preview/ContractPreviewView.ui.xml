@@ -5,7 +5,7 @@
 
     <g:HTMLPanel>
         <div class="card card-default no-border">
-            <div class="card-block">
+            <div class="card-body">
                 <h4 ui:field="header"/>
 
                 <small ui:field="type"/>

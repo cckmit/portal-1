@@ -80,3 +80,8 @@
 .inherit-color-checkbox-group .checkbox >*, .inherit-color, .inherit-color.toggle >* {
   color: inherit;
 }
+
+.checkbox input[type=checkbox]:checked+label::after {
+  font-family: "Font Awesome 5 Free", serif;
+  font-weight: 900;
+}

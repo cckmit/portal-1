@@ -9,7 +9,5 @@ public interface AbstractAppActivity {
 
     void onLogoutClicked();
 
-    void onLocaleChanged( String value );
-
     void onLogoClicked();
 }

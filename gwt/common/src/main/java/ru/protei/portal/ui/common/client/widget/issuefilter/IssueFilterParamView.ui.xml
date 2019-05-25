@@ -69,7 +69,7 @@
             <casetag:CaseTagMultiSelector ui:field="tags"
                                           caseType="CRM_SUPPORT"
                                           header="{lang.tags}"
-                                          addStyleNames="form-group col-xs-12 resize-xs-6"/>
+                                          addStyleNames="form-group col-md-12 resize-md-6"/>
 
             <g:HTMLPanel ui:field="searchPrivateContainer" styleName="form-group col-md-12 resize-md-6">
                 <label><ui:text from="{lang.searchPrivate}"/></label>

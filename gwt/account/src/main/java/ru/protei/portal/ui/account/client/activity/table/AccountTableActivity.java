@@ -58,8 +58,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Event( Type.FILL_CONTENT )
     public void onShow( AccountEvents.Show event ) {
-
-        this.fireEvent( new AppEvents.InitPanelName( lang.accounts() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );

@@ -45,8 +45,6 @@ public abstract class IssueReportTableActivity implements
 
     @Event
     public void onShow(IssueReportEvents.Show event) {
-        fireEvent(new AppEvents.InitPanelName(lang.issueReports()));
-
         fireEvent(new ActionBarEvents.Clear());
         fireEvent(new ActionBarEvents.Add(CREATE_ACTION, null, UiConstants.ActionBarIdentity.ISSUE_REPORT));
 

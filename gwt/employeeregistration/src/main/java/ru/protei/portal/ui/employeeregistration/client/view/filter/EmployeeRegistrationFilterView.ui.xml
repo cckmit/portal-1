@@ -8,7 +8,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default">
-        <div class="card-block">
+        <div class="card-body">
             <div class="row">
                 <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.employeeRegistrationSearchFullNameOrPost}" styleName="form-group col-md-12"/>
 

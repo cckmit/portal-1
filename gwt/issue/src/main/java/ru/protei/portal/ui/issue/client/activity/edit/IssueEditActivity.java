@@ -64,7 +64,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         initDetails.parent.add(view.asWidget());
 
         if (event.id == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.newIssue()));
             if (issue != null) {
                 initialRestoredView(issue);
             } else {
@@ -73,7 +72,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 initialView(caseObject);
             }
         } else {
-            fireEvent(new AppEvents.InitPanelName(lang.issueEdit()));
             requestIssue(event.id, this::initialView);
         }
 

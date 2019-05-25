@@ -7,7 +7,7 @@
 
     <g:HTMLPanel ui:field="preview" styleName="site-folder">
         <div class="card card-default">
-            <div class="card-block">
+            <div class="card-body">
                 <h4 ui:field="name"/>
                 <div class="pull-right">
                     <g:Button styleName="btn btn-xs btn-info" ui:field="openServersButton" text="{lang.siteFolderServers}"/>

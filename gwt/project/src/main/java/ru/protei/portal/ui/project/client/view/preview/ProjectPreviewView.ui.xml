@@ -13,7 +13,7 @@
 
     <g:HTMLPanel ui:field="preview" styleName="preview project">
         <div class="card card-default no-border">
-            <div class="card-block">
+            <div class="card-body">
                 <div class="row">
                     <g:Anchor ui:field="fullScreenBtn" styleName="fa fa-lg fa-external-link m-t-5 pull-left" href="#"/>
                     <g:Anchor ui:field="removeBtn" styleName="fa fa-lg fa-trash m-t-5 pull-left" href="#"/>

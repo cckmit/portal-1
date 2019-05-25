@@ -11,10 +11,8 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.app.portal.client.service.AppServiceAsync;
-import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
@@ -53,10 +51,11 @@ public abstract class AppActivity
         init.parent.clear();
         init.parent.add( view.asWidget() );
 
-        view.setUser( event.profile.getName(), event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(), UserIconUtils.getGenderIcon(event.profile.getGender()));
+        view.setUser( event.profile.getName(),
+                event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(),
+                UiConstants.LOAD_AVATAR_URL + event.profile.getId() + ".jpg");
 
         String currentLocale = LocaleInfo.getCurrentLocale().getLocaleName();
-        view.locale().setValue( LocaleImage.findByLocale( currentLocale ));
 
         Scheduler.get().scheduleDeferred( (Command) () -> {
             if ( initialToken == null || initialToken.isEmpty() || initialToken.equals( UiConstants.LOGIN_PAGE ) ) {
@@ -67,11 +66,6 @@ public abstract class AppActivity
         } );
 
         startPingServerTimer();
-    }
-
-    @Override
-    public void onLocaleChanged( String locale ) {
-        LocaleUtils.changeLocale( locale );
     }
 
     @Override

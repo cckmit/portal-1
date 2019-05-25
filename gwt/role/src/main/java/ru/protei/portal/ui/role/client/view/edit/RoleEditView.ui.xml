@@ -15,7 +15,7 @@
                         <ui:text from="{lang.roleMainTitle}"/>
                     </div>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <div class="form-group col-md-4">
                             <label>
@@ -64,7 +64,7 @@
                         <ui:text from="{lang.rolePrivilegesHint}"/>
                     </p>
                 </div>
-                <div class="card-block">
+                <div class="card-body">
                     <list:PrivilegeList ui:field="privileges"/>
                 </div>
             </div>
@@ -73,7 +73,7 @@
 
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <div class="text-right">
                         <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>

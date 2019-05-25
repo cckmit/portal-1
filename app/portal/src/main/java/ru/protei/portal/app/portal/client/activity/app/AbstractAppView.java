@@ -11,7 +11,7 @@ import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 public interface AbstractAppView extends IsWidget {
     void setActivity( AbstractAppActivity activity );
 
-    void setUser( String username, String company, String iconSrc );
+    void setUser( String username, String company, String photo );
 
     void setAppVersion(String appVersion);
 
@@ -22,6 +22,4 @@ public interface AbstractAppView extends IsWidget {
     HasWidgets getNotifyContainer();
 
     HasWidgets getActionBarContainer();
-
-    HasValue<LocaleImage> locale();
 }

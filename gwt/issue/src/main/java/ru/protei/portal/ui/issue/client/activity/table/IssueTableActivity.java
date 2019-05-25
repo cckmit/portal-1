@@ -80,7 +80,6 @@ public abstract class IssueTableActivity
     public void onShow( IssueEvents.Show event ) {
         applyFilterViewPrivileges();
 
-        this.fireEvent( new AppEvents.InitPanelName( lang.issues() ) );
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );

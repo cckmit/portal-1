@@ -12,7 +12,6 @@
                 <img class="brand" height="30" src="./images/logo.svg" width="30"/>
                 <b class="m-l-5" style="">PROTEI</b>
                 <span>LTD</span>
-                <!--<button type="button" class="btn btn-link hidden-md-down" data-toggle-pin="sidebar"><i class="fa fs-12"></i>-->
             </g:Anchor>
 
             <div class="sidebar-menu">
@@ -25,28 +24,36 @@
         </g:HTMLPanel>
 
         <div class="header">
-            <g:Anchor ui:field="toggleButton" styleName="btn-link toggle-sidebar hidden-lg-up pg pg-menu"/>
+            <g:Anchor ui:field="toggleButton" styleName="hide btn-link toggle-sidebar hidden-lg-up pg pg-menu"/>
 
-            <div class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
-                <img src="./images/logo_blue.png" alt="logo" width="30" height="30"/>
-                <b class="m-l-5">PROTEI</b>
-                LTD
+
+            <div>
+                <div class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
+                    <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
+                    <b class="m-l-5">PROTEI</b>LTD
+                </div>
+                <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="no-margin d-lg-inline-block no-style p-l-30 p-r-20"/>
             </div>
 
-            <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="navbar-nav flex-row"/>
-            <div class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
-                <locale2:LocaleSelector ui:field="locale"/>
 
-                <li>
-                    <a>
-                        <span class="semi-bold" ui:field="headerUsername"/>
-                    </a>
-                </li>
-                <li>
-                    <g:Anchor ui:field="logout" title="{lang.buttonLogout}" href="#">
-                        <i class="fa-lg ion ion-md-log-out"/>
-                    </g:Anchor>
-                </li>
+            <div class="d-flex align-items-center">
+                <div class="pull-left p-r-10 fs-14 font-heading d-lg-block d-none">
+                    <span class="semi-bold" ui:field="username"/>
+                </div>
+                <div class="dropdown pull-right d-lg-block d-none">
+                    <button class="profile-dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                        <span class="thumbnail-wrapper d32 circular inline">
+                            <img ui:field="photo" src="#" alt="" width="32" height="32"/>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right profile-dropdown" role="menu">
+                        <a href="#" class="dropdown-item"><i class="pg-settings_small"></i> Settings</a>
+                        <g:Anchor ui:field="logout" styleName="clearfix bg-master-lighter dropdown-item" title="{lang.buttonLogout}" href="#">
+                            <span class="pull-left">Logout</span>
+                            <span class="pull-right"><i class="pg-power"></i></span>
+                        </g:Anchor>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -58,15 +65,6 @@
 
         <g:HTMLPanel styleName="main-sidebar" ui:field="sidebar" visible="false">
             <section class="sidebar">
-                <g:HTMLPanel ui:field="userPanel" styleName="user-panel">
-                    <div class="pull-left image">
-                        <img src="./images/user-icon-m.svg" class="img-circle" ui:field="icon"/>
-                    </div>
-                    <div class="pull-left info">
-                        <p ui:field="username"></p>
-                        <a ui:field="company"></a>
-                    </div>
-                </g:HTMLPanel>
                 <ul class="sidebar-menu">
                     <li class="header">
                         <ui:text from="{lang.appNavHeader}"/>

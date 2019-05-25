@@ -27,14 +27,14 @@
 }
 
 .region-state {
-  font-family: FontAwesome, serif;
+  font-family: "Font Awesome 5 Free", serif;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   &.unknown {
     &:before {
-      content: "\f29c";
+      content: "\f059";
     }
   }
 
@@ -48,6 +48,7 @@
   &.marketing {
     &:before {
       content: "\f59f";
+      font-weight: 900;
     }
     color: rgb(88, 5, 5);
   }
@@ -62,14 +63,16 @@
 
   &.talk {
     &:before {
-      content: "\f0e6"
+      content: "\f086";
+      font-weight: 900;
     }
     color: #88027b;
   }
 
   &.projecting {
     &:before {
-      content: "\f002"
+      content: "\f002";
+      font-weight: 900;
     }
     color: #0e00b9;
   }
@@ -83,14 +86,15 @@
 
   &.deployment {
     &:before {
-      content: "\f0a3"
+      content: "\f621";
+      font-weight: 900;
     }
     color: #b9ae00;
   }
 
   &.support {
     &:before {
-      content: "\f05d"
+      content: "\f058"
     }
     color: #6acc39;
   }
@@ -105,6 +109,7 @@
   &.canceled {
     &:before {
       content: "\f05e";
+      font-weight: 900;
     }
     color: #A0A0A0;
   }

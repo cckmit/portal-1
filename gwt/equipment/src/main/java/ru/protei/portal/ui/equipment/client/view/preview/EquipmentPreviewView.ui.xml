@@ -5,7 +5,7 @@
 
     <g:HTMLPanel ui:field="preview">
         <div class="card card-default">
-            <div class="card-block">
+            <div class="card-body">
                 <h4>
                     <g:Anchor ui:field="header" styleName="full-screen-link" href="#"/>
                 </h4>

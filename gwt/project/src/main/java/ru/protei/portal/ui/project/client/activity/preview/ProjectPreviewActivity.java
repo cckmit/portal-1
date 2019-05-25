@@ -127,7 +127,6 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
             @Override
             public void onSuccess( ProjectInfo project ) {
-                fireEvent( new AppEvents.InitPanelName( project.getId().toString() ) );
                 fillView( project );
             }
         } );

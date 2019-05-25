@@ -9,7 +9,7 @@
 
     <g:HTMLPanel styleName="container-fluid padding-25 sm-padding-10">
         <div class="card card-default">
-            <div class="card-block">
+            <div class="card-body">
                 <div class="row">
                     <div class="form-group col-md-6">
                         <div class="form-group col-md-12">

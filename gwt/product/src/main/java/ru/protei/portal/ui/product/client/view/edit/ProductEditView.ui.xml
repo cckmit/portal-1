@@ -14,7 +14,7 @@
     <g:HTMLPanel>
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-md-7">
                             <label ui:field="nameLabel">
@@ -65,7 +65,7 @@
         </div>
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <g:HTMLPanel ui:field="componentsContainer" styleName="form-group col-md-12">
                             <label>
@@ -79,7 +79,7 @@
         </div>
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <div class="row">
                         <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-md-12">
                             <label><ui:text from="{lang.belongsTo}"/></label>
@@ -92,7 +92,7 @@
 
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <label><ui:text from="{lang.productHistoryVersion}"/></label>
                     <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
                 </div>
@@ -101,7 +101,7 @@
 
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <label><ui:text from="{lang.productConfiguration}"/></label>
                     <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
                 </div>
@@ -110,7 +110,7 @@
 
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <label><ui:text from="{lang.productCDRDescription}"/></label>
                     <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
                 </div>
@@ -122,7 +122,7 @@
 
         <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
-                <div class="card-block">
+                <div class="card-body">
                     <div class="text-right">
                         <g:Button ui:field="stateBtn" styleName="btn" text="{lang.productToArchive}"/>
                         <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>

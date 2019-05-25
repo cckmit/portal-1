@@ -38,8 +38,6 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
 
     @Event
     public void onShow( CompanyEvents.Show event ) {
-        fireEvent(new AppEvents.InitPanelName(lang.companies()));
-
         fireEvent(new ActionBarEvents.Clear());
         if(policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE )){
             fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.COMPANY ));

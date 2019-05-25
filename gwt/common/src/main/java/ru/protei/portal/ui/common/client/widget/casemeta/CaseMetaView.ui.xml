@@ -6,7 +6,7 @@
     <g:HTMLPanel>
 
         <div class="grid grid-indent">
-            <div class="form-group col-xs-12 m-b-0 case-meta">
+            <div class="form-group col-md-12 m-b-0 case-meta">
 
                 <div class="case-meta-content">
                     <g:HTMLPanel ui:field="linksSection" styleName="case-meta-links hide">

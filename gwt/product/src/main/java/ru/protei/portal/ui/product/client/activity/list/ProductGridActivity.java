@@ -36,8 +36,6 @@ public abstract class ProductGridActivity implements AbstractProductGridActivity
 
     @Event
     public void onShow( ProductEvents.Show event ) {
-        fireEvent(new AppEvents.InitPanelName(lang.products()));
-
         fireEvent(new ActionBarEvents.Clear());
         if(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE )){
             fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.PRODUCT ));

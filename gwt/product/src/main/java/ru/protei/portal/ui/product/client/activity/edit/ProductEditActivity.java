@@ -52,7 +52,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             product = new DevUnit();
             resetView();
             resetValidationStatus();
-            fireEvent(new AppEvents.InitPanelName(lang.productNew()));
             return;
         }
 
@@ -138,7 +137,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             @Override
             public void onSuccess( DevUnit devUnit ) {
                 product = devUnit;
-                fireEvent( new AppEvents.InitPanelName( product.getName() ) );
                 fillView( product );
                 resetValidationStatus();
             }

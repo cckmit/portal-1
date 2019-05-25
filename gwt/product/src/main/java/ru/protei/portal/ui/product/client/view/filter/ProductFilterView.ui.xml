@@ -6,7 +6,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default">
-        <div class="card-block row">
+        <div class="card-body row">
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
             <div class="form-group col-md-12">
                 <label><ui:text from="{lang.sortBy}"/></label>
