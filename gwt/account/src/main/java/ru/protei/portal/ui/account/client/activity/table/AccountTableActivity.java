@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.account.client.activity.table;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -21,12 +20,17 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 
 /**
  * Активность создания и редактирования учетной записи
@@ -48,11 +52,11 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     }
 
     @Event
-    public void onAuthSuccess (AuthEvents.Success event) {
+    public void onAuthSuccess ( AuthEvents.Success event ) {
         filterView.resetFilter();
     }
 
-    @Event(Type.FILL_CONTENT)
+    @Event( Type.FILL_CONTENT )
     public void onShow( AccountEvents.Show event ) {
 
         this.fireEvent( new AppEvents.InitPanelName( lang.accounts() ) );
@@ -65,7 +69,7 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
                 new ActionBarEvents.Clear()
         );
 
-        requestTotalCount();
+        requestAccounts( 0 );
     }
 
     @Event
@@ -125,60 +129,41 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
 
     @Override
     public void onFilterChanged() {
-        requestTotalCount();
+        requestAccounts( 0 );
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback< List< UserLogin > > asyncCallback ) {
-        AccountQuery query = makeQuery();
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        accountService.getAccounts( query, new RequestCallback< List< UserLogin > >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                asyncCallback.onFailure( throwable );
-            }
-
-            @Override
-            public void onSuccess( List< UserLogin > logins ) {
-                asyncCallback.onSuccess( logins );
-            }
-        } );
+    public void onPageSelected( int page ) {
+        pagerView.setCurrentPage( page );
+        requestAccounts( page );
     }
 
-    @Override
-    public void onPageChanged(int page) {
-        pagerView.setCurrentPage(page);
-    }
-
-    @Override
-    public void onPageSelected(int page) {
-        view.scrollTo(page);
-    }
-
-    private void requestTotalCount() {
+    private void requestAccounts( int page ) {
         view.clearRecords();
         animation.closeDetails();
 
-        accountService.getAccountsCount( makeQuery(), new RequestCallback< Long >() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
+        boolean isFirstChunk = page == 0;
+        marker = new Date().getTime();
 
-            @Override
-            public void onSuccess( Long count ) {
-                view.setRecordCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-            }
-        });
+        AccountQuery query = makeQuery();
+        query.setOffset( page*PAGE_SIZE );
+        query.setLimit( PAGE_SIZE );
+
+        accountService.getAccounts( query, new FluentCallback< SearchResult< UserLogin > >()
+                .withMarkedSuccess( marker, ( m, r ) -> {
+                    if ( marker == m ) {
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
+                            pagerView.setCurrentPage( 0 );
+                        }
+                        view.addRecords( r.getResults() );
+                    }
+                } )
+                .withErrorMessage( lang.errGetList() ) );
     }
 
     private void showPreview ( UserLogin value ) {
-
         if ( value == null ) {
             animation.closeDetails();
         } else {
@@ -235,4 +220,6 @@ public abstract class AccountTableActivity implements AbstractAccountTableActivi
     private AppEvents.InitDetails init;
 
     private static String CREATE_ACTION;
+
+    private long marker;
 }

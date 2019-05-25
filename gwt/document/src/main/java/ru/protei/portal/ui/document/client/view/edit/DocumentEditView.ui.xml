@@ -82,7 +82,7 @@
                             <label>
                                 <ui:text from="{lang.documentEquipment}"/>
                             </label>
-                            <equipment:EquipmentSelector ui:field="equipment"
+                            <equipment:EquipmentButtonSelector ui:field="equipment"
                                                          printDecimalNumbers="false"
                                                          hasNullValue="false"/>
                         </g:HTMLPanel>

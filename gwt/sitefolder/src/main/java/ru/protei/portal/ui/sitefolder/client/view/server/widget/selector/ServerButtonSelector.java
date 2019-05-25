@@ -11,8 +11,8 @@ import java.util.List;
 public class ServerButtonSelector extends ButtonSelector<EntityOption> implements SelectorWithModel<EntityOption> {
 
     @Inject
-    void init() {
-        serverModel.subscribe(this);
+    void init(ServerModel model) {
+        setSelectorModel(model);
         setSearchEnabled(true);
         setHasNullValue(true);
 
@@ -25,7 +25,4 @@ public class ServerButtonSelector extends ButtonSelector<EntityOption> implement
         options.forEach(this::addOption);
         reselectValueIfNeeded();
     }
-
-    @Inject
-    ServerModel serverModel;
 }

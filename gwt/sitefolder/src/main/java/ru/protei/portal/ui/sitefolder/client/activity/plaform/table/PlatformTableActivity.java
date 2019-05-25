@@ -19,11 +19,14 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.filter.AbstractPlatformFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class PlatformTableActivity implements
@@ -63,7 +66,7 @@ public abstract class PlatformTableActivity implements
             fireEvent(new ActionBarEvents.Add(lang.siteFolderPlatformCreate(), null, UiConstants.ActionBarIdentity.SITE_FOLDER_PLATFORM));
         }
 
-        requestPlatformsCount();
+        loadTable();
     }
 
     @Event
@@ -167,21 +170,23 @@ public abstract class PlatformTableActivity implements
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Platform>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         PlatformQuery query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
-        siteFolderController.getPlatforms(query, new RequestCallback<List<Platform>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                asyncCallback.onFailure(throwable);
-            }
-
-            @Override
-            public void onSuccess(List<Platform> result) {
-                asyncCallback.onSuccess(result);
-            }
-        });
+        siteFolderController.getPlatforms(query, new FluentCallback<SearchResult<Platform>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                    }
+                }));
     }
 
     @Override
@@ -196,25 +201,13 @@ public abstract class PlatformTableActivity implements
 
     @Override
     public void onFilterChanged() {
-        requestPlatformsCount();
+        loadTable();
     }
 
-    private void requestPlatformsCount() {
-        view.clearRecords();
+    private void loadTable() {
         animation.closeDetails();
-        siteFolderController.getPlatformsCount(getQuery(), new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Long result) {
-                view.setPlatformsCount(result);
-                pagerView.setTotalPages(view.getPageCount());
-                pagerView.setTotalCount(result);
-            }
-        });
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private PlatformQuery getQuery() {

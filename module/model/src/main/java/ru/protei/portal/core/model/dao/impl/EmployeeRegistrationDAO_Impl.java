@@ -8,38 +8,26 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeRegistrationQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.CollectionUtils;
-import ru.protei.winter.jdbc.JdbcBaseDAO;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
 
-public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegistration> implements EmployeeRegistrationDAO {
+public class EmployeeRegistrationDAO_Impl extends PortalBaseJdbcDAO<EmployeeRegistration> implements EmployeeRegistrationDAO {
 
     private static final String CASE_LINK_JOIN = " left outer join case_link cl on cl.case_id=employee_registration.id ";
 
     @Override
-    public List<EmployeeRegistration> getListByQuery(EmployeeRegistrationQuery query) {
-        SqlCondition where = createSqlCondition(query);
-        JdbcQueryParameters queryParameters = new JdbcQueryParameters();
-
-        if (CollectionUtils.isNotEmpty(query.getLinkedIssueIds()))
-            queryParameters.withJoins(CASE_LINK_JOIN);
-
-        queryParameters.withCondition(where.condition, where.args)
-                .withDistinct(true)
-                .withSort(TypeConverters.createSort(query, "CO"))
-                .withOffset(query.getOffset());
-        if (query.limit > 0) {
-            queryParameters = queryParameters.withLimit(query.getLimit());
-        }
-        return getList(queryParameters);
+    public SearchResult<EmployeeRegistration> getSearchResult(EmployeeRegistrationQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
     }
 
     @Override
-    public int countByQuery(EmployeeRegistrationQuery query) {
-        SqlCondition where = createSqlCondition(query);
-        return getObjectsCount(where.condition, where.args);
+    public List<EmployeeRegistration> getListByQuery(EmployeeRegistrationQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getList(parameters);
     }
 
     @Override
@@ -50,6 +38,26 @@ public class EmployeeRegistrationDAO_Impl extends JdbcBaseDAO<Long, EmployeeRegi
     @Override
     public List<EmployeeRegistration> getAfterProbationList( int daysAfterProbationEndDate ) {
         return getListByCondition( "CURDATE() = DATE_ADD(DATE_ADD(employment_date, INTERVAL probation_period MONTH), INTERVAL ? DAY)", daysAfterProbationEndDate );
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(EmployeeRegistrationQuery query) {
+
+        SqlCondition where = createSqlCondition(query);
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+
+        if (CollectionUtils.isNotEmpty(query.getLinkedIssueIds())) {
+            parameters.withJoins(CASE_LINK_JOIN);
+        }
+
+        parameters.withCondition(where.condition, where.args)
+                .withDistinct(true)
+                .withSort(TypeConverters.createSort(query, "CO"))
+                .withOffset(query.getOffset());
+        if (query.limit > 0) {
+            parameters = parameters.withLimit(query.getLimit());
+        }
+
+        return parameters;
     }
 
     @SqlConditionBuilder

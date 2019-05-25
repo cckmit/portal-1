@@ -13,7 +13,8 @@
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:casemeta="urn:import:ru.protei.portal.ui.common.client.widget.casemeta"
-             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate">
+             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -89,7 +90,7 @@
                     <label ui:field="descriptionLabel">
                         <ui:text from="{lang.description}"/>
                     </label>
-                    <g:TextArea ui:field="description" styleName="form-control description resize-vertical" />
+                    <makdown:MarkdownAreaWithPreview ui:field="description" minRows="5" maxRows="10"/>
                 </div>
 
 
@@ -133,6 +134,8 @@
         </div>
         <div class="footer">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+             xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
             <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
         </div>
 

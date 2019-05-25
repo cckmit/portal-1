@@ -52,6 +52,18 @@ public class MarkdownAreaWithPreview
         this.renderer = renderer;
     }
 
+    public void setMinRows(int rows) {
+        text.setMinRows(rows);
+    }
+
+    public void setMaxRows(int rows) {
+        text.setMaxRows(rows);
+    }
+
+    public void setExtraRows(int rows) {
+        text.setExtraRows(rows);
+    }
+
     @UiHandler("text")
     public void onTextChanged(ValueChangeEvent<String> value) {
         scheduleChangedPreview();
@@ -73,7 +85,7 @@ public class MarkdownAreaWithPreview
         }
 
         renderer.render(value, text -> {
-            if (StringUtils.isBlank(value)) {
+            if (StringUtils.isBlank(text)) {
                 previewContainer.setVisible(false);
                 return;
             }

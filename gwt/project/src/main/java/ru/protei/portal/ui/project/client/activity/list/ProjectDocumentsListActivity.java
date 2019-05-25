@@ -16,6 +16,7 @@ import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemActivity;
 import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocumentsListItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +42,8 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
             handleDocuments(new ArrayList<>());
             return;
         }
-        documentController.getProjectDocuments(event.projectId, new FluentCallback<List<Document>>().withSuccess(this::handleDocuments));
+        documentController.getProjectDocuments(event.projectId, new FluentCallback<SearchResult<Document>>()
+                .withSuccess(documents -> handleDocuments(documents.getResults())));
     }
 
 

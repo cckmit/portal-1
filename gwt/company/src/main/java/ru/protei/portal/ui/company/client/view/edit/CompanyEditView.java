@@ -120,6 +120,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasVisibility tableContainerVisibility() {
+        return tableContainerBlock;
+    }
+
+    @Override
+    public HasVisibility siteFolderContainerVisibility() {
+        return siteFolderContainerBlock;
+    }
+
+    @Override
     public void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter ) {
         parentCompany.setFilter( companyFilter );
     }
@@ -189,8 +199,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     CategoryButtonSelector companyCategory;
 
     @UiField
+    HTMLPanel tableContainerBlock;
+    @UiField
     HTMLPanel tableContainer;
 
+    @UiField
+    HTMLPanel siteFolderContainerBlock;
     @UiField
     HTMLPanel siteFolderContainer;
 

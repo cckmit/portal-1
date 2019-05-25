@@ -10,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
 import ru.protei.portal.core.model.dict.En_EquipmentType;
@@ -25,7 +26,8 @@ import ru.protei.portal.ui.common.client.widget.document.uploader.AbstractDocume
 import ru.protei.portal.ui.common.client.widget.document.uploader.DocumentUploader;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.decimalnumber.DecimalNumberInput;
-import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.equipment.EquipmentModel;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
@@ -46,6 +48,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
+        equipment.setModel(equipmentModelProvider.get());
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
     }
 
@@ -341,7 +344,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
 
     @Inject
     @UiField(provided = true)
-    EquipmentSelector equipment;
+    EquipmentButtonSelector equipment;
 
     @UiField
     HTMLPanel equipmentSelectorContainer;
@@ -355,6 +358,8 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     @UiField
     Lang lang;
+    @Inject
+    Provider<EquipmentModel> equipmentModelProvider;
 
     private AbstractDocumentEditActivity activity;
 

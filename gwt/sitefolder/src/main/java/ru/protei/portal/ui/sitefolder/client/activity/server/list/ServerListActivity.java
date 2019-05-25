@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.list.item.AbstractServerListItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -131,15 +132,15 @@ public abstract class ServerListActivity implements Activity, AbstractServerList
 
         ServerQuery query = new ServerQuery();
         query.setPlatformId(platformId);
-        siteFolderController.getServers(query, new RequestCallback<List<Server>>() {
+        siteFolderController.getServers(query, new RequestCallback<SearchResult<Server>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(List<Server> result) {
-                fillViewHandler = taskService.startPeriodicTask(result, fillViewer, 50, 50);
+            public void onSuccess(SearchResult<Server> result) {
+                fillViewHandler = taskService.startPeriodicTask(result.getResults(), fillViewer, 50, 50);
             }
         });
     }

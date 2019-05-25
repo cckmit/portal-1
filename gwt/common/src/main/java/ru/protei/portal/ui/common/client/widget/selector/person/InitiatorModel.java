@@ -27,28 +27,7 @@ public abstract class InitiatorModel implements Activity {
         myId = event.profile.getId();
     }
 
-    public void subscribe( SelectorWithModel<PersonShortView> selector) {
-        subscribers.add(selector);
-        selector.fillOptions(list);
-    }
-
-    public void updateCompanies(Set<Long> companyIds, boolean fired) {
-        refreshOptions(companyIds, fired);
-    }
-
-    public Collection getList() {
-        return new ArrayList(list);
-    }
-
-    private void notifySubscribers() {
-        for (SelectorWithModel<PersonShortView> selector : subscribers) {
-            selector.fillOptions(list);
-            selector.refreshValue();
-        }
-    }
-
-    private void refreshOptions(Set<Long> companyIds, boolean fired) {
-
+    public void updateCompanies(SelectorWithModel<PersonShortView> selector, Set<Long> companyIds, boolean fired) {
         PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
             @Override
@@ -62,9 +41,8 @@ public abstract class InitiatorModel implements Activity {
                 if (value > 0) {
                     options.add(0, options.remove(value));
                 }
-                list.clear();
-                list.addAll(options);
-                notifySubscribers();
+                selector.fillOptions(options);
+                selector.refreshValue();
             }
         });
     }
@@ -87,14 +65,8 @@ public abstract class InitiatorModel implements Activity {
 
     @Inject
     PersonControllerAsync personService;
-
     @Inject
     Lang lang;
 
-    private List<PersonShortView> list = new ArrayList<>();
-
-    List<SelectorWithModel<PersonShortView>> subscribers = new ArrayList<>();
-
     private Long myId;
-
 }

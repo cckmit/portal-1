@@ -21,7 +21,6 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
     @Inject
     public void init(InitiatorModel model) {
         this.model = model;
-        model.subscribe( this );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> {
@@ -71,7 +70,7 @@ public class PersonButtonSelector extends ButtonSelector< PersonShortView > impl
     public void updateCompanies(Set<Long> companyIds) {
         this.companyIds = companyIds;
         if(model!=null){
-            model.updateCompanies(companyIds, fired);
+            model.updateCompanies(this, companyIds, fired);
         }
     }
 

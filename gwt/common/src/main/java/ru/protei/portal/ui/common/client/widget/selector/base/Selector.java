@@ -232,7 +232,7 @@ public abstract class Selector<T>
     @Override
     public void onWindowScroll(Window.ScrollEvent event) {
         if (popup.isAttached()) {
-            showPopup(relative);
+            popup.showNear(relative);
         }
     }
 

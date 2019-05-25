@@ -2,15 +2,12 @@ package ru.protei.portal.core.model.dao;
 
 import ru.protei.portal.core.model.ent.Equipment;
 import ru.protei.portal.core.model.query.EquipmentQuery;
-
-import java.util.List;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
  * DAO оборудования
  */
 public interface EquipmentDAO extends PortalBaseDAO<Equipment> {
 
-    List<Equipment> getListByQuery( EquipmentQuery query );
-
-    Long countByQuery( EquipmentQuery query );
+    SearchResult<Equipment> getSearchResult(EquipmentQuery query);
 }

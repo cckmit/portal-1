@@ -21,11 +21,14 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterActivity;
 import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 
 public abstract class DocumentTableActivity
@@ -57,7 +60,7 @@ public abstract class DocumentTableActivity
         );
 
         query = makeQuery();
-        requestTotalCount();
+        loadTable();
     }
 
     @Override
@@ -103,7 +106,7 @@ public abstract class DocumentTableActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery();
-        requestTotalCount();
+        loadTable();
     }
 
     @Override
@@ -121,43 +124,28 @@ public abstract class DocumentTableActivity
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Document>> callback) {
+        boolean isFirstChunk = offset == 0;
         query.setOffset(offset);
         query.setLimit(limit);
-
-        documentService.getDocuments(query, new RequestCallback<List<Document>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                callback.onFailure(throwable);
-            }
-
-            @Override
-            public void onSuccess(List<Document> result) {
-                callback.onSuccess(result);
-            }
-        });
+        documentService.getDocuments(query, new FluentCallback<SearchResult<Document>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    callback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    callback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                    }
+                }));
     }
 
-    private void requestTotalCount() {
+    private void loadTable() {
+        animation.closeDetails();
         view.clearRecords();
-
-        documentService.getDocumentCount(query, new RequestCallback<Integer>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Integer result) {
-                if (result == null) {
-                    onError(null);
-                    return;
-                }
-                view.setRecordCount(result);
-                pagerView.setTotalPages(view.getPageCount());
-                pagerView.setTotalCount(result);
-            }
-        });
+        view.triggerTableLoad();
     }
 
     private void showPreview(Document document) {

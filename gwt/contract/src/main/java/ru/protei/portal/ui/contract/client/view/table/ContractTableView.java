@@ -29,6 +29,7 @@ import ru.protei.portal.ui.common.client.lang.En_ContractTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableActivity;
 import ru.protei.portal.ui.contract.client.activity.table.AbstractContractTableView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -64,8 +65,13 @@ public class ContractTableView extends Composite implements AbstractContractTabl
     }
 
     @Override
-    public void setRecordCount(int count) {
-        table.setTotalRecords(count);
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
+    }
+
+    @Override
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override

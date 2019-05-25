@@ -13,11 +13,15 @@ import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dao.UserSessionDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
+import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 29.06.16.
@@ -127,22 +131,11 @@ public class AuthServiceImpl implements AuthService {
         return descriptor;
     }
 
-    @Override
-    public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
-
-        String loginSuffix = config.data().getLoginSuffix();
-        if (!ulogin.contains("@") && !loginSuffix.isEmpty()) {
-            logger.debug("login [{}] missed suffix [{}], forced to use suffix", ulogin, loginSuffix);
-            ulogin += loginSuffix;
-        }
-
-        UserLogin login = userLoginDAO.findByLogin(ulogin);
+    private En_ResultStatus authentificate(UserLogin login, String ulogin, String pwd) {
         if (login == null) {
             logger.debug("login [" + ulogin + "] not found, auth-failed");
-            return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+            return En_ResultStatus.INVALID_LOGIN_OR_PWD;
         }
-
-        jdbcManyRelationsHelper.fill(login, "roles");
 
         if (login.isLDAP_Auth()) {
             // check by LDAP
@@ -154,18 +147,56 @@ public class AuthServiceImpl implements AuthService {
             //
             //
             //
-            En_ResultStatus status = ldapAuthProvider.checkAuth(ulogin, pwd);
-            if (status != En_ResultStatus.OK)
-                return new CoreResponse().error(status);
-
+            return ldapAuthProvider.checkAuth(ulogin, pwd);
         } else {
             // check MD5
             String md5Hash = DigestUtils.md5DigestAsHex(pwd.getBytes());
             if (login.getUpass() == null || !login.getUpass().equalsIgnoreCase(md5Hash)) {
                 logger.debug("login " + ulogin + " - invalid password, auth-failed");
-                return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+                return En_ResultStatus.INVALID_LOGIN_OR_PWD;
+            } else {
+                return En_ResultStatus.OK;
             }
         }
+    }
+
+    @Override
+    public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+        if ( StringUtils.isEmpty(ulogin) || StringUtils.isEmpty(pwd) ) {
+            logger.debug("null login or pwd, auth-failed");
+            return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+        }
+        String loginSuffix = config.data().getLoginSuffix();
+
+        En_ResultStatus loginResponse;
+        UserLogin login = userLoginDAO.findByLogin(ulogin);
+        boolean loginHasSuffix = ulogin.contains("@");
+
+        if (isEmpty(loginSuffix) || loginHasSuffix) {
+            loginResponse = authentificate(login, ulogin, pwd);
+        } else {
+            // PORTAL-490 feature
+            if ( login == null || !login.isLDAP_Auth()) {
+                logger.debug("login [{}] not found, forced to use suffix [{}]", ulogin, loginSuffix);
+                ulogin += loginSuffix;
+                login = userLoginDAO.findByLogin(ulogin);
+                loginResponse = authentificate(login, ulogin, pwd);
+            } else {
+                loginResponse = authentificate(login, ulogin, pwd);
+                if ( loginResponse != En_ResultStatus.OK ) {
+                    logger.debug("ldap login [{}] failed, forced to use suffix [{}]", ulogin, loginSuffix);
+                    ulogin += loginSuffix;
+                    login = userLoginDAO.findByLogin(ulogin);
+                    loginResponse = authentificate(login, ulogin, pwd);
+                }
+            }
+        }
+
+        if ( loginResponse != En_ResultStatus.OK ) {
+            return new CoreResponse<UserSessionDescriptor>().error(loginResponse);
+        }
+
+        jdbcManyRelationsHelper.fill(login, "roles");
 
         UserSessionDescriptor descriptor = getSessionDescriptor(appSessionId);
         if (descriptor != null) {

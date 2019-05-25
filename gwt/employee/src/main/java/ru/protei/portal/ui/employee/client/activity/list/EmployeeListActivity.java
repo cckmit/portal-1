@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -18,16 +19,18 @@ import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
 /**
  * Активность списка сотрудников
@@ -43,12 +46,12 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onAuthSuccess ( AuthEvents.Success event) {
+    public void onAuthSuccess ( AuthEvents.Success event ) {
         filterView.resetFilter();
     }
 
     @Event
-    public void onInitDetails( AppEvents.InitDetails event) {
+    public void onInitDetails( AppEvents.InitDetails event ) {
         this.init = event;
     }
 
@@ -79,6 +82,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     private void requestEmployees() {
+
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
@@ -86,22 +90,25 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         view.getChildContainer().clear();
         itemViewToModel.clear();
 
-        employeeService.getEmployees( makeQuery(), new RequestCallback< List< EmployeeShortView > >() {
+        view.showLoader( true );
+        marker = new Date().getTime();
 
-            @Override
-            public void onError( Throwable throwable ) {}
-
-            @Override
-            public void onSuccess( List< EmployeeShortView > employees ) {
-                fillViewHandler = taskService.startPeriodicTask( employees, fillViewer, 50, 50 );
-            }
-        });
+        employeeService.getEmployees( makeQuery(), new FluentCallback< List< EmployeeShortView > >()
+                .withMarkedSuccess( marker, ( m, result ) -> {
+                    if ( marker == m ) {
+                        fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
+                        view.showLoader( false );
+                    }
+                } ) );
     }
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery( false, false, true,
                 null,
                 filterView.searchPattern().getValue(),
+                filterView.workPhone().getValue(),
+                filterView.mobilePhone().getValue(),
+                filterView.ipAddress().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
     }
@@ -124,7 +131,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             itemView.setPosition( mainEntry.getPositionName() );
         }
 
-        itemView.setPhoto( "/avatars/" + employee.getId() + ".jpg" );
+        itemView.setPhoto( LOAD_AVATAR_URL + employee.getId() + ".jpg" );
 
         return itemView;
     }
@@ -160,7 +167,10 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     @Inject
     Lang lang;
 
+    private long marker;
     private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
+    private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
+    private static final Logger log = Logger.getLogger(EmployeeListActivity.class.getName());
 }

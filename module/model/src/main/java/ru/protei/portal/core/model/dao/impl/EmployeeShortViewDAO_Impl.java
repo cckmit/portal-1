@@ -38,7 +38,7 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
                         withDistinct(true).
                         withOffset(query.getOffset()).
                         withLimit(query.getLimit()).
-                        withSort( TypeConverters.createSort(query))
+                        withSort(TypeConverters.createSort(query))
         );
     }
 }

@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.sitefolder.client.activity.app.list.item.AbstractApplicationListItemActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.app.list.item.AbstractApplicationListItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -115,15 +116,15 @@ public abstract class ApplicationListActivity implements Activity, AbstractAppli
 
         ApplicationQuery query = new ApplicationQuery();
         query.setServerId(serverId);
-        siteFolderController.getApplications(query, new RequestCallback<List<Application>>() {
+        siteFolderController.getApplications(query, new RequestCallback<SearchResult<Application>>() {
             @Override
             public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess(List<Application> result) {
-                fillViewHandler = taskService.startPeriodicTask(result, fillViewer, 50, 50);
+            public void onSuccess(SearchResult<Application> result) {
+                fillViewHandler = taskService.startPeriodicTask(result.getResults(), fillViewer, 50, 50);
             }
         });
     }

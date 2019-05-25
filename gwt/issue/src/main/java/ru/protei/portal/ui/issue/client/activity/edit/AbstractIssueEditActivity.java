@@ -2,6 +2,8 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 
 import ru.protei.portal.core.model.ent.Attachment;
 
+import java.util.function.Consumer;
+
 /**
  * Created by bondarenko on 11.11.16.
  */
@@ -13,4 +15,5 @@ public interface AbstractIssueEditActivity {
     void onCompanyChanged();
     void onCreateContactClicked();
     void onLocalClicked();
+    void renderMarkupText(String text, Consumer<String> consumer);
 }

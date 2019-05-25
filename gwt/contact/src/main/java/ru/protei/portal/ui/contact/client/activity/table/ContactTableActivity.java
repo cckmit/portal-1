@@ -18,12 +18,14 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterActivity;
 import ru.protei.portal.ui.contact.client.activity.filter.AbstractContactFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
+import java.util.Date;
 
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 /**
  * Активность таблицы контактов
  */
@@ -67,7 +69,7 @@ public abstract class ContactTableActivity
         contactId = null;
 
         query = makeQuery( null );
-        requestTotalCount();
+        requestContacts( 0 );
     }
 
     @Event
@@ -141,70 +143,51 @@ public abstract class ContactTableActivity
     @Override
     public void onFilterChanged() {
         query = makeQuery( null );
-        requestTotalCount();
+        requestContacts( 0 );
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<Person>> asyncCallback ) {
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        contactService.getContacts( query, new RequestCallback<List<Person>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                asyncCallback.onFailure( throwable );
-            }
-
-            @Override
-            public void onSuccess( List<Person> persons ) {
-                asyncCallback.onSuccess( persons );
-            }
-        } );
+    public void onPageSelected( int page ) {
+        pagerView.setCurrentPage( page );
+        requestContacts( page );
     }
 
-    @Override
-    public void onPageChanged(int page) {
-        pagerView.setCurrentPage(page);
-    }
-
-    @Override
-    public void onPageSelected(int page) {
-        view.scrollTo(page);
-    }
-
-    private void requestTotalCount() {
+    private void requestContacts( int page ) {
         view.clearRecords();
         animation.closeDetails();
 
-        contactService.getContactsCount(query, new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
+        boolean isFirstChunk = page == 0;
+        marker = new Date().getTime();
 
-            @Override
-            public void onSuccess(Long count) {
-                view.setRecordCount( count );
-                pagerView.setTotalPages( view.getPageCount() );
-                pagerView.setTotalCount( count );
-            }
-        });
+        query.setOffset( page*PAGE_SIZE );
+        query.setLimit( PAGE_SIZE );
+
+        contactService.getContacts( query, new FluentCallback< SearchResult< Person> >()
+                .withMarkedSuccess( marker, ( m, r ) -> {
+                    if ( marker == m ) {
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
+                            pagerView.setCurrentPage( 0 );
+                        }
+                        view.addRecords( r.getResults() );
+                    }
+                })
+                .withErrorMessage( lang.errGetList() ) );
     }
 
     private void showPreview ( Person value ) {
-
         if ( value == null ) {
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent(new ContactEvents.ShowPreview(view.getPreviewContainer(), value));
+            fireEvent( new ContactEvents.ShowPreview( view.getPreviewContainer(), value ) );
         }
     }
 
     private ContactQuery makeQuery( Long companyId ) {
         if ( companyId != null ) {
-            return new ContactQuery( companyId, null, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+            return new ContactQuery( companyId, null, false, null, En_SortField.person_full_name, En_SortDir.ASC );
         }
         return new ContactQuery( filterView.company().getValue(),
                 filterView.showFired().getValue() ? null : filterView.showFired().getValue(),
@@ -242,4 +225,6 @@ public abstract class ContactTableActivity
     private ContactQuery query;
 
     private static String CREATE_ACTION;
+
+    private long marker;
 }

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.account.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -140,7 +139,7 @@ public class AccountFilterView extends Composite implements AbstractAccountFilte
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent<String> event ) {
         timer.cancel();
-        timer.schedule( 300 );
+        timer.schedule( 400 );
     }
 
     Timer timer = new Timer() {

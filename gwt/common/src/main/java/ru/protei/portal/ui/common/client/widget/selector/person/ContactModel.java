@@ -10,10 +10,8 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ContactControllerAsync;
-import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -21,10 +19,6 @@ import java.util.function.Consumer;
  * Модель сотрудников любой компании
  */
 public abstract class ContactModel implements Activity {
-
-    public void subscribe( SelectorWithModel selector) {
-        subscribers.add( selector );
-    }
 
     public void requestPersonList( Company company, Boolean fired, Consumer< List<PersonShortView> > fillOptionsAction ){
         isPushing = true;
@@ -49,10 +43,8 @@ public abstract class ContactModel implements Activity {
 
     @Inject
     ContactControllerAsync contactService;
-
     @Inject
     Lang lang;
 
     private boolean isPushing;
-    private List<SelectorWithModel> subscribers = new ArrayList<>();
 }

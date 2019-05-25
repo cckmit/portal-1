@@ -4,7 +4,6 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.*;
@@ -225,7 +224,7 @@ public class ImportDataServiceImpl implements ImportDataService {
 
 
     private boolean isRequireToReImport (UserLogin userLogin) {
-        if (userLogin.getPerson().getCompanyId() != 1L) {
+        if (userLogin.getCompanyId() != 1L) {
             return true;
         }
 

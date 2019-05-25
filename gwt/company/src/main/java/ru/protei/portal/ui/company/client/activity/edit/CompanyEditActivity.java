@@ -6,10 +6,13 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -61,8 +64,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             initialView(new Company());
         }else {
             fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
-            fireEvent( new ContactEvents.ShowConciseTable( view.tableContainer(), event.getCompanyId() ) );
-            fireEvent( new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), event.getCompanyId()));
             requestCompany(event.getCompanyId());
         }
     }
@@ -160,7 +161,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
         view.companySubscriptions().setValue(
-                company.getSubscriptions().stream()
+                CollectionUtils.stream(company.getSubscriptions())
                         .map( Subscription::fromCompanySubscription )
                         .collect(Collectors.toList())
         );
@@ -169,6 +170,20 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES));
         fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
+
+        if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
+            fireEvent(new ContactEvents.ShowConciseTable(view.tableContainer(), company.getId()));
+            view.tableContainerVisibility().setVisible(true);
+        } else {
+            view.tableContainerVisibility().setVisible(false);
+        }
+
+        if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
+            fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), company.getId()));
+            view.siteFolderContainerVisibility().setVisible(true);
+        } else {
+            view.siteFolderContainerVisibility().setVisible(false);
+        }
     }
 
     private EntityOption makeCompanyOption( Company company ) {
@@ -205,12 +220,12 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Inject
     AbstractCompanyEditView view;
-
     @Inject
     Lang lang;
-
     @Inject
     CompanyControllerAsync companyService;
+    @Inject
+    PolicyService policyService;
 
     private Company tempCompany;
 

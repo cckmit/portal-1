@@ -19,11 +19,14 @@ import ru.protei.portal.ui.common.client.events.EmployeeRegistrationEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeRegistrationControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterActivity;
 import ru.protei.portal.ui.employeeregistration.client.activity.filter.AbstractEmployeeRegistrationFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public abstract class EmployeeRegistrationTableActivity implements AbstractEmployeeRegistrationTableActivity,
         AbstractEmployeeRegistrationFilterActivity, Activity {
@@ -52,7 +55,7 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
         );
 
         filterView.resetFilter();
-        requestEmployeeRegistrationsCount(makeQuery());
+        loadTable();
     }
 
     @Event
@@ -70,27 +73,32 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
 
     @Override
     public void onFilterChanged() {
-        requestEmployeeRegistrationsCount(makeQuery());
+        loadTable();
     }
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<EmployeeRegistration>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         EmployeeRegistrationQuery query = makeQuery();
         query.setOffset(offset);
         query.setLimit(limit);
+        employeeRegistrationService.getEmployeeRegistrations(query, new FluentCallback<SearchResult<EmployeeRegistration>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                    }
+                }));
+    }
 
-        employeeRegistrationService.getEmployeeRegistrations(query, new RequestCallback<List<EmployeeRegistration>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(List<EmployeeRegistration> employeeRegistrations) {
-                asyncCallback.onSuccess(employeeRegistrations);
-            }
-        });
-
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private EmployeeRegistrationQuery makeQuery() {
@@ -112,24 +120,6 @@ public abstract class EmployeeRegistrationTableActivity implements AbstractEmplo
             fireEvent(new EmployeeRegistrationEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
         }
     }
-
-    private void requestEmployeeRegistrationsCount(EmployeeRegistrationQuery query) {
-        view.clearRecords();
-        animation.closeDetails();
-
-        employeeRegistrationService.getEmployeeRegistrationCount(query, new RequestCallback<Integer>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Integer count) {
-                view.setRecordCount(count);
-            }
-        });
-    }
-
 
     @Inject
     private Lang lang;

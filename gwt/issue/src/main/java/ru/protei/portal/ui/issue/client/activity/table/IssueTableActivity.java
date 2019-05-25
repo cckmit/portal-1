@@ -32,14 +32,17 @@ import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.attachment.popup.AttachPopup;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterParamActivity;
 import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.issue.client.activity.edit.CaseStateFilterProvider;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterActivity;
 import ru.protei.portal.ui.issue.client.activity.filter.AbstractIssueFilterView;
 import ru.protei.portal.ui.issue.client.activity.filter.IssueFilterService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Активность таблицы обращений
@@ -102,22 +105,15 @@ public abstract class IssueTableActivity
 
         filterParamView.toggleMsgSearchThreshold();
 
-        requestIssuesCount();
+        loadTable();
     }
 
     @Event
     public void onChangeRow( IssueEvents.ChangeIssue event ) {
-        issueService.getIssues( new CaseQuery(event.id), new RequestCallback<List<CaseShortView>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( List<CaseShortView> caseObjects ) {
-                view.updateRow(caseObjects.get(0));
-            }
-        } );
+        issueService.getIssues(new CaseQuery(event.id), new FluentCallback<SearchResult<CaseShortView>>()
+                .withSuccess(sr -> {
+                    view.updateRow(sr.getResults().get(0));
+                }));
     }
 
     @Event
@@ -154,7 +150,7 @@ public abstract class IssueTableActivity
                 fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new IssueEvents.ChangeUserFilterModel());
                 filterView.resetFilter();
-                requestIssuesCount();
+                loadTable();
             }
         });
     }
@@ -198,7 +194,7 @@ public abstract class IssueTableActivity
             return;
         }
 
-        requestIssuesCount();
+        loadTable();
         filterParamView.toggleMsgSearchThreshold();
     }
 
@@ -295,25 +291,26 @@ public abstract class IssueTableActivity
         updateInitiatorSelector();
     }
 
-
     @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback ) {
+    public void loadData(int offset, int limit, AsyncCallback<List<CaseShortView>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         CaseQuery query = getQuery();
-        query.setOffset( offset );
-        query.setLimit( limit );
-
-        issueService.getIssues( query, new RequestCallback<List<CaseShortView>>() {
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                asyncCallback.onFailure( throwable );
-            }
-
-            @Override
-            public void onSuccess( List<CaseShortView> caseObjects ) {
-                asyncCallback.onSuccess( caseObjects );
-            }
-        } );
+        query.setOffset(offset);
+        query.setLimit(limit);
+        issueService.getIssues(query, new FluentCallback<SearchResult<CaseShortView>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                        restoreScrollTopPositionOrClearSelection();
+                    }
+                }));
     }
 
     @Override
@@ -344,6 +341,12 @@ public abstract class IssueTableActivity
         });
     }
 
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
+    }
+
     private void persistScrollTopPosition() {
         scrollTop = Window.getScrollTop();
     }
@@ -353,7 +356,8 @@ public abstract class IssueTableActivity
             view.clearSelection();
             return;
         }
-        if (scrollTop <= RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight()) {
+        int trh = RootPanel.get(DebugIds.DEBUG_ID_PREFIX + DebugIds.APP_VIEW.GLOBAL_CONTAINER).getOffsetHeight() - Window.getClientHeight();
+        if (scrollTop <= trh) {
             Window.scrollTo(0, scrollTop);
             scrollTop = null;
         }
@@ -364,26 +368,6 @@ public abstract class IssueTableActivity
         filterView.editBtnVisibility().setVisible( true );
         filterView.filterName().setValue( filter.getName() );
         filterParamView.fillFilterFields(filter.getParams());
-    }
-
-    private void requestIssuesCount() {
-        animation.closeDetails();
-        view.clearRecords();
-
-        issueService.getIssuesCount( getQuery(), new RequestCallback< Long >() {
-                @Override
-                public void onError( Throwable throwable ) {
-                    fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
-                }
-
-                @Override
-                public void onSuccess( Long issuesCount ) {
-                    view.setIssuesCount( issuesCount );
-                    pagerView.setTotalPages( view.getPageCount() );
-                    pagerView.setTotalCount( issuesCount );
-                    restoreScrollTopPositionOrClearSelection();
-                }
-            } );
     }
 
     private void showPreview ( CaseShortView value ) {

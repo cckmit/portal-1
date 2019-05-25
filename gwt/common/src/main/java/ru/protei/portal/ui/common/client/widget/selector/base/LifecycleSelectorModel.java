@@ -20,11 +20,7 @@ public abstract class LifecycleSelectorModel<T> implements Activity, SelectorMod
         if (CollectionUtils.isNotEmpty(selector.getValues())) {
             return;
         }
-        if (CollectionUtils.isNotEmpty(cache)) {
-            notifySubscriber(selector, cache);
-            return;
-        }
-        refreshOptions();
+        refreshFromCache(selector);
     }
 
     @Override
@@ -34,6 +30,14 @@ public abstract class LifecycleSelectorModel<T> implements Activity, SelectorMod
         }
         subscribers.remove(selector);
         selector.clearOptions();
+    }
+
+    public void refreshFromCache(SelectorWithModel<T> selector) {
+        if (CollectionUtils.isNotEmpty(cache)) {
+            notifySubscriber(selector, cache);
+            return;
+        }
+        refreshOptions();
     }
 
     protected void clear() {

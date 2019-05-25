@@ -20,10 +20,10 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by michael on 11.10.16.
@@ -35,10 +35,11 @@ public class CompanyServiceTest extends BaseServiceTest {
     @Test
     public void testGetCompanyList () {
 
-        CoreResponse<List<Company>> result = companyService.companyList(getAuthToken(), new CompanyQuery());
+        CoreResponse<SearchResult<Company>> result = companyService.getCompanies(getAuthToken(), new CompanyQuery());
 
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getData());
+        Assert.assertNotNull(result.getData().getResults());
     }
 
 //    @Test

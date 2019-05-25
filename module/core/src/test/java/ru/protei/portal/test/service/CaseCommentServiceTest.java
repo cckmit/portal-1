@@ -18,6 +18,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseCommentService;
 import ru.protei.winter.core.CoreConfigurationContext;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import javax.inject.Inject;
@@ -35,7 +36,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     @Test
     public void getCaseObjectsTest() {
         assertNotNull(caseService);
-        List<CaseShortView> all = checkResultAndGetData(caseService.caseObjectList(getAuthToken(), new CaseQuery()));
+        SearchResult<CaseShortView> all = checkResultAndGetData(caseService.getCaseObjects(getAuthToken(), new CaseQuery()));
         assertNotNull(all);
     }
 

@@ -11,8 +11,8 @@ import java.util.List;
 public class PlatformMultiSelector extends MultipleInputSelector<EntityOption> implements SelectorWithModel<EntityOption> {
 
     @Inject
-    public void init() {
-        platformModel.subscribe(this);
+    public void init(PlatformModel model, Lang lang) {
+        setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName( lang.buttonClear() );
     }
@@ -24,9 +24,4 @@ public class PlatformMultiSelector extends MultipleInputSelector<EntityOption> i
         }
         reselectValuesIfNeeded();
     }
-
-    @Inject
-    PlatformModel platformModel;
-    @Inject
-    Lang lang;
 }

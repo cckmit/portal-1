@@ -111,6 +111,16 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     }
 
     @Override
+    public HasVisibility getContactsContainerVisibility() {
+        return contactsContainer;
+    }
+
+    @Override
+    public HasVisibility getSiteFolderContainerVisibility() {
+        return siteFolderContainer;
+    }
+
+    @Override
     public void setSubscriptionEmails(String value) {
         subscription.setText(value);
     }

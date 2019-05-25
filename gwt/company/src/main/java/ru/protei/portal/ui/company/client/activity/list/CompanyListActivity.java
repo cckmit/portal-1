@@ -25,6 +25,7 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashMap;
 import java.util.List;
@@ -125,7 +126,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
         view.setListCreateBtnVisible(policyService.hasPrivilegeFor( En_Privilege.COMPANY_CREATE ));
         itemViewToModel.clear();
 
-        companyService.getCompanies(query, new RequestCallback< List< Company > >() {
+        companyService.getCompanies(query, new RequestCallback<SearchResult< Company >>() {
 
             @Override
             public void onError( Throwable throwable ) {
@@ -133,8 +134,8 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
             }
 
             @Override
-            public void onSuccess( List< Company > companies ) {
-                fillViewHandler = taskService.startPeriodicTask( companies, fillViewer, 50, 50 );
+            public void onSuccess( SearchResult< Company > companies ) {
+                fillViewHandler = taskService.startPeriodicTask( companies.getResults(), fillViewer, 50, 50 );
             }
         });
     }

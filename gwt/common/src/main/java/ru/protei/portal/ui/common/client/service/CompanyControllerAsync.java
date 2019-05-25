@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.ent.CompanyGroup;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -16,17 +17,11 @@ import java.util.List;
 public interface CompanyControllerAsync {
 
     /**
-     * Получение кол-ва компаний
-     * @param query запрос
-     */
-    void getCompaniesCount( CompanyQuery query, AsyncCallback< Long > async );
-
-    /**
      * Получение списка компаний
      * @param query запрос
      * @return список компаний
      */
-    void getCompanies( CompanyQuery query, AsyncCallback< List< Company > > async );
+    void getCompanies( CompanyQuery query, AsyncCallback< SearchResult< Company >> async );
 
     /**
      * Получение списка групп компаний

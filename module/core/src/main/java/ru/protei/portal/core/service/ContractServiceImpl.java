@@ -7,11 +7,13 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
 import ru.protei.portal.core.model.dao.ContractDAO;
+import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.ContractQuery;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -25,6 +27,8 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     CaseTypeDAO caseTypeDAO;
     @Autowired
+    PersonDAO personDAO;
+    @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
     @Autowired
     PortalConfig portalConfig;
@@ -34,23 +38,12 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
 
     @Override
-    public CoreResponse<Integer> count(AuthToken token, ContractQuery query) {
+    public CoreResponse<SearchResult<Contract>> getContracts(AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
             query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
         }
-        return new CoreResponse<Integer>().success(contractDAO.countByQuery(query));
-    }
-
-    @Override
-    public CoreResponse<List<Contract>> contractList(AuthToken token, ContractQuery query) {
-        if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
-            query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
-        }
-        List<Contract> list = contractDAO.getListByQuery(query);
-        if (list == null) {
-            return new CoreResponse<List<Contract>>().error(En_ResultStatus.INTERNAL_ERROR);
-        }
-        return new CoreResponse<List<Contract>>().success(list);
+        SearchResult<Contract> sr = contractDAO.getSearchResult(query);
+        return new CoreResponse<SearchResult<Contract>>().success(sr);
     }
 
     @Override
@@ -158,6 +151,6 @@ public class ContractServiceImpl implements ContractService {
 
     private Person getCurrentPerson(AuthToken token) {
         UserSessionDescriptor descriptor = authService.findSession(token);
-        return descriptor.getLogin().getPerson();
+        return personDAO.get(descriptor.getLogin().getPersonId());
     }
 }

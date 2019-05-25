@@ -23,8 +23,10 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterActivity;
 import ru.protei.portal.ui.contract.client.activity.filter.AbstractContractFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getCompaniesIdList;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.getManagersIdList;
@@ -61,7 +63,7 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
         );
 
         filterView.resetFilter();
-        requestContractsCount(makeQuery());
+        loadTable();
     }
 
     @Event
@@ -84,18 +86,32 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
 
     @Override
     public void onFilterChanged() {
-        requestContractsCount(makeQuery());
+        loadTable();
     }
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Contract>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         ContractQuery query = makeQuery();
         query.setOffset(offset);
         query.setLimit(limit);
+        contractService.getContracts(query, new FluentCallback<SearchResult<Contract>>()
+                .withError(throwable -> {
+                    errorHandler.accept(throwable);
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                    }
+                }));
+    }
 
-        contractService.getContracts(query, new FluentCallback<List<Contract>>()
-                .withError(throwable -> errorHandler.accept(throwable))
-                .withSuccess(asyncCallback::onSuccess));
+    private void loadTable() {
+        animation.closeDetails();
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private ContractQuery makeQuery() {
@@ -121,16 +137,6 @@ public abstract class ContractTableActivity implements AbstractContractTableActi
             fireEvent(new ContractEvents.ShowPreview(view.getPreviewContainer(), value.getId()));
         }
     }
-
-    private void requestContractsCount(ContractQuery query) {
-        view.clearRecords();
-        animation.closeDetails();
-
-        contractService.getContractCount(query, new FluentCallback<Integer>()
-                .withError(throwable -> errorHandler.accept(throwable))
-                .withSuccess(count -> view.setRecordCount(count)));
-    }
-
 
     @Inject
     private Lang lang;

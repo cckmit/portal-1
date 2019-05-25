@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.ReportQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
@@ -24,24 +25,9 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
     }
 
     @Override
-    public List<Report> getReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds) {
-        query.setCreatorId(creatorId);
-        query.setExcludeIds(excludeIds);
-        SqlCondition where = createSqlCondition(query);
-        return getList(new JdbcQueryParameters()
-                .withCondition(where.condition, where.args)
-                .withDistinct(true)
-                .withOffset(query.getOffset())
-                .withLimit(query.getLimit())
-                .withSort(TypeConverters.createSort(query))
-        );
-    }
-
-    @Override
-    public Long countReportsByQuery(Long creatorId, ReportQuery query, Set<Long> excludeIds) {
-        query.setCreatorId(creatorId);
-        query.setExcludeIds(excludeIds);
-        return count(query);
+    public SearchResult<Report> getSearchResult(Long creatorId, ReportQuery query, Set<Long> excludeIds) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query, creatorId, excludeIds);
+        return getSearchResult(parameters);
     }
 
     @Override
@@ -80,6 +66,18 @@ public class ReportDAO_Impl extends PortalBaseJdbcDAO<Report> implements ReportD
                 .withCondition(where.condition, where.args)
                 .withDistinct(true)
         );
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(ReportQuery query, Long creatorId, Set<Long> excludeIds) {
+        query.setCreatorId(creatorId);
+        query.setExcludeIds(excludeIds);
+        SqlCondition where = createSqlCondition(query);
+        return new JdbcQueryParameters()
+                .withCondition(where.condition, where.args)
+                .withDistinct(true)
+                .withOffset(query.getOffset())
+                .withLimit(query.getLimit())
+                .withSort(TypeConverters.createSort(query));
     }
 
     @Override

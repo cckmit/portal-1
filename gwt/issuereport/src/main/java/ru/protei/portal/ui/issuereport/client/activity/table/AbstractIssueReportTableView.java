@@ -4,17 +4,15 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.ent.Report;
 
-import java.util.List;
-
 public interface AbstractIssueReportTableView extends IsWidget {
 
     void setActivity(AbstractIssueReportTableActivity activity);
 
     void clearRecords();
 
-    void setReportsCount(Long issuesCount);
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

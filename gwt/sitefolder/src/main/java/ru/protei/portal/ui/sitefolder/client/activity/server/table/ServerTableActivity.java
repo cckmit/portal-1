@@ -18,13 +18,16 @@ import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.SiteFolderControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServerFilterActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.server.filter.AbstractServerFilterView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public abstract class ServerTableActivity implements
@@ -74,7 +77,7 @@ public abstract class ServerTableActivity implements
             filterView.platforms().setValue(options);
         }
 
-        requestServersCount();
+        loadTable();
     }
 
     @Event
@@ -192,21 +195,23 @@ public abstract class ServerTableActivity implements
 
     @Override
     public void loadData(int offset, int limit, AsyncCallback<List<Server>> asyncCallback) {
+        boolean isFirstChunk = offset == 0;
         ServerQuery query = getQuery();
         query.setOffset(offset);
         query.setLimit(limit);
-        siteFolderController.getServers(query, new RequestCallback<List<Server>>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-                asyncCallback.onFailure(throwable);
-            }
-
-            @Override
-            public void onSuccess(List<Server> result) {
-                asyncCallback.onSuccess(result);
-            }
-        });
+        siteFolderController.getServers(query, new FluentCallback<SearchResult<Server>>()
+                .withError(throwable -> {
+                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                    asyncCallback.onFailure(throwable);
+                })
+                .withSuccess(sr -> {
+                    asyncCallback.onSuccess(sr.getResults());
+                    if (isFirstChunk) {
+                        view.setTotalRecords(sr.getTotalCount());
+                        pagerView.setTotalPages(view.getPageCount());
+                        pagerView.setTotalCount(sr.getTotalCount());
+                    }
+                }));
     }
 
     @Override
@@ -221,25 +226,13 @@ public abstract class ServerTableActivity implements
 
     @Override
     public void onFilterChanged() {
-        requestServersCount();
+        loadTable();
     }
 
-    private void requestServersCount() {
-        view.clearRecords();
+    private void loadTable() {
         animation.closeDetails();
-        siteFolderController.getServersCount(getQuery(), new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-                fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
-            }
-
-            @Override
-            public void onSuccess(Long result) {
-                view.setServersCount(result);
-                pagerView.setTotalPages(view.getPageCount());
-                pagerView.setTotalCount(result);
-            }
-        });
+        view.clearRecords();
+        view.triggerTableLoad();
     }
 
     private ServerQuery getQuery() {

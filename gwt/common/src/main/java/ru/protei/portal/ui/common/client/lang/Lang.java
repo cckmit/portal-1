@@ -1685,4 +1685,12 @@ public interface Lang extends Messages, ContactItemLang {
     String caseStateDescription();
 
     String documentWorkGroupHeader();
+
+    String employeeEmployeeFullNameColumnHeader();
+
+    String employeeWorkPhoneColumnHeader();
+
+    String employeeMobilePhoneColumnHeader();
+
+    String employeeIPAddressColumnHeader();
 }

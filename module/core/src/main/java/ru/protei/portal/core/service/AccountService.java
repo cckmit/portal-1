@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -15,11 +16,9 @@ import java.util.List;
  * Сервис управления учетными записями
  */
 public interface AccountService {
-    @Privileged({ En_Privilege.ACCOUNT_VIEW })
-    CoreResponse< List< UserLogin > > accountList( AuthToken authToken, AccountQuery query );
 
     @Privileged({ En_Privilege.ACCOUNT_VIEW })
-    CoreResponse< Long > count( AuthToken authToken, AccountQuery query );
+    CoreResponse<SearchResult<UserLogin>> getAccounts(AuthToken token, AccountQuery query);
 
     @Privileged({ En_Privilege.ACCOUNT_VIEW })
     CoreResponse< UserLogin > getAccount( AuthToken authToken, long id );

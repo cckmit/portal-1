@@ -13,9 +13,9 @@ public interface AbstractServerTableView extends IsWidget {
 
     void clearRecords();
 
-    void setServersCount(Long count);
+    void triggerTableLoad();
 
-    int getPageSize();
+    void setTotalRecords(int totalRecords);
 
     int getPageCount();
 

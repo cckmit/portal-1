@@ -33,11 +33,11 @@
                 <h5><ui:text from="{lang.siteFolderAttachments}"/></h5>
                 <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
 
-                <w:collapse.CollapsablePanel ui:field="contactsContainer"
-                                             legend="{lang.siteFolderCompanyContacts}"/>
-
                 <w:collapse.CollapsablePanel ui:field="serversContainer"
                                              legend="{lang.siteFolderServers}"/>
+
+                <w:collapse.CollapsablePanel ui:field="contactsContainer"
+                                             legend="{lang.siteFolderCompanyContacts}"/>
 
             </div>
         </div>

@@ -14,15 +14,13 @@ import ru.protei.portal.core.model.dict.En_AdminState;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.UserLogin;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -56,26 +54,15 @@ public class AccountServiceImpl implements AccountService {
     EventPublisherService publisherService;
 
     @Override
-    public CoreResponse< List< UserLogin > > accountList(AuthToken token, AccountQuery query ) {
+    public CoreResponse<SearchResult<UserLogin>> getAccounts(AuthToken token, AccountQuery query) {
+
         applyFilterByScope(token, query);
-        List< UserLogin > list = userLoginDAO.getAccounts( query );
 
-        if (list == null)
-            return new CoreResponse< List< UserLogin > >().error( En_ResultStatus.GET_DATA_ERROR );
-        jdbcManyRelationsHelper.fill( list, "roles" );
+        SearchResult<UserLogin> sr = userLoginDAO.getSearchResult(query);
 
-        return new CoreResponse< List< UserLogin > >().success( list );
-    }
+        jdbcManyRelationsHelper.fill(sr.getResults(), "roles");
 
-    @Override
-    public CoreResponse< Long > count( AuthToken authToken, AccountQuery query ) {
-        applyFilterByScope(authToken, query);
-        Long count = userLoginDAO.count( query );
-
-        if ( count == null )
-            return new CoreResponse< Long >().error( En_ResultStatus.GET_DATA_ERROR );
-
-        return new CoreResponse< Long >().success( count );
+        return new CoreResponse<SearchResult<UserLogin>>().success(sr);
     }
 
     @Override
@@ -142,11 +129,12 @@ public class AccountServiceImpl implements AccountService {
 
             if (sendWelcomeEmail) {
 
-                userLogin.setPerson(personDAO.get(userLogin.getPersonId()));
+                Person person = personDAO.get(userLogin.getPersonId());
+                userLogin.setPerson(person);
 
-                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(userLogin.getPerson().getContactInfo());
+                PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(person.getContactInfo());
                 String address = HelperFunc.nvlt(infoFacade.getEmail(), infoFacade.getEmail_own(), null);
-                NotificationEntry notificationEntry = NotificationEntry.email(address, userLogin.getPerson().getLocale());
+                NotificationEntry notificationEntry = NotificationEntry.email(address, person.getLocale());
                 UserLoginUpdateEvent userLoginUpdateEvent = new UserLoginUpdateEvent(userLogin.getUlogin(), passwordRaw, userLogin.getInfo(), isNewAccount, notificationEntry);
 
                 publisherService.publishEvent(userLoginUpdateEvent);

@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -243,6 +244,14 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         setSubscriptionEmails(getSubscriptionsBasedOnPrivacy(subscriptionsList, subscriptionsListEmptyMessage));
     }
 
+    @Override
+    public void renderMarkupText(String text, Consumer<String> consumer) {
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(issue);
+        textRenderController.render(text, textMarkup, new FluentCallback<String>()
+                .withError(throwable -> consumer.accept(null))
+                .withSuccess(consumer));
+    }
+
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, false);
@@ -315,7 +324,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isLocal().setValue(issue.isPrivateCase());
 
-        view.description().setText(issue.getInfo());
+        view.description().setValue(issue.getInfo());
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
         view.state().setValue(isNew(issue) && !isRestoredIssue ? En_CaseState.CREATED : En_CaseState.getById(issue.getStateId()));
@@ -366,7 +375,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private void fillIssueObject(CaseObject issue){
         issue.setName(view.name().getValue());
         issue.setPrivateCase( view.isLocal().getValue() );
-        issue.setInfo(view.description().getText());
+        issue.setInfo(view.description().getValue());
 
         issue.setStateId(view.state().getValue().getId());
         issue.setImpLevel(view.importance().getValue().getId());
@@ -478,6 +487,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CompanyControllerAsync companyService;
     @Inject
     CaseStateFilterProvider caseStateFilter;
+    @Inject
+    TextRenderControllerAsync textRenderController;
 
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;

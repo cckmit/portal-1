@@ -56,13 +56,13 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
     }
 
     @Override
-    public void setServersCount(Long count) {
-        table.setTotalRecords(count.intValue());
+    public void triggerTableLoad() {
+        table.setTotalRecords(table.getPageSize());
     }
 
     @Override
-    public int getPageSize() {
-        return table.getPageSize();
+    public void setTotalRecords(int totalRecords) {
+        table.setTotalRecords(totalRecords);
     }
 
     @Override
@@ -105,6 +105,7 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
 
         columns.add(nameColumn);
         columns.add(platformColumn);
+        columns.add(ip);
         columns.add(appsColumn);
         columns.add(accessParams);
         columns.add(copyClickColumn);
@@ -145,6 +146,20 @@ public class ServerTableView extends Composite implements AbstractServerTableVie
             cell.setInnerText(value.getName());
         }
     };
+
+    private ClickColumn<Server> ip = new ClickColumn<Server>() {
+        @Override
+        protected void fillColumnHeader(Element columnHeader) {
+            columnHeader.addClassName("column-hidable");
+            columnHeader.setInnerText(lang.siteFolderIP());
+        }
+        @Override
+        public void fillColumnValue(Element cell, Server value) {
+            cell.addClassName("column-hidable");
+            cell.setInnerText(value.getIp());
+        }
+    };
+
     private ClickColumn<Server> accessParams = new ClickColumn<Server>() {
         @Override
         protected void fillColumnHeader(Element columnHeader) {

@@ -11,8 +11,8 @@ import java.util.List;
 public class ServerMultiSelector extends MultipleInputSelector<EntityOption> implements SelectorWithModel<EntityOption> {
 
     @Inject
-    public void init() {
-        serverModel.subscribe(this);
+    public void init(ServerModel model, Lang lang) {
+        setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName( lang.buttonClear() );
     }
@@ -24,9 +24,4 @@ public class ServerMultiSelector extends MultipleInputSelector<EntityOption> imp
         }
         reselectValuesIfNeeded();
     }
-
-    @Inject
-    ServerModel serverModel;
-    @Inject
-    Lang lang;
 }

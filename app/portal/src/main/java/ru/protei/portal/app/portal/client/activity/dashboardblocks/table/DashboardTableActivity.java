@@ -14,6 +14,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -115,7 +116,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
     private void updateSection(DashboardTableModel model){
         model.view.clearRecords();
         applyDaysLimitIfNeeded(model);
-        updateRecordsCount(model);
         requestRecords(model);
     }
 
@@ -123,16 +123,17 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
         if(model.isLoaderShow)
             model.view.showLoader(true);
 
-        issueService.getIssues( model.query, new RequestCallback<List<CaseShortView>>() {
+        issueService.getIssues( model.query, new RequestCallback<SearchResult<CaseShortView>>() {
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( List<CaseShortView> caseObjects ) {
-                model.view.putRecords(caseObjects);
-                model.view.putPersons(caseObjects.stream()
+            public void onSuccess( SearchResult<CaseShortView> searchResult ) {
+                model.view.setRecordsCount(searchResult.getTotalCount());
+                model.view.putRecords(searchResult.getResults());
+                model.view.putPersons(searchResult.getResults().stream()
                         .filter(caseObject -> caseObject.getInitiatorId() != null && caseObject.getInitiatorShortName() != null)
                         .map(caseObject -> new PersonShortView(caseObject.getInitiatorShortName(), caseObject.getInitiatorId(), false))
                         .distinct()
@@ -152,20 +153,6 @@ public abstract class DashboardTableActivity implements AbstractDashboardTableAc
             table.setEnsureDebugId(debugId);
         }
         return table;
-    }
-
-    private void updateRecordsCount(DashboardTableModel model){
-        issueService.getIssuesCount(model.query, new RequestCallback<Long>() {
-            @Override
-            public void onError(Throwable throwable) {
-
-            }
-
-            @Override
-            public void onSuccess(Long aLong) {
-                model.view.setRecordsCount(aLong.intValue());
-            }
-        });
     }
 
     private void applyDaysLimitIfNeeded(DashboardTableModel model) {

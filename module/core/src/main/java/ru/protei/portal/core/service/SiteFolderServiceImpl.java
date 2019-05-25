@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.ApplicationQuery;
 import ru.protei.portal.core.model.query.PlatformQuery;
 import ru.protei.portal.core.model.query.ServerQuery;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -23,108 +24,68 @@ import java.util.stream.Collectors;
 public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Override
-    public CoreResponse<Long> countPlatforms(AuthToken token, PlatformQuery query) {
+    public CoreResponse<SearchResult<Platform>> getPlatforms(AuthToken token, PlatformQuery query) {
 
-        Long count = platformDAO.count(query);
+        SearchResult<Platform> sr = platformDAO.getSearchResultByQuery(query);
 
-        if (count == null) {
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
+        if ( CollectionUtils.isEmpty(sr.getResults())) {
+            return new CoreResponse<SearchResult<Platform>>().success(sr);
         }
 
-        return new CoreResponse<Long>().success(count);
-    }
+        Map<Long, Long> map = serverDAO.countByPlatformIds(sr.getResults().stream()
+                .map(Platform::getId)
+                .collect(Collectors.toList()));
 
-    @Override
-    public CoreResponse<Long> countServers(AuthToken token, ServerQuery query) {
-
-        Long count = serverDAO.count(query);
-
-        if (count == null) {
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
-        }
-
-        return new CoreResponse<Long>().success(count);
-    }
-
-    @Override
-    public CoreResponse<Long> countApplications(AuthToken token, ApplicationQuery query) {
-
-        Long count = applicationDAO.count(query);
-
-        if (count == null) {
-            return new CoreResponse<Long>().error(En_ResultStatus.GET_DATA_ERROR, 0L);
-        }
-
-        return new CoreResponse<Long>().success(count);
-    }
-
-
-    @Override
-    public CoreResponse<List<Platform>> listPlatforms(AuthToken token, PlatformQuery query) {
-
-        List<Platform> result = platformDAO.listByQuery(query);
-
-        if (result == null) {
-            return new CoreResponse<List<Platform>>().error(En_ResultStatus.GET_DATA_ERROR, null);
-        }
-
-        result.forEach(platform -> {
-            ServerQuery serverQuery = new ServerQuery();
-            serverQuery.setPlatformId(platform.getId());
-            Long count = serverDAO.count(serverQuery);
-            platform.setServersCount(count == null ? 0L : count);
+        sr.getResults().forEach(platform -> {
+            Long count = map.getOrDefault(platform.getId(), 0L);
+            platform.setServersCount(count);
             // RESET PRIVACY INFO
             if (platform.getManager() != null) {
                 platform.getManager().resetPrivacyInfo();
             }
         });
 
-        return new CoreResponse<List<Platform>>().success(result);
+        return new CoreResponse<SearchResult<Platform>>().success(sr);
     }
 
     @Override
-    public CoreResponse<List<Server>> listServers(AuthToken token, ServerQuery query) {
+    public CoreResponse<SearchResult<Server>> getServers(AuthToken token, ServerQuery query) {
 
-        List<Server> result = serverDAO.listByQuery(query);
+        SearchResult<Server> sr = serverDAO.getSearchResultByQuery(query);
 
-        if (result == null) {
-            return new CoreResponse<List<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+        if (CollectionUtils.isEmpty(sr.getResults())) {
+            return new CoreResponse<SearchResult<Server>>().success(sr);
         }
 
-        result.forEach(server -> {
-            ApplicationQuery applicationQuery = new ApplicationQuery();
-            applicationQuery.setServerId(server.getId());
-            Long count = applicationDAO.count(applicationQuery);
-            server.setApplicationsCount(count == null ? 0L : count);
+        Map<Long, Long> map = applicationDAO.countByServerIds(sr.getResults().stream()
+                .map(Server::getId)
+                .collect(Collectors.toList()));
+
+        sr.getResults().forEach(server -> {
+            Long count = map.getOrDefault(server.getId(), 0L);
+            server.setApplicationsCount(count);
         });
 
-        return new CoreResponse<List<Server>>().success(result);
+        return new CoreResponse<SearchResult<Server>>().success(sr);
     }
 
     @Override
-    public CoreResponse<List<Application>> listApplications(AuthToken token, ApplicationQuery query) {
-
-        List<Application> result = applicationDAO.listByQuery(query);
-
-        if (result == null) {
-            return new CoreResponse<List<Application>>().error(En_ResultStatus.GET_DATA_ERROR, null);
-        }
-
-        return new CoreResponse<List<Application>>().success(result);
+    public CoreResponse<SearchResult<Application>> getApplications(AuthToken token, ApplicationQuery query) {
+        SearchResult<Application> sr = applicationDAO.getSearchResultByQuery(query);
+        return new CoreResponse<SearchResult<Application>>().success(sr);
     }
 
     @Override
-    public CoreResponse<List<Server>> listServersWithAppsNames(AuthToken token, ServerQuery query) {
+    public CoreResponse<SearchResult<Server>> getServersWithAppsNames(AuthToken token, ServerQuery query) {
 
-        List<ServerApplication> serverApplications = serverApplicationDAO.listByQuery(query);
-
+        SearchResult<ServerApplication> serverApplications = serverApplicationDAO.getSearchResultByQuery(query);
         if (serverApplications == null) {
-            return new CoreResponse<List<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return new CoreResponse<SearchResult<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
         }
 
         Map<Long, Server> servers = new HashMap<>();
 
-        serverApplications.forEach(sa -> {
+        serverApplications.getResults().forEach(sa -> {
             Long serverId = sa.getServer().getId();
             Server server = servers.getOrDefault(serverId, sa.getServer());
             if (sa.getApplication() != null && HelperFunc.isNotEmpty(sa.getApplication().getName())) {
@@ -133,7 +94,8 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             servers.put(serverId, server);
         });
 
-        return new CoreResponse<List<Server>>().success(new ArrayList<>(servers.values()));
+        SearchResult<Server> sr = new SearchResult<>(new ArrayList<>(servers.values()));
+        return new CoreResponse<SearchResult<Server>>().success(sr);
     }
 
 

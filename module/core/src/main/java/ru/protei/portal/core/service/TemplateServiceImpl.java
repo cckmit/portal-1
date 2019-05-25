@@ -61,6 +61,7 @@ public class TemplateServiceImpl implements TemplateService {
     ) {
         CaseObject newState = event.getCaseObject();
         CaseObject oldState = event.getInitState() == null? null: newState.equals(event.getInitState())? null: event.getInitState();
+        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
 
         Map<String, Object> templateModel = new HashMap<>();
 
@@ -76,8 +77,8 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put( "caseState", En_CaseState.getById( newState.getStateId() ).getName() );
         templateModel.put( "recipients", recipients );
 
-        templateModel.put( "caseInfo", newState == null ? null : escapeText(newState.getInfo()) );
-        templateModel.put( "oldCaseInfo", oldState == null ? null : escapeText(oldState.getInfo()) );
+        templateModel.put( "caseInfo", newState == null ? null : escapeTextAndRenderHTML(newState.getInfo(), textMarkup) );
+        templateModel.put( "oldCaseInfo", oldState == null ? null : escapeTextAndRenderHTML(oldState.getInfo(), textMarkup) );
 
         templateModel.put( "productChanged", event.isProductChanged() );
         templateModel.put( "importanceChanged", event.isCaseImportanceChanged() );
@@ -111,7 +112,6 @@ public class TemplateServiceImpl implements TemplateService {
                         event.getRemovedAttachments())
         );
 
-        En_TextMarkup textMarkup = CaseTextMarkupUtil.recognizeTextMarkup(newState);
         templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment(), textMarkup));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
@@ -254,7 +254,7 @@ public class TemplateServiceImpl implements TemplateService {
         templateModel.put("contractNumber", contract.getNumber());
         templateModel.put("contractDateType", contractDate.getType());
         templateModel.put("contractDateDate", contractDate.getDate());
-        templateModel.put("contractDateComment", escapeText(contractDate.getComment()));
+        templateModel.put("contractDateComment", escapeTextAndReplaceLineBreaks(contractDate.getComment()));
         templateModel.put("contractDateCommentExists", StringUtils.isNotBlank(contractDate.getComment()));
         templateModel.put("linkToContract", String.format(urlTemplate, contract.getId()));
         templateModel.put("recipients", recipients);
@@ -284,14 +284,14 @@ public class TemplateServiceImpl implements TemplateService {
                     Map< String, Object > caseComment = new HashMap<>();
                     caseComment.put( "created", comment.getCreated() );
                     caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", escapeTextComment( comment.getText(), textMarkup ) );
+                    caseComment.put( "text", escapeTextAndRenderHTML( comment.getText(), textMarkup ) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     caseComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
                     if(isChanged && oldCaseComment != null){
-                        caseComment.put( "oldText", escapeTextComment( oldCaseComment.getText(), textMarkup ) );
+                        caseComment.put( "oldText", escapeTextAndRenderHTML( oldCaseComment.getText(), textMarkup ) );
                     }
 
                     return caseComment;
@@ -299,16 +299,15 @@ public class TemplateServiceImpl implements TemplateService {
                 .collect( toList() );
     }
 
-    String escapeTextComment(String text, En_TextMarkup textMarkup) {
+    String escapeTextAndRenderHTML(String text, En_TextMarkup textMarkup) {
         if (text == null) {
             return null;
         }
-        text = HTMLHelper.htmlEscapeWOCodeBlock(text, textMarkup);
         text = htmlRenderer.plain2html(text, textMarkup);
         return text;
     }
 
-    private String escapeText(String text) {
+    private String escapeTextAndReplaceLineBreaks(String text) {
         if (text == null) {
             return null;
         }

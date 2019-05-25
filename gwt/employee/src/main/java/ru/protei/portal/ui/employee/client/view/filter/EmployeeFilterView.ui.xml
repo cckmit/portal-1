@@ -9,7 +9,10 @@
     <g:HTMLPanel styleName="card card-default">
         <div class="card-block">
             <div class="row">
-                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.employeeEmployeeFullNameColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-user"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="workPhone" placeholder="{lang.employeeWorkPhoneColumnHeader}" styleName="form-group col-xs-12" addon="5"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhoneColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-phone"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddressColumnHeader}" styleName="form-group col-xs-12" addon="IP"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">

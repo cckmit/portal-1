@@ -133,7 +133,7 @@ public abstract class MultipleSelector<T>
     @Override
     public void onWindowScroll( Window.ScrollEvent event ) {
         if ( popup.isAttached() ) {
-            showPopup( relative );
+            popup.showNear(relative);
         }
     }
 
