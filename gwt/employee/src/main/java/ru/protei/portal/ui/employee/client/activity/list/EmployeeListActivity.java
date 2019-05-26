@@ -88,14 +88,16 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
 
         view.getChildContainer().clear();
-        itemViewToModel.clear();
-
+        view.updateLabel( 0 );
         view.showLoader( true );
+
+        itemViewToModel.clear();
         marker = new Date().getTime();
 
         employeeService.getEmployees( makeQuery(), new FluentCallback< List< EmployeeShortView > >()
                 .withMarkedSuccess( marker, ( m, result ) -> {
                     if ( marker == m ) {
+                        view.updateLabel( result.size() );
                         fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
                         view.showLoader( false );
                     }

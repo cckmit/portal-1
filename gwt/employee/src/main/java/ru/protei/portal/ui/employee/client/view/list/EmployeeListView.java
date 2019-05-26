@@ -39,8 +39,8 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     }
 
     @Override
-    public void updateLabel( long totalCount ) {
-        label.setInnerText( lang.pagerLabel( totalCount ) );
+    public void updateLabel( int totalCount ) {
+        label.setInnerText( lang.countLabel( totalCount ) );
     }
 
     @UiField
