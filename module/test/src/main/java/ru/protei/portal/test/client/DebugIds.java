@@ -14,7 +14,7 @@ public class DebugIds {
     public interface APP_VIEW {
         String GLOBAL_CONTAINER = "global-container";
         String LOGOUT_BUTTON = "app-logout-button";
-        String LOCALE_SELECTOR = "app-locale-selector";
+        @Deprecated String LOCALE_SELECTOR = "app-locale-selector";
         String TOGGLE_SIDEBAR_BUTTON = "app-toggle-sidebar-button";
         String USER_PANEL = "app-user-panel";
     }
@@ -69,7 +69,7 @@ public class DebugIds {
         String SEARCH_BY_COMMENTS_TOGGLE = "filter-search-by-comments-toggle";
         String SORT_FIELD_SELECTOR = "filter-sort-field-selector";
         String SORT_DIR_BUTTON = "filter-sort-dir-button";
-        String COMPANY_GROUP_SELECTOR = "filter-company-group-selector";
+        @Deprecated String COMPANY_GROUP_SELECTOR = "filter-company-group-selector";
         String DATE_RANGE_SELECTOR = "filter-date-range-selector";
         String COMPANY_SELECTOR_ADD_BUTTON = "filter-company-selector-add-button";
         String COMPANY_SELECTOR_CLEAR_BUTTON = "filter-company-selector-clear-button";
@@ -187,16 +187,16 @@ public class DebugIds {
     public interface ISSUE_PREVIEW {
         String PRIVACY_ICON = "issue-preview-privacy-icon";
         String FULL_SCREEN_BUTTON = "issue-preview-full-screen-button";
-        String TITLE_LABEL = "issue-preview-title-label";
+        @Deprecated String TITLE_LABEL = "issue-preview-title-label";
         String LINKS_CONTAINER = "issue-preview-links-container";
         String DATE_CREATED_LABEL = "issue-preview-date-created-label";
         String IMPORTANCE_LABEL = "issue-preview-importance-label";
         String PRODUCT_LABEL = "issue-preview-product-label";
         String STATE_LABEL = "issue-preview-state-label";
         String TIME_ELAPSED_LABEL = "issue-preview-time-elapsed-label";
-        String COMPANY_LABEL = "issue-preview-company-label";
+        @Deprecated String COMPANY_LABEL = "issue-preview-company-label";
         String CONTACT_LABEL = "issue-preview-contact-label";
-        String OUR_COMPANY_LABEL = "issue-preview-our-company-label";
+        @Deprecated String OUR_COMPANY_LABEL = "issue-preview-our-company-label";
         String MANAGER_LABEL = "issue-preview-manager-label";
         String SUBSCRIPTION_LABEL = "issue-preview-subscription-label";
         String NAME_LABEL = "issue-preview-name-label";

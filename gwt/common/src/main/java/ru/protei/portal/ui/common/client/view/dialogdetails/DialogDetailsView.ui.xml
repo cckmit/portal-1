@@ -17,7 +17,7 @@
                 </div>
                 <div class="modal-footer">
                     <g:Anchor href='#' ui:field="save" styleName="btn btn-primary"><ui:text from="{lang.buttonSave}"/></g:Anchor>
-                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-white"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
+                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
                 </div>
             </div>
         </div>

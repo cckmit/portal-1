@@ -32,7 +32,7 @@ public class DistrictBtnGroupMulti extends ToggleBtnGroupMulti<DistrictInfo> imp
         }
 
         for ( DistrictInfo district : options ) {
-            addBtn( district.shortName, district, "btn btn-white" );
+            addBtn( district.shortName, district, "btn btn-default" );
         }
     }
 

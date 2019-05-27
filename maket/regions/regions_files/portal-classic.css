@@ -22980,11 +22980,11 @@ body {
   border: transparent;
 }
 
-.btn-white, .date .btn-default {
+.btn-default, .date .btn-default {
   background-color: white;
   border-color: #ced2d7 #c5cad0 #ced2d7;
 }
-.btn-white:hover, .date .btn-default:hover {
+.btn-default:hover, .date .btn-default:hover {
   background: #e2e7eb;
   border-color: #d8dde1;
 }

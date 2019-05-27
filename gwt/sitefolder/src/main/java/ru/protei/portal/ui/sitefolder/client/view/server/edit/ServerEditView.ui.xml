@@ -20,7 +20,7 @@
 
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderPlatform}"/></label>
-                    <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="btn-selector"/>
+                    <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="dropdown-selector"/>
                 </div>
 
                 <div class="form-group col-md-12">
@@ -35,8 +35,8 @@
 
                 <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-md-12">
                     <label><ui:text from="{lang.siteFolderApps}"/></label>
-                    <g:Button ui:field="openButton" styleName="btn btn-white pull-right m-l-10" text="{lang.openTableView}"/>
-                    <g:Button ui:field="createButton" styleName="btn btn-white pull-right m-l-10" text="{lang.siteFolderAppCreate}"/>
+                    <g:Button ui:field="openButton" styleName="btn btn-default pull-right m-l-10" text="{lang.openTableView}"/>
+                    <g:Button ui:field="createButton" styleName="btn btn-default pull-right m-l-10" text="{lang.siteFolderAppCreate}"/>
                 </g:HTMLPanel>
 
                 <g:HTMLPanel styleName="form-group col-md-12" ui:field="listContainer"/>
@@ -45,7 +45,7 @@
         </div>
         <div class="footer">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

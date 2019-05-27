@@ -77,7 +77,7 @@ public class ToggleBtnGroupBase<T>
     }
 
     public void addBtn( String caption, T value ) {
-        addBtn( caption, value, "btn btn-white" );
+        addBtn( caption, value, "btn btn-default" );
     }
 
     public ToggleButton addBtn( String caption, T value, String buttonStyle ) {

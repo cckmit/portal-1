@@ -19,17 +19,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        DecoratedTabBar bar = new DecoratedTabBar();
-        bar.addTab("foo");
-        bar.addTab("bar");
-        bar.addTab("baz");
-        rootWrapper.add(bar);
-
-
-        DecoratedTabPanel panel = new DecoratedTabPanel();
-        panel.add(new Button("1"), "1");
-        panel.add(new Button( "2"), "2");
-        rootWrapper.add(panel);
     }
 
     @Override

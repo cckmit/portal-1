@@ -7,7 +7,7 @@
     <g:HTMLPanel ui:field="root" styleName="form-group col-md-12 case-tag-popup">
         <div class="case-tag-popup-header">
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="search-input"/>
-            <g:Button ui:field="addButton" styleName="btn btn-flat btn-white">
+            <g:Button ui:field="addButton" styleName="btn btn-flat btn-default">
                 <i class="fa fa-plus"/>
             </g:Button>
         </div>

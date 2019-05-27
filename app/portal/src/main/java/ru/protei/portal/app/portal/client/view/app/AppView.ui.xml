@@ -11,7 +11,7 @@
             <g:Anchor ui:field="logo" styleName="sidebar-header">
                 <img class="brand" height="30" src="./images/logo.svg" width="30"/>
                 <b class="m-l-5" style="">PROTEI</b>
-                <span>LTD</span>
+                <span> LTD</span>
             </g:Anchor>
 
             <div class="sidebar-menu">
@@ -30,7 +30,7 @@
             <div>
                 <div class="brand inline" style="font-size: 24px;color: #257ac0;left: 36px;">
                     <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
-                    <b class="m-l-5">PROTEI</b>LTD
+                    <b class="m-l-5">PROTEI</b> LTD
                 </div>
                 <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="no-margin d-lg-inline-block no-style p-l-30 p-r-20"/>
             </div>

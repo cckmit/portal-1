@@ -29,7 +29,7 @@
                         <div class="input-group">
                             <g:TextBox ui:field="fileName" styleName="form-control" enabled="false"/>
                             <div class="input-group-btn">
-                                <g:Button ui:field="selectFileButton" styleName="btn btn-white">
+                                <g:Button ui:field="selectFileButton" styleName="btn btn-default">
                                     <i class="ion-upload"/>
                                 </g:Button>
                             </div>
@@ -93,7 +93,7 @@
             </div>
             <div class="footer">
                 <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
             </div>
         </div>
     </g:HTMLPanel>

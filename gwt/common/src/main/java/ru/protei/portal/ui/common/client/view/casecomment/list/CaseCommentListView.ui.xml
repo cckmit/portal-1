@@ -8,58 +8,59 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="panel">
-        <div class="body">
-            <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats">
-                <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
+    <g:HTMLPanel ui:field="root">
+        <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats">
+            <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
 
-                    <div ui:field="messageBlock">
-                        <div class="image">
-                            <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
-                        </div>
+                <div ui:field="messageBlock">
+                    <div class="image">
+                        <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
+                    </div>
 
-                        <div class="message">
-                            <autoresizetextarea:AutoResizeTextArea
-                                    ui:field="comment"
-                                    styleName="form-control form-group message-input resize-vertical"
-                                    enablePasteImage="true"
-                                    minRows="5" maxRows="20"/>
+                    <div class="message">
+                        <autoresizetextarea:AutoResizeTextArea
+                                ui:field="comment"
+                                styleName="form-control form-group message-input resize-vertical"
+                                enablePasteImage="true"
+                                minRows="5" maxRows="20"/>
 
-                            <div class="attachments">
-                                <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn"/>
-
-                                <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
-
-                                <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
-                                    <div class="btn btn-white attach-add-btn">
+                        <div>
+                            <div class="attachments pull-left">
+                                <fileuploader:AttachmentUploader ui:field="fileUploader">
+                                    <div class="attach-add-btn">
+                                        <i class="fas fa-paperclip"/>
                                         <ui:text from='{lang.addAttachmentBtn}'/>
-                                        <i class="ion-plus"/>
                                         <i class="icon-verifiable"/>
                                     </div>
                                 </fileuploader:AttachmentUploader>
 
-                                <div class="inline-block ">
-                                    <timefield:TimeTextBox ui:field="timeElapsed" styleName="form-control inline-block time-elapsed" notNull="false"/>
-                                    <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" styleName="inline-block" />
-                                </div>
-                                <attachment:AttachmentList ui:field="attachmentList" simpleMode="true" styleName="inline-block attachment-list-simple"/>
+                                <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
+                                                           styleName="inline-block attachment-list-simple"/>
                             </div>
+                            <small class="text-muted pull-right" ui:field="textMarkupLabel"/>
+                        </div>
 
-                            <div class="hints">
-                                <span class="icon fa fa-info-circle"/>
-                                <span class="hint"><ui:text from='{lang.sendOnCtrlEnter}'/></span>
-                                <span class="hint hide" ui:field="textMarkupLabel"/>
+                        <div>
+                            <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn btn-xs"/>
+
+                            <g:Button styleName="btn btn-complete btn-xs" ui:field="send" text="{lang.commentSendMessage}"/>
+
+                            <div class="inline-block">
+                                <timefield:TimeTextBox ui:field="timeElapsed"
+                                                       styleName="form-control inline-block time-elapsed" notNull="false"/>
+                                <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" styleName="inline-block"/>
                             </div>
+                        </div>
 
-                            <div ui:field="commentPreviewContainer" class="message-preview hide">
-                                <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/></div>
-                                <div ui:field="commentPreview" class="message-preview-content markdown"/>
+                        <div ui:field="commentPreviewContainer" class="message-preview hide">
+                            <div class="message-preview-label">
+                                <ui:text from='{lang.commentPreview}'/>
                             </div>
-
+                            <div ui:field="commentPreview" class="message-preview-content markdown"/>
                         </div>
                     </div>
-                </g:HTMLPanel>
-            </g:FlowPanel>
-        </div>
+                </div>
+            </g:HTMLPanel>
+        </g:FlowPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

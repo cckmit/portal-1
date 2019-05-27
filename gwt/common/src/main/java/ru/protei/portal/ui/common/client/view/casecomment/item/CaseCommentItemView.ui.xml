@@ -6,7 +6,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" ui:field="root" styleName="left">
-
         <ul class="list-inline m-b-10">
             <li class="issue-link">
                 <issuelink:CaseMetaView ui:field="remoteLink" visible="false" enabled="false" showLabel="false"/>

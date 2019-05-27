@@ -22,7 +22,7 @@
 
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderServer}"/></label>
-                    <server:ServerButtonSelector ui:field="server" validation="true" styleName="btn-selector"/>
+                    <server:ServerButtonSelector ui:field="server" validation="true" styleName="dropdown-selector"/>
                 </div>
 
                 <div class="form-group col-md-12">
@@ -39,7 +39,7 @@
         </div>
         <div class="footer">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-white close_button" text="{lang.buttonCancel}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

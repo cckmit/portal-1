@@ -3,7 +3,7 @@
 
     <g:HTMLPanel styleName="dropdown-selector" ui:field="inputContainer">
         <label ui:field="label" class="hide"/>
-        <g:Button ui:field="button" styleName="btn btn-white btn-block dropdown-toggle">
+        <g:Button ui:field="button" styleName="btn btn-default btn-block dropdown-toggle">
             <i ui:field="icon"/>
             <span ui:field="text" class="selector-val"></span>
         </g:Button>

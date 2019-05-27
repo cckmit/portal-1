@@ -68,6 +68,8 @@ public class AppView extends Composite
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
+        menuBar.removeClassName("show");
+
         if ( activity != null ) {
             activity.onLogoutClicked();
         }
@@ -96,6 +98,8 @@ public class AppView extends Composite
     @UiHandler("settings")
     public void settingsClick(ClickEvent event) {
         event.preventDefault();
+        menuBar.removeClassName("show");
+
         if (activity != null) {
             activity.onSettingsClicked();
         }
@@ -103,11 +107,7 @@ public class AppView extends Composite
 
     @UiHandler("profile")
     public void profileClick(ClickEvent event) {
-        if ( menuBar.getClassName().contains("show") ) {
-            menuBar.removeClassName("show");
-        } else {
-            menuBar.addClassName("show");
-        }
+        menuBar.addClassName("show");
     }
 
     @Override
@@ -118,10 +118,17 @@ public class AppView extends Composite
         }
     }
 
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        menuBar.removeClassName("show");
+    }
+
     private void ensureDebugIds() {
         globalContainer.ensureDebugId(DebugIds.APP_VIEW.GLOBAL_CONTAINER);
         logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
         toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
+        profile.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
     }
 
     private void initHandlers() {

@@ -16,7 +16,7 @@
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
                         <sortfield:SortFieldSelector ui:field="sortField" type="EMPLOYEE_REGISTRATION" hasNullValue="false"/>
-                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                     </div>
                 </div>
 

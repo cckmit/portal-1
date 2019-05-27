@@ -318,7 +318,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.name().setValue(issue.getName());
 
         view.numberVisibility().setVisible( !isNew(issue) );
-        view.number().setValue( isNew(issue) ? null : issue.getCaseNumber().intValue() );
+        view.setNumber(isNew(issue) ? null : issue.getCaseNumber().intValue() );
 
         view.isLocal().setValue(issue.isPrivateCase());
 

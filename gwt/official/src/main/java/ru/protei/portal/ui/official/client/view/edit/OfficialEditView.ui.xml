@@ -29,7 +29,7 @@
                     <g:Button ui:field="saveButton" styleName="btn btn-complete">
                         <ui:text from="{lang.buttonSave}"/>
                     </g:Button>
-                    <g:Button ui:field="cancelButton" styleName="btn btn-white">
+                    <g:Button ui:field="cancelButton" styleName="btn btn-default">
                         <ui:text from="{lang.buttonCancel}"/>
                     </g:Button>
                 </div>

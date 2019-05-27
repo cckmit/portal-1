@@ -21,11 +21,10 @@ public class InfoColumn extends ClickColumn< ProjectInfo > {
     public void fillColumnValue( Element cell, ProjectInfo value ) {
         cell.addClassName( "info" );
 
-        StringBuilder content = new StringBuilder();
-        content.append( "<b>" ).append( value.getName() ).append( "</b><br/>" )
-                .append( value.getDescription() );
+        String content = "<b>" + value.getName() + "</b><br/><small>" +
+                value.getDescription() + "</small>";
 
-        cell.setInnerHTML( content.toString() );
+        cell.setInnerHTML(content);
     }
 
     @Inject

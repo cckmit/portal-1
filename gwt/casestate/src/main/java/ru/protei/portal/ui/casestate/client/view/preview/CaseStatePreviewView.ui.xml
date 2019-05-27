@@ -33,7 +33,7 @@
         <div class="card-footer">
             <div class="text-right">
                 <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
             </div>
         </div>
     </g:HTMLPanel>

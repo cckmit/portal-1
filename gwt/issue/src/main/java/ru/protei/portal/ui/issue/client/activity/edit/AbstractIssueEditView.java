@@ -51,15 +51,10 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility timeElapsedContainerVisibility();
 
     HasValidable companyValidator();
-    HasValidable initiatorValidator();
-    HasValidable productValidator();
-    HasValidable managerValidator();
 
     HasEnabled initiatorState();
 
     HasVisibility numberVisibility();
-
-    HasValue<Integer> number();
 
     void setSubscriptionEmails(String value);
 
@@ -78,6 +73,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled productEnabled();
     HasEnabled managerEnabled();
     HasEnabled stateEnabled();
+
+    void setNumber(Integer num);
 
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();

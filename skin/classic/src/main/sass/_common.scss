@@ -844,7 +844,6 @@ label.bordered:after {
 }
 
 /* table expandable width */
-
 .no-width {
   width: 0;
   max-width: 0;
@@ -867,68 +866,27 @@ label.bordered:after {
   padding-right: 0;
 }
 
-.preview-container {
-  -webkit-transition: all 0.5s;
-  -moz-transition: all 0.5s;
-  -o-transition: all 0.5s;
-  transition: all 0.5s;
-  right: 0;
-}
-
-.preview-container .preview-wrapper.fixed {
-  top: 15px;
-  margin-right: 15px;
-}
-
+.preview-container,
 .filter-container {
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
   -o-transition: all 0.5s;
   transition: all 0.5s;
-  right: 0;
+}
+
+
+.preview-wrapper,
+.filter-container .card {
+  overflow-y: auto;
+  box-sizing: border-box;
+  max-height: calc(100vh - 110px); // 80px = main-header (60px) + top offset (15px) + bottom offset (35px)
   position: relative;
-
-  .panel {
-    margin-left: 10px;
-    padding: 10px 0;
-    background: white;
-
-    .body {
-      display: inline-block;
-
-      p {
-        margin: 10px 0;
-      }
-
-      .buttons_group [class*='col-'] {
-        display: block;
-        padding-top: 5px;
-      }
-    }
-  }
+  z-index: 0;
 }
 
 .filter-container .panel .body .buttons_group {
   width: 100%;
   margin-top: -5px;
-}
-
-.filter-container .card.fixed {
-  margin-right: 15px;
-  width: auto;
-}
-
-.preview-wrapper,
-.filter-container .panel {
-  overflow-y: auto;
-  box-sizing: border-box;
-  max-height: calc(100vh - 100px); // 80px = main-header (50px) + top offset (15px) + bottom offset (35px)
-  position: relative;
-  z-index: 0;
-}
-
-.filter-container .panel.fixed {
-  position: fixed !important;
 }
 
 // временное решение
@@ -938,12 +896,7 @@ label.bordered:after {
 }
 
 /**** Collapsable filter ****/
-.grid {
-  position: relative;
-}
-
 .filter-collapsable {
-
   > .collapsed {
     display: none;
 
@@ -1077,17 +1030,8 @@ label.bordered:after {
 }
 
 /****************/
-
-.panelField .input-selector {
-  margin-right: 7px;
-}
-
 .img-circle {
   border-radius: 50%;
-}
-
-.fixed {
-  position: fixed;
 }
 
 td.info {
@@ -1382,28 +1326,29 @@ td.info {
   min-width: 100px;
 }
 
-.private-btn {
+.private-btn.btn {
   padding: 0;
   min-width: 30px;
-  border-left: 0;
+  border: 0;
+  height: 28px;
+  background: none;
 
-  &.input-group-addon-up {
-    background-color: teal !important;
-    border-color: #1f4c4c;
+  &.btn-down:after,
+  &.btn-down-hovering:after {
+    font-family: "Font Awesome 5 Free", serif;
+    content: "\f023";
+    font-size: 1.6em;
+    color: $danger_color;
+    font-weight: 900;
   }
 
-  &.input-group-addon-down:after,
-  &.input-group-addon-up-hovering:after {
-    font-family: "Ionicons";
-    content: "\f200";
-    font-size: 1.2em;
-  }
-
-  &.input-group-addon-up:after,
-  &.input-group-addon-down-hovering:after {
-    font-family: "Ionicons";
-    content: "\f254";
-    font-size: 1.2em;
+  &.btn-up:after,
+  &.btn-up-hovering:after {
+    font-family: "Font Awesome 5 Free", serif;
+    content: "\f09c";
+    font-size: 1.6em;
+    color: $success_dark_color;
+    font-weight: 900;
   }
 }
 
@@ -2664,7 +2609,7 @@ div.select2-container {
 .case-state-preview {
   .btn-group {
     .btn {
-      &.btn-white {
+      &.btn-default {
         border: none;
 
         &.active {
@@ -3249,4 +3194,14 @@ label {
       }
     }
   }
+}
+
+.card.footer-fixable .card-footer {
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: 0;
+  left: 0;
+  padding: 8px 5px;
+  background-color: #ededed;
+  border-top: 1px solid #dadada;
 }

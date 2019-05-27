@@ -83,7 +83,7 @@
 
                 <div class="footer">
                     <g:Button ui:field="saveButton" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></g:Button>
-                    <g:Button ui:field="cancelButton" styleName="btn btn-white"><ui:text from="{lang.buttonCancel}"/></g:Button>
+                    <g:Button ui:field="cancelButton" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Button>
                 </div>
             </div>
     </g:HTMLPanel>

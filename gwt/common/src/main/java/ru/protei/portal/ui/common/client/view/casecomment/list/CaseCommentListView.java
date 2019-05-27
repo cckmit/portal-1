@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.view.casecomment.list;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -265,7 +266,7 @@ public class CaseCommentListView
     @UiField
     DivElement commentPreview;
     @UiField
-    SpanElement textMarkupLabel;
+    Element textMarkupLabel;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;
