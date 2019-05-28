@@ -59,17 +59,11 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @Override
     public void setEmail( List<String> list ) {
-        emailContainer.clear();
-        if ( CollectionUtils.isNotEmpty( list ) ) {
-            emailContainer.getElement().appendChild( buildIconElement() );
-            String lastValue = list.stream().reduce( ( first, second ) -> second ).get();
-            list.forEach( value -> {
-                emailContainer.getElement().appendChild( buildAnchorElement( value ) );
-                if ( value != lastValue ) {
-                    emailContainer.getElement().appendChild( buildСommaElement() );
-                }
-            } );
-        }
+        boolean isEmpty = CollectionUtils.isEmpty( list );
+        emailContainer.setVisible( !isEmpty );
+        emails.clear();
+        if ( isEmpty ) return;
+        list.forEach( value -> emails.getElement().appendChild( buildAnchorElement( value ) ) );
     }
 
     @Override
@@ -94,23 +88,11 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         return previewContainer;
     }
 
-    private Element buildIconElement() {
-        Element icon = DOM.createElement( "i" );
-        icon.addClassName( "fa fa-envelope" );
-        return icon;
-    }
-
     private Element buildAnchorElement( String value ){
         AnchorElement anchor = DOM.createAnchor().cast();
         anchor.setInnerText( value );
         anchor.setHref( "mailto:" + value );
         return anchor;
-    }
-
-    private Element buildСommaElement() {
-        SpanElement span = DOM.createSpan().cast();
-        span.setInnerText( ", " );
-        return span;
     }
 
     @UiField
@@ -151,6 +133,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     Anchor preview;
+
+    @UiField
+    HTMLPanel emails;
 
     AbstractEmployeeItemActivity activity;
 
