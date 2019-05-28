@@ -12,8 +12,7 @@
 
             <div class="card card-default">
                 <div class="card-body">
-                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
-                                           enabled="false"/>
+
 
                     <h4 class="no-margin inline">
                         <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
@@ -30,42 +29,42 @@
                         <small ui:field="creationDate" class="datetime no-margin"/>
                     </div>
 
+                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
+                                           enabled="false"/>
+
+                    <div class="form-group-attached">
+                        <div class="row clearfix">
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.issueCriticality}"/>
+                                    </label>
+                                    <div>
+                                        <i ui:field="iconCriticality"/>
+                                        <span ui:field="criticality"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group form-group-default">
+                                    <label>
+                                        <ui:text from="{lang.issueState}"/>
+                                    </label>
+                                    <div ui:field="state"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label><ui:text from="{lang.issueProduct}"/></label>
+                                    <span ui:field="product"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <h5 ui:field="name"/>
 
                     <div class="form-group small hint-text pre-formatted-info markdown" ui:field="info"/>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <b>
-                                <ui:text from="{lang.issueCriticality}: "/>
-                            </b>
-                            <span>
-                                <i ui:field="iconCriticality"/>
-                                <span ui:field="criticality"/>
-                            </span>
-                        </div>
-
-                        <div class="col-md-6">
-                            <b>
-                                <ui:text from="{lang.issueProduct}: "/>
-                            </b>
-                            <span ui:field="product"/>
-                        </div>
-
-                        <div class="col-md-6">
-                            <b>
-                                <ui:text from="{lang.issueState}: "/>
-                            </b>
-                            <span ui:field="state"/>
-                        </div>
-
-                        <g:HTMLPanel ui:field="timeElapsedContainer" styleName="col-md-6">
-                            <b>
-                                <ui:text from="{lang.timeElapsed}: "/>
-                            </b>
-                            <timefield:TimeLabel ui:field="timeElapsed" styleName="inline"/>
-                        </g:HTMLPanel>
-                    </div>
 
                     <h5>
                         <ui:text from="{lang.issueContactHeader}"/>
@@ -89,6 +88,13 @@
                         <ui:text from="{lang.companySubscription}"/>
                     </h5>
                     <small ui:field="subscriptions"/>
+
+                    <g:HTMLPanel ui:field="timeElapsedContainer" styleName="row">
+                        <h5 class="col-md-12">
+                            <ui:text from="{lang.timeElapsed}"/>
+                            <timefield:TimeLabel ui:field="timeElapsed" styleName="inline m-l-5"/>
+                        </h5>
+                    </g:HTMLPanel>
 
                     <div class="row">
                         <div class="col-md-12">
@@ -124,6 +130,5 @@
                 </g:HTMLPanel>
             </div>
         </g:HTMLPanel>
-
     </g:HTMLPanel>
 </ui:UiBinder>

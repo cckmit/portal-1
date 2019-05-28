@@ -5,6 +5,7 @@ import com.google.gwt.core.client.GWT;
 import ru.protei.portal.core.model.dict.En_Gender;
 
 public class AccountPhotoUtils {
+
     private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
 
     public static String getPhotoUrl(Long accountId) {

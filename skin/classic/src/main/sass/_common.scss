@@ -880,7 +880,6 @@ label.bordered:after {
   overflow-y: auto;
   box-sizing: border-box;
   max-height: calc(100vh - 110px); // 80px = main-header (60px) + top offset (15px) + bottom offset (35px)
-  position: relative;
   z-index: 0;
 }
 

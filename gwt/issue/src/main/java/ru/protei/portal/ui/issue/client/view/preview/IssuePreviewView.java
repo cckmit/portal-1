@@ -224,7 +224,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement product;
     @UiField
-    SpanElement state;
+    DivElement state;
     @UiField
     Element iconCriticality;
     @UiField

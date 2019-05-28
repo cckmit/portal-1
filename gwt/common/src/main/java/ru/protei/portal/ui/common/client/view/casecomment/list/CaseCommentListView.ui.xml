@@ -24,32 +24,36 @@
                                 enablePasteImage="true"
                                 minRows="5" maxRows="20"/>
 
-                        <div>
-                            <div class="attachments pull-left">
-                                <fileuploader:AttachmentUploader ui:field="fileUploader">
-                                    <div class="attach-add-btn">
-                                        <i class="fas fa-paperclip"/>
-                                        <ui:text from='{lang.addAttachmentBtn}'/>
-                                        <i class="icon-verifiable"/>
-                                    </div>
-                                </fileuploader:AttachmentUploader>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="attachments pull-left">
+                                    <fileuploader:AttachmentUploader ui:field="fileUploader">
+                                        <div class="attach-add-btn">
+                                            <i class="fas fa-paperclip"/>
+                                            <ui:text from='{lang.addAttachmentBtn}'/>
+                                            <i class="icon-verifiable"/>
+                                        </div>
+                                    </fileuploader:AttachmentUploader>
 
-                                <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
-                                                           styleName="inline-block attachment-list-simple"/>
+                                    <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
+                                                               styleName="inline-block attachment-list-simple"/>
+                                </div>
+                                <small class="text-muted pull-right" ui:field="textMarkupLabel"/>
                             </div>
-                            <small class="text-muted pull-right" ui:field="textMarkupLabel"/>
                         </div>
 
-                        <div>
-                            <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn btn-xs"/>
-
+                        <div class="row">
                             <g:Button styleName="btn btn-complete btn-xs" ui:field="send" text="{lang.commentSendMessage}"/>
 
-                            <div class="inline-block">
+                            <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-3"/>
+                            <div class="col-md-3">
                                 <timefield:TimeTextBox ui:field="timeElapsed"
-                                                       styleName="form-control inline-block time-elapsed" notNull="false"/>
-                                <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" styleName="inline-block"/>
+                                                       styleName="form-control time-elapsed" notNull="false"/>
                             </div>
+                            <div class="col-md-2">
+                                <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn btn-xs "/>
+                            </div>
+
                         </div>
 
                         <div ui:field="commentPreviewContainer" class="message-preview hide">
