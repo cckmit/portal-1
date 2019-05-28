@@ -61,9 +61,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     public void setEmail( List<String> list ) {
         boolean isEmpty = CollectionUtils.isEmpty( list );
         emailContainer.setVisible( !isEmpty );
-        emails.clear();
+        emails.removeAllChildren();
         if ( isEmpty ) return;
-        list.forEach( value -> emails.getElement().appendChild( buildAnchorElement( value ) ) );
+        list.forEach( value -> emails.appendChild( buildAnchorElement( value ) ) );
     }
 
     @Override
@@ -135,7 +135,8 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     Anchor preview;
 
     @UiField
-    HTMLPanel emails;
+    SpanElement emails;
+
 
     AbstractEmployeeItemActivity activity;
 

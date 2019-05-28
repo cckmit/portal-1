@@ -23,7 +23,7 @@
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="emailContainer" styleName="contacts email">
                 <i class="fa fa-envelope"/>
-                <g:HTMLPanel ui:field="emails" tag="span"/>
+                <span ui:field="emails"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="departmentContainer" styleName="contacts department" visible="false">
                 <i class="fa fa-sitemap"/>
