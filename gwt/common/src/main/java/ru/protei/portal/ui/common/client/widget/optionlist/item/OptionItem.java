@@ -58,6 +58,8 @@ public class OptionItem
     @UiHandler( "checkbox" )
     public void onCheckboxClicked( ValueChangeEvent<Boolean> event ) {
         ValueChangeEvent.fire( this, event.getValue() );
+
+        checkbox.setValue( event.getValue(), false );
     }
 
     @UiHandler( "name" )

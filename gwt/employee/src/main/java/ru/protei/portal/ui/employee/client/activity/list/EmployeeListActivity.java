@@ -88,14 +88,16 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         }
 
         view.getChildContainer().clear();
-        itemViewToModel.clear();
-
+        view.updateLabel( 0 );
         view.showLoader( true );
+
+        itemViewToModel.clear();
         marker = new Date().getTime();
 
         employeeService.getEmployees( makeQuery(), new FluentCallback< List< EmployeeShortView > >()
                 .withMarkedSuccess( marker, ( m, result ) -> {
                     if ( marker == m ) {
+                        view.updateLabel( result.size() );
                         fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
                         view.showLoader( false );
                     }
@@ -122,7 +124,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
         itemView.setPhone( infoFacade.publicPhonesAsString() );
-        itemView.setEmail( infoFacade.publicEmailsAsString() );
+        itemView.setEmail( infoFacade.publicEmails() );
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
