@@ -303,7 +303,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        text = htmlRenderer.plain2html(text, textMarkup);
+        text = htmlRenderer.plain2html(text, textMarkup, false);
         return text;
     }
 
