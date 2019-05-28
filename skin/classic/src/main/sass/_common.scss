@@ -1407,6 +1407,7 @@ label.bordered:after{
   position: sticky;
   position: -webkit-sticky;
   bottom: 1px;
+  z-index: 1000
 }
 
 .preview-container {
