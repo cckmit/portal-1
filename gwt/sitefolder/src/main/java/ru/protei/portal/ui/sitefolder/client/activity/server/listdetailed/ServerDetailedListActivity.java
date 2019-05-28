@@ -88,7 +88,7 @@ public abstract class ServerDetailedListActivity implements Activity, AbstractSe
     private AbstractServerDetailedListItemView makeItemView(Server server) {
         AbstractServerDetailedListItemView itemView = itemFactory.get();
         itemView.setActivity(this);
-        itemView.setName(server.getName());
+        itemView.setName(server.getName() + " – " + server.getIp());
         itemView.setParameters(server.getParams());
         itemView.setApps(stream(server.getAppNames())
                 .filter(Objects::nonNull)
