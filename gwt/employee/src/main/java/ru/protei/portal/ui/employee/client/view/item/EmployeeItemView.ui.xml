@@ -21,10 +21,7 @@
                 <i class="fa fa-phone"/>
                 <span ui:field="phone"/>
             </g:HTMLPanel>
-            <g:HTMLPanel ui:field="emailContainer" styleName="contacts email">
-                <i class="fa fa-envelope"/>
-                <a href="#" ui:field="email"/>
-            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="emailContainer" styleName="contacts email"/>
             <g:HTMLPanel ui:field="departmentContainer" styleName="contacts department" visible="false">
                 <i class="fa fa-sitemap"/>
                 <span ui:field="department"/>
