@@ -72,7 +72,7 @@ public class IssueControllerImpl implements IssueController {
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
-        log.debug( "saveIssue(): id", response.getData().getId() );
+        log.debug( "saveIssue(): id={}", response.getData().getId() );
         return response.getData();
     }
 
