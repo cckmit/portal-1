@@ -26,10 +26,17 @@ public class CaseObjectSqlBuilder {
                         .append(StringUtils.join(query.getMemberIds(), ","))
                         .append("))");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
-                boolean notSpecified = query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED);
-                if (!query.getCaseTagsIds().isEmpty()) {
-                    condition.append(" and case_object.id")
-                            .append(notSpecified ? " not in" : " in")
+                if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
+                    condition.append( " and (case_object.id not in (select case_id from case_object_tag)" );
+                    if (!query.getCaseTagsIds().isEmpty()) {
+                        condition.append(" or case_object.id in")
+                                .append(" (select case_id from case_object_tag where tag_id in (")
+                                .append(StringUtils.join(query.getCaseTagsIds(), ","))
+                                .append("))");
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and case_object.id in")
                             .append(" (select case_id from case_object_tag where tag_id in (")
                             .append(StringUtils.join(query.getCaseTagsIds(), ","))
                             .append("))");
