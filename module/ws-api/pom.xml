@@ -9,8 +9,8 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>portal4.ws-api</artifactId>
+    <version>1.0.0.0</version>
 
     <build>
 
@@ -61,6 +61,8 @@
                         </manifest>
                         <manifestEntries>
                             <Class-Path>config/</Class-Path>
+                            <version>${project.version}</version>
+                            <build-time>${maven.build.timestamp}</build-time>
                         </manifestEntries>
                     </archive>
                     <excludes>
