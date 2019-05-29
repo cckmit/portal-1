@@ -13,47 +13,53 @@
             <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
 
                 <div ui:field="messageBlock">
+
                     <div class="image">
                         <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
                     </div>
 
                     <div class="message">
+
                         <autoresizetextarea:AutoResizeTextArea
                                 ui:field="comment"
                                 styleName="form-control form-group message-input resize-vertical"
                                 enablePasteImage="true"
                                 minRows="5" maxRows="20"/>
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="attachments pull-left">
-                                    <fileuploader:AttachmentUploader ui:field="fileUploader">
+                        <div class="card-body p-t-0 p-b-0">
+
+                            <div class="row">
+                                <div class="col-md-12 p-0 p-b-5">
+                                    <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="pull-left">
                                         <div class="attach-add-btn">
                                             <i class="fas fa-paperclip"/>
                                             <ui:text from='{lang.addAttachmentBtn}'/>
-                                            <i class="icon-verifiable"/>
+                                            <i class="fas icon-verifiable"/>
                                         </div>
                                     </fileuploader:AttachmentUploader>
-
-                                    <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
-                                                               styleName="inline-block attachment-list-simple"/>
+                                    <small class="text-muted pull-right" ui:field="textMarkupLabel"/>
                                 </div>
-                                <small class="text-muted pull-right" ui:field="textMarkupLabel"/>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <g:Button styleName="btn btn-complete btn-xs" ui:field="send" text="{lang.commentSendMessage}"/>
-
-                            <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-3"/>
-                            <div class="col-md-3">
-                                <timefield:TimeTextBox ui:field="timeElapsed"
-                                                       styleName="form-control time-elapsed" notNull="false"/>
-                            </div>
-                            <div class="col-md-2">
-                                <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn btn-xs "/>
                             </div>
 
+                            <div class="row">
+                                <g:Button styleName="btn btn-complete" ui:field="send" text="{lang.commentSendMessage}"/>
+
+                                <timeElapsed:ElapsedTimeTypeSelector ui:field="timeElapsedType" addStyleNames="col-md-3 p-r-0"/>
+
+                                <div class="col-md-3 p-r-0">
+                                    <timefield:TimeTextBox ui:field="timeElapsed"
+                                                           styleName="form-control time-elapsed" notNull="false"/>
+                                </div>
+
+                                <div class="col-md-1 p-r-0">
+                                    <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn btn-xs"/>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <attachment:AttachmentList ui:field="attachmentList" simpleMode="true"
+                                                           styleName="inline-block attachment-list-simple"/>
+                            </div>
                         </div>
 
                         <div ui:field="commentPreviewContainer" class="message-preview hide">

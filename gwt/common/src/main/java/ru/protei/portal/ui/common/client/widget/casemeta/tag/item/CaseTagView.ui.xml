@@ -5,7 +5,7 @@
 
     <g:FocusPanel ui:field="root">
         <g:HTMLPanel ui:field="panel" tag="li" styleName="case-tag">
-            <g:Anchor ui:field="remove" href="#" styleName="case-tag-close fa fa-close"/>
+            <g:Anchor ui:field="remove" href="#" styleName="case-tag-close fas fa-times"/>
             <g:InlineLabel ui:field="text" styleName="case-tag-text"/>
             <g:InlineLabel ui:field="icon" styleName="case-tag-icon"/>
         </g:HTMLPanel>

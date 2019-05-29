@@ -68,7 +68,7 @@ public class AppView extends Composite
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
-        menuBar.removeClassName("show");
+        menuBar.removeStyleName("show");
 
         if ( activity != null ) {
             activity.onLogoutClicked();
@@ -98,7 +98,7 @@ public class AppView extends Composite
     @UiHandler("settings")
     public void settingsClick(ClickEvent event) {
         event.preventDefault();
-        menuBar.removeClassName("show");
+        menuBar.removeStyleName("show");
 
         if (activity != null) {
             activity.onSettingsClicked();
@@ -107,7 +107,12 @@ public class AppView extends Composite
 
     @UiHandler("profile")
     public void profileClick(ClickEvent event) {
-        menuBar.addClassName("show");
+        menuBar.addStyleName("show");
+    }
+
+    @UiHandler("menuBarFocus")
+    public void profileClick(MouseOutEvent event) {
+        menuBar.removeStyleName("show");
     }
 
     @Override
@@ -121,7 +126,7 @@ public class AppView extends Composite
     @Override
     protected void onDetach() {
         super.onDetach();
-        menuBar.removeClassName("show");
+        menuBar.removeStyleName("show");
     }
 
     private void ensureDebugIds() {
@@ -179,7 +184,9 @@ public class AppView extends Composite
     @UiField
     Anchor settings;
     @UiField
-    DivElement menuBar;
+    FocusPanel menuBarFocus;
+    @UiField
+    HTMLPanel menuBar;
     @UiField
     Button profile;
 

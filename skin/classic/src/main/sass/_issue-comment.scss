@@ -73,11 +73,15 @@
 }
 
 .chats .image + .message {
-  margin-left: 60px
+  margin-left: 50px;
 }
 
 .chats .meta + .message {
-  margin-left: 60px;
+  margin-left: 50px;
+}
+
+.chats .new-message .message {
+  padding: 12px;
 }
 
 .chats .message {
@@ -97,17 +101,17 @@
     border-color: #f9d35b;
   }
 
+  .message-input:focus {
+    background-color: transparent;
+  }
 
   .message-text {
     white-space: pre-wrap;
   }
 
-  .form-control.time-elapsed {
-    width: 190px;
-    max-height: 31px;
-    height: 31px;
-    line-height: 31px;
-    margin-left: 5px;
+  .private-btn {
+    height: 35px;
+    line-height: 35px;
   }
 }
 
@@ -137,6 +141,10 @@
 }
 
 .chats .left .date-time {
+  float: right;
+}
+
+.chats .right .date-time {
   float: left;
 }
 
@@ -161,12 +169,12 @@
 }
 
 .chats .right .image + .message {
-  margin-right: 75px;
+  margin-right: 50px;
   margin-left: 0
 }
 
 .chats .right .meta + .message {
-  margin-right: 75px;
+  margin-right: 50px;
   margin-left: 0
 }
 
@@ -198,15 +206,16 @@
 .chats {
   .left {
     .options {
-      right: 110px;
+      right: 120px;
     }
   }
 
   .right {
     .options {
-      left: 110px;
+      left: 120px;
     }
   }
+
   .options {
     font-size: 12px;
     display: block;
@@ -260,5 +269,3 @@ blockquote {
     font-size: 0.9em;
   }
 }
-
-

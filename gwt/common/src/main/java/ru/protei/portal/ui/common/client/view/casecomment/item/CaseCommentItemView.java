@@ -169,7 +169,7 @@ public class CaseCommentItemView
     public void setPrivacyFlag(Boolean value) {
         if ( value ) {
             messageContainer.addClassName("private-message");
-            privacyFlag.setClassName("fa fa-fw fa-lock text-danger");
+            privateComment.setClassName("fa fa-fw fa-lock text-danger");
         }
     }
 
@@ -209,7 +209,7 @@ public class CaseCommentItemView
     @UiField
     HTMLPanel message;
     @UiField
-    Element privacyFlag;
+    Element privateComment;
     @UiField
     Anchor remove;
     @UiField

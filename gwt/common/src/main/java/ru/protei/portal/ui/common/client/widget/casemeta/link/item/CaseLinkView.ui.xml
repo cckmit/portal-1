@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="panel" tag="li" styleName="case-link">
-        <g:Anchor ui:field="remove" href="#" styleName="case-link-close fa fa-close"/>
+        <g:Anchor ui:field="remove" href="#" styleName="case-link-close fas fa-times"/>
         <g:Anchor ui:field="link">
             <span ui:field="text" class="case-link-text"/>
             <span ui:field="icon" class="case-link-icon"/>

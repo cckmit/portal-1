@@ -46,19 +46,21 @@
                             <img ui:field="photo" src="#" alt="" width="32" height="32"/>
                         </span>
                     </g:Button>
-                    <div class="dropdown-menu dropdown-menu-right profile-dropdown" ui:field="menuBar">
-                        <g:Anchor ui:field="settings" styleName="dropdown-item" title="{lang.buttonLogout}" href="#">
-                            <span class="pull-left m-r-10">
-                                <i class="fas fa-user-cog"/></span>
-                            <ui:text from="{lang.buttonSettings}"/>
-                        </g:Anchor>
+                    <g:FocusPanel ui:field="menuBarFocus">
+                        <g:HTMLPanel ui:field="menuBar" styleName="dropdown-menu dropdown-menu-right profile-dropdown">
+                            <g:Anchor ui:field="settings" styleName="dropdown-item" title="{lang.buttonLogout}" href="#">
+                                <span class="pull-left m-r-10">
+                                    <i class="fas fa-user-cog"/></span>
+                                <ui:text from="{lang.buttonSettings}"/>
+                            </g:Anchor>
 
-                        <g:Anchor ui:field="logout" styleName="clearfix bg-master-lighter dropdown-item" title="{lang.buttonLogout}" href="#">
-                            <span class="pull-left"><ui:text from="{lang.buttonLogout}"/></span>
-                            <span class="pull-right">
-                                <i class="fas fa-power-off"/></span>
-                        </g:Anchor>
-                    </div>
+                            <g:Anchor ui:field="logout" styleName="clearfix bg-master-lighter dropdown-item" title="{lang.buttonLogout}" href="#">
+                                <span class="pull-left"><ui:text from="{lang.buttonLogout}"/></span>
+                                <span class="pull-right">
+                                    <i class="fas fa-power-off"/></span>
+                            </g:Anchor>
+                        </g:HTMLPanel>
+                    </g:FocusPanel>
                 </div>
             </div>
         </div>

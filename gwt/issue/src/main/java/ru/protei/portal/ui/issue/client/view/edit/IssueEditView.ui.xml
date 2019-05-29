@@ -17,11 +17,11 @@
 
     <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin footer-fixable">
         <div class="card-body">
-            <div class="row">
-                <h4 class="no-margin col-md-12">
-                    <g:ToggleButton ui:field="local" styleName="btn private-btn pull-left m-r-5"/>
-                    <g:Label ui:field="number"/>
-                </h4>
+            <div class="row p-b-10">
+                <h5 class="no-margin col-md-12">
+                    <g:ToggleButton ui:field="local" styleName="btn private-btn m-r-5 inline-block"/>
+                    <g:Label ui:field="number" styleName="inline-block"/>
+                </h5>
             </div>
 
             <div class="row">

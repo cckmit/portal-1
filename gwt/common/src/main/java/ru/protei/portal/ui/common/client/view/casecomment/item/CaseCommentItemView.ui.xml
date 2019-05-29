@@ -7,25 +7,25 @@
 
     <g:HTMLPanel tag="li" ui:field="root" styleName="left">
         <ul class="list-inline m-b-10">
+            <li ui:field="date" class="date-time"/>
+            <li ui:field="owner" class="name"/>
+            <i ui:field="privateComment"/>
             <li class="issue-link">
                 <issuelink:CaseMetaView ui:field="remoteLink" visible="false" enabled="false" showLabel="false"/>
             </li>
-            <li ui:field="date" class="date-time"/>
-            <li ui:field="owner" class="name"/>
-            <i ui:field="privacyFlag"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <li ui:field="timeElapsed" class="time-label"/>
             <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">
                     <g:Anchor href="javascript:;" ui:field="reply">
-                        <i class="fa fa-reply"/>
+                        <i class="fas fa-reply"/>
                     </g:Anchor>
                     <g:Anchor href="javascript:;" ui:field="edit">
-                        <i class="fa fa-pencil"/>
+                        <i class="fas fa-pencil-alt"/>
                     </g:Anchor>
                     <g:Anchor href="javascript:;" ui:field="remove">
-                        <i class="fa fa-trash"/>
+                        <i class="fas fa-trash"/>
                     </g:Anchor>
                 </span>
             </li>
