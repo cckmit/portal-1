@@ -140,9 +140,10 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     @Inject
     En_CaseLinkLang caseLinkLang;
     @Inject
-    Lang lang;
-    @Inject
     En_CaseStateLang caseStateLang;
+    @Inject
+    @UiField
+    Lang lang;
 
     @UiField
     HTMLPanel panel;

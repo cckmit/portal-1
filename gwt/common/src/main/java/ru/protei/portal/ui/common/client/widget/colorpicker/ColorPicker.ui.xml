@@ -7,7 +7,7 @@
 
         <div class="input-group-btn">
             <g:Button ui:field="colorPickerButton" styleName="btn btn-default">
-                <i class="fa fa-tint fa-lg"/>
+                <i class="fas fa-sm fa-tint"/>
             </g:Button>
         </div>
     </g:HTMLPanel>

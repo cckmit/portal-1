@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="row text-right">
+        <div class="row">
             <div class="form-group col-md-12 m-b-0 case-meta">
                 <div class="case-meta-content">
                     <g:HTMLPanel ui:field="linksSection" styleName="case-meta-links hide">
@@ -19,12 +19,12 @@
 
                 <g:HTMLPanel ui:field="controlsSection" styleName="case-meta-controls">
                     <g:Button ui:field="addTagButton" styleName="btn btn-default case-meta-button">
-                        <i class="fa fa-tag"/>
-                        <i class="fa fa-chevron-down"/>
+                        <i class="fas fa-sm fa-tag"/>
+                        <i class="fas fa-chevron-down"/>
                     </g:Button>
                     <g:Button ui:field="addLinkButton" styleName="btn btn-default case-meta-button">
-                        <i class="fa fa-link"/>
-                        <i class="fa fa-chevron-down"/>
+                        <i class="fas fa-sm fa-link"/>
+                        <i class="fas fa-chevron-down"/>
                     </g:Button>
                 </g:HTMLPanel>
             </div>

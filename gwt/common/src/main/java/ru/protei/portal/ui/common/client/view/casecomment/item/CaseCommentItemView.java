@@ -167,8 +167,8 @@ public class CaseCommentItemView
 
     @Override
     public void setPrivateComment(Boolean value) {
-        privateComment.setClassName(value ? "fa fa-fw fa-lg fa-lock text-danger pull-left"
-                                          : "fa fa-fw fa-lg fa-unlock-alt text-success pull-left");
+        privateComment.setClassName(value ? "fas fa-lock fa-lg text-danger"
+                                          : "fas fa-unlock-alt fa-lg text-success");
     }
 
     private HasVisibility privacyVisibility = new HasVisibility() {
