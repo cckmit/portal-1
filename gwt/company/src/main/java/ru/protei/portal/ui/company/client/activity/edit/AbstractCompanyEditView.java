@@ -37,8 +37,6 @@ public interface AbstractCompanyEditView extends IsWidget {
 
     HasWidgets tableContainer();
     HasWidgets siteFolderContainer();
-    HasVisibility tableContainerVisibility();
-    HasVisibility siteFolderContainerVisibility();
 
     void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter );
 

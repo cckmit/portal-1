@@ -18,7 +18,6 @@ import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
@@ -111,22 +110,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Override
     public HasWidgets tableContainer() {
-        return tableContainer;
+        return contactsContainer;
     }
 
     @Override
     public HasWidgets siteFolderContainer() {
         return siteFolderContainer;
-    }
-
-    @Override
-    public HasVisibility tableContainerVisibility() {
-        return tableContainerBlock;
-    }
-
-    @Override
-    public HasVisibility siteFolderContainerVisibility() {
-        return siteFolderContainerBlock;
     }
 
     @Override
@@ -199,12 +188,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     CategoryButtonSelector companyCategory;
 
     @UiField
-    HTMLPanel tableContainerBlock;
-    @UiField
-    HTMLPanel tableContainer;
+    HTMLPanel contactsContainer;
 
-    @UiField
-    HTMLPanel siteFolderContainerBlock;
     @UiField
     HTMLPanel siteFolderContainer;
 

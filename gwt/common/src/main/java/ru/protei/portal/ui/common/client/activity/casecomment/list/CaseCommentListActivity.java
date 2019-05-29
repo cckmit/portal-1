@@ -359,9 +359,9 @@ public abstract class CaseCommentListActivity
 
         itemView.clearElapsedTime();
         fillTimeElapsed( value, itemView );
-        itemView.setPrivateComment(value.isPrivateComment());
-
-        itemView.getPrivacyVisibility().setVisible(isPrivateVisible);
+        if ( isPrivateVisible ) {
+            itemView.setPrivacyFlag(value.isPrivateComment());
+        }
 
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;

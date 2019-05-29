@@ -169,18 +169,14 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         fireEvent(new ContactItemEvents.ShowList(view.phonesContainer(), company.getContactInfo().getItems(), ALLOWED_PHONE_TYPES));
         fireEvent(new ContactItemEvents.ShowList(view.emailsContainer(), company.getContactInfo().getItems(), ALLOWED_EMAIL_TYPES));
 
+        view.tableContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.CONTACT_VIEW)) {
             fireEvent(new ContactEvents.ShowConciseTable(view.tableContainer(), company.getId()));
-            view.tableContainerVisibility().setVisible(true);
-        } else {
-            view.tableContainerVisibility().setVisible(false);
         }
 
+        view.siteFolderContainer().clear();
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), company.getId()));
-            view.siteFolderContainerVisibility().setVisible(true);
-        } else {
-            view.siteFolderContainerVisibility().setVisible(false);
         }
     }
 

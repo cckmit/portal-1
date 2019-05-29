@@ -4,7 +4,8 @@
              xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
@@ -110,33 +111,19 @@
                 </div>
             </div>
         </div>
-        <g:HTMLPanel ui:field="tableContainerBlock" styleName="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.contacts}"/>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <g:HTMLPanel ui:field="tableContainer"/>
-                </div>
-            </div>
-        </g:HTMLPanel>
+        <g:HTMLPanel  styleName="container-fluid padding-15">
+            <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
+                <tab:pane.TabWidgetPane tabName="{lang.contacts}">
+                    <g:HTMLPanel ui:field="contactsContainer"/>
+                </tab:pane.TabWidgetPane>
 
-        <g:HTMLPanel ui:field="siteFolderContainerBlock" styleName="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.siteFolder}"/>
-                    </div>
-                </div>
-                <div class="card-body">
+                <tab:pane.TabWidgetPane tabName="{lang.siteFolder}">
                     <g:HTMLPanel ui:field="siteFolderContainer"/>
-                </div>
-            </div>
+                </tab:pane.TabWidgetPane>
+            </tab:TabWidget>
         </g:HTMLPanel>
 
-        <div class="container-fluid padding-15">
+        <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
                 <div class="card-body">
                     <div class="text-right">

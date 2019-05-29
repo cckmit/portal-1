@@ -166,30 +166,11 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setPrivateComment(Boolean value) {
-        privateComment.setClassName(value ? "fa fa-fw fa-lg fa-lock text-danger pull-left"
-                                          : "fa fa-fw fa-lg fa-unlock-alt text-success pull-left");
-    }
-
-    private HasVisibility privacyVisibility = new HasVisibility() {
-        @Override
-        public boolean isVisible() {
-            return privateComment.getClassName().contains("hide") ;
+    public void setPrivacyFlag(Boolean value) {
+        if ( value ) {
+            messageContainer.addClassName("private-message");
+            privacyFlag.setClassName("fa fa-fw fa-lock text-danger");
         }
-
-        @Override
-        public void setVisible( boolean b ) {
-            if (b) {
-                privateComment.removeClassName("hide");
-            } else {
-                privateComment.setClassName("hide");
-            }
-        }
-    };
-
-    @Override
-    public HasVisibility getPrivacyVisibility() {
-        return privacyVisibility;
     }
 
     @UiHandler( "remove" )
@@ -228,7 +209,7 @@ public class CaseCommentItemView
     @UiField
     HTMLPanel message;
     @UiField
-    Element privateComment;
+    Element privacyFlag;
     @UiField
     Anchor remove;
     @UiField
@@ -262,6 +243,8 @@ public class CaseCommentItemView
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    DivElement messageContainer;
     @Inject
     En_CaseStateLang stateLang;
     @Inject

@@ -22,7 +22,7 @@
             <h5><ui:text from="{lang.caseStatesPreviewCompanies}"/></h5>
 
             <div class="row">
-                <bg:UsageInCompaniesBtnGroup ui:field="usageInCompanies" addStyleNames="form-group col-md-12"/>
+                <bg:UsageInCompaniesBtnGroup ui:field="usageInCompanies" addStyleNames="btn-group col-md-12"/>
 
                 <companyselector:CompanyMultiSelector ui:field="companies" visible="false"
                                                       header="{lang.issueCompany}"
