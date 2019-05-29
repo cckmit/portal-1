@@ -6,8 +6,8 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="panel">
-        <div class="body">
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin footer-fixable">
+        <div class="card-body">
             <div class="row">
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.devUnitComponent}"/></label>
@@ -34,12 +34,11 @@
                     <label><ui:text from="{lang.siteFolderPaths}"/></label>
                     <g:HTMLPanel ui:field="pathsContainer" styleName="panelField"/>
                 </div>
-
             </div>
         </div>
-        <div class="footer">
+        <div class="card-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

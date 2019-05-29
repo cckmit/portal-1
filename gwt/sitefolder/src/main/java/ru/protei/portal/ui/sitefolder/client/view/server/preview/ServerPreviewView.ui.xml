@@ -5,39 +5,34 @@
 
     <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
-            <div class="actions col-md-12">
-                <g:Button styleName="btn btn-default" ui:field="openAppsButton" text="{lang.siteFolderApps}"/>
+
+            <div class="card card-default">
+
+                <div class="card-body">
+
+                    <h4 class="col-md-12 no-margin no-padding">
+                        <g:InlineLabel ui:field="name"/>
+                        <g:Button styleName="btn btn-xs btn-info pull-right" ui:field="openAppsButton" text="{lang.siteFolderApps}"/>
+                    </h4>
+
+                    <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderPlatform}: "/></b>
+                        <span ui:field="platform"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderIP}: "/></b>
+                        <span ui:field="ip"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderParams}: "/></b>
+                        <span class="pre-formatted-info" ui:field="parameters"/>
+                    </div>
+                </div>
             </div>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.siteFolderPlatform}"/></legend>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderName}"/></label>
-                    <span class="col-md-8" ui:field="name"/>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderPlatform}"/></label>
-                    <span class="col-md-8" ui:field="platform"/>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderIP}"/></label>
-                    <span class="col-md-8" ui:field="ip"/>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderParamsLocal}"/></label>
-                    <span class="col-md-8 pre-formatted-info" ui:field="parameters"/>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderComment}"/></label>
-                    <span class="col-md-8 pre-formatted-info" ui:field="comment"/>
-                </div>
-
-            </fieldset>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

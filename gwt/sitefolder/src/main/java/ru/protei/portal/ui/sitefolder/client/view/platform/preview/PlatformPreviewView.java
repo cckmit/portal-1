@@ -12,7 +12,6 @@ import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
-import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewActivity;
 import ru.protei.portal.ui.sitefolder.client.activity.plaform.preview.AbstractPlatformPreviewView;
 
@@ -43,7 +42,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
 
     @Override
     public void setName(String value) {
-        name.setInnerText(value);
+        name.setText(value);
     }
 
     @Override
@@ -89,7 +88,7 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     }
 
     @UiField
-    HeadingElement name;
+    InlineLabel name;
     @UiField
     SpanElement company;
     @UiField
@@ -99,9 +98,9 @@ public class PlatformPreviewView extends Composite implements AbstractPlatformPr
     @UiField
     Label comment;
     @UiField
-    CollapsablePanel contactsContainer;
+    HTMLPanel contactsContainer;
     @UiField
-    CollapsablePanel serversContainer;
+    HTMLPanel serversContainer;
     @UiField
     Button openServersButton;
     @Inject

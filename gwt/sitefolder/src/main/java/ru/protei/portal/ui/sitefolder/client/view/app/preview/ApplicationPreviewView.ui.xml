@@ -6,35 +6,32 @@
     <g:HTMLPanel styleName="preview-wrapper grid">
         <g:HTMLPanel ui:field="preview" styleName="preview">
 
-            <fieldset class="header">
-                <legend><ui:text from="{lang.siteFolderApp}"/></legend>
+            <div class="card card-default">
 
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderName}"/></label>
-                    <span class="col-md-8" ui:field="name"/>
+                <div class="card-body">
+
+                    <h4 class="col-md-12 no-margin no-padding">
+                        <g:InlineLabel ui:field="name"/>
+                    </h4>
+
+                    <g:Label styleName="small hint-text pre-formatted-info" ui:field="comment"/>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.devUnitComponent}: "/></b>
+                        <span ui:field="component"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderServer}: "/></b>
+                        <span ui:field="server"/>
+                    </div>
+
+                    <div class="small">
+                        <b><ui:text from="{lang.siteFolderPaths}: "/></b>
+                        <span ui:field="paths"/>
+                    </div>
                 </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.devUnitComponent}"/></label>
-                    <span class="col-md-8" ui:field="component"/>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderServer}"/></label>
-                    <span class="col-md-8" ui:field="server"/>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderComment}"/></label>
-                    <span class="col-md-8 pre-formatted-info" ui:field="comment"/>
-                </div>
-
-                <div class="col-md-12">
-                    <label class="col-md-4"><ui:text from="{lang.siteFolderPaths}"/></label>
-                    <span class="col-md-8" ui:field="paths"/>
-                </div>
-
-            </fieldset>
+            </div>
         </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

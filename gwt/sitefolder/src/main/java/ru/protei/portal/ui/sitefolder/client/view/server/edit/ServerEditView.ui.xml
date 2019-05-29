@@ -1,12 +1,13 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
-             xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'>
+             xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel ui:field="root" styleName="panel">
-        <div class="body">
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin footer-fixable">
+        <div class="card-body">
             <div class="row">
                 <div class="form-group col-md-4">
                     <label><ui:text from="{lang.siteFolderServerName}"/></label>
@@ -32,20 +33,22 @@
                     <label><ui:text from="{lang.siteFolderComment}"/></label>
                     <g:TextArea ui:field="comment" styleName="form-control sf-comment resize-vertical"/>
                 </div>
-
-                <g:HTMLPanel ui:field="listContainerHeader" styleName="form-group col-md-12">
-                    <label><ui:text from="{lang.siteFolderApps}"/></label>
-                    <g:Button ui:field="openButton" styleName="btn btn-default pull-right m-l-10" text="{lang.openTableView}"/>
-                    <g:Button ui:field="createButton" styleName="btn btn-default pull-right m-l-10" text="{lang.siteFolderAppCreate}"/>
-                </g:HTMLPanel>
-
-                <g:HTMLPanel styleName="form-group col-md-12" ui:field="listContainer"/>
-
+            </div>
+            <div class="row">
+                <tab:TabWidget tabNames="{lang.siteFolderApps}">
+                    <tab:pane.TabWidgetPane tabName="{lang.siteFolderApps}">
+                        <g:HTMLPanel styleName="form-group col-md-12 p-0" ui:field="listContainerHeader">
+                            <g:Button ui:field="openButton" styleName="btn btn-default m-r-10" text="{lang.openTableView}"/>
+                            <g:Button ui:field="createButton" styleName="btn btn-default m-r-10" text="{lang.siteFolderAppCreate}"/>
+                        </g:HTMLPanel>
+                        <g:HTMLPanel ui:field="listContainer"/>
+                    </tab:pane.TabWidgetPane>
+                </tab:TabWidget>
             </div>
         </div>
-        <div class="footer">
+        <div class="card-footer text-right">
             <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-            <g:Button ui:field="cancelButton" styleName="btn btn-default close_button" text="{lang.buttonCancel}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

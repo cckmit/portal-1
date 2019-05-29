@@ -14,7 +14,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
-import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
@@ -187,7 +186,7 @@ public class PlatformEditView extends Composite implements AbstractPlatformEditV
     @UiField
     Button openButton;
     @UiField
-    CollapsablePanel contactsContainer;
+    HTMLPanel contactsContainer;
     @UiField
     AttachmentUploader fileUploader;
     @Inject

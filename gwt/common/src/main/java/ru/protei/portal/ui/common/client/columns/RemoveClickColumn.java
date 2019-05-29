@@ -28,6 +28,7 @@ public class RemoveClickColumn< T > extends ClickColumn< T > {
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
+        cell.addClassName("remove");
         if ( ((Removable) value).isAllowedRemove() ) {
             AnchorElement a = DOM.createAnchor().cast();
             a.setHref( "#" );

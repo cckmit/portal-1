@@ -3,108 +3,78 @@
              xmlns:validatefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:person='urn:import:ru.protei.portal.ui.common.client.widget.selector.person'
+             xmlns:tab='urn:import:ru.protei.portal.ui.common.client.widget.tab'
              xmlns:w='urn:import:ru.protei.portal.ui.common.client.widget'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
+    <g:HTMLPanel ui:field="root" styleName="card card-transparent no-margin footer-fixable">
+        <div class="card-body">
+            <div class="row">
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.siteFolderCompany}"/></label>
+                    <company:CompanySelector ui:field="company" validation="true"/>
+                </div>
 
-    <g:HTMLPanel>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.companyMainInfoTitle}"/>
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.siteFolderPlatformName}"/></label>
+                    <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
+                </div>
+
+                <div class="form-group col-md-4">
+                    <label><ui:text from="{lang.siteFolderManager}"/></label>
+                    <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectManager}"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.siteFolderParams}"/></label>
+                    <g:TextArea ui:field="parameters" styleName="form-control sf-comment resize-vertical"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.siteFolderComment}"/></label>
+                    <g:TextArea ui:field="comment" styleName="form-control sf-comment resize-vertical"/>
+                </div>
+
+                <div class="form-group col-md-12">
+                    <label ui:field="attachmentsLabel"><ui:text from="{lang.siteFolderAttachments}"/></label>
+                    <div>
+                        <div class="attach attach-add">
+                            <w:uploader.AttachmentUploader ui:field="fileUploader">
+                                <div class="attach-add-circle">
+                                    <i class="fa fa-plus"/>
+                                    <i class="icon-verifiable"/>
+                                </div>
+                            </w:uploader.AttachmentUploader>
+                        </div>
+                        <w:attachment.list.AttachmentList ui:field="attachmentContainer"/>
                     </div>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="form-group col-md-4">
-                            <label>
-                                <ui:text from="{lang.siteFolderCompany}"/>
-                            </label>
-                            <company:CompanySelector ui:field="company" validation="true"/>
-                        </div>
+            </div>
 
-                        <div class="form-group col-md-4">
-                            <label>
-                                <ui:text from="{lang.siteFolderPlatformName}"/>
-                            </label>
-                            <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
-                        </div>
+            <div class="row">
 
-                        <div class="form-group col-md-4">
-                            <label>
-                                <ui:text from="{lang.siteFolderManager}"/>
-                            </label>
-                            <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectManager}"/>
-                        </div>
+                <tab:TabWidget tabNames="{lang.siteFolderServers}|{lang.siteFolderCompanyContacts}">
 
-                        <div class="form-group col-md-12">
-                            <label>
-                                <ui:text from="{lang.siteFolderParams}"/>
-                            </label>
-                            <g:TextArea ui:field="parameters" styleName="form-control sf-comment resize-vertical"/>
-                        </div>
+                    <tab:pane.TabWidgetPane tabName="{lang.siteFolderServers}">
+                        <g:HTMLPanel styleName="form-group col-md-12 p-0" ui:field="listContainerHeader">
+                            <g:Button ui:field="openButton" styleName="btn btn-default m-r-10"
+                                      text="{lang.openTableView}"/>
+                            <g:Button ui:field="createButton" styleName="btn btn-default m-r-10"
+                                      text="{lang.siteFolderServerCreate}"/>
+                        </g:HTMLPanel>
+                        <g:HTMLPanel styleName="form-group col-md-12" ui:field="listContainer"/>
+                    </tab:pane.TabWidgetPane>
 
-                        <div class="form-group col-md-12">
-                            <label>
-                                <ui:text from="{lang.siteFolderComment}"/>
-                            </label>
-                            <g:TextArea ui:field="comment" styleName="form-control sf-comment resize-vertical"/>
-                        </div>
-                    </div>
-                </div>
+                    <tab:pane.TabWidgetPane tabName="{lang.siteFolderCompanyContacts}">
+                        <g:HTMLPanel ui:field="contactsContainer"/>
+                    </tab:pane.TabWidgetPane>
+                </tab:TabWidget>
             </div>
         </div>
-
-        <div class="form-group col-md-12">
-            <label ui:field="attachmentsLabel">
-                <ui:text from="{lang.siteFolderAttachments}"/>
-            </label>
-            <div class="attach attach-add">
-                <w:uploader.AttachmentUploader ui:field="fileUploader">
-                    <div class="attach-add-circle">
-                        <i class="fa fa-plus"/>
-                        <i class="icon-verifiable"/>
-                    </div>
-                </w:uploader.AttachmentUploader>
-            </div>
-            <w:attachment.list.AttachmentList ui:field="attachmentContainer"/>
-        </div>
-
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <g:HTMLPanel ui:field="listContainerHeader" styleName="card-title">
-                        <legend>
-                            <ui:text from="{lang.siteFolderServers}"/>
-                        </legend>
-                        <g:Button ui:field="openButton" styleName="btn btn-default pull-right m-l-10"
-                                  text="{lang.openTableView}"/>
-                        <g:Button ui:field="createButton" styleName="btn btn-default pull-right m-l-10"
-                                  text="{lang.siteFolderServerCreate}"/>
-                    </g:HTMLPanel>
-                </div>
-                <div class="card-body">
-                    <g:HTMLPanel styleName="form-group col-md-12" ui:field="listContainer"/>
-                </div>
-            </div>
-        </div>
-
-
-        <w:collapse.CollapsablePanel ui:field="contactsContainer"
-                                     legend="{lang.siteFolderCompanyContacts}"/>
-
-
-        <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <div class="text-right">
-                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                        <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
-                    </div>
-                </div>
-            </div>
+        <div class="card-footer text-right">
+            <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+            <g:Button ui:field="cancelButton" styleName="btn btn-default" text="{lang.buttonCancel}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>
