@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.product.client.activity.list;
+package ru.protei.portal.ui.product.client.activity.table;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;

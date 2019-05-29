@@ -7,6 +7,7 @@
              xmlns:devunit='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit'
              xmlns:component='urn:import:ru.protei.portal.ui.common.client.widget.selector.product.component'
              xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -60,28 +61,14 @@
 
                         <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-md-12"/>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
                     <div class="row">
-                        <g:HTMLPanel ui:field="componentsContainer" styleName="form-group col-md-12">
+                        <g:HTMLPanel ui:field="componentsContainer" styleName="form-group col-md-6">
                             <label>
                                 <ui:text from="{lang.components}"/>
                             </label>
                             <component:ComponentMultiSelector styleName="components-selector" ui:field="components"/>
                         </g:HTMLPanel>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <div class="row">
-                        <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-md-12">
+                        <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-md-6">
                             <label><ui:text from="{lang.belongsTo}"/></label>
                             <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits"/>
                         </g:HTMLPanel>
@@ -91,36 +78,22 @@
         </div>
 
         <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <label><ui:text from="{lang.productHistoryVersion}"/></label>
+            <tab:TabWidget tabNames="{lang.productHistoryVersion}|{lang.productConfiguration}|{lang.productCDRDescription}" styleName="">
+                <tab:pane.TabWidgetPane tabName="{lang.productHistoryVersion}">
                     <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
-                </div>
-            </div>
+                </tab:pane.TabWidgetPane>
+
+                <tab:pane.TabWidgetPane tabName="{lang.productConfiguration}">
+                    <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
+                </tab:pane.TabWidgetPane>
+
+                <tab:pane.TabWidgetPane tabName="{lang.productCDRDescription}">
+                    <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
+                </tab:pane.TabWidgetPane>
+            </tab:TabWidget>
         </div>
 
         <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <label><ui:text from="{lang.productConfiguration}"/></label>
-                    <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
-                </div>
-            </div>
-        </div>
-
-        <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <label><ui:text from="{lang.productCDRDescription}"/></label>
-                    <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
-                </div>
-            </div>
-        </div>
-
-        <g:TabBar ui:field="tabPanel">
-        </g:TabBar>
-
-        <div class="container-fluid padding-15 bg-white">
             <div class="card card-transparent no-margin">
                 <div class="card-body">
                     <div class="text-right">

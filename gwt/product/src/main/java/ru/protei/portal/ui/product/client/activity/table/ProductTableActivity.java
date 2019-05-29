@@ -1,39 +1,46 @@
-package ru.protei.portal.ui.product.client.activity.list;
+package ru.protei.portal.ui.product.client.activity.table;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
-import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterActivity;
+import ru.protei.portal.ui.product.client.activity.filter.AbstractProductFilterView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Активность таблицы продуктов
  */
 public abstract class ProductTableActivity implements
-        Activity, AbstractPagerActivity, AbstractProductTableActivity {
+        Activity, AbstractPagerActivity, AbstractProductFilterActivity, AbstractProductTableActivity {
 
     @PostConstruct
     public void init() {
         view.setActivity( this );
         view.setAnimation( animation );
+        filterView.setActivity( this );
         pagerView.setActivity( this );
+
+        view.getFilterContainer().add(filterView.asWidget());
+
+        query = makeQuery();
     }
 
     @Event
@@ -42,26 +49,37 @@ public abstract class ProductTableActivity implements
     }
 
     @Event
-    public void onShow( ProductEvents.ShowDefinite event ) {
-        if(event.viewType != ViewType.TABLE)
-            return;
+    public void onAuthSuccess (AuthEvents.Success event) {
+        filterView.resetFilter();
+    }
 
-        this.query = event.query;
+    @Event
+    public void onShow( ProductEvents.Show event ) {
+        fireEvent(new ActionBarEvents.Clear());
+        if(policyService.hasPrivilegeFor( En_Privilege.PRODUCT_CREATE )){
+            fireEvent(new ActionBarEvents.Add( lang.buttonCreate(), null, UiConstants.ActionBarIdentity.PRODUCT ));
+        }
+
         init.parent.clear();
         init.parent.add( view.asWidget() );
+
         view.getPagerContainer().add( pagerView.asWidget() );
 
-        view.getFilterContainer().add(event.filter);
         loadTable();
     }
 
     @Event
-    public void onFilterChange(ProductEvents.UpdateData event) {
-        if (event.viewType != ViewType.TABLE) {
+    public void onCreateClicked( ActionBarEvents.Clicked event ) {
+        if ( !(UiConstants.ActionBarIdentity.PRODUCT.equals( event.identity )) ) {
             return;
         }
 
-        this.query = event.query;
+        fireEvent(new ProductEvents.Edit(null));
+    }
+
+    @Override
+    public void onFilterChanged() {
+        query = makeQuery();
         loadTable();
     }
 
@@ -85,16 +103,6 @@ public abstract class ProductTableActivity implements
         fireEvent( new ProductEvents.Edit ( value.getId() ));
     }
 
-    private void showPreview (DevUnit value ) {
-
-        if ( value == null ) {
-            animation.closeDetails();
-        } else {
-            animation.showDetails();
-            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true, true ) );
-        }
-    }
-
     @Override
     public void loadData( int offset, int limit, AsyncCallback<List<DevUnit>> asyncCallback ) {
         boolean isFirstChunk = offset == 0;
@@ -115,6 +123,27 @@ public abstract class ProductTableActivity implements
                 }));
     }
 
+    private ProductQuery makeQuery() {
+        ProductQuery pq = new ProductQuery();
+        pq.setSearchString(filterView.searchPattern().getValue());
+        pq.setState(filterView.showDeprecated().getValue() ? null : En_DevUnitState.ACTIVE);
+        pq.setSortField(filterView.sortField().getValue());
+        pq.setSortDir(filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        pq.setTypes(filterView.types().getValue());
+
+        return pq;
+    }
+
+    private void showPreview (DevUnit value ) {
+
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent( new ProductEvents.ShowPreview( view.getPreviewContainer(), value, true, true ) );
+        }
+    }
+
     private void loadTable() {
         animation.closeDetails();
         view.clearRecords();
@@ -131,6 +160,10 @@ public abstract class ProductTableActivity implements
     AbstractPagerView pagerView;
     @Inject
     ProductControllerAsync productService;
+    @Inject
+    AbstractProductFilterView filterView;
+    @Inject
+    PolicyService policyService;
 
     private AppEvents.InitDetails init;
     private ProductQuery query;

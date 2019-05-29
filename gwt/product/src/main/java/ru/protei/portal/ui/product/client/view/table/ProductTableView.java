@@ -20,9 +20,8 @@ import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableActivity;
-import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableActivity;
+import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableView;
 
 public class ProductTableView extends Composite implements AbstractProductTableView{
 

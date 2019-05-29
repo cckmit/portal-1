@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.company.client.activity.list;
+package ru.protei.portal.ui.company.client.activity.table;
 
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.ent.Company;

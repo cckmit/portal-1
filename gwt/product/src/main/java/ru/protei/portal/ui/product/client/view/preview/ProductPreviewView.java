@@ -66,17 +66,17 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setConfiguration(String value ) {
-        this.configuration.setInnerHTML(value);
+        this.configuration.getElement().setInnerHTML(value);
     }
 
     @Override
     public void setHistoryVersion(String value ) {
-        this.historyVersion.setInnerHTML(value);
+        this.historyVersion.getElement().setInnerHTML(value);
     }
 
     @Override
     public void setCdrDescription(String value ) {
-        this.cdrDescription.setInnerHTML(value);
+        this.cdrDescription.getElement().setInnerHTML(value);
     }
 
     @Override
@@ -87,7 +87,6 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
             rootWrapper.removeStyleName("preview-wrapper");
         }
 
-//        productNameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
@@ -104,11 +103,11 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     AnchorElement wikiLink;
     @UiField
-    DivElement configuration;
+    HTMLPanel configuration;
     @UiField
-    DivElement historyVersion;
+    HTMLPanel historyVersion;
     @UiField
-    DivElement cdrDescription;
+    HTMLPanel cdrDescription;
 
     @Inject
     FixedPositioner positioner;
