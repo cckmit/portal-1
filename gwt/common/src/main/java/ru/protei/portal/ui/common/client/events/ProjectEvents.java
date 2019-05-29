@@ -97,5 +97,10 @@ public class ProjectEvents {
         public Long projectId;
         public HasWidgets parent;
     }
+
+    /**
+     * Показать форму поиска
+     */
+    public static class Search {}
 }
 

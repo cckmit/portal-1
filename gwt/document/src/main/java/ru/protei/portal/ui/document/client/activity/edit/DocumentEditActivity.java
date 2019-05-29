@@ -14,10 +14,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.DocumentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
@@ -148,6 +145,11 @@ public abstract class DocumentEditActivity
             view.decimalNumberEnabled().setEnabled(true);
             view.setDecimalNumberHints(decimalNumbers);
         }
+    }
+
+    @Override
+    public void onSearchProjectClicked() {
+        fireEvent(new ProjectEvents.Search());
     }
 
     private void setDesignationVisibility() {

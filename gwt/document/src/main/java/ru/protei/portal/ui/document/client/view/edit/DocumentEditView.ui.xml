@@ -72,7 +72,14 @@
                         <label>
                             <ui:text from="{lang.equipmentProject}"/>
                         </label>
-                        <project:ProjectButtonSelector ui:field="project"/>
+                        <div class="input-group">
+                            <project:ProjectButtonSelector ui:field="project"/>
+                            <div class="input-group-btn">
+                                <g:Button ui:field="searchProject" styleName="btn btn-white">
+                                    <i class="fa fa-search"/>
+                                </g:Button>
+                            </div>
+                        </div>
                     </div>
 
                     <g:HTMLPanel styleName="form-group col-xs-3" ui:field="equipmentSelectorContainer">

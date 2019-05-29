@@ -270,6 +270,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         fileName.setValue(documentUploader.getFilename());
     }
 
+    @UiHandler( "searchProject" )
+    public void onSearchClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onSearchProjectClicked();
+        }
+    }
 
     @UiField
     ValidableTextBox name;
@@ -358,6 +364,10 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     @UiField
     Lang lang;
+
+    @UiField
+    Button searchProject;
+
     @Inject
     Provider<EquipmentModel> equipmentModelProvider;
 
