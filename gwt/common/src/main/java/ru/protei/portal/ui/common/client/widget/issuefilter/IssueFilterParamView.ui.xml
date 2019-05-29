@@ -8,7 +8,6 @@
              xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
              xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist"
              xmlns:casetag="urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag">
@@ -16,7 +15,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="user-filter">
+        <div class="user-filter form-group col-md-12">
             <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
         </div>
 
@@ -24,17 +23,17 @@
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12 m-b-0"/>
             <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-md-12 local-search-options-container">
                 <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
-                <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
+                <g:CheckBox ui:field="searchByComments" text="{lang.searchByComments}" styleName="checkbox"/>
             </g:HTMLPanel>
 
-            <div class="col-md-12 resize-md-6">
-                <label class="bold"><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            <div class="form-group col-md-12 resize-md-6">
+                <label><ui:text from="{lang.created}"/></label>
+                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
             </div>
 
-            <div class="col-md-12 resize-md-6">
-                <label class="bold"><ui:text from="{lang.updated}"/></label>
-                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+            <div class="form-group col-md-12 resize-md-6">
+                <label><ui:text from="{lang.updated}"/></label>
+                <range:RangePicker ui:field="dateModifiedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm" styleName=""/>
             </div>
 
             <div class="form-group col-md-12 resize-md-6">

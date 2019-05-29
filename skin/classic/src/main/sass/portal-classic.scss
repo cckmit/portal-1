@@ -102,3 +102,7 @@
   position: sticky;
   top: calc(60px + 1rem) !important;
 }
+
+div.select2-container ul.select2-choices li.select2-search-choice a.select2-search-choice-close {
+  font-weight: 900;
+}

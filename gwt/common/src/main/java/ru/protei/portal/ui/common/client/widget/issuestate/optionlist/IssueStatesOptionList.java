@@ -24,7 +24,7 @@ public class IssueStatesOptionList extends OptionList<En_CaseState> implements S
     public void fillOptions( List< En_CaseState > states ) {
         clearOptions();
         states.forEach(state -> {
-            addOption( lang.getStateName( state ), state, "form-group col-md-4 option-" + state.toString().toLowerCase() );
+            addOption( lang.getStateName( state ), state, "inline m-r-5 option-" + state.toString().toLowerCase() );
             setEnsureDebugId(state, DebugIdsHelper.ISSUE_STATE.byId(state.getId()));
         });
     }

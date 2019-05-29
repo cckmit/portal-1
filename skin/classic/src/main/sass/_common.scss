@@ -373,17 +373,24 @@ i.ban {
 .tree-state-btn {
   position: relative;
   display: block;
-  height: 30px;
   background: white;
-  border: 1px solid #ccc;
+  border: 1px solid #f0f0f0;
   overflow: hidden;
+  line-height: normal;
+  font-size: 14px;
+  font-weight: 400;
+  vertical-align: middle;
+  min-height: 35px;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
 
   > div {
     position: relative;
     display: inline-block;
     float: left;
     width: 33.33%;
-    height: 30px;
+    height: 35px;
     line-height: 30px;
     margin: 0;
     padding: 0;
@@ -412,12 +419,12 @@ i.ban {
     position: absolute;
     display: block;
     width: 33.33%;
-    height: 30px;
+    height: 100%;
     z-index: 0;
     box-sizing: border-box;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    background-color: #4270b1;
-    box-shadow: #4270b1 0 0 0 16px inset;
+    background-color: #48b0f7;
+    box-shadow: #48b0f7 0 0 0 16px inset;
   }
 
   .tree-state-btn-yes.active ~ .toggle {
