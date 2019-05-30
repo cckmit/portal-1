@@ -52,7 +52,7 @@
                                 </div>
 
                                 <div class="col-md-2 p-r-0">
-                                    <g:CheckBox ui:field="privateComment" styleName="checkbox" text="{lang.commentSetPrivate}"/>
+                                    <g:CheckBox ui:field="privateComment" styleName="checkbox check-danger" text="{lang.commentSetPrivate}"/>
                                 </div>
                             </div>
 
