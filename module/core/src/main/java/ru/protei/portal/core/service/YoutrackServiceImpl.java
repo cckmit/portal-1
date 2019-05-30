@@ -89,7 +89,7 @@ public class YoutrackServiceImpl implements YoutrackService {
 
         String issueId = UriUtils.getLastPathSegment(response.getHeaders().getLocation());
         if (issueId == null) {
-            log.error("failed to create issue: failed to extract issue id from response Location header: {}" + response.getHeaders().getLocation());
+            log.error("failed to create issue: failed to extract issue id from response Location header: {}", response.getHeaders().getLocation());
             throw new RuntimeException();
         }
 
