@@ -240,7 +240,7 @@ public class CaseCommentListView
     @UiField
     FlowPanel commentsContainer;
     @UiField
-    ToggleButton privateComment;
+    CheckBox privateComment;
     @UiField
     Button send;
     @Inject

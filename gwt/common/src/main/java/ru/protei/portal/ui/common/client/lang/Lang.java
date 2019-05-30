@@ -1695,4 +1695,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeIPAddressColumnHeader();
 
     String buttonSettings();
+
+    String commentSetPrivate();
 }

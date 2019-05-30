@@ -169,7 +169,7 @@ public class CaseCommentItemView
     public void setPrivacyFlag(Boolean value) {
         if ( value ) {
             messageContainer.addClassName("private-message");
-            privateComment.setClassName("fa fa-fw fa-lock text-danger");
+            privateComment.setClassName("fa m-l-10 fa-lock text-danger");
         }
     }
 

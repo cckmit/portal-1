@@ -51,8 +51,8 @@
                                                            styleName="form-control time-elapsed" notNull="false"/>
                                 </div>
 
-                                <div class="col-md-1 p-r-0">
-                                    <g:ToggleButton ui:field="privateComment" styleName="btn btn-danger private-btn btn-xs"/>
+                                <div class="col-md-2 p-r-0">
+                                    <g:CheckBox ui:field="privateComment" styleName="checkbox" text="{lang.commentSetPrivate}"/>
                                 </div>
                             </div>
 

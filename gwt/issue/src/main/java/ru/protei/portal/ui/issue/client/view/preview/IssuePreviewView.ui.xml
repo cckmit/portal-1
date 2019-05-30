@@ -97,7 +97,7 @@
                     </g:HTMLPanel>
 
                     <div class="row">
-                        <div class="col-md-12">
+                        <div class="form-group col-md-12">
                             <h5>
                                 <ui:text from="{lang.issueAttachments}"/>
                             </h5>
