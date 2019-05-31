@@ -315,7 +315,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
         view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
-        view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
+        view.setTagsEnabled(true);
 
         view.name().setValue(issue.getName());
 

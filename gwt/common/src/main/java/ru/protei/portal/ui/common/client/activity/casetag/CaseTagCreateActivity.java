@@ -9,6 +9,7 @@ import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
@@ -22,6 +23,11 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         dialogView.setActivity(this);
         dialogView.setHeader(lang.tagCreate());
         dialogView.getBodyContainer().add(view.asWidget());
+    }
+
+    @Event
+    public void onAuthSuccess (AuthEvents.Success event) {
+        companyId = event.profile.getCompany().getId();
     }
 
     @Event
@@ -43,6 +49,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseTag.setCaseType(caseType);
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
+        caseTag.setCompanyId(companyId);
 
         caseTagController.createTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {
@@ -71,6 +78,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
     }
 
     private En_CaseType caseType;
+    private Long companyId;
 
     @Inject
     Lang lang;

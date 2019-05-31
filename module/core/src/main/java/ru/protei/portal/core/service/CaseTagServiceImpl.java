@@ -7,15 +7,21 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseObjectTag;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.service.user.AuthService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class CaseTagServiceImpl implements CaseTagService {
 
@@ -45,6 +51,10 @@ public class CaseTagServiceImpl implements CaseTagService {
     @Override
     public CoreResponse<List<CaseTag>> getTagList(AuthToken token, En_CaseType caseType) {
         CaseTagQuery query = new CaseTagQuery();
+        if (!policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
+            Long companyId = authService.findSession( token ).getCompany().getId();
+            query.setCompanyId(companyId);
+        }
         query.setCaseTypes(Collections.singletonList(caseType));
         List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);
         return new CoreResponse<List<CaseTag>>().success(caseTags);
@@ -63,8 +73,18 @@ public class CaseTagServiceImpl implements CaseTagService {
         return true;
     }
 
+    private Set<UserRole> getRoles(AuthToken token) {
+        return Optional.ofNullable(authService.findSession(token))
+                .map(d -> d.getLogin().getRoles())
+                .orElse(null);
+    }
+
     @Autowired
     CaseTagDAO caseTagDAO;
     @Autowired
     CaseObjectTagDAO caseObjectTagDAO;
+    @Autowired
+    AuthService authService;
+    @Autowired
+    PolicyService policyService;
 }
