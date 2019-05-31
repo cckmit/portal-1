@@ -224,10 +224,10 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
         <div style="font-size:14px;margin-top:15px">
             <#list caseComments?reverse as caseComment>
                 <div style="border-radius:5px;padding:12px;margin-bottom:5px;background:<#if caseComment.changed>#dff7e2<#else>#f0f0f0</#if>;">
-                    <span style="color:#666666;line-height: 17px;margin-right:10px">${caseComment.created?datetime}</span>
+                    <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
                     <#if showPrivacy>
                         <#if caseComment.isPrivateComment>
-                            <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;">(приватное)</span>
+                            <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(приватное)</span>
                         </#if>
                     </#if>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
