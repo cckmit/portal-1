@@ -24,6 +24,9 @@ public class CaseTag implements Serializable, EntityOptionSupport {
     @JdbcColumn(name = "color")
     private String color;
 
+    @JdbcColumn(name = "company_id")
+    private Long companyId;
+
     public CaseTag() {}
 
     public Long getId() {
@@ -58,6 +61,14 @@ public class CaseTag implements Serializable, EntityOptionSupport {
         this.color = color;
     }
 
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -78,6 +89,7 @@ public class CaseTag implements Serializable, EntityOptionSupport {
                 ", caseType=" + caseType +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
+                ", companyId='" + companyId + '\'' +
                 '}';
     }
 
