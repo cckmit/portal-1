@@ -28,13 +28,6 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     }
 
     private List<EmployeeShortView> employeeListByQuery(EmployeeQuery query) {
-        SqlCondition where = createEmployeeSqlCondition(query);
-        return getList(
-                new JdbcQueryParameters().
-                        withCondition(where.condition, where.args).
-                        withOffset(query.getOffset()).
-                        withLimit(query.getLimit()).
-                        withSort(TypeConverters.createSort(query))
-        );
+        return listByQuery(query);
     }
 }
