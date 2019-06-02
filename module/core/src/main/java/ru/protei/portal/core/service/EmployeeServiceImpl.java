@@ -103,15 +103,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
-        List<EmployeeShortView> list = employeeShortViewDAO.getEmployees(query);
+    public CoreResponse<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
-        if (list == null)
-            new CoreResponse<List<EmployeeShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+        SearchResult<EmployeeShortView> list = employeeShortViewDAO.getSearchResult(query);
 
         jdbcManyRelationsHelper.fill(list, "workerEntries");
 
-        return new CoreResponse<List<EmployeeShortView>>().success(list);
+        return new CoreResponse<SearchResult<EmployeeShortView>>().success(list);
     }
 
     @Override

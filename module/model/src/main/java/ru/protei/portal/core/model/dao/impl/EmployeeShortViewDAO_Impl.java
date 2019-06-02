@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.utils.TypeConverters;
 import ru.protei.winter.core.utils.beans.SearchResult;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
+import ru.protei.winter.jdbc.JdbcHelper;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
@@ -37,7 +37,25 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     @Override
     public SearchResult<EmployeeShortView> getSearchResult(EmployeeQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
-        return getSearchResult(parameters);
+        SearchResult<EmployeeShortView> searchResult = new SearchResult();
+        if (parameters.getOffset() <= 0 && parameters.getLimit() > 0) {
+            if (parameters.getLimit() > 0) {
+                searchResult.setTotalCount(count(query));
+            }
+        }
+        searchResult.setResults(getList(parameters));
+        return searchResult;
+    }
+
+    private int count(EmployeeQuery query) {
+        StringBuilder sql = new StringBuilder("select count(*) from ( select distinct ").append(getSelectSQL());
+        SqlCondition whereCondition = createEmployeeSqlCondition(query);
+        sql.append(" where ").append(whereCondition.condition).append(" )");
+        return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray()).intValue();
+    }
+
+    private String getSelectSQL() {
+        return this.getObjectMapper().getSelectSQL(JdbcHelper.getDatabaseType(this.getJdbcTemplate()));
     }
 
     private JdbcQueryParameters buildJdbcQueryParameters(EmployeeQuery query) {
