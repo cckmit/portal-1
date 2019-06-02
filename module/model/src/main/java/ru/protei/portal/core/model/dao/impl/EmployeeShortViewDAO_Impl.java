@@ -7,6 +7,8 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.core.utils.collections.CollectionUtils;
 import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.List;
@@ -29,5 +31,25 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
 
     private List<EmployeeShortView> employeeListByQuery(EmployeeQuery query) {
         return listByQuery(query);
+    }
+
+    @Override
+    public SearchResult<EmployeeShortView> getSearchResult(EmployeeQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getSearchResult(parameters);
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(EmployeeQuery query) {
+
+        SqlCondition where = createEmployeeSqlCondition(query);
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+
+        parameters.withCondition(where.condition, where.args)
+                .withDistinct(true)
+                .withSort(TypeConverters.createSort(query))
+                .withOffset(query.getOffset())
+                .withLimit(query.getLimit());
+
+        return parameters;
     }
 }

@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -102,15 +103,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
-        List<EmployeeShortView> list = employeeShortViewDAO.getEmployees(query);
-
-        if (list == null)
-            new CoreResponse<List<EmployeeShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+    public CoreResponse<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
+        SearchResult<EmployeeShortView> list = employeeShortViewDAO.getSearchResult(query);
 
         jdbcManyRelationsHelper.fill(list, "workerEntries");
 
-        return new CoreResponse<List<EmployeeShortView>>().success(list);
+        return new CoreResponse<SearchResult<EmployeeShortView>>().success(list);
     }
 
     @Override

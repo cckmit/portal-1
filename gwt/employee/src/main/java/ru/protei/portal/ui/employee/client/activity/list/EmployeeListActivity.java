@@ -24,6 +24,7 @@ import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilte
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -94,11 +95,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemViewToModel.clear();
         marker = new Date().getTime();
 
-        employeeService.getEmployees( makeQuery(), new FluentCallback< List< EmployeeShortView > >()
+        employeeService.getEmployees( makeQuery(), new FluentCallback< SearchResult< EmployeeShortView > >()
                 .withMarkedSuccess( marker, ( m, result ) -> {
                     if ( marker == m ) {
-                        view.updateLabel( result.size() );
-                        fillViewHandler = taskService.startPeriodicTask( result, fillViewer, 50, 50 );
+                        view.updateLabel( result.getTotalCount() );
+                        fillViewHandler = taskService.startPeriodicTask( result.getResults(), fillViewer, 50, 50 );
                         view.showLoader( false );
                     }
                 } ) );

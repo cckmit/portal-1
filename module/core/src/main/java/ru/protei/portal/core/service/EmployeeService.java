@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.view.EmployeeDetailView;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface EmployeeService {
     CoreResponse<List<WorkerView>> list(String param);
 
     @Privileged(En_Privilege.EMPLOYEE_VIEW)
-    CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
+    CoreResponse<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query);
 
     CoreResponse<Person> getEmployee( Long id );
     EmployeeDetailView getEmployeeProfile (Long id);
