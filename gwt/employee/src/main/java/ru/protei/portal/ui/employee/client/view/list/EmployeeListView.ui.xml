@@ -14,11 +14,7 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             </g:HTMLPanel>
-            <div class="pager-container">
-                <div class="table-pager">
-                    <div ui:field="label" class="pull-left pager-label m-l-10 m-r-5 m-t-5 m-b-5">Всего записей 0</div>
-                </div>
-            </div>
+            <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
         </div>
         <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
     </g:HTMLPanel>

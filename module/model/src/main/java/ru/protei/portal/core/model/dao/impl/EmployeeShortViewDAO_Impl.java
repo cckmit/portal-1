@@ -50,7 +50,7 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     private int count(EmployeeQuery query) {
         StringBuilder sql = new StringBuilder("select count(*) from ( select distinct ").append(getSelectSQL());
         SqlCondition whereCondition = createEmployeeSqlCondition(query);
-        sql.append(" where ").append(whereCondition.condition).append(" )");
+        sql.append(" where ").append(whereCondition.condition).append(" ) empl");
         return jdbcTemplate.queryForObject(sql.toString(), Long.class, whereCondition.args.toArray()).intValue();
     }
 

@@ -13,6 +13,8 @@ import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.WorkerEntryShortView;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
+import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
@@ -28,22 +30,24 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
+
+import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 
 /**
  * Активность списка сотрудников
  */
 public abstract class EmployeeListActivity implements AbstractEmployeeListActivity,
-        AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, Activity {
+        AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void init() {
         view.setActivity( this );
         filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
+        pagerView.setActivity( this );
     }
 
     @Event
@@ -62,13 +66,20 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         fireEvent( new AppEvents.InitPanelName( lang.employees() ) );
         init.parent.clear();
         init.parent.add( view.asWidget() );
+        view.getPagerContainer().add( pagerView.asWidget() );
 
-        requestEmployees();
+        requestEmployees( 0 );
     }
 
     @Override
     public void onFilterChanged() {
-        requestEmployees();
+        requestEmployees( 0 );
+    }
+
+    @Override
+    public void onPageSelected( int page ) {
+        pagerView.setCurrentPage( page );
+        requestEmployees( page );
     }
 
     @Override
@@ -82,24 +93,32 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         animation.showPreview( itemView, ( IsWidget ) itemView.getPreviewContainer() );
     }
 
-    private void requestEmployees() {
+    private void requestEmployees( int page ) {
 
         if ( fillViewHandler != null ) {
             fillViewHandler.cancel();
         }
 
         view.getChildContainer().clear();
-        view.updateLabel( 0 );
         view.showLoader( true );
-
         itemViewToModel.clear();
+
+        boolean isFirstChunk = page == 0;
         marker = new Date().getTime();
 
-        employeeService.getEmployees( makeQuery(), new FluentCallback< SearchResult< EmployeeShortView > >()
-                .withMarkedSuccess( marker, ( m, result ) -> {
+        EmployeeQuery query = makeQuery();
+        query.setOffset( page*PAGE_SIZE );
+        query.setLimit( PAGE_SIZE );
+
+        employeeService.getEmployees( query, new FluentCallback< SearchResult< EmployeeShortView > >()
+                .withMarkedSuccess( marker, ( m, r ) -> {
                     if ( marker == m ) {
-                        view.updateLabel( result.getTotalCount() );
-                        fillViewHandler = taskService.startPeriodicTask( result.getResults(), fillViewer, 50, 50 );
+                        if ( isFirstChunk ) {
+                            pagerView.setTotalCount( r.getTotalCount() );
+                            pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
+                            pagerView.setCurrentPage( 0 );
+                        }
+                        fillViewHandler = taskService.startPeriodicTask( r.getResults(), fillViewer, 50, 50 );
                         view.showLoader( false );
                     }
                 } ) );
@@ -166,6 +185,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     @Inject
     EmployeeControllerAsync employeeService;
+
+    @Inject
+    AbstractPagerView pagerView;
 
     @Inject
     Lang lang;

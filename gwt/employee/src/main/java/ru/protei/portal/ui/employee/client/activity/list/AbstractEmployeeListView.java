@@ -12,5 +12,5 @@ public interface AbstractEmployeeListView extends IsWidget {
     HasWidgets getChildContainer();
     HasWidgets getFilterContainer ();
     void showLoader( boolean isShow );
-    void updateLabel( int totalCount );
+    HasWidgets getPagerContainer();
 }
