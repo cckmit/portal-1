@@ -16,8 +16,6 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     @Autowired
     EmployeeSqlBuilder employeeSqlBuilder;
 
-    private final static String WORKER_ENTRY_JOIN = "LEFT JOIN worker_entry WE ON WE.personId = person.id";
-
     @Override
     public List<EmployeeShortView> getEmployees(EmployeeQuery query) {
         return employeeListByQuery(query);
@@ -33,9 +31,7 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
         SqlCondition where = createEmployeeSqlCondition(query);
         return getList(
                 new JdbcQueryParameters().
-                        withJoins(WORKER_ENTRY_JOIN).
                         withCondition(where.condition, where.args).
-                        withDistinct(true).
                         withOffset(query.getOffset()).
                         withLimit(query.getLimit()).
                         withSort(TypeConverters.createSort(query))
