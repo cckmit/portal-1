@@ -30,7 +30,8 @@ public class EmployeeShortViewDAO_Impl extends PortalBaseJdbcDAO<EmployeeShortVi
     }
 
     private List<EmployeeShortView> employeeListByQuery(EmployeeQuery query) {
-        return listByQuery(query);
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getList(parameters);
     }
 
     @Override
