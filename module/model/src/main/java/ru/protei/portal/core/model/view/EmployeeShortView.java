@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Сокращенное представление Person
  */
-@JdbcEntity(selectSql = "SELECT person.*, info.* FROM person, JSON_TABLE(person.contactInfo, '$.items[*]' COLUMNS ( a VARCHAR(20) PATH '$.a', t VARCHAR(40) PATH '$.t', v VARCHAR(40) PATH '$.v')) info")
+@JdbcEntity(selectSql = "person.*, info.* FROM person, JSON_TABLE(person.contactInfo, '$.items[*]' COLUMNS ( a VARCHAR(20) PATH '$.a', t VARCHAR(40) PATH '$.t', v VARCHAR(40) PATH '$.v')) info")
 public class EmployeeShortView implements Serializable {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
