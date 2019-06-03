@@ -83,7 +83,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     private void displayTags() {
         clearTagsListView();
         caseTags.stream()
-                .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter))
+                .filter(caseTag -> containsIgnoreCase(caseTag.getViewName(), searchNameFilter))
                 .forEach(this::addTagToListView);
     }
 

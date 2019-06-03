@@ -237,4 +237,11 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Company company = (Company) o;
+        return id.equals(company.id);
+    }
 }

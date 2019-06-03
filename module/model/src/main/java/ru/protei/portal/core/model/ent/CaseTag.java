@@ -24,8 +24,10 @@ public class CaseTag implements Serializable, EntityOptionSupport {
     @JdbcColumn(name = "color")
     private String color;
 
-    @JdbcColumn(name = "company_id")
-    private Long companyId;
+    @JdbcJoinedObject( localColumn = "company_id", table = "company" )
+    private Company company;
+
+    private boolean showCompanyInView = false;
 
     public CaseTag() {}
 
@@ -61,12 +63,20 @@ public class CaseTag implements Serializable, EntityOptionSupport {
         this.color = color;
     }
 
-    public Long getCompanyId() {
-        return companyId;
+    public Company getCompany() {
+        return company;
     }
 
-    public void setCompanyId(Long companyId) {
-        this.companyId = companyId;
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public boolean isShowCompanyInView() {
+        return showCompanyInView;
+    }
+
+    public void setShowCompanyInView(boolean showCompanyInView) {
+        this.showCompanyInView = showCompanyInView;
     }
 
     @Override
@@ -89,19 +99,16 @@ public class CaseTag implements Serializable, EntityOptionSupport {
                 ", caseType=" + caseType +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", companyId='" + companyId + '\'' +
+                ", company='" + company + '\'' +
                 '}';
     }
 
     @Override
     public EntityOption toEntityOption() {
-        return new EntityOption(getName(), getId());
+        return new EntityOption(getViewName(), getId());
     }
 
-    public static CaseTag fromEntityOption(EntityOption entityOption) {
-        CaseTag caseTag = new CaseTag();
-        caseTag.setId(entityOption.getId());
-        caseTag.setName(entityOption.getDisplayText());
-        return caseTag;
+    public String getViewName() {
+        return getName() + (showCompanyInView ? " (" + company.getCname() + ")" : "");
     }
 }

@@ -18,10 +18,10 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.service.user.AuthService;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class CaseTagServiceImpl implements CaseTagService {
 
@@ -43,21 +43,49 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
-    public CoreResponse<List<CaseObjectTag>> getTagsForCase(AuthToken token, long caseId) {
-        List<CaseObjectTag> tags = caseObjectTagDAO.getListByCaseId(caseId);
-        return new CoreResponse<List<CaseObjectTag>>().success(tags);
+    public CoreResponse<List<CaseTag>> getTagsByCaseId(AuthToken token, long caseId) {
+        return templateGetTagsByPermission(token,
+                query -> {
+                    List<Long> caseIds = caseObjectTagDAO.getListByCaseId(caseId).stream()
+                            .map(CaseObjectTag::getTagId).collect(Collectors.toList());
+                    query.setIds(caseIds);
+                    return query;
+                });
     }
 
     @Override
-    public CoreResponse<List<CaseTag>> getTagList(AuthToken token, En_CaseType caseType) {
-        CaseTagQuery query = new CaseTagQuery();
+    public CoreResponse<List<CaseTag>> getTagsByCaseType(AuthToken token, En_CaseType caseType) {
+        return templateGetTagsByPermission(token,
+                query -> {
+                    query.setCaseTypes(Collections.singletonList(caseType));
+                    return query;
+                });
+    }
+
+    private CoreResponse<List<CaseTag>> templateGetTagsByPermission(AuthToken token, Function<CaseTagQuery, CaseTagQuery> specify){
+        CaseTagQuery query = specify.apply(new CaseTagQuery());
+        boolean showCompanyNameInView = checkPermissionAndSetCompanyInQuery(token, query);
+
+        List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);
+        setShowCompanyNameInView(showCompanyNameInView, caseTags);
+
+        return new CoreResponse<List<CaseTag>>().success(caseTags);
+    }
+
+    private boolean checkPermissionAndSetCompanyInQuery(AuthToken token, CaseTagQuery query) {
+        boolean showCompanyNameInView;
         if (!policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
             Long companyId = authService.findSession( token ).getCompany().getId();
             query.setCompanyId(companyId);
+            showCompanyNameInView = false;
+        } else {
+            showCompanyNameInView = true;
         }
-        query.setCaseTypes(Collections.singletonList(caseType));
-        List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);
-        return new CoreResponse<List<CaseTag>>().success(caseTags);
+        return showCompanyNameInView;
+    }
+
+    private void setShowCompanyNameInView(boolean showCompanyNameInView, Collection<CaseTag> caseTags) {
+        caseTags.forEach(tag -> tag.setShowCompanyInView(showCompanyNameInView));
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {
@@ -68,6 +96,9 @@ public class CaseTagServiceImpl implements CaseTagService {
             return false;
         }
         if (StringUtils.isBlank(caseTag.getName())) {
+            return false;
+        }
+        if (caseTag.getCompany() == null){
             return false;
         }
         return true;

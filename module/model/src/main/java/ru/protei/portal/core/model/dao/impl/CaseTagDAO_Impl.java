@@ -43,6 +43,10 @@ public class CaseTagDAO_Impl extends PortalBaseJdbcDAO<CaseTag> implements CaseT
                 condition.append(" and case_tag.company_id = ?");
                 args.add(query.getCompanyId());
             }
+
+            if ( query.getIds() != null ) {
+                condition.append(" and case_tag.id in " + HelperFunc.makeInArg(query.getIds()));
+            }
         }));
     }
 }

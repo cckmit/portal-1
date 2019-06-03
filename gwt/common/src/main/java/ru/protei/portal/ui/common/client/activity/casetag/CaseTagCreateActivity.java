@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
@@ -27,7 +28,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
 
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
-        companyId = event.profile.getCompany().getId();
+        company = event.profile.getCompany();
     }
 
     @Event
@@ -49,7 +50,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseTag.setCaseType(caseType);
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
-        caseTag.setCompanyId(companyId);
+        caseTag.setCompany(company);
 
         caseTagController.createTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {
@@ -78,7 +79,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
     }
 
     private En_CaseType caseType;
-    private Long companyId;
+    private Company company;
 
     @Inject
     Lang lang;

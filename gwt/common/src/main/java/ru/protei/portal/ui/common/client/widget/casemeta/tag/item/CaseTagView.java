@@ -35,8 +35,8 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
 
         String backgroundColor = makeSafeColor(caseTag.getColor());
         String textColor = makeContrastColor(backgroundColor);
-        text.setText(caseTag.getName());
-        icon.setText(makeSingleCharName(caseTag.getName()));
+        text.setText(caseTag.getViewName());
+        icon.setText(makeSingleCharName(caseTag.getViewName()));
         icon.getElement().getStyle().setProperty("backgroundColor", backgroundColor);
         icon.getElement().getStyle().setProperty("color", textColor);
 

@@ -72,6 +72,9 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     CaseStateWorkflowService caseStateWorkflowService;
 
+    @Autowired
+    CaseTagService caseTagService;
+
     @Override
     public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
@@ -103,12 +106,9 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setLinks(caseLinks.getData());
         }
 
-        jdbcManyRelationsHelper.fill(caseObject, "tags");
-        if (!policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
-            Long companyId = authService.findSession(token).getCompany().getId();
-            caseObject.setTags(caseObject.getTags().stream()
-                    .filter(tag -> tag.getCompanyId().equals(companyId))
-                    .collect(Collectors.toSet()));
+        CoreResponse<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
+        if (caseTags.isOk()) {
+            caseObject.setTags(new HashSet<>(caseTags.getData()));
         }
 
         // RESET PRIVACY INFO
