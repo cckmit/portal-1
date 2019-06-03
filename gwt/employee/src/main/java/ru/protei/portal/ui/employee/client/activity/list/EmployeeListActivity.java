@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
@@ -95,10 +94,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     private void requestEmployees( int page ) {
 
-        if ( fillViewHandler != null ) {
-            fillViewHandler.cancel();
-        }
-
         view.getChildContainer().clear();
         view.showLoader( true );
         itemViewToModel.clear();
@@ -118,7 +113,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                             pagerView.setTotalPages( getTotalPages( r.getTotalCount() ) );
                             pagerView.setCurrentPage( 0 );
                         }
-                        fillViewHandler = taskService.startPeriodicTask( r.getResults(), fillViewer, 50, 50 );
+                        r.getResults().forEach( fillViewer );
                         view.showLoader( false );
                     }
                 } ) );
@@ -181,9 +176,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     Provider< AbstractEmployeeItemView > factory;
 
     @Inject
-    PeriodicTaskService taskService;
-
-    @Inject
     EmployeeControllerAsync employeeService;
 
     @Inject
@@ -193,7 +185,6 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     Lang lang;
 
     private long marker;
-    private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
     private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";

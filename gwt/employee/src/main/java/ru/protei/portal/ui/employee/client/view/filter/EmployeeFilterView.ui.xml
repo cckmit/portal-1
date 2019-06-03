@@ -1,15 +1,14 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
-             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:homecompany='urn:import:ru.protei.portal.ui.common.client.widget.homecompany'>
+             xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="panel">
         <div class="body">
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.employeeEmployeeFullNameColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-user"/>
-            <cleanablesearchbox:CleanableSearchBox ui:field="workPhone" placeholder="{lang.employeeWorkPhoneColumnHeader}" styleName="form-group col-xs-12" addon="5"/>
+            <cleanablesearchbox:CleanableSearchBox ui:field="workPhone" placeholder="{lang.employeeWorkPhoneColumnHeader}" styleName="form-group col-xs-12" addon="5-"/>
             <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhoneColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-phone"/>
             <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddressColumnHeader}" styleName="form-group col-xs-12" addon="IP"/>
             <div class="form-group col-xs-12">

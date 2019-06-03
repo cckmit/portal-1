@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class EmployeeSqlBuilder {
 
-    public SqlCondition createSqlCondition( EmployeeQuery query) {
+    public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
