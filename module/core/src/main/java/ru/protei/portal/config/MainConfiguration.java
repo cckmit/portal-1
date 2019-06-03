@@ -267,7 +267,6 @@ public class MainConfiguration {
         return new WorkerEntryDAO_Impl();
     }
 
-
     @Bean
     public CompanyGroupDAO getCompanyGroupDAO() {
         return new CompanyGroupDAO_Impl();
@@ -483,6 +482,11 @@ public class MainConfiguration {
     @Bean
     public CaseStateWorkflowDAO getCaseStateWorkflowDAO() {
         return new CaseStateWorkflowDAO_Impl();
+    }
+
+    @Bean
+    public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
+        return  new WorkerEntryShortViewDAO_Impl();
     }
 
     /* SERVICES */
