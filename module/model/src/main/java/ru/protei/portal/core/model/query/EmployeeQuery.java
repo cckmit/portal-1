@@ -31,8 +31,12 @@ public class EmployeeQuery extends BaseQuery {
         fired = false;
     }
 
-    public EmployeeQuery(Boolean fired, Boolean onlyPeople, String searchString, En_SortField sortField, En_SortDir sortDir) {
-        this(fired, null, onlyPeople, null, searchString, null, null, null, null, sortField, sortDir);
+    public EmployeeQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
+        this(null, null, null, null, searchString, null, null, null, null, sortField, sortDir);
+    }
+
+    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, En_SortField sortField, En_SortDir sortDir) {
+        this(fired, deleted, onlyPeople, null, null, null, null, null, null, sortField, sortDir);
     }
 
     public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, En_SortField sortField, En_SortDir sortDir) {
