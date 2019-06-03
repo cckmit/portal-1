@@ -59,7 +59,7 @@ public class CompanyDAO_Impl extends PortalBaseJdbcDAO<Company> implements Compa
             }
 
             if(query.isSortHomeCompaniesAtBegin()){
-                condition.append( " and is_hidden = false" );
+                condition.append( " and (is_hidden is null or is_hidden = false)" );
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
