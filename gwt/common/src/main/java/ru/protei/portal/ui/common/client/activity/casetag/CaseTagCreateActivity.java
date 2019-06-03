@@ -36,6 +36,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseType = event.getCaseType();
         view.name().setValue("");
         view.color().setValue("");
+        view.company().setValue(null);
         dialogView.showPopup();
     }
 
@@ -50,7 +51,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseTag.setCaseType(caseType);
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
-        caseTag.setCompany(company);
+        caseTag.setCompany(Company.fromEntityOption(view.company().getValue()));
 
         caseTagController.createTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {

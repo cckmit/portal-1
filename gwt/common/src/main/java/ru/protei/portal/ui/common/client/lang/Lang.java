@@ -1624,6 +1624,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagColor();
 
+    String tagCompany();
+
     String commentEmpty();
 
     String siteFolderAttachments();

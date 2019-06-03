@@ -8,16 +8,19 @@ import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateActivity;
 import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.ColorPicker;
+import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 
 public class CaseTagCreateView extends Composite implements AbstractCaseTagCreateView {
 
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        company.setDefaultValue(lang.selectIssueCompany());
     }
 
     @Override
@@ -33,11 +36,25 @@ public class CaseTagCreateView extends Composite implements AbstractCaseTagCreat
         return color;
     }
 
+    @Override
+    public HasValue<EntityOption> company() {
+        return company;
+    }
+
+    @Inject
+    @UiField
+    Lang lang;
+
     @UiField
     TextBox name;
+
     @Inject
     @UiField(provided = true)
     ColorPicker color;
+
+    @Inject
+    @UiField(provided = true)
+    CompanySelector company;
 
     interface CaseTagCreateViewUiBinder extends UiBinder<Widget, CaseTagCreateView> {}
     private static CaseTagCreateViewUiBinder ourUiBinder = GWT.create(CaseTagCreateViewUiBinder.class);

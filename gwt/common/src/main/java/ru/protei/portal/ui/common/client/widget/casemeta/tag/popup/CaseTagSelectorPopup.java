@@ -74,6 +74,14 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
         hide();
     }
 
+    public void setAddTagsEnabled(boolean enabled) {
+        if (enabled) {
+            addButton.getElement().removeClassName("hide");
+        } else {
+            addButton.getElement().addClassName("hide");
+        }
+    }
+
     private void resetSearchFilter() {
         searchNameFilter = "";
         search.setValue(searchNameFilter);
