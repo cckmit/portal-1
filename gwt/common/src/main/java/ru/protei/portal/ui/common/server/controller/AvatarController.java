@@ -43,8 +43,6 @@ public class AvatarController {
                            HttpServletRequest request,
                            HttpServletResponse response ) throws IOException {
 
-        logger.debug( "getAvatar(): filePath = {} | fileName = {}", portalConfig.data().getEmployee().getAvatarPath(), fileName );
-
         UserSessionDescriptor descriptor = getDescriptor( request );
         if ( descriptor == null ) {
             response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
@@ -81,8 +79,6 @@ public class AvatarController {
                 response.setHeader( "Pragma", "" );
 
                 response.flushBuffer();
-
-                logger.debug( "getAvatar(): loaded file {}", file.getName() );
 
                 return true;
             }
