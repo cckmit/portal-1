@@ -126,6 +126,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 filterView.workPhone().getValue(),
                 filterView.mobilePhone().getValue(),
                 filterView.ipAddress().getValue(),
+                filterView.email().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
     }

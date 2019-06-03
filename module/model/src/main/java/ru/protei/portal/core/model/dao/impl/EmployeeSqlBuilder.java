@@ -48,6 +48,11 @@ public class EmployeeSqlBuilder {
                 condition.append(" and Person.ipaddress like ?");
                 args.add(HelperFunc.makeLikeArg(query.getIpAddress(), true));
             }
+
+            if (HelperFunc.isLikeRequired(query.getEmail())) {
+                condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
+                args.add(HelperFunc.makeLikeArg(query.getEmail(), true));
+            }
         });
     }
 }

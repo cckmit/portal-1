@@ -69,7 +69,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
     private void refreshOptions() {
         if (requested) return;
         requested = true;
-        employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, null, null, null, null, null, En_SortField.person_full_name, En_SortDir.ASC ),
+        employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, null, null, null, null, null, null, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
