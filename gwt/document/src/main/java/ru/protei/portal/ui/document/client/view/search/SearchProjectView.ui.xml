@@ -17,8 +17,6 @@
                 <label><ui:text from="{lang.created}"/></label>
                 <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
-        </div>
-        <div class="form-group grid grid-indent">
             <div class="col-xs-6">
                 <label><ui:text from="{lang.projectCustomerType}"/></label>
                 <cutomertype:CustomerTypeSelector ui:field="customerType"/>
@@ -29,8 +27,10 @@
                                                               addStyleNames="form-group col-xs-12"/>
             </div>
         </div>
-        <div class="form-group grid grid-indent">
-            <g:Anchor href='#' ui:field="search" styleName="btn btn-primary"><ui:text from="{lang.buttonSearch}"/></g:Anchor>
+        <div class="form-group grid grid-indent footer">
+            <div class="col-xs-12">
+                <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
+            </div>
         </div>
         <g:HTMLPanel ui:field="projectContainer" styleName="form-group grid grid-indent"/>
     </g:HTMLPanel>

@@ -161,6 +161,11 @@ public class CaseObjectSqlBuilder {
 
                 condition.append(")");
             }
+
+            if (query.getLocal() != null) {
+                condition.append( " and case_object.islocal = ?" );
+                args.add(query.getLocal());
+            }
         });
     }
 }

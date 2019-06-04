@@ -2,10 +2,7 @@ package ru.protei.portal.core.model.query;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 
@@ -69,6 +66,8 @@ public class CaseQuery extends BaseQuery {
 
     private boolean findRecordByCaseComments;
 
+    private Integer local;
+
     public CaseQuery() {}
 
     public CaseQuery(Long id) {
@@ -105,6 +104,7 @@ public class CaseQuery extends BaseQuery {
         setCommentAuthorIds(query.getCommentAuthorIds());
         setCaseTagsIds(query.getCaseTagsIds());
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
+        setLocal(query.getLocal());
     }
 
     public Long getId() {
@@ -269,6 +269,14 @@ public class CaseQuery extends BaseQuery {
         this.findRecordByCaseComments = findRecordByCaseComments;
     }
 
+    public Integer getLocal() {
+        return local;
+    }
+
+    public void setLocal(Integer local) {
+        this.local = local;
+    }
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -287,13 +295,16 @@ public class CaseQuery extends BaseQuery {
                 StringUtils.isNotBlank(searchCasenoString) ||
                 CollectionUtils.isNotEmpty(memberIds) ||
                 CollectionUtils.isNotEmpty(commentAuthorIds) ||
-                CollectionUtils.isNotEmpty(caseTagsIds);
+                CollectionUtils.isNotEmpty(caseTagsIds) ||
+                local != null;
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "CaseQuery{" +
-                "companyIds=" + companyIds +
+                "id=" + id +
+                ", caseNumbers=" + caseNumbers +
+                ", companyIds=" + companyIds +
                 ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
                 ", managerIds=" + managerIds +
@@ -301,18 +312,19 @@ public class CaseQuery extends BaseQuery {
                 ", type=" + type +
                 ", stateIds=" + stateIds +
                 ", importanceIds=" + importanceIds +
+                ", allowViewPrivate=" + allowViewPrivate +
+                ", viewPrivate=" + viewPrivate +
                 ", createdFrom=" + createdFrom +
                 ", createdTo=" + createdTo +
                 ", modifiedFrom=" + modifiedFrom +
                 ", modifiedTo=" + modifiedTo +
-                ", showPrivate=" + allowViewPrivate +
                 ", searchStringAtComments=" + searchStringAtComments +
-                ", searchCasenoString=" + searchCasenoString +
-                ", viewPrivate=" + viewPrivate +
+                ", searchCasenoString='" + searchCasenoString + '\'' +
                 ", memberIds=" + memberIds +
                 ", commentAuthorIds=" + commentAuthorIds +
                 ", caseTagsIds=" + caseTagsIds +
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
+                ", local=" + local +
                 '}';
     }
 }

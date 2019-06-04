@@ -1,9 +1,13 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.DevUnit;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -11,16 +15,24 @@ import java.util.Set;
  */
 public class ProjectQuery extends BaseQuery {
 
-    Set<En_RegionState> states;
+    private Set<En_RegionState> states;
 
-    Set<Long> districtIds;
+    private Set<Long> districtIds;
 
-    Long directionId;
+    private Long directionId;
 
-    Boolean onlyMineProjects;
+    private Boolean onlyMineProjects;
+
+    private List<Long> productIds;
+
+    private En_CustomerType customerType;
+
+    private Date createdFrom;
+
+    private Date createdTo;
 
     public ProjectQuery() {
-        sortField = En_SortField.prod_name;
+        sortField = En_SortField.case_name;
         sortDir = En_SortDir.ASC;
     }
 
@@ -63,5 +75,37 @@ public class ProjectQuery extends BaseQuery {
 
     public void setOnlyMineProjects(Boolean onlyMineProjects) {
         this.onlyMineProjects = onlyMineProjects;
+    }
+
+    public List<Long> getProductIds() {
+        return productIds;
+    }
+
+    public void setProductIds(List<Long> productIds) {
+        this.productIds = productIds;
+    }
+
+    public En_CustomerType getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType( En_CustomerType customerType ) {
+        this.customerType = customerType;
+    }
+
+    public Date getCreatedFrom() {
+        return createdFrom;
+    }
+
+    public void setCreatedFrom( Date createdFrom ) {
+        this.createdFrom = createdFrom;
+    }
+
+    public Date getCreatedTo() {
+        return createdTo;
+    }
+
+    public void setCreatedTo( Date createdTo ) {
+        this.createdTo = createdTo;
     }
 }

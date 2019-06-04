@@ -23,7 +23,7 @@ public interface ProjectService {
      * @param query    параметры запроса
      */
     @Privileged( En_Privilege.REGION_VIEW )
-    CoreResponse<List<RegionInfo>> listRegions(AuthToken token, ProjectQuery query );
+    CoreResponse<List<RegionInfo>> listRegions( AuthToken token, ProjectQuery query );
 
     /**
      * Возвращает список проектов сгруппированных по регионам
@@ -58,5 +58,5 @@ public interface ProjectService {
     @Auditable( En_AuditType.PROJECT_REMOVE )
     CoreResponse<Boolean> removeProject( AuthToken token, Long projectId );
 
-    CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken);
+    CoreResponse<List<ProjectInfo>> listProjects( AuthToken token, ProjectQuery query );
 }

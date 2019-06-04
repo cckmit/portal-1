@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -105,24 +106,7 @@ public class ProjectServiceImpl implements ProjectService {
     public CoreResponse< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType( En_CaseType.PROJECT );
-        caseQuery.setStateIds( query.getStates().stream()
-                .map( ( state ) -> new Long( state.getId() ).intValue() )
-                .collect( toList() )
-        );
-        List<Long> productIds = null;
-        if (query.getDirectionId() != null){
-            productIds = new ArrayList<>();
-            productIds.add( query.getDirectionId() );
-        }
-        caseQuery.setProductIds( productIds );
-        if (query.isOnlyMineProjects()) {
-            UserSessionDescriptor descriptor = authService.findSession(token);
-            if (descriptor != null && descriptor.getPerson() != null) {
-                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
-            }
-        }
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery( token, query );
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {
@@ -210,12 +194,8 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken) {
-
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-        caseQuery.setSortDir(En_SortDir.ASC);
-        caseQuery.setSortField(En_SortField.case_name);
+    public CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
         List<ProjectInfo> result = projects.stream()
@@ -374,5 +354,49 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
+    }
+
+    private CaseQuery applyProjectQueryToCaseQuery(AuthToken authToken, ProjectQuery projectQuery) {
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+
+        caseQuery.setStateIds(projectQuery.getStates().stream()
+                .map((state) -> new Long(state.getId()).intValue())
+                .collect(toList())
+        );
+
+        List<Long> productIds = null;
+        if (projectQuery.getDirectionId() != null) {
+            productIds = new ArrayList<>();
+            productIds.add(projectQuery.getDirectionId());
+        }
+        if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
+            productIds = new ArrayList<>();
+            productIds.addAll(projectQuery.getProductIds());
+        }
+        caseQuery.setProductIds( productIds );
+
+        if (projectQuery.isOnlyMineProjects()) {
+            UserSessionDescriptor descriptor = authService.findSession(authToken);
+            if (descriptor != null && descriptor.getPerson() != null) {
+                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
+            }
+        }
+
+        if (projectQuery.getCustomerType() != null) {
+            caseQuery.setLocal(projectQuery.getCustomerType().getId());
+        }
+
+        if (projectQuery.getCreatedFrom() != null) {
+            caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
+        }
+        if (projectQuery.getCreatedTo() != null) {
+            caseQuery.setCreatedTo(projectQuery.getCreatedTo());
+        }
+
+        caseQuery.setSortDir(projectQuery.getSortDir());
+        caseQuery.setSortField(projectQuery.getSortField());
+
+        return caseQuery;
     }
 }

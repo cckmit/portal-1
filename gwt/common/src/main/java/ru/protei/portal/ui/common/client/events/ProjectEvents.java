@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Name;
 import ru.brainworm.factory.context.client.annotation.Url;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 
 /**
@@ -102,5 +103,20 @@ public class ProjectEvents {
      * Показать форму поиска
      */
     public static class Search {}
+
+    /**
+     * Показать таблицу проектов
+     */
+    public static class ShowDetailedTable {
+
+        public ShowDetailedTable( HasWidgets parent, ProjectQuery query ) {
+            this.parent = parent;
+            this.query = query;
+        }
+
+        public HasWidgets parent;
+        public ProjectQuery query;
+    }
+
 }
 
