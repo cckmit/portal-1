@@ -1697,4 +1697,6 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonSettings();
 
     String commentSetPrivate();
+
+    String employeeRegistrationCuratorsHint();
 }

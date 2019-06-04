@@ -8,7 +8,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import ru.protei.portal.ui.common.client.widget.tab.TabWidgetActivity;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidgetHandler;
 
 public class TabWidgetNavItem extends Composite {
 
@@ -16,7 +16,7 @@ public class TabWidgetNavItem extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setActivity(TabWidgetActivity activity) {
+    public void setActivity(TabWidgetHandler activity) {
         this.activity = activity;
     }
 
@@ -47,7 +47,7 @@ public class TabWidgetNavItem extends Composite {
     Anchor anchor;
 
     private String tabName;
-    private TabWidgetActivity activity;
+    private TabWidgetHandler activity;
 
     interface TabWidgetNavItemUiBinder extends UiBinder<HTMLPanel, TabWidgetNavItem> {}
     private static TabWidgetNavItemUiBinder ourUiBinder = GWT.create(TabWidgetNavItemUiBinder.class);

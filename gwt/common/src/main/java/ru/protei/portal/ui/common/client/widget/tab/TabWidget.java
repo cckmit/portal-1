@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.widget.tab.pane.TabWidgetPane;
 
 import java.util.*;
 
-public class TabWidget extends Composite implements HasWidgets, TabWidgetActivity {
+public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler {
 
     public TabWidget() {
         initWidget(ourUiBinder.createAndBindUi(this));
