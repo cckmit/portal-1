@@ -25,6 +25,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_timeDayLiteral" value="${timeDayLiteral}"/>
 <@set name="_timeHourLiteral" value="${timeHourLiteral}"/>
 <@set name="_timeMinuteLiteral" value="${timeMinuteLiteral}"/>
+<@set name="_privateComment" value="${privateComment}"/>
 
 <#noparse>
 <#macro changeTo old, new>
@@ -227,7 +228,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <span style="color:#666666;line-height: 17px;margin-right:5px">${caseComment.created?datetime}</span>
                     <#if showPrivacy>
                         <#if caseComment.isPrivateComment>
-                            <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(приватное)</span>
+                            <span style="font-size:10px;margin-bottom:5px;color:red;line-height: 17px;margin-right:5px">(${_privateComment})</span>
                         </#if>
                     </#if>
                     <span style="color:blue;font-size:14px;margin-bottom:5px;color:#0062ff;line-height: 17px;">
