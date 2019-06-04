@@ -531,7 +531,7 @@ public class PortalConfigData {
         private final String avatarPath;
 
         public EmployeeConfig(PropertiesWrapper propertiesWrapper) {
-            avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars" );
+            avatarPath = propertiesWrapper.getProperty( "employee.avatar.path", "/usr/protei/shared/avatars/" );
         }
 
         public String getAvatarPath() {
@@ -543,7 +543,7 @@ public class PortalConfigData {
         private final String url;
 
         public LdapConfig(PropertiesWrapper properties) {
-            url = properties.getProperty("ldap.url");
+            url = properties.getProperty("ldap.url", "ldap://ldap_1.protei");
         }
 
         public String getUrl() {

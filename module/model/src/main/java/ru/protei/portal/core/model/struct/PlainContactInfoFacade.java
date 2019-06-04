@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.struct;
 import ru.protei.portal.core.model.dict.En_ContactDataAccess;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -57,6 +58,12 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         return emailsStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map(
                 e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")
         ).collect( Collectors.joining( ", " ) );
+    }
+
+    public List<String> publicEmails () {
+        return emailsStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map(
+                e -> e.value()
+        ).collect( Collectors.toList() );
     }
 
     public String getWorkPhone() {

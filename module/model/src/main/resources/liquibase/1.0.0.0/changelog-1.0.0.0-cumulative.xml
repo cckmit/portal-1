@@ -106,4 +106,5 @@
   <include file="2019-04-29-add-hidden-column-to-company.xml" relativeToChangelogFile="true"/>
   <include file="2019-04-30-modify-case_filter_login_id_fk.xml" relativeToChangelogFile="true"/>
   <include file="2019-05-08-modify-company-table.xml" relativeToChangelogFile="true"/>
+  <include file="2019-05-22-add-restricted-column-to-report.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

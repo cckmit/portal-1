@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -37,6 +38,11 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
         loader.setVisible( isShow );
     }
 
+    @Override
+    public void updateLabel( int totalCount ) {
+        label.setInnerText( lang.countLabel( totalCount ) );
+    }
+
     @UiField
     PlateList childContainer;
 
@@ -49,6 +55,8 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     @Inject
     @UiField
     Lang lang;
+    @UiField
+    DivElement label;
 
     AbstractEmployeeListActivity activity;
 

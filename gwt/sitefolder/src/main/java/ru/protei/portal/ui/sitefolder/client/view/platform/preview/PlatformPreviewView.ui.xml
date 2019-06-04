@@ -50,11 +50,11 @@
                 </div>
             </fieldset>
 
-            <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
-                                         legend="{lang.siteFolderCompanyContacts}"/>
-
             <w:collapse.CollapsablePanel ui:field="serversContainer" styleName="collapsable header"
                                          legend="{lang.siteFolderServers}"/>
+
+            <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
+                                         legend="{lang.siteFolderCompanyContacts}"/>
 
         </g:HTMLPanel>
     </g:HTMLPanel>

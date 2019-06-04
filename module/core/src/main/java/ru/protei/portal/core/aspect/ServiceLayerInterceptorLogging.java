@@ -10,9 +10,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -39,7 +37,8 @@ public class ServiceLayerInterceptorLogging {
         String methodName = pjp.getSignature().toShortString();
         Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " " + methodName);
 
-        log.debug("calling : {} args: {}", methodName, pjp.getArgs());
+        Object[] securedArguments = makeSecuredArguments(methodName, pjp.getArgs());
+        log.debug("calling : {} args: {}", methodName, securedArguments);
         long currentTimeMillis = System.currentTimeMillis();
 
         CoreResponse result = ERROR_RESPONSE;
@@ -64,6 +63,20 @@ public class ServiceLayerInterceptorLogging {
         }
 
         return result;
+    }
+
+    private Object[] makeSecuredArguments(String methodName, Object[] arguments) {
+        if (!SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP.containsKey(methodName)) {
+            return arguments;
+        }
+        List<Integer> securedArgumentIndexes = SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP.get(methodName);
+        for (Integer index : securedArgumentIndexes) {
+            if (index < 0 || index >= arguments.length) {
+                continue;
+            }
+            arguments[index] = "<secured>";
+        }
+        return arguments;
     }
 
     private String makeResultAsString( CoreResponse result ) {
@@ -91,6 +104,9 @@ public class ServiceLayerInterceptorLogging {
         return result == null ? "Result is null." : result.getStatus();
     }
 
+    private static final Map<String, List<Integer>> SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP = new HashMap<String, List<Integer>>() {{
+        put("AuthService.login(..)", Arrays.asList(2));
+    }};
       private static final CoreResponse<Object> ERROR_RESPONSE = new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
 
 }

@@ -71,6 +71,9 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
     @JdbcColumn
     private String locale;
 
+    @JdbcColumn(name = "is_restricted")
+    private boolean isRestricted;
+
     @Override
     public boolean isAllowedRemove() {
         return status != En_ReportStatus.PROCESS;
@@ -166,6 +169,14 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
         this.locale = locale;
     }
 
+    public boolean isRestricted() {
+        return isRestricted;
+    }
+
+    public void setRestricted( boolean restricted ) {
+        this.isRestricted = restricted;
+    }
+
     @Override
     public String toString() {
         return "Report{" +
@@ -179,6 +190,7 @@ public class Report implements Removable, Downloadable, Refreshable, Serializabl
                 ", created=" + created +
                 ", modified=" + modified +
                 ", locale='" + locale + '\'' +
+                ", isRestricted=" + isRestricted +
                 '}';
     }
 }

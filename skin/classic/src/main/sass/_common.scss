@@ -353,9 +353,7 @@ div.checkbox {
 }
 
 .checkbox input[type="checkbox"]:focus + label::before {
-  outline-offset: -2px;
-  outline: none;
-  outline: thin dotted;
+  border: 1px dashed #777;
 }
 
 .checkbox input[type="checkbox"]:hover + label::after,
@@ -1409,6 +1407,7 @@ label.bordered:after{
   position: sticky;
   position: -webkit-sticky;
   bottom: 1px;
+  z-index: 1000
 }
 
 .preview-container {

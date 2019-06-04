@@ -4,6 +4,7 @@
     <g:HTMLPanel ui:field="root" tag="li" styleName="sf-detailed-list-item">
         <div class="sf-detailed-list-item-content">
             <span class="name" ui:field="name"/>
+            <span class="name" ui:field="param"/>
             <span class="name" ui:field="apps"/>
             <span class="comment" ui:field="comment"/>
         </div>

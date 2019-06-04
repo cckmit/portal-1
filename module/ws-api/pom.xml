@@ -9,24 +9,12 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
     <artifactId>portal4.ws-api</artifactId>
+    <version>1.0.0.0</version>
 
     <build>
 
         <finalName>portal-api</finalName>
-
-<!--
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>*.properties</include>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
--->
 
         <plugins>
             <plugin>
@@ -61,12 +49,15 @@
                         </manifest>
                         <manifestEntries>
                             <Class-Path>config/</Class-Path>
+                            <version>${project.version}</version>
+                            <build-time>${maven.build.timestamp}</build-time>
                         </manifestEntries>
                     </archive>
                     <excludes>
                         <exclude>*.properties</exclude>
                         <exclude>**/*.properties</exclude>
                     </excludes>
+                    <outputDirectory>${project.build.directory}/portal-api</outputDirectory>
                 </configuration>
             </plugin>
 
@@ -83,7 +74,7 @@
                         </goals>
                         <configuration>
                             <includeScope>compile</includeScope>
-                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <outputDirectory>${project.build.directory}/portal-api/lib</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -111,7 +102,27 @@
                                     </includes>
                                 </resource>
                             </resources>
-                            <outputDirectory>${project.build.directory}/config</outputDirectory>
+                            <outputDirectory>${project.build.directory}/portal-api/config</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-scripts</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>*.sh</include>
+                                        <include>**/*.sh</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}/portal-api</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -181,6 +192,84 @@
             <groupId>ru.protei</groupId>
             <artifactId>portal4.core</artifactId>
             <version>4.0.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>portal4.skin.classic</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ru.protei</groupId>
+                    <artifactId>jmc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.jxls</groupId>
+                    <artifactId>jxls-poi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.freemarker</groupId>
+                    <artifactId>freemarker</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-fileupload</groupId>
+                    <artifactId>commons-fileupload</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.pdfbox</groupId>
+                    <artifactId>pdfbox</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-queryparser</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.lucene</groupId>
+                    <artifactId>lucene-analyzers-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.tmatesoft.svnkit</groupId>
+                    <artifactId>svnkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark-ext-gfm-tables</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark-ext-autolink</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.commonmark</groupId>
+                    <artifactId>commonmark-ext-gfm-strikethrough</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.atlassian.renderer</groupId>
+                    <artifactId>atlassian-renderer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.googlecode.juniversalchardet</groupId>
+                    <artifactId>juniversalchardet</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
