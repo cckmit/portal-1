@@ -287,6 +287,7 @@ public class TemplateServiceImpl implements TemplateService {
                     caseComment.put( "text", escapeTextAndRenderHTML( comment.getText(), textMarkup ) );
                     caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     caseComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
+                    caseComment.put( "isPrivateComment", comment.isPrivateComment() );
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
                     caseComment.put( "changed",  isChanged);
