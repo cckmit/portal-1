@@ -44,9 +44,7 @@ public class CaseTagServiceImpl implements CaseTagService {
     public CoreResponse<List<CaseTag>> getTagsByCaseId(AuthToken token, long caseId) {
         CaseTagQuery query = new CaseTagQuery();
 
-        List<Long> caseIds = caseObjectTagDAO.getListByCaseId(caseId).stream()
-                .map(CaseObjectTag::getTagId).collect(Collectors.toList());
-        query.setIds(caseIds);
+        query.setCaseId(caseId);
 
         return getTagsByPermission(token, query);
     }

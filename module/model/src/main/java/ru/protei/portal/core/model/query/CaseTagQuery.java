@@ -11,6 +11,15 @@ public class CaseTagQuery extends BaseQuery {
     private List<En_CaseType> caseTypes;
     private Long companyId;
     private List<Long> ids;
+    private Long caseId;
+
+    public Long getCaseId() {
+        return caseId;
+    }
+
+    public void setCaseId(Long caseId) {
+        this.caseId = caseId;
+    }
 
     public CaseTagQuery() {}
 
