@@ -1650,7 +1650,5 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeEmailColumnHeader();
 
-    String countLabel(int totalCount);
-
     String privateComment();
 }
