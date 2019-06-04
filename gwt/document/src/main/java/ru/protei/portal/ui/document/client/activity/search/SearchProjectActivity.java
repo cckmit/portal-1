@@ -15,7 +15,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     public void onInit() {
         view.setActivity( this );
         dialogView.setActivity( this );
-        dialogView.setHeader( lang.issueReportNew() );
+        dialogView.setHeader( lang.documentSearchProject() );
         dialogView.getBodyContainer().add( view.asWidget() );
     }
 
@@ -27,6 +27,16 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
         applyFilterViewPrivileges();
 */
         dialogView.showPopup();
+    }
+
+    @Override
+    public void onSaveClicked() {
+
+    }
+
+    @Override
+    public void onCancelClicked() {
+        dialogView.hidePopup();
     }
 
     @Inject

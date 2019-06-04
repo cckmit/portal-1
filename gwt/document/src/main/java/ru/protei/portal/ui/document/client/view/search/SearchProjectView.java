@@ -3,10 +3,7 @@ package ru.protei.portal.ui.document.client.view.search;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
@@ -67,6 +64,12 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;
+
+    @UiField
+    Anchor search;
+
+    @UiField
+    HTMLPanel projectContainer;
 
     @Inject
     @UiField
