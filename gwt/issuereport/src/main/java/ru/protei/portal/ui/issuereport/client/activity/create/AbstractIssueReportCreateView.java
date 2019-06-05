@@ -5,6 +5,8 @@ import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_ReportType;
 
+import java.util.List;
+
 public interface AbstractIssueReportCreateView extends IsWidget {
 
     void setActivity(AbstractIssueReportCreateActivity activity);
@@ -17,5 +19,5 @@ public interface AbstractIssueReportCreateView extends IsWidget {
 
     HasWidgets getReportContainer();
 
-
+    void fillReportTypes( List<En_ReportType> options);
 }

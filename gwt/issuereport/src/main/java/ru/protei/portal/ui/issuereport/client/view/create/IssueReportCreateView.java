@@ -12,6 +12,8 @@ import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueRepor
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.ReportTypeButtonSelector;
 
+import java.util.List;
+
 public class IssueReportCreateView extends Composite implements AbstractIssueReportCreateView {
 
     @Inject
@@ -45,6 +47,11 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         return reportContainer;
     }
 
+    @Override
+    public void fillReportTypes(List<En_ReportType> options) {
+        reportType.fillOptions(options);
+    }
+
     @UiHandler("reportType")
     public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
         if (activity != null) {
@@ -55,6 +62,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     @UiField(provided = true)
     ReportTypeButtonSelector reportType;
+
     @UiField
     TextBox name;
 

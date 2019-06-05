@@ -26,9 +26,8 @@ import ru.protei.portal.ui.common.client.view.report.caseobjects.AbstractCaseObj
 import ru.protei.portal.ui.common.client.view.report.timeelapsed.AbstractTimeElapsedReportView;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.*;
@@ -54,6 +53,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.resetFilter();
         resetFilters();
         applyFilterViewPrivileges();
+        view.fillReportTypes(makeReportTypeList());
         dialogView.showPopup();
     }
 
@@ -243,6 +243,13 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         timeElapsedReportView.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
         timeElapsedReportView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+    }
+
+    private List<En_ReportType> makeReportTypeList() {
+        if (policyService.hasGrantAccessFor(En_Privilege.ISSUE_REPORT)) {
+            return Arrays.asList(En_ReportType.values());
+        }
+        return Arrays.asList(En_ReportType.CASE_OBJECTS);
     }
 
     @Inject
