@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueReportEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -48,12 +49,16 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Event
+    public void onAuthSuccess(AuthEvents.Success event) {
+        view.fillReportTypes(makeReportTypeList());
+    }
+
+    @Event
     public void onShow(IssueReportEvents.Create event) {
         isSaving = false;
         view.resetFilter();
         resetFilters();
         applyFilterViewPrivileges();
-        view.fillReportTypes(makeReportTypeList());
         dialogView.showPopup();
     }
 
