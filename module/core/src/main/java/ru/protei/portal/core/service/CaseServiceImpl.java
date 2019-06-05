@@ -452,6 +452,8 @@ public class CaseServiceImpl implements CaseService {
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
             query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
             query.setAllowViewPrivate( false );
+
+            query.setCustomerSearch(true);
         }
     }
 

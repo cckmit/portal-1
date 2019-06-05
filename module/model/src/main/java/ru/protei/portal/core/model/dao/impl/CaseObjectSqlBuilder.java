@@ -27,7 +27,13 @@ public class CaseObjectSqlBuilder {
                         .append("))");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
                 if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
-                    condition.append( " and (case_object.id not in (select case_id from case_object_tag)" );
+                    if (query.isCustomerSearch()) {
+                        condition.append( " and (case_object.id not in (select case_id from case_object_tag where case_object_tag.tag_id in ")
+                                .append("   (select case_tag.id from case_tag where case_tag.company_id = ? )) ");
+                        args.add( query.getCompanyIds().get(0) );
+                    } else {
+                        condition.append( " and (case_object.id not in (select case_id from case_object_tag) " );
+                    }
                     if (!query.getCaseTagsIds().isEmpty()) {
                         condition.append(" or case_object.id in")
                                 .append(" (select case_id from case_object_tag where tag_id in (")
