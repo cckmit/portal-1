@@ -50,6 +50,14 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
         }
     }
 
+    @Override
+    public void onSelectorUnload( SelectorWithModel<EntityOption> selector ) {
+        if ( selector == null ) {
+            return;
+        }
+        selector.clearOptions();
+    }
+
     private void refreshOptions() {
         subscribersMap.forEach((caseType, subscribers) -> refreshOptionsForCaseType(caseType));
     }
