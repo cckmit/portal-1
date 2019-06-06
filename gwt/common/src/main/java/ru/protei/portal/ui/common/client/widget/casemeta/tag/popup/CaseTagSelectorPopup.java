@@ -91,8 +91,9 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
 
     private void displayTags() {
         clearTagsListView();
+        boolean isProtei =  policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW );
         caseTags.stream()
-                .filter(caseTag -> containsIgnoreCase( IssueFilterUtils.toDisplayName(caseTag, policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )), searchNameFilter))
+                .filter(caseTag -> containsIgnoreCase( IssueFilterUtils.toDisplayName(caseTag, isProtei), searchNameFilter))
                 .forEach(this::addTagToListView);
     }
 

@@ -140,7 +140,12 @@ public class IssueFilterUtils {
         if ( tag == null  ) {
             return null;
         }
-        return tag.getName() + (isProtei ? " (" + tag.getCompanyName() + ")" : "");
+
+        if (isProtei && tag.getCompanyName() != null) {
+            return tag.getName() + " (" + tag.getCompanyName() + ")";
+        } else {
+            return tag.getName();
+        }
     }
 
 
