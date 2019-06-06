@@ -2,21 +2,21 @@ package ru.protei.portal.ui.common.client.widget.casemeta.tag.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
-import ru.protei.portal.ui.common.client.widget.casemeta.link.item.CaseLinkView;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 
 public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasAddHandlers, HasEnabled {
 
@@ -35,8 +35,10 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
 
         String backgroundColor = makeSafeColor(caseTag.getColor());
         String textColor = makeContrastColor(backgroundColor);
-        text.setText(caseTag.getViewName());
-        icon.setText(makeSingleCharName(caseTag.getViewName()));
+        String tagDisplayName = IssueFilterUtils.toDisplayName(caseTag, policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
+
+        text.setText(tagDisplayName);
+        icon.setText(makeSingleCharName(tagDisplayName));
         icon.getElement().getStyle().setProperty("backgroundColor", backgroundColor);
         icon.getElement().getStyle().setProperty("color", textColor);
 
@@ -135,6 +137,9 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
     InlineLabel text;
     @UiField
     InlineLabel icon;
+
+    @Inject
+    PolicyService policyService;
 
     private CaseTag caseTag = null;
 

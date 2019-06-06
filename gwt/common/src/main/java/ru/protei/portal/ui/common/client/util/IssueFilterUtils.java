@@ -126,6 +126,24 @@ public class IssueFilterUtils {
         return option;
     }
 
+    public static EntityOption toEntityOption( CaseTag tag, boolean isProtei ) {
+        if ( tag == null  ) {
+            return null;
+        }
+        EntityOption option = new EntityOption();
+        option.setId( tag.getId() );
+        option.setDisplayText(toDisplayName(tag, isProtei));
+        return option;
+    }
+
+    public static String toDisplayName( CaseTag tag, boolean isProtei ) {
+        if ( tag == null  ) {
+            return null;
+        }
+        return tag.getName() + (isProtei ? " (" + tag.getCompanyName() + ")" : "");
+    }
+
+
     public static List< Long > getProductsIdList( Set< ProductShortView > productSet ) {
 
         if ( productSet == null || productSet.isEmpty() ) {

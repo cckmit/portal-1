@@ -4,13 +4,16 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -67,7 +70,9 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess(caseTags -> {
-                    valuesMap.put(caseType, caseTags.stream().map(CaseTag::toEntityOption).collect(Collectors.toList()));
+                    valuesMap.put(caseType, caseTags.stream()
+                            .map(tag -> IssueFilterUtils.toEntityOption(tag, policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )))
+                            .collect(Collectors.toList()));
                     notifySubscribers(caseType);
                 })
         );
@@ -86,6 +91,9 @@ public abstract class CaseTagModel implements Activity, SelectorModel<EntityOpti
     CaseTagControllerAsync caseTagController;
     @Inject
     Lang lang;
+
+    @Inject
+    PolicyService policyService;
 
     private Map<En_CaseType, List<SelectorWithModel<EntityOption>>> subscribersMap = new HashMap<>();
     private Map<En_CaseType, List<EntityOption>> valuesMap = new HashMap<>();
