@@ -1,8 +1,10 @@
 package ru.protei.portal.ui.document.client.view.search;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
@@ -21,33 +23,46 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
 
     @Inject
     public void onInit() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
+        initWidget(ourUiBinder.createAndBindUi(this));
         dateCreatedRange.setPlaceholder(lang.selectDate());
     }
 
     @Override
-    public void setActivity( AbstractSearchProjectActivity activity ) {
+    public void setActivity(AbstractSearchProjectActivity activity) {
         this.activity = activity;
     }
 
     @Override
-    public HasValue< String > name() {
+    public HasValue<String> name() {
         return name;
     }
 
     @Override
-    public HasValue< En_CustomerType > customerType() {
+    public HasValue<En_CustomerType> customerType() {
         return customerType;
     }
 
     @Override
-    public HasValue< Set< ProductShortView > > products() {
+    public HasValue<Set<ProductShortView>> products() {
         return products;
     }
 
     @Override
-    public HasValue< DateInterval > dateCreatedRange() {
+    public HasValue<DateInterval> dateCreatedRange() {
         return dateCreatedRange;
+    }
+
+    @Override
+    public HasWidgets getProjectContainer() {
+        return projectContainer;
+    }
+
+    @UiHandler( "search" )
+    public void onSearchClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onSearchClicked();
+        }
     }
 
     @UiField

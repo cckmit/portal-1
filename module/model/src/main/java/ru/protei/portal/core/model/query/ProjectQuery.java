@@ -45,6 +45,13 @@ public class ProjectQuery extends BaseQuery {
         this.states = state;
     }
 
+    public ProjectQuery(Date createdFrom, Date createdTo, List<Long> productIds, String searchString, En_SortField sortField, En_SortDir sortDir) {
+        super(searchString, sortField, sortDir);
+        this.createdFrom = createdFrom;
+        this.createdTo = createdTo;
+        this.productIds = productIds;
+    }
+
     public Set<En_RegionState> getStates() {
         return states;
     }
