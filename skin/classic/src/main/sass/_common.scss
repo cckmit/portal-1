@@ -2494,10 +2494,11 @@ a {
   position: relative;
   display: inline-block;
   margin: 2px;
-  text-align: center;
+  text-align: left;
   height: 22px;
   line-height: 22px;
   cursor: default;
+  border-radius: 2px;
 
   > * {
     float: left;
@@ -2513,7 +2514,7 @@ a {
   }
 
   .case-tag-text {
-    padding: 0 2px 0 0;
+    padding: 0 2px 0 6px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -2521,38 +2522,8 @@ a {
     -ms-user-select: none;
     user-select: none;
   }
-
-  .case-tag-company-name {
-    padding: 0 2px 0 0;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-
-  .case-tag-icon {
-    height: 16px;
-    width: 16px;
-    min-width: 16px;
-    margin: 2px 2px 2px 3px;
-    line-height: 16px;
-    color: #383838;
-    background-color: #e9edef;
-    border-radius: 2px;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 0.8em;
-    font-weight: bold;
-  }
 }
 
-.case-meta-container {
-  .case-tag-company-name {
-    display: none;
-  }
-}
 
 .case-tag-popup {
   z-index: 1000;
@@ -2592,6 +2563,9 @@ a {
 
     .case-tag {
       position: relative;
+      text-align: center;
+      height: 22px;
+      line-height: 22px;
       display: flex;
       margin-left: 10px;
       cursor: pointer;
@@ -2618,6 +2592,18 @@ a {
         text-overflow: ellipsis;
         max-width: 50%;
         text-align: right;
+      }
+      .case-tag-icon {
+        height: 16px;
+        width: 16px;
+        min-width: 16px;
+        margin: 2px 2px 2px 3px;
+        line-height: 16px;
+        border-radius: 2px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 0.8em;
+        font-weight: bold;
       }
     }
   }

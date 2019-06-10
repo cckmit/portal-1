@@ -21,7 +21,7 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
-import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagView;
+import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagPopupView;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -99,13 +99,12 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     }
 
     private void addTagToListView(CaseTag caseTag) {
-        CaseTagView caseTagView = caseTagViewProvider.get();
-        caseTagView.setEnabled(false);
-        caseTagView.setValue(caseTag);
-        caseTagView.addAddHandler(event -> {
+        CaseTagPopupView caseTagPopupView = caseTagViewProvider.get();
+        caseTagPopupView.setValue(caseTag);
+        caseTagPopupView.addAddHandler(event -> {
             onTagSelected(caseTag);
         });
-        childContainer.add(caseTagView);
+        childContainer.add(caseTagPopupView);
     }
 
     private void onTagSelected(CaseTag caseTag) {
@@ -123,7 +122,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     @Inject
     CaseTagControllerAsync caseTagController;
     @Inject
-    Provider<CaseTagView> caseTagViewProvider;
+    Provider<CaseTagPopupView> caseTagViewProvider;
 
     @Inject
     @UiField
