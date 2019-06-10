@@ -2522,9 +2522,20 @@ a {
     user-select: none;
   }
 
+  .case-tag-company-name {
+    padding: 0 2px 0 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
   .case-tag-icon {
     height: 16px;
     width: 16px;
+    min-width: 16px;
     margin: 2px 2px 2px 3px;
     line-height: 16px;
     color: #383838;
@@ -2537,11 +2548,17 @@ a {
   }
 }
 
+.case-meta-container {
+  .case-tag-company-name {
+    display: none;
+  }
+}
+
 .case-tag-popup {
   z-index: 1000;
   float: left;
   min-width: 160px;
-  text-align: left;
+  max-width: 360px;
   box-sizing: border-box;
   background: #fff;
   box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);
@@ -2580,8 +2597,27 @@ a {
       cursor: pointer;
 
       .case-tag-text {
-        flex: 1;
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-negative: 1;
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         text-align: left;
+      }
+      .case-tag-company-name {
+        -webkit-box-flex: 1;
+        -ms-flex-positive: 1;
+        flex-grow: 1;
+        -ms-flex-negative: 1;
+        flex-shrink: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 50%;
+        text-align: right;
       }
     }
   }

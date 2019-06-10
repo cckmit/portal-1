@@ -13,7 +13,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -22,7 +21,6 @@ import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagView;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
@@ -91,9 +89,8 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
 
     private void displayTags() {
         clearTagsListView();
-        boolean isProtei =  policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW );
         caseTags.stream()
-                .filter(caseTag -> containsIgnoreCase( IssueFilterUtils.toDisplayName(caseTag, isProtei), searchNameFilter))
+                .filter(caseTag -> containsIgnoreCase( caseTag.getName(), searchNameFilter))
                 .forEach(this::addTagToListView);
     }
 

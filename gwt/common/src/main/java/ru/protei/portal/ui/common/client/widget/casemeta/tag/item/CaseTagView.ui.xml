@@ -7,6 +7,7 @@
         <g:HTMLPanel ui:field="panel" tag="li" styleName="case-tag">
             <g:Anchor ui:field="remove" href="#" styleName="case-tag-close fa fa-close"/>
             <g:InlineLabel ui:field="text" styleName="case-tag-text"/>
+            <g:InlineLabel ui:field="companyName" styleName="case-tag-company-name"/>
             <g:InlineLabel ui:field="icon" styleName="case-tag-icon"/>
         </g:HTMLPanel>
     </g:FocusPanel>

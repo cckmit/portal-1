@@ -16,7 +16,6 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 
 public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasAddHandlers, HasEnabled {
 
@@ -35,10 +34,15 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
 
         String backgroundColor = makeSafeColor(caseTag.getColor());
         String textColor = makeContrastColor(backgroundColor);
-        String tagDisplayName = IssueFilterUtils.toDisplayName(caseTag, policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
 
-        text.setText(tagDisplayName);
-        icon.setText(makeSingleCharName(tagDisplayName));
+        text.setText(caseTag.getName());
+        if (policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )) {
+            companyName.setText(caseTag.getCompanyName());
+        } else {
+            companyName.setText("");
+        }
+
+        icon.setText(makeSingleCharName(caseTag.getName()));
         icon.getElement().getStyle().setProperty("backgroundColor", backgroundColor);
         icon.getElement().getStyle().setProperty("color", textColor);
 
@@ -135,6 +139,8 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
     Anchor remove;
     @UiField
     InlineLabel text;
+    @UiField
+    InlineLabel companyName;
     @UiField
     InlineLabel icon;
 
