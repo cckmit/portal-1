@@ -11,13 +11,11 @@ import ru.brainworm.factory.widget.table.client.TableWidget;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.StaticColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.project.client.activity.table.detailed.AbstractProjectDetailedTableActivity;
 import ru.protei.portal.ui.project.client.activity.table.detailed.AbstractProjectDetailedTableView;
-import ru.protei.portal.ui.project.client.view.table.columns.InfoColumn;
 import ru.protei.portal.ui.project.client.view.table.columns.ManagersColumn;
 
 import java.util.Date;

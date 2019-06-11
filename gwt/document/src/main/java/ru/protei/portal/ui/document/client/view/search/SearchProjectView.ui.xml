@@ -30,6 +30,7 @@
         <div class="form-group grid grid-indent footer">
             <div class="col-xs-12">
                 <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
+                <g:Anchor href='#' ui:field="clear" styleName="btn btn-white" text="{lang.buttonClear}"/>
             </div>
         </div>
         <g:HTMLPanel ui:field="projectContainer" styleName="form-group grid grid-indent"/>

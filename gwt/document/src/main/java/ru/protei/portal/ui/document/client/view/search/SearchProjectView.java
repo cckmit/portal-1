@@ -10,13 +10,16 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.document.client.activity.search.AbstractSearchProjectActivity;
 import ru.protei.portal.ui.document.client.activity.search.AbstractSearchProjectView;
+import ru.protei.portal.ui.document.client.widget.projectlist.list.ProjectList;
 
+import java.util.List;
 import java.util.Set;
 
 public class SearchProjectView extends Composite implements AbstractSearchProjectView {
@@ -57,11 +60,34 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         return projectContainer;
     }
 
-    @UiHandler( "search" )
+/*
+    @Override
+    public void fillProjectList(List<ProjectInfo> list) {
+        list.forEach(project -> projects.addProject(project));
+    }
+*/
+
+    @Override
+    public void resetFilter() {
+        name.setValue(null);
+        customerType.setValue(null);
+        products.setValue(null);
+        dateCreatedRange.setValue(null);
+    }
+
+    @UiHandler("search")
     public void onSearchClicked(ClickEvent event) {
         event.preventDefault();
         if (activity != null) {
             activity.onSearchClicked();
+        }
+    }
+
+    @UiHandler("clear")
+    public void onClearClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onClearClicked();
         }
     }
 
@@ -84,11 +110,14 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     Anchor search;
 
     @UiField
-    HTMLPanel projectContainer;
+    Anchor clear;
 
     @Inject
     @UiField
     Lang lang;
+
+    @UiField
+    HTMLPanel projectContainer;
 
     private AbstractSearchProjectActivity activity;
 
