@@ -62,7 +62,7 @@ public class ProjectDetailedTableView extends Composite implements AbstractProje
             @Override
             protected void fillColumnHeader(Element columnHeader) {
                 columnHeader.addClassName("created");
-                columnHeader.setInnerText(lang.issueReportsInfo());
+                columnHeader.setInnerText(lang.projectCreationDate());
             }
 
             @Override
@@ -73,11 +73,25 @@ public class ProjectDetailedTableView extends Composite implements AbstractProje
             }
         };
 
+        info = new ClickColumn< ProjectInfo>() {
+            @Override
+            protected void fillColumnHeader(Element columnHeader) {
+                columnHeader.addClassName("info");
+                columnHeader.setInnerText(lang.name());
+            }
+
+            @Override
+            public void fillColumnValue(Element cell, ProjectInfo value) {
+                cell.addClassName("info");
+                cell.setInnerText(value.getName());
+            }
+        };
+
         customerType = new ClickColumn<ProjectInfo>() {
             @Override
             protected void fillColumnHeader(Element columnHeader) {
                 columnHeader.addClassName("customer-type");
-                columnHeader.setInnerText(lang.issueReportsInfo());
+                columnHeader.setInnerText(lang.projectCustomerType());
             }
 
             @Override
@@ -91,13 +105,13 @@ public class ProjectDetailedTableView extends Composite implements AbstractProje
             @Override
             protected void fillColumnHeader(Element columnHeader) {
                 columnHeader.addClassName("products");
-                columnHeader.setInnerText(lang.issueReportsInfo());
+                columnHeader.setInnerText(lang.projectProducts());
             }
 
             @Override
             public void fillColumnValue(Element cell, ProjectInfo value) {
                 cell.addClassName("products");
-                cell.setInnerText(value.getProducts().stream().map(product -> product.getName()).collect( Collectors.joining(",")));
+                cell.setInnerText(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect( Collectors.joining(", ")));
             }
         };
         table.addColumn(created.header, created.values);
@@ -118,12 +132,10 @@ public class ProjectDetailedTableView extends Composite implements AbstractProje
     En_CustomerTypeLang customerTypeLang;
 
     @Inject
-    InfoColumn info;
-
-    @Inject
     ManagersColumn managers;
 
     ClickColumn<ProjectInfo> created;
+    ClickColumn<ProjectInfo> info;
     ClickColumn<ProjectInfo> customerType;
     ClickColumn<ProjectInfo> products;
 

@@ -10,11 +10,14 @@ import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPrevie
 import ru.protei.portal.ui.project.client.activity.preview.ProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
 import ru.protei.portal.ui.project.client.activity.table.ProjectTableActivity;
+import ru.protei.portal.ui.project.client.activity.table.detailed.AbstractProjectDetailedTableView;
+import ru.protei.portal.ui.project.client.activity.table.detailed.ProjectDetailedTableActivity;
 import ru.protei.portal.ui.project.client.view.filter.ProjectFilterView;
 import ru.protei.portal.ui.project.client.view.list.ProjectDocumentsListView;
 import ru.protei.portal.ui.project.client.view.list.item.ProjectDocumentsListItemView;
 import ru.protei.portal.ui.project.client.view.preview.ProjectPreviewView;
 import ru.protei.portal.ui.project.client.view.table.ProjectTableView;
+import ru.protei.portal.ui.project.client.view.table.detailed.ProjectDetailedTableView;
 import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.TeamSelector;
 import ru.protei.portal.ui.project.client.view.widget.team.item.AbstractTeamSelectorItem;
@@ -30,10 +33,10 @@ public class ProjectClientModule extends AbstractGinModule {
         bind( ProjectPage.class ).asEagerSingleton();
 
         bind( ProjectTableActivity.class ).asEagerSingleton();
-        bind( AbstractProjectTableView.class ).to(ProjectTableView.class);
-        bind( AbstractProjectFilterView.class ).to(ProjectFilterView.class);
+        bind( AbstractProjectTableView.class ).to(ProjectTableView.class );
+        bind( AbstractProjectFilterView.class ).to(ProjectFilterView.class );
 
-        bind( ProjectPreviewActivity.class).asEagerSingleton();
+        bind( ProjectPreviewActivity.class ).asEagerSingleton();
         bind( AbstractProjectPreviewView.class ).to( ProjectPreviewView.class );
 
         bind( AbstractTeamSelector.class ).to( TeamSelector.class );
@@ -43,6 +46,8 @@ public class ProjectClientModule extends AbstractGinModule {
         bind( AbstractProjectDocumentsListView.class ).to( ProjectDocumentsListView.class );
         bind( AbstractProjectDocumentsListItemView.class ).to( ProjectDocumentsListItemView.class );
 
+        bind( ProjectDetailedTableActivity.class ).asEagerSingleton();
+        bind( AbstractProjectDetailedTableView.class ).to( ProjectDetailedTableView.class );
     }
 }
 

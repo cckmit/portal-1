@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="modal">
-        <div class="modal-dialog dialog-content" ui:field="modalDialog">
+        <div class="modal-dialog dialog-content modal-lg" ui:field="modalDialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <g:Button ui:field="close" styleName="close">×</g:Button>

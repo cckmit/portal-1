@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -114,5 +115,35 @@ public class ProjectQuery extends BaseQuery {
 
     public void setCreatedTo( Date createdTo ) {
         this.createdTo = createdTo;
+    }
+
+    @Override
+    public boolean isParamsPresent() {
+        return super.isParamsPresent() ||
+                CollectionUtils.isNotEmpty(states) ||
+                directionId != null ||
+                CollectionUtils.isNotEmpty(productIds) ||
+                customerType != null ||
+                createdFrom != null ||
+                createdTo != null;
+    }
+
+    @Override
+    public String toString() {
+        return "ProjectQuery{" +
+                "states=" + states +
+                ", districtIds=" + districtIds +
+                ", directionId=" + directionId +
+                ", onlyMineProjects=" + onlyMineProjects +
+                ", productIds=" + productIds +
+                ", customerType=" + customerType +
+                ", createdFrom=" + createdFrom +
+                ", createdTo=" + createdTo +
+                ", searchString='" + searchString + '\'' +
+                ", sortField=" + sortField +
+                ", sortDir=" + sortDir +
+                ", limit=" + limit +
+                ", offset=" + offset +
+                '}';
     }
 }

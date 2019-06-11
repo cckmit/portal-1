@@ -28,6 +28,11 @@ public abstract class ProjectDetailedTableActivity implements AbstractProjectDet
         requestProjects(event.query);
     }
 
+    @Override
+    public void onItemClicked(ProjectInfo value) {
+
+    }
+
     private void requestProjects(ProjectQuery query) {
 
         view.clearRecords();

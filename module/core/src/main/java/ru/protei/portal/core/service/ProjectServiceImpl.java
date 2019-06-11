@@ -198,6 +198,10 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+
+        helper.fill(projects, "members");
+        helper.fill(projects, "products");
+
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
         return new CoreResponse<List<ProjectInfo>>().success( result );
@@ -360,10 +364,12 @@ public class ProjectServiceImpl implements ProjectService {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setType(En_CaseType.PROJECT);
 
-        caseQuery.setStateIds(projectQuery.getStates().stream()
-                .map((state) -> new Long(state.getId()).intValue())
-                .collect(toList())
-        );
+        if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
+            caseQuery.setStateIds(projectQuery.getStates().stream()
+                    .map((state) -> new Long(state.getId()).intValue())
+                    .collect(toList())
+            );
+        }
 
         List<Long> productIds = null;
         if (projectQuery.getDirectionId() != null) {
@@ -374,9 +380,9 @@ public class ProjectServiceImpl implements ProjectService {
             productIds = new ArrayList<>();
             productIds.addAll(projectQuery.getProductIds());
         }
-        caseQuery.setProductIds( productIds );
+        caseQuery.setProductIds(productIds);
 
-        if (projectQuery.isOnlyMineProjects()) {
+        if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
             UserSessionDescriptor descriptor = authService.findSession(authToken);
             if (descriptor != null && descriptor.getPerson() != null) {
                 caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
@@ -387,13 +393,10 @@ public class ProjectServiceImpl implements ProjectService {
             caseQuery.setLocal(projectQuery.getCustomerType().getId());
         }
 
-        if (projectQuery.getCreatedFrom() != null) {
-            caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
-        }
-        if (projectQuery.getCreatedTo() != null) {
-            caseQuery.setCreatedTo(projectQuery.getCreatedTo());
-        }
+        caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
+        caseQuery.setCreatedTo(projectQuery.getCreatedTo());
 
+        caseQuery.setSearchString(projectQuery.getSearchString());
         caseQuery.setSortDir(projectQuery.getSortDir());
         caseQuery.setSortField(projectQuery.getSortField());
 

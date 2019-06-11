@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
@@ -48,7 +49,12 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
 
     @Override
     public void onSearchClicked() {
-        fireEvent(new ProjectEvents.ShowDetailedTable(view.getProjectContainer(), makeQuery()));
+        ProjectQuery query = makeQuery();
+        if (isQueryNotValid(query)) {
+            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
+        } else {
+            fireEvent(new ProjectEvents.ShowDetailedTable(view.getProjectContainer(), makeQuery()));
+        }
     }
 
     private ProjectQuery makeQuery() {
@@ -61,6 +67,10 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
         query.setCustomerType(view.customerType().getValue());
         query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect( Collectors.toList()));
         return query;
+    }
+
+    private boolean isQueryNotValid(ProjectQuery query) {
+        return query == null || !query.isParamsPresent();
     }
 
     @Inject
