@@ -3,10 +3,7 @@ package ru.protei.portal.ui.common.client.view.casetag;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.TextBox;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateActivity;
@@ -41,12 +38,20 @@ public class CaseTagCreateView extends Composite implements AbstractCaseTagCreat
         return company;
     }
 
+    @Override
+    public void setVisibleCompanyPanel(boolean visible) {
+        companyPanel.setVisible(visible);
+    }
+
     @Inject
     @UiField
     Lang lang;
 
     @UiField
     TextBox name;
+
+    @UiField
+    HTMLPanel companyPanel;
 
     @Inject
     @UiField(provided = true)
