@@ -132,22 +132,10 @@ public class IssueFilterUtils {
         }
         EntityOption option = new EntityOption();
         option.setId( tag.getId() );
-        option.setDisplayText(toDisplayName(tag, isProtei));
+        option.setDisplayText(tag.getName());
+        option.setInfo(isProtei? tag.getCompanyName() : null);
         return option;
     }
-
-    public static String toDisplayName( CaseTag tag, boolean isProtei ) {
-        if ( tag == null  ) {
-            return null;
-        }
-
-        if (isProtei && tag.getCompanyName() != null) {
-            return tag.getName() + " (" + tag.getCompanyName() + ")";
-        } else {
-            return tag.getName();
-        }
-    }
-
 
     public static List< Long > getProductsIdList( Set< ProductShortView > productSet ) {
 

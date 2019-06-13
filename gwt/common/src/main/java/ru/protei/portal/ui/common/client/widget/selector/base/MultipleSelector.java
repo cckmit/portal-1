@@ -65,12 +65,23 @@ public abstract class MultipleSelector<T>
     }
 
     public void addOption( String name, T value ) {
+        addOption(name, null, value);
+    }
+
+    public void addOption( String name, String info, T value ) {
         SelectableItem itemView;
         if ( value == null && hasAnyValue ) {
             itemView = makeAnySelectorItem( name );
         } else {
             itemView = itemFactory.get();
-            itemView.setName( name );
+            itemView.setText( name );
+            if (info == null) {
+                itemView.setInfoVisible(false);
+                itemView.setInfo( "" );
+            } else {
+                itemView.setInfoVisible(true);
+                itemView.setInfo( info );
+            }
             itemView.addValueChangeHandler( this );
             itemViewToModel.put( itemView, value );
             itemToViewModel.put( value, itemView );
@@ -258,7 +269,7 @@ public abstract class MultipleSelector<T>
     private SelectableItem makeAnySelectorItem( String name ) {
         anyItemView = itemFactory.get();
         anyItemView.addStyleName( UiConstants.Styles.MULTIPLE_ANY );
-        anyItemView.setName( name );
+        anyItemView.setText( name );
         anyItemView.addValueChangeHandler( this );
         itemToNameModel.put( null, name );
 
