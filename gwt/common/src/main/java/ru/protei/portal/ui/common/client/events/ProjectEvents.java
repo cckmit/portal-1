@@ -105,6 +105,18 @@ public class ProjectEvents {
     public static class Search {}
 
     /**
+     * Установить выбранный проект
+     */
+    public static class Set {
+
+        public Set(ProjectInfo project) {
+            this.project = project;
+        }
+
+        public ProjectInfo project;
+    }
+
+    /**
      * Показать таблицу проектов
      */
     public static class ShowDetailedTable {

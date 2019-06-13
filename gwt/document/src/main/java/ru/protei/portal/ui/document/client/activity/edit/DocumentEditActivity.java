@@ -78,6 +78,12 @@ public abstract class DocumentEditActivity
         }
     }
 
+    @Event
+    public void onSetProject(ProjectEvents.Set event) {
+        view.project().setValue(event.project);
+        onProjectChanged();
+    }
+
     @Override
     public void onSaveClicked() {
         if (!view.saveEnabled().isEnabled())

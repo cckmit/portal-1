@@ -24,10 +24,11 @@ import ru.protei.portal.ui.document.client.widget.projectlist.item.ProjectItem;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProjectList extends Composite implements HasValue<ProjectInfo>, ValueChangeHandler<Boolean> {
+public class ProjectList
+        extends Composite
+        implements HasValue<ProjectInfo>, ValueChangeHandler<Boolean> {
 
-    @Inject
-    public void onInit() {
+    public ProjectList() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
     }
 
@@ -52,15 +53,27 @@ public class ProjectList extends Composite implements HasValue<ProjectInfo>, Val
         }
     }
 
-    public void addProject(ProjectInfo value) {
+    public void addItems(List<ProjectInfo> list) {
+        root.setVisible(true);
+        list.forEach(this::addItem);
+    }
+
+    public void clearItems() {
+        root.setVisible(false);
+        container.clear();
+        itemViewToModel.clear();
+        itemToViewModel.clear();
+    }
+
+    private void addItem(ProjectInfo value) {
         ProjectItem itemView = itemFactory.get();
         itemView.setCreated(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
-        itemView.setInfo(value.getName());
+        itemView.setName(value.getName());
         itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect( Collectors.joining(", ")));
         itemView.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
         itemView.setManagers(makeManagers(value));
         itemView.addValueChangeHandler(this);
-        itemView.setValue(selected.equals(value));
+        itemView.setValue(selected != null && selected.equals(value));
 
         itemViewToModel.put(itemView, value);
         itemToViewModel.put(value, itemView);
@@ -111,14 +124,8 @@ public class ProjectList extends Composite implements HasValue<ProjectInfo>, Val
         return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @Inject
-    @UiField
-    Lang lang;
-
     @UiField
     FlowPanel container;
-    @UiField
-    LabelElement header;
 
     @Inject
     Provider<ProjectItem> itemFactory;
@@ -130,6 +137,12 @@ public class ProjectList extends Composite implements HasValue<ProjectInfo>, Val
 
     @Inject
     En_CustomerTypeLang customerTypeLang;
+
+    @Inject
+    @UiField
+    Lang lang;
+    @UiField
+    HTMLPanel root;
 
     private static ProjectListUiBinder ourUiBinder = GWT.create( ProjectListUiBinder.class );
     interface ProjectListUiBinder extends UiBinder<HTMLPanel, ProjectList> {}

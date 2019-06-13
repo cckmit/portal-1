@@ -24,4 +24,5 @@ public interface AbstractDialogDetailsView extends IsWidget {
      */
     void setHeader( String value );
 
+    void addStyleName( String value );
 }

@@ -17,6 +17,8 @@ public interface AbstractSearchProjectView extends IsWidget {
     HasValue<En_CustomerType> customerType();
     HasValue<Set<ProductShortView>> products();
     HasValue<DateInterval> dateCreatedRange();
-    HasWidgets getProjectContainer();
+    HasValue<ProjectInfo> project();
+    void clearProjectList();
+    void fillProjectList(List<ProjectInfo> list);
     void resetFilter();
 }

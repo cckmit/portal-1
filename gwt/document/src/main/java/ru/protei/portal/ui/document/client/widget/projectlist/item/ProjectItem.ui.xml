@@ -1,11 +1,11 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <g:HTMLPanel styleName="list-item">
-        <g:RadioButton ui:field="radio" name=""/>
-        <g:Label ui:field="created" styleName="option-name"/>
-        <g:Label ui:field="info" styleName="option-name"/>
-        <g:Label ui:field="products" styleName="option-name"/>
-        <g:Label ui:field="customerType" styleName="option-name"/>
-        <g:Label ui:field="managers" styleName="option-name"/>
+    <g:HTMLPanel ui:field="root" styleName="item-row">
+        <div class="item-cell select"><g:RadioButton ui:field="radio" name=""/></div>
+        <g:Label ui:field="created" styleName="item-cell created"/>
+        <g:Label ui:field="name" styleName="item-cell name"/>
+        <g:Label ui:field="products" styleName="item-cell products"/>
+        <g:Label ui:field="customerType" styleName="item-cell customer-type"/>
+        <g:Label ui:field="managers" styleName="item-cell managers"/>
     </g:HTMLPanel>
 </ui:UiBinder>

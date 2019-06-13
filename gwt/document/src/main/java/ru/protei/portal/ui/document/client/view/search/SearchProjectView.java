@@ -56,16 +56,19 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     }
 
     @Override
-    public HasWidgets getProjectContainer() {
-        return projectContainer;
+    public HasValue<ProjectInfo> project() {
+        return project;
     }
 
-/*
+    @Override
+    public void clearProjectList() {
+        project.clearItems();
+    }
+
     @Override
     public void fillProjectList(List<ProjectInfo> list) {
-        list.forEach(project -> projects.addProject(project));
+        project.addItems(list);
     }
-*/
 
     @Override
     public void resetFilter() {
@@ -113,11 +116,12 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     Anchor clear;
 
     @Inject
+    @UiField(provided = true)
+    ProjectList project;
+
+    @Inject
     @UiField
     Lang lang;
-
-    @UiField
-    HTMLPanel projectContainer;
 
     private AbstractSearchProjectActivity activity;
 

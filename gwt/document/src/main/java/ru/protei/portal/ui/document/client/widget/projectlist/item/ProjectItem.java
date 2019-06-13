@@ -9,7 +9,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 
-public class ProjectItem extends Composite implements HasValue<Boolean> {
+public class ProjectItem
+        extends Composite
+        implements HasValue<Boolean> {
+
     public ProjectItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
@@ -22,6 +25,11 @@ public class ProjectItem extends Composite implements HasValue<Boolean> {
     @Override
     public void setValue(Boolean value) {
         radio.setValue(value);
+        if (value) {
+            root.addStyleName("selected");
+        } else {
+            root.removeStyleName("selected");
+        }
     }
 
     @Override
@@ -33,8 +41,8 @@ public class ProjectItem extends Composite implements HasValue<Boolean> {
         this.created.setText(created == null ? "" : created);
     }
 
-    public void setInfo(String info) {
-        this.info.setText(info == null ? "" : info);
+    public void setName( String name ) {
+        this.name.setText( name == null ? "" : name );
     }
 
     public void setProducts(String products) {
@@ -67,13 +75,15 @@ public class ProjectItem extends Composite implements HasValue<Boolean> {
     @UiField
     Label created;
     @UiField
-    Label info;
+    Label name;
     @UiField
     Label products;
     @UiField
     Label customerType;
     @UiField
     Label managers;
+    @UiField
+    HTMLPanel root;
 
     private static ProjectItemUiBinder ourUiBinder = GWT.create(ProjectItemUiBinder.class);
     interface ProjectItemUiBinder extends UiBinder<HTMLPanel, ProjectItem> {}

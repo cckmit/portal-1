@@ -1379,24 +1379,6 @@ label.bordered:after{
   }
 }
 
-.projects-detailed {
-  .created {
-    width: 15%;
-  }
-  .customer-type {
-    width: 15%;
-  }
-  .products {
-    width: 25%;
-  }
-  .info {
-    width: 30%;
-  }
-  .managers {
-    width: 15%;
-  }
-}
-
 /* table expandable width */
 
 .no-width {
@@ -3282,6 +3264,7 @@ ul.privileges {
   background-color: #f6f7f8;
 }
 
+
 .fa-1-9x {
   font-size: 1.9em !important;
 }
@@ -3913,4 +3896,67 @@ div.select2-container {
 
 .text-bold {
   font-weight: bold !important;
+}
+
+div.table {
+  display: table;
+
+  .list-head,
+  .list-body {
+    display: table-header-group;
+
+    .item-row {
+      display: table-row;
+
+      &.selected {
+        background-color: #ddd;
+      }
+      .item-cell {
+        display: table-cell;
+        padding: 8px;
+        line-height: 1.42857143;
+        vertical-align: middle;
+        border-top: 1px solid #ddd;
+
+        &.select {
+          width: 3%;
+        }
+        &.created {
+          width: 15%;
+        }
+        &.customer-type {
+          width: 15%;
+        }
+        &.products {
+          width: 25%;
+        }
+        &.name {
+          width: 27%;
+        }
+        &.managers {
+          width: 15%;
+        }
+      }
+    }
+  }
+
+  .list-body {
+    .item-row:hover {
+      background-color: #f6f7f8;
+    }
+  }
+
+  .list-head {
+    .item-row {
+      .item-cell {
+        vertical-align: bottom;
+        border-bottom: 2px solid #ddd;
+        text-align: left;
+        border-top: 0;
+        text-transform: uppercase;
+        word-spacing: 0.15em;
+        font-weight: bold;
+      }
+    }
+  }
 }

@@ -2,7 +2,8 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
-             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'>
+             xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
+             xmlns:projectlist='urn:import:ru.protei.portal.ui.document.client.widget.projectlist.list'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -33,6 +34,8 @@
                 <g:Anchor href='#' ui:field="clear" styleName="btn btn-white" text="{lang.buttonClear}"/>
             </div>
         </div>
-        <g:HTMLPanel ui:field="projectContainer" styleName="form-group grid grid-indent"/>
+        <div class="form-group grid grid-indent">
+            <projectlist:ProjectList ui:field="project"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

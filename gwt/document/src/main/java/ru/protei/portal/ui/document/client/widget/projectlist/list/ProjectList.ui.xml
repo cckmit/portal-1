@@ -3,8 +3,17 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="form-group">
-        <label class="control-label" ui:field="header"/>
-        <g:FlowPanel ui:field="container"/>
+    <g:HTMLPanel ui:field="root" styleName="table" visible="false">
+        <div class="list-head">
+            <div class="item-row">
+                <div class="item-cell select"/>
+                <div class="item-cell created"><ui:text from="{lang.created}"/></div>
+                <div class="item-cell name"><ui:text from="{lang.name}"/></div>
+                <div class="item-cell products"><ui:text from="{lang.projectProducts}"/></div>
+                <div class="item-cell customer-type"><ui:text from="{lang.projectCustomerType}"/></div>
+                <div class="item-cell managers"><ui:text from="{lang.projectManagers}"/></div>
+            </div>
+        </div>
+        <g:FlowPanel ui:field="container" styleName="list-body"/>
     </g:HTMLPanel>
 </ui:UiBinder>

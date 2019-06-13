@@ -31,23 +31,23 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
         view.setActivity(this);
         dialogView.setActivity(this);
         dialogView.setHeader(lang.documentSearchProject());
+        dialogView.addStyleName("modal-lg");
         dialogView.getBodyContainer().add(view.asWidget());
     }
 
     @Event
     public void onShow(ProjectEvents.Search event) {
         view.resetFilter();
-/*
-        view.resetFilter();
-        resetFilters();
-        applyFilterViewPrivileges();
-*/
         dialogView.showPopup();
     }
 
     @Override
     public void onSaveClicked() {
-
+        dialogView.hidePopup();
+        ProjectInfo project = view.project().getValue();
+        if (project != null) {
+            fireEvent( new ProjectEvents.Set( view.project().getValue() ) );
+        }
     }
 
     @Override
@@ -61,11 +61,11 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
         if (isQueryNotValid(query)) {
             fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
         } else {
+            view.clearProjectList();
             regionService.getProjectsList(query, new FluentCallback<List< ProjectInfo >>()
                     .withErrorMessage(lang.errGetList())
                     .withSuccess(result -> {
-
-                        //view.getProjectContainer().add(itemView.asWidget());
+                        view.fillProjectList(result);
                     }));
         }
     }
@@ -73,6 +73,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     @Override
     public void onClearClicked() {
         view.resetFilter();
+        view.clearProjectList();
     }
 
     private ProjectQuery makeQuery() {
@@ -91,28 +92,8 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
         return query == null || !query.isParamsPresent();
     }
 
-    private void makeItemView(ProjectInfo value) {
-        ProjectItem itemView = itemFactory.get();
-        itemView.setCreated(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
-        itemView.setInfo(value.getName());
-        itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect( Collectors.joining(", ")));
-        itemView.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
-/*
-        itemView.setManagers(makeManagers(value));
-        itemView.addValueChangeHandler(this);
-        itemView.setValue(selected.equals(value));
-*/
-
-    }
-
-    @Inject
-    Provider<ProjectItem> itemFactory;
-
     @Inject
     RegionControllerAsync regionService;
-
-    @Inject
-    En_CustomerTypeLang customerTypeLang;
 
     @Inject
     Lang lang;
