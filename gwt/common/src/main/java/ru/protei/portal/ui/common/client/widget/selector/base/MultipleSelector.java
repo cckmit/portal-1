@@ -75,13 +75,7 @@ public abstract class MultipleSelector<T>
         } else {
             itemView = itemFactory.get();
             itemView.setText( name );
-            if (info == null) {
-                itemView.setInfoVisible(false);
-                itemView.setInfo( "" );
-            } else {
-                itemView.setInfoVisible(true);
-                itemView.setInfo( info );
-            }
+            itemView.setInfo( info );
             itemView.addValueChangeHandler( this );
             itemViewToModel.put( itemView, value );
             itemToViewModel.put( value, itemView );

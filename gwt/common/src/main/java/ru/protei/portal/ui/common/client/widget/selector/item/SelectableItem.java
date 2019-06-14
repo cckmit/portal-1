@@ -27,11 +27,10 @@ public class SelectableItem
     }
 
     public void setInfo( String info ) {
-        this.info.setText( info );
-    }
-
-    public void setInfoVisible(boolean visible){
-        info.setVisible(visible);
+        if (info != null) {
+            this.info.setText( info );
+            this.info.setVisible(true);
+        }
     }
 
     @Override

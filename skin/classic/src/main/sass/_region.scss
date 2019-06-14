@@ -267,6 +267,10 @@
   display: flex;
   cursor: pointer;
 
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
   .selectable-item-text {
     -webkit-box-flex: 1;
     -ms-flex-positive: 1;
@@ -277,6 +281,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+    padding-left: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
   }
   .selectable-item-info {
     -webkit-box-flex: 1;
@@ -290,5 +297,7 @@
     max-width: 45%;
     text-align: right;
     padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
   }
 }
