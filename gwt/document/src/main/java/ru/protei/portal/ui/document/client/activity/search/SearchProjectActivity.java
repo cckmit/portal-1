@@ -41,18 +41,15 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
         dialogView.showPopup();
     }
 
-    @Override
-    public void onSaveClicked() {
-        dialogView.hidePopup();
-        ProjectInfo project = view.project().getValue();
-        if (project != null) {
-            fireEvent( new ProjectEvents.Set( view.project().getValue() ) );
-        }
+    @Event
+    public void onCreatedProject(ProjectEvents.Created event) {
+        onSearchClicked();
+        view.createProjectContainer().clear();
     }
 
-    @Override
-    public void onCancelClicked() {
-        dialogView.hidePopup();
+    @Event
+    public void onCanceledCreationProject(ProjectEvents.Canceled event) {
+        view.createProjectContainer().clear();
     }
 
     @Override
@@ -62,7 +59,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
             fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
         } else {
             view.clearProjectList();
-            regionService.getProjectsList(query, new FluentCallback<List< ProjectInfo >>()
+            regionService.getProjectsList(query, new FluentCallback<List<ProjectInfo>>()
                     .withErrorMessage(lang.errGetList())
                     .withSuccess(result -> {
                         view.fillProjectList(result);
@@ -73,7 +70,25 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     @Override
     public void onClearClicked() {
         view.resetFilter();
-        view.clearProjectList();
+    }
+
+    @Override
+    public void onCreateProjectClicked() {
+        fireEvent(new ProjectEvents.Create(view.createProjectContainer()));
+    }
+
+    @Override
+    public void onSaveClicked() {
+        dialogView.hidePopup();
+        ProjectInfo project = view.project().getValue();
+        if (project != null) {
+            fireEvent(new ProjectEvents.Set(view.project().getValue()));
+        }
+    }
+
+    @Override
+    public void onCancelClicked() {
+        dialogView.hidePopup();
     }
 
     private ProjectQuery makeQuery() {

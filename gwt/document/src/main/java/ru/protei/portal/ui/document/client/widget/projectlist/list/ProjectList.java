@@ -54,15 +54,14 @@ public class ProjectList
     }
 
     public void addItems(List<ProjectInfo> list) {
-        root.setVisible(true);
         list.forEach(this::addItem);
     }
 
     public void clearItems() {
-        root.setVisible(false);
         container.clear();
         itemViewToModel.clear();
         itemToViewModel.clear();
+        selected = null;
     }
 
     private void addItem(ProjectInfo value) {
@@ -141,8 +140,6 @@ public class ProjectList
     @Inject
     @UiField
     Lang lang;
-    @UiField
-    HTMLPanel root;
 
     private static ProjectListUiBinder ourUiBinder = GWT.create( ProjectListUiBinder.class );
     interface ProjectListUiBinder extends UiBinder<HTMLPanel, ProjectList> {}

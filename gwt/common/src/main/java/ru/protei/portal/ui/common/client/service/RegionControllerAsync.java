@@ -29,7 +29,7 @@ public interface RegionControllerAsync {
 
     void getRegionList(AsyncCallback<List<EntityOption>> callback);
 
-    void createNewProject(AsyncCallback<Long> callback);
+    void createProject(ProjectInfo project, AsyncCallback<Long> callback);
 
     void removeProject(Long projectId, AsyncCallback<Boolean> async);
 }

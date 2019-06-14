@@ -20,5 +20,6 @@ public interface AbstractSearchProjectView extends IsWidget {
     HasValue<ProjectInfo> project();
     void clearProjectList();
     void fillProjectList(List<ProjectInfo> list);
+    HasWidgets createProjectContainer();
     void resetFilter();
 }

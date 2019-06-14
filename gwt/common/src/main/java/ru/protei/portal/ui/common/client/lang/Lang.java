@@ -1653,4 +1653,8 @@ public interface Lang extends Messages, ContactItemLang {
     String documentSearchProject();
 
     String buttonSearch();
+
+    String buttonClose();
+
+    String projectName();
 }

@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel ui:field="root" styleName="table" visible="false">
+    <g:HTMLPanel styleName="table">
         <div class="list-head">
             <div class="item-row">
                 <div class="item-cell select"/>

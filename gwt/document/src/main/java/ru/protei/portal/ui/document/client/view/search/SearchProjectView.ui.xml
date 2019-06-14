@@ -8,10 +8,9 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-
         <div class="form-group grid grid-indent">
             <div class="col-xs-6">
-                <label><ui:text from="{lang.documentName}"/></label>
+                <label><ui:text from="{lang.name}"/></label>
                 <g:TextBox ui:field="name" styleName="input-field"/>
             </div>
             <div class="col-xs-6">
@@ -28,14 +27,18 @@
                                                               addStyleNames="form-group col-xs-12"/>
             </div>
         </div>
-        <div class="form-group grid grid-indent footer">
-            <div class="col-xs-12">
+        <div class="form-group grid grid-indent">
+            <div class="col-xs-12 footer">
                 <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
                 <g:Anchor href='#' ui:field="clear" styleName="btn btn-white" text="{lang.buttonClear}"/>
             </div>
         </div>
-        <div class="form-group grid grid-indent">
+        <g:HTMLPanel ui:field="panel" styleName="form-group grid grid-indent" visible="false">
             <projectlist:ProjectList ui:field="project"/>
-        </div>
+            <div class="col-xs-12 footer">
+                <g:Anchor href='#' ui:field="create" styleName="btn btn-primary" text="{lang.buttonCreate}"/>
+            </div>
+            <g:HTMLPanel ui:field="createProjectContainer" styleName="col-xs-12"/>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

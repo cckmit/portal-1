@@ -116,6 +116,15 @@ public class ProjectEvents {
         public ProjectInfo project;
     }
 
+    public static class Create {
+        public Create(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
+    }
+
+    public static class Created {}
+    public static class Canceled {}
     /**
      * Показать таблицу проектов
      */

@@ -110,15 +110,23 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public long createNewProject() throws RequestFailedException {
-        log.debug( "createNewProject()" );
+    public long createProject(ProjectInfo project) throws RequestFailedException {
+        log.debug("createProject(): project={}", project);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        Long personId = sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId();
+        Long personId = sessionService.getUserSessionDescriptor(httpServletRequest).getPerson().getId();
 
-        CoreResponse< Long > response = projectService.createProject( descriptor.makeAuthToken(), personId );
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
+        CoreResponse< Long > response;
+
+        if (project == null) {
+            response = projectService.createProject(descriptor.makeAuthToken(), personId);
+        } else {
+            project.setCreatorId(personId);
+            response = projectService.createProject(descriptor.makeAuthToken(), project);
+        }
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
         }
 
         return response.getData();

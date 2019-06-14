@@ -61,6 +61,11 @@ public class ProjectInfo extends AuditableObject implements Removable {
     Date created;
 
     /**
+     * Создатель проекта
+     */
+    private Long creatorId;
+
+    /**
      * Команда проекта
      */
     private List<PersonProjectMemberView> team;
@@ -109,6 +114,14 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
     public void setCreated( Date created ) {
         this.created = created;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId( Long creatorId ) {
+        this.creatorId = creatorId;
     }
 
     public EntityOption getRegion() {

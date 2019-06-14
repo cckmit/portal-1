@@ -67,7 +67,13 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
 
     @Override
     public void fillProjectList(List<ProjectInfo> list) {
+        panel.setVisible(true);
         project.addItems(list);
+    }
+
+    @Override
+    public HasWidgets createProjectContainer() {
+        return createProjectContainer;
     }
 
     @Override
@@ -76,6 +82,8 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         customerType.setValue(null);
         products.setValue(null);
         dateCreatedRange.setValue(null);
+        panel.setVisible(false);
+        project.clearItems();
     }
 
     @UiHandler("search")
@@ -91,6 +99,14 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         event.preventDefault();
         if (activity != null) {
             activity.onClearClicked();
+        }
+    }
+
+    @UiHandler("create")
+    public void onCreateClicked(ClickEvent event) {
+        event.preventDefault();
+        if (activity != null) {
+            activity.onCreateProjectClicked();
         }
     }
 
@@ -118,6 +134,15 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     @Inject
     @UiField(provided = true)
     ProjectList project;
+
+    @UiField
+    HTMLPanel panel;
+
+    @UiField
+    Anchor create;
+
+    @UiField
+    HTMLPanel createProjectContainer;
 
     @Inject
     @UiField
