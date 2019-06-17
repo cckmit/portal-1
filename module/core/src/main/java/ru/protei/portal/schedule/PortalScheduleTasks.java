@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.service.ContractReminderService;
 import ru.protei.portal.core.service.EmployeeRegistrationReminderService;
 
@@ -14,6 +15,10 @@ public class PortalScheduleTasks {
 
     @PostConstruct
     public void init() {
+        if (!config.data().isSchedulerEnabled()) {
+            log.debug("portal task's scheduler is not started because disabled in configuration");
+            return;
+        }
         // Ежедневно в 11:10
         scheduler.schedule(this::remindAboutEmployeeProbationPeriod, new CronTrigger( "0 10 11 * * ?"));
         // Ежедневно в 11:14
@@ -29,6 +34,9 @@ public class PortalScheduleTasks {
     private void notifyAboutContractDates() {
         contractReminderService.notifyAboutDates();
     }
+
+    @Autowired
+    PortalConfig config;
 
     @Autowired
     private ThreadPoolTaskScheduler scheduler;
