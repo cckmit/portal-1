@@ -43,17 +43,6 @@ public class AvatarController {
                            HttpServletRequest request,
                            HttpServletResponse response ) throws IOException {
 
-        UserSessionDescriptor descriptor = getDescriptor( request );
-        if ( descriptor == null ) {
-            response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
-            return;
-        }
-
-        if ( !policyService.hasEveryPrivilegeOf( descriptor.getLogin().getRoles(), En_Privilege.EMPLOYEE_VIEW ) ) {
-            response.sendError( HttpServletResponse.SC_FORBIDDEN );
-            return;
-        }
-
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
         loadFile( context.getRealPath( NOPHOTO_PATH ), response );
