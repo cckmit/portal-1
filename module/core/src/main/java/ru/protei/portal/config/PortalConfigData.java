@@ -33,7 +33,7 @@ public class PortalConfigData {
     private final LdapConfig ldapConfig;
 
     private final String loginSuffixConfig;
-    private final boolean schedulerEnabled;
+    private final boolean taskSchedulerEnabled;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
@@ -52,7 +52,7 @@ public class PortalConfigData {
         ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
-        schedulerEnabled = wrapper.getProperty("scheduler.enabled", Boolean.class,false);
+        taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
     }
 
     public CommonConfig getCommonConfig() {
@@ -115,8 +115,8 @@ public class PortalConfigData {
         return ldapConfig;
     }
 
-    public boolean isSchedulerEnabled() {
-        return schedulerEnabled;
+    public boolean isTaskSchedulerEnabled() {
+        return taskSchedulerEnabled;
     }
 
     public static class CommonConfig {

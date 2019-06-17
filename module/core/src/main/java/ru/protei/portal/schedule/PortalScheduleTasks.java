@@ -15,7 +15,7 @@ public class PortalScheduleTasks {
 
     @PostConstruct
     public void init() {
-        if (!config.data().isSchedulerEnabled()) {
+        if (!config.data().isTaskSchedulerEnabled()) {
             log.debug("portal task's scheduler is not started because disabled in configuration");
             return;
         }
