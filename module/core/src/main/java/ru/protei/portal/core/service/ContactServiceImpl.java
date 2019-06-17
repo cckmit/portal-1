@@ -172,19 +172,23 @@ public class ContactServiceImpl implements ContactService {
             return;
         }
 
+        List<String> emails = new PlainContactInfoFacade(person.getContactInfo())
+                .emailsStream()
+                .map(ContactItem::value)
+                .collect(Collectors.toList());
+
+        if (emails.isEmpty()) {
+            return;
+        }
+
         int removed = companySubscriptionDAO.removeByCondition(
                 "company_id = ? and email_addr in " +
-                HelperFunc.makeInArg(
-                        new PlainContactInfoFacade(person.getContactInfo())
-                                .emailsStream()
-                                .map(ContactItem::value)
-                                .collect(Collectors.toList())
-                ),
+                HelperFunc.makeInArg(emails),
                 person.getCompanyId()
         );
 
         if (removed > 0) {
-            log.debug("person({}) : removed {} email(s) from company with id {}");
+            log.debug("person({}) : removed email(s) from company with id {}", person.getDisplayName(), person.getCompanyId());
         }
     }
 }

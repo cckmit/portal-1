@@ -1648,5 +1648,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeIPAddressColumnHeader();
 
-    String countLabel(int totalCount);
+    String employeeEmailColumnHeader();
+
+    String privateComment();
 }

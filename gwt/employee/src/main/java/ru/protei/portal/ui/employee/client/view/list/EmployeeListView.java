@@ -1,7 +1,6 @@
 package ru.protei.portal.ui.employee.client.view.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -34,13 +33,13 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     public HasWidgets getFilterContainer () { return filterContainer; }
 
     @Override
-    public void showLoader( boolean isShow ) {
-        loader.setVisible( isShow );
+    public HasWidgets getPagerContainer() {
+        return pagerContainer;
     }
 
     @Override
-    public void updateLabel( int totalCount ) {
-        label.setInnerText( lang.countLabel( totalCount ) );
+    public void showLoader( boolean isShow ) {
+        loader.setVisible( isShow );
     }
 
     @UiField
@@ -55,8 +54,9 @@ public class EmployeeListView extends Composite implements AbstractEmployeeListV
     @Inject
     @UiField
     Lang lang;
+
     @UiField
-    DivElement label;
+    HTMLPanel pagerContainer;
 
     AbstractEmployeeListActivity activity;
 

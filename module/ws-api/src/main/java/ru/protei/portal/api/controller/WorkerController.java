@@ -153,8 +153,7 @@ public class WorkerController {
 
         try {
 
-            EmployeeQuery query = new EmployeeQuery(null, null,
-                    Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
+            EmployeeQuery query = new EmployeeQuery(Tm_SqlQueryHelper.makeLikeArgEx(expr.trim()), En_SortField.person_full_name, En_SortDir.ASC);
 
             personDAO.getEmployees(query).forEach(
                     p -> persons.append(new WorkerRecord(p))

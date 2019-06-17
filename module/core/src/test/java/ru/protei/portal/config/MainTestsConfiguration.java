@@ -374,6 +374,11 @@ public class MainTestsConfiguration {
         return new CaseStateWorkflowDAO_Impl();
     }
 
+    @Bean
+    public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
+        return  new WorkerEntryShortViewDAO_Impl();
+    }
+
     /* SERVICES */
 
     @Bean
