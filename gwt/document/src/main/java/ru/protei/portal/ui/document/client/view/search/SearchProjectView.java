@@ -84,6 +84,7 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         dateCreatedRange.setValue(null);
         panel.setVisible(false);
         project.clearItems();
+        createProjectContainer.clear();
     }
 
     @UiHandler("search")

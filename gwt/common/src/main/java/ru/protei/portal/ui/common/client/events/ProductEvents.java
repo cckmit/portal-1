@@ -78,4 +78,12 @@ public class ProductEvents {
         public ViewType viewType;
         public ProductQuery query;
     }
+
+    public static class QuickCreate {
+        public QuickCreate(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
+    }
+    public static class QuickCreated {}
 }

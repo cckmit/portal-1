@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.activity.create;
 
 import com.google.gwt.user.client.ui.HasValue;
+import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -17,4 +18,5 @@ public interface AbstractProjectCreateView extends IsWidget {
     HasValue<EntityOption> company();
     HasValue<En_CustomerType> customerType();
     HasValidable nameValidator();
+    HasWidgets createProductContainer();
 }

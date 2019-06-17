@@ -48,6 +48,9 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productId = event.productId;
 
+        view.showElements(true);
+        isQuickCreate = false;
+
         if( productId == null ) {
             product = new DevUnit();
             resetView();
@@ -57,6 +60,17 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         }
 
         requestProduct(productId);
+    }
+
+    @Event
+    public void onShow (ProductEvents.QuickCreate event) {
+        event.parent.clear();
+        event.parent.add(view.asWidget());
+        product = new DevUnit();
+        resetView();
+        resetValidationStatus();
+        view.showElements(false);
+        isQuickCreate = true;
     }
 
     @Override
@@ -125,7 +139,11 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     private void goBack() {
-        fireEvent(new Back());
+        if (isQuickCreate) {
+            fireEvent(new ProductEvents.QuickCreated());
+        } else {
+            fireEvent(new Back());
+        }
     }
 
     private void requestProduct(Long productId) {
@@ -240,6 +258,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private Long productId;
     private DevUnit product;
+
+    private boolean isQuickCreate;
 
     private AppEvents.InitDetails init;
 }

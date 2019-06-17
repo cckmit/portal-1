@@ -1657,4 +1657,7 @@ public interface Lang extends Messages, ContactItemLang {
     String buttonClose();
 
     String projectName();
+
+    String buttonCreateProject();
+    String buttonCreateProduct();
 }

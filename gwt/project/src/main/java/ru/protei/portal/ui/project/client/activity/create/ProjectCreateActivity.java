@@ -6,9 +6,9 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -28,7 +28,12 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         fillView();
     }
 
-    @Override
+    @Event
+    public void onProductCreated(ProductEvents.QuickCreated event) {
+        view.createProductContainer().clear();
+    }
+
+        @Override
     public void onSaveClicked() {
 
         if (!validate()) {
@@ -48,6 +53,11 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     @Override
     public void onCancelClicked() {
         fireEvent(new ProjectEvents.Canceled());
+    }
+
+    @Override
+    public void onCreateProductClicked() {
+        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
     }
 
     private void fillView() {
@@ -76,8 +86,6 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     AbstractProjectCreateView view;
     @Inject
     RegionControllerAsync regionService;
-    @Inject
-    PolicyService policyService;
 
     @Inject
     Lang lang;

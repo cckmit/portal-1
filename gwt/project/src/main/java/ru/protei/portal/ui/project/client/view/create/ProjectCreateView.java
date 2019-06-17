@@ -62,6 +62,11 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
         return name;
     }
 
+    @Override
+    public HasWidgets createProductContainer() {
+        return createProductContainer;
+    }
+
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
     {
@@ -74,6 +79,13 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     {
         if (activity != null)
             activity.onCancelClicked();
+    }
+
+    @UiHandler("createProductBtn")
+    public void onCreateProductClicked(ClickEvent event)
+    {
+        if (activity != null)
+            activity.onCreateProductClicked();
     }
 
     @UiField
@@ -93,6 +105,10 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     Button saveBtn;
     @UiField
     Button cancelBtn;
+    @UiField
+    HTMLPanel createProductContainer;
+    @UiField
+    Button createProductBtn;
 
     AbstractProjectCreateActivity activity;
 

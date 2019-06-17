@@ -24,7 +24,7 @@
             <div class="col-xs-6">
                 <label><ui:text from="{lang.projectProducts}"/></label>
                 <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"
-                                                              addStyleNames="form-group col-xs-12"/>
+                                                              addStyleNames="col-xs-12"/>
             </div>
         </div>
         <div class="form-group grid grid-indent">
@@ -36,7 +36,7 @@
         <g:HTMLPanel ui:field="panel" styleName="form-group grid grid-indent" visible="false">
             <projectlist:ProjectList ui:field="project"/>
             <div class="col-xs-12 footer">
-                <g:Anchor href='#' ui:field="create" styleName="btn btn-primary" text="{lang.buttonCreate}"/>
+                <g:Anchor href='#' ui:field="create" styleName="btn btn-primary" text="{lang.buttonCreateProject}"/>
             </div>
             <g:HTMLPanel ui:field="createProjectContainer" styleName="col-xs-12"/>
         </g:HTMLPanel>

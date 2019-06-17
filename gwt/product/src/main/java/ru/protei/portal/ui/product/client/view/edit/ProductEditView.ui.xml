@@ -9,62 +9,66 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel">
+    <g:HTMLPanel ui:field="root" styleName="panel">
         <div class="body">
             <div class="grid grid-indent">
-                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-10">
+                <g:HTMLPanel ui:field="namePanel" styleName="form-group col-xs-10">
                     <label ui:field="nameLabel"><ui:text from="{lang.productName}"/></label>
                     <div class="panelField verifiable">
                         <i ui:field="verifiableIcon"/>
                         <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </div>
                 </g:HTMLPanel>
-                <div class="form-group col-xs-2">
+                <g:HTMLPanel ui:field="typePanel" styleName="form-group col-xs-2">
                     <label><ui:text from="{lang.productType}"/></label>
                     <div class="form-group col-xs-12 m-b-0 du-selector-inline">
                         <typebtn:ProductTypeBtnGroup ui:field="type"/>
                     </div>
-                </div>
+                </g:HTMLPanel>
 
                 <div class="form-group col-xs-12">
                     <label><ui:text from="{lang.description}"/></label>
                     <g:TextArea ui:field="info" styleName="input-field description" />
                 </div>
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.productWikiLink}"/></label>
-                    <g:TextBox ui:field="wikiLink" styleName="input-field"/>
-                </div>
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.productHistoryVersion}"/></label>
-                    <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
-                </div>
+                <g:HTMLPanel ui:field="parametersPanel" styleName="col-xs-12">
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.productConfiguration}"/></label>
-                    <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
-                </div>
+                    <div class="form-group col-xs-12">
+                        <label><ui:text from="{lang.productWikiLink}"/></label>
+                        <g:TextBox ui:field="wikiLink" styleName="input-field"/>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <label><ui:text from="{lang.productHistoryVersion}"/></label>
+                        <makdown:MarkdownAreaWithPreview ui:field="historyVersion"/>
+                    </div>
 
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.productCDRDescription}"/></label>
-                    <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
-                </div>
+                    <div class="form-group col-xs-12">
+                        <label><ui:text from="{lang.productConfiguration}"/></label>
+                        <makdown:MarkdownAreaWithPreview ui:field="configuration"/>
+                    </div>
 
-                <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-xs-12">
-                    <label><ui:text from="{lang.belongsTo}"/></label>
-                    <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits" hasNullValue="false"/>
+                    <div class="form-group col-xs-12">
+                        <label><ui:text from="{lang.productCDRDescription}"/></label>
+                        <makdown:MarkdownAreaWithPreview ui:field="cdrDescription"/>
+                    </div>
+
+                    <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-xs-12">
+                        <label><ui:text from="{lang.belongsTo}"/></label>
+                        <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits" hasNullValue="false"/>
+                    </g:HTMLPanel>
+
+                    <g:HTMLPanel styleName="form-group col-xs-12">
+                        <label><ui:text from="{lang.components}"/></label>
+                        <component:ComponentMultiSelector styleName="components-selector" ui:field="components"/>
+                    </g:HTMLPanel>
+
+                    <div class="form-group col-xs-12">
+                        <label><ui:text from="{lang.companySubscription}"/></label>
+                    </div>
+
+                    <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-xs-12" />
+
                 </g:HTMLPanel>
-
-                <g:HTMLPanel styleName="form-group col-xs-12">
-                    <label><ui:text from="{lang.components}"/></label>
-                    <component:ComponentMultiSelector styleName="components-selector" ui:field="components"/>
-                </g:HTMLPanel>
-
-                <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.companySubscription}"/></label>
-                </div>
-
-                <list:SubscriptionList ui:field="subscriptions" styleName="form-group col-xs-12" />
             </div>
         </div>
         <div class="footer">

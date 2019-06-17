@@ -137,6 +137,21 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         stateBtn.setText(caption);
     }
 
+    @Override
+    public void showElements(boolean isAll) {
+        parametersPanel.setVisible(isAll);
+        typePanel.setVisible(isAll);
+        if (isAll) {
+            root.addStyleName("panel");
+            namePanel.removeStyleName("col-xs-12");
+            namePanel.addStyleName("col-xs-10");
+        } else {
+            root.removeStyleName("panel");
+            namePanel.removeStyleName("col-xs-10");
+            namePanel.addStyleName("col-xs-12");
+        }
+    }
+
     @UiHandler( "stateBtn" )
     public void onStateClicked (ClickEvent event)
     {
@@ -195,7 +210,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
 
     @UiField
-    HTMLPanel nameContainer;
+    HTMLPanel namePanel;
     @UiField
     LabelElement nameLabel;
     @UiField
@@ -236,6 +251,12 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     MarkdownAreaWithPreview cdrDescription;
     @UiField
     TextBox wikiLink;
+    @UiField
+    HTMLPanel parametersPanel;
+    @UiField
+    HTMLPanel typePanel;
+    @UiField
+    HTMLPanel root;
 
 
     AbstractProductEditActivity activity;

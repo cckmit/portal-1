@@ -117,10 +117,7 @@ button.close {
 
 .modal-body .footer {
   text-align: right;
-  /*
-  padding-bottom: 7px;
-  border-bottom: 1px solid #e5e5e5;
-  */
+  margin-bottom: 30px;
 }
 
 .modal-footer {

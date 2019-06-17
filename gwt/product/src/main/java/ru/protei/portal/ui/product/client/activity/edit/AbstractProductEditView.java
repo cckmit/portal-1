@@ -54,4 +54,6 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasValue<List<Subscription>> productSubscriptions();
     HasValidable productSubscriptionsValidator();
+
+    void showElements(boolean isAll);
 }
