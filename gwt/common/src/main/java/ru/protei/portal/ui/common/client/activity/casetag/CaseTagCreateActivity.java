@@ -35,7 +35,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         view.color().setValue("");
         view.company().setValue(EntityOption.fromCompany(company));
         if (policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )) {
-            view.setVisibleCompanyPanel(true);
+            view.setVisibleCompanyPanel();
         }
         dialogView.showPopup();
     }

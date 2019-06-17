@@ -39,8 +39,8 @@ public class CaseTagCreateView extends Composite implements AbstractCaseTagCreat
     }
 
     @Override
-    public void setVisibleCompanyPanel(boolean visible) {
-        companyPanel.setVisible(visible);
+    public void setVisibleCompanyPanel() {
+        companyPanel.setVisible(true);
     }
 
     @Inject
