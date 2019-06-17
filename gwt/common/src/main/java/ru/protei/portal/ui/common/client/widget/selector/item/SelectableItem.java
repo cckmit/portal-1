@@ -24,12 +24,14 @@ public class SelectableItem
 
     public void setText(String text ) {
         this.text.setText( text );
+        this.text.setTitle( text );
     }
 
     public void setInfo( String info ) {
         if (info != null) {
             this.info.setText( info );
             this.info.setVisible(true);
+            this.info.setTitle( info );
         }
     }
 
