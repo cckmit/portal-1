@@ -14,4 +14,6 @@ public interface CaseTagService {
     CoreResponse<List<CaseTag>> getTagsByCaseId(AuthToken token, long caseId);
 
     CoreResponse<List<CaseTag>> getTagsByCaseType(AuthToken token, En_CaseType caseType);
+
+    CoreResponse<List<CaseTag>> getTagsByCompanyId(AuthToken token, long companyId);
 }

@@ -2,10 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
-import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -102,4 +99,8 @@ public interface CompanyController extends RemoteService {
      */
     List<CaseState> getCompanyCaseStates(Long id) throws RequestFailedException;
 
+    /**
+     * Получить список тэгов компании
+     */
+    List<CaseTag> getCompanyTags( Long companyId )  throws RequestFailedException;
 }

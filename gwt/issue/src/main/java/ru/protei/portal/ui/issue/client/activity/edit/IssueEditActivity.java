@@ -229,6 +229,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         fireEvent(new CaseStateEvents.UpdateSelectorOptions());
+        fireEvent(new CaseTagEvents.ChangeCompany(Company.fromEntityOption(view.company().getValue())));
     }
 
     @Override
@@ -255,6 +256,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, false);
+        fireEvent(new CaseTagEvents.ChangeCompany(issue.getInitiatorCompany()));
     }
 
     private void initialRestoredView(CaseObject issue){

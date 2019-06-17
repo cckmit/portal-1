@@ -4,15 +4,20 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
@@ -25,6 +30,7 @@ import ru.protei.portal.ui.company.client.widget.category.buttonselector.Categor
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Вид создания и редактирования компании
@@ -102,7 +108,16 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     public HasValue<List<Subscription> > companySubscriptions() {
         return subscriptions;
     }
-
+    @Override
+    public HasValue<Set<CaseTag>> tags() {
+        return new HasValue<Set<CaseTag>>() {
+            @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
+            @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
+            @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
+            @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
+            @Override public void fireEvent(GwtEvent<?> event) {}
+        };
+    }
     @Override
     public HasValidable companySubscriptionsValidator() {
         return subscriptions;
@@ -225,6 +240,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @UiField( provided = true )
     SubscriptionList subscriptions;
 
+    @Inject
+    @UiField(provided = true)
+    CaseMetaView caseMetaView;
 
     Timer timer = new Timer() {
         @Override

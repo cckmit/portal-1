@@ -53,6 +53,15 @@ public class CaseTagServiceImpl implements CaseTagService {
         return getTagsByPermission(token, query);
     }
 
+    @Override
+    public CoreResponse<List<CaseTag>> getTagsByCompanyId(AuthToken token, long companyId) {
+        CaseTagQuery query = new CaseTagQuery();
+
+        query.setCompanyId(companyId);
+
+        return getTagsByPermission(token, query);
+    }
+
     private CoreResponse<List<CaseTag>> getTagsByPermission(AuthToken token, CaseTagQuery query){
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();

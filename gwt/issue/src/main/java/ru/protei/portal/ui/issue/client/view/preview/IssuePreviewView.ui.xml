@@ -16,7 +16,7 @@
 
             <fieldset class="header">
                 <legend><lable ui:field="header"/></legend>
-                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12" enabled="false"/>
+                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 issue-preview" enabled="false"/>
 
                 <div class="col-xs-6">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.issueCreationDate}"/></label>

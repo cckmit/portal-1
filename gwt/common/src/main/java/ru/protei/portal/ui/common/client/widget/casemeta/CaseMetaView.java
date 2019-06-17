@@ -74,8 +74,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         tagToViewModel.clear();
         tagsContainer.clear();
 
-        toggleTagsVisibility();
-
         if (CollectionUtils.isEmpty(tags)) {
             return;
         }
@@ -163,8 +161,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         if (itemView != null) {
             tagsContainer.remove(itemView);
         }
-
-        toggleTagsVisibility();
     }
 
     private boolean isCrmLink(CaseLink item) {
@@ -221,6 +217,11 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         tagsCreateHandlerRegistration = caseTagSelectorPopup.addAddHandler(event -> {
             activity.fireEvent(new CaseTagEvents.Create(tagCaseType));
         });
+    }
+
+    @UiHandler("addTagButtonBefContainer")
+    public void addButtonClick(ClickEvent event) {
+        activity.fireEvent(new CaseTagEvents.Create(tagCaseType));
     }
 
     private void addCaseLink(CaseLink item) {
@@ -291,7 +292,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
 
         tags.add(item);
         makeCaseTagViewAndAddToParent(item);
-        toggleTagsVisibility();
 
         ValueChangeEvent.fire(CaseMetaView.this, new CaseMeta(null, tags));
     }
@@ -360,6 +360,8 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     HTMLPanel tagsSection;
     @UiField
     LabelElement tagsLabel;
+    @UiField
+    Button addTagButtonBefContainer;
     @UiField
     HTMLPanel tagsContainer;
     @UiField

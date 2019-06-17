@@ -13,8 +13,11 @@
                         <label ui:field="linksLabel" class="case-meta-label"><ui:text from="{lang.linkedWith}"/>: </label>
                         <g:HTMLPanel ui:field="linksContainer" tag="ul" styleName="case-meta-container"/>
                     </g:HTMLPanel>
-                    <g:HTMLPanel ui:field="tagsSection" styleName="case-meta-tags hide">
+                    <g:HTMLPanel ui:field="tagsSection" styleName="case-meta-tags">
                         <label ui:field="tagsLabel" class="case-meta-label"><ui:text from="{lang.tags}"/>: </label>
+                        <g:Button ui:field="addTagButtonBefContainer" styleName="btn btn-flat btn-white case-meta-add-tags-button-bef">
+                            <i class="fa fa-plus"/>
+                        </g:Button>
                         <g:HTMLPanel ui:field="tagsContainer" tag="ul" styleName="case-meta-container"/>
                     </g:HTMLPanel>
                 </div>
