@@ -348,6 +348,8 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new RuntimeException("failed to update case modifiedDate");
         }
 
+        updateTimeElapsed(token, caseId);
+
         return new CoreResponse<Boolean>().success(isRemoved);
     }
 
