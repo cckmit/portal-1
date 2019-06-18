@@ -12,6 +12,8 @@ import ru.protei.winter.web.common.client.activity.section.AbstractSectionItemAc
 import ru.protei.winter.web.common.client.activity.section.AbstractSectionItemView;
 import ru.protei.winter.web.common.client.common.DisplayStyle;
 
+import static ru.protei.portal.test.client.DebugIds.SIDEBAR_MENU.ICON_SUFFIX;
+
 /**
  * Вид одного элемента раздела навигации
  */
@@ -92,6 +94,7 @@ public class SectionItemView extends Composite implements AbstractSectionItemVie
     @Override
     public void setEnsureDebugId( String ensureDebugId ) {
         anchor.ensureDebugId( ensureDebugId );
+        icon.setId( ensureDebugId + ICON_SUFFIX );
     }
 
     @UiHandler("anchor")
