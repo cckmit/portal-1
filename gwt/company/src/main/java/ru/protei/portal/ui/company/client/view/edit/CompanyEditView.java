@@ -14,6 +14,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -163,6 +164,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         parentCompany.setEnabled( isEnabled );
     }
 
+    @Override
+    public void setCompanyToMetaView( Company company ) {
+        caseMetaView.setCompany(company);
+    }
+    
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {

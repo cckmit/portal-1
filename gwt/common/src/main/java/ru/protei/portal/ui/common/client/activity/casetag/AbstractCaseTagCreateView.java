@@ -14,5 +14,5 @@ public interface AbstractCaseTagCreateView extends IsWidget {
 
     HasValue<EntityOption> company();
 
-    void setVisibleCompanyPanel();
+    void setVisibleCompanyPanel(boolean isVisible);
 }

@@ -22,6 +22,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
@@ -215,13 +216,13 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
             tagsCreateHandlerRegistration.removeHandler();
         }
         tagsCreateHandlerRegistration = caseTagSelectorPopup.addAddHandler(event -> {
-            activity.fireEvent(new CaseTagEvents.Create(tagCaseType));
+            activity.fireEvent(new CaseTagEvents.Create(tagCaseType, company));
         });
     }
 
     @UiHandler("addTagButtonBefContainer")
     public void addButtonClick(ClickEvent event) {
-        activity.fireEvent(new CaseTagEvents.Create(tagCaseType));
+        activity.fireEvent(new CaseTagEvents.Create(tagCaseType, company));
     }
 
     private void addCaseLink(CaseLink item) {
@@ -333,6 +334,10 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         createCaseLinkPopup.setEnsureDebugIdApply(debugId);
     }
 
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
     @Inject
     CaseLinkProvider caseLinkProvider;
     @Inject
@@ -383,6 +388,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     private HandlerRegistration linksPopupHandlerRegistration;
     private HandlerRegistration tagsPopupHandlerRegistration;
     private HandlerRegistration tagsCreateHandlerRegistration;
+    private Company company;
 
     interface CaseMetaViewUiBinder extends UiBinder<HTMLPanel, CaseMetaView> {}
     private static CaseMetaViewUiBinder ourUiBinder = GWT.create(CaseMetaViewUiBinder.class);

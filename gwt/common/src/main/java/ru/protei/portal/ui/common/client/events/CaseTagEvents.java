@@ -7,20 +7,14 @@ public class CaseTagEvents {
 
     public static class Create {
         private En_CaseType caseType;
+        private Company company;
         public Create () {}
-        public Create(En_CaseType caseType) {
+        public Create(En_CaseType caseType, Company company) {
             this.caseType = caseType;
+            this.company = company;
         }
         public En_CaseType getCaseType() {
             return caseType;
-        }
-    }
-
-    public static class ChangeCompany {
-        private Company company;
-        public ChangeCompany () {}
-        public ChangeCompany(Company company) {
-            this.company = company;
         }
         public Company getCompany() {
             return company;

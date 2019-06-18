@@ -33,16 +33,9 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseType = event.getCaseType();
         view.name().setValue("");
         view.color().setValue("");
-        view.company().setValue(EntityOption.fromCompany(company));
-        if (policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW )) {
-            view.setVisibleCompanyPanel();
-        }
+        view.company().setValue(EntityOption.fromCompany(event.getCompany()));
+        view.setVisibleCompanyPanel(event.getCompany() == null);
         dialogView.showPopup();
-    }
-
-    @Event
-    public void onChangeCompany(CaseTagEvents.ChangeCompany event) {
-        company = event.getCompany();
     }
 
     @Override
@@ -85,7 +78,6 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
     }
 
     private En_CaseType caseType;
-    private Company company;
 
     @Inject
     Lang lang;

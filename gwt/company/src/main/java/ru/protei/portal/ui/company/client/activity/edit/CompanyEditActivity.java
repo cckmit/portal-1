@@ -56,23 +56,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     @Event
-    public void onChangeModel(CaseTagEvents.ChangeModel event) {
-        if (Id != null) {
-            companyService.getCompanyTags(Id, new ShortRequestCallback<List<CaseTag>>()
-                    .setOnSuccess(tags -> {
-                        view.tags().setValue(new HashSet<>(tags));
-                    }));
-        }
-    }
-
-    @Event
     public void onShow( CompanyEvents.Edit event ) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
         view.tableContainer().clear();
         view.siteFolderContainer().clear();
-
-        Id = event.getCompanyId();
 
         if(event.getCompanyId() == null) {
             fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
@@ -149,8 +137,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         tempCompany = company;
         fillView(tempCompany);
         resetValidationStatus();
-
-        fireEvent(new CaseTagEvents.ChangeCompany(company));
     }
 
     private void requestCompany(Long id){
@@ -202,6 +188,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         } else {
             view.siteFolderContainerVisibility().setVisible(false);
         }
+        view.setCompanyToMetaView(company);
     }
 
     private EntityOption makeCompanyOption( Company company ) {
@@ -246,7 +233,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     PolicyService policyService;
 
     private Company tempCompany;
-    private Long Id;
 
     private AppEvents.InitDetails initDetails;
 
