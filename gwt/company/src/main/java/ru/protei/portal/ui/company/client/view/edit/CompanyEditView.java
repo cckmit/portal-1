@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.company.client.view.edit;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -166,7 +167,12 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @Override
     public void setCompanyToMetaView( Company company ) {
-        caseMetaView.setCompany(company);
+        caseMetaView.setCompany( company );
+        if ( company.getId() == null ) {
+            tagsPanel.addClassName( "hide" );
+        } else {
+            tagsPanel.removeClassName( "hide" );
+        }
     }
     
     @UiHandler( "saveButton" )
@@ -249,6 +255,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     @Inject
     @UiField(provided = true)
     CaseMetaView caseMetaView;
+    @UiField
+    DivElement tagsPanel;
 
     Timer timer = new Timer() {
         @Override

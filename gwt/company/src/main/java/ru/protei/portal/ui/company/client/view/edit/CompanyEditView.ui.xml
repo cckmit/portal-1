@@ -78,7 +78,7 @@
                         <list:SubscriptionList ui:field="subscriptions"/>
                     </div>
 
-                    <div class="form-group col-xs-12">
+                    <div ui:field="tagsPanel" class="form-group col-xs-12">
                         <label>
                             <ui:text from="{lang.tags}"/>
                         </label>

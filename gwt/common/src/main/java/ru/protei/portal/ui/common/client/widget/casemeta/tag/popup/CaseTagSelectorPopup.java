@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -88,9 +89,10 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     }
 
     private void displayTags() {
+        boolean isGranted =  policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
         clearTagsListView();
         caseTags.stream()
-                .filter(caseTag -> containsIgnoreCase( caseTag.getName(), searchNameFilter))
+                .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter) || isGranted ? containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) : false)
                 .forEach(this::addTagToListView);
     }
 

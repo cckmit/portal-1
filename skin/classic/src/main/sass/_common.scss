@@ -2571,8 +2571,11 @@ a {
 .case-tag-popup {
   z-index: 1000;
   float: left;
+  /*
   min-width: 160px;
   max-width: 360px;
+  */
+  width: 300px;
   box-sizing: border-box;
   background: #fff;
   box-shadow: 0 1px 3px 0 rgba(136, 153, 178, 0.68);

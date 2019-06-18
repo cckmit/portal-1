@@ -62,8 +62,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.tableContainer().clear();
         view.siteFolderContainer().clear();
 
-        Id = event.getCompanyId();
-
         if(event.getCompanyId() == null) {
             fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
             initialView(new Company());
@@ -75,12 +73,13 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Event
     public void onChangeModel(CaseTagEvents.ChangeModel event) {
-        if (Id != null) {
-            companyService.getCompanyTags(Id, new ShortRequestCallback<List<CaseTag>>()
-                    .setOnSuccess(tags -> {
-                        view.tags().setValue(new HashSet<>(tags));
-                    }));
-        }
+        if (tempCompany == null || tempCompany.getId() == null)
+            return;
+
+        companyService.getCompanyTags(tempCompany.getId(), new ShortRequestCallback<List<CaseTag>>()
+                .setOnSuccess(tags ->
+                    view.tags().setValue(new HashSet<>(tags))
+                ));
     }
 
     @Override
@@ -200,6 +199,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         } else {
             view.siteFolderContainerVisibility().setVisible(false);
         }
+
         view.setCompanyToMetaView(company);
     }
 
@@ -245,7 +245,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     PolicyService policyService;
 
     private Company tempCompany;
-    private Long Id;
 
     private AppEvents.InitDetails initDetails;
 

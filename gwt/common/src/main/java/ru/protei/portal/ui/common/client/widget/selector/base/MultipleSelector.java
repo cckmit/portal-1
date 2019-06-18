@@ -81,7 +81,9 @@ public abstract class MultipleSelector<T>
             itemToViewModel.put( value, itemView );
             itemToNameModel.put(value, name);
         }
-        itemToDisplayOptionModel.put( value, new DisplayOption( name ) );
+        DisplayOption displayOption = new DisplayOption( name );
+        displayOption.setInfo( info );
+        itemToDisplayOptionModel.put( value, displayOption );
         popup.getChildContainer().add( itemView.asWidget() );
     }
 
@@ -180,7 +182,7 @@ public abstract class MultipleSelector<T>
         popup.getChildContainer().clear();
 
         for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
-            String entryText = entry.getValue().getName().toLowerCase();
+            String entryText = entry.getValue().getName().toLowerCase() + (entry.getValue().getInfo() == null ? "" : entry.getValue().getInfo().toLowerCase());
             if ( searchText.isEmpty() || entryText.contains(searchText) ) {
                 SelectableItem itemView = itemToViewModel.get( entry.getKey() );
                 if ( itemView != null ) {
