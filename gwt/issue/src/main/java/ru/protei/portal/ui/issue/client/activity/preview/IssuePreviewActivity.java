@@ -168,7 +168,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         Long timeElapsed = value.getTimeElapsed();
         view.timeElapsed().setTime(Objects.equals(0L, timeElapsed) ? null : timeElapsed);
         view.setLinks(value.getLinks() == null ? null : new HashSet<>(value.getLinks()));
-        view.setTags(value.getTags());
+        view.setTags(value.getTags() == null ? new HashSet<>() : value.getTags());
 
         view.attachmentsContainer().clear();
         view.attachmentsContainer().add(value.getAttachments());
