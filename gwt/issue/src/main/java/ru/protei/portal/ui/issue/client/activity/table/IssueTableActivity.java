@@ -428,7 +428,6 @@ public abstract class IssueTableActivity
         filterParamView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterParamView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
         filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
-        filterParamView.tagsVisibility().setVisible( policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ) );
     }
 
     private void showUserFilterName(){

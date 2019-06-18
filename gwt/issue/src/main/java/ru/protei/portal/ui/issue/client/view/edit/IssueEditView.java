@@ -335,6 +335,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setTagsAddButtonEnabled(boolean enabled) {
+        caseMetaView.setTagsAddButtonEnabled(enabled);
+    }
+
+    @Override
     public void setStateWorkflow(En_CaseStateWorkflow workflow) {
         state.setWorkflow(workflow);
     }

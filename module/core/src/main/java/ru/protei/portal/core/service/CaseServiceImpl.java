@@ -72,6 +72,9 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     CaseStateWorkflowService caseStateWorkflowService;
 
+    @Autowired
+    CaseTagService caseTagService;
+
     @Override
     public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
@@ -92,7 +95,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if(caseObject == null)
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_FOUND);
 
         jdbcManyRelationsHelper.fillAll( caseObject.getInitiatorCompany() );
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
@@ -103,10 +106,9 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setLinks(caseLinks.getData());
         }
 
-        if (policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_VIEW, En_Scope.SYSTEM)) {
-            jdbcManyRelationsHelper.fill(caseObject, "tags");
-        } else {
-            caseObject.setTags(new HashSet<>());
+        CoreResponse<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
+        if (caseTags.isOk()) {
+            caseObject.setTags(new HashSet<>(caseTags.getData()));
         }
 
         // RESET PRIVACY INFO
@@ -131,7 +133,7 @@ public class CaseServiceImpl implements CaseService {
     public CoreResponse< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         if (caseObject == null)
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
 
         applyCaseByScope( token, caseObject );
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
@@ -156,7 +158,7 @@ public class CaseServiceImpl implements CaseService {
         Long caseId = caseObjectDAO.insertCase(caseObject);
 
         if (caseId == null)
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_CREATED);
         else
             caseObject.setId(caseId);
 
@@ -198,8 +200,7 @@ public class CaseServiceImpl implements CaseService {
             caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         }
 
-        if (CollectionUtils.isNotEmpty(caseObject.getTags()) &&
-                policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_EDIT, En_Scope.SYSTEM)) {
+        if (CollectionUtils.isNotEmpty(caseObject.getTags())) {
             caseObjectTagDAO.persistBatch(
                     caseObject.getTags()
                             .stream()
@@ -223,7 +224,7 @@ public class CaseServiceImpl implements CaseService {
     @Transactional
     public CoreResponse<CaseObject> updateCaseObject( CaseObject caseObject, Person initiator ) {
         if (caseObject == null)
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
 
         jdbcManyRelationsHelper.persist(caseObject, "notifiers");
 
@@ -254,7 +255,7 @@ public class CaseServiceImpl implements CaseService {
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
         if (!isUpdated)
-            return new CoreResponse().error(En_ResultStatus.NOT_UPDATED);
+            return new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_UPDATED);
 
         if(oldState.getState() != caseObject.getState()){
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null, null);
@@ -289,10 +290,7 @@ public class CaseServiceImpl implements CaseService {
         UserSessionDescriptor descriptor = authService.findSession( token );
 
         caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
-
-        if (policyService.hasScopeForPrivilege(getRoles(token), En_Privilege.ISSUE_EDIT, En_Scope.SYSTEM)) {
-            jdbcManyRelationsHelper.persist(caseObject, "tags");
-        }
+        jdbcManyRelationsHelper.persist(caseObject, "tags");
 
         return updateCaseObject (caseObject, descriptor.getPerson());
     }
@@ -373,7 +371,7 @@ public class CaseServiceImpl implements CaseService {
         CaseShortView caseObject = caseShortViewDAO.getCase( caseNumber );
 
         if(caseObject == null)
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return new CoreResponse<CaseInfo>().error(En_ResultStatus.NOT_FOUND);
 
         CaseInfo info = new CaseInfo();
         info.setId(caseObject.getId());
@@ -454,6 +452,8 @@ public class CaseServiceImpl implements CaseService {
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
             query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
             query.setAllowViewPrivate( false );
+
+            query.setCustomerSearch(true);
         }
     }
 

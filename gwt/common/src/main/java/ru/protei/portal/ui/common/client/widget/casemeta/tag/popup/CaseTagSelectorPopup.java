@@ -13,21 +13,21 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AddEvent;
 import ru.protei.portal.ui.common.client.events.AddHandler;
 import ru.protei.portal.ui.common.client.events.HasAddHandlers;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.service.CaseTagController;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
-import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagView;
+import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagPopupView;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
-import java.util.Set;
 
 public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers {
 
@@ -74,6 +74,14 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
         hide();
     }
 
+    public void setAddTagsEnabled(boolean enabled) {
+        if (enabled) {
+            addButton.getElement().removeClassName("hide");
+        } else {
+            addButton.getElement().addClassName("hide");
+        }
+    }
+
     private void resetSearchFilter() {
         searchNameFilter = "";
         search.setValue(searchNameFilter);
@@ -81,9 +89,10 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     }
 
     private void displayTags() {
+        boolean isGranted =  policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
         clearTagsListView();
         caseTags.stream()
-                .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter))
+                .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter) || isGranted ? containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) : false)
                 .forEach(this::addTagToListView);
     }
 
@@ -92,13 +101,12 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     }
 
     private void addTagToListView(CaseTag caseTag) {
-        CaseTagView caseTagView = caseTagViewProvider.get();
-        caseTagView.setEnabled(false);
-        caseTagView.setValue(caseTag);
-        caseTagView.addAddHandler(event -> {
+        CaseTagPopupView caseTagPopupView = caseTagViewProvider.get();
+        caseTagPopupView.setValue(caseTag);
+        caseTagPopupView.addAddHandler(event -> {
             onTagSelected(caseTag);
         });
-        childContainer.add(caseTagView);
+        childContainer.add(caseTagPopupView);
     }
 
     private void onTagSelected(CaseTag caseTag) {
@@ -116,7 +124,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     @Inject
     CaseTagControllerAsync caseTagController;
     @Inject
-    Provider<CaseTagView> caseTagViewProvider;
+    Provider<CaseTagPopupView> caseTagViewProvider;
 
     @Inject
     @UiField
@@ -129,6 +137,9 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     Button addButton;
     @UiField
     HTMLPanel childContainer;
+
+    @Inject
+    PolicyService policyService;
 
     private String searchNameFilter = "";
     private List<CaseTag> caseTags;

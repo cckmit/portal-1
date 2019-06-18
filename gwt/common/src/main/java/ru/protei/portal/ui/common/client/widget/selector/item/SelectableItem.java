@@ -22,8 +22,17 @@ public class SelectableItem
     }
 
 
-    public void setName( String name ) {
-        anchor.setText( name == null ? "" : name );
+    public void setText(String text ) {
+        this.text.setText( text );
+        this.text.setTitle( text );
+    }
+
+    public void setInfo( String info ) {
+        if (info != null) {
+            this.info.setText( info );
+            this.info.setVisible(true);
+            this.info.setTitle( info );
+        }
     }
 
     @Override
@@ -71,31 +80,32 @@ public class SelectableItem
         setSelectedStyle();
     }
 
-    @UiHandler( "anchor" )
-    public void onAnchorClicked( ClickEvent event ) {
+    @UiHandler( {"text", "info"} )
+    public void onTextClicked( ClickEvent event ) {
         event.preventDefault();
         checkbox.setValue( !checkbox.getValue() );
         ValueChangeEvent.fire( SelectableItem.this, checkbox.getValue() );
         setSelectedStyle();
     }
 
-
     private void setSelectedStyle() {
         if ( checkbox.getValue() ) {
-            root.addStyleName( "selected" );
+            text.addStyleName( "selected" );
+            info.addStyleName( "selected" );
         } else {
-            root.removeStyleName( "selected" );
+            text.removeStyleName( "selected" );
+            info.removeStyleName( "selected" );
         }
     }
 
-
     @UiField
-    Anchor anchor;
+    HTMLPanel panel;
     @UiField
     CheckBox checkbox;
     @UiField
-    HTMLPanel root;
-
+    InlineLabel text;
+    @UiField
+    InlineLabel info;
 
     interface SelectorItemViewUiBinder extends UiBinder<HTMLPanel, SelectableItem > {}
     private static SelectorItemViewUiBinder ourUiBinder = GWT.create( SelectorItemViewUiBinder.class );

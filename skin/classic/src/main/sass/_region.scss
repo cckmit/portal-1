@@ -258,7 +258,46 @@
   }
 }
 
-// без этого фикса в выпадайке checkbox на отдельной строке рисуется
-ul > li.selectable-item > a {
-  display: inline-block;
+.selectable-panel {
+  display: inline;
+}
+
+.selectable-item {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  .selectable-item-text {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -ms-flex-negative: 1;
+    flex-shrink: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    padding-left: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+  .selectable-item-info {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -ms-flex-negative: 1;
+    flex-shrink: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 45%;
+    text-align: right;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
 }
