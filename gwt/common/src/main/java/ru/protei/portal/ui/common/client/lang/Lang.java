@@ -1588,6 +1588,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationCurators();
 
+    String employeeRegistrationValidationHeadOfDepartmentAsCurator();
+
     String employeeRegistrationValidationProbationPeriod();
 
     String timeElapsedTypeNone();
