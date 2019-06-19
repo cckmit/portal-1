@@ -295,3 +295,30 @@ blockquote {
     font-size: 0.9em;
   }
 }
+
+.message-preview {
+  .show-preview-btn {
+    padding: 0;
+    min-width: 20px;
+    border-left: 0;
+    height: 20px;
+
+    font-size: 12px;
+    margin-top: -12px;
+
+    &.btn-down:after, &.btn-up-hovering:after {
+      font-family: "Ionicons";
+      content: "\f133";
+      font-size: 1.6em;
+      color: teal;
+    }
+
+    &.btn-up:after, &.btn-down-hovering:after {
+      font-family: "Ionicons";
+      content: "\f306";
+      font-size: 1.6em;
+      color: gray;
+    }
+
+  }
+}

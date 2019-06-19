@@ -100,4 +100,8 @@ public interface AbstractIssueEditView extends IsWidget {
     void setTagsAddButtonEnabled(boolean enabled);
 
     void setStateWorkflow(En_CaseStateWorkflow workflow);
+
+    void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
+
+    String DESCRIPTION = "description";
 }

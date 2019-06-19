@@ -1653,4 +1653,6 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeEmailColumnHeader();
 
     String privateComment();
+
+    String commentPreviewIsDisplay();
 }
