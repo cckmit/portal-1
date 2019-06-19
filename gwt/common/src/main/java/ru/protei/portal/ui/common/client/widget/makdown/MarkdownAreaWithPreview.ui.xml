@@ -14,7 +14,7 @@
             <div class="message-preview-label">
                 <ui:text from='{lang.markdownPreview}'/>
                 <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn"
-                title="показать/спрятать"/>
+                title="{lang.commentPreviewIsDisplay}"/>
             </div>
             <div ui:field="preview" class="message-preview-content markdown"/>
         </g:HTMLPanel>

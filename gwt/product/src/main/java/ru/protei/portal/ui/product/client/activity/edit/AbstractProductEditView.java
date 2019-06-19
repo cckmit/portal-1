@@ -55,11 +55,11 @@ public interface AbstractProductEditView extends IsWidget {
     HasValue<List<Subscription>> productSubscriptions();
     HasValidable productSubscriptionsValidator();
 
-    void setHistoryVersionPreviewDisplaying( boolean isPreviewAllowed );
+    void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed );
 
-    void setConfigurationPreviewDisplaying( boolean isPreviewAllowed );
+    void setConfigurationPreviewAllowing( boolean isPreviewAllowed );
 
-    void setCdrDescriptionPreviewDisplaying( boolean isPreviewAllowed );
+    void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed );
 
     String HISTORY_VERSION = "historyVersion";
     String CONFIGURATION = "configuration";

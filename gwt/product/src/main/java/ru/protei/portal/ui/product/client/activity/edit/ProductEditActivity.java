@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
@@ -19,7 +18,6 @@ import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
-import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -197,13 +195,14 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         );
 
         view.wikiLink().setValue(devUnit.getWikiLink());
+
+        view.setHistoryVersionPreviewAllowing( makePreviewDisplaying(HISTORY_VERSION) );
+        view.setConfigurationPreviewAllowing( makePreviewDisplaying(CONFIGURATION) );
+        view.setCdrDescriptionPreviewAllowed( makePreviewDisplaying(CDR_DESCRIPTION) );
+
         view.cdrDescription().setValue(devUnit.getCdrDescription());
         view.configuration().setValue(devUnit.getConfiguration());
         view.historyVersion().setValue(devUnit.getHistoryVersion());
-
-        view.setHistoryVersionPreviewDisplaying( makePreviewDisplaying(HISTORY_VERSION) );
-        view.setConfigurationPreviewDisplaying( makePreviewDisplaying(CONFIGURATION) );
-        view.setCdrDescriptionPreviewDisplaying( makePreviewDisplaying(CDR_DESCRIPTION) );
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -265,5 +264,5 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     private DevUnit product;
 
     private AppEvents.InitDetails init;
-    private static final String PRODUCT = "product_view";
+    private static final String PRODUCT = "product_view_is_preview_displayed";
 }

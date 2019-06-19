@@ -96,17 +96,17 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void setHistoryVersionPreviewDisplaying( boolean isPreviewAllowed ) {
+    public void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed ) {
         historyVersion.setDisplayPreview( isPreviewAllowed );
     }
 
     @Override
-    public void setConfigurationPreviewDisplaying( boolean isPreviewAllowed ) {
+    public void setConfigurationPreviewAllowing( boolean isPreviewAllowed ) {
         configuration.setDisplayPreview( isPreviewAllowed );
     }
 
     @Override
-    public void setCdrDescriptionPreviewDisplaying( boolean isPreviewAllowed ) {
+    public void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
        cdrDescription.setDisplayPreview( isPreviewAllowed );
     }
 
