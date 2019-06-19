@@ -43,14 +43,16 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
-        final Set<String> existingAttachmentsNames = getExistingAttachmentsNames(obj.getId());
+        final Set<Attachment> existingAttachments = getExistingAttachments(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
             logger.debug("process attachments for case, id={}", caseObjId);
             List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
             issue.getAttachments()
                     .stream()
-                    .filter(x -> !existingAttachmentsNames.contains(x.getFileName()))
+                    .filter(x -> existingAttachments.stream().noneMatch(attachment ->
+                                    attachment.getFileName().equals(x.getFileName())
+                                            && attachment.getDataSize().equals(x.getFileSize())))
                     .forEach(x -> {
                         Attachment a = new Attachment();
                         a.setCreated(new Date());
@@ -179,11 +181,10 @@ public final class CommonServiceImpl implements CommonService {
     }
 
 
-    private Set<String> getExistingAttachmentsNames(long caseObjId) {
+    private Set<Attachment> getExistingAttachments(long caseObjId) {
         return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
                 .map(CaseAttachment::getAttachmentId)
                 .map(attachmentDAO::get)
-                .map(Attachment::getFileName)
                 .collect(Collectors.toSet());
     }
 
