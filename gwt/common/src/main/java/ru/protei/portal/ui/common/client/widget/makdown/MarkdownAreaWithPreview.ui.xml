@@ -11,7 +11,11 @@
                 maxRows="20"/>
 
         <g:HTMLPanel ui:field="previewContainer" styleName="message-preview">
-            <div class="message-preview-label"><ui:text from='{lang.markdownPreview}'/></div>
+            <div class="message-preview-label">
+                <ui:text from='{lang.markdownPreview}'/>
+                <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn"
+                title="показать/спрятать"/>
+            </div>
             <div ui:field="preview" class="message-preview-content markdown"/>
         </g:HTMLPanel>
     </g:HTMLPanel>

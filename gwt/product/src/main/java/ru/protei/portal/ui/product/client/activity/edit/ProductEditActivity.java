@@ -9,7 +9,9 @@ import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -17,6 +19,7 @@ import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -25,6 +28,10 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CDR_DESCRIPTION;
+import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CONFIGURATION;
+import static ru.protei.portal.ui.product.client.view.edit.ProductEditView.HISTORY_VERSION;
 
 /**
  * Активность карточки создания и редактирования продуктов
@@ -124,6 +131,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .withSuccess(consumer));
     }
 
+
+    @Override
+    public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
+        localStorageService.set( PRODUCT + "_" + key, String.valueOf( isDisplay ) );
+    }
+
     private void goBack() {
         fireEvent(new Back());
     }
@@ -187,6 +200,14 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.cdrDescription().setValue(devUnit.getCdrDescription());
         view.configuration().setValue(devUnit.getConfiguration());
         view.historyVersion().setValue(devUnit.getHistoryVersion());
+
+        view.setHistoryVersionPreviewDisplaying( makePreviewDisplaying(HISTORY_VERSION) );
+        view.setConfigurationPreviewDisplaying( makePreviewDisplaying(CONFIGURATION) );
+        view.setCdrDescriptionPreviewDisplaying( makePreviewDisplaying(CDR_DESCRIPTION) );
+    }
+
+    private boolean makePreviewDisplaying( String key ) {
+        return Boolean.parseBoolean( localStorageService.getOrDefault( PRODUCT + "_" + key, "false" ) );
     }
 
     private void fillDto(DevUnit product) {
@@ -237,9 +258,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     ProductControllerAsync productService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    LocalStorageService localStorageService;
 
     private Long productId;
     private DevUnit product;
 
     private AppEvents.InitDetails init;
+    private static final String PRODUCT = "product_view";
 }
