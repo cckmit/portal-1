@@ -55,7 +55,7 @@ public class CaseCommentControllerImpl implements CaseCommentController {
         log.debug("removeCaseComment(): caseType={}, comment={}", caseType, comment);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse<Boolean> response = caseCommentService.removeCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson().getId());
+        CoreResponse<Boolean> response = caseCommentService.removeCaseComment(descriptor.makeAuthToken(), caseType, comment, descriptor.getPerson());
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());
         }

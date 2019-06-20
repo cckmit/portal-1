@@ -277,27 +277,39 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, En_TextMarkup textMarkup){
+        Long removedCommentId = (!comments.stream().map(CaseComment::getId).collect(toList()).contains(newCaseComment.getId())) ?
+                newCaseComment.getId() : null;
+        if (removedCommentId != null) {
+            comments.add(newCaseComment);
+        }
+
         return comments
                 .stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map( comment -> {
-                    Map< String, Object > caseComment = new HashMap<>();
-                    caseComment.put( "created", comment.getCreated() );
-                    caseComment.put( "author", comment.getAuthor() );
-                    caseComment.put( "text", escapeTextAndRenderHTML( comment.getText(), textMarkup ) );
-                    caseComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
-                    caseComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
-                    caseComment.put( "isPrivateComment", comment.isPrivateComment() );
+                    Map< String, Object > mailComment = createMailComment(comment, textMarkup);
 
                     boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
-                    caseComment.put( "changed",  isChanged);
+                    mailComment.put( "changed",  isChanged);
                     if(isChanged && oldCaseComment != null){
-                        caseComment.put( "oldText", escapeTextAndRenderHTML( oldCaseComment.getText(), textMarkup ) );
+                        mailComment.put( "oldText", escapeTextAndRenderHTML( oldCaseComment.getText(), textMarkup ) );
                     }
-
-                    return caseComment;
+                    mailComment.put( "removed", removedCommentId != null && HelperFunc.equals( comment.getId(), removedCommentId));
+                    return mailComment;
                 } )
                 .collect( toList() );
+    }
+
+    private Map< String, Object > createMailComment(CaseComment comment, En_TextMarkup textMarkup) {
+        Map< String, Object > mailComment = new HashMap<>();
+        mailComment.put( "created", comment.getCreated() );
+        mailComment.put( "author", comment.getAuthor() );
+        mailComment.put( "text", escapeTextAndRenderHTML( comment.getText(), textMarkup ) );
+        mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
+        mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
+        mailComment.put( "isPrivateComment", comment.isPrivateComment() );
+
+        return mailComment;
     }
 
     String escapeTextAndRenderHTML(String text, En_TextMarkup textMarkup) {
