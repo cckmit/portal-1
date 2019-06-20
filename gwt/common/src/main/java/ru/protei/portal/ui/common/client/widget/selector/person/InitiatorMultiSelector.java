@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -38,7 +39,9 @@ public class InitiatorMultiSelector
     @Override
     public void fillOptions( List< PersonShortView > options ) {
         clearOptions();
-        this.persons = options;
+        for ( PersonShortView option : emptyIfNull( options) ) {
+            addOption( option.getDisplayShortName(), option );
+        }
     }
 
     @Override
@@ -54,19 +57,6 @@ public class InitiatorMultiSelector
         }
     }
 
-    @Override
-    protected void showPopup( IsWidget relative ) {
-        if(persons != null){
-            for ( PersonShortView type : persons ) {
-                addOption( type.getDisplayShortName(), type );
-            }
-            persons = null;
-        }
-        super.showPopup( relative );
-    }
-
-    public void setFired ( boolean value ) { this.fired = value; }
-
     public void updateCompanies() {
         if (model == null || companiesSupplier == null) {
             return;
@@ -80,7 +70,7 @@ public class InitiatorMultiSelector
             setValue(null);
         }
 
-        model.updateCompanies(this, companyIds, fired);
+        model.updateCompanies(this, companyIds);
 
     }
 
@@ -90,9 +80,6 @@ public class InitiatorMultiSelector
 
     Lang lang;
     private InitiatorModel model;
-    private boolean fired;
-    private List<PersonShortView> persons;
-
 
 
     private Supplier<Set<EntityOption>> companiesSupplier = new Supplier<Set<EntityOption>>() {
