@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -23,18 +24,18 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     CaseFilterDAO caseFilterDAO;
 
     @Override
-    public CoreResponse< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId ) {
+    public CoreResponse< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
 
         log.debug( "getIssueFilterShortViewList(): accountId={} ", loginId );
 
-        List<CaseFilter > list = caseFilterDAO.getListByCondition( "login_id=?", loginId );
+        List< CaseFilter > list = caseFilterDAO.getListByLoginIdAndFilterType( loginId, filterType );
 
-        if (list == null)
-            return new CoreResponse<List<CaseFilterShortView >>().error(En_ResultStatus.GET_DATA_ERROR);
+        if ( list == null )
+            return new CoreResponse< List< CaseFilterShortView > >().error( En_ResultStatus.GET_DATA_ERROR );
 
         List< CaseFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
 
-        return new CoreResponse<List<CaseFilterShortView >>().success(result);
+        return new CoreResponse< List< CaseFilterShortView > >().success( result );
     }
 
     @Override

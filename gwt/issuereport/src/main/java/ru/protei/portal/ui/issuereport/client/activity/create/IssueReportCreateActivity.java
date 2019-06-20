@@ -130,7 +130,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Override
     public void onUserFilterChanged() {
 
-        CaseFilterShortView filter = caseObjectReportView.userFilter().getValue();
+        CaseFilterShortView filter = view.userFilter().getValue();
         if (filter == null || filter.getId() == null) {
             caseObjectReportView.resetFilter();
             caseObjectReportView.toggleMsgSearchThreshold();
