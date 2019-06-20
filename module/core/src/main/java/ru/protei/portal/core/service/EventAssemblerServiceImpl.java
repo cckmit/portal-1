@@ -57,11 +57,12 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
 
         AssembledCaseEvent existingEvent = assembledEventsMap.get(key);
-        if (
-                existingEvent != null
-                        && existingEvent.isCaseCommentAttached()
-                        && !Objects.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId()) //we don't take into account a last edited comment
-                ) {
+        if ( existingEvent != null && (
+                        (existingEvent.isCaseCommentAttached() /*&&
+                                !Objects.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId())*/)//we don't take into account a last edited comment
+                        || existingEvent.isCaseCommentRemoved()
+                )
+        ) {
             logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
             publishAndClear(key);
             assembledEventsMap.put(key, new AssembledCaseEvent(event));

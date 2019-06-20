@@ -98,6 +98,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return this.comment != null;
     }
 
+    public boolean isCaseCommentRemoved() {
+        return comment == null && oldComment != null;
+    }
+
     public boolean isCaseStateChanged() {
         return isUpdateEvent() && lastState.getState() != initState.getState();
     }

@@ -141,15 +141,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return new CoreResponse<Boolean>().error(checkAccessStatus);
         }
 
-        // ***
-        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
-        List<Long> ids = new ArrayList<>(1);
-        ids.add(comment.getId());
-        Collection<Attachment> removedAttachments = attachmentService.getAttachments(
-                token,
-                caseType,
-                ids
-        ).getData();
+        CaseObject caseObjectOld = caseObjectDAO.get( comment.getCaseId());
+        Collection<Attachment> removedAttachments = attachmentService.getAttachmentsByCaseId(token, caseType, comment.getCaseId())
+                .getData();
 
         CoreResponse<Boolean> response = remove(token, caseType, comment);
         if (response.isError()) {
@@ -160,10 +154,9 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             throw new RuntimeException("failed to update time elapsed on removeCaseComment");
         }
 
-        // ---
         CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, null, removedAttachments, comment, null, person));
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, removedAttachments, null, null, person));
 
         Boolean result = response.getData();
 
