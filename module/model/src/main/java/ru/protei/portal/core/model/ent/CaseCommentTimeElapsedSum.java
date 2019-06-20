@@ -13,6 +13,15 @@ import java.util.Date;
         "sum(IF(case_comment.time_elapsed_type IS NUll or case_comment.time_elapsed_type = 0, case_comment.time_elapsed, 0)) time_elapsed_none, " +
         "sum(IF(case_comment.time_elapsed_type = 1, case_comment.time_elapsed, 0)) time_elapsed_watch, " +
         "sum(IF(case_comment.time_elapsed_type = 2, case_comment.time_elapsed, 0)) time_elapsed_night_work, " +
+        "sum(IF(case_comment.time_elapsed_type = 3, case_comment.time_elapsed, 0)) time_elapsed_SoftInstall, " +
+        "sum(IF(case_comment.time_elapsed_type = 4, case_comment.time_elapsed, 0)) time_elapsed_SoftUpdate, " +
+        "sum(IF(case_comment.time_elapsed_type = 5, case_comment.time_elapsed, 0)) time_elapsed_SoftConfig, " +
+        "sum(IF(case_comment.time_elapsed_type = 6, case_comment.time_elapsed, 0)) time_elapsed_Testing, " +
+        "sum(IF(case_comment.time_elapsed_type = 7, case_comment.time_elapsed, 0)) time_elapsed_Consultation, " +
+        "sum(IF(case_comment.time_elapsed_type = 8, case_comment.time_elapsed, 0)) time_elapsed_Meeting, " +
+        "sum(IF(case_comment.time_elapsed_type = 9, case_comment.time_elapsed, 0)) time_elapsed_DiscussionOfImprovements, " +
+        "sum(IF(case_comment.time_elapsed_type = 10, case_comment.time_elapsed, 0)) time_elapsed_LogAnalysis, " +
+        "sum(IF(case_comment.time_elapsed_type = 11, case_comment.time_elapsed, 0)) time_elapsed_SolveProblems, " +
         "case_object.caseno case_no, case_object.private_flag private_flag, case_object.case_name case_name, " +
         "company.cname case_company_name, manager.displayshortname manager_display_name, " +
         "case_object.importance importance, case_object.state state, case_object.created created, " +
@@ -49,6 +58,25 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     @JdbcColumn(name = "time_elapsed_night_work", permType = PermType.READ_ONLY)
     private Long timeElapsedNightWork;
+
+    @JdbcColumn(name = "time_elapsed_SoftInstall", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeSoftInstall;
+    @JdbcColumn(name = "time_elapsed_SoftUpdate", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeSoftUpdate;
+    @JdbcColumn(name = "time_elapsed_SoftConfig", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeSoftConfig;
+    @JdbcColumn(name = "time_elapsed_Testing", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeTesting;
+    @JdbcColumn(name = "time_elapsed_Consultation", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeConsultation;
+    @JdbcColumn(name = "time_elapsed_Meeting", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeMeeting;
+    @JdbcColumn(name = "time_elapsed_DiscussionOfImprovements", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeDiscussionOfImprovements;
+    @JdbcColumn(name = "time_elapsed_LogAnalysis", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeLogAnalysis;
+    @JdbcColumn(name = "time_elapsed_SolveProblems", permType = PermType.READ_ONLY)
+    private Long timeElapsedTypeSolveProblems;
 
     @JdbcColumn(name = "case_no", permType = PermType.READ_ONLY)
     private Long caseNumber;
@@ -100,6 +128,42 @@ public class CaseCommentTimeElapsedSum implements Serializable {
 
     public Long getTimeElapsedNightWork() {
         return timeElapsedNightWork;
+    }
+
+    public Long getTimeElapsedTypeSoftInstall() {
+        return timeElapsedTypeSoftInstall;
+    }
+
+    public Long getTimeElapsedTypeSoftUpdate() {
+        return timeElapsedTypeSoftUpdate;
+    }
+
+    public Long getTimeElapsedTypeSoftConfig() {
+        return timeElapsedTypeSoftConfig;
+    }
+
+    public Long getTimeElapsedTypeTesting() {
+        return timeElapsedTypeTesting;
+    }
+
+    public Long getTimeElapsedTypeConsultation() {
+        return timeElapsedTypeConsultation;
+    }
+
+    public Long getTimeElapsedTypeMeeting() {
+        return timeElapsedTypeMeeting;
+    }
+
+    public Long getTimeElapsedTypeDiscussionOfImprovements() {
+        return timeElapsedTypeDiscussionOfImprovements;
+    }
+
+    public Long getTimeElapsedTypeLogAnalysis() {
+        return timeElapsedTypeLogAnalysis;
+    }
+
+    public Long getTimeElapsedTypeSolveProblems() {
+        return timeElapsedTypeSolveProblems;
     }
 
     public String getProductName() {
