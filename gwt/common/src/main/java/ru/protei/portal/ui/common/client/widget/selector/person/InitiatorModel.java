@@ -29,8 +29,8 @@ public abstract class InitiatorModel implements Activity {
         myId = event.profile.getId();
     }
 
-    public void updateCompanies(SelectorWithModel<PersonShortView> selector, Set<Long> companyIds) {
-        PersonQuery query = new PersonQuery(companyIds, null, false, false, null, En_SortField.person_full_name, En_SortDir.ASC);
+    public void updateCompanies(SelectorWithModel<PersonShortView> selector, Set<Long> companyIds, boolean fired) {
+        PersonQuery query = new PersonQuery(companyIds, null, fired, false, null, En_SortField.person_full_name, En_SortDir.ASC);
         personService.getPersonViewList(query, new RequestCallback<List<PersonShortView>>() {
             @Override
             public void onError(Throwable throwable) {
@@ -44,9 +44,6 @@ public abstract class InitiatorModel implements Activity {
                     options.add(0, options.remove(value));
                 }
                 selector.fillOptions(options);
-                if(!isEmpty(selector.getValues())){
-                    selector.getValues().retainAll( options );
-                }
                 selector.refreshValue();
             }
         });

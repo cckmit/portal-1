@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import liquibase.util.CollectionUtil;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -11,10 +13,7 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -57,6 +56,16 @@ public class InitiatorMultiSelector
         }
     }
 
+    @Override
+    public void refreshValue() {
+        Set<PersonShortView> value = getValue();
+        if (!isEmpty( value )) {
+            value.retainAll( getValues() );
+        }
+        setValue( value );
+        super.refreshValue();
+    }
+
     public void updateCompanies() {
         if (model == null || companiesSupplier == null) {
             return;
@@ -70,7 +79,7 @@ public class InitiatorMultiSelector
             setValue(null);
         }
 
-        model.updateCompanies(this, companyIds);
+        model.updateCompanies(this, companyIds, false);
 
     }
 
