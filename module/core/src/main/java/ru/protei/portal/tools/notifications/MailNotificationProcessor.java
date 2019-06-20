@@ -99,7 +99,7 @@ public class MailNotificationProcessor {
         CoreResponse<List<CaseComment>> comments = caseCommentService.getCaseCommentList(
                 null,
                 En_CaseType.CRM_SUPPORT,
-                event.getCaseComment() == null ?
+                event.getCaseComment() == null || event.getRemovedComment() != null ?
                         new CaseCommentQuery(caseObject.getId()) :
                         new CaseCommentQuery(caseObject.getId(), event.getCaseComment().getCreated())
         );

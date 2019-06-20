@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.service.CaseService;
 
 import java.util.*;
 
@@ -20,6 +19,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseObject initState;
     private CaseComment comment;
     private CaseComment oldComment;
+    private CaseComment removedComment;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
 
@@ -51,6 +51,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         comment = commentEvent.getCaseComment();
         addedAttachments.addAll(commentEvent.getAddedAttachments());
         removedAttachments.addAll(commentEvent.getRemovedAttachments());
+        removedComment = commentEvent.getRemovedCaseComment();
     }
 
     public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
@@ -99,7 +100,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     }
 
     public boolean isCaseCommentRemoved() {
-        return comment == null && oldComment != null;
+        return removedComment != null;
     }
 
     public boolean isCaseStateChanged() {
@@ -164,6 +165,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public CaseComment getOldComment() {
         return oldComment;
+    }
+
+    public CaseComment getRemovedComment() {
+        return removedComment;
     }
 
     public Collection<Attachment> getAddedAttachments() {

@@ -112,7 +112,7 @@ public class TemplateServiceImpl implements TemplateService {
                         event.getRemovedAttachments())
         );
 
-        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment(), textMarkup));
+        templateModel.put( "caseComments",  getCommentsModelKeys(caseComments, event.getCaseComment(), event.getOldComment(), event.getRemovedComment(), textMarkup));
 
         PreparedTemplate template = new PreparedTemplate( "notification/email/crm.body.%s.ftl" );
         template.setModel( templateModel );
@@ -276,9 +276,10 @@ public class TemplateServiceImpl implements TemplateService {
         return template;
     }
 
-    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, En_TextMarkup textMarkup){
-        Long removedCommentId = (oldCaseComment != null && checkRemoved(oldCaseComment, comments)) ?
-                addCommentToListAndReturnId(oldCaseComment, comments) : null;
+    private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, CaseComment removedCaseComment, En_TextMarkup textMarkup){
+        if (removedCaseComment != null) {
+            comments.add(removedCaseComment);
+        }
 
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
@@ -296,19 +297,10 @@ public class TemplateServiceImpl implements TemplateService {
                     if(isChanged && oldCaseComment != null){
                         mailComment.put( "oldText", escapeTextAndRenderHTML( oldCaseComment.getText(), textMarkup ) );
                     }
-                    mailComment.put( "removed", removedCommentId != null && HelperFunc.equals( comment.getId(), removedCommentId));
+                    mailComment.put( "removed", removedCaseComment != null && HelperFunc.equals( removedCaseComment.getId(), comment.getId()));
                     return mailComment;
                 } )
                 .collect( toList() );
-    }
-
-    private Long addCommentToListAndReturnId(CaseComment oldComment, List<CaseComment> comments) {
-        comments.add(oldComment);
-        return oldComment.getId();
-    }
-
-    private boolean checkRemoved(CaseComment oldComment, List<CaseComment> comments) {
-        return comments.stream().map(CaseComment::getId).noneMatch(id -> id.equals(oldComment.getId()));
     }
 
     String escapeTextAndRenderHTML(String text, En_TextMarkup textMarkup) {

@@ -11,6 +11,7 @@ import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,15 +58,20 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
 
         AssembledCaseEvent existingEvent = assembledEventsMap.get(key);
-        if ( existingEvent != null && (
-                        (existingEvent.isCaseCommentAttached() /*&&
-                                !Objects.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId())*/)//we don't take into account a last edited comment
-                        || existingEvent.isCaseCommentRemoved()
-                )
-        ) {
-            logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
-            publishAndClear(key);
-            assembledEventsMap.put(key, new AssembledCaseEvent(event));
+        if ( existingEvent != null && ( existingEvent.isCaseCommentAttached() || existingEvent.isCaseCommentRemoved() ) )
+        {
+            if (existingEvent.getCaseComment() != null && event.getRemovedCaseComment() != null
+                    && ( HelperFunc.equals(existingEvent.getCaseComment().getId(), event.getRemovedCaseComment().getId()))) {
+                logger.debug("onCaseCommentEvent, remove new (not mailed) comment on case {}", event.getCaseObject().defGUID());
+                assembledEventsMap.remove(key);
+            } else if (existingEvent.getCaseComment() != null && event.getCaseComment() != null
+                    && HelperFunc.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId())) {
+                    ; // //we don't take into account a last edited comment
+                } else {
+                    logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
+                    publishAndClear(key);
+                    assembledEventsMap.put(key, new AssembledCaseEvent(event));
+                }
         } else {
             logger.debug("onCaseCommentEvent, push new event on case {}", event.getCaseObject().defGUID());
             //In order to update case events map in both cases:
