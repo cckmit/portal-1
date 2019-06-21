@@ -25,69 +25,56 @@ import java.util.logging.Logger;
 /**
  * Модель контактов домашней компании
  */
-public abstract class EmployeeModel implements Activity, SelectorModel<PersonShortView> {
+public abstract class EmployeeModel implements Activity, SelectorModel< PersonShortView > {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
         myId = event.profile.getId();
+        clearSubscribersOptions();
     }
 
     @Override
-    public void onSelectorLoad( SelectorWithModel<PersonShortView> selector ) {
+    public void onSelectorLoad( SelectorWithModel< PersonShortView > selector ) {
         if ( selector == null ) {
             return;
         }
         subscribers.add( selector );
-        if(!CollectionUtils.isEmpty( list )){
-            selector.clearOptions();
-            selector.fillOptions( list );
-            return;
-        }
         if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-            refreshOptions();
+            refreshOptions( selector );
         }
     }
 
     @Override
-    public void onSelectorUnload( SelectorWithModel<PersonShortView> selector ) {
+    public void onSelectorUnload( SelectorWithModel< PersonShortView > selector ) {
         if ( selector == null ) {
             return;
         }
         selector.clearOptions();
-        subscribers.remove( selector );
     }
 
-    private void notifySubscribers() {
-        for ( SelectorWithModel< PersonShortView > selector : subscribers ) {
-            selector.fillOptions( list );
-            selector.refreshValue();
+    private void clearSubscribersOptions() {
+        for ( SelectorWithModel< PersonShortView > subscriber : subscribers ) {
+            subscriber.clearOptions();
         }
     }
 
-    private boolean requested;
-
-    private void refreshOptions() {
-        if (requested) return;
-        requested = true;
+    private void refreshOptions( SelectorWithModel< PersonShortView > selector ) {
         employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
-                requested = false;
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                fireEvent(new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR) );
             }
 
             @Override
             public void onSuccess( List< PersonShortView > options ) {
-                requested = false;
-                    int value = options.indexOf( new PersonShortView("", myId, false ) );
-                    if ( value > 0 ) {
-                        options.add(0, options.remove(value));
-                    }
+                int value = options.indexOf( new PersonShortView("", myId, false ) );
+                if ( value > 0 ) {
+                    options.add(0, options.remove( value ) );
+                }
 
-                list.clear();
-                list.addAll( options );
-                notifySubscribers();
+                selector.fillOptions( options );
+                selector.refreshValue();
             }
         } );
     }
@@ -97,9 +84,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
     @Inject
     Lang lang;
 
-    private List< PersonShortView > list = new ArrayList<>();
-
-    Set<SelectorWithModel< PersonShortView >> subscribers = new HashSet<>();
+    Set< SelectorWithModel< PersonShortView > > subscribers = new HashSet<>();
 
     Long myId;
 }
