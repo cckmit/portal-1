@@ -255,13 +255,6 @@ public abstract class MultipleSelector<T>
         return itemToNameModel.get(item);
     }
 
-    protected void fillItemsSelection() {
-        for (Map.Entry<SelectableItem, T> entry : itemViewToModel.entrySet()) {
-            boolean isSelected = selected.contains(entry.getValue());
-            entry.getKey().setValue(isSelected);
-        }
-    }
-
     private SelectableItem makeAnySelectorItem( String name ) {
         anyItemView = itemFactory.get();
         anyItemView.addStyleName( UiConstants.Styles.MULTIPLE_ANY );
