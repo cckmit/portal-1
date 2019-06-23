@@ -25,20 +25,19 @@ public abstract class IssueFilterModel implements Activity {
     public void onChangeUserFilterModel( IssueEvents.ChangeUserFilterModel event ) {
         for ( SelectorWithModel< CaseFilterShortView > subscriber : subscribers ) {
             subscriber.clearOptions();
-            requestFilters( subscriber );
         }
     }
 
-    public void subscribe( SelectorWithModel< CaseFilterShortView > selector ) {
+    public void subscribe( SelectorWithModel< CaseFilterShortView > selector, En_CaseFilterType filterType ) {
         subscribers.add( selector );
+        selectorToType.put( selector, filterType );
     }
 
     public void updateFilterType( SelectorWithModel< CaseFilterShortView > selector, En_CaseFilterType filterType ) {
         selectorToType.put( selector, filterType );
-        requestFilters( selector );
     }
 
-    private void requestFilters( SelectorWithModel< CaseFilterShortView > selector ) {
+    public void requestFilters( SelectorWithModel< CaseFilterShortView > selector ) {
 
         filterService.getIssueFilterShortViewList( selectorToType.get( selector ), new RequestCallback< List< CaseFilterShortView > >() {
             @Override

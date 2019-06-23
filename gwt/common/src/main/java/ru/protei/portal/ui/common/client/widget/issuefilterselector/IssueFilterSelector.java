@@ -17,19 +17,17 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
     public void init( IssueFilterModel model ) {
 
         this.model = model;
-        model.subscribe( this );
+        model.subscribe( this, En_CaseFilterType.CASE_OBJECTS );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getName() ) );
     }
 
-/*
     @Override
     public void onBtnClick( ClickEvent event ) {
         super.onBtnClick( event );
         model.requestFilters( this );
     }
-*/
 
     public void changeValueName( CaseFilterShortView value ){
 
