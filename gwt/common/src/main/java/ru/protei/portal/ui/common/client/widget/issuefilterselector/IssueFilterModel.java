@@ -14,7 +14,7 @@ import java.util.List;
 
 public abstract class IssueFilterModel implements Activity {
 
-    public void updateFilterType( SelectorWithModel< CaseFilterShortView > selector, En_CaseFilterType filterType ) {
+    public void requestFilters( SelectorWithModel< CaseFilterShortView > selector, En_CaseFilterType filterType ) {
         filterService.getIssueFilterShortViewList( filterType, new RequestCallback< List< CaseFilterShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
