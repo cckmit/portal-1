@@ -10,6 +10,7 @@ import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
 
@@ -58,20 +59,21 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
 
         AssembledCaseEvent existingEvent = assembledEventsMap.get(key);
-        if ( existingEvent != null && ( existingEvent.isCaseCommentAttached() || existingEvent.isCaseCommentRemoved() ) )
-        {
-            if (existingEvent.getCaseComment() != null && event.getRemovedCaseComment() != null
-                    && ( HelperFunc.equals(existingEvent.getCaseComment().getId(), event.getRemovedCaseComment().getId()))) {
+        if ( isChangedComments(existingEvent) ) {
+            if ( isSame( existingEvent.getCaseComment(), event.getRemovedCaseComment()) ) {
                 logger.debug("onCaseCommentEvent, remove new (not mailed) comment on case {}", event.getCaseObject().defGUID());
+
                 assembledEventsMap.remove(key);
-            } else if (existingEvent.getCaseComment() != null && event.getCaseComment() != null
-                    && HelperFunc.equals(existingEvent.getCaseComment().getId(), event.getCaseComment().getId())) {
-                    ; // //we don't take into account a last edited comment
-                } else {
-                    logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
-                    publishAndClear(key);
-                    assembledEventsMap.put(key, new AssembledCaseEvent(event));
-                }
+            } else if ( isSame(existingEvent.getCaseComment(), event.getCaseComment()) ) {
+                logger.debug("onCaseCommentEvent, we don't take into account a last edited comment");
+
+                // we don't take into account a last edited comment
+            } else {
+                logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
+
+                publishAndClear(key);
+                assembledEventsMap.put(key, new AssembledCaseEvent(event));
+            }
         } else {
             logger.debug("onCaseCommentEvent, push new event on case {}", event.getCaseObject().defGUID());
             //In order to update case events map in both cases:
@@ -91,6 +93,16 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
                 assembledEventsMap.put(key, new AssembledCaseEvent(event));
             }
         }
+    }
+
+    private boolean isChangedComments(AssembledCaseEvent existingEvent) {
+        return existingEvent != null &&
+                ( existingEvent.isCaseCommentAttached() || existingEvent.isCaseCommentRemoved() );
+    }
+
+    private boolean isSame(CaseComment comment1, CaseComment comment2) {
+        return comment1 != null && comment2 != null
+                && ( HelperFunc.equals(comment1.getId(), comment2.getId()) );
     }
 
     @Override

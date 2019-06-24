@@ -126,7 +126,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Transactional
     public CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment, Person person) {
         En_ResultStatus checkAccessStatus = null;
-        if (removedComment == null || removedComment.getId() == null || person == null) {
+        if (removedComment == null || removedComment.getId() == null || person == null || person.getId() == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
         }
         if (checkAccessStatus == null) {
