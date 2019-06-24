@@ -26,7 +26,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     @Override
     public CoreResponse< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
 
-        log.debug( "getIssueFilterShortViewList(): accountId={} ", loginId );
+        log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", loginId, filterType );
 
         List< CaseFilter > list = caseFilterDAO.getListByLoginIdAndFilterType( loginId, filterType );
 

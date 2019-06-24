@@ -1,8 +1,8 @@
 package ru.protei.portal.ui.common.client.widget.issuefilterselector;
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
@@ -17,16 +17,9 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
     public void init( IssueFilterModel model ) {
 
         this.model = model;
-        model.subscribe( this, En_CaseFilterType.CASE_OBJECTS );
         setSearchEnabled( true );
         setSearchAutoFocus( true );
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getName() ) );
-    }
-
-    @Override
-    public void onBtnClick( ClickEvent event ) {
-        super.onBtnClick( event );
-        model.requestFilters( this );
     }
 
     public void changeValueName( CaseFilterShortView value ){
@@ -60,11 +53,14 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
     public void fillOptions( List< CaseFilterShortView > filters ) {
         clearOptions();
 
-        filters.sort((o1, o2) -> HelperFunc.compare(o1.getName(), o2.getName(), false));
-
         if ( defaultValue != null ) {
             addOption( null );
         }
+
+        if ( CollectionUtils.isEmpty( filters ) ) return;
+
+        filters.sort( ( o1, o2 ) -> HelperFunc.compare( o1.getName(), o2.getName(), false ) );
+
         filters.forEach( this::addOption );
     }
 

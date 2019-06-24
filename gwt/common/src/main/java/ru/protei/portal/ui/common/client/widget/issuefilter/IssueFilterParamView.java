@@ -11,10 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -58,6 +55,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortDir.setValue(false);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
+        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
     @Override

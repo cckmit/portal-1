@@ -10,6 +10,6 @@ public class CaseFilterDAO_Impl extends PortalBaseJdbcDAO<CaseFilter > implement
 
     @Override
     public List< CaseFilter > getListByLoginIdAndFilterType( Long loginId, En_CaseFilterType filterType ) {
-        return getListByCondition( "login_id=? and filter_type=?", loginId, filterType );
+        return getListByCondition( "login_id=? and filter_type=?", loginId, filterType.name() );
     }
 }

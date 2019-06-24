@@ -103,15 +103,18 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.getReportContainer().clear();
         switch (view.reportType().getValue()) {
             case CASE_OBJECTS: {
-                view.getReportContainer().add( caseObjectReportView.asWidget());
+                view.getReportContainer().add(caseObjectReportView.asWidget());
+                view.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
                 break;
             }
             case CASE_TIME_ELAPSED: {
                 view.getReportContainer().add(timeElapsedReportView.asWidget());
+                view.updateFilterType(En_CaseFilterType.CASE_TIME_ELAPSED);
                 break;
             }
             case CASE_RESOLUTION_TIME:
-                view.getReportContainer().add( caseResolutionTimeReportView.asWidget());
+                view.getReportContainer().add(caseResolutionTimeReportView.asWidget());
+                view.updateFilterType(En_CaseFilterType.CASE_RESOLUTION_TIME);
                 break;
         }
     }
