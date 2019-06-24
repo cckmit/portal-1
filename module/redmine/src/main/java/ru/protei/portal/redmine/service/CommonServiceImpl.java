@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.CaseService;
@@ -45,8 +46,8 @@ public final class CommonServiceImpl implements CommonService {
         final long caseObjId = obj.getId();
         final Set<Attachment> existingAttachments = getExistingAttachments(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
-        if (issue.getAttachments() != null && !issue.getAttachments().isEmpty()) {
-            logger.debug("process attachments for case, id={}", caseObjId);
+        if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
+            logger.debug("process attachments for case, id={}, existingAttachments={}", caseObjId, existingAttachments);
             List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
             issue.getAttachments()
                     .stream()

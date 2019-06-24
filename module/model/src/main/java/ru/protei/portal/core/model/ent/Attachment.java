@@ -114,4 +114,13 @@ public class Attachment implements Serializable {
     public boolean equals(Object obj) {
         return obj instanceof Attachment && Objects.equals(id, ((Attachment) obj).getId());
     }
+
+    @Override
+    public String toString() {
+        return "Attachment{" +
+                "id=" + id +
+                ", dataSize=" + dataSize +
+                ", fileName='" + fileName + '\'' +
+                '}';
+    }
 }
