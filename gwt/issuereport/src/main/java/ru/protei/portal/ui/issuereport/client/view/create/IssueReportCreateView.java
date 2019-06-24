@@ -49,7 +49,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Override
     public void resetFilter() {
         reportType.setValue(En_ReportType.CASE_OBJECTS, true);
-        userFilter.setFilterType(En_CaseFilterType.CASE_OBJECTS);
+        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
         userFilter.setValue(null);
         name.setValue(null);
     }
@@ -66,7 +66,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @Override
     public void updateFilterType(En_CaseFilterType filterType) {
-        userFilter.setFilterType(filterType);
+        userFilter.updateFilterType(filterType);
         userFilter.setValue(null);
     }
 

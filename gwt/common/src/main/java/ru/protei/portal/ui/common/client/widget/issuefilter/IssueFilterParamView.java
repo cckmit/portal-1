@@ -54,12 +54,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         sortDir.setValue(false);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
-        userFilter.setFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
     @Override
     public void setActivity(AbstractIssueFilterParamActivity activity) {
         this.activity = activity;
+        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
     @Override

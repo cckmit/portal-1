@@ -22,12 +22,6 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
         setDisplayOptionCreator( value -> new DisplayOption( value == null ? defaultValue : value.getName() ) );
     }
 
-    @Override
-    public void onBtnClick( ClickEvent event ) {
-        super.onBtnClick( event );
-        model.requestFilters( this, filterType );
-    }
-
     public void changeValueName( CaseFilterShortView value ){
         if (value == null){
             return;
@@ -44,8 +38,11 @@ public class IssueFilterSelector extends ButtonSelector< CaseFilterShortView > i
         itemToDisplayOptionModel.put( value, new DisplayOption( value.getName() ) );
     }
 
-    public void setFilterType( En_CaseFilterType filterType ) {
+    public void updateFilterType( En_CaseFilterType filterType ) {
         this.filterType = filterType;
+        if ( model != null ) {
+            model.updateFilterType( this, this.filterType );
+        }
     }
 
     public void setDefaultValue( String value ) {
