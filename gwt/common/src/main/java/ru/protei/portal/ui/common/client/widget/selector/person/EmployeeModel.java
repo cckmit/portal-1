@@ -20,36 +20,34 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Модель контактов домашней компании
  */
-public abstract class EmployeeModel implements Activity, SelectorModel<PersonShortView> {
+public abstract class EmployeeModel implements Activity, SelectorModel< PersonShortView > {
 
     @Event
     public void onInit( AuthEvents.Success event ) {
         myId = event.profile.getId();
+        list.clear();
     }
 
     @Override
-    public void onSelectorLoad( SelectorWithModel<PersonShortView> selector ) {
+    public void onSelectorLoad( SelectorWithModel< PersonShortView > selector ) {
         if ( selector == null ) {
             return;
         }
         subscribers.add( selector );
-        if(!CollectionUtils.isEmpty( list )){
-            selector.clearOptions();
+        if( CollectionUtils.isNotEmpty( list ) ){
             selector.fillOptions( list );
+            selector.refreshValue();
             return;
         }
-        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-            refreshOptions();
-        }
+        refreshOptions();
     }
 
     @Override
-    public void onSelectorUnload( SelectorWithModel<PersonShortView> selector ) {
+    public void onSelectorUnload( SelectorWithModel< PersonShortView > selector ) {
         if ( selector == null ) {
             return;
         }
@@ -74,17 +72,16 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
             @Override
             public void onError( Throwable throwable ) {
                 requested = false;
-                    fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
+                fireEvent(new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR) );
             }
 
             @Override
             public void onSuccess( List< PersonShortView > options ) {
                 requested = false;
-                    int value = options.indexOf( new PersonShortView("", myId, false ) );
-                    if ( value > 0 ) {
-                        options.add(0, options.remove(value));
-                    }
-
+                int value = options.indexOf( new PersonShortView("", myId, false ) );
+                if ( value > 0 ) {
+                    options.add(0, options.remove( value ) );
+                }
                 list.clear();
                 list.addAll( options );
                 notifySubscribers();
@@ -94,12 +91,13 @@ public abstract class EmployeeModel implements Activity, SelectorModel<PersonSho
 
     @Inject
     EmployeeControllerAsync employeeService;
+
     @Inject
     Lang lang;
 
     private List< PersonShortView > list = new ArrayList<>();
 
-    Set<SelectorWithModel< PersonShortView >> subscribers = new HashSet<>();
+    Set< SelectorWithModel< PersonShortView > > subscribers = new HashSet<>();
 
     Long myId;
 }
