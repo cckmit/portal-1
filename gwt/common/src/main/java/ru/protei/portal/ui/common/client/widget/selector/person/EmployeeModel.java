@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Модель контактов домашней компании
@@ -30,7 +29,7 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
     @Event
     public void onInit( AuthEvents.Success event ) {
         myId = event.profile.getId();
-        clearSubscribersOptions();
+        list.clear();
     }
 
     @Override
@@ -39,9 +38,12 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
             return;
         }
         subscribers.add( selector );
-        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
-            refreshOptions( selector );
+        if( CollectionUtils.isNotEmpty( list ) ){
+            selector.fillOptions( list );
+            selector.refreshValue();
+            return;
         }
+        refreshOptions();
     }
 
     @Override
@@ -50,39 +52,50 @@ public abstract class EmployeeModel implements Activity, SelectorModel< PersonSh
             return;
         }
         selector.clearOptions();
+        subscribers.remove( selector );
     }
 
-    private void clearSubscribersOptions() {
-        for ( SelectorWithModel< PersonShortView > subscriber : subscribers ) {
-            subscriber.clearOptions();
+    private void notifySubscribers() {
+        for ( SelectorWithModel< PersonShortView > selector : subscribers ) {
+            selector.fillOptions( list );
+            selector.refreshValue();
         }
     }
 
-    private void refreshOptions( SelectorWithModel< PersonShortView > selector ) {
+    private boolean requested;
+
+    private void refreshOptions() {
+        if (requested) return;
+        requested = true;
         employeeService.getEmployeeViewList( new EmployeeQuery( false, false, true, En_SortField.person_full_name, En_SortDir.ASC ),
                 new RequestCallback< List< PersonShortView > >() {
             @Override
             public void onError( Throwable throwable ) {
+                requested = false;
                 fireEvent(new NotifyEvents.Show( lang.errGetList(), NotifyEvents.NotifyType.ERROR) );
             }
 
             @Override
             public void onSuccess( List< PersonShortView > options ) {
+                requested = false;
                 int value = options.indexOf( new PersonShortView("", myId, false ) );
                 if ( value > 0 ) {
                     options.add(0, options.remove( value ) );
                 }
-
-                selector.fillOptions( options );
-                selector.refreshValue();
+                list.clear();
+                list.addAll( options );
+                notifySubscribers();
             }
         } );
     }
 
     @Inject
     EmployeeControllerAsync employeeService;
+
     @Inject
     Lang lang;
+
+    private List< PersonShortView > list = new ArrayList<>();
 
     Set< SelectorWithModel< PersonShortView > > subscribers = new HashSet<>();
 
