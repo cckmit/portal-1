@@ -6,5 +6,5 @@ import ru.protei.portal.core.model.ent.RedmineEndpoint;
 
 public interface RedmineEventHandler {
     void handle(User user, Issue issue, RedmineEndpoint endpoint);
-    void handleUpdateIssueCreatorAndCreationDateAttachment( Issue issue, RedmineEndpoint endpoint);
+    void handleUpdateIssueCreatorAndCreationDateAttachment(Issue issue, RedmineEndpoint endpoint);
 }

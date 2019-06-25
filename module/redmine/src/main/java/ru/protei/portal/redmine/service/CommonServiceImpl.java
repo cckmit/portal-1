@@ -119,19 +119,17 @@ public final class CommonServiceImpl implements CommonService {
         final Set<Attachment> existingAttachments = getExistingAttachments(caseObjId);
         if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachments)) {
             logger.debug("process update creation date of attachments for case, id={}", caseObjId);
-            existingAttachments
-                    .stream()
-                    .forEach(x -> {
-                        com.taskadapter.redmineapi.bean.Attachment attachment = issue.getAttachments().stream()
-                                .filter(y ->
-                                        y.getFileName().equals(x.getFileName()) &&
-                                        y.getFileSize().equals(x.getDataSize()))
-                                .findFirst()
-                                .orElse(null);
-                        if (attachment != null) {
-                            x.setCreated(attachment.getCreatedOn());
-                        }
-                    });
+            existingAttachments.forEach(attachment -> {
+
+                com.taskadapter.redmineapi.bean.Attachment redmineAttachment = issue.getAttachments().stream()
+                        .filter(y -> y.getFileName().equals(attachment.getFileName()) && y.getFileSize().equals(attachment.getDataSize()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (redmineAttachment != null) {
+                    attachment.setCreated(redmineAttachment.getCreatedOn());
+                }
+            });
         }
         attachmentDAO.mergeBatch(existingAttachments);
     }
