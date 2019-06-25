@@ -37,6 +37,19 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         }
     }
 
+    @Override
+    public void handleUpdateIssueCreatorAndCreationDateAttachment(Issue issue, RedmineEndpoint endpoint) {
+        final CaseObject object = caseObjectDAO.getByExternalAppCaseId(issue.getId() + "_"
+                + endpoint.getCompanyId());
+        if (object != null) {
+            logger.debug("Found case object with id {}", object.getId());
+            object.setCreatorId(object.getInitiatorId());
+            updateCreationDateAttachments(issue, object, endpoint);
+            caseObjectDAO.saveOrUpdate(object);
+            logger.debug("Object with id {} saved", object.getId());
+        }
+    }
+
     /**
      * Finding changes made after last update querying.
      * FIltering out comments, getting lists of details, parsing them to change types, distinct and returning it
@@ -115,6 +128,10 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         parseJournals(latestJournals).stream().map(caseUpdaterFactory::getUpdater).forEach(x -> x.apply(object, issue, endpoint));
 
         commonService.processAttachments(issue, object, object.getInitiator(), endpoint);
+    }
+
+    private void updateCreationDateAttachments(Issue issue, CaseObject object, RedmineEndpoint endpoint) {
+        commonService.processUpdateCreationDateAttachments(issue, object, endpoint);
     }
 
     @Autowired

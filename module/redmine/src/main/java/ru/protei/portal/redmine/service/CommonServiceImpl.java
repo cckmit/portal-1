@@ -90,6 +90,52 @@ public final class CommonServiceImpl implements CommonService {
         ));
     }
 
+/*
+    @Override
+    public void processUpdateCreationDateAttachments(Issue issue, CaseObject obj, RedmineEndpoint endpoint) {
+        final long caseObjId = obj.getId();
+        final Set<String> existingAttachmentsNames = getExistingAttachmentsNames(obj.getId());
+        final Collection<Attachment> updatedAttachments = new ArrayList<>(existingAttachmentsNames.size());
+        if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachmentsNames)) {
+            logger.debug("process update creation date of attachments for case, id={}, existingAttachmentsNames={}", caseObjId, existingAttachmentsNames);
+            issue.getAttachments()
+                    .stream()
+                    .filter(x -> existingAttachmentsNames.contains(x.getFileName()))
+                    .forEach(x -> {
+                        Attachment attachment = attachmentDAO.getByCondition("file_name=? and DATA_SIZE=?", x.getFileName(), x.getFileSize());
+                        if (attachment != null) {
+                            attachment.setCreated(x.getCreatedOn());
+                            updatedAttachments.add(attachment);
+                        }
+                    });
+        }
+        attachmentDAO.mergeBatch(updatedAttachments);
+    }
+*/
+
+    @Override
+    public void processUpdateCreationDateAttachments(Issue issue, CaseObject obj, RedmineEndpoint endpoint) {
+        final long caseObjId = obj.getId();
+        final Set<Attachment> existingAttachments = getExistingAttachments(caseObjId);
+        if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachments)) {
+            logger.debug("process update creation date of attachments for case, id={}", caseObjId);
+            existingAttachments
+                    .stream()
+                    .forEach(x -> {
+                        com.taskadapter.redmineapi.bean.Attachment attachment = issue.getAttachments().stream()
+                                .filter(y ->
+                                        y.getFileName().equals(x.getFileName()) &&
+                                        y.getFileSize().equals(x.getDataSize()))
+                                .findFirst()
+                                .orElse(null);
+                        if (attachment != null) {
+                            x.setCreated(attachment.getCreatedOn());
+                        }
+                    });
+        }
+        attachmentDAO.mergeBatch(existingAttachments);
+    }
+
     @Override
     public CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment) {
         comment.setCaseId(caseObjId);
@@ -185,6 +231,13 @@ public final class CommonServiceImpl implements CommonService {
                 .map(CaseAttachment::getAttachmentId)
                 .map(attachmentDAO::get)
                 .map(Attachment::toHashCodeForRedmineCheck)
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Attachment> getExistingAttachments(long caseObjId) {
+        return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
+                .map(CaseAttachment::getAttachmentId)
+                .map(attachmentDAO::get)
                 .collect(Collectors.toSet());
     }
 
