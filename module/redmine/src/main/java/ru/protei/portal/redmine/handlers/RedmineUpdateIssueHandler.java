@@ -37,7 +37,6 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         }
     }
 
-    @Override
     public void handleUpdateIssueCreatorAndCreationDateAttachment(Issue issue, RedmineEndpoint endpoint) {
         final CaseObject object = caseObjectDAO.getByExternalAppCaseId(issue.getId() + "_"
                 + endpoint.getCompanyId());

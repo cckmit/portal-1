@@ -90,29 +90,6 @@ public final class CommonServiceImpl implements CommonService {
         ));
     }
 
-/*
-    @Override
-    public void processUpdateCreationDateAttachments(Issue issue, CaseObject obj, RedmineEndpoint endpoint) {
-        final long caseObjId = obj.getId();
-        final Set<String> existingAttachmentsNames = getExistingAttachmentsNames(obj.getId());
-        final Collection<Attachment> updatedAttachments = new ArrayList<>(existingAttachmentsNames.size());
-        if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachmentsNames)) {
-            logger.debug("process update creation date of attachments for case, id={}, existingAttachmentsNames={}", caseObjId, existingAttachmentsNames);
-            issue.getAttachments()
-                    .stream()
-                    .filter(x -> existingAttachmentsNames.contains(x.getFileName()))
-                    .forEach(x -> {
-                        Attachment attachment = attachmentDAO.getByCondition("file_name=? and DATA_SIZE=?", x.getFileName(), x.getFileSize());
-                        if (attachment != null) {
-                            attachment.setCreated(x.getCreatedOn());
-                            updatedAttachments.add(attachment);
-                        }
-                    });
-        }
-        attachmentDAO.mergeBatch(updatedAttachments);
-    }
-*/
-
     @Override
     public void processUpdateCreationDateAttachments(Issue issue, CaseObject obj, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
@@ -223,7 +200,6 @@ public final class CommonServiceImpl implements CommonService {
         }
     }
 
-
     private Set<Integer> getExistingAttachmentsHashCodes(long caseObjId) {
         return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
                 .map(CaseAttachment::getAttachmentId)
@@ -240,7 +216,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     private int toHashCode(com.taskadapter.redmineapi.bean.Attachment attachment){
-        return ((attachment.getCreatedOn() == null ? "" : attachment.getCreatedOn().toString()) + (attachment.getFileName() == null ? "" : attachment.getFileName())).hashCode();
+        return ((attachment.getCreatedOn() == null ? "" : attachment.getCreatedOn().getTime()) + (attachment.getFileName() == null ? "" : attachment.getFileName())).hashCode();
     }
 
     @Autowired

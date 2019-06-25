@@ -179,12 +179,10 @@ public final class RedmineServiceImpl implements RedmineService {
 
             final List<Issue> issues = getAllIssues(projectId, endpoint);
 
-            if (issues.isEmpty()) return;
-
             logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
-            for (Issue issue : issues) {
-                updateHandler.handleUpdateIssueCreatorAndCreationDateAttachment(issue, endpoint);
-            }
+            issues.forEach(issue ->
+                    updateHandler.handleUpdateIssueCreatorAndCreationDateAttachment(issue, endpoint)
+            );
 
         } catch (RedmineException re) {
             //something

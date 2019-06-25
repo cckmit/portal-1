@@ -20,7 +20,7 @@ public interface RedmineService {
 
     void updateIssue(Issue issue, RedmineEndpoint endpoint) throws RedmineException;
 
-    void updateIssueCreatorAndCreationDateAttachment( RedmineEndpoint endpoint);
+    void updateIssueCreatorAndCreationDateAttachment(RedmineEndpoint endpoint);
 
     @EventListener
     void onAssembledCaseEvent(AssembledCaseEvent event);

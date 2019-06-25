@@ -26,9 +26,9 @@ public class BootstrapService {
             return;
         }
 
-        logger.debug("Update creation date of attachments started");
+        logger.debug("Update issue creator and creation date of attachments started");
         redmineEndpointDAO.getAll().forEach(redmineService::updateIssueCreatorAndCreationDateAttachment);
-        logger.debug("Update creation date of attachments ended");
+        logger.debug("Update issue creator and creation date of attachments ended");
     }
 
     @Autowired

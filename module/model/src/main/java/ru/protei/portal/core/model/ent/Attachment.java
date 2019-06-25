@@ -111,7 +111,7 @@ public class Attachment implements Serializable {
     }
 
     public int toHashCodeForRedmineCheck() {
-        return ((created == null ? "" : created.toString()) + (fileName == null ? "" : fileName)).hashCode();
+        return ((created == null ? "" : created.getTime()) + (fileName == null ? "" : fileName)).hashCode();
     }
 
     @Override
