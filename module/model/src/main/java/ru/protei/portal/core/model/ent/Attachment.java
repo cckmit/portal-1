@@ -110,17 +110,12 @@ public class Attachment implements Serializable {
         this.fileName = fileName;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof Attachment && Objects.equals(id, ((Attachment) obj).getId());
+    public int toHashCodeForRedmineCheck() {
+        return ((created == null ? "" : created.toString()) + (fileName == null ? "" : fileName)).hashCode();
     }
 
     @Override
-    public String toString() {
-        return "Attachment{" +
-                "id=" + id +
-                ", dataSize=" + dataSize +
-                ", fileName='" + fileName + '\'' +
-                '}';
+    public boolean equals(Object obj) {
+        return obj instanceof Attachment && Objects.equals(id, ((Attachment) obj).getId());
     }
 }

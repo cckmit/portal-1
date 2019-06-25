@@ -44,19 +44,17 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
-        final Set<Attachment> existingAttachments = getExistingAttachments(obj.getId());
+        final Set<Integer> existingAttachmentsHashCodes = getExistingAttachmentsHashCodes(obj.getId());
         final Collection<Attachment> addedAttachments = new ArrayList<>(issue.getAttachments().size());
         if (CollectionUtils.isNotEmpty(issue.getAttachments())) {
-            logger.debug("process attachments for case, id={}, existingAttachments={}", caseObjId, existingAttachments);
+            logger.debug("process attachments for case, id={}, existingAttachmentsHashCodes={}", caseObjId, existingAttachmentsHashCodes);
             List<CaseAttachment> caseAttachments = new ArrayList<>(issue.getAttachments().size());
             issue.getAttachments()
                     .stream()
-                    .filter(x -> existingAttachments.stream().noneMatch(attachment ->
-                                    attachment.getFileName().equals(x.getFileName())
-                                            && attachment.getDataSize().equals(x.getFileSize())))
+                    .filter(x -> !existingAttachmentsHashCodes.contains(toHashCode(x)))
                     .forEach(x -> {
                         Attachment a = new Attachment();
-                        a.setCreated(new Date());
+                        a.setCreated(x.getCreatedOn());
                         a.setCreatorId(contactPerson.getId());
                         a.setDataSize(x.getFileSize());
                         a.setFileName(x.getFileName());
@@ -64,7 +62,7 @@ public final class CommonServiceImpl implements CommonService {
                         a.setLabelText(x.getDescription());
                         addedAttachments.add(a);
                         try {
-                            logger.debug("invoke file controller to store attachment {} (size={})", x.getFileName(), x.getFileSize());
+                            logger.debug("invoke file controller to store attachment {} (size={}, hashCode={})", x.getFileName(), x.getFileSize(), toHashCode(x));
                             Long caId = fileController.saveAttachment(a,
                                     new HttpInputSource(x.getContentURL(), endpoint.getApiKey()), x.getFileSize(), x.getContentType(), caseObjId);
                             logger.debug("result from file controller = {} for {} (size={})", caId, x.getFileName(), x.getFileSize());
@@ -182,11 +180,16 @@ public final class CommonServiceImpl implements CommonService {
     }
 
 
-    private Set<Attachment> getExistingAttachments(long caseObjId) {
+    private Set<Integer> getExistingAttachmentsHashCodes(long caseObjId) {
         return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
                 .map(CaseAttachment::getAttachmentId)
                 .map(attachmentDAO::get)
+                .map(Attachment::toHashCodeForRedmineCheck)
                 .collect(Collectors.toSet());
+    }
+
+    private int toHashCode(com.taskadapter.redmineapi.bean.Attachment attachment){
+        return ((attachment.getCreatedOn() == null ? "" : attachment.getCreatedOn().toString()) + (attachment.getFileName() == null ? "" : attachment.getFileName())).hashCode();
     }
 
     @Autowired
