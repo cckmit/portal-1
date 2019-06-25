@@ -23,7 +23,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        ensureDebugIds();
     }
 
     @Override
@@ -42,15 +41,8 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public HasValue<CaseFilterShortView> userFilter() {
-        return userFilter;
-    }
-
-    @Override
     public void resetFilter() {
         reportType.setValue(En_ReportType.CASE_OBJECTS, true);
-        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
-        userFilter.setValue(null);
         name.setValue(null);
     }
 
@@ -64,28 +56,11 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
         reportType.fillOptions(options);
     }
 
-    @Override
-    public void updateFilterType(En_CaseFilterType filterType) {
-        userFilter.updateFilterType(filterType);
-        userFilter.setValue(null);
-    }
-
     @UiHandler("reportType")
     public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
         if (activity != null) {
             activity.onReportTypeSelected();
         }
-    }
-
-    @UiHandler("userFilter")
-    public void onKeyUpSearch(ValueChangeEvent<CaseFilterShortView> event) {
-        if (activity != null) {
-            activity.onUserFilterChanged();
-        }
-    }
-
-    private void ensureDebugIds() {
-        userFilter.setEnsureDebugId( DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON );
     }
 
     @Inject
@@ -94,10 +69,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @UiField
     TextBox name;
-
-    @Inject
-    @UiField(provided = true)
-    IssueFilterSelector userFilter;
 
     @UiField
     HTMLPanel reportContainer;

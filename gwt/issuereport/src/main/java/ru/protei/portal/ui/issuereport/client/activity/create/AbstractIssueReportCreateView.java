@@ -22,8 +22,4 @@ public interface AbstractIssueReportCreateView extends IsWidget {
     HasWidgets getReportContainer();
 
     void fillReportTypes( List<En_ReportType> options);
-
-    HasValue< CaseFilterShortView > userFilter();
-
-    void updateFilterType(En_CaseFilterType filterType);
 }

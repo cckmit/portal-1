@@ -8,14 +8,4 @@ public interface AbstractIssueFilterActivity {
     void onFilterCollapse();
 
     void onFilterRestore();
-
-    void onSaveFilterClicked();
-
-    void onFilterRemoveClicked( Long id );
-
-    void onOkSavingFilterClicked();
-
-    void onCancelSavingFilterClicked();
-
-    void onCreateFilterClicked();
 }

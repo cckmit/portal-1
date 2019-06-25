@@ -16,10 +16,6 @@
                 <label><ui:text from="{lang.issueReportsTitle}"/></label>
                 <g:TextBox ui:field="name" styleName="input-field"/>
             </div>
-            <div class="col-xs-12 m-b-10">
-                <label><ui:text from="{lang.filters}"/></label>
-                <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
-            </div>
         </div>
 
         <div class="form-group grid grid-indent report-issue-filter">

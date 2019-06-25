@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.IssueReportEvents;
@@ -39,13 +40,13 @@ public abstract class IssueReportCreateActivity implements Activity,
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        caseObjectReportView.setActivity(this);
+        issueFilterWidgetView.setActivity(this);
         caseResolutionTimeReportView.setActivity( this );
         timeElapsedReportView.setActivity( this );
         dialogView.setActivity(this);
         dialogView.setHeader(lang.issueReportNew());
         dialogView.getBodyContainer().add(view.asWidget());
-        caseObjectReportView.setInitiatorCompaniesSupplier(() -> caseObjectReportView.companies().getValue());
+        issueFilterWidgetView.setInitiatorCompaniesSupplier(() -> issueFilterWidgetView.companies().getValue());
     }
 
     @Event
@@ -103,40 +104,40 @@ public abstract class IssueReportCreateActivity implements Activity,
         view.getReportContainer().clear();
         switch (view.reportType().getValue()) {
             case CASE_OBJECTS: {
-                view.getReportContainer().add(caseObjectReportView.asWidget());
-                view.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+                view.getReportContainer().add(issueFilterWidgetView.asWidget());
+//                view.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
                 break;
             }
             case CASE_TIME_ELAPSED: {
                 view.getReportContainer().add(timeElapsedReportView.asWidget());
-                view.updateFilterType(En_CaseFilterType.CASE_TIME_ELAPSED);
+//                view.updateFilterType(En_CaseFilterType.CASE_TIME_ELAPSED);
                 break;
             }
             case CASE_RESOLUTION_TIME:
                 view.getReportContainer().add(caseResolutionTimeReportView.asWidget());
-                view.updateFilterType(En_CaseFilterType.CASE_RESOLUTION_TIME);
+//                view.updateFilterType(En_CaseFilterType.CASE_RESOLUTION_TIME);
                 break;
         }
     }
 
     @Override
     public void onFilterChanged() {
-        caseObjectReportView.toggleMsgSearchThreshold();
+        issueFilterWidgetView.toggleMsgSearchThreshold();
     }
 
     @Override
     public void onCompaniesFilterChanged() {
         onFilterChanged();
-        caseObjectReportView.updateInitiators();
+        issueFilterWidgetView.updateInitiators();
     }
 
     @Override
     public void onUserFilterChanged() {
 
-        CaseFilterShortView filter = view.userFilter().getValue();
+        CaseFilterShortView filter = issueFilterWidgetView.userFilter().getValue();
         if (filter == null || filter.getId() == null) {
-            caseObjectReportView.resetFilter();
-            caseObjectReportView.toggleMsgSearchThreshold();
+            issueFilterWidgetView.resetFilter();
+            issueFilterWidgetView.toggleMsgSearchThreshold();
             return;
         }
 
@@ -145,15 +146,15 @@ public abstract class IssueReportCreateActivity implements Activity,
                     fireEvent(new NotifyEvents.Show(lang.errNotFound(), NotifyEvents.NotifyType.ERROR));
                 })
                 .withSuccess( caseFilter ->{
-                    caseObjectReportView.fillFilterFields(caseFilter.getParams());
-                    caseObjectReportView.toggleMsgSearchThreshold();
+                    issueFilterWidgetView.fillFilterFields(caseFilter.getParams());
+                    issueFilterWidgetView.toggleMsgSearchThreshold();
                 })
         );
     }
 
     private void resetFilters() {
-        caseObjectReportView.resetFilter();
-        caseObjectReportView.commentAuthorsVisibility().setVisible(false);
+        issueFilterWidgetView.resetFilter();
+        issueFilterWidgetView.commentAuthorsVisibility().setVisible(false);
         timeElapsedReportView.resetFilter();
         caseResolutionTimeReportView.resetFilter();
         caseResolutionTimeReportView.states().setValue( activeStates );
@@ -161,7 +162,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private CaseQuery makeQuery( En_ReportType reportType ) {
         if (En_ReportType.CASE_OBJECTS.equals( reportType )) {
-            return makeCaseObjectsQuery( caseObjectReportView, true);
+            return makeCaseObjectsQuery( issueFilterWidgetView, true);
         }
 
         if (En_ReportType.CASE_RESOLUTION_TIME.equals( reportType )) {
@@ -172,7 +173,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         return makeTimeElapsedQuery();
     }
 
-    private CaseQuery makeCaseObjectsQuery( AbstractCaseObjectsReportView filterWidgetView, boolean isFillSearchString) {
+    private CaseQuery makeCaseObjectsQuery(AbstractIssueFilterWidgetView filterWidgetView, boolean isFillSearchString) {
         CaseQuery query = new CaseQuery();
         query.setType(En_CaseType.CRM_SUPPORT);
         if (isFillSearchString) {
@@ -243,10 +244,10 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private void applyFilterViewPrivileges() {
-        caseObjectReportView.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
-        caseObjectReportView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-        caseObjectReportView.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
-        caseObjectReportView.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
+        issueFilterWidgetView.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
+        issueFilterWidgetView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+        issueFilterWidgetView.managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
+        issueFilterWidgetView.searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
 
         timeElapsedReportView.companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
         timeElapsedReportView.productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
@@ -277,7 +278,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     AbstractTimeElapsedReportView timeElapsedReportView;
 
     @Inject
-    AbstractCaseObjectsReportView caseObjectReportView;
+    AbstractIssueFilterWidgetView issueFilterWidgetView;
 
     private boolean isSaving;
     private Set<En_CaseState> activeStates = new HashSet<>( Arrays.asList( En_CaseState.CREATED, En_CaseState.OPENED,
