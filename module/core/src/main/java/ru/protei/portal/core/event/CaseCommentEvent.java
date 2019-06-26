@@ -6,7 +6,6 @@ import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.service.CaseService;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,6 +19,7 @@ public class CaseCommentEvent extends ApplicationEvent {
     private CaseObject oldState;
     private CaseComment caseComment;
     private CaseComment oldCaseComment;
+    private CaseComment removedCaseComment;
     private Person person;
     private ServiceModule serviceModule;
     private Collection<Attachment> addedAttachments;
@@ -29,8 +29,9 @@ public class CaseCommentEvent extends ApplicationEvent {
         this(ServiceModule.GENERAL, source, caseObject, null, null, comment, attachments, currentPerson);
     }
 
-    public CaseCommentEvent(Object source, CaseObject newState, CaseObject oldState, CaseComment comment, Collection<Attachment> attachments, Person currentPerson) {
-        this(ServiceModule.GENERAL, source, newState, oldState, null, null, comment, attachments, currentPerson);
+    public CaseCommentEvent(Object source, CaseObject newState, CaseObject oldState, CaseComment comment, Collection<Attachment> attachments, Person currentPerson, CaseComment removedComment, Collection<Attachment> removedAttachments) {
+        this(ServiceModule.GENERAL, source, newState, oldState, null, removedAttachments, comment, attachments, currentPerson);
+        this.removedCaseComment = removedComment;
     }
 
     public CaseCommentEvent(
@@ -92,6 +93,10 @@ public class CaseCommentEvent extends ApplicationEvent {
 
     public CaseComment getOldCaseComment() {
         return oldCaseComment;
+    }
+
+    public CaseComment getRemovedCaseComment() {
+        return removedCaseComment;
     }
 
     public Person getPerson() {

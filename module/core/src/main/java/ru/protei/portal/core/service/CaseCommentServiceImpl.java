@@ -75,7 +75,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     .filter(a -> addedAttachmentsIds.contains(a.getId()))
                     .collect(Collectors.toList());
 
-            publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, addedAttachments, person));
+            publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, addedAttachments, person, null, null));
         }
 
         return new CoreResponse<CaseComment>().success(comment);
@@ -124,16 +124,16 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Long personId) {
+    public CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment, Person person) {
         En_ResultStatus checkAccessStatus = null;
-        if (comment == null || comment.getId() == null || personId == null) {
+        if (removedComment == null || removedComment.getId() == null || person == null || person.getId() == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
         }
         if (checkAccessStatus == null) {
-            checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
+            checkAccessStatus = checkAccessForCaseObject(token, caseType, removedComment.getCaseId());
         }
         if (checkAccessStatus == null) {
-            if (!Objects.equals(personId, comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
+            if (!Objects.equals(person.getId(), removedComment.getAuthorId()) || isCaseCommentReadOnly(removedComment.getCreated())) {
                 checkAccessStatus = En_ResultStatus.NOT_REMOVED;
             }
         }
@@ -141,10 +141,26 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return new CoreResponse<Boolean>().error(checkAccessStatus);
         }
 
-        CoreResponse<Boolean> response = remove(token, caseType, comment);
+        CaseObject caseObjectOld = caseObjectDAO.get(removedComment.getCaseId());
+        Collection<Attachment> removedAttachments = attachmentService.getAttachments(
+                token,
+                caseType,
+                removedComment.getCaseAttachments()
+        ).getData();
+
+        CoreResponse<Boolean> response = remove(token, caseType, removedComment);
         if (response.isError()) {
             return response;
         }
+
+        if (!updateTimeElapsed(token, removedComment.getCaseId()).getData()) {
+            throw new RuntimeException("failed to update time elapsed on removeCaseComment");
+        }
+
+        CaseObject caseObjectNew = getNewStateAndFillOldState(removedComment.getCaseId(), caseObjectOld);
+
+        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, null, null, person, removedComment, removedAttachments));
+
         Boolean result = response.getData();
 
         return new CoreResponse<Boolean>().success(result);
