@@ -141,9 +141,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             return new CoreResponse<Boolean>().error(checkAccessStatus);
         }
 
-        CaseObject caseObjectOld = caseObjectDAO.get( removedComment.getCaseId());
-        Collection<Attachment> removedAttachments = attachmentService.getAttachmentsByCaseId(token, caseType, removedComment.getCaseId())
-                .getData();
+        CaseObject caseObjectOld = caseObjectDAO.get(removedComment.getCaseId());
+        Collection<Attachment> removedAttachments = attachmentService.getAttachments(
+                token,
+                caseType,
+                removedComment.getCaseAttachments()
+        ).getData();
 
         CoreResponse<Boolean> response = remove(token, caseType, removedComment);
         if (response.isError()) {

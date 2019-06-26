@@ -29,8 +29,8 @@ public class CaseCommentEvent extends ApplicationEvent {
         this(ServiceModule.GENERAL, source, caseObject, null, null, comment, attachments, currentPerson);
     }
 
-    public CaseCommentEvent(Object source, CaseObject newState, CaseObject oldState, CaseComment comment, Collection<Attachment> attachments, Person currentPerson, CaseComment removedComment, Collection<Attachment> removedAttachment) {
-        this(ServiceModule.GENERAL, source, newState, oldState, null, removedAttachment, comment, attachments, currentPerson);
+    public CaseCommentEvent(Object source, CaseObject newState, CaseObject oldState, CaseComment comment, Collection<Attachment> attachments, Person currentPerson, CaseComment removedComment, Collection<Attachment> removedAttachments) {
+        this(ServiceModule.GENERAL, source, newState, oldState, null, removedAttachments, comment, attachments, currentPerson);
         this.removedCaseComment = removedComment;
     }
 
