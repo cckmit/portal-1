@@ -37,7 +37,8 @@ public final class RedmineServiceImpl implements RedmineService {
             redmineBackChannelHandler.handle(event);
             logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
-            logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
+            logger.debug("error while handling event for case {}", event.getCaseObject().getExtId());
+            e.printStackTrace();
         }
     }
 
@@ -49,6 +50,7 @@ public final class RedmineServiceImpl implements RedmineService {
             return manager.getIssueManager().getIssueById(id, Include.journals, Include.attachments, Include.watchers);
         } catch (RedmineException e) {
             logger.debug("Get exception while trying to get issue with id {}", id);
+            e.printStackTrace();
             return null;
         }
     }
@@ -60,6 +62,7 @@ public final class RedmineServiceImpl implements RedmineService {
             return manager.getIssueManager().getIssueById(id, Include.attachments);
         } catch (RedmineException e) {
             logger.debug("Get exception while trying to get issue with id {}", id);
+            e.printStackTrace();
             return null;
         }
     }
@@ -106,8 +109,8 @@ public final class RedmineServiceImpl implements RedmineService {
 
         } catch (RedmineException re) {
             //do some stuff
-
-            logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId, re);
+            logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId);
+            re.printStackTrace();
         }
     }
 
@@ -177,7 +180,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
         try {
 
-            final List<Issue> issues = getAllIssues(projectId, endpoint);
+            final List<Issue> issues = getAllIssuesWithAttachmentsOnly(projectId, endpoint);
 
             logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
             issues.forEach(issue ->
@@ -231,7 +234,7 @@ public final class RedmineServiceImpl implements RedmineService {
         return requestIssues(ids, endpoint);
     }
 
-    private List<Issue> getAllIssues( String projectName, RedmineEndpoint endpoint) throws RedmineException {
+    private List<Issue> getAllIssuesWithAttachmentsOnly(String projectName, RedmineEndpoint endpoint) throws RedmineException {
         final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
         final List<Integer> ids = prepareIssuesIds(projectName, manager);
         return requestIssuesWithAttachmentsOnly(ids, endpoint);
@@ -242,6 +245,7 @@ public final class RedmineServiceImpl implements RedmineService {
             return initManager(endpoint).getUserManager().getUserById(id);
         } catch (RedmineException e) {
             logger.debug("User with id {} not found", id);
+            e.printStackTrace();
             return null;
         }
     }

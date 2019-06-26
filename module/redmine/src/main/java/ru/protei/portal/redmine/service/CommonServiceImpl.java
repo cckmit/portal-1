@@ -93,20 +93,14 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public void processUpdateCreationDateAttachments(Issue issue, CaseObject obj, RedmineEndpoint endpoint) {
         final long caseObjId = obj.getId();
-        final Set<Attachment> existingAttachments = getExistingAttachments(caseObjId);
+        final List<Attachment> existingAttachments = attachmentDAO.getListByCaseId(caseObjId);
         if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachments)) {
             logger.debug("process update creation date of attachments for case, id={}", caseObjId);
-            existingAttachments.forEach(attachment -> {
-
-                com.taskadapter.redmineapi.bean.Attachment redmineAttachment = issue.getAttachments().stream()
+            existingAttachments.forEach(attachment ->
+                issue.getAttachments().stream()
                         .filter(y -> y.getFileName().equals(attachment.getFileName()) && y.getFileSize().equals(attachment.getDataSize()))
                         .findFirst()
-                        .orElse(null);
-
-                if (redmineAttachment != null) {
-                    attachment.setCreated(redmineAttachment.getCreatedOn());
-                }
-            });
+                        .ifPresent(redmineAttachment -> attachment.setCreated(redmineAttachment.getCreatedOn())));
         }
         attachmentDAO.mergeBatch(existingAttachments);
     }
@@ -201,17 +195,8 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     private Set<Integer> getExistingAttachmentsHashCodes(long caseObjId) {
-        return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
-                .map(CaseAttachment::getAttachmentId)
-                .map(attachmentDAO::get)
+        return attachmentDAO.getListByCaseId(caseObjId).stream()
                 .map(Attachment::toHashCodeForRedmineCheck)
-                .collect(Collectors.toSet());
-    }
-
-    private Set<Attachment> getExistingAttachments(long caseObjId) {
-        return caseAttachmentDAO.getListByCaseId(caseObjId).stream()
-                .map(CaseAttachment::getAttachmentId)
-                .map(attachmentDAO::get)
                 .collect(Collectors.toSet());
     }
 
