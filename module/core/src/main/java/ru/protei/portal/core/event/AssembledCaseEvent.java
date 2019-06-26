@@ -191,8 +191,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         Iterator<Attachment> it = removedAttachments.iterator();
         while (it.hasNext()){
             Attachment removedAttachment = it.next();
+            boolean itRemove = false;
             if(addedAttachments.contains(removedAttachment)){ //if you add and remove an attachment in a row
                 addedAttachments.remove(removedAttachment);
+                itRemove = true;
+            }
+            if(lastState.getAttachments().contains(removedAttachment)){ //remove not mailed attachment in comment
+                lastState.getAttachments().remove(removedAttachment);
+                itRemove = true;
+            }
+            if (itRemove) {
                 it.remove();
             }
         }
