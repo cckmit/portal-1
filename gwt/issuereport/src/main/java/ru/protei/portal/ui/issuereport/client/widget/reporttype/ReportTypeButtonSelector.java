@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.issuereport.client.widget;
+package ru.protei.portal.ui.issuereport.client.widget.reporttype;
 
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportType;

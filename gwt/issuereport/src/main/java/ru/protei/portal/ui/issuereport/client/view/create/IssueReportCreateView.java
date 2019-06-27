@@ -7,14 +7,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.view.CaseFilterShortView;
-import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
-import ru.protei.portal.ui.issuereport.client.widget.ReportTypeButtonSelector;
+import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
 
 import java.util.List;
 
