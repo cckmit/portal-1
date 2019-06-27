@@ -66,7 +66,7 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = En_CaseType.CRM_SUPPORT)
-    CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Long personId);
+    CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
 
     CoreResponse<Long> getTimeElapsed(Long caseId);
 

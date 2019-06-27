@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
@@ -252,6 +253,11 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 .withSuccess(consumer));
     }
 
+    @Override
+    public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
+        localStorageService.set( ISSUE_EDIT + "_" + key, String.valueOf( isDisplay ) );
+    }
+
     private void initialView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, false);
@@ -314,8 +320,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
 
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
+
+        view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
         view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
-        view.setTagsEnabled(policyService.hasGrantAccessFor(En_Privilege.ISSUE_EDIT));
 
         view.name().setValue(issue.getName());
 
@@ -324,6 +331,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.isLocal().setValue(issue.isPrivateCase());
 
+        view.setDescriptionPreviewAllowed(makePreviewDisplaying( AbstractIssueEditView.DESCRIPTION ));
         view.description().setValue(issue.getInfo());
 
         view.setStateWorkflow(CaseStateWorkflowUtil.recognizeWorkflow(issue));
@@ -370,6 +378,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
 
         view.saveEnabled().setEnabled(true);
+    }
+
+    private boolean makePreviewDisplaying( String key ) {
+        return Boolean.parseBoolean( localStorageService.getOrDefault( ISSUE_EDIT + "_" + key, "false" ) );
     }
 
     private void fillIssueObject(CaseObject issue){
@@ -489,6 +501,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CaseStateFilterProvider caseStateFilter;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    LocalStorageService localStorageService;
 
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
@@ -497,4 +511,5 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     CaseObject issue;
 
     private static final Logger log = Logger.getLogger(IssueEditActivity.class.getName());
+    private static final String ISSUE_EDIT = "issue_edit_is_preview_displayed";
 }

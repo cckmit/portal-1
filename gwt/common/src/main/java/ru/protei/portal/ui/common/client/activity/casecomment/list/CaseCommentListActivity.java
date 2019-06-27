@@ -294,6 +294,12 @@ public abstract class CaseCommentListActivity
         });
     }
 
+    @Override
+    public void onDisplayPreviewChanged( Boolean isDisplayPreview ) {
+        storage.set( IS_PREVIEW_DISPLAYED, String.valueOf( isDisplayPreview ) );
+        fireChangedPreview();
+    }
+
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -576,6 +582,12 @@ public abstract class CaseCommentListActivity
             return;
         }
 
+        view.setPreviewVisible( true );
+        if(!view.isDisplayPreview()){
+            view.setPreviewText( "" );
+            return;
+        }
+
         renderTextAsync(text, textMarkup, converted -> {
             if (StringUtils.isBlank(converted)) {
                 view.setPreviewVisible(false);
@@ -648,4 +660,5 @@ public abstract class CaseCommentListActivity
     @Inject
     private LocalStorageService storage;
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
+    private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
 }

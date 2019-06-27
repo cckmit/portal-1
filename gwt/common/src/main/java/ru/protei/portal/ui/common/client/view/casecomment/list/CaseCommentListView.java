@@ -139,6 +139,11 @@ public class CaseCommentListView
     }
 
     @Override
+    public boolean isDisplayPreview() {
+        return isDisplayPreview.getValue();
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );
@@ -194,6 +199,13 @@ public class CaseCommentListView
     @UiHandler("comment")
     public void onBase64Pasted(PasteEvent event) {
         fileUploader.uploadBase64File(event.getJson());
+    }
+
+    @UiHandler("isDisplayPreview")
+    public void onDisplayPreviewChanged( ClickEvent event ) {
+        if (activity != null) {
+            activity.onDisplayPreviewChanged( isDisplayPreview.getValue() );
+        }
     }
 
     @Override
@@ -266,6 +278,8 @@ public class CaseCommentListView
     DivElement commentPreview;
     @UiField
     SpanElement textMarkupLabel;
+    @UiField
+    ToggleButton isDisplayPreview;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;

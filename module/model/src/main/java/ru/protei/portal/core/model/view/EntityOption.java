@@ -12,13 +12,19 @@ public class EntityOption implements Serializable {
 
     private String displayText;
     private Long id;
+    private String info;
 
     public EntityOption() {
     }
 
     public EntityOption(String displayText, Long id) {
+        this(displayText, id, null);
+    }
+
+    public EntityOption(String displayText, Long id, String info) {
         this.displayText = displayText;
         this.id = id;
+        this.info = info;
     }
 
     public String getDisplayText() {
@@ -35,6 +41,14 @@ public class EntityOption implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     @Override

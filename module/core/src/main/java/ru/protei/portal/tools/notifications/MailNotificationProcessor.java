@@ -99,7 +99,7 @@ public class MailNotificationProcessor {
         CoreResponse<List<CaseComment>> comments = caseCommentService.getCaseCommentList(
                 null,
                 En_CaseType.CRM_SUPPORT,
-                event.getCaseComment() == null ?
+                event.getCaseComment() == null || event.getRemovedComment() != null ?
                         new CaseCommentQuery(caseObject.getId()) :
                         new CaseCommentQuery(caseObject.getId(), event.getCaseComment().getCreated())
         );
@@ -139,16 +139,16 @@ public class MailNotificationProcessor {
     }
 
     private void toPerformCaseObjectNotification(AssembledCaseEvent event, List<CaseComment> comments, Long lastMessageId, List<String> recipients,
-                                                 Map<Boolean, List<NotificationEntry>> partitionNotifiers, boolean IS_PROTEI_RECIPIENT) {
+                                                 Map<Boolean, List<NotificationEntry>> partitionNotifiers, boolean isProteiRecipient) {
         performCaseObjectNotification(
                 event,
-                IS_PROTEI_RECIPIENT ? comments : selectPublicComments(comments),
+                isProteiRecipient ? comments : selectPublicComments(comments),
                 lastMessageId,
                 recipients,
-                IS_PROTEI_RECIPIENT,
-                (IS_PROTEI_RECIPIENT ? config.data().getMailNotificationConfig().getCrmUrlInternal() : config.data().getMailNotificationConfig().getCrmUrlExternal())
+                isProteiRecipient,
+                (isProteiRecipient ? config.data().getMailNotificationConfig().getCrmUrlInternal() : config.data().getMailNotificationConfig().getCrmUrlExternal())
                         + config.data().getMailNotificationConfig().getCrmCaseUrl(),
-                partitionNotifiers.get(IS_PROTEI_RECIPIENT)
+                partitionNotifiers.get(isProteiRecipient)
         );
     }
 

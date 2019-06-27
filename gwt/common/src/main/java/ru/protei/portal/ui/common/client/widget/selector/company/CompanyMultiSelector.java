@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.widget.selector.company;
 
-import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.view.EntityOption;
@@ -28,23 +27,9 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
 
     public void fillOptions( List< EntityOption > options ) {
         clearOptions();
-        this.options = options;
         for ( EntityOption option : emptyIfNull( options) ) {
-            itemToNameModel.put( option, option.getDisplayText() );
+            addOption(  option.getDisplayText(), option );
         }
-        setValue( getValue() );
-    }
-
-    @Override
-    protected void showPopup( IsWidget relative ) {
-        if (options != null) {
-            itemToNameModel.clear();
-            for (EntityOption option : options) {
-                addOption( option.getDisplayText(), option );
-            }
-            options = null; // обнулить, так как clear() очистит для всех экземпляров селектора
-        }
-        super.showPopup( relative );
     }
 
     private List<En_CompanyCategory > categories = Arrays.asList(
@@ -52,5 +37,5 @@ public class CompanyMultiSelector extends MultipleInputSelector< EntityOption > 
             En_CompanyCategory.PARTNER,
             En_CompanyCategory.SUBCONTRACTOR,
             En_CompanyCategory.HOME);
-    private List<EntityOption> options;
+
 }

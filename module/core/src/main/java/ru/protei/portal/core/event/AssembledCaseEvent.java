@@ -8,7 +8,6 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.service.CaseService;
 
 import java.util.*;
 
@@ -20,6 +19,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
     private CaseObject initState;
     private CaseComment comment;
     private CaseComment oldComment;
+    private CaseComment removedComment;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
 
@@ -51,6 +51,7 @@ public class AssembledCaseEvent extends ApplicationEvent {
         comment = commentEvent.getCaseComment();
         addedAttachments.addAll(commentEvent.getAddedAttachments());
         removedAttachments.addAll(commentEvent.getRemovedAttachments());
+        removedComment = commentEvent.getRemovedCaseComment();
     }
 
     public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
@@ -96,6 +97,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isCaseCommentAttached() {
         return this.comment != null;
+    }
+
+    public boolean isCaseCommentRemoved() {
+        return removedComment != null;
     }
 
     public boolean isCaseStateChanged() {
@@ -162,6 +167,10 @@ public class AssembledCaseEvent extends ApplicationEvent {
         return oldComment;
     }
 
+    public CaseComment getRemovedComment() {
+        return removedComment;
+    }
+
     public Collection<Attachment> getAddedAttachments() {
         return addedAttachments;
     }
@@ -182,8 +191,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
         Iterator<Attachment> it = removedAttachments.iterator();
         while (it.hasNext()){
             Attachment removedAttachment = it.next();
+            boolean itRemove = false;
             if(addedAttachments.contains(removedAttachment)){ //if you add and remove an attachment in a row
                 addedAttachments.remove(removedAttachment);
+                itRemove = true;
+            }
+            if(lastState.getAttachments().contains(removedAttachment)){ //remove not mailed attachment in comment
+                lastState.getAttachments().remove(removedAttachment);
+                itRemove = true;
+            }
+            if (itRemove) {
                 it.remove();
             }
         }

@@ -28,7 +28,7 @@
                             <validablefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
                     </g:HTMLPanel>
                 </g:HTMLPanel>
-                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 m-b-0" tagCaseType="CRM_SUPPORT"/>
+                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 m-b-0 issue-edit" tagCaseType="CRM_SUPPORT"/>
             </div>
             <div class="grid grid-indent">
                 <div class="form-group col-xs-6">

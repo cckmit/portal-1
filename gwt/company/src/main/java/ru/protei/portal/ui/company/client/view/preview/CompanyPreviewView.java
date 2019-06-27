@@ -8,10 +8,14 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.collapse.CollapsablePanel;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewActivity;
 import ru.protei.portal.ui.company.client.activity.preview.AbstractCompanyPreviewView;
+
+import java.util.Set;
 
 /**
  * Представление превью компании
@@ -141,6 +145,11 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
         subscription.setInnerText(value);
     }
 
+    @Override
+    public void setTags(Set<CaseTag> value) {
+        this.caseMetaView.setTags(value);
+    }
+
     @UiField
     SpanElement phone;
     @UiField
@@ -177,6 +186,10 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
     CollapsablePanel siteFolderContainer;
     @UiField
     SpanElement subscription;
+    @Inject
+    @UiField(provided = true)
+    CaseMetaView caseMetaView;
+
 
     @Inject
     FixedPositioner positioner;

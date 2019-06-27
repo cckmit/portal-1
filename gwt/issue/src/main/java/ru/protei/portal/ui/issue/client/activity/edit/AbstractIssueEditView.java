@@ -97,6 +97,11 @@ public interface AbstractIssueEditView extends IsWidget {
     void applyCompanyValueIfOneOption();
 
     void setTagsEnabled(boolean enabled);
+    void setTagsAddButtonEnabled(boolean enabled);
 
     void setStateWorkflow(En_CaseStateWorkflow workflow);
+
+    void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
+
+    String DESCRIPTION = "description";
 }
