@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.issuefilter;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -13,7 +11,11 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseState;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -43,7 +45,6 @@ import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
 public class IssueFilterParamView extends Composite implements AbstractIssueFilterWidgetView {
@@ -62,7 +63,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Override
     public void setActivity(AbstractIssueFilterParamActivity activity) {
         this.activity = activity;
-        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
     @Override
@@ -204,11 +204,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setValue(null);
         tags.setValue(null);
         toggleMsgSearchThreshold();
-        removeBtn.setVisible(false);
-        saveBtn.setVisible(false);
-        createBtn.setVisible(true);
-        filterName.removeStyleName(REQUIRED);
-        filterName.setValue("");
     }
 
     @Override
@@ -397,114 +392,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         onFilterChanged();
     }
 
-    @Override
-    public HasVisibility removeFilterBtnVisibility(){
-        return removeBtn;
-    }
-
-    @Override
-    public HasValue< String > filterName() {
-        return filterName;
-    }
-
-    @Override
-    public void setFilterNameContainerErrorStyle( boolean hasError ) {
-        if ( hasError ) {
-            filterName.addStyleName(REQUIRED);
-        } else {
-            filterName.removeStyleName( REQUIRED );
-        }
-    }
-
-    @Override
-    public void setUserFilterNameVisibility( boolean hasVisible ) {
-        if ( hasVisible ) {
-            filterNameContainer.removeClassName( HIDE );
-        } else {
-            filterNameContainer.addClassName( HIDE );
-        }
-    }
-
-    @Override
-    public void setUserFilterControlsVisibility( boolean hasVisible ) {
-        if ( hasVisible ) {
-            createBtn.removeStyleName( HIDE );
-            saveBtn.removeStyleName( HIDE );
-            resetBtn.removeStyleName( HIDE );
-            removeBtn.removeStyleName( HIDE );
-        } else {
-            saveBtn.addStyleName( HIDE );
-            createBtn.addStyleName( HIDE );
-            resetBtn.addStyleName( HIDE );
-            removeBtn.addStyleName( HIDE );
-        }
-    }
-
-    @Override
-    public HasVisibility editBtnVisibility() {
-        return saveBtn;
-    }
-
-    @UiHandler( "resetBtn" )
-    public void onResetClicked ( ClickEvent event ) {
-        if ( activity != null ) {
-            resetFilter();
-            activity.onFilterChanged();
-        }
-    }
-
-    @UiHandler( "saveBtn" )
-    public void onSaveClicked ( ClickEvent event ) {
-        if ( activity == null ) {
-            return;
-        }
-        activity.onSaveFilterClicked();
-    }
-
-    @UiHandler( "createBtn" )
-    public void onCreateClicked ( ClickEvent event ) {
-        if ( activity == null ) {
-            return;
-        }
-        activity.onCreateFilterClicked();
-    }
-
-    @UiHandler( "okBtn" )
-    public void onOkBtnClicked ( ClickEvent event ) {
-        event.preventDefault();
-        if ( activity == null ) {
-            return;
-        }
-        activity.onOkSavingFilterClicked();
-    }
-
-    @UiHandler( "cancelBtn" )
-    public void onCancelBtnClicked ( ClickEvent event ) {
-        event.preventDefault();
-        if ( activity == null ) {
-            return;
-        }
-        activity.onCancelSavingFilterClicked();
-    }
-
-    @UiHandler( "removeBtn" )
-    public void onRemoveClicked ( ClickEvent event ) {
-        if (activity == null) {
-            return;
-        }
-        CaseFilterShortView value = userFilter.getValue();
-        if (value == null || value.getId() == null) {
-            return;
-        }
-        activity.onFilterRemoveClicked(value.getId());
-    }
-
-    @UiHandler( "filterName" )
-    public void onFilterNameChanged( KeyUpEvent event ) {
-        filterNameChangedTimer.cancel();
-        filterNameChangedTimer.schedule( 300 );
-    }
-
     private void ensureDebugIds() {
         userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
@@ -525,12 +412,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
-        filterName.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_NAME_INPUT);
-        okBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_OK_BUTTON);
-        cancelBtn.ensureDebugId(DebugIds.FILTER.USER_FILTER.FILTER_CANCEL_BUTTON);
-        saveBtn.ensureDebugId(DebugIds.FILTER.SAVE_BUTTON);
-        resetBtn.ensureDebugId(DebugIds.FILTER.RESET_BUTTON);
-        removeBtn.ensureDebugId(DebugIds.FILTER.REMOVE_BUTTON);
     }
 
     private void onFilterChanged() {
@@ -553,13 +434,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         }
         timer.schedule(300);
     }
-
-    Timer filterNameChangedTimer = new Timer() {
-        @Override
-        public void run() {
-            setFilterNameContainerErrorStyle( filterName.getValue().isEmpty() );
-        }
-    };
 
     @Inject
     @UiField
@@ -617,22 +491,6 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;
-    @UiField
-    Button resetBtn;
-    @UiField
-    Button createBtn;
-    @UiField
-    Button saveBtn;
-    @UiField
-    Button removeBtn;
-    @UiField
-    Anchor okBtn;
-    @UiField
-    Anchor cancelBtn;
-    @UiField
-    TextBox filterName;
-    @UiField
-    DivElement filterNameContainer;
 
     private Timer timer = null;
     private AbstractIssueFilterParamActivity activity = null;

@@ -7,14 +7,4 @@ public interface AbstractIssueFilterParamActivity {
     void onUserFilterChanged();
 
     void onCompaniesFilterChanged();
-
-    void onSaveFilterClicked();
-
-    void onFilterRemoveClicked( Long id );
-
-    void onOkSavingFilterClicked();
-
-    void onCancelSavingFilterClicked();
-
-    void onCreateFilterClicked();
 }

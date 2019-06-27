@@ -21,6 +21,7 @@
         </div>
 
         <g:HTMLPanel ui:field="body" styleName="body">
+
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12 m-b-0"/>
             <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-xs-12 local-search-options-container">
                 <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
@@ -85,27 +86,5 @@
                 <optionlist:IssueStatesOptionList ui:field="state"/>
             </div>
         </g:HTMLPanel>
-
-        <div class="footer">
-            <div class="user-filter-name hide" ui:field="filterNameContainer">
-                <label class="bold">
-                    <ui:text from="{lang.issueFilterName}"/>
-                </label>
-                <div class="col-xs-12 form-group">
-                    <g:TextBox ui:field="filterName" styleName="input-field"/>
-                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="okBtn">
-                        <span class="fa fa-check"/>
-                    </g:Anchor>
-
-                    <g:Anchor styleName="btn btn-default btn-sm" ui:field="cancelBtn">
-                        <span class="fa fa-times"/>
-                    </g:Anchor>
-                </div>
-            </div>
-            <g:Button ui:field="createBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
-            <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonModify}"/>
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
-            <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
-        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -95,16 +95,4 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     void addUserFilterDisplayOption(CaseFilterShortView value);
 
     void addBodyStyles(String styles);
-
-    HasValue<String> filterName();
-
-    HasVisibility removeFilterBtnVisibility();
-
-    void setFilterNameContainerErrorStyle(boolean hasError);
-
-    void setUserFilterNameVisibility(boolean hasVisible);
-
-    void setUserFilterControlsVisibility(boolean hasVisible);
-
-    HasVisibility editBtnVisibility();
 }

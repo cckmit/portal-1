@@ -12,7 +12,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.test.client.DebugIds;
@@ -40,13 +42,14 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Активность таблицы обращений
  */
 public abstract class IssueTableActivity
         implements AbstractIssueTableActivity, AbstractPagerActivity, Activity, 
-        AbstractIssueFilterActivity
+        AbstractIssueFilterActivity, AbstractIssueFilterParamActivity
 {
 
     @PostConstruct
@@ -57,6 +60,7 @@ public abstract class IssueTableActivity
         view.setAnimation( animation );
 
         filterView.setActivity(this);
+        filterView.getIssueFilterWidget().setActivity(this);
         view.getFilterContainer().add( filterView.asWidget() );
         filterParamView = filterView.getIssueFilterWidget();
         filterParamView.setInitiatorCompaniesSupplier(() -> filterParamView.companies().getValue());
@@ -80,7 +84,7 @@ public abstract class IssueTableActivity
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
-        //showUserFilterControls();
+        showUserFilterControls();
 
         fireEvent( policyService.hasPrivilegeFor( En_Privilege.ISSUE_CREATE ) ?
                 new ActionBarEvents.Add( CREATE_ACTION, UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.ISSUE ) :
@@ -126,6 +130,41 @@ public abstract class IssueTableActivity
         this.initDetails = initDetails;
     }
 
+    @Event
+    public void onConfirmRemove( ConfirmDialogEvents.Confirm event ) {
+
+        if (!event.identity.equals(getClass().getName()) || filterIdToRemove == null) {
+            return;
+        }
+
+        filterService.removeIssueFilter(filterIdToRemove, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+                filterIdToRemove = null;
+                fireEvent(new NotifyEvents.Show(lang.errNotRemoved(), NotifyEvents.NotifyType.ERROR));
+            }
+
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                filterIdToRemove = null;
+                fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueEvents.ChangeUserFilterModel());
+                filterView.resetFilter();
+                loadTable();
+            }
+        });
+    }
+
+    @Event
+    public void onCancelRemove( ConfirmDialogEvents.Cancel event ) {
+
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        filterIdToRemove = null;
+    }
+
     @Override
     public void onItemClicked( CaseShortView value ) {
         showPreview( value );
@@ -147,6 +186,109 @@ public abstract class IssueTableActivity
     public void onFilterRestore() {
         animation.filterRestore();
         issueFilterService.setFilterCollapsed(false);
+    }
+
+    @Override
+    public void onFilterChanged() {
+        if ( !validateMultiSelectorsTotalCount() ){
+            return;
+        }
+
+        loadTable();
+        filterParamView.toggleMsgSearchThreshold();
+    }
+
+    @Override
+    public void onSaveFilterClicked() {
+        isCreateFilterAction = false;
+        showUserFilterName();
+    }
+
+    @Override
+    public void onCreateFilterClicked() {
+        isCreateFilterAction = true;
+        showUserFilterName();
+    }
+
+    @Override
+    public void onFilterRemoveClicked( Long id ) {
+        filterIdToRemove = id;
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
+    }
+
+    @Override
+    public void onUserFilterChanged() {
+        CaseFilterShortView filter = filterParamView.userFilter().getValue();
+        if (filter == null){
+            filterView.resetFilter();
+            showUserFilterControls();
+
+            onFilterChanged();
+            return;
+        }
+
+        filterService.getIssueFilter( filter.getId(), new RequestCallback< CaseFilter >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errNotFound(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( CaseFilter filter ) {
+                fillFilterFields( filter );
+                onFilterChanged();
+            }
+        } );
+    }
+
+    @Override
+    public void onOkSavingFilterClicked() {
+        if (filterView.filterName().getValue().isEmpty()){
+            filterView.setFilterNameContainerErrorStyle( true );
+            fireEvent( new NotifyEvents.Show( lang.errFilterNameRequired(), NotifyEvents.NotifyType.ERROR ) );
+            return;
+        }
+
+        CaseFilter userFilter = fillUserFilter();
+        if ( !isCreateFilterAction ){
+            userFilter.setId( filterParamView.userFilter().getValue().getId() );
+        }
+
+        filterService.saveIssueFilter( userFilter, new RequestCallback< CaseFilter >() {
+            @Override
+            public void onError( Throwable throwable ) {
+                fireEvent( new NotifyEvents.Show( lang.errSaveIssueFilter(), NotifyEvents.NotifyType.ERROR ) );
+            }
+
+            @Override
+            public void onSuccess( CaseFilter filter ) {
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+
+                filterView.editBtnVisibility().setVisible(true);
+                filterView.removeFilterBtnVisibility().setVisible(true);
+
+                CaseFilterShortView filterShortView = filter.toShortView();
+                if ( isCreateFilterAction ){
+                    filterParamView.userFilter().setValue( filterShortView );
+                    filterView.addUserFilterDisplayOption( filterShortView );
+                } else {
+                    filterView.changeUserFilterValueName( filterShortView );
+                }
+
+                showUserFilterControls();
+            }
+        } );
+    }
+
+    @Override
+    public void onCancelSavingFilterClicked() {
+        showUserFilterControls();
+    }
+
+    @Override
+    public void onCompaniesFilterChanged() {
+        onFilterChanged();
+        updateInitiatorSelector();
     }
 
     @Override
@@ -221,6 +363,12 @@ public abstract class IssueTableActivity
         }
     }
 
+    private void fillFilterFields( CaseFilter filter ) {
+        filterView.removeFilterBtnVisibility().setVisible( true );
+        filterView.editBtnVisibility().setVisible( true );
+        filterView.filterName().setValue( filter.getName() );
+        filterParamView.fillFilterFields(filter.getParams());
+    }
 
     private void showPreview ( CaseShortView value ) {
 
@@ -234,6 +382,15 @@ public abstract class IssueTableActivity
 
     private CaseQuery getQuery() {
         return IssueFilterUtils.makeCaseQuery(filterParamView, true);
+    }
+
+    private CaseFilter fillUserFilter() {
+        CaseFilter filter = new CaseFilter();
+        filter.setName(filterView.filterName().getValue());
+        CaseQuery query = IssueFilterUtils.makeCaseQuery(filterParamView, false);
+        filter.setParams(query);
+        query.setSearchString(filterParamView.searchPattern().getValue());
+        return filter;
     }
 
     private boolean validateMultiSelectorsTotalCount() {
@@ -273,6 +430,16 @@ public abstract class IssueTableActivity
         filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
     }
 
+    private void showUserFilterName(){
+        filterView.setUserFilterControlsVisibility(false);
+        filterView.setUserFilterNameVisibility(true);
+    }
+
+    private void showUserFilterControls() {
+        filterView.setUserFilterControlsVisibility(true);
+        filterView.setUserFilterNameVisibility(false);
+    }
+
     private void updateCaseStatesFilter() {
         filterParamView.setStateFilter(caseStateFilter.makeFilter(policyService.getUserCompany().getCaseStates()));
     }
@@ -287,6 +454,10 @@ public abstract class IssueTableActivity
         } else {
             animation.filterRestore();
         }
+    }
+
+    private void updateInitiatorSelector() {
+        filterParamView.updateInitiators();
     }
 
     @Inject
@@ -313,6 +484,9 @@ public abstract class IssueTableActivity
     AttachmentServiceAsync attachmentService;
 
     @Inject
+    IssueFilterControllerAsync filterService;
+
+    @Inject
     PolicyService policyService;
 
     @Inject
@@ -323,6 +497,8 @@ public abstract class IssueTableActivity
 
     private static String CREATE_ACTION;
     private AbstractIssueFilterWidgetView filterParamView;
+    private Long filterIdToRemove;
     private AppEvents.InitDetails initDetails;
     private Integer scrollTop;
+    private boolean isCreateFilterAction = true;
 }
