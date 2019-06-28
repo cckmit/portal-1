@@ -182,7 +182,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
         try {
 
-            final List<ExternalCaseAppData> caseAppDataList = externalCaseAppDAO.getListByCondition("EXT_APP=? and EXT_APP_DATA=? and EXT_APP_ID like ?", "redmine", projectId, "%" + endpoint.getCompanyId().toString());
+            final List<ExternalCaseAppData> caseAppDataList = externalCaseAppDAO.getListByParameters("redmine", projectId, "%" + endpoint.getCompanyId().toString());
 
             logger.debug("Got {} case objects from database", caseAppDataList.size());
 
