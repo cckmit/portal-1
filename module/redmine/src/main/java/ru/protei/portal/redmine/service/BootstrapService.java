@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 
 import javax.annotation.PostConstruct;
@@ -17,24 +18,33 @@ public class BootstrapService {
 
     @PostConstruct
     public void init() {
-        updateIssueCreatorAndCreationDateAttachment();
+        updateCreationDateAttachments();
+        updateNullIssueCreator();
     }
 
-    private void updateIssueCreatorAndCreationDateAttachment() {
+    private void updateCreationDateAttachments() {
         if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
             logger.debug("Redmine integration is disabled in config, therefore nothing happens");
             return;
         }
 
-        logger.debug("Update issue creator and creation date of attachments started");
-        redmineEndpointDAO.getAll().forEach(redmineService::updateIssueCreatorAndCreationDateAttachment);
-        logger.debug("Update issue creator and creation date of attachments ended");
+        logger.debug("Update creation date of issue attachments started");
+        redmineEndpointDAO.getAll().forEach(redmineService::updateCreationDateAttachments);
+        logger.debug("Update creation date of issue attachments ended");
+    }
+
+    private void updateNullIssueCreator() {
+        logger.debug("Update null issue creator started");
+        boolean result = caseObjectDAO.updateNullCreatorByExtAppType("redmine");
+        logger.debug("Update null issue creator ended with result {}", result);
     }
 
     @Autowired
     PortalConfig portalConfig;
     @Autowired
     RedmineEndpointDAO redmineEndpointDAO;
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
     @Autowired
     private RedmineService redmineService;
 }

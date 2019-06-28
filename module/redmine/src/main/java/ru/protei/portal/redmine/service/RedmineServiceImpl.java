@@ -174,7 +174,7 @@ public final class RedmineServiceImpl implements RedmineService {
     }
 
     @Override
-    public void updateIssueCreatorAndCreationDateAttachment(RedmineEndpoint endpoint) {
+    public void updateCreationDateAttachments(RedmineEndpoint endpoint) {
         final String projectId = endpoint.getProjectId();
 
         logger.debug("Issues update from redmine endpoint {}, company {}, project {}",
@@ -194,7 +194,7 @@ public final class RedmineServiceImpl implements RedmineService {
                 if (issue == null) {
                     logger.debug("Not found issue with id {} for case object with id {}", issueId, caseAppData.getId());
                 } else {
-                    updateHandler.handleUpdateIssueCreatorAndCreationDateAttachment(issue, caseAppData.getId(), endpoint);
+                    updateHandler.handleUpdateCreationDateAttachments(issue, caseAppData.getId(), endpoint);
                 }
             });
 
