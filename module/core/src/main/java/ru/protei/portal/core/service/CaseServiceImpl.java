@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
@@ -56,6 +57,9 @@ public class CaseServiceImpl implements CaseService {
 
     @Autowired
     CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
+    CaseTagDAO caseTagDAO;
 
     @Autowired
     PolicyService policyService;
@@ -219,7 +223,6 @@ public class CaseServiceImpl implements CaseService {
         return new CoreResponse<CaseObject>().success( newState );
     }
 
-
     @Override
     @Transactional
     public CoreResponse<CaseObject> updateCaseObject( CaseObject caseObject, Person initiator ) {
@@ -287,12 +290,15 @@ public class CaseServiceImpl implements CaseService {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
         }
-        UserSessionDescriptor descriptor = authService.findSession( token );
 
         caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
+
+        UserSessionDescriptor descriptor = authService.findSession( token );
+
+        synchronizeTags(caseObject, descriptor);
         jdbcManyRelationsHelper.persist(caseObject, "tags");
 
-        return updateCaseObject (caseObject, descriptor.getPerson());
+        return updateCaseObject(caseObject, descriptor.getPerson());
     }
 
     @Override
@@ -420,6 +426,29 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
+    private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
+        if (caseObject == null || descriptor == null || caseObject.getTags() == null) {
+            return;
+        }
+
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            return;
+        }
+
+        Set<CaseTag> tags = caseObject.getTags();
+        List<CaseTag> allTags = caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId()));
+        List<CaseTag> existingTags = allTags.stream().filter(tag -> tag.getCompanyId().equals(descriptor.getCompany().getId())).collect(Collectors.toList());
+
+        List<CaseTag> deletedTags = existingTags.stream().filter(tag -> !tags.contains(tag)).collect(Collectors.toList());
+        List<CaseTag> addedTags = tags.stream().filter(tag -> !existingTags.contains(tag)).collect(Collectors.toList());
+
+        allTags.removeAll(deletedTags);
+        allTags.addAll(addedTags);
+
+        caseObject.setTags(allTags.stream().collect(Collectors.toSet()));
+    }
+
     private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
@@ -492,7 +521,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public boolean hasAccessForCaseObject(AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
+    public boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, privilege ) && policyService.hasScopeForPrivilege( roles, privilege, En_Scope.COMPANY ) ) {
