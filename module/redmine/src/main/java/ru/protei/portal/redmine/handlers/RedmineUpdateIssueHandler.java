@@ -37,16 +37,16 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         }
     }
 
-    public void handleUpdateIssueCreatorAndCreationDateAttachment(Issue issue, RedmineEndpoint endpoint) {
-        final CaseObject object = caseObjectDAO.getByExternalAppCaseId(issue.getId() + "_"
-                + endpoint.getCompanyId());
-        if (object != null) {
-            logger.debug("Found case object with id {}", object.getId());
-            object.setCreatorId(object.getInitiatorId());
-            updateCreationDateAttachments(issue, object, endpoint);
-            caseObjectDAO.saveOrUpdate(object);
-            logger.debug("Object with id {} saved", object.getId());
+    public void handleUpdateIssueCreatorAndCreationDateAttachment(Issue issue, Long caseId, RedmineEndpoint endpoint) {
+        final CaseObject object = caseObjectDAO.get(caseId);
+        if (object == null) {
+            logger.debug("Not found case object with id {}", object.getId());
+            return;
         }
+        object.setCreatorId(object.getInitiatorId());
+        updateCreationDateAttachments(issue, object, endpoint);
+        caseObjectDAO.saveOrUpdate(object);
+        logger.debug("Case object with id {} saved", object.getId());
     }
 
     /**

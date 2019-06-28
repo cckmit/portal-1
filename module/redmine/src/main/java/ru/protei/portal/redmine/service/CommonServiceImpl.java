@@ -95,7 +95,7 @@ public final class CommonServiceImpl implements CommonService {
         final long caseObjId = obj.getId();
         final List<Attachment> existingAttachments = attachmentDAO.getListByCaseId(caseObjId);
         if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachments)) {
-            logger.debug("process update creation date of attachments for case, id={}", caseObjId);
+            logger.debug("Process update creation date of attachments for case object with id {}", caseObjId);
             existingAttachments.forEach(attachment ->
                 issue.getAttachments().stream()
                         .filter(y -> y.getFileName().equals(attachment.getFileName()) && y.getFileSize().equals(attachment.getDataSize()))
@@ -225,7 +225,7 @@ public final class CommonServiceImpl implements CommonService {
     @Autowired
     private EventPublisherService eventPublisherService;
 
-    private final static Logger logger = LoggerFactory.getLogger(RedmineNewIssueHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(CommonServiceImpl.class);
 
     private final static String STUB_NAME = "?";
 }

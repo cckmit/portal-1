@@ -7,8 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
@@ -175,21 +177,30 @@ public final class RedmineServiceImpl implements RedmineService {
     public void updateIssueCreatorAndCreationDateAttachment(RedmineEndpoint endpoint) {
         final String projectId = endpoint.getProjectId();
 
-        logger.debug("updated issues poll from redmine endpoint {}, company {}, project {}",
+        logger.debug("Issues update from redmine endpoint {}, company {}, project {}",
                 endpoint.getServerAddress(), endpoint.getCompanyId(), projectId);
 
         try {
 
-            final List<Issue> issues = getAllIssuesWithAttachmentsOnly(projectId, endpoint);
+            final List<ExternalCaseAppData> caseAppDataList = externalCaseAppDAO.getListByCondition("EXT_APP=? and EXT_APP_DATA=? and EXT_APP_ID like ?", "redmine", projectId, "%" + endpoint.getCompanyId().toString());
 
-            logger.debug("got {} updated issues from {}", issues.size(), endpoint.getServerAddress());
-            issues.forEach(issue ->
-                    updateHandler.handleUpdateIssueCreatorAndCreationDateAttachment(issue, endpoint)
-            );
+            logger.debug("Got {} case objects from database", caseAppDataList.size());
 
-        } catch (RedmineException re) {
+            caseAppDataList.forEach(caseAppData -> {
+
+                String extAppCaseId = caseAppData.getExtAppCaseId();
+                int issueId = Integer.valueOf(extAppCaseId.substring(0, extAppCaseId.indexOf("_"))).intValue();
+                Issue issue = getIssueByIdWithAttachmentsOnly(issueId, endpoint);
+                if (issue == null) {
+                    logger.debug("Not found issue with id {} for case object with id {}", issueId, caseAppData.getId());
+                } else {
+                    updateHandler.handleUpdateIssueCreatorAndCreationDateAttachment(issue, caseAppData.getId(), endpoint);
+                }
+            });
+
+        } catch (Exception re) {
             //something
-            logger.debug("Failed when getting issues from project {}", projectId);
+            logger.debug("Failed when updating issues from project {}", projectId);
             re.printStackTrace();
         }
     }
@@ -234,12 +245,6 @@ public final class RedmineServiceImpl implements RedmineService {
         return requestIssues(ids, endpoint);
     }
 
-    private List<Issue> getAllIssuesWithAttachmentsOnly(String projectName, RedmineEndpoint endpoint) throws RedmineException {
-        final RedmineManager manager = RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
-        final List<Integer> ids = prepareIssuesIds(projectName, manager);
-        return requestIssuesWithAttachmentsOnly(ids, endpoint);
-    }
-
     private User getUser(int id, RedmineEndpoint endpoint) {
         try {
             return initManager(endpoint).getUserManager().getUserById(id);
@@ -261,36 +266,23 @@ public final class RedmineServiceImpl implements RedmineService {
                 .collect(Collectors.toList());
     }
 
-    private List<Issue> requestIssuesWithAttachmentsOnly(List<Integer> ids, RedmineEndpoint endpoint) {
-        return ids.stream()
-                .map(x -> getIssueByIdWithAttachmentsOnly(x, endpoint))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
     private List<Integer> prepareIssuesIds(String param, String date, String projectName, RedmineManager manager) throws RedmineException {
         final Params params = new Params()
                 .add(param, date)
                 .add("limit", "100")
                 .add("project_id", projectName);
-        return prepareIssuesIds(params, manager);
-    }
-
-    private List<Integer> prepareIssuesIds(String projectName, RedmineManager manager) throws RedmineException {
-        final Params params = new Params()
-                .add("project_id", projectName);
-        return prepareIssuesIds(params, manager);
-    }
-
-    private List<Integer> prepareIssuesIds(Params params, RedmineManager manager) throws RedmineException {
         return manager.getIssueManager().getIssues(params)
                 .getResults()
                 .stream()
                 .map(Issue::getId)
                 .collect(Collectors.toList());
     }
+
     @Autowired
     private RedmineEndpointDAO redmineEndpointDAO;
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
 
     @Autowired
     private RedmineNewIssueHandler handler;
