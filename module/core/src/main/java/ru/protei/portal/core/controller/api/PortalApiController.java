@@ -44,15 +44,20 @@ public class PortalApiController {
     private SessionIdGen sidGen;
 
     @Autowired
-    CaseService caseService;
+    private CaseService caseService;
 
     private static final Logger log = LoggerFactory.getLogger( PortalApiController.class );
 
-    /**
-     * Получение списка обращений по параметрам
+     /**
+     * Получение списка обращений List<CaseShortView> по параметрам CaseApiQuery
+     *
      * @return List<CaseShortView>
+     * @param query
+     * @param request
+     * @param response
+     * @return
      */
-    @PostMapping( value = "/caseList" )
+    @PostMapping( value = "/cases" )
     public APIResult<List<CaseShortView>> getCaseList(
             @RequestBody CaseApiQuery query,
             HttpServletRequest request,
@@ -63,8 +68,11 @@ public class PortalApiController {
         try {
             Credentials cr = Credentials.parse(request.getHeader("Authorization"));
             if ((cr == null) || (!cr.isValid())) {
-                authRequired(response, "Basic authentication required");
-                return APIResult.error(En_ResultStatus.INVALID_LOGIN_OR_PWD, "Basic authentication required");
+                String logMsg = "Basic authentication required";
+                response.setHeader("WWW-Authenticate", "Basic realm=\"" + logMsg + "\"");
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                log.error("API | {}", logMsg);
+                return APIResult.error(En_ResultStatus.INVALID_LOGIN_OR_PWD, logMsg);
             }
 
             String ip = request.getRemoteAddr();
@@ -74,7 +82,8 @@ public class PortalApiController {
             CoreResponse<UserSessionDescriptor> result = authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
 
             if (result.isError()) {
-                return APIResult.error(result.getStatus(), result.getStatus().toString());
+                log.error("API | Authentification error {}", result.getStatus().name());
+                return APIResult.error(result.getStatus(), "Authentification error");
             }
 
             AuthToken authToken = result.getData().makeAuthToken();
@@ -82,23 +91,20 @@ public class PortalApiController {
             CoreResponse<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(
                     authToken, makeCaseQuery(query));
 
-            if (result.isError())
-                return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Message error text");
+            if (result.isError()) {
+                log.error("API | Get case objects error {}", result.getStatus().name());
+                return APIResult.error(result.getStatus(), "Get case objects error");
+            }
 
             return APIResult.okWithData(searchList.getData().getResults());
 
         } catch (IllegalArgumentException | IOException ex) {
-            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Some parameters are incorrect");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return APIResult.error(En_ResultStatus.INTERNAL_ERROR, "Message error text");
+            log.error(ex.getMessage());
+            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
+        } catch (Exception ex) {
+            log.error(ex.getMessage());
+            return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
-    }
-
-    private boolean authRequired(HttpServletResponse response, String logMessage) throws Exception {
-        response.setHeader("WWW-Authenticate", "Basic realm=\"" + logMessage + "\"");
-        response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        return false;
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
