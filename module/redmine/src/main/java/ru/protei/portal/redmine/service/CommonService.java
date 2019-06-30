@@ -13,7 +13,7 @@ public interface CommonService {
 
     void processAttachments(Issue issue, CaseObject obj, Person contactPerson, RedmineEndpoint endpoint);
 
-    void processUpdateCreationDateAttachments(Issue issue, Long caseObjId, RedmineEndpoint endpoint);
+    void processUpdateCreationDateAttachments(Issue issue, Long caseObjId);
 
     CaseComment processStoreComment(Issue issue, Person contactPerson, CaseObject obj, Long caseObjId, CaseComment comment);
 

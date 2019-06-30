@@ -194,7 +194,7 @@ public final class RedmineServiceImpl implements RedmineService {
                 if (issue == null) {
                     logger.debug("Not found issue with id {} for case object with id {}", issueId, caseAppData.getId());
                 } else {
-                    updateHandler.handleUpdateCreationDateAttachments(issue, caseAppData.getId(), endpoint);
+                    updateHandler.handleUpdateCreationDateAttachments(issue, caseAppData.getId());
                 }
             });
 

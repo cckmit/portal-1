@@ -91,7 +91,7 @@ public final class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public void processUpdateCreationDateAttachments(Issue issue, Long caseObjId, RedmineEndpoint endpoint) {
+    public void processUpdateCreationDateAttachments(Issue issue, Long caseObjId) {
         final List<Attachment> existingAttachments = attachmentDAO.getListByCaseId(caseObjId);
         if (CollectionUtils.isNotEmpty(issue.getAttachments()) && CollectionUtils.isNotEmpty(existingAttachments)) {
             logger.debug("Process update creation date of attachments for case object with id {}", caseObjId);

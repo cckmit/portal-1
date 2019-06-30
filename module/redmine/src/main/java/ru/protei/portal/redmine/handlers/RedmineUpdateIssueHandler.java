@@ -37,8 +37,8 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         }
     }
 
-    public void handleUpdateCreationDateAttachments(Issue issue, Long caseObjId, RedmineEndpoint endpoint) {
-        commonService.processUpdateCreationDateAttachments(issue, caseObjId, endpoint);
+    public void handleUpdateCreationDateAttachments(Issue issue, Long caseObjId) {
+        commonService.processUpdateCreationDateAttachments(issue, caseObjId);
     }
 
     /**
