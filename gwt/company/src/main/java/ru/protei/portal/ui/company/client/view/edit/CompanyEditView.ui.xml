@@ -82,8 +82,12 @@
                         <label>
                             <ui:text from="{lang.tags}"/>
                         </label>
-                        <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 company-edit"
-                                               enabled="false" tagCaseType="CRM_SUPPORT"/>
+                        <div>
+                            <g:Button ui:field="addTagButton" styleName="btn btn-flat btn-white">
+                                <i class="fa fa-plus"/>
+                            </g:Button>
+                            <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" tagCaseType="CRM_SUPPORT" showLabel="false" styleName="company-tags"/>
+                        </div>
                     </div>
 
                     <g:HTMLPanel ui:field="tableContainerBlock" styleName="form-group col-xs-12">

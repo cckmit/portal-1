@@ -5,6 +5,7 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
@@ -132,6 +133,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         );
     }
 
+    @Override
+    public void onAddTagClicked() {
+        fireEvent(new CaseTagEvents.Create(En_CaseType.CRM_SUPPORT, tempCompany));
+    }
+
     private boolean validateFieldsAndGetResult(){
         return view.companyNameValidator().isValid()
                 && view.companySubscriptionsValidator().isValid()
@@ -200,7 +206,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
             view.siteFolderContainerVisibility().setVisible(false);
         }
 
-        view.setCompanyToMetaView(company);
+        view.hideTags( company.getId() == null );
     }
 
     private EntityOption makeCompanyOption( Company company ) {

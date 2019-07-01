@@ -166,15 +166,14 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public void setCompanyToMetaView( Company company ) {
-        caseMetaView.setCompany( company );
-        if ( company.getId() == null ) {
+    public void hideTags( boolean isHide ) {
+        if ( isHide ) {
             tagsPanel.addClassName( "hide" );
         } else {
             tagsPanel.removeClassName( "hide" );
         }
     }
-    
+
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -194,6 +193,13 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         verifiableIcon.setClassName(NameStatus.UNDEFINED.getStyle());
         timer.cancel();
         timer.schedule( 300 );
+    }
+
+    @UiHandler("addTagButton")
+    public void addButtonClick(ClickEvent event) {
+        if ( activity != null ) {
+            activity.onAddTagClicked();
+        }
     }
 
     @UiField
@@ -257,6 +263,8 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     CaseMetaView caseMetaView;
     @UiField
     DivElement tagsPanel;
+    @UiField
+    Button addTagButton;
 
     Timer timer = new Timer() {
         @Override

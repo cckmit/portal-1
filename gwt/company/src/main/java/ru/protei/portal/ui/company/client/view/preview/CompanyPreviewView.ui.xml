@@ -55,8 +55,7 @@
 
             <fieldset class="header">
                 <legend><ui:text from="{lang.tags}"/></legend>
-                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 company-preview"
-                                       enabled="false"/>
+                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12" enabled="false" showLabel="false"/>
             </fieldset>
 
             <fieldset class="header">

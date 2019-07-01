@@ -2245,11 +2245,6 @@ a {
       float: left;
     }
 
-    .case-meta-add-tags-button-bef {
-      float: left;
-      margin-right: 5px;
-    }
-
     .case-meta-container {
       display: inline-block;
       float: left;
@@ -2439,6 +2434,11 @@ a {
   }
 }
 
+.company-tags {
+  display: inline-block;
+  margin-bottom: -10px;
+}
+
 .type-selector-item,
 .type-selector-item:hover,
 .type-selector-item:active,
@@ -2528,45 +2528,6 @@ a {
   }
 }
 
-.issue-preview {
-  .case-meta-label {
-    display: none;
-  }
-  .case-meta-add-tags-button-bef {
-    display: none;
-  }
-  .case-tag-close{
-    display: none;
-  }
-}
-
-.issue-edit {
-  .case-meta-add-tags-button-bef {
-    display: none;
-  }
-}
-
-
-.company-preview {
-  .case-meta-label {
-    display: none;
-  }
-  .case-meta-add-tags-button-bef {
-    display: none;
-  }
-  .case-tag-close{
-    display: none;
-  }
-}
-
-.company-edit {
-  .case-meta-label {
-    display: none;
-  }
-  .case-tag-close{
-    display: none;
-  }
-}
 
 .case-tag-popup {
   z-index: 1000;
