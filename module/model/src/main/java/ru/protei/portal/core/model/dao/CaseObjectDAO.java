@@ -35,4 +35,6 @@ public interface CaseObjectDAO extends PortalBaseDAO<CaseObject> {
 
     @SqlConditionBuilder
     SqlCondition caseQueryCondition (CaseQuery query);
+
+    int countByQuery(CaseQuery query);
 }
