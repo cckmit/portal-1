@@ -34,6 +34,11 @@ public class BootstrapService {
     }
 
     private void updateNullIssueCreator() {
+        if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
+            logger.debug("Redmine integration is disabled in config, therefore nothing happens");
+            return;
+        }
+
         logger.debug("Update null issue creator started");
         boolean result = caseObjectDAO.updateNullCreatorByExtAppType("redmine");
         logger.debug("Update null issue creator ended with result {}", result);

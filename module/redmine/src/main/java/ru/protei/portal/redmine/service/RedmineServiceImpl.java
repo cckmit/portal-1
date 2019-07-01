@@ -189,7 +189,7 @@ public final class RedmineServiceImpl implements RedmineService {
             caseAppDataList.forEach(caseAppData -> {
 
                 String extAppCaseId = caseAppData.getExtAppCaseId();
-                int issueId = Integer.valueOf(extAppCaseId.substring(0, extAppCaseId.indexOf("_"))).intValue();
+                int issueId = Integer.valueOf(extAppCaseId.substring(0, extAppCaseId.indexOf("_")));
                 Issue issue = getIssueByIdWithAttachmentsOnly(issueId, endpoint);
                 if (issue == null) {
                     logger.debug("Not found issue with id {} for case object with id {}", issueId, caseAppData.getId());
