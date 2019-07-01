@@ -49,5 +49,6 @@ public interface AbstractCompanyEditView extends IsWidget {
     void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter );
 
     void setParentCompanyEnabled( boolean isEnabled );
-    void setCompanyToMetaView( Company company );
+
+    void hideTags( boolean isShow );
 }

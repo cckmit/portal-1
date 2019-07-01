@@ -9,6 +9,9 @@ public class CaseTagEvents {
         private En_CaseType caseType;
         private Company company;
         public Create () {}
+        public Create(En_CaseType caseType) {
+            this.caseType = caseType;
+        }
         public Create(En_CaseType caseType, Company company) {
             this.caseType = caseType;
             this.company = company;
