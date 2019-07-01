@@ -6,10 +6,11 @@ import com.taskadapter.redmineapi.bean.User;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
-import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.AssembledCaseEvent;
+import ru.protei.portal.core.model.dao.ExternalCaseAppDAO;
 import ru.protei.portal.core.model.dao.RedmineEndpointDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
+import ru.protei.portal.core.model.ent.ExternalCaseAppData;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
@@ -38,7 +39,8 @@ public final class RedmineServiceImpl implements RedmineService {
             redmineBackChannelHandler.handle(event);
             logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
-            logger.debug("error while handling event for case {}", event.getCaseObject().getExtId(), e);
+            logger.debug("error while handling event for case {}", event.getCaseObject().getExtId());
+            e.printStackTrace();
         }
     }
 
@@ -50,6 +52,19 @@ public final class RedmineServiceImpl implements RedmineService {
             return manager.getIssueManager().getIssueById(id, Include.journals, Include.attachments, Include.watchers);
         } catch (RedmineException e) {
             logger.debug("Get exception while trying to get issue with id {}", id);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public Issue getIssueByIdWithAttachmentsOnly(int id, RedmineEndpoint endpoint) {
+        try {
+            final RedmineManager manager =
+                    RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
+            return manager.getIssueManager().getIssueById(id, Include.attachments);
+        } catch (RedmineException e) {
+            logger.debug("Get exception while trying to get issue with id {}", id);
+            e.printStackTrace();
             return null;
         }
     }
@@ -96,8 +111,8 @@ public final class RedmineServiceImpl implements RedmineService {
 
         } catch (RedmineException re) {
             //do some stuff
-
-            logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId, re);
+            logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId);
+            re.printStackTrace();
         }
     }
 
@@ -159,6 +174,38 @@ public final class RedmineServiceImpl implements RedmineService {
     }
 
     @Override
+    public void updateCreationDateAttachments(RedmineEndpoint endpoint) {
+        final String projectId = endpoint.getProjectId();
+
+        logger.debug("Issues update from redmine endpoint {}, company {}, project {}",
+                endpoint.getServerAddress(), endpoint.getCompanyId(), projectId);
+
+        try {
+
+            final List<ExternalCaseAppData> caseAppDataList = externalCaseAppDAO.getListByParameters("redmine", projectId, "%" + endpoint.getCompanyId());
+
+            logger.debug("Got {} case objects from database", caseAppDataList.size());
+
+            caseAppDataList.forEach(caseAppData -> {
+
+                String extAppCaseId = caseAppData.getExtAppCaseId();
+                int issueId = Integer.valueOf(extAppCaseId.substring(0, extAppCaseId.indexOf("_")));
+                Issue issue = getIssueByIdWithAttachmentsOnly(issueId, endpoint);
+                if (issue == null) {
+                    logger.debug("Not found issue with id {} for case object with id {}", issueId, caseAppData.getId());
+                } else {
+                    updateHandler.handleUpdateCreationDateAttachments(issue, caseAppData.getId());
+                }
+            });
+
+        } catch (Exception re) {
+            //something
+            logger.debug("Failed when updating issues from project {}", projectId);
+            re.printStackTrace();
+        }
+    }
+
+    @Override
     public User findUser(Person person, RedmineEndpoint endpoint) throws RedmineException {
         final String email = person.getContactInfo().getItems(En_ContactItemType.EMAIL).get(0).value();
         final UserManager userManager = initManager(endpoint).getUserManager();
@@ -203,6 +250,7 @@ public final class RedmineServiceImpl implements RedmineService {
             return initManager(endpoint).getUserManager().getUserById(id);
         } catch (RedmineException e) {
             logger.debug("User with id {} not found", id);
+            e.printStackTrace();
             return null;
         }
     }
@@ -230,9 +278,11 @@ public final class RedmineServiceImpl implements RedmineService {
                 .collect(Collectors.toList());
     }
 
-
     @Autowired
     private RedmineEndpointDAO redmineEndpointDAO;
+
+    @Autowired
+    private ExternalCaseAppDAO externalCaseAppDAO;
 
     @Autowired
     private RedmineNewIssueHandler handler;

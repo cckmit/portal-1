@@ -37,6 +37,10 @@ public final class RedmineUpdateIssueHandler implements RedmineEventHandler {
         }
     }
 
+    public void handleUpdateCreationDateAttachments(Issue issue, Long caseObjId) {
+        commonService.processUpdateCreationDateAttachments(issue, caseObjId);
+    }
+
     /**
      * Finding changes made after last update querying.
      * FIltering out comments, getting lists of details, parsing them to change types, distinct and returning it
