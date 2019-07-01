@@ -18,10 +18,9 @@ public class BootstrapService {
 
     @PostConstruct
     public void init() {
-/*
-        for one-time only
+
+        /* for one-time only */
         updateCreationDateAttachments();
-*/
         updateNullIssueCreator();
     }
 
