@@ -66,6 +66,7 @@ public final class RedmineNewIssueHandler implements RedmineEventHandler {
         final CaseObject obj = new CaseObject();
         obj.setCreated(issue.getCreatedOn());
         obj.setModified(issue.getUpdatedOn());
+        obj.setCreator(contactPerson);
         obj.setInitiator(contactPerson);
         obj.setCaseType(En_CaseType.CRM_SUPPORT);
         obj.setExtAppType("redmine");
