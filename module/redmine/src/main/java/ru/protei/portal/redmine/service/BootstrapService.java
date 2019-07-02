@@ -18,32 +18,25 @@ public class BootstrapService {
 
     @PostConstruct
     public void init() {
-
-        /* for one-time only */
         updateCreationDateAttachments();
         updateNullIssueCreator();
     }
 
     private void updateCreationDateAttachments() {
-        if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
-            logger.debug("Redmine integration is disabled in config, therefore nothing happens");
-            return;
+        /* for one-time only before integration.redmine=true */
+        if (portalConfig.data().integrationConfig().isRedmineUpdateCreationDateAttachmentsEnabled()) {
+            logger.debug("Update creation date of issue attachments started");
+            redmineEndpointDAO.getAll().forEach(redmineService::updateCreationDateAttachments);
+            logger.debug("Update creation date of issue attachments ended");
         }
-
-        logger.debug("Update creation date of issue attachments started");
-        redmineEndpointDAO.getAll().forEach(redmineService::updateCreationDateAttachments);
-        logger.debug("Update creation date of issue attachments ended");
     }
 
     private void updateNullIssueCreator() {
-        if (!portalConfig.data().integrationConfig().isRedmineEnabled()) {
-            logger.debug("Redmine integration is disabled in config, therefore nothing happens");
-            return;
+        if (portalConfig.data().integrationConfig().isRedmineEnabled()) {
+            logger.debug("Update null issue creator started");
+            boolean result = caseObjectDAO.updateNullCreatorByExtAppType("redmine");
+            logger.debug("Update null issue creator ended with result {}", result);
         }
-
-        logger.debug("Update null issue creator started");
-        boolean result = caseObjectDAO.updateNullCreatorByExtAppType("redmine");
-        logger.debug("Update null issue creator ended with result {}", result);
     }
 
     @Autowired
