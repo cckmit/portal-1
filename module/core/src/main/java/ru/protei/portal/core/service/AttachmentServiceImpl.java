@@ -151,7 +151,10 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     public CoreResponse<Long> saveAttachment(Attachment attachment) {
-        attachment.setCreated(new Date());
+        /* В redmine и jira дата устанавливается из источника */
+        if (attachment.getCreated() == null) {
+            attachment.setCreated(new Date());
+        }
         Long id = attachmentDAO.persist(attachment);
         if(id == null)
             return new CoreResponse().error(En_ResultStatus.NOT_CREATED);

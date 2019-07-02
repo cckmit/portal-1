@@ -19,15 +19,25 @@ public class BootstrapService {
     @PostConstruct
     public void init() {
         updateCreationDateAttachments();
+        updateAttachmentsByCaseId(157519L); // PORTAL-670 Не поступают вложения от Тюмени в portal (интеграция)
         updateNullIssueCreator();
     }
 
     private void updateCreationDateAttachments() {
-        /* for one-time only before integration.redmine=true */
-        if (portalConfig.data().integrationConfig().isRedmineUpdateCreationDateAttachmentsEnabled()) {
+        /* for one-time only before Redmine integration enabled */
+        if (portalConfig.data().integrationConfig().isRedminePatchAttachmentsEnabled()) {
             logger.debug("Update creation date of issue attachments started");
             redmineEndpointDAO.getAll().forEach(redmineService::updateCreationDateAttachments);
             logger.debug("Update creation date of issue attachments ended");
+        }
+    }
+
+    private void updateAttachmentsByCaseId(long caseId) {
+        /* for one-time only before Redmine integration enabled */
+        if (portalConfig.data().integrationConfig().isRedminePatchAttachmentsEnabled()) {
+            logger.debug("Merge attachments of case object with id {} started", caseId);
+            redmineService.updateAttachmentsByCaseId(caseId);
+            logger.debug("Merge attachments of case object with id {} ended", caseId);
         }
     }
 
