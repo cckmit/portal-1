@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.redmine.service.RedmineService;
+import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
 public final class RedmineBackChannelHandler implements BackchannelEventHandler {
@@ -85,8 +86,8 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         try {
             service.updateIssue(issue, endpoint);
         } catch (RedmineException e) {
-            logger.debug("Failed to update issue with id {}", issue.getId());
-            e.printStackTrace();
+            logger.error("Failed to update issue with id {}", issue.getId());
+            LoggerUtils.logRedmineException(logger, e);
         }
     }
 

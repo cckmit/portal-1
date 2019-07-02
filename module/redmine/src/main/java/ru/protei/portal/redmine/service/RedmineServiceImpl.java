@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.RedmineEndpoint;
 import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
+import ru.protei.portal.redmine.utils.LoggerUtils;
 import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.Date;
@@ -39,8 +40,7 @@ public final class RedmineServiceImpl implements RedmineService {
             redmineBackChannelHandler.handle(event);
             logger.debug("case-object event handled for case {}", event.getCaseObject().getExtId());
         } catch (Exception e) {
-            logger.debug("error while handling event for case {}", event.getCaseObject().getExtId());
-            e.printStackTrace();
+            logger.error("error while handling event for case " + event.getCaseObject().getExtId(), e);
         }
     }
 
@@ -51,8 +51,8 @@ public final class RedmineServiceImpl implements RedmineService {
                     RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
             return manager.getIssueManager().getIssueById(id, Include.journals, Include.attachments, Include.watchers);
         } catch (RedmineException e) {
-            logger.debug("Get exception while trying to get issue with id {}", id);
-            e.printStackTrace();
+            logger.error("Get exception while trying to get issue with id {}", id);
+            LoggerUtils.logRedmineException(logger, e);
             return null;
         }
     }
@@ -99,8 +99,8 @@ public final class RedmineServiceImpl implements RedmineService {
 
         } catch (RedmineException re) {
             //do some stuff
-            logger.debug("Failed when getting issues created after date: {} from project with id: {}", created, projectId);
-            re.printStackTrace();
+            logger.error("Failed when getting issues created after date: {} from project with id: {}", created, projectId);
+            LoggerUtils.logRedmineException(logger, re);
         }
     }
 
@@ -150,8 +150,8 @@ public final class RedmineServiceImpl implements RedmineService {
             }
         } catch (RedmineException re) {
             //something
-            logger.debug("Failed when getting issues updated after date {} from project {}", updated, projectId);
-            re.printStackTrace();
+            logger.error("Failed when getting issues updated after date {} from project {}", updated, projectId);
+            LoggerUtils.logRedmineException(logger, re);
         }
     }
 
@@ -188,8 +188,7 @@ public final class RedmineServiceImpl implements RedmineService {
 
         } catch (Exception re) {
             //something
-            logger.debug("Failed when updating issues from project {}", projectId);
-            re.printStackTrace();
+            logger.error("Failed when updating issues from project " + projectId, re);
         }
     }
 
@@ -251,8 +250,8 @@ public final class RedmineServiceImpl implements RedmineService {
                     RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
             return manager.getIssueManager().getIssueById(id, Include.attachments);
         } catch (RedmineException e) {
-            logger.debug("Get exception while trying to get issue with id {}", id);
-            e.printStackTrace();
+            logger.error("Get exception while trying to get issue with id {}", id);
+            LoggerUtils.logRedmineException(logger, e);
             return null;
         }
     }
@@ -290,8 +289,8 @@ public final class RedmineServiceImpl implements RedmineService {
         try {
             return initManager(endpoint).getUserManager().getUserById(id);
         } catch (RedmineException e) {
-            logger.debug("User with id {} not found", id);
-            e.printStackTrace();
+            logger.error("User with id {} not found", id);
+            LoggerUtils.logRedmineException(logger, e);
             return null;
         }
     }
