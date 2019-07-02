@@ -346,7 +346,7 @@ public class PortalConfigData {
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
 
-        private final boolean redmineUpdateCreationDateAttachmentsEnabled;
+        private final boolean redminePatchAttachmentsEnabled;
 
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
@@ -354,7 +354,7 @@ public class PortalConfigData {
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
 
-            redmineUpdateCreationDateAttachmentsEnabled = properties.getProperty("integration.redmine.update.creationdate.attachments", Boolean.class, false);
+            redminePatchAttachmentsEnabled = properties.getProperty("integration.redmine.patch.attachments", Boolean.class, false);
         }
 
         public boolean isHpsmEnabled() {
@@ -373,8 +373,8 @@ public class PortalConfigData {
             return jiraEnabled;
         }
 
-        public boolean isRedmineUpdateCreationDateAttachmentsEnabled() {
-            return redmineUpdateCreationDateAttachmentsEnabled;
+        public boolean isRedminePatchAttachmentsEnabled() {
+            return redminePatchAttachmentsEnabled;
         }
     }
 

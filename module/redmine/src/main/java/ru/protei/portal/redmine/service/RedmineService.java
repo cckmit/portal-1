@@ -22,6 +22,8 @@ public interface RedmineService {
 
     void updateCreationDateAttachments(RedmineEndpoint endpoint);
 
+    void updateAttachmentsByCaseId(Long caseId);
+
     @EventListener
     void onAssembledCaseEvent(AssembledCaseEvent event);
 
