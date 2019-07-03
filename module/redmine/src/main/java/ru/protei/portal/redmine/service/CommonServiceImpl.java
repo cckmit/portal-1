@@ -23,6 +23,7 @@ import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventPublisherService;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.utils.HttpInputSource;
+import ru.protei.portal.redmine.utils.RedmineUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -32,8 +33,9 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public CaseComment parseJournal(Journal journal, long companyId) {
         final Person author = getAssignedPerson(companyId, journal.getUser());
-        if (journal.getNotes().contains("PROTEI"))
+        if (journal.getNotes().startsWith(RedmineUtils.COMMENT_PROTEI_USER_PREFIX)) {
             return null;
+        }
         final CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
         comment.setAuthor(author);
