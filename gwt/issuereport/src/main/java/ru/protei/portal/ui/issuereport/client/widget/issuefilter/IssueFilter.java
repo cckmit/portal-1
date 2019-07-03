@@ -2,21 +2,29 @@ package ru.protei.portal.ui.issuereport.client.widget.issuefilter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
-import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.activity.issuefilter.AbstractIssueFilterWidgetView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
@@ -33,10 +41,15 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 
-public class IssueFilter extends Composite implements HasValue<CaseFilter> {
+import java.util.Set;
+
+import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+
+public class IssueFilter extends Composite implements HasValueChangeHandlers<CaseQuery> {
 
     @Inject
-    public void init() {
+    public void init(IssueFilterModel model) {
+        this.model = model;
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         search.getElement().setPropertyString("placeholder", lang.search());
@@ -47,25 +60,118 @@ public class IssueFilter extends Composite implements HasValue<CaseFilter> {
         userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
     }
 
-    @Override
-    public CaseFilter getValue() {
-        return fillUserFilter();
+    public CaseQuery getQuery() {
+        return makeCaseQuery(true);
+    }
+
+    public void resetFilter() {
+        companies.setValue(null);
+        products.setValue(null);
+        managers.setValue(null);
+        initiators.setValue(null);
+        commentAuthors.setValue(null);
+        importance.setValue(null);
+        state.setValue(null);
+        dateCreatedRange.setValue(null);
+        dateModifiedRange.setValue(null);
+        sortField.setValue(En_SortField.creation_date);
+        sortDir.setValue(false);
+        search.setValue("");
+        userFilter.setValue(null);
+        searchByComments.setValue(false);
+        searchPrivate.setValue(null);
+        tags.setValue(null);
+        toggleMsgSearchThreshold();
     }
 
     @Override
-    public void setValue(CaseFilter value) {
-        if (value == null) return;
-        fillFilterFields(value.getParams());
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseQuery> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
     }
 
-    @Override
-    public void setValue(CaseFilter value, boolean fireEvents) {
-
+    @UiHandler("userFilter")
+    public void onUserFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
+        if (model != null) {
+            //model.onUserFilterChanged(this);
+            onFilterChanged();
+        }
     }
 
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler< CaseFilter > handler) {
-        return null;
+    @UiHandler("search")
+    public void onSearchChanged(ValueChangeEvent<String> event) {
+        startFilterChangedTimer();
+    }
+
+    @UiHandler("searchByComments")
+    public void onSearchByCommentsChanged(ValueChangeEvent<Boolean> event) {
+        toggleMsgSearchThreshold();
+        onFilterChanged();
+    }
+
+    @UiHandler("dateCreatedRange")
+    public void onDateCreatedRangeChanged(ValueChangeEvent<DateInterval> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("dateModifiedRange")
+    public void onDateModifiedRangeChanged(ValueChangeEvent<DateInterval> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("sortField")
+    public void onSortFieldSelected(ValueChangeEvent< En_SortField > event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("sortDir")
+    public void onSortDirClicked( ClickEvent event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("products")
+    public void onProductsSelected(ValueChangeEvent< Set< ProductShortView > > event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("companies")
+    public void onCompaniesSelected(ValueChangeEvent<Set< EntityOption >> event) {
+        updateInitiators();
+        onFilterChanged();
+    }
+
+    @UiHandler("initiators")
+    public void onInitiatorsSelected(ValueChangeEvent<Set< PersonShortView >> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("managers")
+    public void onManagersSelected(ValueChangeEvent<Set<PersonShortView>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("commentAuthors")
+    public void onCommentAuthorsSelected(ValueChangeEvent<Set<PersonShortView>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("tags")
+    public void onTagsSelected(ValueChangeEvent<Set<EntityOption>> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("searchPrivate")
+    public void onSearchOnlyPrivateChanged(ValueChangeEvent<Boolean> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("importance")
+    public void onImportanceSelected(ValueChangeEvent<Set< En_ImportanceLevel >> event) {
+        onFilterChanged();
+    }
+
+    @UiHandler("state")
+    public void onStateSelected(ValueChangeEvent<Set<En_CaseState>> event) {
+        onFilterChanged();
     }
 
     public void toggleMsgSearchThreshold() {
@@ -108,13 +214,15 @@ public class IssueFilter extends Composite implements HasValue<CaseFilter> {
     private CaseFilter fillUserFilter() {
         CaseFilter filter = new CaseFilter();
         filter.setName(filterName.getValue());
-        CaseQuery query = new CaseQuery();/*IssueFilterUtils.makeCaseQuery(filterParamView, false);*/
+        CaseQuery query = makeCaseQuery(false);
         filter.setParams(query);
         query.setSearchString(search.getValue());
         return filter;
     }
 
     private void onFilterChanged() {
+        ValueChangeEvent.fire(this, getQuery());
+        toggleMsgSearchThreshold();
     }
 
     private void startFilterChangedTimer() {
@@ -130,6 +238,41 @@ public class IssueFilter extends Composite implements HasValue<CaseFilter> {
             timer.cancel();
         }
         timer.schedule(300);
+    }
+
+    private CaseQuery makeCaseQuery(boolean isFillSearchString) {
+        CaseQuery query = new CaseQuery();
+        query.setType(En_CaseType.CRM_SUPPORT);
+        if (isFillSearchString) {
+            String searchString = search.getValue();
+            query.setCaseNumbers(IssueFilterUtils.searchCaseNumber(searchString, searchByComments.getValue()));
+            if (query.getCaseNumbers() == null) {
+                query.setSearchStringAtComments(searchByComments.getValue());
+                query.setSearchString(isBlank(searchString) ? null : searchString);
+            }
+        }
+        query.setViewPrivate(searchPrivate.getValue());
+        query.setSortField(sortField.getValue());
+        query.setSortDir(sortDir.getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+        query.setCompanyIds(IssueFilterUtils.getCompaniesIdList(companies.getValue()));
+        query.setProductIds(IssueFilterUtils.getProductsIdList(products.getValue()));
+        query.setManagerIds(IssueFilterUtils.getManagersIdList(managers.getValue()));
+        query.setInitiatorIds(IssueFilterUtils.getManagersIdList(initiators.getValue()));
+        query.setImportanceIds(IssueFilterUtils.getImportancesIdList(importance.getValue()));
+        query.setStates(IssueFilterUtils.getStateList(state.getValue()));
+        query.setCommentAuthorIds(IssueFilterUtils.getManagersIdList(commentAuthors.getValue()));
+        query.setCaseTagsIds(IssueFilterUtils.getIds(tags.getValue()));
+        DateInterval createdInterval = dateCreatedRange.getValue();
+        if (createdInterval != null) {
+            query.setCreatedFrom(createdInterval.from);
+            query.setCreatedTo(createdInterval.to);
+        }
+        DateInterval modifiedInterval = dateModifiedRange.getValue();
+        if (modifiedInterval != null) {
+            query.setModifiedFrom(modifiedInterval.from);
+            query.setModifiedTo(modifiedInterval.to);
+        }
+        return query;
     }
 
     private void ensureDebugIds() {
@@ -229,7 +372,7 @@ public class IssueFilter extends Composite implements HasValue<CaseFilter> {
     DivElement filterNameContainer;
 
     private Timer timer = null;
-
+    private IssueFilterModel model;
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );
     interface IssueFilterUiBinder extends UiBinder< HTMLPanel, IssueFilter > {}
 }
