@@ -8,7 +8,7 @@ public class LoggerUtils {
 
     public static void logRedmineException(Logger logger, RedmineException e) {
         if (e instanceof RedmineProcessingException) {
-            logger.error(e.getMessage() + " | " + String.join(", ", ((RedmineProcessingException) e).getErrors()), e);
+            logger.error(String.join(", ", ((RedmineProcessingException) e).getErrors()), e);
         } else {
             logger.error(e.getMessage(), e);
         }

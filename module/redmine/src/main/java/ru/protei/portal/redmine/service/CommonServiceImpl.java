@@ -32,9 +32,8 @@ public final class CommonServiceImpl implements CommonService {
     @Override
     public CaseComment parseJournal(Journal journal, long companyId) {
         final Person author = getAssignedPerson(companyId, journal.getUser());
-        if (journal.getNotes().startsWith("PROTEI:")) {
+        if (journal.getNotes().contains("PROTEI"))
             return null;
-        }
         final CaseComment comment = new CaseComment();
         comment.setCreated(journal.getCreatedOn());
         comment.setAuthor(author);
