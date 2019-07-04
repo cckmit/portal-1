@@ -8,8 +8,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
+import ru.protei.portal.ui.issuereport.client.widget.issuefilter.IssueFilter;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
 
 import java.util.List;
@@ -19,6 +21,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        issueFilter.commentAuthorsVisibility().setVisible(false);
     }
 
     @Override
@@ -37,14 +40,49 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public void resetFilter() {
-        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
-        name.setValue(null);
+    public HasValue<CaseQuery> getIssueFilter() {
+        return issueFilter;
     }
 
     @Override
-    public HasWidgets getReportContainer() {
-        return reportContainer;
+    public HasVisibility productsVisibility() {
+        return issueFilter.productsVisibility();
+    }
+
+    @Override
+    public HasVisibility companiesVisibility() {
+        return issueFilter.companiesVisibility();
+    }
+
+    @Override
+    public HasVisibility managersVisibility() {
+        return issueFilter.managersVisibility();
+    }
+
+    @Override
+    public HasVisibility commentAuthorsVisibility() {
+        return issueFilter.commentAuthorsVisibility();
+    }
+
+    @Override
+    public HasVisibility tagsVisibility() {
+        return issueFilter.tagsVisibility();
+    }
+
+    @Override
+    public HasVisibility searchPrivateVisibility() {
+        return issueFilter.searchPrivateVisibility();
+    }
+
+    @Override
+    public HasVisibility searchByCommentsVisibility() {
+        return issueFilter.searchByCommentsVisibility();
+    }
+
+    @Override
+    public void resetFilter() {
+        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
+        name.setValue(null);
     }
 
     @Override
@@ -54,8 +92,16 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @UiHandler("reportType")
     public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
+        issueFilter.updateReportType(reportType.getValue());
         if (activity != null) {
             activity.onReportTypeSelected();
+        }
+    }
+
+    @UiHandler("issueFilter")
+    public void onFilterChanged(ValueChangeEvent<CaseQuery> event) {
+        if (activity != null) {
+            //activity.onFilterChanged(event.getValue());
         }
     }
 
@@ -66,8 +112,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @UiField
     TextBox name;
 
-    @UiField
-    HTMLPanel reportContainer;
+    @Inject
+    @UiField(provided = true)
+    IssueFilter issueFilter;
 
     private AbstractIssueReportCreateActivity activity;
 

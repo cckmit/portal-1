@@ -1,8 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:reporttype='urn:import:ru.protei.portal.ui.issuereport.client.widget'
-             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
-             xmlns:reporttype2="urn:import:ru.protei.portal.ui.issuereport.client.widget.reporttype">
+             xmlns:reporttype='urn:import:ru.protei.portal.ui.issuereport.client.widget.reporttype'
+             xmlns:issuefilter='urn:import:ru.protei.portal.ui.issuereport.client.widget.issuefilter'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -11,7 +10,7 @@
         <div class="form-group grid grid-indent">
             <div class="col-xs-5">
                 <label><ui:text from="{lang.issueReportsType}"/></label>
-                <reporttype2:ReportTypeButtonSelector ui:field="reportType"/>
+                <reporttype:ReportTypeButtonSelector ui:field="reportType"/>
             </div>
             <div class="col-xs-7">
                 <label><ui:text from="{lang.issueReportsTitle}"/></label>
@@ -20,7 +19,7 @@
         </div>
 
         <div class="form-group grid grid-indent report-issue-filter">
-            <g:HTMLPanel ui:field="reportContainer" styleName="col-xs-12 m-b-10" />
+            <issuefilter:IssueFilter ui:field="issueFilter" styleName="col-xs-12 m-b-10"/>
         </div>
 
     </g:HTMLPanel>

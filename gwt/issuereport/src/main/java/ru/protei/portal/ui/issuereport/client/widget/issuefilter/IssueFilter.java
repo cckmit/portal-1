@@ -44,8 +44,10 @@ import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
+import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
 
-public class IssueFilter extends Composite implements HasValueChangeHandlers<CaseQuery> {
+public class IssueFilter extends Composite implements HasValue<CaseQuery>, HasValueChangeHandlers<CaseQuery> {
 
     @Inject
     public void init(IssueFilterModel model) {
@@ -53,35 +55,67 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         search.getElement().setPropertyString("placeholder", lang.search());
-        sortField.setType( ModuleType.ISSUE);
+        sortField.setType(ModuleType.ISSUE);
         sortDir.setValue(false);
         dateCreatedRange.setPlaceholder(lang.selectDate());
         dateModifiedRange.setPlaceholder(lang.selectDate());
-        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+        initiators.setCompaniesSupplier(() -> companies.getValue());
     }
 
-    public CaseQuery getQuery() {
+    @Override
+    public CaseQuery getValue() {
         return makeCaseQuery(true);
     }
 
-    public void resetFilter() {
-        companies.setValue(null);
-        products.setValue(null);
-        managers.setValue(null);
-        initiators.setValue(null);
-        commentAuthors.setValue(null);
-        importance.setValue(null);
-        state.setValue(null);
-        dateCreatedRange.setValue(null);
-        dateModifiedRange.setValue(null);
-        sortField.setValue(En_SortField.creation_date);
-        sortDir.setValue(false);
-        search.setValue("");
-        userFilter.setValue(null);
-        searchByComments.setValue(false);
-        searchPrivate.setValue(null);
-        tags.setValue(null);
-        toggleMsgSearchThreshold();
+    @Override
+    public void setValue(CaseQuery value) {
+        setValue(value, false);
+    }
+
+    @Override
+    public void setValue(CaseQuery value, boolean fireEvents) {
+        if (value == null) {
+            return;
+        }
+
+        fillFilterFields(value);
+
+        if (fireEvents) {
+            ValueChangeEvent.fire(this, getValue());
+        }
+    }
+
+    public void updateReportType(En_ReportType reportType) {
+        resetFilter();
+        userFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.name()));
+    }
+
+    public HasVisibility productsVisibility() {
+        return products;
+    }
+
+    public HasVisibility companiesVisibility() {
+        return companies;
+    }
+
+    public HasVisibility managersVisibility() {
+        return managers;
+    }
+
+    public HasVisibility commentAuthorsVisibility() {
+        return commentAuthors;
+    }
+
+    public HasVisibility tagsVisibility() {
+        return tags;
+    }
+
+    public HasVisibility searchPrivateVisibility() {
+        return searchPrivateContainer;
+    }
+
+    public HasVisibility searchByCommentsVisibility() {
+        return searchByCommentsContainer;
     }
 
     @Override
@@ -91,10 +125,11 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
 
     @UiHandler("userFilter")
     public void onUserFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
-        if (model != null) {
-            //model.onUserFilterChanged(this);
-            onFilterChanged();
+        if (model == null) {
+            return;
         }
+        model.setIssueFilter(this);
+        onFilterChanged();
     }
 
     @UiHandler("search")
@@ -119,7 +154,7 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
     }
 
     @UiHandler("sortField")
-    public void onSortFieldSelected(ValueChangeEvent< En_SortField > event) {
+    public void onSortFieldSelected(ValueChangeEvent<En_SortField> event) {
         onFilterChanged();
     }
 
@@ -129,18 +164,18 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
     }
 
     @UiHandler("products")
-    public void onProductsSelected(ValueChangeEvent< Set< ProductShortView > > event) {
+    public void onProductsSelected(ValueChangeEvent<Set<ProductShortView>> event) {
         onFilterChanged();
     }
 
     @UiHandler("companies")
-    public void onCompaniesSelected(ValueChangeEvent<Set< EntityOption >> event) {
+    public void onCompaniesSelected(ValueChangeEvent<Set<EntityOption>> event) {
         updateInitiators();
         onFilterChanged();
     }
 
     @UiHandler("initiators")
-    public void onInitiatorsSelected(ValueChangeEvent<Set< PersonShortView >> event) {
+    public void onInitiatorsSelected(ValueChangeEvent<Set<PersonShortView>> event) {
         onFilterChanged();
     }
 
@@ -165,13 +200,104 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
     }
 
     @UiHandler("importance")
-    public void onImportanceSelected(ValueChangeEvent<Set< En_ImportanceLevel >> event) {
+    public void onImportanceSelected(ValueChangeEvent<Set<En_ImportanceLevel>> event) {
         onFilterChanged();
     }
 
     @UiHandler("state")
     public void onStateSelected(ValueChangeEvent<Set<En_CaseState>> event) {
         onFilterChanged();
+    }
+
+    @UiHandler( "resetBtn" )
+    public void onResetClicked(ClickEvent event) {
+        resetFilter();
+        onFilterChanged();
+    }
+
+    @UiHandler("saveBtn")
+    public void onSaveClicked (ClickEvent event) {
+        isCreateFilterAction = false;
+        setUserFilterControlsVisibility(false);
+        setUserFilterNameVisibility(true);
+    }
+
+    @UiHandler("createBtn")
+    public void onCreateClicked (ClickEvent event) {
+        isCreateFilterAction = true;
+        setUserFilterControlsVisibility(false);
+        setUserFilterNameVisibility(true);
+    }
+
+    @UiHandler("okBtn")
+    public void onOkBtnClicked ( ClickEvent event ) {
+        event.preventDefault();
+
+        if (model == null) {
+            return;
+        }
+
+        if (filterName.getValue().isEmpty()){
+            setFilterNameContainerErrorStyle(true);
+            return;
+        }
+        CaseFilter userFilter = fillUserFilter();
+        if (!isCreateFilterAction){
+            userFilter.setId(this.userFilter.getValue().getId());
+        }
+
+        model.saveIssueFilter(userFilter, this);
+        setUserFilterControlsVisibility(true);
+        setUserFilterNameVisibility(false);
+    }
+
+    @UiHandler("cancelBtn")
+    public void onCancelBtnClicked (ClickEvent event) {
+        event.preventDefault();
+        setUserFilterControlsVisibility(true);
+        setUserFilterNameVisibility(false);
+    }
+
+    @UiHandler( "removeBtn" )
+    public void onRemoveClicked ( ClickEvent event ) {
+        if (model == null) {
+            return;
+        }
+        CaseFilterShortView value = userFilter.getValue();
+        if (value == null || value.getId() == null) {
+            return;
+        }
+        model.removeIssueFilter(value.getId());
+    }
+
+    private void setUserFilterNameVisibility(boolean hasVisible) {
+        if (hasVisible) {
+            filterNameContainer.removeClassName(HIDE);
+        } else {
+            filterNameContainer.addClassName(HIDE);
+        }
+    }
+
+    private void setUserFilterControlsVisibility(boolean hasVisible) {
+        if (hasVisible) {
+            createBtn.removeStyleName(HIDE);
+            saveBtn.removeStyleName(HIDE);
+            resetBtn.removeStyleName(HIDE);
+            removeBtn.removeStyleName(HIDE);
+        } else {
+            saveBtn.addStyleName(HIDE);
+            createBtn.addStyleName(HIDE);
+            resetBtn.addStyleName(HIDE);
+            removeBtn.addStyleName(HIDE);
+        }
+    }
+
+    public void setFilterNameContainerErrorStyle(boolean hasError) {
+        if (hasError) {
+            filterName.addStyleName(REQUIRED);
+        } else {
+            filterName.removeStyleName(REQUIRED);
+        }
     }
 
     public void toggleMsgSearchThreshold() {
@@ -188,8 +314,33 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
         }
     }
 
-    public void updateInitiators() {
+    private void updateInitiators() {
         initiators.updateCompanies();
+    }
+
+    public void resetFilter() {
+        companies.setValue(null);
+        products.setValue(null);
+        managers.setValue(null);
+        initiators.setValue(null);
+        commentAuthors.setValue(null);
+        importance.setValue(null);
+        state.setValue(null);
+        dateCreatedRange.setValue(null);
+        dateModifiedRange.setValue(null);
+        sortField.setValue(En_SortField.creation_date);
+        sortDir.setValue(false);
+        search.setValue("");
+        userFilter.setValue(null);
+        searchByComments.setValue(false);
+        searchPrivate.setValue(null);
+        tags.setValue(null);
+        toggleMsgSearchThreshold();
+        removeBtn.setVisible(false);
+        saveBtn.setVisible(false);
+        createBtn.setVisible(true);
+        filterName.removeStyleName(REQUIRED);
+        filterName.setValue("");
     }
 
     private void fillFilterFields(CaseQuery caseQuery) {
@@ -214,6 +365,7 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
     private CaseFilter fillUserFilter() {
         CaseFilter filter = new CaseFilter();
         filter.setName(filterName.getValue());
+        //filter.setType(En_CaseFilterType.valueOf());
         CaseQuery query = makeCaseQuery(false);
         filter.setParams(query);
         query.setSearchString(search.getValue());
@@ -221,7 +373,7 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
     }
 
     private void onFilterChanged() {
-        ValueChangeEvent.fire(this, getQuery());
+        ValueChangeEvent.fire(this, getValue());
         toggleMsgSearchThreshold();
     }
 
@@ -371,8 +523,11 @@ public class IssueFilter extends Composite implements HasValueChangeHandlers<Cas
     @UiField
     DivElement filterNameContainer;
 
+
     private Timer timer = null;
     private IssueFilterModel model;
+    private boolean isCreateFilterAction = true;
+
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );
     interface IssueFilterUiBinder extends UiBinder< HTMLPanel, IssueFilter > {}
 }
