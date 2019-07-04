@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -26,9 +27,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *  Севрис для  API
@@ -109,37 +111,29 @@ public class PortalApiController {
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery( En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir() );
-        query.setStates(getActiveStateList());
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         // optional
+        query.setStateIds(getCaseStateIdList(apiQuery.getStates()));
         query.setManagerIds(apiQuery.getManagerIds());
+        if (CollectionUtils.isEmpty(query.getManagerIds())) {
+            query.setOrWithoutManager(true);
+        }
         query.setAllowViewPrivate(apiQuery.isAllowViewPrivate());
         query.setCreatedFrom(parseDate(apiQuery.getCreatedFrom()));
         query.setCreatedTo(parseDate(apiQuery.getCreatedTo()));
         return query;
     }
 
-    private List<En_CaseState> getActiveStateList() {
-        List<En_CaseState> states = new ArrayList<>();
-        states.add(En_CaseState.CREATED);
-        states.add(En_CaseState.OPENED);
-        states.add(En_CaseState.ACTIVE);
-        states.add(En_CaseState.TEST_LOCAL);
-        states.add(En_CaseState.WORKAROUND);
-        states.add(En_CaseState.INFO_REQUEST);
-        states.add(En_CaseState.CUST_PENDING);
-        states.add(En_CaseState.TEST_CUST);
-        return states;
-    }
-
-    private List< Long > getManagersIdList( Long managerID ) {
-        if ( managerID == null ) {
-            return null;
+    private List<Integer> getCaseStateIdList(List<String> states) {
+        List<Integer> stateIds = null;
+        if (CollectionUtils.isNotEmpty(states)){
+            stateIds = Arrays.asList(En_CaseState.values()).stream()
+                    .filter(state -> states.contains(state.name()))
+                    .map(En_CaseState::getId)
+                    .collect(Collectors.toList());
         }
-        List<Long> managerIds = new ArrayList<>();
-        managerIds.add(managerID);
-        return managerIds;
+        return stateIds;
     }
 
     private Date parseDate(String date) {

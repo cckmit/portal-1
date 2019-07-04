@@ -1,5 +1,6 @@
 package ru.protei.portal.core.controller.api;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -7,15 +8,16 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 /**
  *  Результат выполнения API запроса
  */
+@JsonAutoDetect
 public class APIResult<T>
 {
-    @JsonProperty("ResultStatus")
+    @JsonProperty("status")
     private String status;
 
-    @JsonProperty("Message")
+    @JsonProperty("message")
     private String message;
 
-    @JsonProperty("Data")
+    @JsonProperty("data")
     private T data;
 
     public APIResult() {
@@ -25,6 +27,7 @@ public class APIResult<T>
     public APIResult(T data) {
         this.data = data;
         status = En_ResultStatus.OK.name();
+        message = "";
     }
 
     public APIResult(String status) {
@@ -36,11 +39,6 @@ public class APIResult<T>
         this.status = status;
         this.message = (message != null) ? message : "Error : " + status;
     }
-
-/*    public APIResult(En_ResultStatus resultStatus) {
-        this.status = resultStatus.name();
-        this.message     = (resultStatus.getMessage() != null) ? resultStatus.getMessage() : "Error code: " + result.getCode();
-    }*/
 
     public APIResult(En_ResultStatus resultStatus, String message) {
         this.status = resultStatus.name();
@@ -81,39 +79,10 @@ public class APIResult<T>
         return !isOk();
     }
 
-    @JsonIgnore
-    public boolean isResult (En_ResultStatus resultStatus) { return this.status == resultStatus.name(); }
-
     public static <T> APIResult<T> okWithData (T data) { return new APIResult<>(data); }
-
-/*    @SuppressWarnings("unchecked")
-    public static <T> APIResult<T> anyError (SLResult<?> slResult, Locale locale) {
-        String msg = slResult.getErrorMessage(locale);
-        return new APIResult(slResult.getResultCode(), msg);
-    }*/
-
-/*    @SuppressWarnings("unchecked")
-    public static <T> APIResult<T> error (En_ResultStatus resultStatus) {
-        return new APIResult<>(resultStatus);
-    }*/
 
     @SuppressWarnings("unchecked")
     public static <T> APIResult<T> error (En_ResultStatus resultStatus, String msg) {
         return new APIResult<>(resultStatus, msg);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> APIResult<T> notImplemented () {
-        return new APIResult(En_ResultStatus.NOT_AVAILABLE, "method is not implemented");
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> APIResult<T> startDateInvalid () {
-        return new APIResult(En_ResultStatus.INCORRECT_PARAMS, "start date is invalid");
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> APIResult<T> endDateInvalid () {
-        return new APIResult(En_ResultStatus.INCORRECT_PARAMS, "end date is invalid");
     }
 }
