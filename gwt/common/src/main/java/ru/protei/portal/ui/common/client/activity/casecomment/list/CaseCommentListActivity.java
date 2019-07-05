@@ -109,6 +109,10 @@ public abstract class CaseCommentListActivity
 
     @Event
     public void onValidateComment(CaseCommentEvents.ValidateComment event) {
+        if (event.isNewCase()) {
+            event.validate(true);
+            return;
+        }
         if (StringUtils.isNotBlank(view.message().getValue())) {
             event.validate(true);
             return;

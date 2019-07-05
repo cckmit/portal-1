@@ -123,7 +123,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
         view.saveEnabled().setEnabled(false);
 
-        fireEvent(new CaseCommentEvents.ValidateComment(isValid -> {
+        fireEvent(new CaseCommentEvents.ValidateComment(isNew(issue), isValid -> {
             if (!isValid) {
                 fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
                 view.saveEnabled().setEnabled(true);

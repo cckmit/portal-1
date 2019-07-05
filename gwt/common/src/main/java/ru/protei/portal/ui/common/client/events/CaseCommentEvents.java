@@ -91,13 +91,20 @@ public class CaseCommentEvents {
      */
     public static class ValidateComment {
 
-        public ValidateComment(Consumer<Boolean> onValidate) {
+        public ValidateComment(boolean isNewCase, Consumer<Boolean> onValidate) {
+            this.isNewCase = isNewCase;
             this.onValidate = onValidate;
         }
 
         public void validate(boolean isValid) {
             onValidate.accept(isValid);
         }
+
+        public boolean isNewCase() {
+            return isNewCase;
+        }
+
+        private boolean isNewCase;
 
         private Consumer<Boolean> onValidate;
     }
