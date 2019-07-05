@@ -18,7 +18,7 @@
     <g:HTMLPanel>
 
         <div class="user-filter">
-            <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}"/>
+            <issuefilterselector:IssueFilterSelector ui:field="userFilter" defaultValue="{lang.issueFilterNotDefined}" header="{lang.filters}"/>
         </div>
 
         <g:HTMLPanel ui:field="body" styleName="body grid grid-indent">
@@ -106,11 +106,12 @@
                 </div>
             </div>
 
-            <g:Button ui:field="createBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
-            <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonModify}"/>
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
-            <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
-
+            <div class="pull-right">
+                <g:Button ui:field="createBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
+                <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonModify}"/>
+                <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+                <g:Button ui:field="removeBtn" styleName="btn btn-white" text="{lang.buttonRemove}"/>
+            </div>
         </div>
 
     </g:HTMLPanel>

@@ -7,10 +7,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
+import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.IssueFilter;
 import ru.protei.portal.ui.issuereport.client.widget.reporttype.ReportTypeButtonSelector;
 
@@ -40,43 +42,8 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public HasValue<CaseQuery> getIssueFilter() {
+    public AbstractIssueFilter getIssueFilter() {
         return issueFilter;
-    }
-
-    @Override
-    public HasVisibility productsVisibility() {
-        return issueFilter.productsVisibility();
-    }
-
-    @Override
-    public HasVisibility companiesVisibility() {
-        return issueFilter.companiesVisibility();
-    }
-
-    @Override
-    public HasVisibility managersVisibility() {
-        return issueFilter.managersVisibility();
-    }
-
-    @Override
-    public HasVisibility commentAuthorsVisibility() {
-        return issueFilter.commentAuthorsVisibility();
-    }
-
-    @Override
-    public HasVisibility tagsVisibility() {
-        return issueFilter.tagsVisibility();
-    }
-
-    @Override
-    public HasVisibility searchPrivateVisibility() {
-        return issueFilter.searchPrivateVisibility();
-    }
-
-    @Override
-    public HasVisibility searchByCommentsVisibility() {
-        return issueFilter.searchByCommentsVisibility();
     }
 
     @Override
@@ -92,7 +59,7 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @UiHandler("reportType")
     public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
-        issueFilter.updateReportType(reportType.getValue());
+        issueFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.getValue().name()));
         if (activity != null) {
             activity.onReportTypeSelected();
         }

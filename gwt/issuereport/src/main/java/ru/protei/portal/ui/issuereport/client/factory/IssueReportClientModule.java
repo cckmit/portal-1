@@ -9,7 +9,6 @@ import ru.protei.portal.ui.issuereport.client.activity.table.AbstractIssueReport
 import ru.protei.portal.ui.issuereport.client.activity.table.IssueReportTableActivity;
 import ru.protei.portal.ui.issuereport.client.view.create.IssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.view.table.IssueReportTableView;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.IssueFilterModel;
 
 public class IssueReportClientModule extends AbstractGinModule {
 
@@ -22,7 +21,5 @@ public class IssueReportClientModule extends AbstractGinModule {
 
         bind(IssueReportCreateActivity.class).asEagerSingleton();
         bind(AbstractIssueReportCreateView.class).to(IssueReportCreateView.class).in(Singleton.class);
-
-        bind(IssueFilterModel.class).asEagerSingleton();
     }
 }
