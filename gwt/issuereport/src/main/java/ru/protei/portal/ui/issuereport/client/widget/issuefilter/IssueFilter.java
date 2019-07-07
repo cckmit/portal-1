@@ -3,7 +3,6 @@ package ru.protei.portal.ui.issuereport.client.widget.issuefilter;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.HasValueChangeHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -25,7 +24,6 @@ import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.issuefilterselector.IssueFilterSelector;
 import ru.protei.portal.ui.common.client.widget.issueimportance.btngroup.ImportanceBtnGroupMulti;
@@ -47,8 +45,9 @@ import java.util.Set;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.HIDE;
 import static ru.protei.portal.ui.common.client.common.UiConstants.Styles.REQUIRED;
+import static ru.protei.portal.ui.common.client.util.IssueFilterUtils.*;
 
-public class IssueFilter extends Composite implements HasValue<CaseQuery>, HasValueChangeHandlers<CaseQuery>, AbstractIssueFilter {
+public class IssueFilter extends Composite implements HasValue<CaseQuery>, AbstractIssueFilter {
 
     @Inject
     public void init() {
@@ -119,12 +118,52 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, HasVa
         }
     }
 
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseQuery> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public En_CaseFilterType getFilterType() {
+        return filterType;
+    }
+
     public void updateFilterType(En_CaseFilterType filterType) {
         this.filterType = filterType;
         resetFilter();
         userFilter.updateFilterType(filterType);
+        applyVisibilityByFilterType();
     }
 
+    private void applyVisibilityByFilterType() {
+        if (filterType == null) {
+            return;
+        }
+
+        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
+            modifiedRangeContainer.removeClassName(HIDE);
+            sortByContainer.removeClassName(HIDE);
+        } else {
+            modifiedRangeContainer.addClassName(HIDE);
+            sortByContainer.addClassName(HIDE);
+        }
+        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
+        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
+            importanceContainer.addClassName(HIDE);
+            stateContainer.addClassName(HIDE);
+        } else {
+            importanceContainer.removeClassName(HIDE);
+            stateContainer.removeClassName(HIDE);
+        }
+    }
+
+    @Override
     public HasVisibility productsVisibility() {
         return products;
     }
@@ -140,28 +179,8 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, HasVa
     }
 
     @Override
-    public HasVisibility commentAuthorsVisibility() {
-        return commentAuthors;
-    }
-
-    @Override
-    public HasVisibility tagsVisibility() {
-        return tags;
-    }
-
-    @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
-    }
-
-    @Override
-    public HasVisibility searchByCommentsVisibility() {
-        return searchByCommentsContainer;
-    }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseQuery> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
     }
 
     @UiHandler("userFilter")
@@ -367,15 +386,15 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, HasVa
         sortField.setValue(caseQuery.getSortField());
         dateCreatedRange.setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
         dateModifiedRange.setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
-        importance.setValue( IssueFilterUtils.getImportances(caseQuery.getImportanceIds()));
-        state.setValue(IssueFilterUtils.getStates(caseQuery.getStateIds()));
-        companies.setValue(IssueFilterUtils.getCompanies(caseQuery.getCompanyIds()));
+        importance.setValue(getImportances(caseQuery.getImportanceIds()));
+        state.setValue(getStates(caseQuery.getStateIds()));
+        companies.setValue(getCompanies(caseQuery.getCompanyIds()));
         updateInitiators();
-        managers.setValue(IssueFilterUtils.getPersons(caseQuery.getManagerIds()));
-        initiators.setValue(IssueFilterUtils.getPersons(caseQuery.getInitiatorIds()));
-        products.setValue(IssueFilterUtils.getProducts(caseQuery.getProductIds()));
-        commentAuthors.setValue(IssueFilterUtils.getPersons(caseQuery.getCommentAuthorIds()));
-        tags.setValue(IssueFilterUtils.getOptions(caseQuery.getCaseTagsIds()));
+        managers.setValue(getPersons(caseQuery.getManagerIds()));
+        initiators.setValue(getPersons(caseQuery.getInitiatorIds()));
+        products.setValue(getProducts(caseQuery.getProductIds()));
+        commentAuthors.setValue(getPersons(caseQuery.getCommentAuthorIds()));
+        tags.setValue(getOptions(caseQuery.getCaseTagsIds()));
     }
 
     private CaseFilter fillUserFilter() {
@@ -408,38 +427,57 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, HasVa
     }
 
     private CaseQuery makeCaseQuery(boolean isFillSearchString) {
+
+        if (filterType == null) {
+            return null;
+        }
+
         CaseQuery query = new CaseQuery();
         query.setType(En_CaseType.CRM_SUPPORT);
-        if (isFillSearchString) {
-            String searchString = search.getValue();
-            query.setCaseNumbers(IssueFilterUtils.searchCaseNumber(searchString, searchByComments.getValue()));
-            if (query.getCaseNumbers() == null) {
-                query.setSearchStringAtComments(searchByComments.getValue());
-                query.setSearchString(isBlank(searchString) ? null : searchString);
+
+        switch (filterType) {
+            case CASE_OBJECTS: {
+                if (isFillSearchString) {
+                    String searchString = search.getValue();
+                    query.setCaseNumbers(searchCaseNumber(searchString, searchByComments.getValue()));
+                    if (query.getCaseNumbers() == null) {
+                        query.setSearchStringAtComments(searchByComments.getValue());
+                        query.setSearchString(isBlank(searchString) ? null : searchString);
+                    }
+                }
+                query.setViewPrivate(searchPrivate.getValue());
+                query.setSortField(sortField.getValue());
+                query.setSortDir(sortDir.getValue() ? En_SortDir.ASC : En_SortDir.DESC);
+                query.setCompanyIds(getCompaniesIdList(companies.getValue()));
+                query.setProductIds(getProductsIdList(products.getValue()));
+                query.setManagerIds(getManagersIdList(managers.getValue()));
+                query.setInitiatorIds(getManagersIdList(initiators.getValue()));
+                query.setImportanceIds(getImportancesIdList(importance.getValue()));
+                query.setStates(getStateList(state.getValue()));
+                query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
+                query.setCaseTagsIds(getIds(tags.getValue()));
+                query = fillCreatedInterval(query, dateCreatedRange.getValue());
+                query = fillModifiedInterval(query, dateModifiedRange.getValue());
+                break;
             }
+            case CASE_TIME_ELAPSED: {
+                query.setCompanyIds(getCompaniesIdList(companies.getValue()));
+                query.setProductIds(getProductsIdList(products.getValue()));
+                query.setCommentAuthorIds(getManagersIdList(commentAuthors.getValue()));
+                query = fillCreatedInterval(query, dateCreatedRange.getValue());
+                break;
+            }
+            case CASE_RESOLUTION_TIME:
+                query.setCompanyIds(getCompaniesIdList(companies.getValue()));
+                query.setProductIds(getProductsIdList(products.getValue()));
+                query.setManagerIds(getManagersIdList(managers.getValue()));
+                query.setCaseTagsIds(getIds(tags.getValue()));
+                query.setImportanceIds(getImportancesIdList(importance.getValue()));
+                query.setStates(getStateList(state.getValue()));
+                query = fillCreatedInterval(query, dateCreatedRange.getValue());
+                break;
         }
-        query.setViewPrivate(searchPrivate.getValue());
-        query.setSortField(sortField.getValue());
-        query.setSortDir(sortDir.getValue() ? En_SortDir.ASC : En_SortDir.DESC);
-        query.setCompanyIds(IssueFilterUtils.getCompaniesIdList(companies.getValue()));
-        query.setProductIds(IssueFilterUtils.getProductsIdList(products.getValue()));
-        query.setManagerIds(IssueFilterUtils.getManagersIdList(managers.getValue()));
-        query.setInitiatorIds(IssueFilterUtils.getManagersIdList(initiators.getValue()));
-        query.setImportanceIds(IssueFilterUtils.getImportancesIdList(importance.getValue()));
-        query.setStates(IssueFilterUtils.getStateList(state.getValue()));
-        query.setCommentAuthorIds(IssueFilterUtils.getManagersIdList(commentAuthors.getValue()));
-        query.setCaseTagsIds(IssueFilterUtils.getIds(tags.getValue()));
-        DateInterval createdInterval = dateCreatedRange.getValue();
-        if (createdInterval != null) {
-            query.setCreatedFrom(createdInterval.from);
-            query.setCreatedTo(createdInterval.to);
-        }
-        DateInterval modifiedInterval = dateModifiedRange.getValue();
-        if (modifiedInterval != null) {
-            query.setModifiedFrom(modifiedInterval.from);
-            query.setModifiedTo(modifiedInterval.to);
-        }
-        return query;
+        return activity.validateQuery(filterType, query) ? query : null;
     }
 
     private void ensureDebugIds() {
@@ -547,6 +585,14 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, HasVa
     TextBox filterName;
     @UiField
     DivElement filterNameContainer;
+    @UiField
+    DivElement modifiedRangeContainer;
+    @UiField
+    DivElement sortByContainer;
+    @UiField
+    DivElement importanceContainer;
+    @UiField
+    DivElement stateContainer;
 
 
     private Timer timer = null;

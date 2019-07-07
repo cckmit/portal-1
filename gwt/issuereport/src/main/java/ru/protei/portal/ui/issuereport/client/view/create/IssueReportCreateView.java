@@ -23,7 +23,6 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        issueFilter.commentAuthorsVisibility().setVisible(false);
     }
 
     @Override
@@ -48,8 +47,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
 
     @Override
     public void resetFilter() {
-        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
+        reportType.setValue(En_ReportType.CASE_OBJECTS);
         name.setValue(null);
+        issueFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.getValue().name()));
     }
 
     @Override
