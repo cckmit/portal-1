@@ -30,7 +30,7 @@
             </g:HTMLPanel>
 
             <div class="col-xs-12 resize-xs-6">
-                <label class="bold"><ui:text from="{lang.created}"/></label>
+                <label class="bold" ui:field="dateLabel"><ui:text from="{lang.created}"/></label>
                 <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
             </div>
 
@@ -106,7 +106,7 @@
                 </div>
             </div>
 
-            <div class="pull-right">
+            <div class="pull-right m-t-15">
                 <g:Button ui:field="createBtn" styleName="btn btn-white" text="{lang.buttonCreate}"/>
                 <g:Button ui:field="saveBtn" styleName="btn btn-white" text="{lang.buttonModify}"/>
                 <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>

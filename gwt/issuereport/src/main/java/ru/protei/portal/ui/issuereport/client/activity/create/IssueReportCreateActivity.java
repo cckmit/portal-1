@@ -85,7 +85,7 @@ public abstract class IssueReportCreateActivity implements Activity,
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
         CaseQuery query = view.getIssueFilter().getValue();
         if (query == null) return;
-        report.setCaseQuery( query );
+        report.setCaseQuery(query);
 
         if (isSaving) {
             return;

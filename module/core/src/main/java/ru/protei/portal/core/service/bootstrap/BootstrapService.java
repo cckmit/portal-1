@@ -42,7 +42,7 @@ public class BootstrapService {
 //        autoPatchDefaultRoles();
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
-        updateTypeCaseFilters();
+        //updateTypeCaseFilters();
     }
 
     private void autoPatchDefaultRoles () {

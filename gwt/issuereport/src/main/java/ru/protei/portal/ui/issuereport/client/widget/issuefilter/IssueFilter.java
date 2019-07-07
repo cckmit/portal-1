@@ -2,6 +2,7 @@ package ru.protei.portal.ui.issuereport.client.widget.issuefilter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -91,7 +92,6 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         resetBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
-        showUserFilterControls();
     }
 
     @Override
@@ -300,7 +300,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     public void onOkBtnClicked( ClickEvent event ) {
         event.preventDefault();
 
-        if ( activity == null) {
+        if (activity == null) {
             return;
         }
 
@@ -308,6 +308,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
             setFilterNameContainerErrorStyle(true);
             return;
         }
+
         CaseFilter userFilter = fillUserFilter();
         if (!isCreateFilterAction){
             userFilter.setId(this.userFilter.getValue().getId());
@@ -382,10 +383,11 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         search.setValue(caseQuery.getSearchString());
         searchByComments.setValue(caseQuery.isSearchStringAtComments());
         searchPrivate.setValue(caseQuery.isViewPrivate());
-        sortDir.setValue(caseQuery.getSortDir().equals( En_SortDir.ASC));
-        sortField.setValue(caseQuery.getSortField());
+        sortDir.setValue(caseQuery.getSortDir() == null ? null : caseQuery.getSortDir().equals(En_SortDir.ASC));
+        sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
         dateCreatedRange.setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
         dateModifiedRange.setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
+        dateLabel.setInnerText(filterType.equals(En_CaseFilterType.CASE_OBJECTS) ? lang.created() : lang.period());
         importance.setValue(getImportances(caseQuery.getImportanceIds()));
         state.setValue(getStates(caseQuery.getStateIds()));
         companies.setValue(getCompanies(caseQuery.getCompanyIds()));
@@ -593,12 +595,14 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     DivElement importanceContainer;
     @UiField
     DivElement stateContainer;
+    @UiField
+    LabelElement dateLabel;
 
 
     private Timer timer = null;
     private AbstractIssueFilterActivity activity;
     private boolean isCreateFilterAction = true;
-    private En_CaseFilterType filterType;
+    private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
 
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );
     interface IssueFilterUiBinder extends UiBinder< HTMLPanel, IssueFilter > {}

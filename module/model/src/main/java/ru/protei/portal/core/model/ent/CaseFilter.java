@@ -22,7 +22,7 @@ public class CaseFilter implements Serializable {
     @JdbcColumn( name = "login_id" )
     private Long loginId;
 
-    @JdbcColumn(name = "filter_type")
+    @JdbcColumn(name = "type")
     @JdbcEnumerated(EnumType.STRING)
     private En_CaseFilterType type;
 
