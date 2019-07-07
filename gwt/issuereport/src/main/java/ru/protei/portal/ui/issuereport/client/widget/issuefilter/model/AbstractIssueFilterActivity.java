@@ -14,6 +14,4 @@ public interface AbstractIssueFilterActivity {
     void onSaveFilterClicked(CaseFilter caseFilter, Consumer<CaseFilterShortView> consumer);
 
     void onRemoveFilterClicked(Long id);
-
-    boolean validateQuery(En_CaseFilterType filterType, CaseQuery query);
 }

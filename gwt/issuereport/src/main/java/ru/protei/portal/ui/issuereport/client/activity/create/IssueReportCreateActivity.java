@@ -83,8 +83,13 @@ public abstract class IssueReportCreateActivity implements Activity,
         report.setReportType(reportType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
+
+        En_CaseFilterType type = view.getIssueFilter().getFilterType();
         CaseQuery query = view.getIssueFilter().getValue();
-        if (query == null) return;
+        if (!validateQuery(type, query)) {
+            return;
+        }
+
         report.setCaseQuery(query);
 
         if (isSaving) {
@@ -124,6 +129,10 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Override
     public void onSaveFilterClicked(CaseFilter caseFilter, Consumer<CaseFilterShortView> consumer) {
 
+        if (!validateQuery(caseFilter.getType(), caseFilter.getParams())) {
+            return;
+        }
+
         filterService.saveIssueFilter(caseFilter, new FluentCallback<CaseFilter>()
                 .withErrorMessage(lang.errSaveIssueFilter())
                 .withSuccess(filter -> {
@@ -139,8 +148,11 @@ public abstract class IssueReportCreateActivity implements Activity,
         fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.issueFilterRemoveConfirmMessage()));
     }
 
-    @Override
-    public boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
+    private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
+        if (filterType == null || query == null) {
+            return false;
+        }
+
         switch (filterType) {
             case CASE_RESOLUTION_TIME:
                 if (query.getCreatedFrom() == null || query.getCreatedTo() == null)  {
@@ -199,6 +211,4 @@ public abstract class IssueReportCreateActivity implements Activity,
 
     private Long filterIdToRemove;
     private boolean isSaving;
-    private Set<En_CaseState> activeStates = new HashSet<>( Arrays.asList( En_CaseState.CREATED, En_CaseState.OPENED,
-            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND ) );
 }

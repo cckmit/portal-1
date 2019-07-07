@@ -41,6 +41,8 @@ import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterActivity;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
@@ -92,6 +94,9 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         resetBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
+        if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
+            state.setValue(activeStates);
+        }
     }
 
     @Override
@@ -479,7 +484,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
                 query = fillCreatedInterval(query, dateCreatedRange.getValue());
                 break;
         }
-        return activity.validateQuery(filterType, query) ? query : null;
+        return query;
     }
 
     private void ensureDebugIds() {
@@ -603,6 +608,8 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     private AbstractIssueFilterActivity activity;
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
+    private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,
+            En_CaseState.ACTIVE, En_CaseState.TEST_LOCAL, En_CaseState.WORKAROUND));
 
     private static IssueFilterUiBinder ourUiBinder = GWT.create( IssueFilterUiBinder.class );
     interface IssueFilterUiBinder extends UiBinder< HTMLPanel, IssueFilter > {}
