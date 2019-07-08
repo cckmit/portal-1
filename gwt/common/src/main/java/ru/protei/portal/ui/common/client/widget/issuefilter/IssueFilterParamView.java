@@ -11,11 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -186,6 +182,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public void presetFilterType() {
+        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -294,12 +295,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @Override
     public void changeUserFilterValueName(CaseFilterShortView value) {
-        userFilter.changeValueName(value );
+        //userFilter.changeValueName(value );
     }
 
     @Override
     public void addUserFilterDisplayOption(CaseFilterShortView value) {
-        userFilter.addDisplayOption(value);
+        //userFilter.addDisplayOption(value);
     }
 
     @Override

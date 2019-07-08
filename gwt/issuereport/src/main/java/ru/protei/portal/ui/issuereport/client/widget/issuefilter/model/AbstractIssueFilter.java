@@ -4,7 +4,7 @@ import com.google.gwt.user.client.ui.HasVisibility;
 import ru.protei.portal.core.model.query.CaseQuery;
 
 public interface AbstractIssueFilter {
-    void setModel( AbstractIssueFilterModel activity);
+    void setModel(AbstractIssueFilterModel model);
     void reset();
     CaseQuery getValue();
     HasVisibility productsVisibility();
