@@ -28,7 +28,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug( "getIssueFilterShortViewListByCurrentUser(): accountId={}, filterType={} ", descriptor.getLogin().getId(), filterType );
+        log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", descriptor.getLogin().getId(), filterType );
 
         CoreResponse< List< CaseFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId(), filterType );
 

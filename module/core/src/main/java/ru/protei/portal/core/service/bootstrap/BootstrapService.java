@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -42,7 +41,6 @@ public class BootstrapService {
 //        autoPatchDefaultRoles();
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
-        //updateTypeCaseFilters();
     }
 
     private void autoPatchDefaultRoles () {
@@ -135,21 +133,6 @@ public class BootstrapService {
             caseTagDAO.merge(caseTag);
         });
         log.info("Correction company id in tags completed successfully");
-    }
-
-    private void updateTypeCaseFilters() {
-        log.info("Start update filters where type is null, set type CASE_OBJECTS");
-
-        List<CaseFilter> result = caseFilterDAO.getListByCondition("filter_type is null");
-        if (CollectionUtils.isEmpty(result)) {
-            log.info( "Not found filters. Aborting" );
-            return;
-        }
-        result.forEach(caseFilter -> {
-            caseFilter.setType(En_CaseFilterType.CASE_OBJECTS);
-            caseFilterDAO.merge(caseFilter);
-        });
-        log.info("Correction type in filters completed successfully");
     }
 
     @Inject
