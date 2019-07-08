@@ -2613,12 +2613,16 @@ div.select2-container {
 .dropdown-selector .dropdown-toggle {
   text-align: left;
   padding-right: 27px;
-}
 
-.dropdown-selector .dropdown-toggle::after {
-  position: absolute;
-  top: 45%;
-  right: 15px;
+  &::after {
+    position: absolute;
+    top: 45%;
+    right: 15px;
+  }
+
+  .selector-val {
+    display: inline-block;
+  }
 }
 
 .form-group-default-selectFx.disabled {
