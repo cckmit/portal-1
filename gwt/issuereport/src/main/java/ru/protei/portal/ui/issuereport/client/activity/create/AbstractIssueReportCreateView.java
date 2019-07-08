@@ -17,7 +17,7 @@ public interface AbstractIssueReportCreateView extends IsWidget {
 
     AbstractIssueFilter getIssueFilter();
 
-    void resetFilter();
+    void reset();
 
     void fillReportTypes(List<En_ReportType> options);
 }

@@ -9,7 +9,6 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ReportType;
-import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateActivity;
 import ru.protei.portal.ui.issuereport.client.activity.create.AbstractIssueReportCreateView;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
@@ -46,10 +45,9 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @Override
-    public void resetFilter() {
-        reportType.setValue(En_ReportType.CASE_OBJECTS);
+    public void reset() {
+        reportType.setValue(En_ReportType.CASE_OBJECTS, true);
         name.setValue(null);
-        issueFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.getValue().name()));
     }
 
     @Override
@@ -58,17 +56,10 @@ public class IssueReportCreateView extends Composite implements AbstractIssueRep
     }
 
     @UiHandler("reportType")
-    public void onReportTypeSelected(ValueChangeEvent<En_ReportType> event) {
+    public void onReportTypeChanged(ValueChangeEvent<En_ReportType> event) {
         issueFilter.updateFilterType(En_CaseFilterType.valueOf(reportType.getValue().name()));
         if (activity != null) {
-            activity.onReportTypeSelected();
-        }
-    }
-
-    @UiHandler("issueFilter")
-    public void onFilterChanged(ValueChangeEvent<CaseQuery> event) {
-        if (activity != null) {
-            //activity.onFilterChanged(event.getValue());
+            activity.onReportTypeChanged();
         }
     }
 

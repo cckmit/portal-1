@@ -39,7 +39,7 @@ import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.threestate.ThreeStateButton;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilter;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterActivity;
+import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,12 +65,19 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     }
 
     @Override
-    public void setActivity( AbstractIssueFilterActivity activity) {
-        this.activity = activity;
+    public void setModel(AbstractIssueFilterModel model) {
+        this.model = model;
+    }
+
+    public void updateFilterType(En_CaseFilterType filterType) {
+        this.filterType = filterType;
+        reset();
+        userFilter.updateFilterType(filterType);
+        applyVisibilityByFilterType();
     }
 
     @Override
-    public void resetFilter() {
+    public void reset() {
         companies.setValue(null);
         products.setValue(null);
         managers.setValue(null);
@@ -94,8 +101,9 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         resetBtn.setVisible(true);
         filterName.removeStyleName(REQUIRED);
         filterName.setValue("");
+        setUserFilterNameVisibility(false);
         if (filterType != null && filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME)) {
-            state.setValue(activeStates);
+            state.setValue(new HashSet<>(activeStates));
         }
     }
 
@@ -129,46 +137,6 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     }
 
     @Override
-    public En_CaseFilterType getFilterType() {
-        return filterType;
-    }
-
-    public void updateFilterType(En_CaseFilterType filterType) {
-        this.filterType = filterType;
-        resetFilter();
-        userFilter.updateFilterType(filterType);
-        applyVisibilityByFilterType();
-    }
-
-    private void applyVisibilityByFilterType() {
-        if (filterType == null) {
-            return;
-        }
-
-        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
-            modifiedRangeContainer.removeClassName(HIDE);
-            sortByContainer.removeClassName(HIDE);
-        } else {
-            modifiedRangeContainer.addClassName(HIDE);
-            sortByContainer.addClassName(HIDE);
-        }
-        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
-        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
-        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
-        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
-            importanceContainer.addClassName(HIDE);
-            stateContainer.addClassName(HIDE);
-        } else {
-            importanceContainer.removeClassName(HIDE);
-            stateContainer.removeClassName(HIDE);
-        }
-    }
-
-    @Override
     public HasVisibility productsVisibility() {
         return products;
     }
@@ -190,17 +158,17 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
 
     @UiHandler("userFilter")
     public void onUserFilterChanged(ValueChangeEvent<CaseFilterShortView> event) {
-        if (activity == null) {
+        if (model == null) {
             return;
         }
         CaseFilterShortView value = userFilter.getValue();
         if (value == null || value.getId() == null) {
-            resetFilter();
+            reset();
             onIssueFilterChanged();
             return;
         }
 
-        activity.onUserFilterChanged(value.getId(), caseFilter -> {
+        model.onUserFilterChanged(value.getId(), caseFilter -> {
             setValue(caseFilter.getParams());
             filterName.setValue(caseFilter.getName());
             showUserFilterControls();
@@ -214,6 +182,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
 
     @UiHandler("searchByComments")
     public void onSearchByCommentsChanged(ValueChangeEvent<Boolean> event) {
+        toggleMsgSearchThreshold();
         onIssueFilterChanged();
     }
 
@@ -285,7 +254,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
 
     @UiHandler( "resetBtn" )
     public void onResetClicked(ClickEvent event) {
-        resetFilter();
+        reset();
         onIssueFilterChanged();
     }
 
@@ -302,10 +271,10 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     }
 
     @UiHandler("okBtn")
-    public void onOkBtnClicked( ClickEvent event ) {
+    public void onOkBtnClicked(ClickEvent event) {
         event.preventDefault();
 
-        if (activity == null) {
+        if (model == null) {
             return;
         }
 
@@ -319,7 +288,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
             userFilter.setId(this.userFilter.getValue().getId());
         }
 
-        activity.onSaveFilterClicked(userFilter, caseFilterShortView -> {
+        model.onSaveFilterClicked(userFilter, caseFilterShortView -> {
             this.userFilter.setValue(caseFilterShortView);
             showUserFilterControls();
         });
@@ -329,18 +298,60 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     public void onCancelBtnClicked(ClickEvent event) {
         event.preventDefault();
         showUserFilterControls();
+        if (userFilter.getValue() == null) {
+            removeBtn.setVisible(false);
+            saveBtn.setVisible(false);
+        }
     }
 
     @UiHandler("removeBtn")
-    public void onRemoveClicked (ClickEvent event) {
-        if (activity == null) {
+    public void onRemoveClicked(ClickEvent event) {
+        if (model == null) {
             return;
         }
         CaseFilterShortView value = userFilter.getValue();
         if (value == null || value.getId() == null) {
             return;
         }
-        activity.onRemoveFilterClicked(value.getId());
+        model.onRemoveFilterClicked(value.getId());
+    }
+
+    private void applyVisibilityByFilterType() {
+        if (filterType == null) {
+            return;
+        }
+
+        search.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        searchByComments.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_OBJECTS)) {
+            modifiedRangeContainer.removeClassName(HIDE);
+            sortByContainer.removeClassName(HIDE);
+            dateLabel.setInnerText(lang.created());
+        } else {
+            modifiedRangeContainer.addClassName(HIDE);
+            sortByContainer.addClassName(HIDE);
+            dateLabel.setInnerText(lang.period());
+        }
+        initiators.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        managers.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        commentAuthors.setVisible(filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED));
+        tags.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS) || filterType.equals(En_CaseFilterType.CASE_RESOLUTION_TIME));
+        searchPrivateContainer.setVisible(filterType.equals(En_CaseFilterType.CASE_OBJECTS));
+        if (filterType.equals(En_CaseFilterType.CASE_TIME_ELAPSED)) {
+            importanceContainer.addClassName(HIDE);
+            stateContainer.addClassName(HIDE);
+        } else {
+            importanceContainer.removeClassName(HIDE);
+            stateContainer.removeClassName(HIDE);
+        }
+    }
+
+    public void setFilterNameContainerErrorStyle(boolean hasError) {
+        if (hasError) {
+            filterName.addStyleName(REQUIRED);
+        } else {
+            filterName.removeStyleName(REQUIRED);
+        }
     }
 
     private void setUserFilterNameVisibility(boolean hasVisible) {
@@ -358,12 +369,14 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         removeBtn.setVisible(hasVisible);
     }
 
-    public void setFilterNameContainerErrorStyle(boolean hasError) {
-        if (hasError) {
-            filterName.addStyleName(REQUIRED);
-        } else {
-            filterName.removeStyleName(REQUIRED);
-        }
+    private void showUserFilterName(){
+        setUserFilterControlsVisibility(false);
+        setUserFilterNameVisibility(true);
+    }
+
+    private void showUserFilterControls() {
+        setUserFilterControlsVisibility(true);
+        setUserFilterNameVisibility(false);
     }
 
     public void toggleMsgSearchThreshold() {
@@ -392,7 +405,6 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         sortField.setValue(caseQuery.getSortField() == null ? En_SortField.creation_date : caseQuery.getSortField());
         dateCreatedRange.setValue(new DateInterval(caseQuery.getCreatedFrom(), caseQuery.getCreatedTo()));
         dateModifiedRange.setValue(new DateInterval(caseQuery.getModifiedFrom(), caseQuery.getModifiedTo()));
-        dateLabel.setInnerText(filterType.equals(En_CaseFilterType.CASE_OBJECTS) ? lang.created() : lang.period());
         importance.setValue(getImportances(caseQuery.getImportanceIds()));
         state.setValue(getStates(caseQuery.getStateIds()));
         companies.setValue(getCompanies(caseQuery.getCompanyIds()));
@@ -509,16 +521,6 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
     }
 
-    private void showUserFilterName(){
-        setUserFilterControlsVisibility(false);
-        setUserFilterNameVisibility(true);
-    }
-
-    private void showUserFilterControls() {
-        setUserFilterControlsVisibility(true);
-        setUserFilterNameVisibility(false);
-    }
-
     @Inject
     @UiField
     Lang lang;
@@ -603,9 +605,8 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @UiField
     LabelElement dateLabel;
 
-
+    private AbstractIssueFilterModel model;
     private Timer timer = null;
-    private AbstractIssueFilterActivity activity;
     private boolean isCreateFilterAction = true;
     private En_CaseFilterType filterType = En_CaseFilterType.CASE_OBJECTS;
     private Set<En_CaseState> activeStates = new HashSet<>(Arrays.asList(En_CaseState.CREATED, En_CaseState.OPENED,

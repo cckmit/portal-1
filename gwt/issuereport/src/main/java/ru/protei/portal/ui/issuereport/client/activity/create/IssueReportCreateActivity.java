@@ -18,19 +18,19 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterActivity;
+import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
 import java.util.*;
 import java.util.List;
 import java.util.function.Consumer;
 
 public abstract class IssueReportCreateActivity implements Activity,
-        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, AbstractIssueFilterActivity {
+        AbstractIssueReportCreateActivity, AbstractDialogDetailsActivity, AbstractIssueFilterModel {
 
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        view.getIssueFilter().setActivity(this);
+        view.getIssueFilter().setModel(this);
         dialogView.setActivity(this);
         dialogView.setHeader(lang.issueReportNew());
         dialogView.getBodyContainer().add(view.asWidget());
@@ -44,8 +44,7 @@ public abstract class IssueReportCreateActivity implements Activity,
     @Event
     public void onShow(IssueReportEvents.Create event) {
         isSaving = false;
-        view.resetFilter();
-        applyIssueFilterViewByPrivileges();
+        view.reset();
         dialogView.showPopup();
     }
 
@@ -63,7 +62,7 @@ public abstract class IssueReportCreateActivity implements Activity,
                     filterIdToRemove = null;
                     fireEvent(new NotifyEvents.Show(lang.issueFilterRemoveSuccessed(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new IssueEvents.ChangeUserFilterModel());
-                    view.getIssueFilter().resetFilter();
+                    view.getIssueFilter().reset();
                 }));
     }
 
@@ -79,17 +78,15 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();
+        CaseQuery query = view.getIssueFilter().getValue();
+        if (!validateQuery(reportType, query)) {
+            return;
+        }
+
         Report report = new Report();
         report.setReportType(reportType);
         report.setName(view.name().getValue());
         report.setLocale(LocaleInfo.getCurrentLocale().getLocaleName());
-
-        En_CaseFilterType type = view.getIssueFilter().getFilterType();
-        CaseQuery query = view.getIssueFilter().getValue();
-        if (!validateQuery(type, query)) {
-            return;
-        }
-
         report.setCaseQuery(query);
 
         if (isSaving) {
@@ -113,8 +110,8 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onReportTypeSelected() {
-        applyIssueFilterViewByPrivileges();
+    public void onReportTypeChanged() {
+        applyIssueFilterVisibilityByPrivileges();
     }
 
     @Override
@@ -149,11 +146,15 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private boolean validateQuery(En_CaseFilterType filterType, CaseQuery query) {
-        if (filterType == null || query == null) {
+        return validateQuery(En_ReportType.valueOf(filterType.name()), query);
+    }
+
+    private boolean validateQuery(En_ReportType reportType, CaseQuery query) {
+        if (reportType == null || query == null) {
             return false;
         }
 
-        switch (filterType) {
+        switch (reportType) {
             case CASE_RESOLUTION_TIME:
                 if (query.getCreatedFrom() == null || query.getCreatedTo() == null)  {
                     fireEvent(new NotifyEvents.Show(lang.reportMissingPeriod(), NotifyEvents.NotifyType.ERROR));
@@ -168,23 +169,18 @@ public abstract class IssueReportCreateActivity implements Activity,
         return true;
     }
 
-    private void applyIssueFilterViewByPrivileges() {
-        switch (view.getIssueFilter().getFilterType()) {
-            case CASE_OBJECTS:
-                view.getIssueFilter().companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
-                view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-                view.getIssueFilter().managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
-                view.getIssueFilter().searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
-                break;
-            case CASE_TIME_ELAPSED:
-                view.getIssueFilter().companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
-                view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-                break;
-            case CASE_RESOLUTION_TIME:
-                view.getIssueFilter().companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
-                view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
-                view.getIssueFilter().managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
-                break;
+    private void applyIssueFilterVisibilityByPrivileges() {
+        if (view.getIssueFilter().companiesVisibility().isVisible()) {
+            view.getIssueFilter().companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
+        }
+        if (view.getIssueFilter().productsVisibility().isVisible()) {
+            view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
+        }
+        if (view.getIssueFilter().managersVisibility().isVisible()) {
+            view.getIssueFilter().managersVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_MANAGER_VIEW));
+        }
+        if (view.getIssueFilter().searchPrivateVisibility().isVisible()) {
+            view.getIssueFilter().searchPrivateVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW));
         }
     }
 
