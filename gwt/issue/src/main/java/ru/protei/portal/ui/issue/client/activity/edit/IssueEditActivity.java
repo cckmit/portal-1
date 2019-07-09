@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.util.CaseTextMarkupUtil;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -115,49 +116,40 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onSaveClicked() {
-        if(!validateView()){
+
+        if (!validateView()) {
             return;
         }
 
         fillIssueObject(issue);
 
-        view.saveEnabled().setEnabled(false);
+        if (isLockedSave()) {
+            return;
+        }
+        lockSave();
+        fireEvent(new CaseCommentEvents.OnSavingEvent());
 
         fireEvent(new CaseCommentEvents.ValidateComment(isValid -> {
             if (!isValid) {
+                unlockSave();
+                fireEvent(new CaseCommentEvents.OnDoneEvent());
                 fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
-                view.saveEnabled().setEnabled(true);
                 return;
             }
-            issueService.saveIssue(issue, new FluentCallback<CaseObject>()
-                    .withResult(() -> {
-                        view.saveEnabled().setEnabled(true);
-                    })
-                    .withError(throwable -> {
-                        fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
-                    })
-                    .withSuccess(caseObject -> {
-                        fireEvent(new CaseCommentEvents.RemoveDraft(caseObject.getId()));
-
-                        if (isNew(issue)) {
+            fireEvent(new CaseCommentEvents.GetCurrentComment(comment -> {
+                issueService.saveIssueAndComment(issue, comment, new FluentCallback<CaseObjectWithCaseComment>()
+                        .withResult(this::unlockSave)
+                        .withError(throwable -> {
+                            fireEvent(new CaseCommentEvents.OnDoneEvent());
+                            fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                        })
+                        .withSuccess(caseObjectWithCaseComment -> {
+                            fireEvent(new CaseCommentEvents.OnDoneEvent(caseObjectWithCaseComment.getCaseComment()));
                             fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                             fireEvent(new IssueEvents.ChangeModel());
-                            fireEvent(new IssueEvents.Show());
-                            return;
-                        }
-                        fireEvent(new CaseCommentEvents.SaveComment(caseObject.getId(), new CaseCommentEvents.SaveComment.SaveCommentCompleteHandler() {
-                            @Override
-                            public void onError(Throwable throwable, String message) {
-                                fireEvent(new NotifyEvents.Show(message != null ? message : lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
-                            }
-                            @Override
-                            public void onSuccess() {
-                                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                                fireEvent(new IssueEvents.ChangeModel());
-                                fireEvent(new Back());
-                            }
+                            fireEvent(isNew(issue) ? new IssueEvents.Show() : new Back());
                         }));
-                    }));
+            }));
         }));
     }
 
@@ -377,7 +369,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
 
-        view.saveEnabled().setEnabled(true);
+        unlockSave();
     }
 
     private boolean makePreviewDisplaying( String key ) {
@@ -485,6 +477,20 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 !En_CaseState.CANCELED.equals(caseState);
     }
 
+    private void lockSave() {
+        saving = true;
+        view.saveEnabled().setEnabled(false);
+    }
+
+    private void unlockSave() {
+        saving = false;
+        view.saveEnabled().setEnabled(true);
+    }
+
+    private boolean isLockedSave() {
+        return saving;
+    }
+
     @Inject
     AbstractIssueEditView view;
     @Inject
@@ -504,6 +510,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Inject
     LocalStorageService localStorageService;
 
+    private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;
     private String subscriptionsListEmptyMessage;
     private AppEvents.InitDetails initDetails;

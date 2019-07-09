@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
+import ru.protei.portal.core.model.ent.CaseComment;
 
 import java.util.function.Consumer;
 
@@ -68,25 +69,6 @@ public class CaseCommentEvents {
     }
 
     /**
-     * Сохранить комментарий
-     */
-    public static class SaveComment {
-
-        public SaveComment(Long caseId, SaveComment.SaveCommentCompleteHandler handler) {
-            this.caseId = caseId;
-            this.handler = handler;
-        }
-
-        public Long caseId;
-        public SaveComment.SaveCommentCompleteHandler handler;
-
-        public interface SaveCommentCompleteHandler {
-            void onSuccess();
-            void onError(Throwable throwable, String message);
-        }
-    }
-
-    /**
      * Провалидировать комментарий
      */
     public static class ValidateComment {
@@ -102,15 +84,33 @@ public class CaseCommentEvents {
         private Consumer<Boolean> onValidate;
     }
 
-    /**
-     * Удалить черновик комментария из хранилища
-     */
-    public static class RemoveDraft {
+    public static class GetCurrentComment {
 
-        public RemoveDraft(Long caseId) {
-            this.caseId = caseId;
+        public GetCurrentComment(Consumer<CaseComment> consumer) {
+            this.consumer = consumer;
         }
 
-        public Long caseId;
+        public void provide(CaseComment caseComment) {
+            consumer.accept(caseComment);
+        }
+
+        private Consumer<CaseComment> consumer;
+    }
+
+    public static class OnSavingEvent {
+        public OnSavingEvent() {}
+    }
+
+    public static class OnDoneEvent {
+
+        public OnDoneEvent() {
+            this.caseComment = null;
+        }
+
+        public OnDoneEvent(CaseComment caseComment) {
+            this.caseComment = caseComment;
+        }
+
+        public CaseComment caseComment;
     }
 }
