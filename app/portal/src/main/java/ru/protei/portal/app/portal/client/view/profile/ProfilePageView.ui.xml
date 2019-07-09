@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col-md-2">
                             <div class="profile-image">
-                                <img width="175px" src="./images/user-icon-m.svg" ui:field="icon"/>
+                                <img src="./images/user-icon-m.svg" ui:field="icon"/>
                             </div>
                         </div>
                         <div class="col-md-10">

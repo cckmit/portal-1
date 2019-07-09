@@ -62,7 +62,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
     private void fillView( Profile value ) {
         view.setName( value.getFullName() );
-        view.setIcon( AccountPhotoUtils.getPhotoUrl(value.getId()) );
+        view.setIcon( AccountPhotoUtils.getPhotoUrl( value.getId() ) );
         if ( value.getCompany() != null ) {
             view.setCompany( value.getCompany().getCname() );
             view.companySubscription().setValue( value.getCompany().getSubscriptions().stream()
