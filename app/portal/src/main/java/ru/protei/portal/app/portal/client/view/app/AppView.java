@@ -107,7 +107,11 @@ public class AppView extends Composite
 
     @UiHandler("profile")
     public void profileClick(ClickEvent event) {
-        menuBar.addStyleName("show");
+        if (menuBar.getStyleName().contains("show")) {
+            menuBar.removeStyleName( "show" );
+        } else {
+            menuBar.addStyleName( "show" );
+        }
     }
 
     @UiHandler("menuBarFocus")

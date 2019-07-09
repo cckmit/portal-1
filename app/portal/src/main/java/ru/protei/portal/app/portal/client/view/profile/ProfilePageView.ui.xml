@@ -4,34 +4,41 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="main-content">
-        <div class="panel panel-default">
-            <div class="body">
-                <div class="profile-section">
-                    <div class="profile-left">
-                        <div class="profile-image">
-                            <img src="./images/user-icon-m.svg" ui:field="icon"/>
+    <g:HTMLPanel>
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="profile-image">
+                                <img width="175px" src="./images/user-icon-m.svg" ui:field="icon"/>
+                            </div>
                         </div>
-                    </div>
-                    <div class="profile-right">
-                        <h4>
-                            <g:InlineLabel ui:field="name"/>
-                            <small ui:field="company"/>
-                        </h4>
-                        <div class="row ">
+                        <div class="col-md-10">
+                            <h4 class="col-md-12">
+                                <b><g:InlineLabel ui:field="name"/></b>
+                                <small ui:field="company"/>
+                            </h4>
                             <div class="col-md-12">
-                                <h4 class="title">
+                                <label>
                                     <ui:text from="{lang.companySubscription}"/>
-                                </h4>
+                                </label>
                                 <list:SubscriptionList ui:field="subscriptions"/>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+        </div>
+        <div class="container-fluid padding-15 bg-white">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <div class="text-right">
+                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                    </div>
+                </div>
             </div>
         </div>
+
     </g:HTMLPanel>
 </ui:UiBinder>
