@@ -31,6 +31,7 @@ import ru.protei.portal.hpsm.struct.HpsmMessageHeader;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
+import ru.protei.portal.test.service.BaseServiceTest;
 
 import javax.mail.internet.MimeMessage;
 import java.util.List;
@@ -40,7 +41,7 @@ import static ru.protei.portal.core.model.dict.En_CaseState.WORKAROUND;
 /**
  * Created by Mike on 01.05.2017.
  */
-public class LiveSampleTest {
+public class LiveSampleTest extends BaseServiceTest {
     private static final long LOCAL_PERSON_ID = 18L;
     private static final String HPSM_TEST_CASE_ID1 = "hpsm-live-test1642";
     private static final String HPSM_TEST_REJECT_NO_PRODUCT = "hpsm-live-test-no-product";
@@ -69,7 +70,7 @@ public class LiveSampleTest {
         CaseObject resultCase = caseObjectDAO.get(appData.getId());
         Person testPerson = personDAO.getEmployee(LOCAL_PERSON_ID);
 
-        caseService.updateCaseObject(resultCase, testPerson);
+        caseService.updateCaseObject(getAuthToken(), resultCase, testPerson);
 
         MimeMessage responseMail = testServiceInstance.getSentMessage();
     }
@@ -219,7 +220,7 @@ public class LiveSampleTest {
 
         resultCase.setState(En_CaseState.OPENED);
         resultCase.setManager(testPerson);
-        caseService.updateCaseObject(resultCase, testPerson);
+        caseService.updateCaseObject(getAuthToken(), resultCase, testPerson);
 
         // wait event handling
         Thread.sleep(45000);

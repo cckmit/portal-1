@@ -8,27 +8,23 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 
 import java.util.Collection;
-import java.util.Collections;
 
-/**
- * Created by michael on 04.05.17.
- */
-public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
+public class CaseObjectCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
+    private ServiceModule serviceModule;
+    private Person person;
     private CaseObject newState;
     private CaseObject oldState;
     private CaseComment caseComment;
     private CaseComment oldCaseComment;
     private CaseComment removedCaseComment;
-    private Person person;
-    private ServiceModule serviceModule;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
 
-    private CaseCommentEvent(
-            Object source, ServiceModule serviceModule, 
-            Person person, CaseObject newState, CaseObject oldState, 
-            CaseComment caseComment, CaseComment oldCaseComment, CaseComment removedCaseComment, 
+    private CaseObjectCommentEvent(
+            Object source, ServiceModule serviceModule,
+            Person person, CaseObject newState, CaseObject oldState,
+            CaseComment caseComment, CaseComment oldCaseComment, CaseComment removedCaseComment,
             Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments
     ) {
         super(source);
@@ -45,6 +41,10 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
 
     public ServiceModule getServiceModule() {
         return serviceModule;
+    }
+
+    public Person getPerson() {
+        return person;
     }
 
     public CaseObject getCaseObject() {
@@ -71,19 +71,14 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
         return removedCaseComment;
     }
 
-    public Person getPerson() {
-        return person;
-    }
-
     public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments == null? Collections.emptyList(): addedAttachments;
+        return addedAttachments;
     }
 
     public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments == null? Collections.emptyList(): removedAttachments;
+        return removedAttachments;
     }
-    
-    
+
     public static class Builder {
 
         private Object source;
@@ -153,8 +148,8 @@ public class CaseCommentEvent extends ApplicationEvent implements AbstractCaseEv
             return this;
         }
 
-        public CaseCommentEvent build() {
-            return new CaseCommentEvent(
+        public CaseObjectCommentEvent build() {
+            return new CaseObjectCommentEvent(
                     source,
                     serviceModule,
                     person,

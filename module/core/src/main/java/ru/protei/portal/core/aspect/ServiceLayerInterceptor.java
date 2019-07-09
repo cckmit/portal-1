@@ -88,7 +88,6 @@ public class ServiceLayerInterceptor {
 
             if ( e instanceof ResultStatusException ) {
                 En_ResultStatus resultStatus = ((ResultStatusException) e).getResultStatus();
-                logger.info("Service layer ResultStatusException: status={}", resultStatus);
                 return handleReturn(pjp.getSignature(), resultStatus);
             }
         }
