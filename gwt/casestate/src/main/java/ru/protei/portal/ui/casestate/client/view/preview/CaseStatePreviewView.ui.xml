@@ -9,7 +9,7 @@
     <g:HTMLPanel styleName="card card-default">
 
         <div class="card-body">
-            <h4 class="col-md-12 no-margin no-padding" ui:field="name"/>
+            <h4 ui:field="name"/>
 
             <div class="row">
                 <div class="form-group col-md-12">

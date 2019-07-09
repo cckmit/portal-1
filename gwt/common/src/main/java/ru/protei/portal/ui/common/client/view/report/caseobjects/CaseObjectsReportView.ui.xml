@@ -26,7 +26,7 @@
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12 m-b-0"/>
             <g:HTMLPanel ui:field="searchByCommentsContainer" styleName="form-group col-md-12 local-search-options-container">
                 <g:Label ui:field="searchByCommentsWarning" styleName="warning"/>
-                <option:OptionItem ui:field="searchByComments" styleName="toggle" name="{lang.searchByComments}"/>
+                <g:CheckBox ui:field="searchByComments" text="{lang.searchByComments}" styleName="checkbox"/>
             </g:HTMLPanel>
 
             <div class="col-md-12 resize-md-6">

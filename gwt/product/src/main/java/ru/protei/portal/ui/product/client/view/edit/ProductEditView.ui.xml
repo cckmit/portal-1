@@ -97,7 +97,7 @@
             <div class="card card-transparent no-margin">
                 <div class="card-body">
                     <div class="text-right">
-                        <g:Button ui:field="stateBtn" styleName="btn" text="{lang.productToArchive}"/>
+                        <g:Button ui:field="stateBtn" styleName="btn btn-danger" text="{lang.productToArchive}"/>
                         <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>
                         <g:Button ui:field="cancelBtn" styleName="btn btn-default" text="{lang.buttonCancel}"/>
                     </div>

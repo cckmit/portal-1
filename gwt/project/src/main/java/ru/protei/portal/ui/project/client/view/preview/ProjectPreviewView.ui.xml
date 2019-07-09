@@ -15,11 +15,13 @@
         <div class="card card-default no-border">
             <div class="card-body">
                 <div class="row">
-                    <g:Anchor ui:field="fullScreenBtn" styleName="fa fa-lg fa-external-link m-t-5 pull-left" href="#"/>
-                    <g:Anchor ui:field="removeBtn" styleName="fa fa-lg fa-trash m-t-5 pull-left" href="#"/>
+                    <div class="col-md-1 p-r-0">
+                        <g:Anchor ui:field="fullScreenBtn" styleName="fa fa-lg fa-external-link-alt m-t-5" href="#"/>
+                        <g:Anchor ui:field="removeBtn" styleName="fa fa-lg fa-trash m-t-5" href="#"/>
+                    </div>
                     <g:TextBox ui:field="projectName" styleName="col-md-6 project-name"/>
 
-                    <div class="pull-right">
+                    <div class="col-md-5 pull-right">
                         <div class="inline m-l-10">
                             <small>
                                 <ui:text from="{lang.projectCreateBy}"/>
@@ -76,7 +78,7 @@
                         <h5>
                             <ui:text from="{lang.projectState}"/>
                         </h5>
-                        <div class="col-md-2 w-i fa-3x">
+                        <div class="col-md-4 w-i fa-3x">
                             <state:RegionStateIconSelector ui:field="projectState"/>
                         </div>
                     </div>

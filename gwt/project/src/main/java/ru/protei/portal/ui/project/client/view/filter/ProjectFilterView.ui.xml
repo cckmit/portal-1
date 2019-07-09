@@ -39,7 +39,7 @@
             <div class="form-group col-md-12">
                 <label><ui:text from="{lang.accessory}"/></label>
                 <div class="control-group single-option-container">
-                    <item:OptionItem ui:field="onlyMineProjects" styleName="toggle" name="{lang.projectOnlyMine}"/>
+                    <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
                 </div>
             </div>
         </div>

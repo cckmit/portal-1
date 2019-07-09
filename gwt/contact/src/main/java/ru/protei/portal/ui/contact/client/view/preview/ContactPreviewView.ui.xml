@@ -14,7 +14,7 @@
                     <i class="fa fa-info-circle"/>
                     <label><ui:text from="{lang.contactDeleted}"/></label>
                 </g:HTMLPanel>
-                <h4>
+                <h4 class="m-r-50">
                     <g:Anchor ui:field="displayName" styleName="full-screen-link" href="#"/>
                 </h4>
 

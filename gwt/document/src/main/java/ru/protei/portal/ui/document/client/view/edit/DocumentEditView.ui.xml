@@ -39,7 +39,7 @@
                                 <g:TextBox ui:field="fileName" styleName="form-control" enabled="false"/>
                                 <div class="input-group-btn">
                                     <g:Button ui:field="selectFileButton" styleName="btn btn-default">
-                                        <i class="ion-upload"/>
+                                        <i class="fa fa-cloud-upload-alt"/>
                                     </g:Button>
                                 </div>
                                 <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
@@ -114,7 +114,7 @@
                             <label>
                                 <ui:text from="{lang.documentDecimalNumber}"/>
                             </label>
-                            <decnum:DecimalNumberInput ui:field="decimalNumber" styleName="form-control"/>
+                            <decnum:DecimalNumberInput ui:field="decimalNumber"/>
                         </g:HTMLPanel>
 
                         <g:HTMLPanel styleName="form-group col-md-12" ui:field="approvedContainer">

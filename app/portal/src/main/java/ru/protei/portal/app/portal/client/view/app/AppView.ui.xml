@@ -32,7 +32,7 @@
                     <img alt="logo" height="30" src="./images/logo_blue.png" width="30"/>
                     <b class="m-l-5">PROTEI</b> LTD
                 </div>
-                <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="no-margin d-lg-inline-block no-style p-l-30 p-r-20"/>
+                <g:HTMLPanel ui:field="actionBarContainer" tag="ul" styleName="no-margin inline no-style p-l-30 p-r-20"/>
             </div>
 
 

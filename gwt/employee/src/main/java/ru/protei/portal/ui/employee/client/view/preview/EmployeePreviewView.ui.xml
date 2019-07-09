@@ -4,7 +4,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="rootWrapper">
-        <g:HTMLPanel styleName="preview">
+        <g:HTMLPanel styleName="preview p-l-20">
             <h5><ui:text from="{lang.employeeAdditionalInfoHeader}"/></h5>
             <div class="small">
                 <b><ui:text from="{lang.employeeID}: "/></b>

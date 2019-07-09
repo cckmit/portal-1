@@ -194,7 +194,8 @@ public class ProjectFilterView extends Composite implements AbstractProjectFilte
     ProductDirectionButtonSelector direction;
 
     @UiField
-    OptionItem onlyMineProjects;
+    CheckBox onlyMineProjects;
+
 
     @Inject
     FixedPositioner positioner;

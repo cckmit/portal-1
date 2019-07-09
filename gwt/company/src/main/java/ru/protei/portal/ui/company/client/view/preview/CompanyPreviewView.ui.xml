@@ -7,7 +7,7 @@
     <g:HTMLPanel ui:field="rootWrapper">
         <div class="card card-default">
             <div class="card-body">
-                <h4 class="col-md-12 no-margin no-padding" ui:field="companyName"/>
+                <h4 ui:field="companyName" class="m-r-50"/>
                 <img ui:field="categoryImage" src="" class="preview-title-image_right"/>
                 <div class="small hint-text no-margin">
                     <a ui:field="site" href="#" target="_blank"/>

@@ -227,6 +227,7 @@ ul.plate-list {
       transition: height 350ms ease;
 
       .plate-list-expander {
+        width: calc(100% - 30px);
         transition: height 350ms ease;
         border: 1px solid #ededed;
         opacity: 1;
@@ -236,9 +237,9 @@ ul.plate-list {
     .plate-list-expander {
       position: absolute;
       top: auto;
-      left: 0;
+      left: 15px;
       width: 100%;
-      margin-top: 52px;
+      margin-top: 55px;
       text-align: left;
       overflow: hidden;
       background: white;

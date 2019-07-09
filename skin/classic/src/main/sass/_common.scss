@@ -471,15 +471,15 @@ label.bordered:after {
 }
 
 .icon-verifiable:before {
-  content: "\f110";
+  content: "\f1ce";
 }
 
 .icon-success:before {
-  content: "\e988";
+  content: "\f058";
 }
 
 .icon-error:before {
-  content: "\e987";
+  content: "\f058";
 }
 
 .icon-cross:before {
@@ -498,6 +498,19 @@ label.bordered:after {
 .panelField .button-selector .button {
   width: 100%;
   margin: 0;
+}
+
+.panelField.verifiable {
+  > i::before {
+    vertical-align: middle;
+    position: absolute;
+    right: 5px;
+    font-size: 18px;
+    top: 50%;
+    line-height: 0;
+    color: #a2acb3;
+    animation: animation-8 1s linear 0s infinite normal forwards running;
+  }
 }
 
 .form-control.required,
@@ -1275,6 +1288,11 @@ td.info {
 .case-verified {
   color: #607D8B;
   font-weight: bold;
+}
+
+.label-canceled,
+.option-canceled .option-name {
+  background-color: #868686;
 }
 
 .option-name {

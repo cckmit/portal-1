@@ -210,9 +210,8 @@
   }
 
   .icon-selector.status-group {
-    width: 1.5em;
     padding-right: 0.5em;
-    text-align: center;
+    text-align: left;
 
     a.status {
       border: 1px solid white;
@@ -221,9 +220,7 @@
     }
 
     a.caret-anchor {
-      position: absolute;
-      top: -0.3em;
-      right: 0.32em;
+      position: relative;
       display: none;
     }
 
@@ -233,7 +230,7 @@
       }
 
       a.caret-anchor {
-        display: block;
+        display: inline-block;
       }
     }
     &:focus {
@@ -242,7 +239,7 @@
       }
 
       a.caret-anchor {
-        display: block;
+        display: inline-block;
       }
     }
   }

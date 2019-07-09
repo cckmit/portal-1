@@ -37,7 +37,7 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
         if ( imageUrl == null ) {
-            a.addClassName("fa fa-lg fa-cloud-download");
+            a.addClassName("fa fa-lg fa-cloud-download-alt");
         } else {
             ImageElement img = DOM.createImg().cast();
             img.setSrc(imageUrl);
