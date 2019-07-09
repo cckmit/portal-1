@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
@@ -237,20 +238,22 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        caseObject = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
 
-        // From GWT-side we get partially filled object, that's why we need to refresh state from db
-        CaseObject newState = caseObjectDAO.get(caseObject.getId());
-        newState.setAttachments(caseObject.getAttachments());
-        newState.setNotifiers(caseObject.getNotifiers());
-        jdbcManyRelationsHelper.fill(oldState, "attachments");
-        publisherService.publishEvent(new CaseObjectEvent.Builder(this)
-                .withNewState(newState)
-                .withOldState(oldState)
-                .withPerson(initiator)
-                .build());
+        if (objectResultData.isUpdated()) {
+            // From GWT-side we get partially filled object, that's why we need to refresh state from db
+            CaseObject newState = caseObjectDAO.get(objectResultData.getCaseObject().getId());
+            newState.setAttachments(objectResultData.getCaseObject().getAttachments());
+            newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
+            jdbcManyRelationsHelper.fill(oldState, "attachments");
+            publisherService.publishEvent(new CaseObjectEvent.Builder(this)
+                    .withNewState(newState)
+                    .withOldState(oldState)
+                    .withPerson(initiator)
+                    .build());
+        }
 
-        return new CoreResponse<CaseObject>().success(caseObject);
+        return new CoreResponse<CaseObject>().success(objectResultData.getCaseObject());
     }
 
     @Override
@@ -259,31 +262,33 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObject updatedCaseObject = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
         CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
 
-        // From GWT-side we get partially filled object, that's why we need to refresh state from db
-        CaseObject newState = caseObjectDAO.get(caseObject.getId());
-        newState.setAttachments(caseObject.getAttachments());
-        newState.setNotifiers(caseObject.getNotifiers());
-        jdbcManyRelationsHelper.fill(oldState, "attachments");
+        if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
+            // From GWT-side we get partially filled object, that's why we need to refresh state from db
+            CaseObject newState = caseObjectDAO.get(caseObject.getId());
+            newState.setAttachments(caseObject.getAttachments());
+            newState.setNotifiers(caseObject.getNotifiers());
+            jdbcManyRelationsHelper.fill(oldState, "attachments");
 
-        publisherService.publishEvent(new CaseObjectCommentEvent.Builder(this)
-                .withPerson(initiator)
-                .withOldState(oldState)
-                .withNewState(newState)
-                .withCaseComment(commentResultData.getCaseComment())
-                .withOldCaseComment(commentResultData.getOldCaseComment())
-                .withAddedAttachments(commentResultData.getAddedAttachments())
-                .withRemovedAttachments(commentResultData.getRemovedAttachments())
-                .build());
+            publisherService.publishEvent(new CaseObjectCommentEvent.Builder(this)
+                    .withPerson(initiator)
+                    .withOldState(oldState)
+                    .withNewState(newState)
+                    .withCaseComment(commentResultData.getCaseComment())
+                    .withOldCaseComment(commentResultData.getOldCaseComment())
+                    .withAddedAttachments(commentResultData.getAddedAttachments())
+                    .withRemovedAttachments(commentResultData.getRemovedAttachments())
+                    .build());
+        }
 
         return new CoreResponse<CaseObjectWithCaseComment>().success(
-                new CaseObjectWithCaseComment(updatedCaseObject, commentResultData.getCaseComment())
+                new CaseObjectWithCaseComment(objectResultData.getCaseObject(), commentResultData.getCaseComment())
         );
     }
 
-    private CaseObject performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
+    private CaseObjectUpdateResult performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
 
         if (caseObject == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -308,8 +313,9 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseObject);
 
-        if(isCaseHasNoChanges(caseObject, oldState))
-            return caseObject; //ignore
+        if (isCaseHasNoChanges(caseObject, oldState)) {
+            return new CaseObjectUpdateResult(caseObject, false);
+        }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
         boolean isStateTransitionValid = isCaseStateTransitionValid(workflow, oldState.getState(), caseObject.getState());
@@ -351,7 +357,7 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        return caseObject;
+        return new CaseObjectUpdateResult(caseObject, true);
     }
 
     private CaseCommentSaveOrUpdateResult performSaveOrUpdateCaseComment(AuthToken token, CaseComment caseComment, Person initiator) {

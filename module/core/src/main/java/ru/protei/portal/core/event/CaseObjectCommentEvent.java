@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class CaseObjectCommentEvent extends ApplicationEvent implements AbstractCaseEvent {
 
@@ -72,11 +73,11 @@ public class CaseObjectCommentEvent extends ApplicationEvent implements Abstract
     }
 
     public Collection<Attachment> getAddedAttachments() {
-        return addedAttachments;
+        return addedAttachments == null ? Collections.emptyList() : addedAttachments;
     }
 
     public Collection<Attachment> getRemovedAttachments() {
-        return removedAttachments;
+        return removedAttachments == null ? Collections.emptyList() : removedAttachments;
     }
 
     public static class Builder {

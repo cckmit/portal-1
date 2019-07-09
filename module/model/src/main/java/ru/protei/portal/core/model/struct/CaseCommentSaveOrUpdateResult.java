@@ -12,12 +12,16 @@ public class CaseCommentSaveOrUpdateResult implements Serializable {
     private CaseComment oldCaseComment;
     private Collection<Attachment> addedAttachments;
     private Collection<Attachment> removedAttachments;
+    private boolean isUpdated;
 
-    public CaseCommentSaveOrUpdateResult() {}
+    public CaseCommentSaveOrUpdateResult() {
+        this.isUpdated = false;
+    }
 
     public CaseCommentSaveOrUpdateResult(CaseComment caseComment, Collection<Attachment> addedAttachments) {
         this.caseComment = caseComment;
         this.addedAttachments = addedAttachments;
+        this.isUpdated = true;
     }
 
     public CaseCommentSaveOrUpdateResult(CaseComment caseComment, CaseComment oldCaseComment, Collection<Attachment> addedAttachments, Collection<Attachment> removedAttachments) {
@@ -25,6 +29,7 @@ public class CaseCommentSaveOrUpdateResult implements Serializable {
         this.oldCaseComment = oldCaseComment;
         this.addedAttachments = addedAttachments;
         this.removedAttachments = removedAttachments;
+        this.isUpdated = true;
     }
 
     public CaseComment getCaseComment() {
@@ -43,6 +48,10 @@ public class CaseCommentSaveOrUpdateResult implements Serializable {
         return removedAttachments;
     }
 
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
     @Override
     public String toString() {
         return "CaseCommentSaveOrUpdateResult{" +
@@ -50,6 +59,7 @@ public class CaseCommentSaveOrUpdateResult implements Serializable {
                 ", oldCaseComment=" + oldCaseComment +
                 ", addedAttachments=" + addedAttachments +
                 ", removedAttachments=" + removedAttachments +
+                ", isUpdated=" + isUpdated +
                 '}';
     }
 }
