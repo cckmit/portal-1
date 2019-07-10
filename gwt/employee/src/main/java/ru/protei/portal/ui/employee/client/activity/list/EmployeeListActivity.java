@@ -146,6 +146,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         WorkerEntryShortView mainEntry = entryFacade.getMainEntry();
         if ( mainEntry != null ) {
             itemView.setDepartment( mainEntry.getDepartmentName() );
+            itemView.setDepartmentParent( mainEntry.getDepartmentParentName() );
             itemView.setPosition( mainEntry.getPositionName() );
         }
 
