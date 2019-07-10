@@ -11,5 +11,5 @@ import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 public interface AbstractProjectTableActivity
         extends ClickColumn.Handler<ProjectInfo>, EditClickColumn.EditHandler< ProjectInfo >, RemoveClickColumn.RemoveHandler< ProjectInfo >
 {
-//    void onEditClicked( ProjectInfo value );
+    void onEditClicked( ProjectInfo value );
 }

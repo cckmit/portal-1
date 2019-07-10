@@ -43,9 +43,17 @@ public interface ProjectService {
      * Изменяем проект
      * @param project    проект
      */
-    @Privileged( En_Privilege.PRODUCT_EDIT )
+    @Privileged( En_Privilege.PROJECT_EDIT )
     @Auditable( En_AuditType.PROJECT_MODIFY )
     CoreResponse saveProject( AuthToken token, ProjectInfo project );
+
+    /**
+     * Создает новый проект
+     * @param project    проект
+     */
+    @Privileged(En_Privilege.PROJECT_CREATE)
+    @Auditable(En_AuditType.PROJECT_CREATE)
+    CoreResponse<Long> createProject(AuthToken token, ProjectInfo project);
 
     /**
      * Создает новый проект

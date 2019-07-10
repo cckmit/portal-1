@@ -179,6 +179,43 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
+    public CoreResponse<Long> createProject(AuthToken token, ProjectInfo project) {
+
+        if (project == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = createCaseObjectFromProjectInfo(project);
+
+        Long id = caseObjectDAO.persist(caseObject);
+        if (id == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+
+        updateProducts(caseObject, project.getProducts()); // ???
+
+        return new CoreResponse().success(id);
+    }
+
+    private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setCreated(new Date());
+        caseObject.setStateId(En_RegionState.UNKNOWN.getId());
+        caseObject.setCreatorId(project.getCreatorId());
+        caseObject.setName(project.getName());
+        caseObject.setInfo(project.getDescription());
+        caseObject.setProducts(new HashSet<>());// ???
+        if (project.getCustomer() == null) {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+        if (project.getCustomerType() != null) {
+            caseObject.setLocal(project.getCustomerType().getId());
+        }
+        return caseObject;
+    }
+
+    @Override
+    @Transactional
     public CoreResponse< Long > createProject( AuthToken token, Long creatorId ) {
 
         CaseObject caseObject = new CaseObject();

@@ -1675,4 +1675,12 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedTypeLogAnalysis();
 
     String timeElapsedTypeSolveProblems();
+
+    String newProject();
+
+    String projectEdit();
+
+    String projectName();
+
+    String goToProjects();
 }
