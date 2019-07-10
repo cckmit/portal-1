@@ -25,10 +25,7 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
+import ru.protei.portal.ui.common.shared.model.*;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -141,7 +138,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                         .withResult(this::unlockSave)
                         .withError(throwable -> {
                             fireEvent(new CaseCommentEvents.OnDoneEvent());
-                            fireEvent(new NotifyEvents.Show(throwable.getMessage(), NotifyEvents.NotifyType.ERROR));
+                            defaultErrorHandler.accept(throwable);
                         })
                         .withSuccess(caseObjectWithCaseComment -> {
                             fireEvent(new CaseCommentEvents.OnDoneEvent(caseObjectWithCaseComment.getCaseComment()));
@@ -509,6 +506,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     TextRenderControllerAsync textRenderController;
     @Inject
     LocalStorageService localStorageService;
+    @Inject
+    DefaultErrorHandler defaultErrorHandler;
 
     private boolean saving = false;
     private List<CompanySubscription> subscriptionsList;
