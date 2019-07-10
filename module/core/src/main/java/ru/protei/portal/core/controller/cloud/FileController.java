@@ -197,18 +197,25 @@ public class FileController {
         if(caseId == null)
             throw new RuntimeException("Case-ID is required");
 
+        if(attachmentService.saveAttachment(attachment).isError()) {
+            throw new SQLException("attachment not saved");
+        }
+
         /**
          * судя по всему, у нас раньше не закрывался inputStream
          * добавляю в блок try, для гарантированного закрытия
          */
         try (InputStream contentStream = content.getInputStream()) {
-            String filePath = saveFileStream(contentStream, attachment.getFileName(), fileSize, contentType);
+            String filePath = saveFileStream(
+                    contentStream,
+                    generateCloudFileName(attachment.getId(), attachment.getFileName()),
+                    fileSize, contentType);
             attachment.setExtLink(filePath);
         }
 
         if(attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());
-            throw new SQLException("attachment not saved");
+            throw new SQLException("unable to save link to file");
         }
 
         CoreResponse<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
@@ -243,7 +250,7 @@ public class FileController {
 
     private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {
         return fileStorage.save(
-                generateUniqueFileName(fileName),
+                fileName,
                 new FileStream(inputStream, fileSize, contentType)
         );
     }
@@ -265,20 +272,24 @@ public class FileController {
 
         logger.debug("saveAttachment: creatorId=" + creatorId);
 
-        String filePath = saveFile(is, fileName, size, contentType);
-
-        logger.debug("saveAttachment: creatorId=" + creatorId + ", filePath=" + filePath);
-
         Attachment attachment = new Attachment();
         attachment.setCreatorId(creatorId);
         attachment.setFileName(fileName);
         attachment.setDataSize(size);
-        attachment.setExtLink(filePath);
         attachment.setMimeType(contentType);
 
         if (attachmentService.saveAttachment(attachment).isError()) {
-            fileStorage.deleteFile(filePath);
             throw new SQLException("attachment not saved");
+        }
+
+        String filePath = saveFile(is, generateCloudFileName(attachment.getId(), attachment.getFileName()), size, contentType);
+        attachment.setExtLink(filePath);
+
+        logger.debug("saveAttachment: creatorId=" + creatorId + ", filePath=" + filePath);
+
+        if (attachmentService.saveAttachment(attachment).isError()) {
+            fileStorage.deleteFile(filePath);
+            throw new SQLException("unable to save link to file");
         }
 
         return attachment;
@@ -301,9 +312,16 @@ public class FileController {
         return fileName;
     }
 
-    private String generateUniqueFileName(String filename){
-        return generateUniqueName() + "_" + filename;
+    private String generateCloudFileName(Long id, String filename){
+        int i = filename.lastIndexOf(".");
+        if (i <= 0)
+            return String.valueOf(id);
+        return id + filename.substring(i);
     }
+
+/*    private String generateUniqueFileName(String filename){
+        return generateUniqueName() + "_" + filename;
+    }*/
 
     private String generateUniqueName() {
         return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
