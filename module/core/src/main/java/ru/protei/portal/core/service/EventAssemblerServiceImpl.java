@@ -54,7 +54,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
 
         AssembledCaseEvent assembledPrevEvent = assembledEventsMap.get(key);
 
-        if (!assembledPrevEvent.isLastStateSet()) {
+        if (!assembledPrevEvent.isLastStateSet() && !assembledPrevEvent.isCaseCommentAttached()) {
             logger.info("Attach new event to previous event for case {}", event.getCaseObject().defGUID());
             if (event.getCaseObject() != null) {
                 assembledPrevEvent.attachCaseObject(event.getCaseObject());
