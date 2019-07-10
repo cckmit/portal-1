@@ -82,7 +82,8 @@ public class IssueControllerImpl implements IssueController {
         log.debug("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         if (caseObject.getId() == null) {
-            throw new RequestFailedException(En_ResultStatus.NOT_AVAILABLE);
+            CaseObject saved = saveIssue(caseObject);
+            return new CaseObjectWithCaseComment(saved, null);
         }
         CoreResponse<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
         log.debug("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());

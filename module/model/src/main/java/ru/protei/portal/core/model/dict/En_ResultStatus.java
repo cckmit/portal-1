@@ -118,5 +118,10 @@ public enum En_ResultStatus {
     /**
      * запрещено создавать приватные сообщения
      */
-    PROHIBITED_PRIVATE_COMMENT
+    PROHIBITED_PRIVATE_COMMENT,
+
+    /**
+     * запрещено менять статус обращения с verified на не verified
+     */
+    INVALID_CASE_UPDATE_CASE_IS_CLOSED
 }
