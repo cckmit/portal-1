@@ -23,6 +23,7 @@ import ru.protei.portal.hpsm.logic.InboundMainMessageHandler;
 import ru.protei.portal.hpsm.utils.HpsmTestUtils;
 import ru.protei.portal.hpsm.utils.TestServiceInstance;
 import ru.protei.portal.test.hpsm.config.HpsmTestConfiguration;
+import ru.protei.portal.test.service.BaseServiceTest;
 
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
@@ -30,7 +31,7 @@ import java.util.Date;
 /**
  * Created by Mike on 01.05.2017.
  */
-public class LocalUpdateTest {
+public class LocalUpdateTest extends BaseServiceTest {
     public static final String HPSM_TEST_CASE_ID1 = "hpsm-create-test-1";
     public static final long LOCAL_PERSON_ID = 18L;
     public static final String JUNIT_TEST_COMMENT = "junit-test-comment";
@@ -104,7 +105,7 @@ public class LocalUpdateTest {
 
         object.setState(En_CaseState.OPENED);
         object.setManager(testPerson);
-        caseService.updateCaseObject(object, testPerson );
+        caseService.updateCaseObject(getAuthToken(), object, testPerson );
 
         // wait event handling
         Thread.sleep(40000);
@@ -124,7 +125,7 @@ public class LocalUpdateTest {
 
 
         object.setState(En_CaseState.WORKAROUND);
-        caseService.updateCaseObject(object, testPerson);
+        caseService.updateCaseObject(getAuthToken(), object, testPerson);
 
         // wait event handling
         Thread.sleep(200);
@@ -163,7 +164,7 @@ public class LocalUpdateTest {
 
 
         object.setState(En_CaseState.DONE);
-        caseService.updateCaseObject( object, testPerson);
+        caseService.updateCaseObject(getAuthToken(),  object, testPerson);
 
         // wait event handling
         Thread.sleep(40000);

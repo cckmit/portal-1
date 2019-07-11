@@ -1675,4 +1675,6 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedTypeLogAnalysis();
 
     String timeElapsedTypeSolveProblems();
+
+    String errInvalidCaseUpdateCaseIsClosed();
 }

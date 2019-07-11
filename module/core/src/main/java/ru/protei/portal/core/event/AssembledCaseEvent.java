@@ -54,6 +54,17 @@ public class AssembledCaseEvent extends ApplicationEvent {
         removedComment = commentEvent.getRemovedCaseComment();
     }
 
+    public AssembledCaseEvent(CaseObjectCommentEvent objectCommentEvent) {
+        this(objectCommentEvent.getServiceModule(), objectCommentEvent.getSource(),
+                objectCommentEvent.getOldState(), objectCommentEvent.getNewState(),
+                objectCommentEvent.getPerson());
+        oldComment = objectCommentEvent.getOldCaseComment();
+        comment = objectCommentEvent.getCaseComment();
+        addedAttachments.addAll(objectCommentEvent.getAddedAttachments());
+        removedAttachments.addAll(objectCommentEvent.getRemovedAttachments());
+        removedComment = objectCommentEvent.getRemovedCaseComment();
+    }
+
     public AssembledCaseEvent(CaseAttachmentEvent attachmentEvent) {
         this(attachmentEvent.getSource(), attachmentEvent.getCaseObject(), attachmentEvent.getPerson());
         addedAttachments.addAll(attachmentEvent.getAddedAttachments());
