@@ -324,6 +324,9 @@ public class CaseServiceImpl implements CaseService {
                     caseObject.getId(), oldState.getState(), caseObject.getState(), workflow);
             throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
         }
+        if (workflow == En_CaseStateWorkflow.NO_WORKFLOW && isStateReopenNotAllowed(token, oldState, caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
+        }
 
         caseObject.setModified(new Date());
         caseObject.setTimeElapsed(caseCommentService.getTimeElapsed(caseObject.getId()).getData());
@@ -617,10 +620,21 @@ public class CaseServiceImpl implements CaseService {
         return true;
     }
 
+    private boolean isStateReopenNotAllowed(AuthToken token, CaseObject oldState, CaseObject newState) {
+        return oldState.getState() == En_CaseState.VERIFIED &&
+                newState.getState() != En_CaseState.VERIFIED &&
+                !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
+    }
+
+    private boolean isPersonHasGrantAccess(AuthToken token, En_Privilege privilege) {
+        Set<UserRole> roles = getRoles(token);
+        return policyService.hasGrantAccessFor(roles, privilege);
+    }
+
     private Set<UserRole> getRoles(AuthToken token) {
         return Optional.ofNullable(authService.findSession(token))
                 .map(d -> d.getLogin().getRoles())
-                .orElse(null);
+                .orElse(new HashSet<>());
     }
 
     private boolean personBelongsToHomeCompany(AuthToken token) {
