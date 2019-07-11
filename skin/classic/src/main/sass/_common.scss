@@ -3529,26 +3529,26 @@ div.select2-container {
     border-bottom: 2px solid #dee4e5;
     padding: 15px;
   }
+}
 
-  .user-filter-name {
-    text-align: left;
+.user-filter-name {
+  text-align: left;
 
-    :nth-child(2) {
-      display:  inline-flex;
+  :nth-child(2) {
+    display:  inline-flex;
 
-      a {
-        border: 1px solid;
-        border-color: #ced2d7 #c5cad0 #ced2d7;
-        border-left: none;
-        width: 16px;
+    a {
+      border: 1px solid;
+      border-color: #ced2d7 #c5cad0 #ced2d7;
+      border-left: none;
+      width: 16px;
 
-        &:hover {
-          background-color: #dee4e5;
-        }
+      &:hover {
+        background-color: #dee4e5;
+      }
 
-        span {
-          margin-top: 4px;
-        }
+      span {
+        margin-top: 4px;
       }
     }
   }

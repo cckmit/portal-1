@@ -1,6 +1,10 @@
 package ru.protei.portal.core.model.dao;
 
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 
-public interface CaseFilterDAO extends PortalBaseDAO<CaseFilter > {
+import java.util.List;
+
+public interface CaseFilterDAO extends PortalBaseDAO<CaseFilter> {
+    List<CaseFilter > getListByLoginIdAndFilterType( Long loginId, En_CaseFilterType filterType );
 }
