@@ -53,6 +53,15 @@ public class EmployeeSqlBuilder {
                 condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
                 args.add(HelperFunc.makeLikeArg(query.getEmail(), true));
             }
+
+            if (HelperFunc.isLikeRequired(query.getDepartmentParent())) {
+                condition.append(" and Person.id in (");
+                String innerJoinQuery = "select personId from company_dep as cd inner join worker_entry as we on we.dep_id = cd.id";
+                condition
+                        .append(innerJoinQuery)
+                        .append(" where dep_name like ?)");
+                args.add(HelperFunc.makeLikeArg(query.getDepartmentParent(), true));
+            }
         });
     }
 }
