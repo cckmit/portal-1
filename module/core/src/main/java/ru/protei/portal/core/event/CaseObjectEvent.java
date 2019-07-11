@@ -2,37 +2,31 @@ package ru.protei.portal.core.event;
 
 import org.springframework.context.ApplicationEvent;
 import ru.protei.portal.core.ServiceModule;
+import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.HelperFunc;
-import ru.protei.portal.core.service.CaseService;
 
+import java.util.Collection;
 import java.util.Date;
 
 /**
  * Created by michael on 04.05.17.
  */
-public class CaseObjectEvent extends ApplicationEvent {
+public class CaseObjectEvent extends ApplicationEvent implements AbstractCaseEvent {
 
     private CaseObject newState;
     private CaseObject oldState;
     private Person person;
     private ServiceModule serviceModule;
 
-    public CaseObjectEvent( Object source, CaseObject newState, Person initiator ) {
-        this (ServiceModule.GENERAL, source, newState, null, initiator);
-    }
-
-    public CaseObjectEvent( Object source, CaseObject newState, CaseObject oldState, Person currentPerson ){
-        this (ServiceModule.GENERAL, source, newState, oldState, currentPerson);
-    }
-
-    public CaseObjectEvent( ServiceModule module, Object source, CaseObject newState, CaseObject oldState, Person currentPerson ) {
-        super( source );
+    private CaseObjectEvent(Object source, ServiceModule module, CaseObject newState, CaseObject oldState, Person person) {
+        super(source);
+        this.serviceModule = module;
         this.newState = newState;
         this.oldState = oldState;
-        this.person = currentPerson;
-        this.serviceModule = module;
+        this.person = person;
     }
 
     public boolean isCreateEvent () {
@@ -99,7 +93,62 @@ public class CaseObjectEvent extends ApplicationEvent {
         return oldState;
     }
 
+    public CaseComment getCaseComment() { return null; }
+
+    public CaseComment getOldCaseComment() { return null; }
+
+    public CaseComment getRemovedCaseComment() { return null; }
+
+    public Collection<Attachment> getAddedAttachments() { return null; }
+
+    public Collection<Attachment> getRemovedAttachments() { return null; }
+
     public Person getPerson() {
         return person;
+    }
+
+
+    public static class Builder {
+
+        private Object source;
+        private ServiceModule serviceModule;
+        private CaseObject newState;
+        private CaseObject oldState;
+        private Person person;
+
+        public Builder(Object source) {
+            this.source = source;
+            this.serviceModule = ServiceModule.GENERAL;
+        }
+
+        public Builder(Object source, ServiceModule serviceModule) {
+            this.source = source;
+            this.serviceModule = serviceModule;
+        }
+
+        public Builder withNewState(CaseObject newState) {
+            this.newState = newState;
+            return this;
+        }
+
+        public Builder withOldState(CaseObject oldState) {
+            this.oldState = oldState;
+            return this;
+        }
+
+        public Builder withPerson(Person person) {
+            this.person = person;
+            return this;
+        }
+
+        public CaseObjectEvent build() {
+            return new CaseObjectEvent(
+                    source,
+                    serviceModule,
+                    newState,
+                    oldState,
+                    person
+            );
+        }
     }
 }
