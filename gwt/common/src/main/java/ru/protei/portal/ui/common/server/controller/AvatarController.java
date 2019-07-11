@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dict.En_Gender;
+import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.PolicyService;
@@ -34,7 +36,12 @@ public class AvatarController {
     @Autowired
     ServletContext context;
 
+    @Autowired
+    PersonDAO personDAO;
+
     private static final String NOPHOTO_PATH = "/images/nophoto.png";
+    private static final String MALE_PATH = "/images/user-icon-m.svg";
+    private static final String FEMALE_PATH = "/images/user-icon-f.svg";
 
     private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
 
@@ -45,7 +52,20 @@ public class AvatarController {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
-        loadFile( context.getRealPath( NOPHOTO_PATH ), response );
+        Person person = null;
+        try {
+            Long id = Long.valueOf( fileName.substring( 0, fileName.indexOf( "." ) ) );
+            person = personDAO.get( id );
+        } catch ( Exception e ) {
+            logger.debug( "Person {} not found" );
+        }
+
+        if ( person == null || person.getGender().equals( En_Gender.UNDEFINED ) ) {
+            loadFile( context.getRealPath( NOPHOTO_PATH ), response );
+            return;
+        }
+
+        loadFile( context.getRealPath( person.getGender().equals( En_Gender.MALE ) ? MALE_PATH : FEMALE_PATH ), response );
     }
 
     private UserSessionDescriptor getDescriptor( HttpServletRequest request ) {
