@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
@@ -17,6 +18,7 @@ import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.IssueFilterControllerAsync;
 import ru.protei.portal.ui.common.client.service.ReportControllerAsync;
+import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
@@ -45,6 +47,12 @@ public abstract class IssueReportCreateActivity implements Activity,
     public void onShow(IssueReportEvents.Create event) {
         isSaving = false;
         view.reset();
+        if(!policyService.hasGrantAccessFor(En_Privilege.COMPANY_VIEW)){
+            HashSet<EntityOption> companyIds = new HashSet<>();
+            companyIds.add(IssueFilterUtils.toEntityOption(policyService.getProfile().getCompany()));
+            view.getIssueFilter().companies().setValue(companyIds);
+            view.getIssueFilter().updateInitiators();
+        }
         dialogView.showPopup();
     }
 
@@ -199,7 +207,6 @@ public abstract class IssueReportCreateActivity implements Activity,
     ReportControllerAsync reportController;
     @Inject
     PolicyService policyService;
-
     @Inject
     IssueFilterControllerAsync filterService;
 

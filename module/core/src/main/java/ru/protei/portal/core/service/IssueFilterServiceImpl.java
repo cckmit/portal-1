@@ -66,15 +66,14 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         log.debug("saveIssueFilter(): filter={} ", filter);
 
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        if (filter.getLoginId() == null) {
-            filter.setLoginId(descriptor.getLogin().getId());
-        }
-
         if (isNotValid(filter)) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
+        UserSessionDescriptor descriptor = authService.findSession(token);
+        if (filter.getLoginId() == null) {
+            filter.setLoginId(descriptor.getLogin().getId());
+        }
         applyFilterByScope(descriptor, filter);
 
         if (caseFilterDAO.saveOrUpdate(filter)) {
@@ -97,9 +96,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     private boolean isNotValid( CaseFilter filter ) {
-        return filter != null ||
+        return filter == null ||
                 filter.getType() == null ||
-                filter.getLoginId() == null ||
                 filter.getName() == null ||
                 filter.getParams() == null;
     }

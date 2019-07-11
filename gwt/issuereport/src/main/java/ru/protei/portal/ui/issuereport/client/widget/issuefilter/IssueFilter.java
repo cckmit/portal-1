@@ -142,11 +142,6 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     }
 
     @Override
-    public HasVisibility companiesVisibility() {
-        return companies;
-    }
-
-    @Override
     public HasVisibility managersVisibility() {
         return managers;
     }
@@ -154,6 +149,16 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
     @Override
     public HasVisibility searchPrivateVisibility() {
         return searchPrivateContainer;
+    }
+
+    @Override
+    public HasValue<Set<EntityOption>> companies() {
+        return companies;
+    }
+
+    @Override
+    public void updateInitiators() {
+        initiators.updateCompanies();
     }
 
     @UiHandler("userFilter")
@@ -346,7 +351,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         }
     }
 
-    public void setFilterNameContainerErrorStyle(boolean hasError) {
+    private void setFilterNameContainerErrorStyle(boolean hasError) {
         if (hasError) {
             filterName.addStyleName(REQUIRED);
         } else {
@@ -379,7 +384,7 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         setUserFilterNameVisibility(false);
     }
 
-    public void toggleMsgSearchThreshold() {
+    private void toggleMsgSearchThreshold() {
         if (searchByComments.getValue()) {
             int actualLength = search.getValue().length();
             if (actualLength >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS) {
@@ -391,10 +396,6 @@ public class IssueFilter extends Composite implements HasValue<CaseQuery>, Abstr
         } else if (searchByCommentsWarning.isVisible()) {
             searchByCommentsWarning.setVisible(false);
         }
-    }
-
-    private void updateInitiators() {
-        initiators.updateCompanies();
     }
 
     private void fillFilterFields(CaseQuery caseQuery) {
