@@ -40,8 +40,8 @@ public class AvatarController {
     PersonDAO personDAO;
 
     private static final String NOPHOTO_PATH = "/images/nophoto.png";
-    private static final String MALE_PATH = "/images/user-icon-m.svg";
-    private static final String FEMALE_PATH = "/images/user-icon-f.svg";
+    private static final String MALE_PATH = "/images/user-icon-m.png";
+    private static final String FEMALE_PATH = "/images/user-icon-f.png";
 
     private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
 
@@ -57,7 +57,7 @@ public class AvatarController {
             Long id = Long.valueOf( fileName.substring( 0, fileName.indexOf( "." ) ) );
             person = personDAO.get( id );
         } catch ( Exception e ) {
-            logger.debug( "Person {} not found" );
+            logger.debug( "Person for fileName {} not found", fileName );
         }
 
         if ( person == null || person.getGender().equals( En_Gender.UNDEFINED ) ) {
