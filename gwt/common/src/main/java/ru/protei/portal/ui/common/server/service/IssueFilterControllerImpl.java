@@ -53,7 +53,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException {
+    public CaseFilter saveIssueFilter(CaseFilter filter) throws RequestFailedException {
 
         log.debug("saveIssueFilter, filter: {}", filter);
 
@@ -62,17 +62,14 @@ public class IssueFilterControllerImpl implements IssueFilterController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if (filter.getLoginId() == null){
-            UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-            filter.setLoginId( descriptor.getLogin().getId() );
-        }
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseFilter > response = issueFilterService.saveIssueFilter( filter );
+        CoreResponse<CaseFilter> response = issueFilterService.saveIssueFilter(descriptor.makeAuthToken(), filter);
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());
 
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
         }
 
         return response.getData();

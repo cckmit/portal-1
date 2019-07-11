@@ -79,6 +79,7 @@ public abstract class IssueReportCreateActivity implements Activity,
 
         En_ReportType reportType = view.reportType().getValue();
         CaseQuery query = view.getIssueFilter().getValue();
+
         if (!validateQuery(reportType, query)) {
             return;
         }
@@ -170,9 +171,6 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     private void applyIssueFilterVisibilityByPrivileges() {
-        if (view.getIssueFilter().companiesVisibility().isVisible()) {
-            view.getIssueFilter().companiesVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_COMPANY_VIEW));
-        }
         if (view.getIssueFilter().productsVisibility().isVisible()) {
             view.getIssueFilter().productsVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.ISSUE_FILTER_PRODUCT_VIEW));
         }
