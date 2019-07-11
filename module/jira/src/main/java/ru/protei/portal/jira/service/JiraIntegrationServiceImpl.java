@@ -275,14 +275,6 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
     }
 
 
-/*    private String generateUniqueFileName(String filename){
-        return generateUniqueName() + "_" + filename;
-    }
-
-    private String generateUniqueName() {
-        return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
-    }*/
-
     private void storeAttachment (ru.protei.portal.core.model.ent.Attachment attachment, InputStreamSource content, long caseId) throws Exception {
 
         if(attachmentService.saveAttachment(attachment).isError()) {

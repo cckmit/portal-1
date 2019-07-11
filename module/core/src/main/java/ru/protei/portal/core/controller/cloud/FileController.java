@@ -319,10 +319,6 @@ public class FileController {
         return id + filename.substring(i);
     }
 
-/*    private String generateUniqueFileName(String filename){
-        return generateUniqueName() + "_" + filename;
-    }*/
-
     private String generateUniqueName() {
         return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
     }
