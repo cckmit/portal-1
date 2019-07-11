@@ -119,7 +119,7 @@ public class EmployeeQuery extends BaseQuery {
         this.email = email;
     }
 
-    public String getDepartmentParent() {
+    public String getDepartment() {
         return departmentParent;
     }
 
