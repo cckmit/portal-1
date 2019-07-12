@@ -57,8 +57,8 @@ public class EmployeeSqlBuilder {
                 condition
                         .append(" and Person.id in (")
                         .append("select personId from company_dep cd " +
-                                "left outer join company_dep cd2 on cd.parent_dep = cd2.id " +
-                                "inner join worker_entry we on cd.id = we.dep_id or cd2.id = we.dep_id")
+                                "left join company_dep cd2 on cd.parent_dep = cd2.id " +
+                                "inner join worker_entry we on cd.id = we.dep_id")
                         .append(" where cd.dep_name like ? or cd2.dep_name like ?)");
                 args.add(helper);
                 args.add(helper);
