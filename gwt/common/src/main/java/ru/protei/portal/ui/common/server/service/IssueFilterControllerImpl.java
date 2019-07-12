@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
@@ -23,13 +24,13 @@ import java.util.List;
 public class IssueFilterControllerImpl implements IssueFilterController {
 
     @Override
-    public List< CaseFilterShortView > getIssueFilterShortViewListByCurrentUser() throws RequestFailedException {
+    public List< CaseFilterShortView > getIssueFilterShortViewList( En_CaseFilterType filterType ) throws RequestFailedException {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        log.debug( "getIssueFilterShortViewListByCurrentUser(): accountId={} ", descriptor.getLogin().getId() );
+        log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", descriptor.getLogin().getId(), filterType );
 
-        CoreResponse<List<CaseFilterShortView >> response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId() );
+        CoreResponse< List< CaseFilterShortView > > response = issueFilterService.getIssueFilterShortViewList( descriptor.getLogin().getId(), filterType );
 
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
@@ -52,7 +53,7 @@ public class IssueFilterControllerImpl implements IssueFilterController {
     }
 
     @Override
-    public CaseFilter saveIssueFilter( CaseFilter filter ) throws RequestFailedException {
+    public CaseFilter saveIssueFilter(CaseFilter filter) throws RequestFailedException {
 
         log.debug("saveIssueFilter, filter: {}", filter);
 
@@ -61,17 +62,14 @@ public class IssueFilterControllerImpl implements IssueFilterController {
             throw new RequestFailedException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        if (filter.getLoginId() == null){
-            UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-            filter.setLoginId( descriptor.getLogin().getId() );
-        }
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<CaseFilter > response = issueFilterService.saveIssueFilter( filter );
+        CoreResponse<CaseFilter> response = issueFilterService.saveIssueFilter(descriptor.makeAuthToken(), filter);
 
         log.debug("saveIssueFilter, result: {}", response.getStatus());
 
-        if ( response.isError() ) {
-            throw new RequestFailedException( response.getStatus() );
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
         }
 
         return response.getData();

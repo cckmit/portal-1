@@ -6,15 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
-import ru.protei.portal.core.event.AssembledCaseEvent;
-import ru.protei.portal.core.event.CaseAttachmentEvent;
-import ru.protei.portal.core.event.CaseCommentEvent;
-import ru.protei.portal.core.event.CaseObjectEvent;
-import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.helper.HelperFunc;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -23,109 +21,83 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
     @Override
     @EventListener
     public void publishEvent(CaseObjectEvent event) {
-        if (EAGER_PUSH.contains(event.getCaseObject().getExtAppType())) {
-            publisherService.publishEvent(new AssembledCaseEvent(event));
-            return;
-        }
-
-        Person eventRelatedPerson = event.getPerson();
-        Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
-        if (assembledEventsMap.containsKey(key)) {
-            logger.debug("assemble event on case {}", event.getCaseObject().defGUID());
-            AssembledCaseEvent caseEvent = assembledEventsMap.get(key);
-            if (caseEvent.isLastStateSet()) {
-                publishAndClear(key);
-                assembledEventsMap.put(key, new AssembledCaseEvent(event));
-            } else {
-                //Cuz reference
-                assembledEventsMap.get(key).attachCaseObject(event.getCaseObject());
-            }
-        } else {
-            logger.debug("push new event on case {} for assembly", event.getCaseObject().defGUID());
-            assembledEventsMap.put(key, new AssembledCaseEvent(event));
-
-        }
+        handleEventForAssemble(event, new AssembledCaseEvent(event));
     }
 
     @Override
     @EventListener
     public void publishEvent(CaseCommentEvent event) {
-        if (EAGER_PUSH.contains(event.getCaseObject().getExtAppType())) {
-            publisherService.publishEvent(new AssembledCaseEvent(event));
+        handleEventForAssemble(event, new AssembledCaseEvent(event));
+    }
+
+    @Override
+    @EventListener
+    public void publishEvent(CaseObjectCommentEvent event) {
+        handleEventForAssemble(event, new AssembledCaseEvent(event));
+    }
+
+    private void handleEventForAssemble(AbstractCaseEvent event, AssembledCaseEvent assembledEvent) {
+
+        if (isEagerPush(event)) {
+            logger.info("Eager push on event for case {}", event.getCaseObject().defGUID());
+            publisherService.publishEvent(assembledEvent);
             return;
         }
 
-        Person eventRelatedPerson = event.getPerson();
-        Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
+        Tuple<Person, Long> key = makeEventKey(event);
 
-        AssembledCaseEvent existingEvent = assembledEventsMap.get(key);
-        if ( isChangedComments(existingEvent) ) {
-            if ( isSame( existingEvent.getCaseComment(), event.getRemovedCaseComment()) ) {
-                logger.debug("onCaseCommentEvent, remove new (not mailed) comment on case {}", event.getCaseObject().defGUID());
-
-                assembledEventsMap.remove(key);
-            } else if ( isSame(existingEvent.getCaseComment(), event.getCaseComment()) ) {
-                logger.debug("onCaseCommentEvent, we don't take into account a last edited comment");
-
-                // we don't take into account a last edited comment
-            } else {
-                logger.debug("onCaseCommentEvent, publish prev event on case {}", event.getCaseObject().defGUID());
-
-                publishAndClear(key);
-                assembledEventsMap.put(key, new AssembledCaseEvent(event));
-            }
-        } else {
-            logger.debug("onCaseCommentEvent, push new event on case {}", event.getCaseObject().defGUID());
-            //In order to update case events map in both cases:
-            // person and event pair already exist or
-            // person and event pair does not exist;
-
-            if (assembledEventsMap.containsKey(key)) {
-                logger.debug("attach comment event to existing case {}", event.getCaseObject().defGUID());
-                AssembledCaseEvent assembledCaseEvent = assembledEventsMap.get(key);
-                assembledCaseEvent.attachCaseComment(event.getCaseComment());
-                assembledCaseEvent.attachCaseObject(event.getCaseObject());
-                assembledCaseEvent.synchronizeAttachments(
-                        event.getAddedAttachments(),
-                        event.getRemovedAttachments()
-                );
-            } else {
-                assembledEventsMap.put(key, new AssembledCaseEvent(event));
-            }
+        if (!assembledEventsMap.containsKey(key)) {
+            logger.info("Put event for case {} to map, no previous event found", event.getCaseObject().defGUID());
+            assembledEventsMap.put(key, assembledEvent);
+            return;
         }
-    }
 
-    private boolean isChangedComments(AssembledCaseEvent existingEvent) {
-        return existingEvent != null &&
-                ( existingEvent.isCaseCommentAttached() || existingEvent.isCaseCommentRemoved() );
-    }
+        AssembledCaseEvent assembledPrevEvent = assembledEventsMap.get(key);
 
-    private boolean isSame(CaseComment comment1, CaseComment comment2) {
-        return comment1 != null && comment2 != null
-                && ( HelperFunc.equals(comment1.getId(), comment2.getId()) );
+        if (!assembledPrevEvent.isLastStateSet() && !assembledPrevEvent.isCaseCommentAttached()) {
+            logger.info("Attach new event to previous event for case {}", event.getCaseObject().defGUID());
+            if (event.getCaseObject() != null) {
+                assembledPrevEvent.attachCaseObject(event.getCaseObject());
+            }
+            if (event.getCaseComment() != null) {
+                assembledPrevEvent.attachCaseComment(event.getCaseComment());
+            }
+            assembledPrevEvent.synchronizeAttachments(
+                    event.getAddedAttachments(),
+                    event.getRemovedAttachments()
+            );
+            return;
+        }
+
+        logger.info("Put event for case {} to map, push previous event", event.getCaseObject().defGUID());
+        publishAndClear(key);
+        assembledEventsMap.put(key, assembledEvent);
     }
 
     @Override
     @EventListener
     public void publishEvent(CaseAttachmentEvent event) {
-        if (EAGER_PUSH.contains(event.getCaseObject().getExtAppType())) {
+
+        if (isEagerPush(event)) {
+            logger.info("Eager push on event for case {}", event.getCaseObject().defGUID());
             publisherService.publishEvent(new AssembledCaseEvent(event));
             return;
         }
 
-        Person eventRelatedPerson = event.getPerson();
-        Tuple<Person, Long> key = new Tuple<>(eventRelatedPerson, event.getCaseObject().getId());
-        logger.debug("onCaseAttachmentEvent, adding attachments on case {}", event.getCaseObject().defGUID());
+        Tuple<Person, Long> key = makeEventKey(event);
 
-        if (assembledEventsMap.containsKey(key)) {
-            logger.debug("attach attachment event to existing case {}", event.getCaseObject().defGUID());
-            assembledEventsMap.get(key).synchronizeAttachments(
-                    event.getAddedAttachments(),
-                    event.getRemovedAttachments()
-            );
-        } else {
+        if (!assembledEventsMap.containsKey(key)) {
+            logger.info("Put event for case {} to map, no previous event found", event.getCaseObject().defGUID());
             assembledEventsMap.put(key, new AssembledCaseEvent(event));
+            return;
         }
+
+        logger.info("Attach new event to previous event for case {}", event.getCaseObject().defGUID());
+        AssembledCaseEvent assembledPrevEvent = assembledEventsMap.get(key);
+        assembledPrevEvent.synchronizeAttachments(
+                event.getAddedAttachments(),
+                event.getRemovedAttachments()
+        );
     }
 
     @Override
@@ -167,21 +139,26 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         assembledEventsMap.remove(key);
     }
 
+    private boolean isEagerPush(AbstractCaseEvent event) {
+        return EAGER_PUSH.contains(event.getCaseObject().getExtAppType());
+    }
+
+    private Tuple<Person, Long> makeEventKey(AbstractCaseEvent event) {
+        return new Tuple<>(event.getPerson(), event.getCaseObject().getId());
+    }
+
     private final Map<Tuple<Person, Long>, AssembledCaseEvent> assembledEventsMap = new ConcurrentHashMap<>();
     //Time interval for events checking, MS
     private final static long SCHEDULE_TIME = 5000;
-
     //app types for eager push
     private final static Set<String> EAGER_PUSH = new HashSet<String>() {{
         add("junit-test");
         add("redmine");
     }};
-
     private static Logger logger = LoggerFactory.getLogger(EventAssemblerServiceImpl.class);
 
     @Autowired
     EventPublisherService publisherService;
-
     @Autowired
     EventExpirationControl eventExpirationControl;
 }

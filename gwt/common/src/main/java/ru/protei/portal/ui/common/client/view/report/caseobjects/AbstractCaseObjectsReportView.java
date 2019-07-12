@@ -73,7 +73,4 @@ public interface AbstractCaseObjectsReportView  extends IsWidget {
     void setInitiatorCompaniesSupplier( Supplier<Set<EntityOption>> collectionSupplier);
 
     void updateInitiators();
-
-    HasValue<CaseFilterShortView> userFilter();
-
 }

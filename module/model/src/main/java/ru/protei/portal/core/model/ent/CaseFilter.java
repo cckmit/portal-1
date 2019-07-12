@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.ent;
 
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
 import ru.protei.winter.jdbc.annotations.*;
@@ -20,6 +21,10 @@ public class CaseFilter implements Serializable {
 
     @JdbcColumn( name = "login_id" )
     private Long loginId;
+
+    @JdbcColumn(name = "type")
+    @JdbcEnumerated(EnumType.STRING)
+    private En_CaseFilterType type;
 
     public Long getId() {
         return id;
@@ -53,6 +58,14 @@ public class CaseFilter implements Serializable {
         this.loginId = loginId;
     }
 
+    public En_CaseFilterType getType() {
+        return type;
+    }
+
+    public void setType( En_CaseFilterType type ) {
+        this.type = type;
+    }
+
     public CaseFilterShortView toShortView() {
         return new CaseFilterShortView( this.id, this.name );
     }
@@ -61,9 +74,10 @@ public class CaseFilter implements Serializable {
     public String toString() {
         return "CaseFilter{" +
                 "id=" + id +
-                ", name=" + name +
+                ", name='" + name + '\'' +
                 ", params=" + params +
                 ", loginId=" + loginId +
+                ", type=" + type +
                 '}';
     }
 }

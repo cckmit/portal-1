@@ -50,6 +50,7 @@ public class En_ResultStatusLang {
             case INVENTORY_NUMBER_ALREADY_EXIST: return lang.errInventoryNumberAlreadyExist();
             case DECIMAL_NUMBER_ALREADY_EXIST: return lang.errDecimalNumberAlreadyExist();
             case PROHIBITED_PRIVATE_COMMENT: return lang.errIssueCommentProhibitedPrivate();
+            case INVALID_CASE_UPDATE_CASE_IS_CLOSED: return lang.errInvalidCaseUpdateCaseIsClosed();
             default: return lang.errUnknownResult();
         }
     }

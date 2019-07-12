@@ -50,19 +50,40 @@ public class EventAssemblerTest {
         CaseService caseService = ctx.getBean(CaseService.class);
 
         //First portion
-        CaseObjectEvent objectEvent = new CaseObjectEvent(caseService, object, person);
-        CaseCommentEvent commentEvent = new CaseCommentEvent(caseService, object, comment,null, person);
-        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent(ServiceModule.GENERAL, this, object,
-                attachment, removedAttachment, person);
+        CaseObjectEvent objectEvent = new CaseObjectEvent.Builder(caseService)
+                .withNewState(object)
+                .withPerson(person)
+                .build();
+        CaseCommentEvent commentEvent = new CaseCommentEvent.Builder(caseService)
+                .withState(object)
+                .withCaseComment(comment)
+                .withPerson(person)
+                .build();
+        CaseAttachmentEvent attachmentEvent = new CaseAttachmentEvent.Builder(this)
+                .withCaseObject(object)
+                .withAddedAttachments(attachment)
+                .withRemovedAttachments(removedAttachment)
+                .withPerson(person)
+                .build();
 
         //Second portion
-        CaseObjectEvent secondEvent = new CaseObjectEvent(caseService, newObject, person);
-        CaseCommentEvent secondCommentEvent = new CaseCommentEvent(caseService, newObject, comment, null, person);
+        CaseObjectEvent secondEvent = new CaseObjectEvent.Builder(caseService)
+                .withNewState(newObject)
+                .withPerson(person)
+                .build();
+        CaseCommentEvent secondCommentEvent = new CaseCommentEvent.Builder(caseService)
+                .withState(newObject)
+                .withCaseComment(comment)
+                .withPerson(person)
+                .build();
 
         CaseComment comment2 = new CaseComment();
         comment2.setId(100L);
-        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent(caseService, newObject, comment2, null, person);
-
+        CaseCommentEvent thirdCommentEvent = new CaseCommentEvent.Builder(caseService)
+                .withState(newObject)
+                .withCaseComment(comment2)
+                .withPerson(person)
+                .build();
 
 
         //This is where the fun begin

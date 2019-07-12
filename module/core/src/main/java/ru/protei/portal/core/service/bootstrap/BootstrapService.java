@@ -147,4 +147,6 @@ public class BootstrapService {
     CaseTagDAO caseTagDAO;
     @Autowired
     CompanyGroupHomeDAO companyGroupHomeDAO;
+    @Autowired
+    CaseFilterDAO caseFilterDAO;
 }

@@ -95,4 +95,6 @@ public interface AbstractIssueFilterWidgetView extends IsWidget {
     void addUserFilterDisplayOption(CaseFilterShortView value);
 
     void addBodyStyles(String styles);
+
+    void presetFilterType();
 }
