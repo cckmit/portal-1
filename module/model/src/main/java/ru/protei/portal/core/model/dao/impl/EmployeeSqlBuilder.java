@@ -52,14 +52,16 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {
+                String helper = HelperFunc.makeLikeArg(query.getDepartment(), true);
+
                 condition
                         .append(" and Person.id in (")
-                        .append("select personId from company_dep as cd " +
-                                "inner join worker_entry as we on we.dep_id = cd.id " +
-                                "inner join company_dep cd2 on cd.parent_dep = cd2.id")
+                        .append("select personId from company_dep cd " +
+                                "left outer join company_dep cd2 on cd.parent_dep = cd2.id " +
+                                "inner join worker_entry we on cd.id = we.dep_id or cd2.id = we.dep_id")
                         .append(" where cd.dep_name like ? or cd2.dep_name like ?)");
-                args.add(HelperFunc.makeLikeArg(query.getDepartment(), true));
-                args.add(HelperFunc.makeLikeArg(query.getDepartment(), true));
+                args.add(helper);
+                args.add(helper);
             }
         });
     }
