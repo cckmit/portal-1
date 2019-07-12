@@ -8,8 +8,6 @@
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
              xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
-             xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
-             xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
 >
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -18,25 +16,25 @@
 
         <div class="body">
             <div class="grid grid-indent">
-                <div class="form-group col-xs-6">
+                <div class="form-group col-xs-12">
                     <label ui:field="nameLabel"><ui:text from="{lang.projectName}"/></label>
                     <validablefield:ValidableTextBox ui:field="projectName" styleName="input-field" notNull="true"/>
                 </div>
-                <div class="form-group col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectRegion}"/></label>
+                <div class="form-group col-xs-3">
+                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectRegion}"/></label>
                     <region:RegionButtonSelector ui:field="projectRegion" />
                 </div>
-                <div class="form-group col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectDirection}"/></label>
+                <div class="form-group col-xs-3">
+                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectDirection}"/></label>
                     <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" />
                 </div>
-                <div class="form-group col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                    <company:CompanySelector ui:field="company" defaultValue="{lang.selectIssueCompany}"/>
-                </div>
-                <div class="form-group col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectCustomerType}"/></label>
+                <div class="form-group col-xs-3">
+                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectCustomerType}"/></label>
                     <cutomertype:CustomerTypeSelector ui:field="customerType"/>
+                </div>
+                <div class="form-group col-xs-3">
+                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectCustomerCompany}"/></label>
+                    <company:CompanySelector ui:field="company" defaultValue="{lang.selectIssueCompany}"/>
                 </div>
                 <div class="form-group col-xs-12">
                     <label class="col-xs-12"><ui:text from="{lang.projectDescription}"/></label>

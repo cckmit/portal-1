@@ -152,17 +152,12 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     Element iconState;
     @UiField
     SpanElement state;
-
-    @Inject
-    @UiField(provided = true)
+    @UiField
     DivElement products;
-    @Inject
-    @UiField(provided = true)
+    @UiField
     DivElement team;
-
     @UiField
     HTMLPanel documents;
-
     @UiField
     HTMLPanel commentsContainer;
 

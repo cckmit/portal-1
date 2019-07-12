@@ -98,7 +98,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
         view.setTeam( new HashSet<>( value.getTeam() ) );
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
-        view.setRegion( value.getRegion().getDisplayText() );
+        view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
         view.setProducts(new HashSet<>(value.getProducts()));
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
