@@ -28,7 +28,7 @@ public class EmployeeSqlBuilder {
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and Person.displayName like ?");
-                args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+                args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
@@ -43,16 +43,16 @@ public class EmployeeSqlBuilder {
 
             if (HelperFunc.isLikeRequired(query.getIpAddress())) {
                 condition.append(" and Person.ipaddress like ?");
-                args.add(HelperFunc.makeLikeArg(query.getIpAddress(), true));
+                args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getEmail())) {
                 condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getEmail(), true));
+                args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getDepartment())) {
-                String helper = HelperFunc.makeLikeArg(query.getDepartment(), true);
+                String helper = HelperFunc.makeLikeArg(query.getDepartment().trim(), true);
 
                 condition
                         .append(" and Person.id in (")
