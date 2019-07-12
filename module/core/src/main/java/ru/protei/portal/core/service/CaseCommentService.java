@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public interface CaseCommentService {
     })
     CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query);
 
+
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
             @CasePrivileged(caseType = En_CaseType.OFFICIAL, requireAll = {En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT}),
@@ -47,6 +49,17 @@ public interface CaseCommentService {
     })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
     CoreResponse<CaseComment> addCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
+
+    @Privileged(forCases = {
+            @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.OFFICIAL, requireAll = {En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
+            @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
+    })
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_CREATE, forCases = En_CaseType.CRM_SUPPORT)
+    CoreResponse<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent(AuthToken token, En_CaseType caseType, CaseComment comment);
+
 
     @Privileged(forCases = {
             @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
@@ -65,8 +78,20 @@ public interface CaseCommentService {
             @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
             @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
     })
+    @Auditable(value = En_AuditType.ISSUE_COMMENT_MODIFY, forCases = En_CaseType.CRM_SUPPORT)
+    CoreResponse<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent(AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
+
+
+    @Privileged(forCases = {
+            @CasePrivileged(caseType = En_CaseType.CRM_SUPPORT, requireAll = {En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.OFFICIAL, requireAll = {En_Privilege.OFFICIAL_VIEW, En_Privilege.OFFICIAL_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.PROJECT, requireAll = {En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT}),
+            @CasePrivileged(caseType = En_CaseType.EMPLOYEE_REGISTRATION, requireAll = En_Privilege.EMPLOYEE_REGISTRATION_VIEW),
+            @CasePrivileged(caseType = En_CaseType.CONTRACT, requireAll = {En_Privilege.CONTRACT_VIEW, En_Privilege.CONTRACT_EDIT})
+    })
     @Auditable(value = En_AuditType.ISSUE_COMMENT_REMOVE, forCases = En_CaseType.CRM_SUPPORT)
     CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person);
+
 
     CoreResponse<Long> getTimeElapsed(Long caseId);
 

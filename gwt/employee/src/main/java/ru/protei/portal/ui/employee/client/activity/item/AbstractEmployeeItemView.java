@@ -22,7 +22,9 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhoto ( String photo );
 
-    void setDepartment( String value );
+    void setDepartmentParent(String value);
+
+    void setDepartment(String value );
 
     void setPosition( String value );
 

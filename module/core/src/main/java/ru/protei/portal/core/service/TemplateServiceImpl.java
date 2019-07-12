@@ -277,24 +277,38 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, CaseComment removedCaseComment, En_TextMarkup textMarkup){
+
         if (removedCaseComment != null) {
             comments.add(removedCaseComment);
+        }
+        if (newCaseComment != null) {
+            boolean isNewCommentPresents = comments.stream()
+                    .anyMatch(comment -> Objects.equals(comment.getId(), newCaseComment.getId()));
+            if (!isNewCommentPresents) {
+                comments.add(newCaseComment);
+            }
         }
 
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map( comment -> {
+
+                    boolean isNew = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
+                    boolean isChanged = isNew && oldCaseComment != null;
+
                     Map< String, Object > mailComment = new HashMap<>();
                     mailComment.put( "created", comment.getCreated() );
                     mailComment.put( "author", comment.getAuthor() );
-                    mailComment.put( "text", escapeTextAndRenderHTML( comment.getText(), textMarkup ) );
+                    if (isNew) {
+                        mailComment.put("text", escapeTextAndRenderHTML(newCaseComment.getText(), textMarkup));
+                    } else {
+                        mailComment.put("text", escapeTextAndRenderHTML(comment.getText(), textMarkup));
+                    }
                     mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
-
-                    boolean isChanged = newCaseComment != null && HelperFunc.equals( newCaseComment.getId(), comment.getId() );
-                    mailComment.put( "changed",  isChanged);
-                    if(isChanged && oldCaseComment != null){
+                    mailComment.put( "changed", isNew);
+                    if (isChanged) {
                         mailComment.put( "oldText", escapeTextAndRenderHTML( oldCaseComment.getText(), textMarkup ) );
                     }
                     mailComment.put( "removed", removedCaseComment != null && HelperFunc.equals( removedCaseComment.getId(), comment.getId()));

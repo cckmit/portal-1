@@ -60,4 +60,5 @@ public final class RedmineUtils {
 
     public static final String REDMINE_BASIC_PRIORITY = "Степень приоритета 3 (Стандартная проблема)";
     public static final int REDMINE_CUSTOM_FIELD_ID = 89;
+    public static final String COMMENT_PROTEI_USER_PREFIX = "PROTEI";
 }

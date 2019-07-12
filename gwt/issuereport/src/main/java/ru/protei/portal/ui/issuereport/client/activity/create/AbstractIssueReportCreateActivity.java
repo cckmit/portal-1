@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issuereport.client.activity.create;
 
-public interface AbstractIssueReportCreateActivity {
-    void onReportTypeSelected();
-    void onUserFilterChanged();
+public interface AbstractIssueReportCreateActivity{
+    void onReportTypeChanged();
 }

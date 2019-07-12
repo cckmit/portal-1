@@ -231,14 +231,11 @@ public class FileController {
             return;
         }
 
-        publisherService.publishEvent(new CaseAttachmentEvent(
-                ServiceModule.GENERAL,
-                this,
-                issue.getData(),
-                Collections.singletonList(attachment),
-                null,
-                initiator
-        ));
+        publisherService.publishEvent(new CaseAttachmentEvent.Builder(this)
+                .withCaseObject(issue.getData())
+                .withAddedAttachments(Collections.singletonList(attachment))
+                .withPerson(initiator)
+                .build());
     }
 
     private String saveFileStream(InputStream inputStream, String fileName, long fileSize, String contentType) throws IOException {

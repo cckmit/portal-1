@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.event.CaseCommentEvent;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
@@ -16,6 +17,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
+import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -47,84 +49,191 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Override
     @Transactional
     public CoreResponse<CaseComment> addCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
-        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
-        if (checkAccessStatus != null) {
-            return new CoreResponse<CaseComment>().error(checkAccessStatus);
-        }
-        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
+
+        if (comment == null) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
-        CoreResponse<CaseComment> response = add(token, comment);
-        if (response.isError()) {
-            return response;
+
+        CoreResponse<CaseCommentSaveOrUpdateResult> result = addCaseCommentWithoutEvent(token, caseType, comment);
+        if (result.isError()) {
+            throw new ResultStatusException(result.getStatus());
         }
-        comment = response.getData();
+        CaseCommentSaveOrUpdateResult resultData = result.getData();
 
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
-
-            Collection<Long> addedAttachmentsIds = comment.getCaseAttachments()
-                    .stream()
-                    .map(CaseAttachment::getAttachmentId)
-                    .collect(Collectors.toList());
-
-            Collection<Attachment> addedAttachments = caseObjectNew.getAttachments()
-                    .stream()
-                    .filter(a -> addedAttachmentsIds.contains(a.getId()))
-                    .collect(Collectors.toList());
-
-            publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, comment, addedAttachments, person, null, null));
+            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
+            publisherService.publishEvent(new CaseCommentEvent.Builder(this)
+                    .withPerson(person)
+                    .withOldState(caseObjectOld)
+                    .withNewState(caseObjectNew)
+                    .withCaseComment(resultData.getCaseComment())
+                    .withAddedAttachments(resultData.getAddedAttachments())
+                    .build());
         }
 
         return new CoreResponse<CaseComment>().success(comment);
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent(AuthToken token, En_CaseType caseType, CaseComment comment) {
+
+        if (comment == null) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
+        if (checkAccessStatus != null) {
+            throw new ResultStatusException(checkAccessStatus);
+        }
+
+        if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
+            throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
+        }
+
+        comment.setCreated(new Date());
+        Long commentId = caseCommentDAO.persist(comment);
+        if (commentId == null) {
+            log.info("Failed to create comment at db: {}", comment);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        if (CollectionUtils.isNotEmpty(comment.getCaseAttachments())) {
+            caseService.updateExistsAttachmentsFlag(comment.getCaseId(), true);
+            comment.getCaseAttachments().forEach(ca -> ca.setCommentId(commentId));
+            caseAttachmentDAO.persistBatch(comment.getCaseAttachments());
+        }
+
+        boolean isCaseChanged = caseService.updateCaseModified(token, comment.getCaseId(), comment.getCreated()).getData();
+        if (!isCaseChanged) {
+            log.info("Failed to update case modifiedDate: {}", comment);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        if (!updateTimeElapsed(token, comment.getCaseId()).getData()) {
+            log.info("Failed to update time elapsed on addCaseComment: {}", comment);
+            throw new ResultStatusException(En_ResultStatus.NOT_CREATED);
+        }
+
+        // re-read data from db to get full-filled object
+        CaseComment result = caseCommentDAO.get(commentId);
+        // attachments won't read now from DAO
+        result.setCaseAttachments(comment.getCaseAttachments());
+
+        List<Long> addedAttachmentsIds = result.getCaseAttachments()
+                .stream()
+                .map(CaseAttachment::getAttachmentId)
+                .collect(Collectors.toList());
+
+        Collection<Attachment> addedAttachments = attachmentService.getAttachments(
+                token,
+                caseType,
+                addedAttachmentsIds
+        ).getData();
+
+        return new CoreResponse<CaseCommentSaveOrUpdateResult>().success(new CaseCommentSaveOrUpdateResult(comment, addedAttachments));
     }
 
     @Override
     @Transactional
     public CoreResponse<CaseComment> updateCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+
+        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
+
+        CoreResponse<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, person);
+        if (result.isError()) {
+            throw new ResultStatusException(result.getStatus());
+        }
+        CaseCommentSaveOrUpdateResult resultData = result.getData();
+
+        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
+            CaseObject caseObjectNew = getNewStateAndFillOldState(resultData.getCaseComment().getCaseId(), caseObjectOld);
+            publisherService.publishEvent(new CaseCommentEvent.Builder(this)
+                    .withPerson(person)
+                    .withOldState(caseObjectOld)
+                    .withNewState(caseObjectNew)
+                    .withOldCaseComment(resultData.getOldCaseComment())
+                    .withCaseComment(resultData.getCaseComment())
+                    .withRemovedAttachments(resultData.getRemovedAttachments())
+                    .withAddedAttachments(resultData.getAddedAttachments())
+                    .build());
+        }
+
+        return new CoreResponse<CaseComment>().success(resultData.getCaseComment());
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+
+        if (comment == null || comment.getId() == null || person == null) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, comment.getCaseId());
         if (checkAccessStatus != null) {
-            return new CoreResponse<CaseComment>().error(checkAccessStatus);
+            throw new ResultStatusException(checkAccessStatus);
         }
+
         if (caseType == En_CaseType.CRM_SUPPORT && prohibitedPrivateComment(token, comment)) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
+            throw new ResultStatusException(En_ResultStatus.PROHIBITED_PRIVATE_COMMENT);
+        }
+
+        if (!Objects.equals(person.getId(), comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
+            throw new ResultStatusException(En_ResultStatus.NOT_AVAILABLE);
         }
 
         CaseComment prevComment = caseCommentDAO.get(comment.getId());
-        CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
-        Collection<CaseAttachment> removedCaseAttachments = new ArrayList<>();
-        CoreResponse<CaseComment> response = update(token, caseType, comment, person, prevComment, removedCaseAttachments);
-        if (response.isError()) {
-            return response;
-        }
-        comment = response.getData();
+        jdbcManyRelationsHelper.fill(prevComment, "caseAttachments");
 
-        if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
-            CaseObject caseObjectNew = getNewStateAndFillOldState(comment.getCaseId(), caseObjectOld);
-
-            Collection<Attachment> removedAttachments = attachmentService.getAttachments(
-                    token,
-                    caseType,
-                    removedCaseAttachments
-            ).getData();
-
-            Collection<Attachment> addedAttachments = attachmentService.getAttachments(
-                    token,
-                    caseType,
-                    HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
-            ).getData();
-
-            publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, prevComment, removedAttachments, comment, addedAttachments, person));
+        boolean isCommentUpdated = caseCommentDAO.merge(comment);
+        if (!isCommentUpdated) {
+            log.info("Failed to update comment {} at db", comment.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
         }
 
-        return new CoreResponse<CaseComment>().success(comment);
+        Collection<CaseAttachment> removedCaseAttachments = caseAttachmentDAO.calcDiffAndSynchronize(
+                prevComment.getCaseAttachments(),
+                comment.getCaseAttachments()
+        );
+        if (!removedCaseAttachments.isEmpty()) {
+            removeAttachments(token, caseType, removedCaseAttachments);
+        }
+
+        boolean isCaseChanged =
+                caseService.updateExistsAttachmentsFlag(comment.getCaseId()).getData()
+                        && caseService.updateCaseModified(token, comment.getCaseId(), new Date()).getData();
+        if (!isCaseChanged) {
+            log.info("Failed to update case modifiedDate for comment {}", comment.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        if (!updateTimeElapsed(token, comment.getCaseId()).getData()) {
+            log.info("Failed to update time elapsed on updateCaseComment for comment {}", comment.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
+
+        Collection<Attachment> removedAttachments = attachmentService.getAttachments(
+                token,
+                caseType,
+                removedCaseAttachments
+        ).getData();
+
+        Collection<Attachment> addedAttachments = attachmentService.getAttachments(
+                token,
+                caseType,
+                HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
+        ).getData();
+
+        return new CoreResponse<CaseCommentSaveOrUpdateResult>().success(new CaseCommentSaveOrUpdateResult(comment, prevComment, addedAttachments, removedAttachments));
     }
 
     @Override
     @Transactional
     public CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment, Person person) {
+
         En_ResultStatus checkAccessStatus = null;
         if (removedComment == null || removedComment.getId() == null || person == null || person.getId() == null) {
             checkAccessStatus = En_ResultStatus.INCORRECT_PARAMS;
@@ -138,7 +247,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             }
         }
         if (checkAccessStatus != null) {
-            return new CoreResponse<Boolean>().error(checkAccessStatus);
+            throw new ResultStatusException(checkAccessStatus);
         }
 
         CaseObject caseObjectOld = caseObjectDAO.get(removedComment.getCaseId());
@@ -148,22 +257,43 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 removedComment.getCaseAttachments()
         ).getData();
 
-        CoreResponse<Boolean> response = remove(token, caseType, removedComment);
-        if (response.isError()) {
-            return response;
+        long caseId = removedComment.getCaseId();
+
+        boolean isRemoved = caseCommentDAO.remove(removedComment);
+        if (!isRemoved) {
+            log.info("Failed to remove comment {} at db", removedComment.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
+        }
+
+        boolean isCaseChanged = true;
+        if (CollectionUtils.isNotEmpty(removedComment.getCaseAttachments())) {
+            caseAttachmentDAO.removeByCommentId(caseId);
+            removedComment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
+            if (!caseService.isExistsAttachments(removedComment.getCaseId())) {
+                isCaseChanged = caseService.updateExistsAttachmentsFlag(removedComment.getCaseId(), false).getData();
+            }
+        }
+        isCaseChanged &= caseService.updateCaseModified(token, caseId, new Date()).getData();
+        if (!isCaseChanged) {
+            log.info("Failed to update case modifiedDate for comment {}", removedComment.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
 
         if (!updateTimeElapsed(token, removedComment.getCaseId()).getData()) {
-            throw new RuntimeException("failed to update time elapsed on removeCaseComment");
+            log.info("Failed to update time elapsed on removeCaseComment for comment {}", removedComment.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_REMOVED);
         }
 
         CaseObject caseObjectNew = getNewStateAndFillOldState(removedComment.getCaseId(), caseObjectOld);
+        publisherService.publishEvent(new CaseCommentEvent.Builder(this)
+                .withOldState(caseObjectOld)
+                .withNewState(caseObjectNew)
+                .withRemovedCaseComment(removedComment)
+                .withRemovedAttachments(removedAttachments)
+                .withPerson(person)
+                .build());
 
-        publisherService.publishEvent(new CaseCommentEvent(this, caseObjectNew, caseObjectOld, null, null, person, removedComment, removedAttachments));
-
-        Boolean result = response.getData();
-
-        return new CoreResponse<Boolean>().success(result);
+        return new CoreResponse<Boolean>().success(isRemoved);
     }
 
     @Override
@@ -249,122 +379,6 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         });
 
         return new CoreResponse<List<CaseComment>>().success(comments);
-    }
-
-    private CoreResponse<CaseComment> add(AuthToken token, CaseComment comment) {
-
-        if (comment == null) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        Date now = new Date();
-        comment.setCreated(now);
-
-        Long commentId = caseCommentDAO.persist(comment);
-
-        if (commentId == null) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_CREATED);
-        }
-
-        if (CollectionUtils.isNotEmpty(comment.getCaseAttachments())) {
-            caseService.updateExistsAttachmentsFlag(comment.getCaseId(), true);
-            comment.getCaseAttachments().forEach(ca -> ca.setCommentId(commentId));
-            caseAttachmentDAO.persistBatch(comment.getCaseAttachments());
-        }
-
-        boolean isCaseChanged = caseService.updateCaseModified(token, comment.getCaseId(), comment.getCreated()).getData();
-
-        if (!isCaseChanged) {
-            throw new RuntimeException("failed to update case modifiedDate");
-        }
-
-        if (!updateTimeElapsed(token, comment.getCaseId()).getData()) {
-            throw new RuntimeException("failed to update time elapsed on addCaseComment");
-        }
-
-        // re-read data from db to get full-filled object
-        CaseComment result = caseCommentDAO.get(commentId);
-
-        // attachments won't read now from DAO
-        result.setCaseAttachments(comment.getCaseAttachments());
-
-        return new CoreResponse<CaseComment>().success( result );
-    }
-
-    private CoreResponse<CaseComment> update(AuthToken token, En_CaseType caseType, CaseComment comment, Person person,
-                                             CaseComment prevComment, Collection<CaseAttachment> removedCaseAttachments) {
-
-        if (comment == null || comment.getId() == null) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        if (person == null) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_UPDATED);
-        }
-
-        if (!person.getId().equals(comment.getAuthorId()) || isCaseCommentReadOnly(comment.getCreated())) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_UPDATED);
-        }
-
-        jdbcManyRelationsHelper.fill(prevComment, "caseAttachments");
-
-        boolean isCommentUpdated = caseCommentDAO.merge(comment);
-
-        if (!isCommentUpdated) {
-            return new CoreResponse<CaseComment>().error(En_ResultStatus.NOT_UPDATED);
-        }
-
-        removedCaseAttachments.addAll(caseAttachmentDAO.calcDiffAndSynchronize(
-                prevComment.getCaseAttachments(),
-                comment.getCaseAttachments()
-        ));
-
-        if (!removedCaseAttachments.isEmpty()) {
-            removeAttachments(token, caseType, removedCaseAttachments);
-        }
-
-        boolean isCaseChanged =
-                caseService.updateExistsAttachmentsFlag(comment.getCaseId()).getData()
-                        && caseService.updateCaseModified(token, comment.getCaseId(), new Date()).getData();
-
-        if (!isCaseChanged) {
-            throw new RuntimeException("failed to update case modifiedDate");
-        }
-
-        if (!updateTimeElapsed(token, comment.getCaseId()).getData()) {
-            throw new RuntimeException("failed to update time elapsed on updateCaseComment");
-        }
-
-        return new CoreResponse<CaseComment>().success(comment);
-    }
-
-    private CoreResponse<Boolean> remove(AuthToken token, En_CaseType caseType, CaseComment comment) {
-
-        long caseId = comment.getCaseId();
-
-        boolean isRemoved = caseCommentDAO.remove(comment);
-
-        if (!isRemoved) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_REMOVED);
-        }
-
-        boolean isCaseChanged = true;
-        if (CollectionUtils.isNotEmpty(comment.getCaseAttachments())) {
-            caseAttachmentDAO.removeByCommentId(caseId);
-            comment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
-
-            if (!caseService.isExistsAttachments(comment.getCaseId())) {
-                isCaseChanged = caseService.updateExistsAttachmentsFlag(comment.getCaseId(), false).getData();
-            }
-        }
-
-        isCaseChanged &= caseService.updateCaseModified(token, caseId, new Date()).getData();
-
-        if (!isCaseChanged) {
-            throw new RuntimeException("failed to update case modifiedDate");
-        }
-
-        return new CoreResponse<Boolean>().success(isRemoved);
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {

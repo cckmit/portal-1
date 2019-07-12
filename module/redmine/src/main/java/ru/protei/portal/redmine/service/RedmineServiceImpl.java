@@ -250,8 +250,8 @@ public final class RedmineServiceImpl implements RedmineService {
                     RedmineManagerFactory.createWithApiKey(endpoint.getServerAddress(), endpoint.getApiKey());
             return manager.getIssueManager().getIssueById(id, Include.attachments);
         } catch (RedmineException e) {
-            logger.error("Get exception while trying to get issue with id {}", id);
-            LoggerUtils.logRedmineException(logger, e);
+            logger.debug("Get exception while trying to get issue with id {}", id);
+            e.printStackTrace();
             return null;
         }
     }

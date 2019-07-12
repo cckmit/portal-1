@@ -199,11 +199,11 @@ public class ReportServiceImpl implements ReportService {
         }
     }
 
-    private List<Long> acceptAllowedCompanies(List<Long> companyIds, Collection<Long> allowedCompaniesIds) {
-        if(companyIds==null) return new ArrayList<>(allowedCompaniesIds);
-        ArrayList allowedCompanies = new ArrayList(companyIds);
-        allowedCompanies.retainAll(allowedCompaniesIds);
-        return allowedCompanies;
+    private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
+        if( companyIds == null ) return new ArrayList<>( allowedCompaniesIds );
+        ArrayList allowedCompanies = new ArrayList( companyIds );
+        allowedCompanies.retainAll( allowedCompaniesIds );
+        return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }
 
     private boolean hasGrantAccessForReport(AuthToken token) {

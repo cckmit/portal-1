@@ -6,12 +6,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.event.CaseObjectCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
+import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
+import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
@@ -47,7 +52,7 @@ public class CaseServiceImpl implements CaseService {
     PersonDAO personDAO;
 
     @Autowired
-    EventAssemblerService publisherService;
+    EventPublisherService publisherService;
 
     @Autowired
     CaseAttachmentDAO caseAttachmentDAO;
@@ -167,12 +172,13 @@ public class CaseServiceImpl implements CaseService {
             caseObject.setId(caseId);
 
         Long stateMessageId = createAndPersistStateMessage(initiator, caseId, caseObject.getState(), caseObject.getTimeElapsed(), caseObject.getTimeElapsedType());
-        if(stateMessageId == null)
-            log.error("State message for the issue %d not saved!", caseId);
+        if (stateMessageId == null) {
+            log.error("State message for the issue {} not saved!", caseId);
+        }
 
         Long impMessageId = createAndPersistImportanceMessage(initiator, caseId, caseObject.getImpLevel());
         if (impMessageId == null) {
-            log.error("Importance level message for the issue %d not saved!", caseId);
+            log.error("Importance level message for the issue {} not saved!", caseId);
         }
 
         if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
@@ -218,30 +224,108 @@ public class CaseServiceImpl implements CaseService {
         newState.setAttachments(caseObject.getAttachments());
         newState.setNotifiers(caseObject.getNotifiers());
         newState.setTags(caseObject.getTags());
-        publisherService.publishEvent(new CaseObjectEvent(this, newState, initiator));
+        publisherService.publishEvent(new CaseObjectEvent.Builder(this)
+                .withNewState(newState)
+                .withPerson(initiator)
+                .build());
 
         return new CoreResponse<CaseObject>().success( newState );
     }
 
     @Override
     @Transactional
-    public CoreResponse<CaseObject> updateCaseObject( CaseObject caseObject, Person initiator ) {
-        if (caseObject == null)
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.INCORRECT_PARAMS);
-
-        jdbcManyRelationsHelper.persist(caseObject, "notifiers");
+    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+
+        if (objectResultData.isUpdated()) {
+            // From GWT-side we get partially filled object, that's why we need to refresh state from db
+            CaseObject newState = caseObjectDAO.get(objectResultData.getCaseObject().getId());
+            newState.setAttachments(objectResultData.getCaseObject().getAttachments());
+            newState.setNotifiers(objectResultData.getCaseObject().getNotifiers());
+            jdbcManyRelationsHelper.fill(oldState, "attachments");
+            publisherService.publishEvent(new CaseObjectEvent.Builder(this)
+                    .withNewState(newState)
+                    .withOldState(oldState)
+                    .withPerson(initiator)
+                    .build());
+        }
+
+        return new CoreResponse<CaseObject>().success(objectResultData.getCaseObject());
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment(AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {
+
+        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+        CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
+
+        if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
+            // From GWT-side we get partially filled object, that's why we need to refresh state from db
+            CaseObject newState = caseObjectDAO.get(caseObject.getId());
+            newState.setAttachments(caseObject.getAttachments());
+            newState.setNotifiers(caseObject.getNotifiers());
+            jdbcManyRelationsHelper.fill(oldState, "attachments");
+
+            publisherService.publishEvent(new CaseObjectCommentEvent.Builder(this)
+                    .withPerson(initiator)
+                    .withOldState(oldState)
+                    .withNewState(newState)
+                    .withCaseComment(commentResultData.getCaseComment())
+                    .withOldCaseComment(commentResultData.getOldCaseComment())
+                    .withAddedAttachments(commentResultData.getAddedAttachments())
+                    .withRemovedAttachments(commentResultData.getRemovedAttachments())
+                    .build());
+        }
+
+        return new CoreResponse<CaseObjectWithCaseComment>().success(
+                new CaseObjectWithCaseComment(objectResultData.getCaseObject(), commentResultData.getCaseComment())
+        );
+    }
+
+    private CaseObjectUpdateResult performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
+
+        if (caseObject == null) {
+            throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (!hasAccessForCaseObject(token, En_Privilege.ISSUE_EDIT, caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
+        }
+
+        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+
+        CoreResponse mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
+        if (mergeLinksResponse.isError()) {
+            log.info("Failed to merge links for the issue {}", caseObject.getId());
+            throw new ResultStatusException(mergeLinksResponse.getStatus());
+        }
+
+        synchronizeTags(caseObject, authService.findSession(token));
+        jdbcManyRelationsHelper.persist(caseObject, "tags");
+
+        jdbcManyRelationsHelper.persist(caseObject, "notifiers");
+
         applyStateBasedOnManager(caseObject);
 
-        if(isCaseHasNoChanges(caseObject, oldState))
-            return new CoreResponse<CaseObject>().success( caseObject ); //ignore
+        if (isCaseHasNoChanges(caseObject, oldState)) {
+            return new CaseObjectUpdateResult(caseObject, false);
+        }
 
         En_CaseStateWorkflow workflow = CaseStateWorkflowUtil.recognizeWorkflow(caseObject);
         boolean isStateTransitionValid = isCaseStateTransitionValid(workflow, oldState.getState(), caseObject.getState());
         if (!isStateTransitionValid) {
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.VALIDATION_ERROR);
+            log.info("Wrong state transition for the issue {}: {} -> {}, workflow={}",
+                    caseObject.getId(), oldState.getState(), caseObject.getState(), workflow);
+            throw new ResultStatusException(En_ResultStatus.VALIDATION_ERROR);
+        }
+        if (workflow == En_CaseStateWorkflow.NO_WORKFLOW && isStateReopenNotAllowed(token, oldState, caseObject)) {
+            throw new ResultStatusException(En_ResultStatus.INVALID_CASE_UPDATE_CASE_IS_CLOSED);
         }
 
         caseObject.setModified(new Date());
@@ -257,71 +341,43 @@ public class CaseServiceImpl implements CaseService {
         }
 
         boolean isUpdated = caseObjectDAO.merge(caseObject);
-        if (!isUpdated)
-            return new CoreResponse<CaseObject>().error(En_ResultStatus.NOT_UPDATED);
+        if (!isUpdated) {
+            log.info("Failed to update issue {} at db", caseObject.getId());
+            throw new ResultStatusException(En_ResultStatus.NOT_UPDATED);
+        }
 
         if(oldState.getState() != caseObject.getState()){
             Long messageId = createAndPersistStateMessage(initiator, caseObject.getId(), caseObject.getState(), null, null);
-            if(messageId == null)
-                log.error("State message for the issue %d isn't saved!", caseObject.getId());
+            if (messageId == null) {
+                log.error("State message for the issue {} isn't saved!", caseObject.getId());
+            }
         }
 
         if (!oldState.getImpLevel().equals(caseObject.getImpLevel())) {
             Long messageId = createAndPersistImportanceMessage(initiator, caseObject.getId(), caseObject.getImpLevel());
             if (messageId == null) {
-                log.error("Importance level message for the issue %d isn't saved!", caseObject.getId());
+                log.error("Importance level message for the issue {} isn't saved!", caseObject.getId());
             }
         }
 
-        // From GWT-side we get partially filled object, that's why we need to refresh state from db
-        CaseObject newState = caseObjectDAO.get(caseObject.getId());
-        newState.setAttachments(caseObject.getAttachments());
-        newState.setNotifiers(caseObject.getNotifiers());
-        jdbcManyRelationsHelper.fill( oldState, "attachments");
-
-        publisherService.publishEvent(new CaseObjectEvent(this, newState, oldState, initiator));
-
-        return new CoreResponse<CaseObject>().success( caseObject );
+        return new CaseObjectUpdateResult(caseObject, true);
     }
 
-    @Override
-    @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject ) {
-        if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
-            return new CoreResponse<CaseObject>().error( En_ResultStatus.PERMISSION_DENIED );
+    private CaseCommentSaveOrUpdateResult performSaveOrUpdateCaseComment(AuthToken token, CaseComment caseComment, Person initiator) {
+        if (caseComment == null) {
+            return new CaseCommentSaveOrUpdateResult();
         }
-
-        caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
-
-        UserSessionDescriptor descriptor = authService.findSession( token );
-
-        synchronizeTags(caseObject, descriptor);
-        jdbcManyRelationsHelper.persist(caseObject, "tags");
-
-        return updateCaseObject(caseObject, descriptor.getPerson());
-    }
-
-    private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
-        if (caseObject == null || descriptor == null || caseObject.getTags() == null) {
-            return;
+        CoreResponse<CaseCommentSaveOrUpdateResult> response;
+        if (caseComment.getId() == null) {
+            response = caseCommentService.addCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment);
+        } else {
+            response = caseCommentService.updateCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment, initiator);
         }
-
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
-        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
-            return;
+        if (response.isError()) {
+            log.info("Failed to add/update comment with status {} : {}", response.getStatus(), caseComment);
+            throw new ResultStatusException(response.getStatus());
         }
-
-        Set<CaseTag> tags = caseObject.getTags();
-        List<CaseTag> allTags = caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId()));
-        List<CaseTag> existingTags = allTags.stream().filter(tag -> tag.getCompanyId().equals(descriptor.getCompany().getId())).collect(Collectors.toList());
-
-        List<CaseTag> deletedTags = existingTags.stream().filter(tag -> !tags.contains(tag)).collect(Collectors.toList());
-        List<CaseTag> addedTags = tags.stream().filter(tag -> !existingTags.contains(tag)).collect(Collectors.toList());
-
-        allTags.removeAll(deletedTags);
-        allTags.addAll(addedTags);
-
-        caseObject.setTags(allTags.stream().collect(Collectors.toSet()));
+        return response.getData();
     }
 
     @Override
@@ -449,6 +505,29 @@ public class CaseServiceImpl implements CaseService {
         return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
     }
 
+    private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
+        if (caseObject == null || descriptor == null || caseObject.getTags() == null) {
+            return;
+        }
+
+        Set<UserRole> roles = descriptor.getLogin().getRoles();
+        if (policyService.hasGrantAccessFor(roles, En_Privilege.ISSUE_VIEW)) {
+            return;
+        }
+
+        Set<CaseTag> tags = caseObject.getTags();
+        List<CaseTag> allTags = caseTagDAO.getListByQuery(new CaseTagQuery(caseObject.getId()));
+        List<CaseTag> existingTags = allTags.stream().filter(tag -> tag.getCompanyId().equals(descriptor.getCompany().getId())).collect(Collectors.toList());
+
+        List<CaseTag> deletedTags = existingTags.stream().filter(tag -> !tags.contains(tag)).collect(Collectors.toList());
+        List<CaseTag> addedTags = tags.stream().filter(tag -> !existingTags.contains(tag)).collect(Collectors.toList());
+
+        allTags.removeAll(deletedTags);
+        allTags.addAll(addedTags);
+
+        caseObject.setTags(allTags.stream().collect(Collectors.toSet()));
+    }
+
     private Long createAndPersistStateMessage(Person author, Long caseId, En_CaseState state, Long timeElapsed, En_TimeElapsedType timeElapsedType){
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
@@ -479,18 +558,17 @@ public class CaseServiceImpl implements CaseService {
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
-            query.setCompanyIds( acceptAllowedCompanies(query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
+            query.setCompanyIds( acceptAllowedCompanies( query.getCompanyIds(), descriptor.getAllowedCompaniesIds() ) );
             query.setAllowViewPrivate( false );
-
-            query.setCustomerSearch(true);
+            query.setCustomerSearch( true );
         }
     }
 
     private List<Long> acceptAllowedCompanies( List<Long> companyIds, Collection<Long> allowedCompaniesIds ) {
-        if(companyIds==null) return new ArrayList<Long>(allowedCompaniesIds);
+        if( companyIds == null ) return new ArrayList<>( allowedCompaniesIds );
         ArrayList allowedCompanies = new ArrayList( companyIds );
         allowedCompanies.retainAll( allowedCompaniesIds );
-        return allowedCompanies;
+        return allowedCompanies.isEmpty() ? new ArrayList<>( allowedCompaniesIds ) : allowedCompanies;
     }
 
     private void applyCaseByScope( AuthToken token, CaseObject caseObject ) {
@@ -498,7 +576,7 @@ public class CaseServiceImpl implements CaseService {
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_CREATE ) && policyService.hasScopeForPrivilege( roles, En_Privilege.ISSUE_CREATE, En_Scope.COMPANY ) ) {
             caseObject.setPrivateCase( false );
-            if(!descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() )) {
+            if( !descriptor.getAllowedCompaniesIds().contains( caseObject.getInitiatorCompanyId() ) ) {
                 caseObject.setInitiatorCompany( descriptor.getCompany() );
             }
             caseObject.setManagerId( null );
@@ -541,16 +619,21 @@ public class CaseServiceImpl implements CaseService {
         return true;
     }
 
-    private boolean hasGrantAccessFor(AuthToken token, En_Privilege privilege) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-        Set<UserRole> roles = descriptor.getLogin().getRoles();
+    private boolean isStateReopenNotAllowed(AuthToken token, CaseObject oldState, CaseObject newState) {
+        return oldState.getState() == En_CaseState.VERIFIED &&
+                newState.getState() != En_CaseState.VERIFIED &&
+                !isPersonHasGrantAccess(token, En_Privilege.ISSUE_EDIT);
+    }
+
+    private boolean isPersonHasGrantAccess(AuthToken token, En_Privilege privilege) {
+        Set<UserRole> roles = getRoles(token);
         return policyService.hasGrantAccessFor(roles, privilege);
     }
 
     private Set<UserRole> getRoles(AuthToken token) {
         return Optional.ofNullable(authService.findSession(token))
                 .map(d -> d.getLogin().getRoles())
-                .orElse(null);
+                .orElse(new HashSet<>());
     }
 
     private boolean personBelongsToHomeCompany(AuthToken token) {

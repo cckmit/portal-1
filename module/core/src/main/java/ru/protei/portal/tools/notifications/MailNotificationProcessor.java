@@ -24,10 +24,7 @@ import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -96,12 +93,12 @@ public class MailNotificationProcessor {
         }
 
         CaseObject caseObject = event.getCaseObject();
+
+        Date upperBoundDate = makeCommentUpperBoundDate(event);
         CoreResponse<List<CaseComment>> comments = caseCommentService.getCaseCommentList(
                 null,
                 En_CaseType.CRM_SUPPORT,
-                event.getCaseComment() == null || event.getRemovedComment() != null ?
-                        new CaseCommentQuery(caseObject.getId()) :
-                        new CaseCommentQuery(caseObject.getId(), event.getCaseComment().getCreated())
+                new CaseCommentQuery(caseObject.getId(), upperBoundDate)
         );
         if (comments.isError()) {
             log.error("Failed to retrieve comments for caseId={}", caseObject.getId());
@@ -243,6 +240,13 @@ public class MailNotificationProcessor {
 
     private String makeCaseObjectMessageId( Long caseNumber, Long id, int recipientAddressHashCode ) {
         return "case." + caseNumber + "." + id + "-" + recipientAddressHashCode;
+    }
+
+    private Date makeCommentUpperBoundDate(AssembledCaseEvent event) {
+        Date upperBoundDate = event.getCaseComment() == null || event.getRemovedComment() != null ?
+                new Date(event.getLastUpdated()) :
+                event.getCaseComment().getCreated();
+        return addSeconds(upperBoundDate, 1);
     }
 
     // -----------------------
@@ -543,6 +547,13 @@ public class MailNotificationProcessor {
     private String getEmployeeRegistrationUrl() {
         return config.data().getMailNotificationConfig().getCrmUrlInternal() +
                 config.data().getMailNotificationConfig().getCrmEmployeeRegistrationUrl();
+    }
+
+    private Date addSeconds(Date date, int sec) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.SECOND, sec);
+        return calendar.getTime();
     }
 
     private class MimeMessageHeadersFacade {

@@ -123,7 +123,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
 
     private void updateComments(Issue issue, CaseComment comment, RedmineEndpoint endpoint) {
         if (comment != null && !comment.isPrivateComment() && !comment.getText().isEmpty()) {
-            issue.setNotes("PROTEI: " + comment.getAuthor().getDisplayName() + ": " + comment.getText());
+            issue.setNotes(RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + comment.getAuthor().getDisplayName() + ": " + comment.getText());
         }
     }
 

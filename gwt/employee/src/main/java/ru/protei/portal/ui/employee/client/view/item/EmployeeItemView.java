@@ -67,6 +67,12 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
+    public void setDepartmentParent(String value) {
+        departmentParentContainer.setVisible( value != null && !value.isEmpty() );
+        departmentParent.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
     public void setDepartment( String value ) {
         departmentContainer.setVisible( value != null && !value.isEmpty() );
         department.setInnerText( value == null ? "" : value );
@@ -108,6 +114,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     HTMLPanel emailContainer;
 
     @UiField
+    HTMLPanel departmentParentContainer;
+
+    @UiField
     HTMLPanel departmentContainer;
 
     @UiField
@@ -124,6 +133,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     SpanElement department;
+
+    @UiField
+    SpanElement departmentParent;
 
     @UiField
     SpanElement position;
