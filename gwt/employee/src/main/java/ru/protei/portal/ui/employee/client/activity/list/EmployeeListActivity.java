@@ -17,10 +17,13 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
+import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterView;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
@@ -60,13 +63,27 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onShow( EmployeeEvents.Show event ) {
+    public void onShow( EmployeeEvents.ShowDefinite event ) {
+        if (event.viewType != ViewType.LIST) {
+            return;
+        }
 
-        fireEvent( new AppEvents.InitPanelName( lang.employees() ) );
+        this.query = event.query;
         init.parent.clear();
         init.parent.add( view.asWidget() );
         view.getPagerContainer().add( pagerView.asWidget() );
 
+        view.getFilterContainer().add(event.filter);
+
+        requestEmployees( 0 );
+    }
+
+    @Event
+    public void onFilterChanged(EmployeeEvents.UpdateData event) {
+        if(event.viewType != ViewType.LIST)
+            return;
+
+        this.query = event.query;
         requestEmployees( 0 );
     }
 
@@ -118,6 +135,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                     }
                 } ) );
     }
+
 
     private EmployeeQuery makeQuery() {
         return new EmployeeQuery( false, false, true,
@@ -192,6 +210,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     Lang lang;
 
     private long marker;
+    private PeriodicTaskService.PeriodicTaskHandler fillViewHandler;
+    private EmployeeQuery query;
     private AppEvents.InitDetails init;
     private Map< AbstractEmployeeItemView, EmployeeShortView > itemViewToModel = new HashMap<>();
     private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
