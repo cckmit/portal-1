@@ -42,12 +42,12 @@ import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
  * Активность списка сотрудников
  */
 public abstract class EmployeeListActivity implements AbstractEmployeeListActivity,
-        AbstractEmployeeItemActivity, AbstractEmployeeFilterActivity, AbstractPagerActivity, Activity {
+        AbstractEmployeeItemActivity, AbstractPagerActivity, Activity {
 
     @PostConstruct
     public void init() {
         view.setActivity( this );
-        filterView.setActivity( this );
+//        filterView.setActivity( this );
         view.getFilterContainer().add( filterView.asWidget() );
         pagerView.setActivity( this );
     }
@@ -79,16 +79,11 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
     }
 
     @Event
-    public void onFilterChanged(EmployeeEvents.UpdateData event) {
+    public void onFilterChange(EmployeeEvents.UpdateData event) {
         if(event.viewType != ViewType.LIST)
             return;
 
         this.query = event.query;
-        requestEmployees( 0 );
-    }
-
-    @Override
-    public void onFilterChanged() {
         requestEmployees( 0 );
     }
 
