@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
+import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintPhoneNumber;
 
 /**
  * Created by Mike on 09.11.2016.
@@ -35,16 +36,31 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
     }
 
     public String allPhonesAsString () {
-        return allPhonesStream().map (
-                    p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
-                )
+        return allPhonesAsString(false);
+    }
+
+    public String allPhonesAsString (boolean isPrettyPrintPhoneNumber) {
+        return allPhonesStream()
+                .map(p -> {
+                    String number = isPrettyPrintPhoneNumber ? prettyPrintPhoneNumber(p.value()) : p.value();
+                    String comment = isNotEmpty(p.comment()) ? " (" + p.comment() + ")" : "";
+                    return number + comment;
+                })
                 .collect( Collectors.joining( ", " ) );
     }
 
     public String publicPhonesAsString () {
-        return allPhonesStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map (
-                p -> p.value() + (isNotEmpty(p.comment()) ? " (" + p.comment() + ")" :"")
-        )
+        return publicPhonesAsFormattedString(false);
+    }
+
+    public String publicPhonesAsFormattedString (boolean isPrettyPrintPhoneNumber) {
+        return allPhonesStream()
+                .filter(ci -> ci.accessType().equals(En_ContactDataAccess.PUBLIC))
+                .map(p -> {
+                    String number = isPrettyPrintPhoneNumber ? prettyPrintPhoneNumber(p.value()) : p.value();
+                    String comment = isNotEmpty(p.comment()) ? " (" + p.comment() + ")" : "";
+                    return number + comment;
+                })
                 .collect( Collectors.joining( ", " ) );
     }
 

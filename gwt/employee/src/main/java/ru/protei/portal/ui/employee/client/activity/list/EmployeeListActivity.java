@@ -139,7 +139,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
-        itemView.setPhone( infoFacade.publicPhonesAsString() );
+        itemView.setPhone( infoFacade.publicPhonesAsFormattedString(true) );
         itemView.setEmail( infoFacade.publicEmails() );
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
