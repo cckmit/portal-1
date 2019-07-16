@@ -19,5 +19,7 @@ public interface AbstractEmployeeFilterView extends IsWidget {
     HasValue< String > mobilePhone();
     HasValue< String > ipAddress();
     HasValue< String > email();
+    HasValue< String > departmentParent();
+
     void resetFilter();
 }
