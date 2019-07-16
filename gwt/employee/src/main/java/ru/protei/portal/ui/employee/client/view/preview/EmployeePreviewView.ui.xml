@@ -5,7 +5,10 @@
 
     <g:HTMLPanel ui:field="rootWrapper">
         <g:HTMLPanel styleName="preview grid">
-
+            <g:HTMLPanel ui:field="employeeNameBlock" tag="fieldset" styleName="header" visible="false">
+                <legend><ui:text from="{lang.employeeEmployeeFullNameColumnHeader}"/></legend>
+                <span ui:field="employeeName"></span>
+            </g:HTMLPanel>
             <fieldset class="header">
                 <legend><ui:text from="{lang.employeeAdditionalInfoHeader}"/></legend>
                 <div class="col-xs-12">

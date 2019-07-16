@@ -11,6 +11,8 @@ public interface AbstractEmployeeTableView extends IsWidget {
 
     void clearRecords();
 
+    HasWidgets getPreviewContainer();
+
     HasWidgets getFilterContainer();
 
     HasWidgets getPagerContainer();

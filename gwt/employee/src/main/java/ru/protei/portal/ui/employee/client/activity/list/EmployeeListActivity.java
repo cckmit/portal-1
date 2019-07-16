@@ -100,7 +100,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             return;
         }
 
-        fireEvent( new EmployeeEvents.ShowPreview( itemView.getPreviewContainer(), value ) );
+        fireEvent( new EmployeeEvents.ShowPreview( itemView.getPreviewContainer(), value, false, false ) );
         animation.showPreview( itemView, ( IsWidget ) itemView.getPreviewContainer() );
     }
 

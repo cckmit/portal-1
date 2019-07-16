@@ -21,7 +21,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     public void onInit() {
         filterView.setActivity(this);
         query = makeQuery();
-        currentViewType = ViewType.TABLE;
+        currentViewType = ViewType.LIST;
     }
 
     @Event

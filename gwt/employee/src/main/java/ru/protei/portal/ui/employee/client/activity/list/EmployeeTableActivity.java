@@ -6,12 +6,14 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -73,10 +75,21 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
 
     @Override
     public void onItemClicked(EmployeeShortView value) {
+        showPreview(value);
     }
 
     @Override
     public void onEditClicked(EmployeeShortView value) {
+    }
+
+    private void showPreview (EmployeeShortView value ) {
+
+        if ( value == null ) {
+            animation.closeDetails();
+        } else {
+            animation.showDetails();
+            fireEvent(new EmployeeEvents.ShowPreview(view.getPreviewContainer(), value, true,true));
+        }
     }
 
     @Override
@@ -100,6 +113,7 @@ public abstract class EmployeeTableActivity implements AbstractEmployeeTableActi
     }
 
     private void loadTable() {
+        animation.closeDetails();
         view.clearRecords();
         view.triggerTableLoad();
     }

@@ -10,6 +10,7 @@
                 <table:InfiniteTableWidget ui:field="table" styleName="table-hover employees"/>
                 <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
             </g:HTMLPanel>
+            <g:HTMLPanel ui:field="previewContainer" styleName="preview-container no-width"/>
             <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
         </div>
     </g:HTMLPanel>

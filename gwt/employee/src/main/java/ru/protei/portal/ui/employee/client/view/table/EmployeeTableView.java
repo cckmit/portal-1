@@ -53,6 +53,11 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     }
 
     @Override
+    public HasWidgets getPreviewContainer() {
+        return previewContainer;
+    }
+
+    @Override
     public HasWidgets getFilterContainer() {
         return filterContainer;
     }
@@ -95,7 +100,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     @Override
     public void setAnimation(TableAnimation animation) {
-        animation.setContainers(tableContainer, null, filterContainer);
+        animation.setContainers(tableContainer, previewContainer, filterContainer);
     }
 
     private void initTable() {
@@ -193,6 +198,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     @UiField
     HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel previewContainer;
     @UiField
     HTMLPanel filterContainer;
     @UiField
