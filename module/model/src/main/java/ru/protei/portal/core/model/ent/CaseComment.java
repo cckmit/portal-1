@@ -35,6 +35,15 @@ public class CaseComment extends AuditableObject {
     @JdbcColumn(name="cimp_level")
     private Integer caseImpLevel;
 
+    @JdbcColumn(name="cmanager_id")
+    private Long caseManagerId;
+
+    @JdbcJoinedColumn(localColumn = "cmanager_id", table = "Person", remoteColumn = "ID", mappedColumn = "displayShortName")
+    private String caseManagerShortName;
+
+    @JdbcColumn(name="cchange_log")
+    private String caseChangeLog;
+
     @JdbcColumn(name="reply_to")
     private Long replyTo;
 
@@ -146,6 +155,30 @@ public class CaseComment extends AuditableObject {
 
     public void setCaseImpLevel(Integer caseImpLevel) {
         this.caseImpLevel = caseImpLevel;
+    }
+
+    public Long getCaseManagerId() {
+        return caseManagerId;
+    }
+
+    public void setCaseManagerId(Long caseManagerId) {
+        this.caseManagerId = caseManagerId;
+    }
+
+    public String getCaseManagerShortName() {
+        return caseManagerShortName;
+    }
+
+    public void setCaseManagerShortName(String caseManagerShortName) {
+        this.caseManagerShortName = caseManagerShortName;
+    }
+
+    public String getCaseChangeLog() {
+        return caseChangeLog;
+    }
+
+    public void setCaseChangeLog(String caseChangeLog) {
+        this.caseChangeLog = caseChangeLog;
     }
 
     public Long getReplyTo() {
@@ -267,16 +300,22 @@ public class CaseComment extends AuditableObject {
                 ", author=" + author +
                 ", caseStateId=" + caseStateId +
                 ", caseImpLevel=" + caseImpLevel +
+                ", caseManagerId=" + caseManagerId +
+                ", caseManagerShortName='" + caseManagerShortName + '\'' +
+                ", caseChangeLog='" + caseChangeLog + '\'' +
                 ", replyTo=" + replyTo +
                 ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
                 ", oldId=" + oldId +
+                ", caseAttachments=" + caseAttachments +
                 ", timeElapsed=" + timeElapsed +
+                ", timeElapsedType=" + timeElapsedType +
                 ", remoteId='" + remoteId + '\'' +
                 ", remoteLinkId=" + remoteLinkId +
+                ", remoteLink=" + remoteLink +
                 ", originalAuthorName='" + originalAuthorName + '\'' +
                 ", originalAuthorFullName='" + originalAuthorFullName + '\'' +
-                ", privateComment='" + privateComment + '\'' +
+                ", privateComment=" + privateComment +
                 '}';
     }
 }

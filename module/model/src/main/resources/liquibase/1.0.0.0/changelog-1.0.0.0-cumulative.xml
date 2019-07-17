@@ -109,4 +109,5 @@
   <include file="2019-05-22-add-restricted-column-to-report.xml" relativeToChangelogFile="true"/>
   <include file="2019-05-31-add-company-column-to-case-tag.xml" relativeToChangelogFile="true"/>
   <include file="2019-06-20-add-type-column-to-case_filter.xml" relativeToChangelogFile="true"/>
+  <include file="2019-07-17-add-cmanager_id-and-cchanged-columns-to-case_comment.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
