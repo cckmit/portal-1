@@ -26,4 +26,6 @@ public interface AccountController extends RemoteService {
     boolean isLoginUnique( String login, Long exceptId ) throws RequestFailedException;
 
     boolean removeAccount( Long accountId ) throws RequestFailedException;
+
+    boolean updateAccountPassword( String login, String newPassword ) throws RequestFailedException;
 }

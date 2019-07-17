@@ -78,7 +78,7 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
     private void initTable() {
 
-        editClickColumn.setPrivilege(En_Privilege.CONTACT_EDIT);
+//        editClickColumn.setPrivilege(En_Privilege.CONTACT_EDIT);
 
         columns.add(fio);
         columns.add(email);

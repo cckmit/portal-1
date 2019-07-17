@@ -39,4 +39,6 @@ public interface AccountService {
     @Privileged({ En_Privilege.ACCOUNT_REMOVE })
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
     CoreResponse< Boolean > removeAccount( AuthToken authToken, Long accountId );
+
+    CoreResponse< Boolean > updateAccountPassword( String login, String password );
 }

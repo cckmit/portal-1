@@ -24,6 +24,8 @@ public class Profile implements Serializable {
 
     private Long id;
 
+    private Long loginId;
+
     private Set<En_Privilege> privileges;
 
     private En_Gender gender;
@@ -67,6 +69,14 @@ public class Profile implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getLoginId() {
+        return loginId;
+    }
+
+    public void setLoginId(Long loginId) {
+        this.loginId = loginId;
     }
 
     public String getFullName() {

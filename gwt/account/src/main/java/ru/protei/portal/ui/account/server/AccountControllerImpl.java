@@ -115,6 +115,21 @@ public class AccountControllerImpl implements AccountController {
         throw new RequestFailedException(response.getStatus());
     }
 
+    @Override
+    public boolean updateAccountPassword(String login, String password) throws RequestFailedException {
+        log.debug("updateAccountPassword(): id={}, password={}", login, password);
+
+        CoreResponse<Boolean> response = accountService.updateAccountPassword(login, password);
+
+        log.debug("updateAccountPassword(): result={}", response.isOk() ? "ok" : response.getStatus());
+
+        if (response.isOk()) {
+            return response.getData();
+        }
+
+        throw new RequestFailedException(response.getStatus());
+    }
+
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
         UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
         log.info( "userSessionDescriptor={}", descriptor );

@@ -15,6 +15,8 @@ import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionLi
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
+import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.List;
 
@@ -61,6 +63,41 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
+    public HasValue<String> currentPassword() {
+        return currentPassword;
+    }
+
+    @Override
+    public HasValue<String> newPassword() {
+        return newPassword;
+    }
+
+    @Override
+    public HasValue<String> confirmPassword() {
+        return confirmPassword;
+    }
+
+    @Override
+    public HasVisibility passwordContainerVisibility() {
+        return passwordContainer;
+    }
+
+    @Override
+    public HasVisibility currentPasswordVisibility() {
+        return currentPassword;
+    }
+
+    @Override
+    public HasVisibility newPasswordVisibility() {
+        return newPassword;
+    }
+
+    @Override
+    public HasVisibility confirmPasswordVisibility() {
+        return confirmPassword;
+    }
+
+    @Override
     public HasVisibility saveButtonVisibility() {
         return saveButton;
     }
@@ -96,6 +133,14 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     Element company;
     @UiField
     ImageElement icon;
+    @UiField
+    HTMLPanel passwordContainer;
+    @UiField
+    PasswordTextBox currentPassword;
+    @UiField
+    PasswordTextBox newPassword;
+    @UiField
+    PasswordTextBox confirmPassword;
 
     @Inject
     FixedPositioner positioner;

@@ -571,13 +571,21 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountPassword();
 
+    String accountCurrentPassword();
+
+    String accountNewPassword();
+
     String accountPasswordNotDefinied();
 
     String errEditContactLogin();
 
+    String errEditProfile();
+
     String accountLoginInfo();
 
     String accountConfirmPassword();
+
+    String accountPasswordChange();
 
     String accountPasswordsNotMatch();
 

@@ -109,7 +109,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     }
 
     private void initTable () {
-        editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
+//        editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
         category = new DynamicColumn<>(
             lang.companyCategory(),
