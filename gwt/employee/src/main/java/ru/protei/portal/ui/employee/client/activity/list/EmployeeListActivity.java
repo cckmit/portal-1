@@ -127,8 +127,9 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
                 filterView.mobilePhone().getValue(),
                 filterView.ipAddress().getValue(),
                 filterView.email().getValue(),
+                filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC );
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
     }
 
     private AbstractEmployeeItemView makeView( EmployeeShortView employee ) {
