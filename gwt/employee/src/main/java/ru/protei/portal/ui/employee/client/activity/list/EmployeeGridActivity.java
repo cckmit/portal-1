@@ -72,6 +72,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.mobilePhone().getValue(),
                 filterView.ipAddress().getValue(),
                 filterView.email().getValue(),
+                filterView.departmentParent().getValue(),
                 filterView.sortField().getValue(),
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
     }
