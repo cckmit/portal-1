@@ -10,6 +10,8 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
 <@set name="_createdBy" value="${created_by}"/>
 <@set name="_changedStateTo" value="${changed_state_to}"/>
 <@set name="_changedImportanceTo" value="${changed_importance_to}"/>
+<@set name="_changedManagerTo" value="${changed_manager_to}"/>
+<@set name="_changedChangeLog" value="${changed_change_log}"/>
 <@set name="_you" value="${you}"/>
 <@set name="_yourself" value="${yourself}"/>
 <@set name="_product" value="${product}"/>
@@ -238,6 +240,10 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                         ${_changedStateTo} ${caseComment.caseState}
                     <#elseif caseComment.caseImportance??>
                         ${_changedImportanceTo} ${caseComment.caseImportance}
+                    <#elseif caseComment.caseManager??>
+                        ${_changedManagerTo} ${caseComment.caseManager}
+                    <#elseif caseComment.caseChangeLog??>
+                        ${_changedChangeLog}
                     <#else>
                         <#if caseComment.oldText??>
                             <span style="color:#11731d;line-height: 17px;margin-right:10px">${_updated}</span>
