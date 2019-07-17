@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.project.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
@@ -11,15 +12,12 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewActivity;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
-
-import java.util.Set;
 
 /**
  * Вид превью проекта
@@ -29,6 +27,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
     }
 
     @Override
@@ -70,16 +69,13 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setDirection( String value ) { this.projectDirection.setInnerText( value ); }
 
     @Override
-    public void setTeam( Set<PersonProjectMemberView> value ) { this.team.setInnerText( value.toString() ); }
-
-    @Override
     public void setDescription( String value ) { this.description.setInnerText( value ); }
 
     @Override
     public void setRegion( String value ) { this.projectRegion.setInnerText( value ); }
 
     @Override
-    public void setProducts( Set<ProductShortView> value ) { this.products.setInnerText( value.toString() ); }
+    public void setProducts( String value ) { this.products.setInnerText( value ); }
 
     @Override
     public void setCompany( String value ) { this.company.setInnerText( value ); }
@@ -88,13 +84,16 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void setCustomerType( String value ) { this.customerType.setInnerText( value );}
 
     @Override
+    public void setTeam( String value ) { this.team.setInnerText( value ); }
+
+    @Override
     public void showFullScreen( boolean value ) {
-        fullScreenBtn.setVisible( !value );
+        fullScreen.setVisible( !value );
         backButton.setVisible( value );
         if ( value ) {
-            preview.addStyleName( "col-xs-12 col-lg-6" );
+            preview.addStyleName( "col-md-12 m-t-10" );
         } else {
-            preview.removeStyleName( "col-xs-12 col-lg-6" );
+            preview.setStyleName( "preview" );
         }
     }
 
@@ -108,7 +107,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         return documents;
     }
 
-    @UiHandler( "fullScreenBtn" )
+    @UiHandler( "fullScreen" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
 
@@ -124,11 +123,30 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
         }
     }
 
-    @UiField
-    HTMLPanel preview;
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        fullScreen.ensureDebugId(DebugIds.PROJECT_PREVIEW.FULL_SCREEN_BUTTON);
+        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TITLE_LABEL);
+        creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DATE_CREATED_LABEL);
+        projectName.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.NAME_LABEL);
+        description.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.INFO_LABEL);
+        state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.STATE_LABEL);
+        projectRegion.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.REGION_LABEL);
+        projectDirection.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.DIRECTION_LABEL);
+        customerType.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.CUSTOMER_TYPE_LABEL);
+        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.COMPANY_LABEL);
+        team.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.TEAM_LABEL);
+        products.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.PROJECT_PREVIEW.PRODUCTS_LABEL);
+        documents.ensureDebugId(DebugIds.PROJECT_PREVIEW.DOCUMENTS_CONTAINER);
+    }
 
     @UiField
-    Button fullScreenBtn;
+    HTMLPanel preview;
+    @UiField
+    Anchor fullScreen;
     @UiField
     Button backButton;
 
@@ -137,9 +155,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @UiField
     SpanElement creationDate;
     @UiField
-    SpanElement projectName;
+    DivElement projectName;
     @UiField
-    SpanElement description;
+    DivElement description;
     @UiField
     SpanElement projectRegion;
     @UiField

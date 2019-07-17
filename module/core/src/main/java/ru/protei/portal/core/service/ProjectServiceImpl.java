@@ -106,6 +106,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setSearchString(query.getSearchString());
         caseQuery.setType( En_CaseType.PROJECT );
         caseQuery.setStateIds( query.getStates().stream()
                 .map( ( state ) -> new Long( state.getId() ).intValue() )
@@ -123,6 +124,9 @@ public class ProjectServiceImpl implements ProjectService {
                 caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
             }
         }
+
+        caseQuery.setSortField(query.getSortField());
+        caseQuery.setSortDir(query.getSortDir());
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {
@@ -190,7 +194,15 @@ public class ProjectServiceImpl implements ProjectService {
         if (id == null)
             return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
 
-        updateProducts(caseObject, project.getProducts()); // ???
+        try {
+            updateTeam(caseObject, project.getTeam());
+            updateLocations(caseObject, project.getRegion());
+            updateProducts(caseObject, project.getProducts());
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+        }
+        caseObjectDAO.merge( caseObject );
 
         return new CoreResponse().success(id);
     }
@@ -199,13 +211,16 @@ public class ProjectServiceImpl implements ProjectService {
         CaseObject caseObject = new CaseObject();
         caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
         caseObject.setTypeId(En_CaseType.PROJECT.getId());
-        caseObject.setCreated(new Date());
-        caseObject.setStateId(En_RegionState.UNKNOWN.getId());
+        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
+        caseObject.setStateId(project.getState() == null ? En_RegionState.UNKNOWN.getId() : project.getState().getId());
         caseObject.setCreatorId(project.getCreatorId());
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
-        caseObject.setProducts(new HashSet<>());// ???
-        if (project.getCustomer() == null) {
+
+        if (project.getProductDirection() != null)
+            caseObject.setProductId(project.getProductDirection().getId());
+
+        if (project.getCustomer().getId() != null) {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
         if (project.getCustomerType() != null) {
@@ -266,15 +281,17 @@ public class ProjectServiceImpl implements ProjectService {
         List<Long> toRemove = new ArrayList<>();
         List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
 
-        for (CaseMember member : caseObject.getMembers()) {
-            if (!projectRoles.contains(member.getRole())) {
-                continue;
-            }
-            int nPos = toAdd.indexOf(PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()));
-            if (nPos == -1) {
-                toRemove.add(member.getId());
-            } else {
-                toAdd.remove(nPos);
+        if (caseObject.getMembers() != null) {
+            for (CaseMember member : caseObject.getMembers()) {
+                if (!projectRoles.contains(member.getRole())) {
+                    continue;
+                }
+                int nPos = toAdd.indexOf(PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()));
+                if (nPos == -1) {
+                    toRemove.add(member.getId());
+                } else {
+                    toAdd.remove(nPos);
+                }
             }
         }
 

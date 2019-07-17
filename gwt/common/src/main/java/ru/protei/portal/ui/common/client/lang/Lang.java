@@ -1685,4 +1685,12 @@ public interface Lang extends Messages, ContactItemLang {
     String goToProjects();
 
     String errInvalidCaseUpdateCaseIsClosed();
+
+    String errSaveProjectNeedSelectRegion();
+
+    String errSaveProjectNeedSelectDirection();
+
+    String errSaveProjectNeedSelectCustomerType();
+
+    String errSaveProjectNeedSelectCompany();
 }

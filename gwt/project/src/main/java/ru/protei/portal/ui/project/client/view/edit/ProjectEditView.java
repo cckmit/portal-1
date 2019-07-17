@@ -15,14 +15,16 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.common.UiConstants;
+import ru.protei.portal.ui.common.client.lang.En_RegionStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateIconSelector;
+import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.project.client.activity.edit.AbstractProjectEditActivity;
@@ -41,6 +43,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         initWidget(ourUiBinder.createAndBindUi(this));
         ensureDebugIds();
         company.setDefaultValue(lang.selectIssueCompany());
+        projectState.setDefaultValue(regionStateLang.getStateName(En_RegionState.UNKNOWN));
         projectRegion.setDefaultValue(lang.selectOfficialRegion());
         projectDirection.setDefaultValue(lang.contractSelectDirection());
     }
@@ -54,6 +57,9 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     public void setActivity(AbstractProjectEditActivity activity) {
         this.activity = activity;
     }
+
+    @Override
+    public HasValue<Integer> number() { return number; }
 
     @Override
     public HasValue<String> name() { return projectName; }
@@ -93,20 +99,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Override
     public HasValidable nameValidator() { return projectName; }
 
-/*
     @Override
-    public HasValidable companyValidator() { return company; }
-
-    @Override
-    public HasValidable regionValidator() { return projectRegion; }
-
-    @Override
-    public HasValidable directionValidator() { return projectDirection; }
-
-    @Override
-    public HasValidable customerTypeValidator() { return customerType; }
-*/
-
+    public HasVisibility numberVisibility() { return number; }
 
     @Override
     public HasVisibility saveVisibility() { return saveButton; }
@@ -138,59 +132,40 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Override
     public void showDocuments(boolean isShow) {
         if(isShow)
-            comments.removeClassName(UiConstants.Styles.HIDE);
+            documents.removeClassName(UiConstants.Styles.HIDE);
         else
-            comments.addClassName(UiConstants.Styles.HIDE);
+            documents.addClassName(UiConstants.Styles.HIDE);
     }
 
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
         }
-/*        local.ensureDebugId(DebugIds.ISSUE.PRIVACY_BUTTON);
-        number.ensureDebugId(DebugIds.ISSUE.NUMBER_INPUT);
-        name.ensureDebugId(DebugIds.ISSUE.NAME_INPUT);
-        caseMetaView.setEnsureDebugId(DebugIds.ISSUE.LINKS_BUTTON);
-        caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE.LINKS_CONTAINER);
-        caseMetaView.setEnsureDebugIdSelector(DebugIds.ISSUE.LINKS_TYPE_SELECTOR);
-        caseMetaView.setEnsureDebugIdTextBox(DebugIds.ISSUE.LINKS_INPUT);
-        caseMetaView.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
-        state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
-        importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
-        company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
-        initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
-        product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
-        manager.setEnsureDebugId(DebugIds.ISSUE.MANAGER_SELECTOR);
-        timeElapsed.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_LABEL);
-        timeElapsedInput.ensureDebugId(DebugIds.ISSUE.TIME_ELAPSED_INPUT);
-        description.ensureDebugId(DebugIds.ISSUE.DESCRIPTION_INPUT);
-        notifiers.setAddEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_ADD_BUTTON);
-        notifiers.setClearEnsureDebugId(DebugIds.ISSUE.NOTIFIERS_SELECTOR_CLEAR_BUTTON);
-        fileUploader.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_UPLOAD_BUTTON);
-        attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
-        saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
-        cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
+        number.ensureDebugId(DebugIds.PROJECT.NUMBER_INPUT);
+        projectName.ensureDebugId(DebugIds.PROJECT.NAME_INPUT);
+        description.ensureDebugId(DebugIds.PROJECT.DESCRIPTION_INPUT);
+        projectState.setEnsureDebugId(DebugIds.PROJECT.STATE_SELECTOR);
+        projectRegion.setEnsureDebugId(DebugIds.PROJECT.REGION_SELECTOR);
+        projectDirection.setEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
+        company.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
+        customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
+/*        products.setEnsureDebugId(DebugIds.PROJECT.PRODUCTS_SELECTOR);*/
+/*        documentsContainer.setEnsureDebugIdContainer(DebugIds.PROJECT.DOCUMENTS_CONTAINER);*/
 
-        nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
-        caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
-        stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.STATE);
-        importanceLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.IMPORTANCE);
-        companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.COMPANY);
-        initiatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.CONTACT);
-        productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PRODUCT);
-        managerLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.MANAGER);
-        timeElapsedLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.TIME_ELAPSED);
-        descriptionLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.INFO);
-        subscriptionsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.SUBSCRIPTIONS);
-        notifiersLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NOTIFIERS);
-        attachmentsLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.ATTACHMENTS);*/
+        saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
+        cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
+
     }
 
     @UiField
     HTMLPanel root;
 
     @UiField
+    IntegerBox number;
+    @UiField
     ValidableTextBox projectName;
+    @UiField
+    HTMLPanel nameContainer;
 
     @UiField
     TextArea description;
@@ -205,7 +180,7 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
 
     @Inject
     @UiField( provided = true )
-    RegionStateIconSelector projectState;
+    RegionStateButtonSelector projectState;
 
     @Inject
     @UiField( provided = true )
@@ -239,6 +214,8 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
     @Inject
     @UiField
     Lang lang;
+    @Inject
+    En_RegionStateLang regionStateLang;
 
     private AbstractProjectEditActivity activity;
 

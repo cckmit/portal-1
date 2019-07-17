@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -7,6 +8,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
@@ -44,11 +46,12 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     public void onShow(ProjectEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        resetView();
 
         if (event.id == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.newProject()));
             project = new ProjectInfo();
             fillView(project);
+            fireEvent(new AppEvents.InitPanelName(lang.newProject()));
         } else {
             fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
             requestProject(event.id, this::fillView);
@@ -58,7 +61,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     @Override
     public void onSaveClicked() {
         if (!validateView()) {
-            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
@@ -94,9 +96,26 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
             @Override
             public void onSuccess(ProjectInfo projectInfo) {
-                successAction.accept(projectInfo);
+                project = projectInfo;
+                fillView(projectInfo);
             }
         });
+    }
+
+    private void resetView () {
+        view.number().setValue(null);
+        view.name().setValue("");
+        view.description().setText("");
+        view.state().setValue(En_RegionState.UNKNOWN);
+        view.region().setValue(null);
+        view.direction().setValue(null);
+        view.customerType().setValue(null);
+        view.company().setValue(null);
+        view.team().setValue(null);
+        view.products().setValue(null);
+
+        view.getDocumentsContainer().clear();
+        view.getCommentsContainer().clear();
     }
 
     private void fillView(ProjectInfo projectInfo) {
@@ -112,11 +131,13 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.customerType().setValue(projectInfo.getCustomerType());
 
         if (isNew(project)) {
+            view.numberVisibility().setVisible( false );
             view.showComments(false);
             view.showDocuments(false);
-            view.getCommentsContainer().clear();
-            view.getDocumentsContainer().clear();
         } else {
+            view.numberVisibility().setVisible( true );
+            view.number().setValue( projectInfo.getId().intValue() );
+
             view.showComments(true);
             view.showDocuments(true);
 
@@ -138,6 +159,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         projectInfo.setDescription(view.description().getText());
         projectInfo.setState(view.state().getValue());
         projectInfo.setCustomer(Company.fromEntityOption(view.company().getValue()));
+        Window.alert(projectInfo.getCustomer().toString());
         projectInfo.setCustomerType(view.customerType().getValue());
         projectInfo.setProducts(view.products().getValue());
         projectInfo.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
@@ -147,13 +169,24 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private boolean validateView() {
+        if(view.region().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectRegion(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        if(view.direction().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectDirection(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+        if(view.customerType().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCustomerType(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
         if(view.company().getValue() == null){
+            fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectCompany(), NotifyEvents.NotifyType.ERROR));
             return false;
         }
 
-        boolean isFieldsValid = view.nameValidator().isValid() /*&&
-                view.stateValidator().isValid() &&
-                view.companyValidator().isValid()*/;
+        boolean isFieldsValid = view.nameValidator().isValid();
 
         return isFieldsValid;
     }

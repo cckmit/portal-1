@@ -16,53 +16,54 @@
 
         <div class="body">
             <div class="grid grid-indent">
-                <div class="form-group col-xs-12">
+                <g:HTMLPanel ui:field="nameContainer" styleName="form-group col-xs-6 m-b-0">
                     <label ui:field="nameLabel"><ui:text from="{lang.projectName}"/></label>
-                    <validablefield:ValidableTextBox ui:field="projectName" styleName="input-field" notNull="true"/>
+                    <g:HTMLPanel ui:field="nameInputGroupContainer" styleName="project-main-info">
+                        <g:IntegerBox ui:field="number" styleName="input-field project-number" enabled="false"/>
+                        <validablefield:ValidableTextBox ui:field="projectName" styleName="input-field" notNull="true"/>
+                    </g:HTMLPanel>
+                </g:HTMLPanel>
+                <div class="form-group col-xs-6">
+                    <label class="col-xs-6 col-md-3 h30"><ui:text from="{lang.projectState}"/></label>
+                    <state:RegionStateButtonSelector ui:field="projectState" validation="true"/>
                 </div>
                 <div class="form-group col-xs-3">
-                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectRegion}"/></label>
+                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectRegion}"/></label>
                     <region:RegionButtonSelector ui:field="projectRegion" />
                 </div>
                 <div class="form-group col-xs-3">
-                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectDirection}"/></label>
+                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectDirection}"/></label>
                     <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" />
                 </div>
                 <div class="form-group col-xs-3">
-                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectCustomerType}"/></label>
+                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectCustomerType}"/></label>
                     <cutomertype:CustomerTypeSelector ui:field="customerType"/>
                 </div>
                 <div class="form-group col-xs-3">
-                    <label class="col-xs-6 col-md-6 h30"><ui:text from="{lang.projectCustomerCompany}"/></label>
+                    <label class="col-xs-3 col-md-3 h30"><ui:text from="{lang.projectCustomerCompany}"/></label>
                     <company:CompanySelector ui:field="company" defaultValue="{lang.selectIssueCompany}"/>
                 </div>
                 <div class="form-group col-xs-12">
+                    <label class="col-xs-12"><ui:text from="{lang.projectProducts}"/></label>
+                    <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false" addStyleNames="form-group col-xs-12"/>
+                </div>
+                <div class="form-group col-xs-12">
                     <label class="col-xs-12"><ui:text from="{lang.projectDescription}"/></label>
-                    <g:TextArea styleName="col-xs-12 col-md-12 pre-formatted-info project-details" ui:field="description"/>
+                    <g:TextArea ui:field="description" styleName="input-field description" />
                 </div>
 
-                <div class="form-group col-xs-6">
-                    <legend><ui:text from="{lang.projectTeam}"/></legend>
+                <div class="form-group col-xs-12">
+                    <label class="col-xs-12"><ui:text from="{lang.projectTeam}"/></label>
                     <team:TeamSelector ui:field="team" addStyleNames="form-group col-xs-12"/>
                 </div>
 
-                <div class="form-group col-xs-6">
-                    <legend><ui:text from="{lang.projectProducts}"/></legend>
-                    <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false" addStyleNames="form-group col-xs-12"/>
-                </div>
-
-                <div class="form-group col-xs-6">
-                    <legend><ui:text from="{lang.projectState}"/></legend>
-                    <state:RegionStateIconSelector ui:field="projectState" />
-                </div>
-
                 <div class="form-group col-xs-12" ui:field="documents">
-                    <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
+                    <label class="col-xs-6"><ui:text from="{lang.equipmentDocuments}"/></label>
                     <g:HTMLPanel ui:field="documentsContainer" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
                 </div>
 
                 <div class="form-group col-xs-12" ui:field="comments">
-                    <label><ui:text from="{lang.comments}"/></label>
+                    <label class="col-xs-6"><ui:text from="{lang.comments}"/></label>
                     <g:HTMLPanel ui:field="commentsContainer"/>
                 </div>
             </div>

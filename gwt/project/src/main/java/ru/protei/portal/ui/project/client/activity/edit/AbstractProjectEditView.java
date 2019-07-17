@@ -18,6 +18,7 @@ public interface AbstractProjectEditView extends IsWidget {
 
     void setActivity(AbstractProjectEditActivity activity);
 
+    HasValue<Integer> number();
     HasValue<String> name();
     HasText description();
     HasValue<En_RegionState> state();
@@ -32,11 +33,8 @@ public interface AbstractProjectEditView extends IsWidget {
     HasWidgets getDocumentsContainer();
 
     HasValidable nameValidator();
-/*    HasValidable regionValidator();
-    HasValidable directionValidator();
-    HasValidable companyValidator();
-    HasValidable customerTypeValidator();*/
 
+    HasVisibility numberVisibility();
     HasVisibility saveVisibility();
 
     HasEnabled saveEnabled();

@@ -68,7 +68,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public Map< String, List< ProjectInfo > > getProjectsByRegions( ProjectQuery query ) throws RequestFailedException {
-        log.debug( "getProjectsByRegions(): search={} | showDeprecated={} | sortField={} | order={}",
+        log.debug( "getProjectsByRegions(): search={} | states={} | sortField={} | order={}",
                 query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();

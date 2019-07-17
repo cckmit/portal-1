@@ -136,7 +136,6 @@ public abstract class ProjectTableActivity
 
     @Override
     public void onEditClicked( ProjectInfo value ) {
-        //persistScrollTopPosition();
         fireEvent(new ProjectEvents.Edit(value.getId()));
     }
 

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.region.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,12 +16,12 @@ import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
+import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
+import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
-import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -88,6 +87,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         sortField.setValue( En_SortField.prod_name );
         sortDir.setValue( true );
         search.setValue( "" );
+        direction.setValue( null );
         districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
     }

@@ -3004,6 +3004,15 @@ a {
 
 /**** PROJECTS ****/
 
+.project-main-info {
+  display: flex;
+
+  .project-number {
+    max-width: 15%;
+    border-right: none;
+  }
+}
+
 .autoadd-ts-group {
 
   ul.select2-choices {

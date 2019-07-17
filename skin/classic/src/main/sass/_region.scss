@@ -116,6 +116,31 @@
   }
 }
 
+/*  region state style for button selector  */
+
+.region-state-btn {
+  padding: 5px 10px 5px 5px !important;
+}
+
+.region-state-item:not(.selector-val) {
+  padding: 5px !important;
+  > span {
+    position: relative;
+    float: left;
+    line-height: 18px;
+    &:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+  }
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+}
+
 .projects {
   table > thead > tr > th.managers {
     min-width: 100px;

@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -14,11 +15,12 @@ import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.HashSet;
+import java.util.stream.Collectors;
 
 /**
  * Активность превью проекта
@@ -96,11 +98,19 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.setState( value.getState().getId() );
         view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
-        view.setTeam( new HashSet<>( value.getTeam() ) );
         view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
         view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
         view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
-        view.setProducts(new HashSet<>(value.getProducts()));
+
+        if( value.getTeam() != null ) {
+            view.setTeam( value.getTeam().stream().map( entry ->
+                    roleTypeLang.getName(entry.getRole()) + ": " + entry.getDisplayShortName() ).collect( Collectors.joining(", ")) );
+        }
+
+        if( value.getProducts() != null ) {
+            view.setProducts( value.getProducts().stream().map( ProductShortView::getName ).collect( Collectors.joining(", ")) );
+        }
+
         view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
@@ -113,6 +123,8 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
     @Inject
     Lang lang;
+    @Inject
+    En_PersonRoleTypeLang roleTypeLang;
     @Inject
     En_CustomerTypeLang customerTypeLang;
     @Inject

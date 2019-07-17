@@ -2,10 +2,6 @@ package ru.protei.portal.ui.project.client.activity.preview;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.view.PersonProjectMemberView;
-import ru.protei.portal.core.model.view.ProductShortView;
-
-import java.util.Set;
 
 /**
  * Абстракция вида проекта
@@ -20,10 +16,10 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setName( String name );
     void setState( long value );
     void setDirection( String value );
-    void setTeam( Set<PersonProjectMemberView> value );
+    void setTeam( String value );
     void setDescription( String value );
     void setRegion( String value );
-    void setProducts( Set<ProductShortView> value );
+    void setProducts( String value );
     void setCompany( String value );
     void setCustomerType( String value );
 
