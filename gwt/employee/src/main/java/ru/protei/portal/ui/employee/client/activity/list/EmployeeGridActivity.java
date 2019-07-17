@@ -4,8 +4,11 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -21,7 +24,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     public void onInit() {
         filterView.setActivity(this);
         query = makeQuery();
-        currentViewType = ViewType.LIST;
+        String currentViewString = localStorageService.getOrDefault("currentViewType", "LIST");
+        currentViewType = ViewType.valueOf(currentViewString);
     }
 
     @Event
@@ -34,9 +38,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
         fireEvent(new AppEvents.InitPanelName(lang.employees()));
 
         fireEvent(new ActionBarEvents.Clear());
-//        if (policyService.hasPrivilegeFor(En_Privilege.)) {
-//            fireEvent(new ActionBarEvents.Add(lang.buttonCreate(), UiConstants.ActionBarIcons.CREATE, UiConstants.ActionBarIdentity.COMPANY));
-//        }
 
         boolean isListCurrent = currentViewType == ViewType.LIST;
         fireEvent(new ActionBarEvents.Add(
@@ -55,6 +56,8 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
         currentViewType = currentViewType == ViewType.TABLE ? ViewType.LIST : ViewType.TABLE;
         onShow(new EmployeeEvents.Show());
+
+        localStorageService.set("currentViewType", currentViewType.toString());
     }
 
     @Override
@@ -75,21 +78,14 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
                 filterView.sortDir().getValue() ? En_SortDir.ASC : En_SortDir.DESC);
     }
 
-//    private EmployeeQuery makeQuery() {
-//        EmployeeQuery eq = new EmployeeQuery(filterView.searchPattern().getValue(),
-//                filterView.sortField().getValue(),
-//                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
-//
-//        return eq;
-//    }
-
-
     @Inject
     AbstractEmployeeFilterView filterView;
     @Inject
     Lang lang;
-//    @Inject
-//    PolicyService policyService;
+    @Inject
+    PolicyService policyService;
+    @Inject
+    LocalStorageService localStorageService;
 
     private ViewType currentViewType;
     private EmployeeQuery query;

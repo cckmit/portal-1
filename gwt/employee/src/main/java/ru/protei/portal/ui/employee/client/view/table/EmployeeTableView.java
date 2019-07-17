@@ -178,18 +178,13 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     private Element buildElement(String iconClass, String contacts) {
         Element data = DOM.createSpan();
         data.setInnerText(contacts);
-        return buildElement(iconClass, data);
-    }
-
-    private Element buildElement(String iconClass, Element element) {
         Element icon = DOM.createElement("i");
         icon.addClassName(iconClass);
 
         Element wrapper = DOM.createDiv();
         wrapper.addClassName("contacts");
         wrapper.appendChild(icon);
-        wrapper.appendChild(element);
-
+        wrapper.appendChild(data);
         return wrapper;
     }
 
