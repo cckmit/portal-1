@@ -11,6 +11,17 @@ public class PhoneUtils {
         return phoneNumber.replaceAll(NOT_ALLOWED_SYMBOLS_REGEX, "");
     }
 
+    public static String prettyPrintWorkPhoneNumber(String phoneNumber) {
+        if (isEmpty(phoneNumber)) {
+            return phoneNumber;
+        }
+        if (!phoneNumber.matches(PROTEI_PHONE_NUMBER_PATTERN)) {
+            return phoneNumber;
+        }
+
+        return phoneNumber.substring(0, 1) + "-" + phoneNumber.substring(1);
+    }
+
     public static String prettyPrintPhoneNumber(String phoneNumber) {
         if (isEmpty(phoneNumber)) {
             return phoneNumber;
@@ -43,6 +54,7 @@ public class PhoneUtils {
                 phoneNumber.substring(first + second, first + second + third);
     }
 
+    private static final String PROTEI_PHONE_NUMBER_PATTERN = "^[0-9]{4}$";
     private static final String RUS_PHONE_NUMBER_PATTERN = "^(\\+7|8)[0-9]{9,10}$"; // [+7 или 8] + [3 код региона] + [6-7 номер]
     private static final String NOT_ALLOWED_SYMBOLS_REGEX = "[^+0-9]";
 }

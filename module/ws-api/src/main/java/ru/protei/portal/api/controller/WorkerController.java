@@ -812,9 +812,9 @@ public class WorkerController {
         person.setInfo(HelperFunc.isEmpty(rec.getInfo()) ? null : rec.getInfo().trim());
 
         PlainContactInfoFacade contactInfoFacade = new PlainContactInfoFacade(person.getContactInfo());
-        contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : rec.getPhoneWork().trim());
+        contactInfoFacade.setWorkPhone(HelperFunc.isEmpty(rec.getPhoneWork()) ? null : normalizePhoneNumber(rec.getPhoneWork().trim()));
         contactInfoFacade.setMobilePhone(HelperFunc.isEmpty(rec.getPhoneMobile()) ? null : normalizePhoneNumber(rec.getPhoneMobile().trim()));
-        contactInfoFacade.setHomePhone(HelperFunc.isEmpty(rec.getPhoneHome()) ? null : rec.getPhoneHome().trim());
+        contactInfoFacade.setHomePhone(HelperFunc.isEmpty(rec.getPhoneHome()) ? null : normalizePhoneNumber(rec.getPhoneHome().trim()));
         contactInfoFacade.setLegalAddress(HelperFunc.isEmpty(rec.getAddress()) ? null : rec.getAddress().trim());
         contactInfoFacade.setHomeAddress(HelperFunc.isEmpty(rec.getAddressHome()) ? null : rec.getAddressHome().trim());
         contactInfoFacade.setEmail(HelperFunc.isEmpty(rec.getEmail()) ? null : rec.getEmail().trim());

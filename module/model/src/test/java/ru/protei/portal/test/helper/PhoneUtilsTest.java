@@ -27,6 +27,10 @@ public class PhoneUtilsTest {
         phoneMap.put("8(999) 8887766", "89998887766");
         phoneMap.put("8(999)8887766", "89998887766");
         phoneMap.put("89998887766", "89998887766");
+        phoneMap.put("5-000", "5000");
+        phoneMap.put("5 000", "5000");
+        phoneMap.put("5 - 000", "5000");
+        phoneMap.put("5000", "5000");
 
         phoneMap.forEach((number, expected) -> {
             Assert.assertEquals(number, expected, PhoneUtils.normalizePhoneNumber(number));
@@ -49,6 +53,19 @@ public class PhoneUtilsTest {
 
         phoneMap.forEach((number, expected) -> {
             Assert.assertEquals(number, expected, PhoneUtils.prettyPrintPhoneNumber(number));
+        });
+
+        Map<String, String> workPhoneMap = new HashMap<>();
+        workPhoneMap.put("5000", "5-000");
+        workPhoneMap.put("4123", "4-123");
+        workPhoneMap.put("3456", "3-456");
+        workPhoneMap.put("123", "123");
+        workPhoneMap.put("+7 (999) 888-77-66", "+7 (999) 888-77-66");
+        workPhoneMap.put("+7 999 888-77-66", "+7 999 888-77-66");
+        workPhoneMap.put("+7(999)8887766", "+7(999)8887766");
+        workPhoneMap.put("(809) 123-1234", "(809) 123-1234");
+        workPhoneMap.forEach((number, expected) -> {
+            Assert.assertEquals(number, expected, PhoneUtils.prettyPrintWorkPhoneNumber(number));
         });
     }
 }

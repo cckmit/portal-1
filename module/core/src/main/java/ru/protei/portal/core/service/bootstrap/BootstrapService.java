@@ -156,7 +156,7 @@ public class BootstrapService {
             for (Person person : result.getResults()) {
                 ContactInfo ci = person.getContactInfo();
                 PlainContactInfoFacade facade = new PlainContactInfoFacade(ci);
-                facade.getMobilePhoneList().forEach(cci -> {
+                facade.allPhonesStream().forEach(cci -> {
                     String normalized = PhoneUtils.normalizePhoneNumber(cci.value());
                     cci.modify(normalized);
                 });

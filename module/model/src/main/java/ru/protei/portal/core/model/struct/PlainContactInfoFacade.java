@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintPhoneNumber;
+import static ru.protei.portal.core.model.helper.PhoneUtils.prettyPrintWorkPhoneNumber;
 
 /**
  * Created by Mike on 09.11.2016.
@@ -42,8 +43,17 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
     public String allPhonesAsString (boolean isPrettyPrintPhoneNumber) {
         return allPhonesStream()
                 .map(p -> {
-                    String number = isPrettyPrintPhoneNumber ? prettyPrintPhoneNumber(p.value()) : p.value();
+                    En_ContactItemType type = p.type();
+                    En_ContactDataAccess accessType = p.accessType();
                     String comment = isNotEmpty(p.comment()) ? " (" + p.comment() + ")" : "";
+                    String number = p.value();
+                    if (isPrettyPrintPhoneNumber) {
+                        if (type == En_ContactItemType.GENERAL_PHONE && accessType == En_ContactDataAccess.PUBLIC) {
+                            number = prettyPrintWorkPhoneNumber(number);
+                        } else {
+                            number = prettyPrintPhoneNumber(number);
+                        }
+                    }
                     return number + comment;
                 })
                 .collect( Collectors.joining( ", " ) );
@@ -57,8 +67,16 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         return allPhonesStream()
                 .filter(ci -> ci.accessType().equals(En_ContactDataAccess.PUBLIC))
                 .map(p -> {
-                    String number = isPrettyPrintPhoneNumber ? prettyPrintPhoneNumber(p.value()) : p.value();
+                    En_ContactItemType type = p.type();
                     String comment = isNotEmpty(p.comment()) ? " (" + p.comment() + ")" : "";
+                    String number = p.value();
+                    if (isPrettyPrintPhoneNumber) {
+                        if (type == En_ContactItemType.GENERAL_PHONE) {
+                            number = prettyPrintWorkPhoneNumber(number);
+                        } else {
+                            number = prettyPrintPhoneNumber(number);
+                        }
+                    }
                     return number + comment;
                 })
                 .collect( Collectors.joining( ", " ) );
