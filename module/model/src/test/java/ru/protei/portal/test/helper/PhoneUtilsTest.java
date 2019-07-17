@@ -45,6 +45,8 @@ public class PhoneUtilsTest {
         phoneMap.put("+7999887766", "+7 (999) 88-77-66");
         phoneMap.put("89998887766", "8 (999) 888-77-66");
         phoneMap.put("8999887766", "8 (999) 88-77-66");
+        phoneMap.put("8887766", "888-77-66");
+        phoneMap.put("887766", "88-77-66");
         phoneMap.put("123", "123");
         phoneMap.put("+7 (999) 888-77-66", "+7 (999) 888-77-66");
         phoneMap.put("+7 999 888-77-66", "+7 999 888-77-66");

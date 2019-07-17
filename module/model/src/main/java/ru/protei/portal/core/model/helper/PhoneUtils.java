@@ -30,8 +30,13 @@ public class PhoneUtils {
             return phoneNumber;
         }
 
-        int countryCodeLength = phoneNumber.startsWith("+") ? 2 : 1;
-        int regionCodeLength = 3;
+        boolean isFullSizedPhoneNumber = phoneNumber.length() > 7;
+        int countryCodeLength = isFullSizedPhoneNumber ?
+                (phoneNumber.startsWith("+") ? 2 : 1) :
+                0;
+        int regionCodeLength = isFullSizedPhoneNumber ?
+                3 :
+                0;
         int numberLength = phoneNumber.length() - regionCodeLength - countryCodeLength;
 
         String countryCode = phoneNumber.substring(0, countryCodeLength);
@@ -43,7 +48,9 @@ public class PhoneUtils {
             number = splitPhoneNumberWithDash(number, 3, 2, 2);
         }
 
-        return countryCode + " (" + regionCode + ") " + number;
+        return isFullSizedPhoneNumber ?
+                countryCode + " (" + regionCode + ") " + number :
+                number;
     }
 
     private static String splitPhoneNumberWithDash(String phoneNumber, int first, int second, int third) {
@@ -55,6 +62,6 @@ public class PhoneUtils {
     }
 
     private static final String PROTEI_PHONE_NUMBER_PATTERN = "^[0-9]{4}$";
-    private static final String RUS_PHONE_NUMBER_PATTERN = "^(\\+7|8)[0-9]{9,10}$"; // [+7 или 8] + [3 код региона] + [6-7 номер]
+    private static final String RUS_PHONE_NUMBER_PATTERN = "^((\\+7|8)[0-9]{9,10}|[0-9]{6,7})$"; // [+7 или 8] + [3 код региона] + [6-7 номер] ИЛИ [6-7 номер]
     private static final String NOT_ALLOWED_SYMBOLS_REGEX = "[^+0-9]";
 }
