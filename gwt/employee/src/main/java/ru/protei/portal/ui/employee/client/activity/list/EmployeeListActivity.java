@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.*;
 
 /**
@@ -123,8 +124,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         return new EmployeeQuery( false, false, true,
                 null,
                 filterView.searchPattern().getValue(),
-                filterView.workPhone().getValue(),
-                filterView.mobilePhone().getValue(),
+                normalizePhoneNumber(filterView.workPhone().getValue()),
+                normalizePhoneNumber(filterView.mobilePhone().getValue()),
                 filterView.ipAddress().getValue(),
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),
