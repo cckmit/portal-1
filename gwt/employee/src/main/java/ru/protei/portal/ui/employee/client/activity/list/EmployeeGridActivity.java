@@ -4,10 +4,8 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
@@ -82,8 +80,6 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     AbstractEmployeeFilterView filterView;
     @Inject
     Lang lang;
-    @Inject
-    PolicyService policyService;
     @Inject
     LocalStorageService localStorageService;
 

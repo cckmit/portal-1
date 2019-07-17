@@ -1,19 +1,16 @@
 package ru.protei.portal.ui.employee.client.activity.list;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -22,10 +19,7 @@ import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.Date;
 import java.util.List;
-
-import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
 public abstract class EmployeeTableActivity implements AbstractEmployeeTableActivity, AbstractPagerActivity, Activity {
     @PostConstruct
