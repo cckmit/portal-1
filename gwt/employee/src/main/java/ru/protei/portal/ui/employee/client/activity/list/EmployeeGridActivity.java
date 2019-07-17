@@ -22,8 +22,7 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
     public void onInit() {
         filterView.setActivity(this);
         query = makeQuery();
-        String currentViewString = localStorageService.getOrDefault("currentViewType", "LIST");
-        currentViewType = ViewType.valueOf(currentViewString);
+        currentViewType = ViewType.valueOf(localStorageService.getOrDefault(EMPLOYEE_CURRENT_VIEW_TYPE, ViewType.LIST.toString()));
     }
 
     @Event
@@ -49,13 +48,14 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     @Event
     public void onChangeViewClicked(ActionBarEvents.Clicked event) {
-        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW.equals(event.identity)))
+        if (!(UiConstants.ActionBarIdentity.EMPLOYEE_TYPE_VIEW.equals(event.identity))) {
             return;
+        }
 
         currentViewType = currentViewType == ViewType.TABLE ? ViewType.LIST : ViewType.TABLE;
         onShow(new EmployeeEvents.Show());
 
-        localStorageService.set("currentViewType", currentViewType.toString());
+        localStorageService.set(EMPLOYEE_CURRENT_VIEW_TYPE, currentViewType.toString());
     }
 
     @Override
@@ -85,4 +85,5 @@ public abstract class EmployeeGridActivity implements AbstractEmployeeGridActivi
 
     private ViewType currentViewType;
     private EmployeeQuery query;
+    private static final String EMPLOYEE_CURRENT_VIEW_TYPE = "employeeCurrentViewType";
 }
