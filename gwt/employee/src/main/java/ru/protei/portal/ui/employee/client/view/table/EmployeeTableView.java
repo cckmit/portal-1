@@ -137,7 +137,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         Element employeeContacts = DOM.createDiv();
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
-        String phones = infoFacade.publicPhonesAsString();
+        String phones = infoFacade.publicPhonesAsFormattedString(true);
         String emails = infoFacade.publicEmailsAsString();
 
         if (!phones.isEmpty()) {

@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.EmployeeEvents;
@@ -36,6 +35,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.PAGE_SIZE;
 import static ru.protei.portal.ui.common.client.util.PaginationUtils.getTotalPages;
 
@@ -134,8 +134,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         return new EmployeeQuery( false, false, true,
                 null,
                 filterView.searchPattern().getValue(),
-                filterView.workPhone().getValue(),
-                filterView.mobilePhone().getValue(),
+                normalizePhoneNumber(filterView.workPhone().getValue()),
+                normalizePhoneNumber(filterView.mobilePhone().getValue()),
                 filterView.ipAddress().getValue(),
                 filterView.email().getValue(),
                 filterView.departmentParent().getValue(),
@@ -151,7 +151,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
         itemView.setBirthday( DateFormatter.formatDateMonth( employee.getBirthday() ) );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade( employee.getContactInfo() );
-        itemView.setPhone( infoFacade.publicPhonesAsString() );
+        itemView.setPhone( infoFacade.publicPhonesAsFormattedString(true) );
         itemView.setEmail( infoFacade.publicEmails() );
 
         WorkerEntryFacade entryFacade = new WorkerEntryFacade( employee.getWorkerEntries() );
