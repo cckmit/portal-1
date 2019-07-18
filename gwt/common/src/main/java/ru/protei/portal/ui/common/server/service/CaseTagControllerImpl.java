@@ -17,9 +17,15 @@ import java.util.List;
 public class CaseTagControllerImpl implements CaseTagController {
 
     @Override
-    public void createTag(CaseTag caseTag) throws RequestFailedException {
+    public void saveTag(CaseTag caseTag) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        ServiceUtils.checkResult(caseTagService.createTag(authToken, caseTag));
+        ServiceUtils.checkResult(caseTagService.saveTag(authToken, caseTag));
+    }
+
+    @Override
+    public void removeTag(CaseTag caseTag) throws RequestFailedException {
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        ServiceUtils.checkResult(caseTagService.removeTag(caseTag));
     }
 
     @Override

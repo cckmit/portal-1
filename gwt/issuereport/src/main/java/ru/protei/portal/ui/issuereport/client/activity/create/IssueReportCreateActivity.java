@@ -5,7 +5,9 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.CaseFilter;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -22,7 +24,8 @@ import ru.protei.portal.ui.common.client.util.IssueFilterUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.issuereport.client.widget.issuefilter.model.AbstractIssueFilterModel;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -80,6 +83,11 @@ public abstract class IssueReportCreateActivity implements Activity,
             return;
         }
         filterIdToRemove = null;
+    }
+
+    @Override
+    public void onRemoveClicked() {
+
     }
 
     @Override

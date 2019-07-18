@@ -1622,6 +1622,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagCreate();
 
+    String tagEdit();
+
     String tagName();
 
     String tagColor();

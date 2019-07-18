@@ -121,6 +121,10 @@ button.close {
   border-top: 1px solid #e5e5e5;
 }
 
+.modal-footer .remove-button {
+  float: left;
+}
+
 @media (min-width: 768px) {
   .modal-dialog {
     width: 600px;

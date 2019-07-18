@@ -21,18 +21,30 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
     public void onInit() {
         view.setActivity(this);
         dialogView.setActivity(this);
-        dialogView.setHeader(lang.tagCreate());
         dialogView.getBodyContainer().add(view.asWidget());
     }
 
     @Event
     public void onShow(CaseTagEvents.Create event) {
+        this.caseTag = event.getCaseTag();
         caseType = event.getCaseType();
-        view.name().setValue("");
-        view.color().setValue("");
+        view.name().setValue(event.getTagName());
+        view.color().setValue(event.getTagColor());
         view.company().setValue(EntityOption.fromCompany(event.getCompany()));
         view.setVisibleCompanyPanel(event.getCompany() == null);
+        dialogView.removeButtonVisibility().setVisible(!event.getTagName().isEmpty());
+        dialogView.setHeader(event.getTagName().isEmpty() ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();
+    }
+
+    @Override
+    public void onRemoveClicked() {
+        caseTagController.removeTag(caseTag, new FluentCallback<Void>()
+                .withSuccess(v -> {
+                    dialogView.hidePopup();
+                    fireEvent(new CaseTagEvents.ChangeModel());
+                })
+        );
     }
 
     @Override
@@ -42,13 +54,13 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
             return;
         }
 
-        CaseTag caseTag = new CaseTag();
+        CaseTag caseTag = this.caseTag == null ? new CaseTag() : this.caseTag;
         caseTag.setCaseType(caseType);
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
 
-        caseTagController.createTag(caseTag, new FluentCallback<Void>()
+        caseTagController.saveTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {
                     dialogView.hidePopup();
                     fireEvent(new CaseTagEvents.ChangeModel());
@@ -75,6 +87,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
     }
 
     private En_CaseType caseType;
+    private CaseTag caseTag;
 
     @Inject
     Lang lang;

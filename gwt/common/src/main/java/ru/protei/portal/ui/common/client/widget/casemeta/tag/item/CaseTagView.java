@@ -7,13 +7,22 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.events.CaseTagEvents;
+import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
 public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled{
 
-    public CaseTagView() {
+    @Inject
+    public CaseTagView(NotifyActivity activity, CompanyControllerAsync companyService) {
+        this.activity = activity;
+        this.companyService = companyService;
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -74,6 +83,21 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         CloseEvent.fire(this, caseTag);
     }
 
+    @UiHandler("text")
+    public void textClick(ClickEvent event) {
+        companyService.getCompany(caseTag.getCompanyId(), new AsyncCallback<Company>() {
+            @Override
+            public void onFailure(Throwable caught) {
+
+            }
+
+            @Override
+            public void onSuccess(Company result) {
+                activity.fireEvent(new CaseTagEvents.Create(caseTag, result));
+            }
+        });
+    }
+
     @UiField
     FocusPanel root;
     @UiField
@@ -82,6 +106,9 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
     Anchor remove;
     @UiField
     InlineLabel text;
+
+    private NotifyActivity activity;
+    private CompanyControllerAsync companyService;
 
     private CaseTag caseTag = null;
 

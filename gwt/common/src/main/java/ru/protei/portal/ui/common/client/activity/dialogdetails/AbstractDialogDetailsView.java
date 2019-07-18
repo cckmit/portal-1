@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.dialogdetails;
 
+import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 
@@ -18,6 +19,8 @@ public interface AbstractDialogDetailsView extends IsWidget {
     void showPopup();
 
     void hidePopup();
+
+    HasVisibility removeButtonVisibility();
 
     /**
      * Установить заголовок окна детализации

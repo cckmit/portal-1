@@ -40,6 +40,11 @@ public abstract class EquipmentCopyActivity
     }
 
     @Override
+    public void onRemoveClicked() {
+
+    }
+
+    @Override
     public void onSaveClicked() {
         String title = view.name().getValue();
         if ( title == null || title.isEmpty() ) {

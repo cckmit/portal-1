@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface CaseTagService {
 
-    CoreResponse createTag(AuthToken token, CaseTag caseTag);
+    CoreResponse saveTag(AuthToken token, CaseTag caseTag);
+
+    CoreResponse removeTag(CaseTag caseTag);
 
     CoreResponse<List<CaseTag>> getTagsByCaseId(AuthToken token, long caseId);
 
