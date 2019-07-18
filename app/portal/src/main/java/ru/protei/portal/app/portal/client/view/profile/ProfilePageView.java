@@ -85,9 +85,6 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         return saveButton;
     }
 
-    @UiField
-    Button changePasswordButton;
-
     @Override
     public void setIcon( String iconSrc ) {
         this.icon.setSrc( iconSrc );
@@ -98,31 +95,10 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         return subscriptions;
     }
 
-    @UiHandler( "saveButton" )
-    public void onButtonClicked( ClickEvent event ) {
-        if ( activity != null ) {
-            activity.onSaveSubscriptionClicked();
-        }
-    }
-
-    @UiField
-    Button savePasswordButton;
-
     @Override
     public HasVisibility changePasswordButtonVisibility() {
         return changePasswordButton;
     }
-
-    @Inject
-    @UiField
-    Lang lang;
-    @Inject
-    @UiField(provided = true)
-    SubscriptionList subscriptions;
-    @UiField
-    InlineLabel name;
-    @UiField
-    Button saveButton;
 
     @UiHandler("changePasswordButton")
     public void onChangePasswordButtonClicked(ClickEvent event) {
@@ -137,6 +113,28 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
             activity.onSavePasswordButtonClicked();
         }
     }
+
+    @UiHandler( "saveButton" )
+    public void onButtonClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onSaveSubscriptionClicked();
+        }
+    }
+
+    @UiField
+    Button changePasswordButton;
+    @UiField
+    Button savePasswordButton;
+    @Inject
+    @UiField
+    Lang lang;
+    @Inject
+    @UiField(provided = true)
+    SubscriptionList subscriptions;
+    @UiField
+    InlineLabel name;
+    @UiField
+    Button saveButton;
     @UiField
     Element company;
     @UiField
