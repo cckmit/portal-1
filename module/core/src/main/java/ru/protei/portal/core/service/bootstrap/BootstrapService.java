@@ -142,10 +142,10 @@ public class BootstrapService {
 
     private void patchNormalizeWorkersPhoneNumbers() {
 
-        final String sqlCondition = "company_id = ? AND sex <> ?";
+        final String sqlCondition = "sex <> ? AND company_id IN (SELECT id FROM company WHERE category_id = ?)";
         final List<Object> params = new ArrayList<>();
-        params.add(1);
         params.add(En_Gender.UNDEFINED.getCode());
+        params.add(5);
 
         log.info("Patch for workers phone number normalization has started");
 
