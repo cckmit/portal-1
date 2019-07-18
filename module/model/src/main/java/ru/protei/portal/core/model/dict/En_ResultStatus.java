@@ -125,5 +125,8 @@ public enum En_ResultStatus {
      */
     INVALID_CASE_UPDATE_CASE_IS_CLOSED,
 
-    INVALID_PASSWORD
+    /**
+     * неверный текущий пароль при изменении пароля
+     */
+    INVALID_CURRENT_PASSWORD
 }

@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,19 +177,20 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateAccountPassword(String login, String password) {
+    public CoreResponse<Boolean> updateAccountPassword(String login, String currentPassword, String newPassword) {
         UserLogin userLogin = userLoginDAO.findByLogin(login);
+
         if (userLogin.getAuthTypeId() != 1) {
             return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_AVAILABLE);
         }
 
-        String md5Password = DigestUtils.md5DigestAsHex(password.trim().getBytes());
-        if (!userLogin.getUpass().equals(md5Password)) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.INVALID_PASSWORD);
+        String md5Password = DigestUtils.md5DigestAsHex(currentPassword.getBytes());
+        if (!userLogin.getUpass().equalsIgnoreCase(md5Password)) {
+            return new CoreResponse<Boolean>().error(En_ResultStatus.INVALID_CURRENT_PASSWORD);
         }
-        userLogin.setUpass(md5Password);
+        userLogin.setUpass(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
 
-        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<Boolean>().success() : new CoreResponse<Boolean>().error(En_ResultStatus.INTERNAL_ERROR);
+        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<Boolean>().success(true) : new CoreResponse<Boolean>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {

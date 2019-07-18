@@ -29,15 +29,11 @@ public interface AbstractProfilePageView extends IsWidget {
 
     HasVisibility passwordContainerVisibility();
 
-    HasVisibility currentPasswordVisibility();
-
-    HasVisibility newPasswordVisibility();
-
-    HasVisibility confirmPasswordVisibility();
-
     HasVisibility saveButtonVisibility();
 
-    void setIcon( String iconSrc );
+    HasVisibility changePasswordButtonVisibility();
+
+    void setIcon(String iconSrc);
 
     HasEnabled companySubscriptionEnabled();
 }

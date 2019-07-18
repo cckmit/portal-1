@@ -7,8 +7,6 @@ import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
-
 /**
  * Сервис управления учетными записями
  */
@@ -27,5 +25,5 @@ public interface AccountController extends RemoteService {
 
     boolean removeAccount( Long accountId ) throws RequestFailedException;
 
-    boolean updateAccountPassword( String login, String newPassword ) throws RequestFailedException;
+    boolean updateAccountPassword(String login, String currentPassword, String newPassword) throws RequestFailedException;
 }

@@ -35,6 +35,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonCreate();
 
+    String buttonChangePassword();
+
     String errNoMatchesFound();
 
     String errGetList();
@@ -1685,4 +1687,6 @@ public interface Lang extends Messages, ContactItemLang {
     String timeElapsedTypeSolveProblems();
 
     String errInvalidCaseUpdateCaseIsClosed();
+
+    String errInvalidCurrentPassword();
 }

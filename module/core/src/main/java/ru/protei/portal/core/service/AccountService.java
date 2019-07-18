@@ -10,8 +10,6 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
-
 /**
  * Сервис управления учетными записями
  */
@@ -40,5 +38,5 @@ public interface AccountService {
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
     CoreResponse< Boolean > removeAccount( AuthToken authToken, Long accountId );
 
-    CoreResponse< Boolean > updateAccountPassword( String login, String password );
+    CoreResponse<Boolean> updateAccountPassword(String login, String currentPassword, String newPassword);
 }

@@ -7,5 +7,7 @@ public interface AbstractProfilePageActivity {
 
     void onSaveSubscriptionClicked();
 
-    void onSavePasswordClicked();
+    void onChangePasswordButtonClicked();
+
+    void onSavePasswordButtonClicked();
 }

@@ -9,14 +9,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
+import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
-import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
-import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
-import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 
 import java.util.List;
 
@@ -83,24 +81,12 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
-    public HasVisibility currentPasswordVisibility() {
-        return currentPassword;
-    }
-
-    @Override
-    public HasVisibility newPasswordVisibility() {
-        return newPassword;
-    }
-
-    @Override
-    public HasVisibility confirmPasswordVisibility() {
-        return confirmPassword;
-    }
-
-    @Override
     public HasVisibility saveButtonVisibility() {
         return saveButton;
     }
+
+    @UiField
+    Button changePasswordButton;
 
     @Override
     public void setIcon( String iconSrc ) {
@@ -119,6 +105,14 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         }
     }
 
+    @UiField
+    Button savePasswordButton;
+
+    @Override
+    public HasVisibility changePasswordButtonVisibility() {
+        return changePasswordButton;
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -129,6 +123,20 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     InlineLabel name;
     @UiField
     Button saveButton;
+
+    @UiHandler("changePasswordButton")
+    public void onChangePasswordButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onChangePasswordButtonClicked();
+        }
+    }
+
+    @UiHandler("savePasswordButton")
+    public void onSavePasswordButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onSavePasswordButtonClicked();
+        }
+    }
     @UiField
     Element company;
     @UiField
