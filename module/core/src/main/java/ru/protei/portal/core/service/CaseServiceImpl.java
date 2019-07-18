@@ -245,7 +245,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator, false);
 
         if (objectResultData.isUpdated()) {
             // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -269,7 +269,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator, caseComment != null);
         CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
 
         if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
@@ -295,7 +295,7 @@ public class CaseServiceImpl implements CaseService {
         );
     }
 
-    private CaseObjectUpdateResult performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
+    private CaseObjectUpdateResult performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator, boolean isWithCommentUpdate) {
 
         if (caseObject == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -375,7 +375,7 @@ public class CaseServiceImpl implements CaseService {
             }
         }
 
-        if (isCaseChangedExceptStateImpLevelManager(oldState, caseObject)) {
+        if (!isWithCommentUpdate && isCaseChangedExceptStateImpLevelManager(oldState, caseObject)) {
             Long messageId = createAndPersistChangeLogMessage(initiator, caseObject.getId());
             if (messageId == null) {
                 log.error("Change log message for the issue {} isn't saved!", caseObject.getId());
