@@ -84,10 +84,18 @@ public class ProjectEvents {
         public ShowProjectDocuments(HasWidgets parent, Long projectId) {
             this.parent = parent;
             this.projectId = projectId;
+            this.isModifyEnabled = true;
+        }
+
+        public ShowProjectDocuments(HasWidgets parent, Long projectId, boolean isModifyEnabled) {
+            this.parent = parent;
+            this.projectId = projectId;
+            this.isModifyEnabled = isModifyEnabled;
         }
 
         public Long projectId;
         public HasWidgets parent;
+        public boolean isModifyEnabled;
     }
 }
 

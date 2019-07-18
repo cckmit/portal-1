@@ -343,8 +343,8 @@ public class ProjectServiceImpl implements ProjectService {
         if (products == null)
             return;
 
-        Set<DevUnit> oldProducts = caseObject.getProducts();
-        Set<DevUnit> newProducts = products.stream().map(DevUnit::fromProductShortView).collect(Collectors.toSet());
+        Set<DevUnit> oldProducts = caseObject.getProducts() == null ? new HashSet<>() : caseObject.getProducts();
+        Set<DevUnit> newProducts = products == null ? new HashSet<>() : products.stream().map(DevUnit::fromProductShortView).collect(Collectors.toSet());
 
         Set<DevUnit> toDelete = new HashSet<>(oldProducts);
         Set<DevUnit> toCreate = new HashSet<>(newProducts);

@@ -13,7 +13,8 @@ public class RegionStateButtonSelector extends ButtonSelector<En_RegionState> {
 
     @Inject
     public void init( ) {
-        setDisplayOptionCreator(value -> new DisplayOption( lang.getStateName( value ), null, lang.getStateIcon(value)));
+        setDisplayOptionCreator(value -> new DisplayOption(
+                lang.getStateName( value ), "region-state-item", lang.getStateIcon(value) + " selector"));
         addBtnStyleName("region-state-btn");
         fillOptions();
     }

@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.project.client.activity.edit;
 
-import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -50,7 +49,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         if (event.id == null) {
             project = new ProjectInfo();
-            fillView(project);
             fireEvent(new AppEvents.InitPanelName(lang.newProject()));
         } else {
             fireEvent(new AppEvents.InitPanelName(lang.projectEdit()));
@@ -97,7 +95,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             @Override
             public void onSuccess(ProjectInfo projectInfo) {
                 project = projectInfo;
-                fillView(projectInfo);
+                successAction.accept(projectInfo);
             }
         });
     }
@@ -116,9 +114,17 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
 
         view.getDocumentsContainer().clear();
         view.getCommentsContainer().clear();
+        view.showComments(false);
+        view.showDocuments(false);
+
+        view.numberVisibility().setVisible(false);
+
+        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) );
+        view.saveEnabled().setEnabled(true);
     }
 
     private void fillView(ProjectInfo projectInfo) {
+        view.number().setValue( projectInfo.getId().intValue() );
         view.name().setValue(projectInfo.getName());
         view.state().setValue( projectInfo.getState() );
         view.direction().setValue( projectInfo.getProductDirection() == null ? null : new ProductDirectionInfo( projectInfo.getProductDirection() ) );
@@ -130,28 +136,18 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         view.products().setValue(projectInfo.getProducts());
         view.customerType().setValue(projectInfo.getCustomerType());
 
-        if (isNew(project)) {
-            view.numberVisibility().setVisible( false );
-            view.showComments(false);
-            view.showDocuments(false);
-        } else {
-            view.numberVisibility().setVisible( true );
-            view.number().setValue( projectInfo.getId().intValue() );
+        view.numberVisibility().setVisible( true );
 
-            view.showComments(true);
-            view.showDocuments(true);
+        view.showComments(true);
+        view.showDocuments(true);
 
-            fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
-                    .withCaseType(En_CaseType.PROJECT)
-                    .withCaseId(projectInfo.getId())
-                    .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
-                    .build());
+        fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
+                .withCaseType(En_CaseType.PROJECT)
+                .withCaseId(projectInfo.getId())
+                .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
+                .build());
 
-            fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId()));
-        }
-
-        view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) );
-        view.saveEnabled().setEnabled(true);
+        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId()));
     }
 
     private ProjectInfo fillProject(ProjectInfo projectInfo) {
@@ -159,7 +155,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         projectInfo.setDescription(view.description().getText());
         projectInfo.setState(view.state().getValue());
         projectInfo.setCustomer(Company.fromEntityOption(view.company().getValue()));
-        Window.alert(projectInfo.getCustomer().toString());
         projectInfo.setCustomerType(view.customerType().getValue());
         projectInfo.setProducts(view.products().getValue());
         projectInfo.setProductDirection(EntityOption.fromProductDirectionInfo( view.direction().getValue() ));
