@@ -281,13 +281,13 @@ public class TemplateServiceImpl implements TemplateService {
         if (removedCaseComment != null) {
             comments.add(removedCaseComment);
         }
-        if (newCaseComment != null) {
-            boolean isNewCommentPresents = comments.stream()
-                    .anyMatch(comment -> Objects.equals(comment.getId(), newCaseComment.getId()));
-            if (!isNewCommentPresents) {
-                comments.add(newCaseComment);
-            }
-        }
+//        if (newCaseComment != null) {
+//            boolean isNewCommentPresents = comments.stream()
+//                    .anyMatch(comment -> Objects.equals(comment.getId(), newCaseComment.getId()));
+//            if (!isNewCommentPresents) {
+//                comments.add(newCaseComment);
+//            }
+//        }
 
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
