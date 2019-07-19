@@ -7,6 +7,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -85,17 +86,19 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
 
     @UiHandler("text")
     public void textClick(ClickEvent event) {
-        companyService.getCompany(caseTag.getCompanyId(), new AsyncCallback<Company>() {
-            @Override
-            public void onFailure(Throwable caught) {
+        if (History.getToken().contains("company")) {
+            companyService.getCompany(caseTag.getCompanyId(), new AsyncCallback<Company>() {
+                @Override
+                public void onFailure(Throwable caught) {
 
-            }
+                }
 
-            @Override
-            public void onSuccess(Company result) {
-                activity.fireEvent(new CaseTagEvents.Create(caseTag, result));
-            }
-        });
+                @Override
+                public void onSuccess(Company result) {
+                    activity.fireEvent(new CaseTagEvents.Create(caseTag, result));
+                }
+            });
+        }
     }
 
     @UiField

@@ -25,7 +25,7 @@ public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     @Transactional
-    public CoreResponse saveTag(AuthToken token, CaseTag caseTag) {
+    public CoreResponse saveTag(CaseTag caseTag) {
         if (!isCaseTagValid(caseTag)) {
             return new CoreResponse<>().error(En_ResultStatus.VALIDATION_ERROR);
         }

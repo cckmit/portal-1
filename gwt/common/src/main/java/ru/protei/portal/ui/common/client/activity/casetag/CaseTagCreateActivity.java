@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.client.activity.casetag;
 
+import com.google.gwt.user.client.History;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -31,7 +32,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         view.name().setValue(event.getTagName());
         view.color().setValue(event.getTagColor());
         view.company().setValue(EntityOption.fromCompany(event.getCompany()));
-        view.setVisibleCompanyPanel(event.getCompany() == null);
+        view.setVisibleCompanyPanel(History.getToken().contains("issue"));
         dialogView.removeButtonVisibility().setVisible(!event.getTagName().isEmpty());
         dialogView.setHeader(event.getTagName().isEmpty() ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();

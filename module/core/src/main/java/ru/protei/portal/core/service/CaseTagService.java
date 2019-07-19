@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface CaseTagService {
 
-    CoreResponse saveTag(AuthToken token, CaseTag caseTag);
+    CoreResponse saveTag(CaseTag caseTag);
 
     CoreResponse removeTag(CaseTag caseTag);
 
