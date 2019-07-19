@@ -12,18 +12,13 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
 public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, HasAddHandlers, HasEditHandlers {
 
-    @Inject
-    public CaseTagPopupView(NotifyActivity activity, CompanyControllerAsync companyService) {
-        this.activity = activity;
-        this.companyService = companyService;
+    public CaseTagPopupView() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -103,8 +98,6 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
     PolicyService policyService;
 
     private CaseTag caseTag = null;
-    private NotifyActivity activity;
-    private CompanyControllerAsync companyService;
 
     interface CaseTagViewUiBinder extends UiBinder<FocusPanel, CaseTagPopupView> {}
     private static CaseTagViewUiBinder ourUiBinder = GWT.create(CaseTagViewUiBinder.class);
