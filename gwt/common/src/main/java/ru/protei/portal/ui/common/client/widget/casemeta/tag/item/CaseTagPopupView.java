@@ -71,6 +71,10 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
         return addHandler(handler, EditEvent.getType());
     }
 
+    public HasVisibility editIconVisibility() {
+        return editIcon;
+    }
+
     @UiHandler({"text", "companyName", "icon"})
     public void rootClick(ClickEvent event) {
         AddEvent.fire(this);

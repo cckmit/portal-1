@@ -116,6 +116,10 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         caseTagSelectorPopup.setAddTagsEnabled(enabled);
     }
 
+    public void setTagsEditButtonEnabled(boolean enabled) {
+        caseTagSelectorPopup.setEditTagsEnabled(enabled);
+    }
+
     private void makeCaseLinkViewAndAddToParent(CaseLink item) {
         String linkId = isCrmLink(item) ? item.getCaseInfo().getCaseNumber().toString() : item.getRemoteId();
         item.setLink(caseLinkProvider.getLink(item.getType(), linkId));

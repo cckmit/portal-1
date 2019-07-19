@@ -87,6 +87,10 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
         }
     }
 
+    public void setEditTagsEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     private void resetSearchFilter() {
         searchNameFilter = "";
         search.setValue(searchNameFilter);
@@ -108,6 +112,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     private void addTagToListView(CaseTag caseTag) {
         CaseTagPopupView caseTagPopupView = caseTagViewProvider.get();
         caseTagPopupView.setValue(caseTag);
+        caseTagPopupView.editIconVisibility().setVisible(enabled);
         caseTagPopupView.addAddHandler(event -> {
             onTagSelected(caseTag);
         });
@@ -156,6 +161,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
 
     private String searchNameFilter = "";
     private List<CaseTag> caseTags;
+    private boolean enabled;
 
     interface CaseTagSelectorPopupUiBinder extends UiBinder<HTMLPanel, CaseTagSelectorPopup> {}
     private static CaseTagSelectorPopupUiBinder ourUiBinder = GWT.create(CaseTagSelectorPopupUiBinder.class);
