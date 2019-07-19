@@ -8,22 +8,17 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.events.CaseTagEvents;
-import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
-public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, HasAddHandlers{
+public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, HasAddHandlers, HasEditHandlers {
 
     @Inject
     public CaseTagPopupView(NotifyActivity activity, CompanyControllerAsync companyService) {
@@ -76,6 +71,11 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
         return addHandler(handler, AddEvent.getType());
     }
 
+    @Override
+    public HandlerRegistration addEditHandler(EditHandler handler) {
+        return addHandler(handler, EditEvent.getType());
+    }
+
     @UiHandler({"text", "companyName", "icon"})
     public void rootClick(ClickEvent event) {
         AddEvent.fire(this);
@@ -83,17 +83,7 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
 
     @UiHandler("editIcon")
     public void editClick(ClickEvent event) {
-        companyService.getCompany(caseTag.getCompanyId(), new AsyncCallback<Company>() {
-            @Override
-            public void onFailure(Throwable caught) {
-
-            }
-
-            @Override
-            public void onSuccess(Company result) {
-                activity.fireEvent(new CaseTagEvents.Create(caseTag, result));
-            }
-        });
+        EditEvent.fire(this, caseTag);
     }
 
     @UiField

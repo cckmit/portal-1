@@ -9,7 +9,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -17,9 +19,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.events.AddEvent;
-import ru.protei.portal.ui.common.client.events.AddHandler;
-import ru.protei.portal.ui.common.client.events.HasAddHandlers;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.client.widget.casemeta.tag.item.CaseTagPopupView;
@@ -29,7 +29,7 @@ import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
 
-public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers {
+public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
 
     @Inject
     public void onInit() {
@@ -45,6 +45,11 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     @Override
     public HandlerRegistration addAddHandler(AddHandler handler) {
         return addHandler(handler, AddEvent.getType());
+    }
+
+    @Override
+    public HandlerRegistration addEditHandler(EditHandler handler) {
+        return addHandler(handler, EditEvent.getType());
     }
 
     @Override
@@ -106,11 +111,19 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
         caseTagPopupView.addAddHandler(event -> {
             onTagSelected(caseTag);
         });
+        caseTagPopupView.addEditHandler(event -> {
+            onTagEdit(event.caseTag);
+        });
         childContainer.add(caseTagPopupView);
     }
 
     private void onTagSelected(CaseTag caseTag) {
         ValueChangeEvent.fire(this, caseTag);
+        hide();
+    }
+
+    private void onTagEdit(CaseTag caseTag) {
+        EditEvent.fire(this, caseTag);
         hide();
     }
 

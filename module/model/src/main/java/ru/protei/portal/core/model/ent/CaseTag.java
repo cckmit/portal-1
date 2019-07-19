@@ -28,6 +28,9 @@ public class CaseTag implements Serializable {
     @JdbcJoinedColumn(localColumn = "company_id", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
 
+    @JdbcJoinedObject(localColumn = "company_id", remoteColumn = "id")
+    private Company company;
+
     public CaseTag() {}
 
     public Long getId() {
@@ -76,6 +79,14 @@ public class CaseTag implements Serializable {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 
     @Override

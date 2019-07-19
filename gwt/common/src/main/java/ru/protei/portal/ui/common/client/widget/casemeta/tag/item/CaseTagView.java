@@ -8,22 +8,16 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.History;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
-import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
-import ru.protei.portal.ui.common.client.events.CaseTagEvents;
-import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.events.EditEvent;
+import ru.protei.portal.ui.common.client.events.EditHandler;
+import ru.protei.portal.ui.common.client.events.HasEditHandlers;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
-public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled{
+public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled, HasEditHandlers {
 
-    @Inject
-    public CaseTagView(NotifyActivity activity, CompanyControllerAsync companyService) {
-        this.activity = activity;
-        this.companyService = companyService;
+    public CaseTagView() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -74,6 +68,11 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         return addHandler(handler, CloseEvent.getType());
     }
 
+    @Override
+    public HandlerRegistration addEditHandler(EditHandler handler) {
+        return addHandler(handler, EditEvent.getType());
+    }
+
     @UiHandler("remove")
     public void closeClick(ClickEvent event) {
         event.preventDefault();
@@ -87,17 +86,7 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
     @UiHandler("text")
     public void textClick(ClickEvent event) {
         if (History.getToken().contains("company")) {
-            companyService.getCompany(caseTag.getCompanyId(), new AsyncCallback<Company>() {
-                @Override
-                public void onFailure(Throwable caught) {
-
-                }
-
-                @Override
-                public void onSuccess(Company result) {
-                    activity.fireEvent(new CaseTagEvents.Create(caseTag, result));
-                }
-            });
+            EditEvent.fire(this, caseTag);
         }
     }
 
@@ -109,9 +98,6 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
     Anchor remove;
     @UiField
     InlineLabel text;
-
-    private NotifyActivity activity;
-    private CompanyControllerAsync companyService;
 
     private CaseTag caseTag = null;
 

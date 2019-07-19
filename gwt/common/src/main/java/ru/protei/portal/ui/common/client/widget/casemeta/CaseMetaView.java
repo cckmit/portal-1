@@ -134,6 +134,7 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         caseTagView.setEnabled(enabled);
         caseTagView.setValue(item);
         caseTagView.addCloseHandler(event -> removeCaseTag(event.getTarget()));
+        caseTagView.addEditHandler(event -> activity.fireEvent(new CaseTagEvents.Create(item)));
 
         tagToViewModel.put(item, caseTagView);
         tagsContainer.add(caseTagView);
@@ -221,8 +222,11 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         tagsCreateHandlerRegistration = caseTagSelectorPopup.addAddHandler(event -> {
             activity.fireEvent(new CaseTagEvents.Create(tagCaseType));
         });
+        tagsCreateHandlerRegistration = caseTagSelectorPopup.addEditHandler(event -> {
+            activity.fireEvent(new CaseTagEvents.Create(event.caseTag));
+        });
     }
-
+    
     private void addCaseLink(CaseLink item) {
 
         if (item == null) {

@@ -18,9 +18,9 @@ public class CaseTagEvents {
             this.caseType = caseType;
             this.company = company;
         }
-        public Create(CaseTag caseTag, Company company) {
+        public Create(CaseTag caseTag) {
             this.caseTag = caseTag;
-            this.company = company;
+            this.company = caseTag.getCompany();
             this.caseType = caseTag.getCaseType();
         }
         public En_CaseType getCaseType() {
