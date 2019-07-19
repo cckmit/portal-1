@@ -105,6 +105,18 @@ public class MailNotificationProcessor {
             return;
         }
 
+        List<CaseComment> commentsBase = comments.getData();
+        if (event.getRemovedComment() != null) {
+            commentsBase.add(event.getRemovedComment());
+        }
+        if (event.getCaseComment() != null) {
+            boolean isNewCommentPresents = commentsBase.stream()
+                    .anyMatch(comment -> Objects.equals(comment.getId(), event.getCaseComment().getId()));
+            if (!isNewCommentPresents) {
+                commentsBase.add(event.getCaseComment());
+            }
+        }
+
         try {
             semaphore.acquire();
         } catch (InterruptedException e) {

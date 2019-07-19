@@ -277,18 +277,6 @@ public class TemplateServiceImpl implements TemplateService {
     }
 
     private List<Map<String, Object>> getCommentsModelKeys(List<CaseComment> comments, CaseComment newCaseComment, CaseComment oldCaseComment, CaseComment removedCaseComment, En_TextMarkup textMarkup){
-
-        if (removedCaseComment != null) {
-            comments.add(removedCaseComment);
-        }
-//        if (newCaseComment != null) {
-//            boolean isNewCommentPresents = comments.stream()
-//                    .anyMatch(comment -> Objects.equals(comment.getId(), newCaseComment.getId()));
-//            if (!isNewCommentPresents) {
-//                comments.add(newCaseComment);
-//            }
-//        }
-
         return comments.stream()
                 .sorted(Comparator.comparing(CaseComment::getCreated, Date::compareTo))
                 .map( comment -> {

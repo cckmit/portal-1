@@ -256,14 +256,16 @@ public class AssembledCaseEvent extends ApplicationEvent {
 
     public boolean isSendToCustomers() {
         return isCreateEvent()
-                || !isCaseCommentAttached()
-                || isCommentNotPrivate()
-                || isChangedWithOutComments();
-
+                || ((!isCaseCommentAttached() || isCommentNotPrivate()) && (!isCaseCommentRemoved() || isRemovedCommentNotPrivate()))
+                || isChangedWithOutComments()
+                ;
     }
 
     private boolean isCommentNotPrivate() {
         return comment != null && !comment.isPrivateComment();
+    }
+    private boolean isRemovedCommentNotPrivate() {
+        return removedComment != null && !removedComment.isPrivateComment();
     }
 
     private boolean isChangedWithOutComments() {
@@ -276,6 +278,6 @@ public class AssembledCaseEvent extends ApplicationEvent {
                 || isNameChanged()
                 || isPrivacyChanged()
                 || isProductChanged()
-                || isTimeElapsedChanged();
+                ;
     }
 }
