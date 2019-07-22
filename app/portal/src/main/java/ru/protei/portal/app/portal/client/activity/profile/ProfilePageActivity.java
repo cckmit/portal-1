@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CompanySubscription;
@@ -24,6 +25,7 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -76,14 +78,15 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
     @Override
     public void onSavePasswordButtonClicked() {
-        if (profile.getAuthTypeId() != 1) {
+        if (profile.getAuthType() != En_AuthType.LOCAL) {
             fireEvent(new NotifyEvents.Show(lang.errPermissionDenied(), NotifyEvents.NotifyType.ERROR));
+            return;
         }
 
         if (!isConfirmValidate()) {
             fireEvent(new NotifyEvents.Show(lang.errEditProfile(), NotifyEvents.NotifyType.ERROR));
         } else if (!HelperFunc.isEmpty(view.currentPassword().getValue())) {
-            accountService.updateAccountPassword(profile.getLogin(), view.currentPassword().getValue(), view.newPassword().getValue(), new AsyncCallback<Boolean>() {
+            accountService.updateAccountPassword(profile.getLoginId(), view.currentPassword().getValue(), view.newPassword().getValue(), new AsyncCallback<Boolean>() {
                 @Override
                 public void onFailure(Throwable caught) {
                     if (caught instanceof RequestFailedException) {
@@ -102,12 +105,9 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
     }
 
     private boolean isConfirmValidate() {
-        return HelperFunc.isEmpty(view.currentPassword().getValue()) &&
-                HelperFunc.isEmpty(view.newPassword().getValue()) &&
-                HelperFunc.isEmpty(view.confirmPassword().getValue()) ||
-                (!HelperFunc.isEmpty(view.currentPassword().getValue()) &&
-                        !HelperFunc.isEmpty(view.newPassword().getValue()) &&
-                        view.newPassword().getValue().equals(view.confirmPassword().getValue()));
+        return !HelperFunc.isEmpty(view.currentPassword().getValue()) &&
+                !HelperFunc.isEmpty(view.newPassword().getValue()) &&
+                Objects.equals(view.newPassword().getValue(), view.confirmPassword().getValue());
     }
 
     private void fillView(Profile value) {
@@ -124,7 +124,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
         view.companySubscriptionEnabled().setEnabled(policyService.hasPrivilegeFor(En_Privilege.COMMON_PROFILE_EDIT));
         view.saveButtonVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.COMMON_PROFILE_EDIT));
-        view.changePasswordButtonVisibility().setVisible(value.getAuthTypeId() == 1);
+        view.changePasswordButtonVisibility().setVisible(value.getAuthType() == En_AuthType.LOCAL);
         view.passwordContainerVisibility().setVisible(false);
     }
 

@@ -7,14 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.app.portal.client.service.AuthController;
-import ru.protei.portal.core.model.dao.UserLoginDAO;
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_PrivilegeEntity;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.UserRole;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.AccountService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
@@ -84,7 +83,7 @@ public class AuthControllerImpl implements AuthController {
         profile.setGender( sessionDescriptor.getPerson().getGender() );
         profile.setCompany( sessionDescriptor.getCompany() );
         profile.setLoginId( sessionDescriptor.getSession().getLoginId() );
-        profile.setAuthTypeId(sessionDescriptor.getLogin().getAuthTypeId());
+        profile.setAuthType( En_AuthType.find(sessionDescriptor.getLogin().getAuthTypeId()) );
 
         return profile;
     }
@@ -122,12 +121,6 @@ public class AuthControllerImpl implements AuthController {
 
     @Autowired
     SessionService sessionService;
-
-    @Autowired
-    UserLoginDAO userLoginDAO;
-
-    @Autowired
-    AccountService accountService;
 
     @Autowired
     private AuthService authService;

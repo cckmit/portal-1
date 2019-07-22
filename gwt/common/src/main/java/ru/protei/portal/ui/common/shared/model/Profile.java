@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.common.shared.model;
 
+import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_Scope;
@@ -26,7 +27,7 @@ public class Profile implements Serializable {
 
     private Long loginId;
 
-    private int authTypeId;
+    private En_AuthType authType;
 
     private Set<En_Privilege> privileges;
 
@@ -81,12 +82,12 @@ public class Profile implements Serializable {
         this.loginId = loginId;
     }
 
-    public int getAuthTypeId() {
-        return authTypeId;
+    public En_AuthType getAuthType() {
+        return authType;
     }
 
-    public void setAuthTypeId(int authTypeId) {
-        this.authTypeId = authTypeId;
+    public void setAuthType(En_AuthType authType) {
+        this.authType = authType;
     }
 
     public String getFullName() {

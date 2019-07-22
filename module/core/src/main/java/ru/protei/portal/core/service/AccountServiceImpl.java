@@ -177,8 +177,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateAccountPassword(String login, String currentPassword, String newPassword) {
-        UserLogin userLogin = userLoginDAO.findByLogin(login);
+    public CoreResponse<Boolean> updateAccountPassword(AuthToken token, Long loginId, String currentPassword, String newPassword) {
+        UserLogin userLogin = getAccount(token, loginId).getData();
 
         if (userLogin.getAuthTypeId() != 1) {
             return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_AVAILABLE);

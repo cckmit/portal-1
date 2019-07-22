@@ -38,5 +38,5 @@ public interface AccountService {
     @Auditable( En_AuditType.ACCOUNT_MODIFY )
     CoreResponse< Boolean > removeAccount( AuthToken authToken, Long accountId );
 
-    CoreResponse<Boolean> updateAccountPassword(String login, String currentPassword, String newPassword);
+    CoreResponse<Boolean> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword );
 }
