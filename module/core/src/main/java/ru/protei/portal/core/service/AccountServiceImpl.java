@@ -177,20 +177,22 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateAccountPassword(AuthToken token, Long loginId, String currentPassword, String newPassword) {
+    public CoreResponse<?> updateAccountPassword(AuthToken token, Long loginId, String currentPassword, String newPassword) {
         UserLogin userLogin = getAccount(token, loginId).getData();
 
-        if (userLogin.getAuthTypeId() != 1) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_AVAILABLE);
+        Long personIdFromSession = authService.findSession(token).getPerson().getId();
+
+        if (userLogin.isLDAP_Auth() || !Objects.equals(personIdFromSession, userLogin.getPersonId())) {
+            return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
         }
 
         String md5Password = DigestUtils.md5DigestAsHex(currentPassword.getBytes());
         if (!userLogin.getUpass().equalsIgnoreCase(md5Password)) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.INVALID_CURRENT_PASSWORD);
+            return new CoreResponse().error(En_ResultStatus.INVALID_CURRENT_PASSWORD);
         }
         userLogin.setUpass(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
 
-        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<Boolean>().success(true) : new CoreResponse<Boolean>().error(En_ResultStatus.INTERNAL_ERROR);
+        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<>().success(true) : new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {
