@@ -39,6 +39,8 @@ public class MailNotificationProcessor {
 
     private final static Logger log = LoggerFactory.getLogger( MailNotificationProcessor.class );
 
+    private final static Semaphore messageIdSemaphore = new Semaphore(1);
+
     @Autowired
     CaseSubscriptionService subscriptionService;
 
@@ -69,81 +71,68 @@ public class MailNotificationProcessor {
     // ------------------------
     // CaseObject notifications
     // ------------------------
-
-    private final static Semaphore semaphore = new Semaphore(1);
-
     @EventListener
     public void onCaseChanged(AssembledCaseEvent event){
-        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers( event );
-        Collection<NotificationEntry> notifiers =
-                formNotifiers(defaultNotifiers,
-                        event.getInitiator(),
-                        event.getCaseObject().getCreator(),
-                        event.getCaseObject().getManager());
+        Collection<NotificationEntry> notifiers = collectNotifiers(event);
 
-        log.info( "subscribers: {}", join( notifiers, ni->ni.getAddress(), ",") );
-        if(!notifiers.isEmpty())
-            performCaseObjectNotification( event, notifiers );
-    }
-
-    private void performCaseObjectNotification(AssembledCaseEvent event, Collection<NotificationEntry> notifiers) {
-
-        if (notifiers == null || notifiers.size() == 0) {
+        if(CollectionUtils.isEmpty(notifiers)) {
+            log.info( "Case notification :: subscribers not found, break notification" );
             return;
         }
+
+        log.info( "Case notification :: subscribers: {}", join( notifiers, ni->ni.getAddress(), ",") );
 
         CaseObject caseObject = event.getCaseObject();
 
         Date upperBoundDate = makeCommentUpperBoundDate(event);
-        CoreResponse<List<CaseComment>> comments = caseCommentService.getCaseCommentList(
-                null,
-                En_CaseType.CRM_SUPPORT,
-                new CaseCommentQuery(caseObject.getId(), upperBoundDate)
-        );
-        if (comments.isError()) {
-            log.error("Failed to retrieve comments for caseId={}", caseObject.getId());
+        CoreResponse<List<CaseComment>> allComments = caseCommentService.getCaseCommentList(null, En_CaseType.CRM_SUPPORT, new CaseCommentQuery(caseObject.getId(), upperBoundDate));
+
+        if (allComments.isError()) {
+            log.error("Case notification :: failed to retrieve comments for caseId={}", caseObject.getId());
             return;
         }
 
-        List<CaseComment> commentsBase = comments.getData();
+        List<CaseComment> comments = allComments.getData();
         if (event.getRemovedComment() != null) {
-            commentsBase.add(event.getRemovedComment());
+            comments.add(event.getRemovedComment());
         }
+
         if (event.getCaseComment() != null) {
-            boolean isNewCommentPresents = commentsBase.stream()
-                    .anyMatch(comment -> Objects.equals(comment.getId(), event.getCaseComment().getId()));
+            boolean isNewCommentPresents = comments.stream()
+                    .anyMatch(comment ->
+                            Objects.equals(comment.getId(), event.getCaseComment().getId())
+                    );
+
             if (!isNewCommentPresents) {
-                commentsBase.add(event.getCaseComment());
+                comments.add(event.getCaseComment());
             }
         }
 
-        try {
-            semaphore.acquire();
-        } catch (InterruptedException e) {
-            log.warn("Semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
-            return;
-        }
 
         try {
+            messageIdSemaphore.acquire();
+
             Long lastMessageId = getEmailLastId(caseObject.getId());
             Map<Boolean, List<NotificationEntry>> partitionNotifiers = notifiers.stream().collect(partitioningBy(this::isProteiRecipient));
-            final boolean IS_PROTEI_RECIPIENT = true;
+            final boolean IS_PRIVATE_RECIPIENT = true;
 
-            if ( isSendOnlyProtei(event) ) {
-                List<String> recipients = getNotifiersAddresses(partitionNotifiers.get(IS_PROTEI_RECIPIENT));
+            if ( isPrivateCase(event) ) {
+                List<String> recipients = getNotifiersAddresses(partitionNotifiers.get(IS_PRIVATE_RECIPIENT));
 
-                toPerformCaseObjectNotification(event, comments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PROTEI_RECIPIENT);
+                toPerformCaseObjectNotification(event, allComments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PRIVATE_RECIPIENT);
 
             } else {
                 List<String> recipients = getNotifiersAddresses(notifiers);
 
-                toPerformCaseObjectNotification(event, comments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PROTEI_RECIPIENT);
-                toPerformCaseObjectNotification(event, comments.getData(), lastMessageId, recipients, partitionNotifiers, !IS_PROTEI_RECIPIENT);
+                toPerformCaseObjectNotification(event, allComments.getData(), lastMessageId, recipients, partitionNotifiers, IS_PRIVATE_RECIPIENT);
+                toPerformCaseObjectNotification(event, allComments.getData(), lastMessageId, recipients, partitionNotifiers, !IS_PRIVATE_RECIPIENT);
             }
-            caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
 
+            caseService.updateEmailLastId(caseObject.getId(), lastMessageId + 1);
+        } catch (InterruptedException e) {
+            log.warn("Case notification :: semaphore interrupted while waiting for green light, so we are skipping notification with case id = {}. Exception = {}", event.getCaseObject().getId(), e.getMessage());
         } finally {
-            semaphore.release();
+            messageIdSemaphore.release();
         }
     }
 
@@ -161,7 +150,7 @@ public class MailNotificationProcessor {
         );
     }
 
-    private boolean isSendOnlyProtei(AssembledCaseEvent event) {
+    private boolean isPrivateCase(AssembledCaseEvent event) {
         return event.getCaseObject().isPrivateCase()
                 || !event.isSendToCustomers()
                 || config.data().smtp().isBlockExternalRecipients();
@@ -188,7 +177,7 @@ public class MailNotificationProcessor {
             boolean isProteiRecipients, String crmCaseUrl, Collection<NotificationEntry> notifiers
     ) {
 
-        if (notifiers == null || notifiers.size() == 0) {
+        if (CollectionUtils.isEmpty(notifiers)) {
             return;
         }
 
@@ -225,6 +214,15 @@ public class MailNotificationProcessor {
                 log.error("Failed to make MimeMessage", e);
             }
         });
+    }
+
+
+    private Collection<NotificationEntry> collectNotifiers(AssembledCaseEvent event) {
+        Set<NotificationEntry> defaultNotifiers = subscriptionService.subscribers( event );
+        return formNotifiers(defaultNotifiers,
+                event.getInitiator(),
+                event.getCaseObject().getCreator(),
+                event.getCaseObject().getManager());
     }
 
     /**
