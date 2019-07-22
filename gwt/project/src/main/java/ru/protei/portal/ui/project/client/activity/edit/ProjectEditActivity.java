@@ -190,33 +190,6 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
         return projectInfo.getId() == null;
     }
 
-/*    @Override
-    public void onNameChanged() {
-        String value = view.name().getValue().trim();
-
-        //isNameUnique не принимает пустые строки!
-        if ( value.isEmpty()) {
-            view.setNameStatus(NameStatus.NONE);
-            return;
-        }
-
-        regionService.isProjectNameUnique(
-                value,
-                projectId,
-                new RequestCallback<Boolean>() {
-                    @Override
-                    public void onError(Throwable throwable) {
-                        view.setNameStatus(NameStatus.ERROR);
-                    }
-
-                    @Override
-                    public void onSuccess(Boolean isUnique) {
-                        view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
-                    }
-                });
-    }*/
-
-
     @Inject
     Lang lang;
     @Inject

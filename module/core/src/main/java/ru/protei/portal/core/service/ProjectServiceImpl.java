@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -63,11 +64,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public CoreResponse< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
-        LocationQuery locationQuery = new LocationQuery();
-        locationQuery.setType( En_LocationType.REGION );
-        List< Location > regions = locationDAO.listByQuery( locationQuery );
+        List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
+        /*  здесь на выходе получается мапа с сортировкой по id по возрастанию */
         Map< Long, RegionInfo > regionInfos = regions.stream().collect(
-                Collectors.toMap( Location::getId, Location::toRegionInfo )
+                Collectors.toMap( Location::getId, Location::toRegionInfo)
         );
 
         CaseQuery caseQuery = new CaseQuery();
@@ -90,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List< RegionInfo > result = regionInfos.values().stream()
                 .filter( ( regionInfo ) -> {
-                    if ( query.getStates() == null || query.getStates().isEmpty() ) {
+                    if (CollectionUtils.isEmpty(query.getStates())) {
                         return true;
                     }
 
@@ -103,6 +103,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public CoreResponse< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
+
+//        List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, false) );
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
@@ -172,9 +174,14 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
 
-        updateTeam( caseObject, project.getTeam() );
-        updateLocations( caseObject, project.getRegion() );
-        updateProducts( caseObject, project.getProducts() );
+        try {
+            updateTeam( caseObject, project.getTeam() );
+            updateLocations( caseObject, project.getRegion() );
+            updateProducts( caseObject, project.getProducts() );
+        } catch (Throwable e) {
+            log.error("error during save project when update one of following parameters: team, location, or products; {}", e.getMessage());
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
 
         caseObjectDAO.merge( caseObject );
 
@@ -199,8 +206,8 @@ public class ProjectServiceImpl implements ProjectService {
             updateLocations(caseObject, project.getRegion());
             updateProducts(caseObject, project.getProducts());
         } catch (Throwable e) {
-            e.printStackTrace();
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            log.error("error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
         }
         caseObjectDAO.merge( caseObject );
 
@@ -373,7 +380,7 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( project );
 
         List< CaseLocation > locations = project.getLocations();
-        if ( locations == null || locations.isEmpty() ) {
+        if ( locations == null || locations.isEmpty()) {
             handler.accept( null );
             return;
         }
@@ -428,5 +435,21 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
+    }
+
+    private LocationQuery makeLocationQuery( ProjectQuery query, boolean isSortByFilter ) {
+        LocationQuery locationQuery = new LocationQuery();
+        locationQuery.setType(En_LocationType.REGION);
+        locationQuery.setSearchString(query.getSearchString());
+        locationQuery.setDistrictIds(query.getDistrictIds());
+        if (isSortByFilter) {
+            locationQuery.setSortField(query.getSortField());
+            locationQuery.setSortDir(query.getSortDir());
+        }
+        else {
+            locationQuery.setSortField(En_SortField.name);
+            locationQuery.setSortDir(En_SortDir.ASC);
+        }
+        return locationQuery;
     }
 }

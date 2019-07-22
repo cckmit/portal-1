@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Реализация сервиса управления продуктами
+ * Реализация сервиса управления регионами
  */
 @Service( "RegionController" )
 public class RegionControllerImpl implements RegionController {

@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
 import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
@@ -33,6 +34,8 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        direction.setDefaultValue(lang.contractSelectDirection());
+        sortField.setType( ModuleType.REGION );
     }
 
     @Override
@@ -84,7 +87,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
 
     @Override
     public void resetFilter() {
-        sortField.setValue( En_SortField.prod_name );
+        sortField.setValue( En_SortField.name );
         sortDir.setValue( true );
         search.setValue( "" );
         direction.setValue( null );
