@@ -31,6 +31,10 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> productIds;
 
+    private List<Long> locationIds;
+
+    private List<Long> districtIds;
+
     private List<Long> managerIds;
 
     private boolean orWithoutManager;
@@ -93,6 +97,8 @@ public class CaseQuery extends BaseQuery {
         setCaseNumbers(query.getCaseNumbers());
         setCompanyIds(query.getCompanyIds());
         setProductIds(query.getProductIds());
+        setLocationIds(query.getLocationIds());
+        setDistrictIds(query.getDistrictIds());
         setType(query.getType());
         setStateIds(query.getStateIds());
         setImportanceIds(query.getImportanceIds());
@@ -152,6 +158,14 @@ public class CaseQuery extends BaseQuery {
     }
 
     public void setProductIds( List<Long> productIds ) { this.productIds = productIds; }
+
+    public List<Long> getLocationIds() { return locationIds; }
+
+    public void setLocationIds(List<Long> locationIds) { this.locationIds = locationIds; }
+
+    public List<Long> getDistrictIds() { return districtIds; }
+
+    public void setDistrictIds(List<Long> districtsIds) { this.districtIds = districtsIds; }
 
     public En_CaseType getType() {
         return type;
@@ -289,6 +303,8 @@ public class CaseQuery extends BaseQuery {
                 CollectionUtils.isNotEmpty(companyIds) ||
                 CollectionUtils.isNotEmpty(initiatorIds) ||
                 CollectionUtils.isNotEmpty(productIds) ||
+                CollectionUtils.isNotEmpty(locationIds) ||
+                CollectionUtils.isNotEmpty(districtIds) ||
                 CollectionUtils.isNotEmpty(managerIds) ||
                 CollectionUtils.isNotEmpty(stateIds) ||
                 CollectionUtils.isNotEmpty(importanceIds) ||
@@ -308,6 +324,8 @@ public class CaseQuery extends BaseQuery {
                 "companyIds=" + companyIds +
                 ", initiatorIds=" + initiatorIds +
                 ", productIds=" + productIds +
+                ", locationIds=" + locationIds +
+                ", districtIds=" + districtIds +
                 ", managerIds=" + managerIds +
                 ", orWithoutManager=" + orWithoutManager +
                 ", type=" + type +

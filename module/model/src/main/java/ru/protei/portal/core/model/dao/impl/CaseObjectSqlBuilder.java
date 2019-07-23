@@ -93,6 +93,15 @@ public class CaseObjectSqlBuilder {
                 }
             }
 
+            if ( query.getLocationIds() != null && !query.getLocationIds().isEmpty() ) {
+                condition.append(" and case_object.id in (SELECT location.case_id FROM location " +
+                        "WHERE location.id in " + HelperFunc.makeInArg(query.getLocationIds()) + ")");
+            }
+            else if ( query.getDistrictIds() != null && !query.getDistrictIds().isEmpty() ) {
+                condition.append(" and case_object.id in (SELECT location.case_id FROM location " +
+                        "WHERE location.parent_id in " + HelperFunc.makeInArg(query.getDistrictIds()) + ")");
+            }
+
             if ( query.getManagerIds() != null && !query.getManagerIds().isEmpty() ) {
                 condition.append(" and manager in (" + query.getManagerIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
 

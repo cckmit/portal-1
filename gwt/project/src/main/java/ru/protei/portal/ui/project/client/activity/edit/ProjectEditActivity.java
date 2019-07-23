@@ -164,6 +164,11 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
     }
 
     private boolean validateView() {
+        if(!view.nameValidator().isValid()){
+            fireEvent(new NotifyEvents.Show(lang.errEmptyName(), NotifyEvents.NotifyType.ERROR));
+            return false;
+        }
+
         if(view.region().getValue() == null){
             fireEvent(new NotifyEvents.Show(lang.errSaveProjectNeedSelectRegion(), NotifyEvents.NotifyType.ERROR));
             return false;
@@ -181,9 +186,7 @@ public abstract class ProjectEditActivity implements AbstractProjectEditActivity
             return false;
         }
 
-        boolean isFieldsValid = view.nameValidator().isValid();
-
-        return isFieldsValid;
+        return true;
     }
 
     private boolean isNew(ProjectInfo projectInfo) {

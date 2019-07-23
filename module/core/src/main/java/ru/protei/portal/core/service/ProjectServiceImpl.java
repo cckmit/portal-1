@@ -104,8 +104,6 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public CoreResponse< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
 
-//        List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, false) );
-
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setSearchString(query.getSearchString());
@@ -120,6 +118,8 @@ public class ProjectServiceImpl implements ProjectService {
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );
+        caseQuery.setDistrictIds( new ArrayList<>(query.getDistrictIds()) );
+
         if (query.isOnlyMineProjects()) {
             UserSessionDescriptor descriptor = authService.findSession(token);
             if (descriptor != null && descriptor.getPerson() != null) {
