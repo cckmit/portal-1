@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.winter.core.utils.mime.MimeUtils;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,54 +24,31 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 
 @RestController
 public class AvatarController {
 
-    @Autowired
-    PortalConfig portalConfig;
-
-    @Autowired
-    PolicyService policyService;
-
-    @Autowired
-    ServletContext context;
-
-    @Autowired
-    PersonDAO personDAO;
-
     private static final String NOPHOTO_PATH = "/images/nophoto.png";
-    private static final String MALE_PATH = "/images/user-icon-m.png";
-    private static final String FEMALE_PATH = "/images/user-icon-f.png";
-
     private static final Logger logger = LoggerFactory.getLogger( AvatarController.class );
 
+    @Autowired
+    private PortalConfig portalConfig;
+
+    @Autowired
+    private ServletContext context;
+
+
     @RequestMapping( value = "/avatars/{fileName:.+}" )
-    public void getAvatar( @PathVariable String fileName,
-                           HttpServletRequest request,
-                           HttpServletResponse response ) throws IOException {
+    public void getAvatar(@PathVariable String fileName,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response ) throws IOException {
 
         if ( loadFile( portalConfig.data().getEmployee().getAvatarPath() + fileName , response ) ) return;
 
-        Person person = null;
-        try {
-            Long id = Long.valueOf( fileName.substring( 0, fileName.indexOf( "." ) ) );
-            person = personDAO.get( id );
-        } catch ( Exception e ) {
-            logger.debug( "Person for fileName {} not found", fileName );
-        }
-
-        if ( person == null || person.getGender().equals( En_Gender.UNDEFINED ) ) {
-            loadFile( context.getRealPath( NOPHOTO_PATH ), response );
-            return;
-        }
-
-        loadFile( context.getRealPath( person.getGender().equals( En_Gender.MALE ) ? MALE_PATH : FEMALE_PATH ), response );
+        loadFile( context.getRealPath( NOPHOTO_PATH ), response );
     }
 
-    private UserSessionDescriptor getDescriptor( HttpServletRequest request ) {
-        return  (UserSessionDescriptor) request.getSession().getAttribute( CrmConstants.Auth.SESSION_DESC );
-    }
 
     private boolean loadFile( String pathname, HttpServletResponse response ) throws IOException {
 

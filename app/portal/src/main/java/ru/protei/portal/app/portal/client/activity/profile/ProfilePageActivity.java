@@ -7,9 +7,9 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
-import ru.protei.portal.ui.common.client.common.AccountPhotoUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.Profile;
@@ -62,7 +62,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
     private void fillView( Profile value ) {
         view.setName( value.getFullName() );
-        view.setIcon( AccountPhotoUtils.getPhotoUrl( value.getId() ) );
+        view.setIcon( AvatarUtils.getAvatarUrl(value) );
         if ( value.getCompany() != null ) {
             view.setCompany( value.getCompany().getCname() );
             view.companySubscription().setValue( value.getCompany().getSubscriptions().stream()

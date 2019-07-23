@@ -6,6 +6,7 @@ import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
@@ -15,10 +16,10 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerView;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
-import ru.protei.portal.ui.common.client.common.AccountPhotoUtils;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.EmployeeControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.employee.client.activity.filter.AbstractEmployeeFilterActivity;
@@ -151,9 +152,8 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
             }
 
             itemView.setPosition( mainEntry.getPositionName() );
+            itemView.setPhoto(AvatarUtils.getAvatarUrl(employee.getId(), En_CompanyCategory.HOME.getId(), null));
         }
-
-        itemView.setPhoto(AccountPhotoUtils.getPhotoUrl(employee.getId()));
 
         return itemView;
     }
@@ -170,19 +170,14 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
     @Inject
     PlateListAnimation animation;
-
     @Inject
     AbstractEmployeeListView view;
-
     @Inject
     AbstractEmployeeFilterView filterView;
-
     @Inject
     Provider< AbstractEmployeeItemView > factory;
-
     @Inject
     EmployeeControllerAsync employeeService;
-
     @Inject
     AbstractPagerView pagerView;
 

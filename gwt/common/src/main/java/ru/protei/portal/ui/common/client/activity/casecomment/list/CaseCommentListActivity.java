@@ -14,14 +14,13 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
-import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
-import ru.protei.portal.ui.common.client.common.AccountPhotoUtils;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.lang.TimeElapsedTypeLang;
 import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.CaseCommentControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.client.util.CaseCommentUtils;
@@ -92,7 +91,7 @@ public abstract class CaseCommentListActivity
         view.clearTimeElapsed();
         view.timeElapsedVisibility().setVisible(isElapsedTimeEnabled);
         view.timeElapsedTypeVisibility().setVisible(isElapsedTimeEnabled);
-        view.setUserIcon(AccountPhotoUtils.getPhotoUrl(profile.getId()));
+        view.setUserIcon(AvatarUtils.getAvatarUrl(profile));
         view.enabledNewComment(isModifyEnabled);
         view.setTextMarkupLabel(textMarkup == En_TextMarkup.MARKDOWN ?
                         lang.textMarkdownSupport() :
@@ -359,7 +358,7 @@ public abstract class CaseCommentListActivity
 
         itemView.setDate( DateFormatter.formatDateTime( value.getCreated() ) );
         itemView.setOwner( getOwnerName(value) );
-        itemView.setIcon( AccountPhotoUtils.getPhotoUrl(value.getAuthorId()) );
+        itemView.setIcon( AvatarUtils.getAvatarUrl(value.getAuthor()));
         itemView.setRemoteLink(value.getRemoteLink());
 
         if (StringUtils.isNotEmpty(value.getText())) {
@@ -649,8 +648,6 @@ public abstract class CaseCommentListActivity
     AttachmentServiceAsync attachmentService;
     @Inject
     TextRenderControllerAsync textRenderController;
-    @Inject
-    PolicyService policyService;
 
     private CaseComment comment;
     private AbstractCaseCommentItemView lastCommentView;

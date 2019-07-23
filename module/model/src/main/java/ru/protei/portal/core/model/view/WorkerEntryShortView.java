@@ -10,11 +10,14 @@ import java.io.Serializable;
 @JdbcEntity(table = "worker_entry")
 public class WorkerEntryShortView implements Serializable {
 
-    @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
+    @JdbcId(idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
-    @JdbcColumn(name="personId")
+    @JdbcColumn
     private Long personId;
+
+    @JdbcColumn
+    private Long companyId;
 
     @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
@@ -88,6 +91,14 @@ public class WorkerEntryShortView implements Serializable {
 
     public void setActiveFlag(int activeFlag) {
         this.activeFlag = activeFlag;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 
     public boolean isMain() {

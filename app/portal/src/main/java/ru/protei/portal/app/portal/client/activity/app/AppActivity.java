@@ -10,11 +10,11 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.app.portal.client.service.AppServiceAsync;
-import ru.protei.portal.ui.common.client.common.AccountPhotoUtils;
 import ru.protei.portal.ui.common.client.common.PageService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
+import ru.protei.portal.ui.common.client.service.AvatarUtils;
 import ru.protei.portal.ui.common.client.service.PingControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ClientConfigData;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -52,7 +52,7 @@ public abstract class AppActivity
 
         view.setUser( event.profile.getName(),
                 event.profile.getCompany() == null ? "" : event.profile.getCompany().getCname(),
-                AccountPhotoUtils.getPhotoUrl(event.profile.getId()));
+                AvatarUtils.getAvatarUrl(event.profile));
 
         Scheduler.get().scheduleDeferred( (Command) () -> {
             if ( initialToken == null || initialToken.isEmpty() || initialToken.equals( UiConstants.LOGIN_PAGE ) ) {

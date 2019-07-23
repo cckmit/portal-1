@@ -1,4 +1,5 @@
 $danger_color: #d52020;
+$danger_color: #d52020;
 
 $info_dark_color: #5481c1;
 $info_color: #42a5f5;
@@ -3118,18 +3119,19 @@ label {
   flex-direction: row;
   margin: 2px;
   text-align: center;
-  height: 24px;
-  line-height: 24px;
+  height: 20px;
+  line-height: 20px;
   cursor: default;
+  border-radius: 3px;
+  padding: 0 6px;
 
   .case-tag-close {
-    height: 12px;
-    width: 12px;
-    padding: 8px 2px 6px 4px;
+    line-height: inherit;
     font-size: 0.8em;
     color: inherit;
     cursor: pointer;
     box-sizing: unset;
+    padding-right: 8px;
   }
 
   .case-tag-text {
@@ -3140,20 +3142,6 @@ label {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-  }
-
-  .case-tag-icon {
-    height: 16px;
-    width: 16px;
-    margin: 4px 2px;
-    line-height: 16px;
-    color: #383838;
-    background-color: #e9edef;
-    border-radius: 2px;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 0.8em;
-    font-weight: bold;
   }
 }
 

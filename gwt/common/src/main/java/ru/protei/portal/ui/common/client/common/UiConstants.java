@@ -65,11 +65,6 @@ public class UiConstants {
         String CONTRACT = "contract";
     }
 
-    public interface UserIcon {
-        String MALE = "./images/user-icon-m.svg";
-        String FEMALE = "./images/user-icon-f.svg";
-    }
-
     public interface Styles {
         String HIDE = "hide";
         String REQUIRED = "required";
