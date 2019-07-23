@@ -20,7 +20,6 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
  * Created by bondarenko on 30.10.17.
