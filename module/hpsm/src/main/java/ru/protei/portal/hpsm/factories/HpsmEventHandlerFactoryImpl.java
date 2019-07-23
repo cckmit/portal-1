@@ -132,7 +132,10 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
                 logger.debug("publish event on create case id={}, ext={}", obj.getId(), obj.getExtId());
 
-                eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, obj, null, contactPerson));
+                eventPublisherService.publishEvent(new CaseObjectEvent.Builder(caseService, ServiceModule.HPSM)
+                        .withNewState(obj)
+                        .withPerson(contactPerson)
+                        .build());
 
                 createComment(request, contactPerson, obj, caseObjId);
 
@@ -234,8 +237,11 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
 
             logger.debug("publish event on update case id={}, ext={}", object.getId(), object.getExtId());
 
-            eventPublisherService.publishEvent(new CaseObjectEvent(ServiceModule.HPSM, caseService, object, oldState, contactPerson));
-
+            eventPublisherService.publishEvent(new CaseObjectEvent.Builder(caseService, ServiceModule.HPSM)
+                    .withNewState(object)
+                    .withOldState(oldState)
+                    .withPerson(contactPerson)
+                    .build());
 
             if (HelperFunc.isNotEmpty(request.getHpsmMessage().getMessage())) {
                 logger.debug("append comment text from message");
@@ -366,16 +372,12 @@ public class HpsmEventHandlerFactoryImpl implements HpsmEventHandlerFactory{
             comment.setCaseAttachments(caseAttachments);
         }
 
-        eventPublisherService.publishEvent(new CaseCommentEvent(
-                ServiceModule.HPSM,
-                caseService,
-                obj,
-                null,
-                null,
-                comment,
-                addedAttachments,
-                contactPerson
-        ));
+        eventPublisherService.publishEvent(new CaseCommentEvent.Builder(caseService, ServiceModule.HPSM)
+                .withState(obj)
+                .withCaseComment(comment)
+                .withAddedAttachments(addedAttachments)
+                .withPerson(contactPerson)
+                .build());
 
         return comment;
     }

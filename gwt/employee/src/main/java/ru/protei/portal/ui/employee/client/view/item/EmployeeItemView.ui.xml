@@ -23,10 +23,14 @@
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="emailContainer" styleName="contacts email">
                 <i class="fa fa-envelope"/>
-                <a href="#" ui:field="email"/>
+                <span ui:field="emails"/>
+            </g:HTMLPanel>
+            <g:HTMLPanel ui:field="departmentParentContainer" styleName="contacts department" visible="false">
+                <i class="fa fa-sitemap"/>
+                <span ui:field="departmentParent"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="departmentContainer" styleName="contacts department" visible="false">
-                <i class="fa fa-sitemap"/>
+                <i class="fa fa-th-large"/>
                 <span ui:field="department"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="positionContainer" styleName="contacts position" visible="false">

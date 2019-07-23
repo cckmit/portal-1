@@ -171,11 +171,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
-    public HasValue<CaseFilterShortView> userFilter() {
-        return userFilter;
-    }
-
-    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -193,8 +188,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         searchPrivate.setValue(null);
         tags.setValue(null);
         toggleMsgSearchThreshold();
-
-        userFilter.setValue( null );
     }
 
     @Override
@@ -320,13 +313,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         onFilterChanged();
     }
 
-    @UiHandler("userFilter")
-    public void onKeyUpSearch( ValueChangeEvent<CaseFilterShortView> event ) {
-        if (activity != null) {
-            activity.onUserFilterChanged();
-        }
-    }
-
     private void ensureDebugIds() {
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
@@ -346,7 +332,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
-        userFilter.setEnsureDebugId( DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON );
     }
 
     private void onFilterChanged() {
@@ -374,9 +359,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @UiField
     Lang lang;
 
-    @Inject
-    @UiField(provided = true)
-    IssueFilterSelector userFilter;
     @UiField
     HTMLPanel body;
     @UiField

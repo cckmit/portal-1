@@ -67,6 +67,8 @@ public class CaseQuery extends BaseQuery {
 
     private List<Long> caseTagsIds;
 
+    private boolean customerSearch = false;
+
     private boolean findRecordByCaseComments;
 
     public CaseQuery() {}
@@ -105,6 +107,7 @@ public class CaseQuery extends BaseQuery {
         setCommentAuthorIds(query.getCommentAuthorIds());
         setCaseTagsIds(query.getCaseTagsIds());
         setFindRecordByCaseComments(query.isFindRecordByCaseComments());
+        setCustomerSearch(query.isCustomerSearch());
     }
 
     public Long getId() {
@@ -269,6 +272,15 @@ public class CaseQuery extends BaseQuery {
         this.findRecordByCaseComments = findRecordByCaseComments;
     }
 
+    public boolean isCustomerSearch() {
+        return customerSearch;
+    }
+
+    public void setCustomerSearch(boolean customerSearch) {
+        this.customerSearch = customerSearch;
+    }
+
+
     @Override
     public boolean isParamsPresent() {
         return super.isParamsPresent() ||
@@ -313,6 +325,7 @@ public class CaseQuery extends BaseQuery {
                 ", commentAuthorIds=" + commentAuthorIds +
                 ", caseTagsIds=" + caseTagsIds +
                 ", findRecordByCaseComments=" + findRecordByCaseComments +
+                ", customerSearch=" + customerSearch +
                 '}';
     }
 }

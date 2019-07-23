@@ -5,8 +5,11 @@
              xmlns:companycategory='urn:import:ru.protei.portal.ui.company.client.widget.category.buttonselector'
              xmlns:list="urn:import:ru.protei.portal.ui.common.client.widget.subscription.list"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
-             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab"
+             xmlns:casemeta='urn:import:ru.protei.portal.ui.common.client.widget.casemeta'
+    >
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
         <div class="container-fluid padding-15">
@@ -87,11 +90,11 @@
                             <label>
                                 <ui:text from="{lang.phone}"/>
                             </label>
-                            <g:HTMLPanel ui:field="phonesContainer" styleName="panelField phone"/>
+                            <g:HTMLPanel ui:field="phonesContainer" styleName="form-control phone"/>
                         </div>
                         <div class="form-group col-md-6">
                             <label>Email</label>
-                            <g:HTMLPanel ui:field="emailsContainer" styleName="panelField"/>
+                            <g:HTMLPanel ui:field="emailsContainer" styleName="form-control"/>
                         </div>
                         <div class="form-group col-md-6">
                             <label>
@@ -111,6 +114,19 @@
                 </div>
             </div>
         </div>
+
+        <div ui:field="tagsPanel" class="form-group col-xs-12">
+            <label>
+                <ui:text from="{lang.tags}"/>
+            </label>
+            <div>
+                <g:Button ui:field="addTagButton" styleName="btn btn-flat btn-white">
+                    <i class="fa fa-plus"/>
+                </g:Button>
+                <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" tagCaseType="CRM_SUPPORT" showLabel="false" styleName="company-tags"/>
+            </div>
+        </div>
+
         <g:HTMLPanel  styleName="container-fluid padding-15">
             <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
                 <tab:pane.TabWidgetPane tabName="{lang.contacts}">

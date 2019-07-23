@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
@@ -140,6 +139,11 @@ public class CaseCommentListView
     }
 
     @Override
+    public boolean isDisplayPreview() {
+        return isDisplayPreview.getValue();
+    }
+
+    @Override
     public void clearCommentsContainer() {
         commentsContainer.clear();
         commentsContainer.add( newMessage );
@@ -195,6 +199,13 @@ public class CaseCommentListView
     @UiHandler("comment")
     public void onBase64Pasted(PasteEvent event) {
         fileUploader.uploadBase64File(event.getJson());
+    }
+
+    @UiHandler("isDisplayPreview")
+    public void onDisplayPreviewChanged( ClickEvent event ) {
+        if (activity != null) {
+            activity.onDisplayPreviewChanged( isDisplayPreview.getValue() );
+        }
     }
 
     @Override
@@ -267,6 +278,8 @@ public class CaseCommentListView
     DivElement commentPreview;
     @UiField
     Element textMarkupLabel;
+    @UiField
+    ToggleButton isDisplayPreview;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;

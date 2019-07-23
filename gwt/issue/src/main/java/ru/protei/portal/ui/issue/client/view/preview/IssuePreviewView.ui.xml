@@ -30,7 +30,7 @@
                     </div>
 
                     <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group"
-                                           enabled="false"/>
+                                           enabled="false" showLabel="false"/>
 
                     <div class="form-group-attached">
                         <div class="row clearfix">

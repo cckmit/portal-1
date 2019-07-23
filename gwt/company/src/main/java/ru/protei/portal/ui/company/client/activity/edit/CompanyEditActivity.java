@@ -5,8 +5,10 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanyCategory;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -20,8 +22,10 @@ import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
+import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +68,17 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }else {
             requestCompany(event.getCompanyId());
         }
+    }
+
+    @Event
+    public void onChangeModel(CaseTagEvents.ChangeModel event) {
+        if (tempCompany == null || tempCompany.getId() == null)
+            return;
+
+        companyService.getCompanyTags(tempCompany.getId(), new ShortRequestCallback<List<CaseTag>>()
+                .setOnSuccess(tags ->
+                    view.tags().setValue(new HashSet<>(tags))
+                ));
     }
 
     @Override
@@ -116,6 +131,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         );
     }
 
+    @Override
+    public void onAddTagClicked() {
+        fireEvent(new CaseTagEvents.Create(En_CaseType.CRM_SUPPORT, tempCompany));
+    }
+
     private boolean validateFieldsAndGetResult(){
         return view.companyNameValidator().isValid()
                 && view.companySubscriptionsValidator().isValid()
@@ -158,6 +178,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.parentCompany().setValue( makeCompanyOption( company ) );
         view.setParentCompanyEnabled(isEmpty(company.getChildCompanies()));
         view.setParentCompanyFilter(makeCompanyFilter(company.getId()));
+        view.tags().setValue(company.getTags() == null ? new HashSet<>() : company.getTags());
         view.companySubscriptions().setValue(
                 CollectionUtils.stream(company.getSubscriptions())
                         .map( Subscription::fromCompanySubscription )
@@ -178,6 +199,8 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         if (company.getId() != null && policyService.hasPrivilegeFor(En_Privilege.SITE_FOLDER_VIEW)) {
             fireEvent(new SiteFolderPlatformEvents.ShowConciseTable(view.siteFolderContainer(), company.getId()));
         }
+
+        view.hideTags( company.getId() == null );
     }
 
     private EntityOption makeCompanyOption( Company company ) {

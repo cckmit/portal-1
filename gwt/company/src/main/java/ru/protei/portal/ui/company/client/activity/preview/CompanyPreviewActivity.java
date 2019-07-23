@@ -6,6 +6,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,6 +67,7 @@ public abstract class CompanyPreviewActivity
         view.setInfo( value.getInfo() );
 
         requestSubscriptionEmails(value.getId());
+        requestTags(value.getId());
         requestParentAndChildCompanies(value.getId());
 
         view.getContactsContainer().clear();
@@ -111,7 +114,13 @@ public abstract class CompanyPreviewActivity
                     }
                     view.setSubscriptionEmails(subscriptionsStr);
                 }));
+    }
 
+    private void requestTags(Long companyId) {
+        companyController.getCompanyTags(companyId, new ShortRequestCallback<List<CaseTag>>()
+                .setOnSuccess(tags -> {
+                    view.setTags(new HashSet<>(tags));
+                }));
     }
 
     @Inject

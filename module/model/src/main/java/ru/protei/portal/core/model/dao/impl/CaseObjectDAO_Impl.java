@@ -8,14 +8,23 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
+import ru.protei.portal.core.model.util.CrmConstants;
+import ru.protei.portal.core.utils.TypeConverters;
+import ru.protei.winter.jdbc.JdbcHelper;
+import ru.protei.winter.jdbc.JdbcQueryParameters;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.core.model.helper.StringUtils.length;
+import static ru.protei.portal.core.model.helper.StringUtils.trim;
 
 /**
  * Created by michael on 19.05.16.
  */
 public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements CaseObjectDAO {
+
+    public static final String LEFT_JOIN_CASE_COMMENT = " LEFT JOIN case_comment ON case_object.id = case_comment.CASE_ID";
 
     private static final String COLUMN_EMAIL_LAST_ID = "email_last_id";
 
@@ -75,14 +84,20 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
-    public List< CaseObject > getCases( CaseQuery query ) {
+    public List< CaseObject > getCases(CaseQuery query) {
 //        SqlCondition condition = caseQueryCondition( query );
 //        return partialGetListByCondition( condition.condition, condition.args, query.offset, query.limit, TypeConverters.createSort( query ),
 //                "id", "CASENO", "IMPORTANCE", "STATE", "CREATED", "INFO", "InitiatorName" ).getResults();
 
         //
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return getList(parameters);
+    }
 
-        return listByQuery(query);
+    @Override
+    public int countByQuery(CaseQuery query) {
+        JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
+        return JdbcHelper.getObjectsCount(this.getObjectMapper(), this.jdbcTemplate, parameters);
     }
 
     @Override
@@ -100,13 +115,44 @@ public class CaseObjectDAO_Impl extends PortalBaseJdbcDAO<CaseObject> implements
     }
 
     @Override
+    public boolean updateNullCreatorByExtAppType(String extAppType) {
+        String sql = "UPDATE " + getTableName() + " SET creator = initiator WHERE creator IS NULL AND EXT_APP = ?";
+        return jdbcTemplate.update(sql, extAppType) > 0;
+    }
+
+    @Override
     public Long getEmailLastId(Long caseId) {
         String sql = "SELECT " + COLUMN_EMAIL_LAST_ID + " FROM " + getTableName() + " WHERE " + getIdColumnName() + " = ?";
         return jdbcTemplate.queryForObject(sql, Long.class, caseId);
     }
 
     @SqlConditionBuilder
-    public SqlCondition caseQueryCondition ( CaseQuery query) {
+    public SqlCondition caseQueryCondition (CaseQuery query) {
         return caseObjectSqlBuilder.caseCommonQuery(query);
+    }
+
+    public static boolean isSearchAtComments(CaseQuery query) {
+        return query.isSearchStringAtComments()
+                && length(trim( query.getSearchString() )) >= CrmConstants.Issue.MIN_LENGTH_FOR_SEARCH_BY_COMMENTS;
+    }
+
+    private JdbcQueryParameters buildJdbcQueryParameters(CaseQuery query) {
+
+        JdbcQueryParameters parameters = new JdbcQueryParameters();
+
+        SqlCondition where = createSqlCondition(query);
+        if (where.isConditionDefined()) {
+            parameters.withCondition(where.condition, where.args);
+        }
+
+        parameters.withOffset(query.getOffset());
+        parameters.withLimit(query.getLimit());
+        parameters.withSort(TypeConverters.createSort( query ));
+        if (isSearchAtComments(query)) {
+            parameters.withDistinct(true);
+            parameters.withJoins(LEFT_JOIN_CASE_COMMENT);
+        }
+
+        return parameters;
     }
 }

@@ -48,7 +48,7 @@ public class CaseTagMultiSelector extends MultipleInputSelector<EntityOption> im
         if (hasNullValue) {
             addOption(lang.tagNotSpecified(), new EntityOption(lang.tagNotSpecified(), CrmConstants.CaseTag.NOT_SPECIFIED));
         }
-        options.forEach(caseTag -> addOption(caseTag.getDisplayText(), caseTag));
+        options.forEach(caseTag -> addOption(caseTag.getDisplayText(), caseTag.getInfo(), caseTag));
     }
 
     @Inject

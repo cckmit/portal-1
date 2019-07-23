@@ -17,6 +17,8 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.*;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
+
 /**
  * Модель заявителей по обращению
  */

@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.helper.StringUtils;
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
@@ -29,6 +30,8 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseType = event.getCaseType();
         view.name().setValue("");
         view.color().setValue("");
+        view.company().setValue(EntityOption.fromCompany(event.getCompany()));
+        view.setVisibleCompanyPanel(event.getCompany() == null);
         dialogView.showPopup();
     }
 
@@ -43,6 +46,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
         caseTag.setCaseType(caseType);
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
+        caseTag.setCompanyId(view.company().getValue().getId());
 
         caseTagController.createTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {

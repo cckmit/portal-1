@@ -1,10 +1,7 @@
 package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import ru.protei.portal.core.model.ent.CaseState;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.CompanyGroup;
-import ru.protei.portal.core.model.ent.CompanySubscription;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.winter.core.utils.beans.SearchResult;
@@ -98,4 +95,8 @@ public interface CompanyControllerAsync {
      */
     void getCompanyCaseStates(Long id, AsyncCallback<List<CaseState>> async);
 
+    /**
+     * Получить список тэгов компании
+     */
+    void getCompanyTags( Long companyId, AsyncCallback<List<CaseTag>> async );
 }

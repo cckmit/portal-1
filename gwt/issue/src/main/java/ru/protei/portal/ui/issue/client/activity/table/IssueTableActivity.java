@@ -9,6 +9,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.enums.Type;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -42,7 +43,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Активность таблицы обращений
@@ -73,6 +73,7 @@ public abstract class IssueTableActivity
     @Event
     public void onAuthSuccess (AuthEvents.Success event) {
         filterView.resetFilter();
+        filterView.getIssueFilterWidget().presetFilterType();
         updateCaseStatesFilter();
     }
 
@@ -262,17 +263,12 @@ public abstract class IssueTableActivity
             @Override
             public void onSuccess( CaseFilter filter ) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new IssueEvents.ChangeUserFilterModel());
 
                 filterView.editBtnVisibility().setVisible(true);
                 filterView.removeFilterBtnVisibility().setVisible(true);
 
-                CaseFilterShortView filterShortView = filter.toShortView();
-                if ( isCreateFilterAction ){
-                    filterParamView.userFilter().setValue( filterShortView );
-                    filterView.addUserFilterDisplayOption( filterShortView );
-                } else {
-                    filterView.changeUserFilterValueName( filterShortView );
-                }
+                filterView.getIssueFilterWidget().userFilter().setValue(filter.toShortView());
 
                 showUserFilterControls();
             }
@@ -386,6 +382,7 @@ public abstract class IssueTableActivity
     private CaseFilter fillUserFilter() {
         CaseFilter filter = new CaseFilter();
         filter.setName(filterView.filterName().getValue());
+        filter.setType(En_CaseFilterType.CASE_OBJECTS);
         CaseQuery query = IssueFilterUtils.makeCaseQuery(filterParamView, false);
         filter.setParams(query);
         query.setSearchString(filterParamView.searchPattern().getValue());
@@ -427,7 +424,6 @@ public abstract class IssueTableActivity
         filterParamView.productsVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_PRODUCT_VIEW ) );
         filterParamView.managersVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_FILTER_MANAGER_VIEW ) );
         filterParamView.searchPrivateVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_PRIVACY_VIEW ) );
-        filterParamView.tagsVisibility().setVisible( policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ) );
     }
 
     private void showUserFilterName(){

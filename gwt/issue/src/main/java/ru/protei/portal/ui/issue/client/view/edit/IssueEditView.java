@@ -70,6 +70,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
+        description.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
+            @Override
+            public void onDisplayPreviewChanged( boolean isDisplay ) {
+                activity.onDisplayPreviewChanged( DESCRIPTION, isDisplay );
+            }
+        } );
     }
 
     @Override
@@ -329,8 +335,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setTagsAddButtonEnabled(boolean enabled) {
+        caseMetaView.setTagsAddButtonEnabled(enabled);
+    }
+
+    @Override
     public void setStateWorkflow(En_CaseStateWorkflow workflow) {
         state.setWorkflow(workflow);
+    }
+
+    @Override
+    public void setDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
+        description.setDisplayPreview( isPreviewAllowed );
     }
 
     @UiHandler( "company" )

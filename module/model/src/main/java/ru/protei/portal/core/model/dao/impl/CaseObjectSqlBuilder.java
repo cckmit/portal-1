@@ -26,10 +26,23 @@ public class CaseObjectSqlBuilder {
                         .append(StringUtils.join(query.getMemberIds(), ","))
                         .append("))");
             } else if (CollectionUtils.isNotEmpty(query.getCaseTagsIds())) {
-                boolean notSpecified = query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED);
-                if (!query.getCaseTagsIds().isEmpty()) {
-                    condition.append(" and case_object.id")
-                            .append(notSpecified ? " not in" : " in")
+                if (query.getCaseTagsIds().remove(CrmConstants.CaseTag.NOT_SPECIFIED)) {
+                    if (query.isCustomerSearch()) {
+                        condition.append( " and (case_object.id not in (select case_id from case_object_tag where case_object_tag.tag_id in ")
+                                .append("   (select case_tag.id from case_tag where case_tag.company_id = ? )) ");
+                        args.add( query.getCompanyIds().get(0) );
+                    } else {
+                        condition.append( " and (case_object.id not in (select case_id from case_object_tag) " );
+                    }
+                    if (!query.getCaseTagsIds().isEmpty()) {
+                        condition.append(" or case_object.id in")
+                                .append(" (select case_id from case_object_tag where tag_id in (")
+                                .append(StringUtils.join(query.getCaseTagsIds(), ","))
+                                .append("))");
+                    }
+                    condition.append(")");
+                } else {
+                    condition.append(" and case_object.id in")
                             .append(" (select case_id from case_object_tag where tag_id in (")
                             .append(StringUtils.join(query.getCaseTagsIds(), ","))
                             .append("))");
@@ -37,10 +50,10 @@ public class CaseObjectSqlBuilder {
             }
 
             if ( !query.isAllowViewPrivate() ) {
-                condition.append( " and private_flag=?" );
+                condition.append( " and case_object.private_flag=?" );
                 args.add( 0 );
             } else if (query.isViewPrivate() != null) {
-                condition.append( " and private_flag=?" );
+                condition.append( " and case_object.private_flag=?" );
                 args.add( query.isViewPrivate() ? 1 : 0 );
             }
 

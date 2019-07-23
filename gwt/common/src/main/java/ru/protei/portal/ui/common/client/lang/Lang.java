@@ -1608,6 +1608,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationCurators();
 
+    String employeeRegistrationValidationHeadOfDepartmentAsCurator();
+
     String employeeRegistrationValidationProbationPeriod();
 
     String timeElapsedTypeNone();
@@ -1643,6 +1645,8 @@ public interface Lang extends Messages, ContactItemLang {
     String tagName();
 
     String tagColor();
+
+    String tagCompany();
 
     String commentEmpty();
 
@@ -1693,6 +1697,32 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeMobilePhoneColumnHeader();
 
     String employeeIPAddressColumnHeader();
+
+    String employeeEmailColumnHeader();
+
+    String privateComment();
+
+    String commentPreviewIsDisplay();
+
+    String timeElapsedTypeSoftInstall();
+
+    String timeElapsedTypeSoftUpdate();
+
+    String timeElapsedTypeSoftConfig();
+
+    String timeElapsedTypeTesting();
+
+    String timeElapsedTypeConsultation();
+
+    String timeElapsedTypeMeeting();
+
+    String timeElapsedTypeDiscussionOfImprovements();
+
+    String timeElapsedTypeLogAnalysis();
+
+    String timeElapsedTypeSolveProblems();
+
+    String errInvalidCaseUpdateCaseIsClosed();
 
     String buttonSettings();
 

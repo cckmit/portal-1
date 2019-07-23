@@ -25,7 +25,7 @@ public class CaseTagControllerImpl implements CaseTagController {
     @Override
     public List<CaseTag> getCaseTagsForCaseType(En_CaseType caseType) throws RequestFailedException {
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        return ServiceUtils.checkResultAndGetData(caseTagService.getTagList(authToken, caseType));
+        return ServiceUtils.checkResultAndGetData(caseTagService.getTagsByCaseType(authToken, caseType));
     }
 
     @Autowired

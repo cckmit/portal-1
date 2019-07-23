@@ -7,11 +7,10 @@
              xmlns:importance='urn:import:ru.protei.portal.ui.common.client.widget.issueimportance.btngroup'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'
              xmlns:threestate='urn:import:ru.protei.portal.ui.common.client.widget.threestate'
-             xmlns:issuefilterselector='urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector'
              xmlns:casetag='urn:import:ru.protei.portal.ui.common.client.widget.selector.casetag'
-             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist">
+             xmlns:optionlist="urn:import:ru.protei.portal.ui.common.client.widget.issuestate.optionlist"
+             xmlns:issuefilterselector="urn:import:ru.protei.portal.ui.common.client.widget.issuefilterselector">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 

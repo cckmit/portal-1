@@ -7,15 +7,14 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.CaseObjectTag;
-import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
+import ru.protei.portal.core.service.user.AuthService;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CaseTagServiceImpl implements CaseTagService {
 
@@ -37,16 +36,41 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
-    public CoreResponse<List<CaseObjectTag>> getTagsForCase(AuthToken token, long caseId) {
-        List<CaseObjectTag> tags = caseObjectTagDAO.getListByCaseId(caseId);
-        return new CoreResponse<List<CaseObjectTag>>().success(tags);
+    public CoreResponse<List<CaseTag>> getTagsByCaseId(AuthToken token, long caseId) {
+        CaseTagQuery query = new CaseTagQuery();
+
+        query.setCaseId(caseId);
+
+        return getTagsByPermission(token, query);
     }
 
     @Override
-    public CoreResponse<List<CaseTag>> getTagList(AuthToken token, En_CaseType caseType) {
+    public CoreResponse<List<CaseTag>> getTagsByCaseType(AuthToken token, En_CaseType caseType) {
         CaseTagQuery query = new CaseTagQuery();
+
         query.setCaseTypes(Collections.singletonList(caseType));
+
+        return getTagsByPermission(token, query);
+    }
+
+    @Override
+    public CoreResponse<List<CaseTag>> getTagsByCompanyId(AuthToken token, long companyId) {
+        CaseTagQuery query = new CaseTagQuery();
+
+        query.setCompanyId(companyId);
+
+        return getTagsByPermission(token, query);
+    }
+
+    private CoreResponse<List<CaseTag>> getTagsByPermission(AuthToken token, CaseTagQuery query){
+        UserSessionDescriptor descriptor = authService.findSession( token );
+        Set< UserRole > roles = descriptor.getLogin().getRoles();
+        if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {
+            query.setCompanyId(descriptor.getCompany().getId());
+        }
+
         List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);
+
         return new CoreResponse<List<CaseTag>>().success(caseTags);
     }
 
@@ -60,6 +84,9 @@ public class CaseTagServiceImpl implements CaseTagService {
         if (StringUtils.isBlank(caseTag.getName())) {
             return false;
         }
+        if (caseTag.getCompanyId() == null){
+            return false;
+        }
         return true;
     }
 
@@ -67,4 +94,8 @@ public class CaseTagServiceImpl implements CaseTagService {
     CaseTagDAO caseTagDAO;
     @Autowired
     CaseObjectTagDAO caseObjectTagDAO;
+    @Autowired
+    AuthService authService;
+    @Autowired
+    PolicyService policyService;
 }

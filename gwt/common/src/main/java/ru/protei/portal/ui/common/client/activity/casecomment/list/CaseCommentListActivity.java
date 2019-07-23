@@ -62,6 +62,7 @@ public abstract class CaseCommentListActivity
         workTimeFormatter = new WorkTimeFormatter(lang);
     }
 
+
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         this.profile = event.profile;
@@ -82,10 +83,9 @@ public abstract class CaseCommentListActivity
 
         comment = null;
         lastCommentView = null;
-        requesting = false;
         tempAttachments.clear();
+        unlockSave();
 
-        view.sendEnabled().setEnabled(true);
         view.message().setValue(makeCommentText(null), true);
         view.attachmentContainer().clear();
         view.clearCommentsContainer();
@@ -109,36 +109,35 @@ public abstract class CaseCommentListActivity
 
     @Event
     public void onValidateComment(CaseCommentEvents.ValidateComment event) {
-        if (StringUtils.isNotBlank(view.message().getValue())) {
+        if (event.isNewCase()) {
             event.validate(true);
             return;
         }
-        if (view.timeElapsed().getTime() != null) {
-            event.validate(false);
-            return;
-        }
-        if (!tempAttachments.isEmpty()) {
-            event.validate(false);
-            return;
-        }
-        event.validate(true);
+        event.validate(isValid());
     }
 
     @Event
-    public void onSaveComment(CaseCommentEvents.SaveComment event) {
-        if (!HelperFunc.isEmpty(view.message().getValue())) {
-            send(event.caseId, event.handler);
+    public void onGetCurrentComment(CaseCommentEvents.GetCurrentComment event) {
+        if (StringUtils.isEmpty(view.message().getValue())) {
+            event.provide(null);
         } else {
-            event.handler.onSuccess();
+            event.provide(buildCaseComment());
         }
     }
 
     @Event
-    public void onRemoveDraft(CaseCommentEvents.RemoveDraft event){
-        if (event.caseId != null) {
-            storage.remove(makeStorageKey(event.caseId));
+    public void onSavingEvent(CaseCommentEvents.OnSavingEvent event) {
+        lockSave();
+    }
+
+    @Event
+    public void onDoneEvent(CaseCommentEvents.OnDoneEvent event) {
+        unlockSave();
+        if (event.caseComment != null) {
+            storage.remove(makeStorageKey(event.caseComment.getCaseId()));
         }
     }
+
 
     @Override
     public void onRemoveClicked(final AbstractCaseCommentItemView itemView ) {
@@ -227,7 +226,7 @@ public abstract class CaseCommentListActivity
 
     @Override
     public void onSendClicked() {
-        send( null, null );
+        send();
     }
 
     @Override
@@ -294,6 +293,12 @@ public abstract class CaseCommentListActivity
         });
     }
 
+    @Override
+    public void onDisplayPreviewChanged( Boolean isDisplayPreview ) {
+        storage.set( IS_PREVIEW_DISPLAYED, String.valueOf( isDisplayPreview ) );
+        fireChangedPreview();
+    }
+
     private void removeAttachment(Long id, Runnable successAction){
         attachmentService.removeAttachmentEverywhere(caseType, id, new RequestCallback<Boolean>() {
             @Override
@@ -357,6 +362,9 @@ public abstract class CaseCommentListActivity
         itemView.setIcon( AccountPhotoUtils.getPhotoUrl(value.getAuthorId()) );
         itemView.setRemoteLink(value.getRemoteLink());
 
+        if (StringUtils.isNotEmpty(value.getText())) {
+            itemView.setMessage(value.getText());
+        }
         itemView.clearElapsedTime();
         fillTimeElapsed( value, itemView );
         if ( isPrivateVisible ) {
@@ -448,105 +456,118 @@ public abstract class CaseCommentListActivity
                 list.stream().map(CaseAttachment::getAttachmentId).collect(Collectors.toList());
     }
 
-    private void send(Long id, CaseCommentEvents.SaveComment.SaveCommentCompleteHandler saveCommentCompleteHandler) {
-        if ( requesting ) {
+
+    private void send() {
+
+        if (isLockedSave()) {
             return;
         }
-        requesting = true;
-        view.sendEnabled().setEnabled(false);
+        lockSave();
 
-        if ( comment == null ) {
-            comment = new CaseComment();
-            comment.setAuthorId( profile.getId() );
+        if (!isValid()) {
+            unlockSave();
+            fireEvent(new NotifyEvents.Show(lang.commentEmpty(), NotifyEvents.NotifyType.ERROR));
+            return;
+        }
+
+        comment = buildCaseComment();
+
+        if (isBlank(comment.getText())) {
+            unlockSave();
+            fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
+            return;
         }
 
         boolean isEdit = comment.getId() != null;
-
-        String message = view.message().getValue();
-        if ( isBlank( message ) ) {
-            if ( id == null ) {
-                fireEvent(new NotifyEvents.Show(lang.errEditIssueCommentEmpty(), NotifyEvents.NotifyType.ERROR));
-            }
-            requesting = false;
-            view.sendEnabled().setEnabled(true);
-            return;
-        }
-
-        if (caseType == En_CaseType.CRM_SUPPORT) {
-            if (view.privateComment().getValue() && !policyService.hasPrivilegeFor(En_Privilege.ISSUE_PRIVACY_VIEW)){
-                fireEvent(new NotifyEvents.Show(lang.errIssueCommentProhibitedPrivate(), NotifyEvents.NotifyType.ERROR));
-                requesting = false;
-                view.sendEnabled().setEnabled(true);
-                return;
-            }
-        }
-
-        comment.setCaseId( id != null ? id : caseId );
-        comment.setText( message );
-        comment.setTimeElapsed(view.timeElapsed().getTime());
-        En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
-        comment.setTimeElapsedType( elapsedType != null ? elapsedType : En_TimeElapsedType.NONE );
-
-        comment.setPrivateComment(isPrivateCase || view.privateComment().getValue());
-        comment.setCaseAttachments(
-                tempAttachments.stream()
-                        .map(a -> new CaseAttachment(caseId, a.getId(), isEdit? comment.getId(): null))
-                        .collect(Collectors.toList())
-        );
-
         caseCommentController.saveCaseComment(caseType, comment, new FluentCallback<CaseComment>()
-                .withResult(() -> {
-                    requesting = false;
-                    view.sendEnabled().setEnabled(true);
-                })
-                .withError(throwable -> {
-                    if (saveCommentCompleteHandler != null) {
-                        saveCommentCompleteHandler.onError(throwable, null);
-                        return;
-                    }
-                    fireEvent(new NotifyEvents.Show(lang.errEditIssueComment(), NotifyEvents.NotifyType.ERROR));
-                })
-                .withSuccess(result -> {
-                    storage.remove(makeStorageKey(result.getCaseId()));
-
-                    if (saveCommentCompleteHandler != null) {
-                        saveCommentCompleteHandler.onSuccess();
-                        return;
-                    }
-                    result.setCaseAttachments(comment.getCaseAttachments());
-
-                    if (isEdit) {
-                        renderTextAsync(result.getText(), textMarkup, lastCommentView::setMessage);
-                        lastCommentView.clearElapsedTime();
-                        fillTimeElapsed( comment, lastCommentView );
-
-                        Collection<Attachment> prevAttachments = lastCommentView.attachmentContainer().getAll();
-
-                        if (!(prevAttachments.isEmpty() && tempAttachments.isEmpty())) {
-                            synchronizeAttachments(prevAttachments, tempAttachments);
-                            lastCommentView.attachmentContainer().clear();
-                            lastCommentView.attachmentContainer().add(tempAttachments);
-                            lastCommentView.showAttachments(!tempAttachments.isEmpty());
-                        }
-                    } else {
-                        fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
-                        AbstractCaseCommentItemView itemView = makeCommentView(result);
-                        lastCommentView = itemView;
-                        view.addCommentToFront(itemView.asWidget());
-                        renderTextAsync(result.getText(), textMarkup, itemView::setMessage);
-                    }
-
-                    comment = null;
-                    view.message().setValue(null, true);
-                    view.attachmentContainer().clear();
-                    view.clearTimeElapsed();
-                    tempAttachments.clear();
-                    // FIXME зачем IssueEvents.ChangeModel здесь \/
-                    fireEvent(new IssueEvents.ChangeModel());
-                    updateTimeElapsedInIssue(itemViewToModel.values());
-                })
+                .withResult(this::unlockSave)
+                .withErrorMessage(lang.errEditIssueComment())
+                .withSuccess(result -> onCommentSent(isEdit, result))
         );
     }
+
+    private boolean isValid() {
+        if (StringUtils.isNotBlank(view.message().getValue())) {
+            return true;
+        }
+        if (view.timeElapsed().getTime() != null) {
+            return false;
+        }
+        if (!tempAttachments.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
+    private CaseComment buildCaseComment() {
+        CaseComment comment = this.comment;
+        if (comment == null) {
+            comment = new CaseComment();
+            comment.setAuthorId(profile.getId());
+        }
+        Long commentId = comment.getId();
+        En_TimeElapsedType elapsedType = view.timeElapsedType().getValue();
+        comment.setCaseId(caseId);
+        comment.setText(view.message().getValue());
+        comment.setTimeElapsed(view.timeElapsed().getTime());
+        comment.setTimeElapsedType(elapsedType != null ? elapsedType : En_TimeElapsedType.NONE);
+        comment.setPrivateComment(isPrivateCase || view.privateComment().getValue());
+        comment.setCaseAttachments(tempAttachments.stream()
+                .map(a -> new CaseAttachment(caseId, a.getId(), commentId))
+                .collect(Collectors.toList())
+        );
+        return comment;
+    }
+
+    private void onCommentSent(boolean isEdit, CaseComment caseComment) {
+
+        storage.remove(makeStorageKey(caseComment.getCaseId()));
+
+        caseComment.setCaseAttachments(comment.getCaseAttachments());
+
+        if (isEdit) {
+            renderTextAsync(caseComment.getText(), textMarkup, lastCommentView::setMessage);
+            lastCommentView.clearElapsedTime();
+            fillTimeElapsed( comment, lastCommentView );
+
+            Collection<Attachment> prevAttachments = lastCommentView.attachmentContainer().getAll();
+
+            if (!(prevAttachments.isEmpty() && tempAttachments.isEmpty())) {
+                synchronizeAttachments(prevAttachments, tempAttachments);
+                lastCommentView.attachmentContainer().clear();
+                lastCommentView.attachmentContainer().add(tempAttachments);
+                lastCommentView.showAttachments(!tempAttachments.isEmpty());
+            }
+        } else {
+            fireEvent(new AttachmentEvents.Add(caseId, tempAttachments));
+            AbstractCaseCommentItemView itemView = makeCommentView(caseComment);
+            lastCommentView = itemView;
+            view.addCommentToFront(itemView.asWidget());
+            renderTextAsync(caseComment.getText(), textMarkup, itemView::setMessage);
+        }
+
+        comment = null;
+        view.message().setValue(null, true);
+        view.attachmentContainer().clear();
+        view.clearTimeElapsed();
+        tempAttachments.clear();
+        updateTimeElapsedInIssue(itemViewToModel.values());
+    }
+
+    private void lockSave() {
+        saving = true;
+        view.sendEnabled().setEnabled(false);
+    }
+
+    private void unlockSave() {
+        saving = false;
+        view.sendEnabled().setEnabled(true);
+    }
+
+    private boolean isLockedSave() {
+        return saving;
+    }
+
 
     private void updateTimeElapsedInIssue(Collection<CaseComment> comments) {
         Long timeElapsed = CollectionUtils.stream(comments).filter(cmnt -> cmnt.getTimeElapsed() != null)
@@ -573,6 +594,12 @@ public abstract class CaseCommentListActivity
 
         if (StringUtils.isBlank(text)) {
             view.setPreviewVisible(false);
+            return;
+        }
+
+        view.setPreviewVisible( true );
+        if(!view.isDisplayPreview()){
+            view.setPreviewText( "" );
             return;
         }
 
@@ -633,7 +660,7 @@ public abstract class CaseCommentListActivity
 
     private En_CaseType caseType;
     private En_TextMarkup textMarkup;
-    private boolean requesting = false;
+    private boolean saving = false;
     private boolean isElapsedTimeEnabled = false;
     private boolean isModifyEnabled = true;
     private Long caseId;
@@ -648,4 +675,5 @@ public abstract class CaseCommentListActivity
     @Inject
     private LocalStorageService storage;
     private final String STORAGE_CASE_COMMENT_PREFIX = "CaseСomment_";
+    private final String IS_PREVIEW_DISPLAYED = STORAGE_CASE_COMMENT_PREFIX+"is_preview_displayed";
 }

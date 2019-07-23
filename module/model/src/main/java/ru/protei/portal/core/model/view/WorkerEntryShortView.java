@@ -19,6 +19,12 @@ public class WorkerEntryShortView implements Serializable {
     @JdbcJoinedColumn(localColumn = "companyId", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
 
+    @JdbcJoinedColumn(mappedColumn = "dep_name", joinPath = {
+            @JdbcJoinPath(localColumn = "dep_id", table = "company_dep", remoteColumn = "id"),
+            @JdbcJoinPath(localColumn = "parent_dep", table = "company_dep", remoteColumn = "id")
+    })
+    private String departmentParentName;
+
     @JdbcJoinedColumn(localColumn = "dep_id", table = "company_dep", remoteColumn = "id", mappedColumn = "dep_name")
     private String departmentName;
 
@@ -50,6 +56,14 @@ public class WorkerEntryShortView implements Serializable {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public String getDepartmentParentName() {
+        return departmentParentName;
+    }
+
+    public void setDepartmentParentName(String departmentParentName) {
+        this.departmentParentName = departmentParentName;
     }
 
     public String getDepartmentName() {

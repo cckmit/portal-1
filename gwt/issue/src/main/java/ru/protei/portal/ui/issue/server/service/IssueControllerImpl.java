@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.ui.common.client.service.IssueController;
@@ -68,12 +69,25 @@ public class IssueControllerImpl implements IssueController {
             response = caseService.saveCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
         }
         else
-            response = caseService.updateCaseObject( descriptor.makeAuthToken(), caseObject );
+            response = caseService.updateCaseObject( descriptor.makeAuthToken(), caseObject, getCurrentPerson() );
 
         log.debug( "saveIssue(): response.isOk()={}", response.isOk() );
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
-        log.debug( "saveIssue(): id", response.getData().getId() );
+        log.debug( "saveIssue(): id={}", response.getData().getId() );
         return response.getData();
+    }
+
+    @Override
+    public CaseObjectWithCaseComment saveIssueAndComment(CaseObject caseObject, CaseComment caseComment) throws RequestFailedException {
+        log.debug("saveIssueAndComment(): caseNo={} | case={} | comment={}", caseObject.getCaseNumber(), caseObject, caseComment);
+        AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        if (caseObject.getId() == null) {
+            CaseObject saved = saveIssue(caseObject);
+            return new CaseObjectWithCaseComment(saved, null);
+        }
+        CoreResponse<CaseObjectWithCaseComment> response = caseService.updateCaseObjectAndSaveComment(token, caseObject, caseComment, getCurrentPerson());
+        log.debug("saveIssueAndComment(): caseNo={}", caseObject.getCaseNumber());
+        return ServiceUtils.checkResultAndGetData(response);
     }
 
     @Override

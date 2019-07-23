@@ -1,5 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:casemeta='urn:import:ru.protei.portal.ui.common.client.widget.casemeta'
              xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
@@ -17,6 +18,11 @@
 
                 <p class="small">
                     <g:InlineLabel ui:field="companyLinksMessage"/>
+                </p>
+
+                <p class="small">
+                    <legend><ui:text from="{lang.tags}"/></legend>
+                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-md-12" enabled="false" showLabel="false"/>
                 </p>
 
                 <p class="small">

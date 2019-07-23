@@ -69,7 +69,10 @@ public class ExcelReportWriter implements
                 "ir_caseno", "ir_private", "ir_name",
                 "ir_company", "ir_product", "ir_performer", "ir_manager",
                 "ir_importance", "ir_state", "ir_date_created",
-                "ir_work_time_none", "ir_work_time_watch" , "ir_work_time_night_work"
+                "ir_work_time_none", "ir_work_time_watch", "ir_work_time_night_work",
+                "ir_work_time_SoftInstall", "ir_work_time_SoftUpdate", "ir_work_time_SoftConfig",
+                "ir_work_time_Testing", "ir_work_time_Consultation", "ir_work_time_Meeting",
+                "ir_work_time_DiscussionOfImprovements", "ir_work_time_LogAnalysis", "ir_work_time_SolveProblems"
         };
     }
 
@@ -80,6 +83,9 @@ public class ExcelReportWriter implements
             return new Object[] {
                     "", "", "",
                     "", "", "", "",
+                    "", "", "",
+                    "", "", "",
+                    "", "", "",
                     "", "", "",
                     "", lang.get("summary") + ":", timeFormatter.formatHourMinutes(object.getTimeElapsedSum())
             };
@@ -97,7 +103,16 @@ public class ExcelReportWriter implements
                 object.getCaseCreated() != null ? dateFormat.format(object.getCaseCreated()) : "",
                 timeFormatter.formatHourMinutes(object.getTimeElapsedNone()),
                 timeFormatter.formatHourMinutes(object.getTimeElapsedWatch()),
-                timeFormatter.formatHourMinutes(object.getTimeElapsedNightWork())
+                timeFormatter.formatHourMinutes(object.getTimeElapsedNightWork()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftInstall()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftUpdate()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSoftConfig()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeTesting()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeConsultation()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeMeeting()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeDiscussionOfImprovements()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeLogAnalysis()),
+                timeFormatter.formatHourMinutes(object.getTimeElapsedTypeSolveProblems())
         };
     }
 }

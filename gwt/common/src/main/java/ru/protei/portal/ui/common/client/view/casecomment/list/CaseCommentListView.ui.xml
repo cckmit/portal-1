@@ -63,8 +63,9 @@
                         </div>
 
                         <div ui:field="commentPreviewContainer" class="message-preview hide">
-                            <div class="message-preview-label">
-                                <ui:text from='{lang.commentPreview}'/>
+                            <div class="message-preview-label"><ui:text from='{lang.commentPreview}'/>
+                                <g:ToggleButton ui:field="isDisplayPreview" styleName="btn show-preview-btn"
+                                                title="{lang.commentPreviewIsDisplay}"/>
                             </div>
                             <div ui:field="commentPreview" class="message-preview-content markdown"/>
                         </div>
