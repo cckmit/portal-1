@@ -6,13 +6,13 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateActivity;
-import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagCreateView;
+import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagEditActivity;
+import ru.protei.portal.ui.common.client.activity.casetag.AbstractCaseTagEditView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.ColorPicker;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 
-public class CaseTagCreateView extends Composite implements AbstractCaseTagCreateView {
+public class CaseTagEditView extends Composite implements AbstractCaseTagEditView {
 
     @Inject
     public void onInit() {
@@ -21,7 +21,7 @@ public class CaseTagCreateView extends Composite implements AbstractCaseTagCreat
     }
 
     @Override
-    public void setActivity(AbstractCaseTagCreateActivity activity) {}
+    public void setActivity(AbstractCaseTagEditActivity activity) {}
 
     @Override
     public HasValue<String> name() {
@@ -61,6 +61,6 @@ public class CaseTagCreateView extends Composite implements AbstractCaseTagCreat
     @UiField(provided = true)
     CompanySelector company;
 
-    interface CaseTagCreateViewUiBinder extends UiBinder<Widget, CaseTagCreateView> {}
-    private static CaseTagCreateViewUiBinder ourUiBinder = GWT.create(CaseTagCreateViewUiBinder.class);
+    interface CaseTagEditViewUiBinder extends UiBinder<Widget, CaseTagEditView> {}
+    private static CaseTagEditViewUiBinder ourUiBinder = GWT.create(CaseTagEditViewUiBinder.class);
 }

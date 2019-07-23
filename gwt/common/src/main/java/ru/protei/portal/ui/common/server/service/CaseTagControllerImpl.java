@@ -18,12 +18,14 @@ public class CaseTagControllerImpl implements CaseTagController {
 
     @Override
     public void saveTag(CaseTag caseTag) throws RequestFailedException {
-        ServiceUtils.checkResult(caseTagService.saveTag(caseTag));
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        ServiceUtils.checkResult(caseTagService.saveTag(authToken, caseTag));
     }
 
     @Override
     public void removeTag(CaseTag caseTag) throws RequestFailedException {
-        ServiceUtils.checkResult(caseTagService.removeTag(caseTag));
+        AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
+        ServiceUtils.checkResult(caseTagService.removeTag(authToken, caseTag));
     }
 
     @Override

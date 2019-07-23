@@ -6,22 +6,24 @@ import ru.protei.portal.core.model.ent.Company;
 
 public class CaseTagEvents {
 
-    public static class Create {
+    public static class Update {
         private En_CaseType caseType;
         private Company company;
         private CaseTag caseTag;
-        public Create () {}
-        public Create(En_CaseType caseType) {
+        private boolean isCompanySelectorVisible;
+        public Update() {}
+        public Update(En_CaseType caseType, boolean isCompanySelectorVisible) {
             this.caseType = caseType;
+            this.isCompanySelectorVisible = isCompanySelectorVisible;
         }
-        public Create(En_CaseType caseType, Company company) {
+        public Update(En_CaseType caseType, Company company, boolean isCompanySelectorVisible) {
             this.caseType = caseType;
             this.company = company;
+            this.isCompanySelectorVisible = isCompanySelectorVisible;
         }
-        public Create(CaseTag caseTag) {
+        public Update(CaseTag caseTag, boolean isCompanySelectorVisible) {
             this.caseTag = caseTag;
-            this.company = caseTag.getCompany();
-            this.caseType = caseTag.getCaseType();
+            this.isCompanySelectorVisible = isCompanySelectorVisible;
         }
         public En_CaseType getCaseType() {
             return caseType;
@@ -37,6 +39,9 @@ public class CaseTagEvents {
         }
         public CaseTag getCaseTag() {
             return caseTag;
+        }
+        public boolean isCompanyPanelVisible() {
+            return isCompanySelectorVisible;
         }
     }
 

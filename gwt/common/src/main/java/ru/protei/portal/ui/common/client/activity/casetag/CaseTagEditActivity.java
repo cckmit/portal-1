@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.common.client.activity.casetag;
 
-import com.google.gwt.user.client.History;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -16,7 +15,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
-public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTagCreateActivity, AbstractDialogDetailsActivity {
+public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEditActivity, AbstractDialogDetailsActivity {
 
     @PostConstruct
     public void onInit() {
@@ -26,13 +25,13 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
     }
 
     @Event
-    public void onShow(CaseTagEvents.Create event) {
+    public void onShow(CaseTagEvents.Update event) {
         this.caseTag = event.getCaseTag();
         caseType = event.getCaseType();
         view.name().setValue(event.getTagName());
         view.color().setValue(event.getTagColor());
-        view.company().setValue(EntityOption.fromCompany(event.getCompany()));
-        view.setVisibleCompanyPanel(History.getToken().contains("issue"));
+        view.company().setValue(caseTag != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : new EntityOption());
+        view.setVisibleCompanyPanel(event.isCompanyPanelVisible());
         dialogView.removeButtonVisibility().setVisible(!event.getTagName().isEmpty());
         dialogView.setHeader(event.getTagName().isEmpty() ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();
@@ -93,7 +92,7 @@ public abstract class CaseTagCreateActivity implements Activity, AbstractCaseTag
     @Inject
     Lang lang;
     @Inject
-    AbstractCaseTagCreateView view;
+    AbstractCaseTagEditView view;
     @Inject
     AbstractDialogDetailsView dialogView;
     @Inject

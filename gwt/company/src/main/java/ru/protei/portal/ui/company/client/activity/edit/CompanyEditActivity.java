@@ -49,6 +49,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
+        view.addTagHandler();
     }
 
     @Event
@@ -135,7 +136,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onAddTagClicked() {
-        fireEvent(new CaseTagEvents.Create(En_CaseType.CRM_SUPPORT, tempCompany));
+        fireEvent(new CaseTagEvents.Update(En_CaseType.CRM_SUPPORT, tempCompany, false));
     }
 
     private boolean validateFieldsAndGetResult(){

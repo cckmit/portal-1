@@ -95,6 +95,7 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
     InlineLabel companyName;
     @UiField
     InlineLabel icon;
+
     @UiField
     InlineLabel editIcon;
 

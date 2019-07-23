@@ -25,7 +25,7 @@ public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     @Transactional
-    public CoreResponse saveTag(CaseTag caseTag) {
+    public CoreResponse saveTag(AuthToken authToken, CaseTag caseTag) {
         if (!isCaseTagValid(caseTag)) {
             return new CoreResponse<>().error(En_ResultStatus.VALIDATION_ERROR);
         }
@@ -42,7 +42,7 @@ public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     @Transactional
-    public CoreResponse removeTag(CaseTag caseTag) {
+    public CoreResponse removeTag(AuthToken authToken, CaseTag caseTag) {
         return !caseTagDAO.remove(caseTag) ?
                 new CoreResponse<>().error(En_ResultStatus.NOT_REMOVED) :
                 new CoreResponse<>().success();

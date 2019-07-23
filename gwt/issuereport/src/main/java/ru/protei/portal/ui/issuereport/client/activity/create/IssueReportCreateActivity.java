@@ -86,11 +86,6 @@ public abstract class IssueReportCreateActivity implements Activity,
     }
 
     @Override
-    public void onRemoveClicked() {
-
-    }
-
-    @Override
     public void onSaveClicked() {
 
         En_ReportType reportType = view.reportType().getValue();

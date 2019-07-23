@@ -117,7 +117,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
             onTagSelected(caseTag);
         });
         caseTagPopupView.addEditHandler(event -> {
-            onTagEdit(event.caseTag);
+            onTagEdit(caseTag);
         });
         childContainer.add(caseTagPopupView);
     }

@@ -7,7 +7,6 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.ui.common.client.events.EditEvent;
@@ -73,6 +72,12 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         return addHandler(handler, EditEvent.getType());
     }
 
+    public void addTagHandler() {
+        text.addClickHandler(event -> {
+            EditEvent.fire(this, caseTag);
+        });
+    }
+
     @UiHandler("remove")
     public void closeClick(ClickEvent event) {
         event.preventDefault();
@@ -82,20 +87,15 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         }
         CloseEvent.fire(this, caseTag);
     }
-
-    @UiHandler("text")
-    public void textClick(ClickEvent event) {
-        if (History.getToken().contains("company")) {
-            EditEvent.fire(this, caseTag);
-        }
-    }
-
     @UiField
     FocusPanel root;
+
     @UiField
     HTMLPanel panel;
+
     @UiField
     Anchor remove;
+
     @UiField
     InlineLabel text;
 

@@ -8,7 +8,7 @@ public interface AbstractDialogDetailsActivity {
     /**
      * Нажата кнопка "Удалить"
      * */
-    void onRemoveClicked();
+    default void onRemoveClicked() {}
 
     /**
      * Нажата кнопка "Сохранить"
