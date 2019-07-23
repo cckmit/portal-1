@@ -86,7 +86,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
         if (!isConfirmValidate()) {
             fireEvent(new NotifyEvents.Show(lang.errEditProfile(), NotifyEvents.NotifyType.ERROR));
         } else if (!HelperFunc.isEmpty(view.currentPassword().getValue())) {
-            accountService.updateAccountPassword(profile.getLoginId(), view.currentPassword().getValue(), view.newPassword().getValue(), new AsyncCallback<Boolean>() {
+            accountService.updateAccountPassword(profile.getLoginId(), view.currentPassword().getValue(), view.newPassword().getValue(), new AsyncCallback<Void>() {
                 @Override
                 public void onFailure(Throwable caught) {
                     if (caught instanceof RequestFailedException) {
@@ -96,7 +96,7 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
                 }
 
                 @Override
-                public void onSuccess(Boolean result) {
+                public void onSuccess(Void result) {
                     fireEvent(new AppEvents.Logout());
                     fireEvent(new MenuEvents.Clear());
                 }
