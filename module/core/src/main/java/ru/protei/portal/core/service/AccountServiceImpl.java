@@ -192,7 +192,7 @@ public class AccountServiceImpl implements AccountService {
         }
         userLogin.setUpass(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
 
-        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<>().success(true) : new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<>().success() : new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {
