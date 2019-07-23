@@ -14,7 +14,7 @@
                 <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
 
                     <div ui:field="messageBlock">
-                        <div class="image">
+                        <div ui:field="image" class="image">
                             <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
                         </div>
 
@@ -31,7 +31,7 @@
                                 <g:Button styleName="btn btn-success" ui:field="send" text="{lang.commentSendMessage}"/>
 
                                 <fileuploader:AttachmentUploader ui:field="fileUploader" styleName="inline-block">
-                                    <div class="btn btn-white attach-add-btn">
+                                    <div ui:field="filesUpload" class="btn btn-white attach-add-btn">
                                         <ui:text from='{lang.addAttachmentBtn}'/>
                                         <i class="ion-plus"/>
                                         <i class="icon-verifiable"/>

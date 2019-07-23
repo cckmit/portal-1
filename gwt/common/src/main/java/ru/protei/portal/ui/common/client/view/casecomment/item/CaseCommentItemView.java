@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.casecomment.item;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -14,6 +15,7 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.item.AbstractCaseCommentItemView;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
@@ -37,6 +39,7 @@ public class CaseCommentItemView
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+        ensureDebugIds();
     }
 
     @Override
@@ -219,6 +222,20 @@ public class CaseCommentItemView
     @UiHandler("attachList")
     public void onRemoveAttachment(RemoveEvent event){
         activity.onRemoveAttachment(this, event.getAttachment());
+    }
+
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        privateComment.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.PRIVACY_ICON);
+        reply.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REPLY_BUTTON);
+        edit.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_BUTTON);
+        remove.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REMOVE_BUTTON);
+        owner.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
+        timeElapsed.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
+        date.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
     }
 
 

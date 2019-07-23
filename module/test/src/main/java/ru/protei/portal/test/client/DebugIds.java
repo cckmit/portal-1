@@ -203,5 +203,26 @@ public class DebugIds {
         String INFO_LABEL = "issue-preview-info-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";
+
+        interface COMMENT_LIST {
+            String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
+            String USER_ICON = "issue-preview-comment-list-user-icon";
+            String TEXT_AREA = "issue-preview-comment-list-text-area";
+            String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
+            String SEND_BUTTON = "issue-preview-comment-list-send-button";
+            String FILES_UPLOAD = "issue-preview-comment-list-files-upload";
+            String TIME_ELAPSED = "issue-preview-comment-list-time-elapsed";
+            String TIME_ELAPSED_TYPE = "issue-preview-comment-list-time-elapsed-type";
+        }
+
+        interface COMMENT_ITEM {
+            String PRIVACY_ICON = "issue-preview-comment-item-privacy-icon";
+            String REPLY_BUTTON = "issue-preview-comment-item-reply-button";
+            String EDIT_BUTTON = "issue-preview-comment-item-edit-button";
+            String REMOVE_BUTTON = "issue-preview-comment-item-remove-button";
+            String OWNER = "issue-preview-comment-item-owner";
+            String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
+            String CREATE_DATE = "issue-preview-comment-item-create-date";
+        }
     }
 }
