@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -12,9 +13,7 @@ import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -64,6 +63,15 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         requestProduct(productId);
     }
 
+    @Event
+    public void onConfirmStateChange(ConfirmDialogEvents.Confirm event) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+        product.setStateId(product.isActiveUnit() ? En_DevUnitState.DEPRECATED.getId() : En_DevUnitState.ACTIVE.getId());
+        this.onSaveClicked();
+    }
+
     @Override
     public void onNameChanged() {
         String value = view.name().getValue().trim();
@@ -92,7 +100,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onStateChanged() {
-        product.setStateId(product.isActiveUnit() ? En_DevUnitState.DEPRECATED.getId() : En_DevUnitState.ACTIVE.getId());
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.productChangeStateConfirmMessage()));
     }
 
     @Override
