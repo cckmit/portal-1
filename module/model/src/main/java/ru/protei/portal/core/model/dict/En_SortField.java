@@ -108,7 +108,12 @@ public enum En_SortField {
     /**
      * author id
      */
-    author_id("author_id");
+    author_id("author_id"),
+
+    /**
+     * project name
+     */
+    project_name("CASE_NAME");
 
     private String fieldName;
     private String bundleKey;

@@ -2,7 +2,6 @@ package ru.protei.portal.ui.employee.client.activity.list;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
-import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 

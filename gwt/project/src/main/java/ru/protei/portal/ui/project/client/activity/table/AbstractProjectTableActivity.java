@@ -6,10 +6,10 @@ import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
 
 /**
- * Активность таблицы контактов
+ * Активность таблицы проектов
  */
 public interface AbstractProjectTableActivity
         extends ClickColumn.Handler<ProjectInfo>, EditClickColumn.EditHandler< ProjectInfo >, RemoveClickColumn.RemoveHandler< ProjectInfo >
 {
-//    void onEditClicked( ProjectInfo value );
+    void onEditClicked( ProjectInfo value );
 }
