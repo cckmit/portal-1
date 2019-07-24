@@ -173,11 +173,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
         }
     }
 
-    @Override
-    public void addTagHandler() {
-        caseMetaView.addTagHandler();
-    }
-
     @UiHandler( "saveButton" )
     public void onSaveClicked( ClickEvent event ) {
         if ( activity != null ) {

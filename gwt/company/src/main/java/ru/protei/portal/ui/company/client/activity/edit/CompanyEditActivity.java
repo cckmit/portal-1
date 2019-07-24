@@ -49,7 +49,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     @PostConstruct
     public void onInit() {
         view.setActivity( this );
-        view.addTagHandler();
     }
 
     @Event

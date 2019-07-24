@@ -72,12 +72,6 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         return addHandler(handler, EditEvent.getType());
     }
 
-    public void addTagHandler() {
-        text.addClickHandler(event -> {
-            EditEvent.fire(this, caseTag);
-        });
-    }
-
     @UiHandler("remove")
     public void closeClick(ClickEvent event) {
         event.preventDefault();

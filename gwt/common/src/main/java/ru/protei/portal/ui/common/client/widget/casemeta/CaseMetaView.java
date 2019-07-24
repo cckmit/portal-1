@@ -120,10 +120,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         caseTagSelectorPopup.setEditTagsEnabled(enabled);
     }
 
-    public void addTagHandler() {
-        this.addTagHandler = true;
-    }
-
     private void makeCaseLinkViewAndAddToParent(CaseLink item) {
         String linkId = isCrmLink(item) ? item.getCaseInfo().getCaseNumber().toString() : item.getRemoteId();
         item.setLink(caseLinkProvider.getLink(item.getType(), linkId));
@@ -143,9 +139,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         caseTagView.setValue(item);
         caseTagView.addCloseHandler(event -> removeCaseTag(event.getTarget()));
         caseTagView.addEditHandler(event -> activity.fireEvent(new CaseTagEvents.Update(item, false)));
-        if (addTagHandler) {
-            caseTagView.addTagHandler();
-        }
 
         tagToViewModel.put(item, caseTagView);
         tagsContainer.add(caseTagView);
@@ -388,7 +381,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
     private boolean linksEnabled = true;
     private boolean tagsEnabled = true;
     private boolean showLabel = true;
-    private boolean addTagHandler;
     private Set<CaseLink> links = null;
     private Set<CaseTag> tags = null;
     private Map<CaseLink, CaseLinkView> linkToViewModel = new HashMap<>();

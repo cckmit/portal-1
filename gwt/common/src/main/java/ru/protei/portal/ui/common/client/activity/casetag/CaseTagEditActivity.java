@@ -30,7 +30,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseType = event.getCaseType();
         view.name().setValue(event.getTagName());
         view.color().setValue(event.getTagColor());
-        view.company().setValue(caseTag != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : new EntityOption());
+        view.company().setValue(caseTag != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : EntityOption.fromCompany(event.getCompany()));
         view.setVisibleCompanyPanel(event.isCompanyPanelVisible());
         dialogView.removeButtonVisibility().setVisible(!event.getTagName().isEmpty());
         dialogView.setHeader(event.getTagName().isEmpty() ? lang.tagCreate() : lang.tagEdit());

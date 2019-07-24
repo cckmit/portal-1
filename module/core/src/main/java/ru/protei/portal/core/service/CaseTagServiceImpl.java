@@ -19,6 +19,7 @@ import ru.protei.portal.core.service.user.AuthService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class CaseTagServiceImpl implements CaseTagService {
@@ -31,6 +32,9 @@ public class CaseTagServiceImpl implements CaseTagService {
         }
         boolean result;
         try {
+            if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
+                return new CoreResponse<>().error(En_ResultStatus.PERMISSION_DENIED);
+            }
             result = caseTagDAO.saveOrUpdate(caseTag);
         } catch (DuplicateKeyException exception) {
             return new CoreResponse<>().error(En_ResultStatus.ALREADY_EXIST);
@@ -43,6 +47,9 @@ public class CaseTagServiceImpl implements CaseTagService {
     @Override
     @Transactional
     public CoreResponse removeTag(AuthToken authToken, CaseTag caseTag) {
+        if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
+            return new CoreResponse<>().error(En_ResultStatus.PERMISSION_DENIED);
+        }
         return !caseTagDAO.remove(caseTag) ?
                 new CoreResponse<>().error(En_ResultStatus.NOT_REMOVED) :
                 new CoreResponse<>().success();

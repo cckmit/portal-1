@@ -50,6 +50,4 @@ public interface AbstractCompanyEditView extends IsWidget {
     void setParentCompanyEnabled( boolean isEnabled );
 
     void hideTags( boolean isShow );
-
-    void addTagHandler();
 }

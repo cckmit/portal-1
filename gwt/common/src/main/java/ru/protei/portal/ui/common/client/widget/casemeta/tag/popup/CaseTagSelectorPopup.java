@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.widget.popup.PopupRightAligned;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueChangeHandlers<CaseTag>, HasAddHandlers, HasEditHandlers {
 
@@ -112,7 +113,7 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     private void addTagToListView(CaseTag caseTag) {
         CaseTagPopupView caseTagPopupView = caseTagViewProvider.get();
         caseTagPopupView.setValue(caseTag);
-        caseTagPopupView.editIconVisibility().setVisible(enabled);
+        caseTagPopupView.editIconVisibility().setVisible(enabled && Objects.equals(policyService.getProfile().getId(), caseTag.getPersonId()));
         caseTagPopupView.addAddHandler(event -> {
             onTagSelected(caseTag);
         });
