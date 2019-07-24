@@ -259,7 +259,7 @@ public class CaseCommentListView
         send.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.SEND_BUTTON);
         filesUpload.setId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.FILES_UPLOAD);
         timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED);
-        timeElapsedType.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED_TYPE);
+        timeElapsedType.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED_TYPE);
     }
 
     @UiField

@@ -58,6 +58,7 @@ public class CaseCommentItemView
             this.status.setInnerText( value );
             this.status.removeClassName( "status" );
             this.status.addClassName( "name" );
+            this.status.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
         } else {
             this.owner.setInnerText( value );
         }
@@ -233,7 +234,6 @@ public class CaseCommentItemView
         reply.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REPLY_BUTTON);
         edit.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_BUTTON);
         remove.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REMOVE_BUTTON);
-        owner.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
         timeElapsed.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
         date.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
     }
