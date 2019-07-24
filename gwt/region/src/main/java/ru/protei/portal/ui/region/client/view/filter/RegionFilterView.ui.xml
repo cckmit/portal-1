@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:sortfieldselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield'
              xmlns:state="urn:import:ru.protei.portal.ui.common.client.widget.selector.state"
-             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:district2="urn:import:ru.protei.portal.ui.common.client.widget.selector.district"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
@@ -10,12 +9,12 @@
     <g:HTMLPanel styleName="panel">
         <div class="body">
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12"/>
-            <div class="form-group col-xs-12">
+<!--            <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.productDirection}"/></label>
                 <div class="control-group">
                     <productdirection:ProductDirectionButtonSelector ui:field="direction" />
                 </div>
-            </div>
+            </div>-->
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.regionDistrict}"/></label>
                 <div class="control-group">

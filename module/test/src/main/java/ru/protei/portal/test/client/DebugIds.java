@@ -239,6 +239,7 @@ public class DebugIds {
         String TEAM_LABEL = "project-preview-team-label";
         String PRODUCTS_LABEL = "project-preview-products-label";
         String DOCUMENTS_CONTAINER = "project-preview-documents-container";
+        String COMMENTS_CONTAINER = "project-preview-comments-container";
     }
 
     public interface REGION_STATE {

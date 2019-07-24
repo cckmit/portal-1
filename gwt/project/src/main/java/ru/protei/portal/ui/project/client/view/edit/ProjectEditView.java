@@ -149,12 +149,15 @@ public class ProjectEditView extends Composite implements AbstractProjectEditVie
         projectDirection.setEnsureDebugId(DebugIds.PROJECT.DIRECTION_SELECTOR);
         company.setEnsureDebugId(DebugIds.PROJECT.COMPANY_SELECTOR);
         customerType.setEnsureDebugId(DebugIds.PROJECT.CUSTOMER_TYPE_SELECTOR);
-/*        products.setEnsureDebugId(DebugIds.PROJECT.PRODUCTS_SELECTOR);*/
-/*        documentsContainer.setEnsureDebugIdContainer(DebugIds.PROJECT.DOCUMENTS_CONTAINER);*/
+/*
+        products.setEnsureDebugId(DebugIds.PROJECT.PRODUCTS_SELECTOR);
+        team.setEnsureDebugId(DebugIds.PROJECT.TEAM_SELECTOR);
+        documentsContainer.setEnsureDebugIdContainer(DebugIds.PROJECT.DOCUMENTS_CONTAINER);
+        commentsContainer.setEnsureDebugIdContainer(DebugIds.PROJECT.COMMENTS_CONTAINER);
+        */
 
         saveButton.ensureDebugId(DebugIds.PROJECT.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.PROJECT.CANCEL_BUTTON);
-
     }
 
     @UiField

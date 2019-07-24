@@ -12,12 +12,10 @@ import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.ModuleType;
 import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
@@ -34,7 +32,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
-        direction.setDefaultValue(lang.contractSelectDirection());
+/*        direction.setDefaultValue(lang.contractSelectDirection());*/
         sortField.setType( ModuleType.REGION );
     }
 
@@ -80,17 +78,17 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         return districts;
     }
 
-    @Override
+/*    @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
-    }
+    }*/
 
     @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.name );
         sortDir.setValue( true );
         search.setValue( "" );
-        direction.setValue( null );
+/*        direction.setValue( null );*/
         districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
     }
@@ -124,12 +122,12 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         }
     }
 
-    @UiHandler( "direction" )
+/*    @UiHandler( "direction" )
     public void onDirectionSelected( ValueChangeEvent<ProductDirectionInfo> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
-    }
+    }*/
 
     @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
@@ -178,9 +176,9 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @UiField( provided = true )
     DistrictBtnGroupMulti districts;
 
-    @Inject
+/*    @Inject
     @UiField( provided = true )
-    ProductDirectionButtonSelector direction;
+    ProductDirectionButtonSelector direction;*/
 
     @Inject
     FixedPositioner positioner;
