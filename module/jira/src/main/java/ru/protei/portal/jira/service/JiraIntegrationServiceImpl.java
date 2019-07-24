@@ -267,19 +267,23 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
         return addedAttachments;
     }
 
-
-    private String generateUniqueFileName(String filename){
-        return generateUniqueName() + "_" + filename;
+    private String generateCloudFileName(Long id, String filename){
+        int i = filename.lastIndexOf(".");
+        if (i <= 0)
+            return String.valueOf(id);
+        return id + filename.substring(i);
     }
 
-    private String generateUniqueName() {
-        return Long.toString(System.currentTimeMillis(), Character.MAX_RADIX);
-    }
 
     private void storeAttachment (ru.protei.portal.core.model.ent.Attachment attachment, InputStreamSource content, long caseId) throws Exception {
+
+        if(attachmentService.saveAttachment(attachment).isError()) {
+            throw new SQLException("attachment not saved");
+        }
+
         try (InputStream contentStream = content.getInputStream()) {
             String filePath =  fileStorage.save(
-                    generateUniqueFileName(attachment.getFileName()),
+                    generateCloudFileName(attachment.getId(), attachment.getFileName()),
                     new FileStream(contentStream, attachment.getDataSize(), attachment.getMimeType())
             );
 
@@ -288,7 +292,7 @@ public class JiraIntegrationServiceImpl implements JiraIntegrationService {
 
         if(attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());
-            throw new SQLException("attachment not saved");
+            throw new SQLException("unable to save link to file");
         }
 
         CoreResponse<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);

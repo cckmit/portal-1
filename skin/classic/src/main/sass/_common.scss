@@ -1246,6 +1246,22 @@ label.bordered:after{
   }
 }
 
+.employees {
+  table {
+    i {
+      padding-right: 5px;
+    }
+    .employee-info {
+      width: 26%
+    }
+    .employee-contacts {
+      width: 36%
+    }
+    .employee-department {
+      width: 37%
+    }
+  }
+}
 
 
 .products {

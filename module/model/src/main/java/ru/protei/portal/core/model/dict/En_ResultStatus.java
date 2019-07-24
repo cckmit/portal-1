@@ -123,5 +123,10 @@ public enum En_ResultStatus {
     /**
      * запрещено менять статус обращения с verified на не verified
      */
-    INVALID_CASE_UPDATE_CASE_IS_CLOSED
+    INVALID_CASE_UPDATE_CASE_IS_CLOSED,
+
+    /**
+     * неверный текущий пароль при изменении пароля
+     */
+    INVALID_CURRENT_PASSWORD
 }

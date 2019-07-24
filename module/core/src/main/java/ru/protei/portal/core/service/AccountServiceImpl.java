@@ -176,6 +176,25 @@ public class AccountServiceImpl implements AccountService {
         return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
     }
 
+    @Override
+    public CoreResponse<?> updateAccountPassword(AuthToken token, Long loginId, String currentPassword, String newPassword) {
+        UserLogin userLogin = getAccount(token, loginId).getData();
+
+        Long personIdFromSession = authService.findSession(token).getPerson().getId();
+
+        if (userLogin.isLDAP_Auth() || !Objects.equals(personIdFromSession, userLogin.getPersonId())) {
+            return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
+        }
+
+        String md5Password = DigestUtils.md5DigestAsHex(currentPassword.getBytes());
+        if (!userLogin.getUpass().equalsIgnoreCase(md5Password)) {
+            return new CoreResponse().error(En_ResultStatus.INVALID_CURRENT_PASSWORD);
+        }
+        userLogin.setUpass(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+
+        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<>().success() : new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+    }
+
     private boolean isValidLogin( UserLogin userLogin ) {
         return HelperFunc.isNotEmpty( userLogin.getUlogin() )
                 && userLogin.getPersonId() != null;

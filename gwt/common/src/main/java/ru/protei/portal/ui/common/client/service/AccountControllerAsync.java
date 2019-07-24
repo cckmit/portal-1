@@ -5,8 +5,6 @@ import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.AccountQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
-
 /**
  * Асинхронный сервис управления учетными записями
  */
@@ -23,4 +21,6 @@ public interface AccountControllerAsync {
     void isLoginUnique( String login, Long exceptId, AsyncCallback< Boolean > async );
 
     void removeAccount( Long accountId, AsyncCallback< Boolean > async );
+
+    void updateAccountPassword(Long loginId, String currentPassword, String newPassword, AsyncCallback<Void> async);
 }

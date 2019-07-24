@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
-import ru.protei.portal.core.ServiceModule;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
@@ -152,9 +151,15 @@ public class AttachmentServiceImpl implements AttachmentService {
         if (attachment.getCreated() == null) {
             attachment.setCreated(new Date());
         }
-        Long id = attachmentDAO.persist(attachment);
-        if(id == null)
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+        Long id = attachment.getId();
+        if (id == null) {
+            id = attachmentDAO.persist(attachment);
+
+            if(id == null)
+                return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+        }
+        else
+            attachmentDAO.merge(attachment);
 
         return new CoreResponse<Long>().success(id);
     }
