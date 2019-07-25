@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.casecomment.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
@@ -15,6 +16,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
@@ -46,6 +48,7 @@ public class CaseCommentListView
         comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
+        ensureDebugIds();
     }
 
     @Override
@@ -244,6 +247,21 @@ public class CaseCommentListView
         return privateComment;
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        commentsContainer.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.COMMENTS_LIST);
+        newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.USER_ICON);
+        comment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TEXT_INPUT);
+        privateComment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.PRIVACY_BUTTON);
+        send.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.SEND_BUTTON);
+        filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.FILES_UPLOAD);
+        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED);
+        timeElapsedType.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED_TYPE);
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
@@ -276,6 +294,10 @@ public class CaseCommentListView
     DivElement commentPreviewContainer;
     @UiField
     DivElement commentPreview;
+    @UiField
+    DivElement newCommentUserImage;
+    @UiField
+    DivElement filesUpload;
     @UiField
     Element textMarkupLabel;
     @UiField
