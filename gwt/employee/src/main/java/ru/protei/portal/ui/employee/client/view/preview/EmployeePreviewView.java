@@ -50,11 +50,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
     }
 
     @Override
-    public void setIP( String value ) {
-        this.ip.setInnerText( value );
-    }
-
-    @Override
     public void setName( String name ) {
         this.employeeName.setInnerText(name);
     }
@@ -80,9 +75,6 @@ public class EmployeePreviewView extends Composite implements AbstractEmployeePr
 
     @UiField
     SpanElement id;
-
-    @UiField
-    SpanElement ip;
 
     @UiField
     HTMLPanel positionsContainer;
