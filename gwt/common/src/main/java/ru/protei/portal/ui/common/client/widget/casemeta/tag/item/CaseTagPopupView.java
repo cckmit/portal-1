@@ -56,6 +56,14 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
         return caseTag;
     }
 
+    public void tagEditable(boolean isEditable) {
+        if (isEditable) {
+            editIcon.addStyleName("fa fa-pencil");
+        } else {
+            editIcon.addStyleName("fa fa-info");
+        }
+    }
+
     @Override
     public HandlerRegistration addValueChangeHandler(ValueChangeHandler<CaseTag> handler) {
         return addHandler(handler, ValueChangeEvent.getType());

@@ -35,26 +35,10 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         this.caseTag = event.getCaseTag();
         Long currentPersonId = policyService.getProfile().getId();
         caseType = event.getCaseType();
-        view.name().setValue(event.getTagName());
-        view.color().setValue(event.getTagColor());
-        view.company().setValue(caseTag != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : EntityOption.fromCompany(event.getCompany()));
-        view.setVisibleCompanyPanel(event.isCompanyPanelVisible());
-        if (caseTag != null) {
-            personService.getPersonNames(
-                    Collections.singletonList(caseTag.getPersonId()),
-                    new FluentCallback<Map<Long, String>>()
-                            .withSuccess(map -> {
-                                view.setVisibleAuthorPanel(true);
-                                view.setAuthor(map.get(caseTag.getPersonId()));
-                            }));
-        } else {
-            view.setVisibleAuthorPanel(false);
-            view.setAuthor("");
-        }
+        fillView(event);
 
-        dialogView.removeButtonVisibility().setVisible(event.getCaseTag() != null);
-        dialogView.setRemoveButtonEnabled(event.getCaseTag() != null && Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
-        dialogView.setSaveButtonEnabled(event.getCaseTag() == null || Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
+        dialogView.removeButtonVisibility().setVisible(event.getCaseTag() != null && Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
+        dialogView.saveButtonVisibility().setVisible(event.getCaseTag() == null || Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
         dialogView.setHeader(event.getTagName().isEmpty() ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();
     }
@@ -81,6 +65,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
+
         caseTag.setPersonId(policyService.getProfile().getId());
 
         caseTagController.saveTag(caseTag, new FluentCallback<Void>()
@@ -94,6 +79,25 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     @Override
     public void onCancelClicked() {
         dialogView.hidePopup();
+    }
+
+    private void fillView(CaseTagEvents.Update event) {
+        view.name().setValue(event.getTagName());
+        view.color().setValue(event.getTagColor());
+        view.company().setValue(caseTag != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : EntityOption.fromCompany(event.getCompany()));
+        view.setVisibleCompanyPanel(event.isCompanyPanelVisible());
+        if (caseTag != null) {
+            personService.getPersonNames(
+                    Collections.singletonList(caseTag.getPersonId()),
+                    new FluentCallback<Map<Long, String>>()
+                            .withSuccess(map -> {
+                                view.setVisibleAuthorPanel(true);
+                                view.setAuthor(map.get(caseTag.getPersonId()));
+                            }));
+        } else {
+            view.setVisibleAuthorPanel(false);
+            view.setAuthor("");
+        }
     }
 
     private boolean validate() {

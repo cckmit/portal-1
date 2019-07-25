@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.CaseTagService;
 import ru.protei.portal.ui.common.client.service.CaseTagController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
@@ -19,8 +18,6 @@ public class CaseTagControllerImpl implements CaseTagController {
 
     @Override
     public void saveTag(CaseTag caseTag) throws RequestFailedException {
-        UserSessionDescriptor descriptor = sessionService.getUserSessionDescriptor( httpServletRequest );
-        caseTag.setPersonId(descriptor.getPerson().getId());
         AuthToken authToken = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
         ServiceUtils.checkResult(caseTagService.saveTag(authToken, caseTag));
     }

@@ -11,21 +11,26 @@ public class CaseTagEvents {
         private Company company;
         private CaseTag caseTag;
         private boolean isCompanySelectorVisible;
-        public Update() {}
-        public Update(En_CaseType caseType, boolean isCompanySelectorVisible) {
+
+        private Update(En_CaseType caseType, CaseTag caseTag, Company company, boolean isCompanySelectorVisible) {
             this.caseType = caseType;
-            this.isCompanySelectorVisible = isCompanySelectorVisible;
-        }
-        public Update(En_CaseType caseType, Company company, boolean isCompanySelectorVisible) {
-            this.caseType = caseType;
+            this.caseTag = caseTag;
             this.company = company;
             this.isCompanySelectorVisible = isCompanySelectorVisible;
         }
-        public Update(CaseTag caseTag, boolean isCompanySelectorVisible) {
-            this.caseTag = caseTag;
-            this.caseType = caseTag.getCaseType();
-            this.isCompanySelectorVisible = isCompanySelectorVisible;
+
+        public Update(En_CaseType caseType, boolean isCompanySelectorVisible) {
+            this(caseType, null, null, isCompanySelectorVisible);
         }
+
+        public Update(En_CaseType caseType, Company company, boolean isCompanySelectorVisible) {
+            this(caseType, null, company, isCompanySelectorVisible);
+        }
+
+        public Update(CaseTag caseTag, boolean isCompanySelectorVisible) {
+            this(caseTag.getCaseType(), caseTag, null, isCompanySelectorVisible);
+        }
+
         public En_CaseType getCaseType() {
             return caseType;
         }

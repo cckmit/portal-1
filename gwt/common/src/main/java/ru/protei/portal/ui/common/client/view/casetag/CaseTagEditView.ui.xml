@@ -7,19 +7,19 @@
 
     <g:HTMLPanel>
         <div class="form-group grid grid-indent">
-            <div class="form-group col-md-6">
+            <div class="form-group col-xs-6">
                 <label>
                     <ui:text from="{lang.tagName}"/>
                 </label>
                 <g:TextBox ui:field="name" styleName="input-field"/>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-xs-6">
                 <label>
                     <ui:text from="{lang.tagColor}"/>
                 </label>
                 <colorpicker:ColorPicker ui:field="color"/>
             </div>
-            <div class="form-group col-md-12">
+            <div class="form-group col-xs-12">
                 <g:HTMLPanel ui:field="companyPanel" visible="false">
                     <label>
                         <ui:text from="{lang.tagCompany}"/>
@@ -28,12 +28,12 @@
                 </g:HTMLPanel>
             </div>
         </div>
-        <div class="form-group col-md-12">
-            <div style="margin-bottom: -15px;">
-                <g:HTMLPanel ui:field="authorPanel" visible="false">
+        <div class="form-group col-xs-12">
+            <g:HTMLPanel ui:field="authorPanel" styleName="tag-author" visible="false">
+                <small>
                     <g:Label ui:field="label"/>
-                </g:HTMLPanel>
-            </div>
+                </small>
+            </g:HTMLPanel>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

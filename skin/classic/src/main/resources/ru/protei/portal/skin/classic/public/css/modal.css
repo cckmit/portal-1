@@ -115,6 +115,10 @@ button.close {
   overflow-y: auto;
 }
 
+.modal-body .tag-author {
+  margin-bottom: -15px;
+}
+
 .modal-footer {
   padding: 15px;
   text-align: right;
