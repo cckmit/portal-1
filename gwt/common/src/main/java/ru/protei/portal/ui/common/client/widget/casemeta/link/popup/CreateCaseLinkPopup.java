@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.casemeta.link.popup;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.*;
@@ -10,6 +11,7 @@ import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
@@ -109,20 +111,32 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     @UiHandler("remoteIdInput")
     public void onChangeText(KeyPressEvent event){
-        if(event.getUnicodeCharCode() != 13) {
-            RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
-            RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
-            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + event.getCharCode());
-            MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + event.getCharCode());
+        final int KEY_TAP_DELAY = 300;
+        int unicodeCharCode = event.getUnicodeCharCode();
+        char charCode = event.getCharCode();
 
-            if (youTrackMatcher != null) {
-                typeSelector.setValue(En_CaseLink.YT);
-            } else if (cmsOldMatcher != null){
-                typeSelector.setValue(En_CaseLink.CRM_OLD);
-            } else{
-                typeSelector.setValue(En_CaseLink.CRM);
+        if (keyTapTimer != null)
+            keyTapTimer.cancel();
+        keyTapTimer = new Timer() {
+            @Override
+            public void run() {
+                if(unicodeCharCode != 13) {
+                    RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
+                    RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
+                    MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + charCode);
+                    MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + charCode);
+
+                    if (youTrackMatcher != null) {
+                        typeSelector.setValue(En_CaseLink.YT);
+                    } else if (cmsOldMatcher != null){
+                        typeSelector.setValue(En_CaseLink.CRM_OLD);
+                    } else{
+                        typeSelector.setValue(En_CaseLink.CRM);
+                    }
+                }
             }
-        }
+        };
+        keyTapTimer.schedule(KEY_TAP_DELAY);
     }
 
     @UiHandler("typeSelector")
@@ -158,6 +172,8 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
+    private Timer keyTapTimer;
+
 
     interface CreateLinkPopupViewUiBinder extends UiBinder<HTMLPanel, CreateCaseLinkPopup> {}
     private static CreateLinkPopupViewUiBinder ourUiBinder = GWT.create(CreateLinkPopupViewUiBinder.class);
