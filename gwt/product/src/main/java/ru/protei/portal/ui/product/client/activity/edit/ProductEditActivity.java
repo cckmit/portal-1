@@ -69,7 +69,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             return;
         }
         product.setStateId(product.isActiveUnit() ? En_DevUnitState.DEPRECATED.getId() : En_DevUnitState.ACTIVE.getId());
-        this.onSaveClicked();
+        this.onChangeStateClicked();
     }
 
     @Override
@@ -119,6 +119,26 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             public void onSuccess(Boolean result) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
+                resetView();
+                goBack();
+            }
+        });
+    }
+
+    private void onChangeStateClicked() {
+
+        if(!isValid())
+            return;
+
+        productService.saveProduct(product, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Boolean result) {
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new ProductEvents.ProductListChanged());
+                resetView();
                 goBack();
             }
         });
