@@ -23,6 +23,7 @@ public class CaseTagEvents {
         }
         public Update(CaseTag caseTag, boolean isCompanySelectorVisible) {
             this.caseTag = caseTag;
+            this.caseType = caseTag.getCaseType();
             this.isCompanySelectorVisible = isCompanySelectorVisible;
         }
         public En_CaseType getCaseType() {

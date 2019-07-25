@@ -15,4 +15,8 @@ public interface AbstractCaseTagEditView extends IsWidget {
     HasValue<EntityOption> company();
 
     void setVisibleCompanyPanel(boolean isVisible);
+
+    void setVisibleAuthorPanel(boolean isVisible);
+
+    void setAuthor(String author);
 }

@@ -43,6 +43,16 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
         companyPanel.setVisible(isVisible);
     }
 
+    @Override
+    public void setVisibleAuthorPanel(boolean isVisible) {
+        authorPanel.setVisible(isVisible);
+    }
+
+    @Override
+    public void setAuthor(String author) {
+        label.setText(lang.tagAuthor() + " " + author);
+    }
+
     @Inject
     @UiField
     Lang lang;
@@ -52,6 +62,12 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
 
     @UiField
     HTMLPanel companyPanel;
+
+    @UiField
+    HTMLPanel authorPanel;
+
+    @UiField
+    Label label;
 
     @Inject
     @UiField(provided = true)

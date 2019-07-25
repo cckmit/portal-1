@@ -57,6 +57,24 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         return remove;
     }
 
+    @Override
+    public void setRemoveButtonEnabled(boolean isEnabled) {
+        if (isEnabled) {
+            remove.removeStyleName("disabled");
+        } else {
+            remove.addStyleName("disabled");
+        }
+    }
+
+    @Override
+    public void setSaveButtonEnabled(boolean isEnabled) {
+        if (isEnabled) {
+            save.removeStyleName("disabled");
+        } else {
+            save.addStyleName("disabled");
+        }
+    }
+
     public DialogAnimation getDialogAnimation() {
         return dialogAnimation;
     }

@@ -10,10 +10,16 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsActivity;
 import ru.protei.portal.ui.common.client.activity.dialogdetails.AbstractDialogDetailsView;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
+import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Objects;
 
 public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEditActivity, AbstractDialogDetailsActivity {
 
@@ -27,12 +33,28 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     @Event
     public void onShow(CaseTagEvents.Update event) {
         this.caseTag = event.getCaseTag();
+        Long currentPersonId = policyService.getProfile().getId();
         caseType = event.getCaseType();
         view.name().setValue(event.getTagName());
         view.color().setValue(event.getTagColor());
         view.company().setValue(caseTag != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : EntityOption.fromCompany(event.getCompany()));
         view.setVisibleCompanyPanel(event.isCompanyPanelVisible());
-        dialogView.removeButtonVisibility().setVisible(!event.getTagName().isEmpty());
+        if (caseTag != null) {
+            personService.getPersonNames(
+                    Collections.singletonList(caseTag.getPersonId()),
+                    new FluentCallback<Map<Long, String>>()
+                            .withSuccess(map -> {
+                                view.setVisibleAuthorPanel(true);
+                                view.setAuthor(map.get(caseTag.getPersonId()));
+                            }));
+        } else {
+            view.setVisibleAuthorPanel(false);
+            view.setAuthor("");
+        }
+
+        dialogView.removeButtonVisibility().setVisible(event.getCaseTag() != null);
+        dialogView.setRemoveButtonEnabled(event.getCaseTag() != null && Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
+        dialogView.setSaveButtonEnabled(event.getCaseTag() == null || Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
         dialogView.setHeader(event.getTagName().isEmpty() ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();
     }
@@ -59,6 +81,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTag.setName(view.name().getValue());
         caseTag.setColor(view.color().getValue());
         caseTag.setCompanyId(view.company().getValue().getId());
+        caseTag.setPersonId(policyService.getProfile().getId());
 
         caseTagController.saveTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {
@@ -97,4 +120,8 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     AbstractDialogDetailsView dialogView;
     @Inject
     CaseTagControllerAsync caseTagController;
+    @Inject
+    PersonControllerAsync personService;
+    @Inject
+    PolicyService policyService;
 }

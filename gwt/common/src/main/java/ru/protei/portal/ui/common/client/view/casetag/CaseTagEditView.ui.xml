@@ -3,22 +3,35 @@
              xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
              xmlns:colorpicker='urn:import:ru.protei.portal.ui.common.client.widget.colorpicker'>
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
         <div class="form-group grid grid-indent">
             <div class="form-group col-md-6">
-                <label><ui:text from="{lang.tagName}"/></label>
+                <label>
+                    <ui:text from="{lang.tagName}"/>
+                </label>
                 <g:TextBox ui:field="name" styleName="input-field"/>
             </div>
             <div class="form-group col-md-6">
-                <label><ui:text from="{lang.tagColor}"/></label>
+                <label>
+                    <ui:text from="{lang.tagColor}"/>
+                </label>
                 <colorpicker:ColorPicker ui:field="color"/>
             </div>
-            <div class="form-group col-md-6">
+            <div class="form-group col-md-12">
                 <g:HTMLPanel ui:field="companyPanel" visible="false">
-                    <label><ui:text from="{lang.tagCompany}"/></label>
+                    <label>
+                        <ui:text from="{lang.tagCompany}"/>
+                    </label>
                     <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
+                </g:HTMLPanel>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <div style="margin-bottom: -15px;">
+                <g:HTMLPanel ui:field="authorPanel" visible="false">
+                    <g:Label ui:field="label"/>
                 </g:HTMLPanel>
             </div>
         </div>

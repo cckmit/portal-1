@@ -1646,6 +1646,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagNotSpecified();
 
+    String tagAuthor();
+
     String employeeEmployeeFullNameColumnHeader();
 
     String employeeWorkPhoneColumnHeader();
