@@ -2,8 +2,11 @@ package ru.protei.portal.ui.common.client.widget.casemeta.link.popup;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.regexp.shared.MatchResult;
+import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -102,6 +105,24 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
         ValueChangeEvent.fire(this, caseLink);
 
         hide();
+    }
+
+    @UiHandler("remoteIdInput")
+    public void onChangeText(KeyPressEvent event){
+        if(event.getUnicodeCharCode() != 13) {
+            RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
+            RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
+            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + event.getCharCode());
+            MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + event.getCharCode());
+
+            if (youTrackMatcher != null) {
+                typeSelector.setValue(En_CaseLink.YT);
+            } else if (cmsOldMatcher != null){
+                typeSelector.setValue(En_CaseLink.CRM_OLD);
+            } else{
+                typeSelector.setValue(En_CaseLink.CRM);
+            }
+        }
     }
 
     @UiHandler("typeSelector")
