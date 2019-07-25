@@ -207,7 +207,7 @@ public class DebugIds {
         interface COMMENT_LIST {
             String COMMENTS_LIST = "issue-preview-comment-list-comments-list";
             String USER_ICON = "issue-preview-comment-list-user-icon";
-            String TEXT_AREA = "issue-preview-comment-list-text-area";
+            String TEXT_INPUT = "issue-preview-comment-list-text-input";
             String PRIVACY_BUTTON = "issue-preview-comment-list-privacy-button";
             String SEND_BUTTON = "issue-preview-comment-list-send-button";
             String FILES_UPLOAD = "issue-preview-comment-list-files-upload";
@@ -221,6 +221,7 @@ public class DebugIds {
             String EDIT_BUTTON = "issue-preview-comment-item-edit-button";
             String REMOVE_BUTTON = "issue-preview-comment-item-remove-button";
             String OWNER = "issue-preview-comment-item-owner";
+            String STATUS = "issue-preview-comment-item-status";
             String TIME_ELAPSED = "issue-preview-comment-item-elapsed-time";
             String CREATE_DATE = "issue-preview-comment-item-create-date";
         }

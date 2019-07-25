@@ -58,7 +58,6 @@ public class CaseCommentItemView
             this.status.setInnerText( value );
             this.status.removeClassName( "status" );
             this.status.addClassName( "name" );
-            this.status.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
         } else {
             this.owner.setInnerText( value );
         }
@@ -230,12 +229,14 @@ public class CaseCommentItemView
             return;
         }
 
-        privateComment.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.PRIVACY_ICON);
+        privateComment.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.PRIVACY_ICON);
         reply.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REPLY_BUTTON);
         edit.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.EDIT_BUTTON);
         remove.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.REMOVE_BUTTON);
-        timeElapsed.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
-        date.setId(DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
+        timeElapsed.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.TIME_ELAPSED);
+        date.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.CREATE_DATE);
+        owner.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.OWNER);
+        status.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_ITEM.STATUS);
     }
 
 
