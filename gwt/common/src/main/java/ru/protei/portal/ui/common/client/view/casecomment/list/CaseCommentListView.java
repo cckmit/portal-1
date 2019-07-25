@@ -253,7 +253,7 @@ public class CaseCommentListView
         }
 
         commentsContainer.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.COMMENTS_LIST);
-        image.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.USER_ICON);
+        newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.USER_ICON);
         comment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TEXT_INPUT);
         privateComment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.PRIVACY_BUTTON);
         send.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.SEND_BUTTON);
@@ -295,7 +295,7 @@ public class CaseCommentListView
     @UiField
     DivElement commentPreview;
     @UiField
-    DivElement image;
+    DivElement newCommentUserImage;
     @UiField
     DivElement filesUpload;
     @UiField

@@ -14,7 +14,7 @@
                 <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
 
                     <div ui:field="messageBlock">
-                        <div ui:field="image" class="image">
+                        <div ui:field="newCommentUserImage" class="image">
                             <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
                         </div>
 
