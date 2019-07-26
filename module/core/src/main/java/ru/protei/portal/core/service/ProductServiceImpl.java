@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
@@ -165,6 +166,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
+    public CoreResponse changeProductState(AuthToken token, Long productId, int stateId) {
+        if (productId == null || En_DevUnitState.forId(stateId) == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        DevUnit product = devUnitDAO.get(productId);
+        if ( product == null ) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+        product.setStateId(stateId);
+
+        devUnitDAO.updateState(productId, product);
+
+        return new CoreResponse().success();
+    }
+
+    @Override
     public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
 
         if( name == null || name.isEmpty() )
@@ -177,10 +196,6 @@ public class ProductServiceImpl implements ProductService {
         DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
 
         return product == null || product.getId().equals(excludeId);
-    }
-
-    private <T> CoreResponse<T> createUndefinedError() {
-        return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     private boolean updateProductSubscriptions( Long devUnitId, List<DevUnitSubscription> devUnitSubscriptions ) {

@@ -30,6 +30,11 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     }
 
     @Override
+    public void updateState(Long productId, DevUnit newState) {
+        partialMerge(newState, "UNIT_STATE");
+    }
+
+    @Override
     public Map<Long, Long> getProductOldToNewMap() {
         Map<Long,Long> result = new HashMap<>();
         getListByCondition("UTYPE_ID=? and old_id is not null", En_DevUnitType.PRODUCT.getId())

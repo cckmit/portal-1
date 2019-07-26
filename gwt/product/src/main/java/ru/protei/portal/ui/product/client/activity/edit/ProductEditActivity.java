@@ -65,11 +65,24 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Event
     public void onConfirmStateChange(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
+        if (!event.identity.equals(getClass().getName()) || !isValid()) {
             return;
         }
+
         product.setStateId(product.isActiveUnit() ? En_DevUnitState.DEPRECATED.getId() : En_DevUnitState.ACTIVE.getId());
-        this.onChangeStateClicked();
+
+        productService.changeState(product.getId(), product.getStateId(), new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Boolean result) {
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new ProductEvents.ProductListChanged());
+                resetView();
+                goBack();
+            }
+        });
     }
 
     @Override
@@ -110,25 +123,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             return;
 
         fillDto(product);
-
-        productService.saveProduct(product, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(Boolean result) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new ProductEvents.ProductListChanged());
-                resetView();
-                goBack();
-            }
-        });
-    }
-
-    private void onChangeStateClicked() {
-
-        if(!isValid())
-            return;
 
         productService.saveProduct(product, new RequestCallback<Boolean>() {
             @Override
