@@ -79,6 +79,14 @@
             </modules>
         </profile>
 
+        <profile>
+            <id>ws-api</id>
+            <modules>
+                <module>module/model</module>
+                <module>module/core</module>
+                <module>module/ws-api</module>
+            </modules>
+        </profile>
     </profiles>
 
     <dependencies>
