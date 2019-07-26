@@ -42,6 +42,8 @@ public class En_SortFieldLang {
                 return lang.equipmentNameBySldWrks();
             case birthday:
                 return lang.birthday();
+            case employee_ip:
+                return lang.employeeIPAddress();
 
             default:
                 return lang.unknownField();

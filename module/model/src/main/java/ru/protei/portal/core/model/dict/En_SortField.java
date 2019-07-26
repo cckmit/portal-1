@@ -51,6 +51,11 @@ public enum En_SortField {
     person_position ("displayPosition"),
 
     /**
+     * person IP address
+     */
+    employee_ip("ipAddress"),
+
+    /**
      * issue number
      */
     issue_number ("caseno"),
