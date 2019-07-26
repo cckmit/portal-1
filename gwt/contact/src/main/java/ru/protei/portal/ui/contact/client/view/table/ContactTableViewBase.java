@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.contact.client.view.table;
 
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
@@ -8,6 +9,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
+import ru.protei.portal.ui.common.client.common.EmailColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public abstract class ContactTableViewBase extends Composite {
@@ -42,10 +44,10 @@ public abstract class ContactTableViewBase extends Composite {
                             .toElement());
                 }
 
-
                 String emails = infoFacade.allEmailsAsString();
+
                 if (StringUtils.isNotBlank(emails)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-mail", emails)
+                    root.appendChild(EmailColumnBuilder.make().add("ion-android-mail", emails)
                             .toElement());
                 }
             }
