@@ -135,7 +135,11 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onAddTagClicked() {
-        fireEvent(new CaseTagEvents.Update(En_CaseType.CRM_SUPPORT, tempCompany, false));
+        CaseTag caseTag = new CaseTag();
+        caseTag.setCaseType(En_CaseType.CRM_SUPPORT);
+        caseTag.setCompanyId(tempCompany.getId());
+        caseTag.setCompanyName(tempCompany.getCname());
+        fireEvent(new CaseTagEvents.Update(caseTag, false));
     }
 
     private boolean validateFieldsAndGetResult(){

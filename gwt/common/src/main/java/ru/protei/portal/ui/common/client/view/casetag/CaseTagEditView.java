@@ -39,6 +39,21 @@ public class CaseTagEditView extends Composite implements AbstractCaseTagEditVie
     }
 
     @Override
+    public HasEnabled colorEnabled() {
+        return color;
+    }
+
+    @Override
+    public HasEnabled nameEnabled() {
+        return name;
+    }
+
+    @Override
+    public HasEnabled companyEnabled() {
+        return company;
+    }
+
+    @Override
     public void setVisibleCompanyPanel(boolean isVisible) {
         companyPanel.setVisible(isVisible);
     }

@@ -15,7 +15,7 @@ import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.colorpicker.popup.ColorPickerPopup;
 
-public class ColorPicker extends Composite implements HasValue<String>, ValueChangeHandler<String> {
+public class ColorPicker extends Composite implements HasEnabled, HasValue<String>, ValueChangeHandler<String> {
 
     @Inject
     public void init() {
@@ -60,7 +60,20 @@ public class ColorPicker extends Composite implements HasValue<String>, ValueCha
 
     @UiHandler("colorPickerButton")
     public void colorPickerButtonClick(ClickEvent event) {
-        showPopup(colorPickerButton);
+        if(colorPickerButton.isEnabled()) {
+            showPopup(colorPickerButton);
+        }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return colorPickerButton.isEnabled() && colorBox.isEnabled();
+    }
+
+    @Override
+    public void setEnabled(boolean isEnabled){
+        colorPickerButton.setEnabled(isEnabled);
+        colorBox.setEnabled(isEnabled);
     }
 
     private void showPopup(IsWidget relative) {

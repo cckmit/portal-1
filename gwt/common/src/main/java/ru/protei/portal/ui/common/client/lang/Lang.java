@@ -1648,6 +1648,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagAuthor();
 
+    String tagInfo();
+
     String employeeEmployeeFullNameColumnHeader();
 
     String employeeWorkPhoneColumnHeader();

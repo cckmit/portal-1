@@ -14,7 +14,7 @@ import ru.protei.portal.ui.common.client.events.EditHandler;
 import ru.protei.portal.ui.common.client.events.HasEditHandlers;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
-public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled, HasEditHandlers {
+public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled {
 
     public CaseTagView() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -65,11 +65,6 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
     @Override
     public HandlerRegistration addCloseHandler(CloseHandler<CaseTag> handler) {
         return addHandler(handler, CloseEvent.getType());
-    }
-
-    @Override
-    public HandlerRegistration addEditHandler(EditHandler handler) {
-        return addHandler(handler, EditEvent.getType());
     }
 
     @UiHandler("remove")

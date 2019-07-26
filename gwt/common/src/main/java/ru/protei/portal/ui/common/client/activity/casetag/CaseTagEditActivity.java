@@ -14,12 +14,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CaseTagControllerAsync;
-import ru.protei.portal.ui.common.client.service.PersonControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
 
 public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEditActivity, AbstractDialogDetailsActivity {
 
@@ -31,15 +26,28 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     }
 
     @Event
+    public void onShow(CaseTagEvents.Readonly event) {
+        this.caseTag = event.getCaseTag();
+        this.isReadOnly = true;
+        fillView(caseTag);
+
+        dialogView.removeButtonVisibility().setVisible(false);
+        dialogView.saveButtonVisibility().setVisible(false);
+        dialogView.setHeader(lang.tagInfo());
+        dialogView.showPopup();
+    }
+
+    @Event
     public void onShow(CaseTagEvents.Update event) {
         this.caseTag = event.getCaseTag();
-        Long currentPersonId = policyService.getProfile().getId();
-        caseType = event.getCaseType();
-        fillView(event);
+        this.isReadOnly = false;
+        this.isCompanyPanelVisible = event.isCompanyPanelVisible();
+        caseType = event.getCaseTag().getCaseType();
+        fillView(caseTag);
 
-        dialogView.removeButtonVisibility().setVisible(event.getCaseTag() != null && Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
-        dialogView.saveButtonVisibility().setVisible(event.getCaseTag() == null || Objects.equals(currentPersonId, event.getCaseTag().getPersonId()));
-        dialogView.setHeader(event.getTagName().isEmpty() ? lang.tagCreate() : lang.tagEdit());
+        dialogView.saveButtonVisibility().setVisible(true);
+        dialogView.removeButtonVisibility().setVisible(caseTag.getId() != null);
+        dialogView.setHeader(caseTag.getId() == null ? lang.tagCreate() : lang.tagEdit());
         dialogView.showPopup();
     }
 
@@ -81,23 +89,17 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         dialogView.hidePopup();
     }
 
-    private void fillView(CaseTagEvents.Update event) {
-        view.name().setValue(event.getTagName());
-        view.color().setValue(event.getTagColor());
-        view.company().setValue(caseTag != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : EntityOption.fromCompany(event.getCompany()));
-        view.setVisibleCompanyPanel(event.isCompanyPanelVisible());
-        if (caseTag != null) {
-            personService.getPersonNames(
-                    Collections.singletonList(caseTag.getPersonId()),
-                    new FluentCallback<Map<Long, String>>()
-                            .withSuccess(map -> {
-                                view.setVisibleAuthorPanel(true);
-                                view.setAuthor(map.get(caseTag.getPersonId()));
-                            }));
-        } else {
-            view.setVisibleAuthorPanel(false);
-            view.setAuthor("");
-        }
+
+    private void fillView(CaseTag caseTag) {
+        view.name().setValue(caseTag.getName());
+        view.color().setValue(caseTag.getColor());
+        view.company().setValue(caseTag.getCompanyName() != null && caseTag.getCompanyId() != null ? new EntityOption(caseTag.getCompanyName(), caseTag.getCompanyId()) : EntityOption.fromCompany(null));
+        view.setVisibleAuthorPanel(caseTag.getPersonName() != null);
+        view.setAuthor(caseTag.getPersonName());
+        view.setVisibleCompanyPanel(isReadOnly || isCompanyPanelVisible);
+        view.colorEnabled().setEnabled(!isReadOnly);
+        view.nameEnabled().setEnabled(!isReadOnly);
+        view.companyEnabled().setEnabled(!isReadOnly);
     }
 
     private boolean validate() {
@@ -115,6 +117,8 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
 
     private En_CaseType caseType;
     private CaseTag caseTag;
+    private boolean isReadOnly;
+    private boolean isCompanyPanelVisible;
 
     @Inject
     Lang lang;
@@ -124,8 +128,6 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
     AbstractDialogDetailsView dialogView;
     @Inject
     CaseTagControllerAsync caseTagController;
-    @Inject
-    PersonControllerAsync personService;
     @Inject
     PolicyService policyService;
 }

@@ -20,7 +20,7 @@
                 <colorpicker:ColorPicker ui:field="color"/>
             </div>
             <div class="form-group col-xs-12">
-                <g:HTMLPanel ui:field="companyPanel" visible="false">
+                <g:HTMLPanel ui:field="companyPanel">
                     <label>
                         <ui:text from="{lang.tagCompany}"/>
                     </label>

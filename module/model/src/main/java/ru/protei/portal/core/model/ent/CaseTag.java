@@ -31,6 +31,9 @@ public class CaseTag implements Serializable {
     @JdbcColumn(name = "person_id")
     private Long personId;
 
+    @JdbcJoinedColumn(localColumn = "person_id", table = "person", remoteColumn = "id", mappedColumn = "displayname")
+    private String personName;
+
     public CaseTag() {}
 
     public Long getId() {
@@ -87,6 +90,14 @@ public class CaseTag implements Serializable {
 
     public void setPersonId(Long personId) {
         this.personId = personId;
+    }
+
+    public String getPersonName() {
+        return personName;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
     }
 
     @Override

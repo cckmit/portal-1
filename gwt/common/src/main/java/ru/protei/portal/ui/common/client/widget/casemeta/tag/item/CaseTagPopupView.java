@@ -2,6 +2,8 @@ package ru.protei.portal.ui.common.client.widget.casemeta.tag.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -16,7 +18,7 @@ import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
-public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, HasAddHandlers, HasEditHandlers {
+public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, HasAddHandlers, HasEditHandlers, HasClickHandlers {
 
     public CaseTagPopupView() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -45,6 +47,7 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
         icon.setText(ColorUtils.makeSingleCharName(caseTag.getName()));
         icon.getElement().getStyle().setProperty("backgroundColor", backgroundColor);
         icon.getElement().getStyle().setProperty("color", textColor);
+        getElement().setAttribute("title", caseTag.getPersonName());
 
         if (fireEvents) {
             ValueChangeEvent.fire(this, value);
@@ -60,7 +63,7 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
         if (isEditable) {
             editIcon.addStyleName("fa fa-pencil");
         } else {
-            editIcon.addStyleName("fa fa-info");
+            editIcon.addStyleName("fa fa-external-link");
         }
     }
 
@@ -79,6 +82,11 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
         return addHandler(handler, EditEvent.getType());
     }
 
+    @Override
+    public HandlerRegistration addClickHandler(ClickHandler handler) {
+        return addHandler(handler, ClickEvent.getType());
+    }
+
     public HasVisibility editIconVisibility() {
         return editIcon;
     }
@@ -90,7 +98,7 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
 
     @UiHandler("editIcon")
     public void editClick(ClickEvent event) {
-        EditEvent.fire(this, caseTag);
+        ClickEvent.fireNativeEvent(event.getNativeEvent(), this);
     }
 
     @UiField
@@ -101,6 +109,7 @@ public class CaseTagPopupView extends Composite implements HasValue<CaseTag>, Ha
     InlineLabel text;
     @UiField
     InlineLabel companyName;
+
     @UiField
     InlineLabel icon;
 

@@ -26,6 +26,7 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.caselinkprovider.CaseLinkProvider;
 import ru.protei.portal.ui.common.client.activity.notify.NotifyActivity;
+import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CaseTagEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -138,7 +139,6 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
         caseTagView.setEnabled(enabled);
         caseTagView.setValue(item);
         caseTagView.addCloseHandler(event -> removeCaseTag(event.getTarget()));
-        caseTagView.addEditHandler(event -> activity.fireEvent(new CaseTagEvents.Update(item, false)));
 
         tagToViewModel.put(item, caseTagView);
         tagsContainer.add(caseTagView);
@@ -224,10 +224,12 @@ public class CaseMetaView extends Composite implements HasValueChangeHandlers<Ca
             tagsCreateHandlerRegistration.removeHandler();
         }
         tagsCreateHandlerRegistration = caseTagSelectorPopup.addAddHandler(event -> {
-            activity.fireEvent(new CaseTagEvents.Update(tagCaseType, true));
+            CaseTag caseTag = new CaseTag();
+            caseTag.setCaseType(tagCaseType);
+            activity.fireEvent(new CaseTagEvents.Update(caseTag, true));
         });
         tagsCreateHandlerRegistration = caseTagSelectorPopup.addEditHandler(event -> {
-            activity.fireEvent(new CaseTagEvents.Update(event.caseTag, true));
+            activity.fireEvent(event.isReadOnly ? new CaseTagEvents.Readonly(event.caseTag) : new CaseTagEvents.Update(event.caseTag, true));
         });
     }
     

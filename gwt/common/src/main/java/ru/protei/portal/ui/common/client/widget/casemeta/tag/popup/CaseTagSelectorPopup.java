@@ -99,10 +99,10 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
     }
 
     private void displayTags() {
-        boolean isGranted =  policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
+        boolean isGranted = policyService.hasGrantAccessFor(En_Privilege.ISSUE_VIEW);
         clearTagsListView();
         caseTags.stream()
-                .filter(caseTag -> containsIgnoreCase(caseTag.getName(), searchNameFilter) || isGranted ? containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) : false)
+                .filter(caseTag -> isGranted && (containsIgnoreCase(caseTag.getCompanyName(), searchNameFilter) || containsIgnoreCase(caseTag.getName(), searchNameFilter)))
                 .forEach(this::addTagToListView);
     }
 
@@ -118,8 +118,8 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
         caseTagPopupView.addAddHandler(event -> {
             onTagSelected(caseTag);
         });
-        caseTagPopupView.addEditHandler(event -> {
-            onTagEdit(caseTag);
+        caseTagPopupView.addClickHandler(event -> {
+            onTagEdit(caseTag, !Objects.equals(policyService.getProfile().getId(), caseTag.getPersonId()));
         });
         childContainer.add(caseTagPopupView);
     }
@@ -129,8 +129,8 @@ public class CaseTagSelectorPopup extends PopupRightAligned implements HasValueC
         hide();
     }
 
-    private void onTagEdit(CaseTag caseTag) {
-        EditEvent.fire(this, caseTag);
+    private void onTagEdit(CaseTag caseTag, boolean isReadOnly) {
+        EditEvent.fire(this, caseTag, isReadOnly);
         hide();
     }
 
