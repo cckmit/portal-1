@@ -111,32 +111,9 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     @UiHandler("remoteIdInput")
     public void onChangeText(KeyPressEvent event){
-        final int KEY_TAP_DELAY = 300;
-        int unicodeCharCode = event.getUnicodeCharCode();
-        char charCode = event.getCharCode();
-
-        if (keyTapTimer != null)
-            keyTapTimer.cancel();
-        keyTapTimer = new Timer() {
-            @Override
-            public void run() {
-                if(unicodeCharCode != 13) {
-                    RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
-                    RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
-                    MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + charCode);
-                    MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + charCode);
-
-                    if (youTrackMatcher != null) {
-                        typeSelector.setValue(En_CaseLink.YT);
-                    } else if (cmsOldMatcher != null){
-                        typeSelector.setValue(En_CaseLink.CRM_OLD);
-                    } else{
-                        typeSelector.setValue(En_CaseLink.CRM);
-                    }
-                }
-            }
-        };
-        keyTapTimer.schedule(KEY_TAP_DELAY);
+        unicodeCurrentChar = event.getUnicodeCharCode();
+        keyTapTimer.cancel();
+        keyTapTimer.schedule(300);
     }
 
     @UiHandler("typeSelector")
@@ -172,7 +149,26 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Window.ScrollHandler windowScrollHandler;
     private HandlerRegistration resizeHandlerReg;
     private HandlerRegistration scrollHandlerReg;
-    private Timer keyTapTimer;
+    private int unicodeCurrentChar;
+    private Timer keyTapTimer = new Timer() {
+        @Override
+        public void run() {
+            if(unicodeCurrentChar != 13) {
+                RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
+                RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
+                MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
+                MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
+
+                if (youTrackMatcher != null) {
+                    typeSelector.setValue(En_CaseLink.YT);
+                } else if (cmsOldMatcher != null){
+                    typeSelector.setValue(En_CaseLink.CRM_OLD);
+                } else{
+                    typeSelector.setValue(En_CaseLink.CRM);
+                }
+            }
+        }
+    };
 
 
     interface CreateLinkPopupViewUiBinder extends UiBinder<HTMLPanel, CreateCaseLinkPopup> {}
