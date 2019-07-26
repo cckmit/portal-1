@@ -82,7 +82,7 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
     private CompanyQuery makeQuery() {
         CompanyQuery cq = new CompanyQuery(filterView.searchPattern().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC, filterView.showDeprecated().getValue());
 
         if(filterView.categories().getValue() != null)
             cq.setCategoryIds(

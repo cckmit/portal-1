@@ -64,6 +64,8 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")
     private List<CaseState> caseStates;
 
+    private Boolean isDeleted;
+
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
             return null;
@@ -227,6 +229,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     public void setHideden(Boolean hideden) {
         isHidden = hideden;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(Boolean deleted) {
+        isDeleted = deleted;
     }
 
     @Override
