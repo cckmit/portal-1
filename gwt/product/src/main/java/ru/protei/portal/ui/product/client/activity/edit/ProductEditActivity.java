@@ -175,7 +175,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
         view.info().setValue(devUnit.getInfo());
         view.state().setVisible( true );
-        view.setStateBtnText(devUnit.isActiveUnit() ? lang.productToArchive() : lang.productFromArchive());
+        view.setStateBtnText(devUnit.isActiveUnit() ? lang.buttonToArchive() : lang.buttonFromArchive());
         view.productSubscriptions().setValue(
                 devUnit.getSubscriptions().stream()
                         .map( Subscription::fromProductSubscription )

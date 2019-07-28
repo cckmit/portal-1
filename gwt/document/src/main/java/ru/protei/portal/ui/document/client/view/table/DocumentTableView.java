@@ -185,7 +185,15 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         public void fillColumnValue(Element cell, Document value) {
             StringBuilder sb = new StringBuilder();
 
-            sb.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
+            if (!value.isActiveUnit()){
+                sb
+                        .append("<div class =\"document-name\" text-danger>")
+                        .append("<i class=\"fa fa-ban m-r-5\"></i> ")
+                        .append(value.getName())
+                        .append("</div>");
+            }
+            else
+                sb.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
             if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
                 sb.append( "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>" );
             }

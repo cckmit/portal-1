@@ -1,6 +1,7 @@
 package ru.protei.portal.core.model.ent;
 
 import ru.protei.portal.core.model.dict.En_DocumentExecutionType;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.winter.jdbc.annotations.*;
@@ -34,6 +35,12 @@ public class Document implements Serializable, Downloadable {
      */
     @JdbcColumn(name = "inventory_number")
     private Long inventoryNumber;
+
+    /**
+     * Статус
+     */
+    @JdbcColumn(name="state_id")
+    private int stateId;
 
     /**
      * Вид документа
@@ -90,8 +97,7 @@ public class Document implements Serializable, Downloadable {
     @JdbcEnumerated(EnumType.ORDINAL)
     private En_DocumentExecutionType executionType;
 
-    public Document() {
-    }
+    public Document(){}
 
     @Override
     public boolean isAllowedDownload() {
@@ -226,6 +232,22 @@ public class Document implements Serializable, Downloadable {
         this.executionType = executionType;
     }
 
+    public void setStateId(int stateId) {
+        this.stateId = stateId;
+    }
+
+    public int getStateId() {
+        return stateId;
+    }
+
+    public En_DocumentState getState(){
+        return En_DocumentState.forId(this.stateId);
+    }
+
+    public boolean isActiveUnit () {
+        return getState() == En_DocumentState.ACTIVE;
+    }
+
     public boolean isValid() {
         // Основная проверка, дополнительные проверки обрабатываются в клиенте и сервере отдельно
         return  this.getType() != null &&
@@ -267,6 +289,7 @@ public class Document implements Serializable, Downloadable {
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
                 ", executionType=" + executionType +
+                ", stateId=" + stateId +
                 '}';
     }
 }

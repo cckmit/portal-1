@@ -222,6 +222,19 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         documentType.refreshValue();
     }
 
+    @Override
+    public void setStateButtonText(String caption) {
+        stateButton.setText(caption);
+    }
+
+    @UiHandler( "stateButton" )
+    public void onStateClicked (ClickEvent event)
+    {
+        if (activity != null) {
+            activity.onStateChanged();
+        }
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -299,6 +312,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     Button saveButton;
     @UiField
     Button cancelButton;
+    @UiField
+    Button stateButton;
+
 
     @UiField
     LongBox inventoryNumber;

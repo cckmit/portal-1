@@ -31,6 +31,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
+    public void updateState(Long productId, Document newState) {
+        partialMerge(newState, "state_id");
+    }
+
+    @Override
     public boolean checkInventoryNumberExists(long inventoryNumber) {
         return checkExistsByCondition(" inventory_number=?", inventoryNumber);
     }
@@ -145,6 +150,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             if (CollectionUtils.isNotEmpty(query.getEquipmentIds())) {
                 condition.append(" and document.equipment_id in ");
                 condition.append(HelperFunc.makeInArg(query.getEquipmentIds(), false));
+            }
+
+            if (query.getState() != null) {
+                condition.append(" and document.type_id=?");
+                args.add(query.getState().getId());
             }
         }));
     }

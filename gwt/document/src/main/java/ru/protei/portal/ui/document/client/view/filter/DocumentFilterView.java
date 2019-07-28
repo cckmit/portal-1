@@ -59,6 +59,7 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
         approved.setValue(null);
         keywords.setValue(new LinkedList<>());
         sortDir.setValue(false);
+        showDeprecated.setValue(false);
     }
 
     @Override
@@ -107,6 +108,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
     }
 
     @Override
+    public HasValue<Boolean> showDeprecated() { return showDeprecated; }
+
+    @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
     }
@@ -118,6 +122,13 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
             if (activity != null) {
                 activity.onFilterChanged();
             }
+        }
+    }
+
+    @UiHandler( "showDeprecated" )
+    public void onShowDeprecatedClicked( ClickEvent event ) {
+        if ( activity != null ) {
+            activity.onFilterChanged();
         }
     }
 
@@ -199,6 +210,9 @@ public class DocumentFilterView extends Composite implements AbstractDocumentFil
 
     @UiField
     Button resetBtn;
+
+    @UiField
+    CheckBox showDeprecated;
 
     @Inject
     @UiField

@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.query;
 
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_OrganizationCode;
 import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
@@ -21,11 +22,12 @@ public class DocumentQuery extends BaseQuery {
     private List<String> decimalNumbers;
     private List<Long> equipmentIds;
     private Long projectId;
+    private En_DocumentState state;
 
     public DocumentQuery() {
     }
 
-    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String inTextQuery, Boolean isApproved) {
+    public DocumentQuery(String searchString, En_SortField sortField, En_SortDir sortDir, Set<En_OrganizationCode> organizationCodes, DocumentType documentType, Date from, Date to, List<String> keywords, Long managerId, String inTextQuery, Boolean isApproved, En_DocumentState state) {
         super(searchString, sortField, sortDir);
         this.organizationCodes = organizationCodes;
         this.from = from;
@@ -35,7 +37,12 @@ public class DocumentQuery extends BaseQuery {
         this.managerId = managerId;
         this.inTextQuery = inTextQuery;
         this.isApproved = isApproved;
+        this.state = state;
     }
+
+    public En_DocumentState getState() { return state; }
+
+    public void setState(En_DocumentState state) { this.state = state; }
 
     public List<String> getKeywords() {
         return keywords;

@@ -53,13 +53,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String description();
 
-    String productToArchive();
+    String buttonToArchive();
 
     String productName();
 
     String msgObjectSaved();
 
-    String productFromArchive();
+    String buttonFromArchive();
 
     String errEmptyName();
 
@@ -812,6 +812,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentKeywords();
 
     String documentContent();
+
+    String documentChangeStateConfirmMessage();
+
+    String documentShowDeprecated();
 
     String addKeyword();
 

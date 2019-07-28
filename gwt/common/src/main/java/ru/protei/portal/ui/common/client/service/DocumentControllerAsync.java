@@ -13,6 +13,8 @@ public interface DocumentControllerAsync {
 
     void getDocument(Long id, AsyncCallback<Document> callback);
 
+    void changeState(Long documentId, int stateId, AsyncCallback<Boolean> callback);
+
     void saveDocument(Document document, AsyncCallback<Document> callback);
 
     void getProjectDocuments(Long projectId, AsyncCallback<SearchResult<Document>> callback);
