@@ -1,7 +1,11 @@
 package ru.protei.portal.ui.common.client.widget.uploader;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.DragEnterEvent;
+import com.google.gwt.event.dom.client.DragLeaveEvent;
+import com.google.gwt.event.dom.client.DropEvent;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -19,6 +23,43 @@ public class AttachmentUploader extends FileUploader{
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment);
         void onError();
+        enum TYPE {TEXT, BINARY, DATAURL};
+
+        // check the filename and extension and return true if you are happy with proceeding
+        // returnning false will prevent the file from being read
+        default boolean checkFileName(String fileName) {
+            return false;
+        }
+
+        // tell the method to use to read this file
+        default TYPE specifyFileType() {
+            return null;
+        }
+
+        // do your stuff here, eg upload to a server
+        default void handleFileContent(String fileName, String fileContent) {}
+    }
+
+    public AttachmentUploader() {
+        addDomHandler(event -> {
+//            overlay(true);
+        }, DragEnterEvent.getType());
+
+        addDomHandler(event -> {
+//            overlay(false);
+        }, DragLeaveEvent.getType());
+
+        addDomHandler(event -> {
+            // stop default behaviour
+            event.preventDefault();
+            event.stopPropagation();
+            // starts the fetching, reading and callbacks
+            if(uploadHandler != null) {
+                handleFiles(event.getDataTransfer(), uploadHandler);
+            }
+
+//            overlay(false)
+        }, DropEvent.getType());
     }
 
     @Override
@@ -113,6 +154,33 @@ public class AttachmentUploader extends FileUploader{
         attachment.setCreated(new Date((long)jsonObj.get("created").isNumber().doubleValue()));
         return attachment;
     }
+
+    private final native void handleFiles(JavaScriptObject dataTransfer, FileUploadHandler fileUploadHandler) /*-{
+        var files = dataTransfer.files;
+        var i;
+        var file;
+        var reader = new FileReader();
+        for(i = 0; i < files.length; i++) {
+            file = files[i];
+            if(fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader.FileUploadHandler::checkFileName(Ljava/lang/String;)(file.name)) {
+                var type = fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader.FileUploadHandler::specifyFileType()();
+                reader.onload = function(e) {
+                    fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader.FileUploadHandler::handleFileContent(Ljava/lang/String;Ljava/lang/String;)(file.name, e.target.result);
+                }
+                if(type == "TEXT") {
+                    reader.readAsText(file);
+                } else if(type == "BINARY") {
+                    reader.readAsBinaryString(file);
+                } else if(type == "DATAURL") {
+                    reader.readAsDataURL(file);
+                    // not supported
+//    } else if(type == "ARRAYBUFFER") {
+//     reader.readAsArrayBuffer(file);
+                } else {
+                }
+            }
+        }
+    }-*/;
 
     private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFile";
     private static final String UPLOAD_WITH_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFileToCase";
