@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.product.client.activity.edit;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -71,7 +70,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         product.setStateId(product.isActiveUnit() ? En_DevUnitState.DEPRECATED.getId() : En_DevUnitState.ACTIVE.getId());
 
-        productService.changeState(product.getId(), product.getStateId(), new RequestCallback<Boolean>() {
+        productService.changeState(product, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {}
 

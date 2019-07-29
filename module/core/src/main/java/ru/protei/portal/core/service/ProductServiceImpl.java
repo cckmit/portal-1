@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
@@ -167,18 +166,12 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public CoreResponse changeProductState(AuthToken token, Long productId, int stateId) {
-        if (productId == null || En_DevUnitState.forId(stateId) == null) {
+    public CoreResponse changeProductState(AuthToken token, DevUnit product) {
+        if (product == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        DevUnit product = devUnitDAO.get(productId);
-        if ( product == null ) {
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
-        }
-        product.setStateId(stateId);
-
-        devUnitDAO.updateState(productId, product);
+        devUnitDAO.updateState(product);
 
         return new CoreResponse().success();
     }

@@ -41,7 +41,7 @@ public interface ProductService {
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )
-    CoreResponse changeProductState(AuthToken token, Long productId, int stateId);
+    CoreResponse changeProductState(AuthToken token, DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);

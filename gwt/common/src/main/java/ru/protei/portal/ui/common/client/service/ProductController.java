@@ -24,7 +24,7 @@ public interface ProductController extends RemoteService {
 
     Boolean saveProduct(DevUnit product) throws RequestFailedException;
 
-    Boolean changeState(Long productId, int stateId) throws RequestFailedException;
+    Boolean changeState(DevUnit product) throws RequestFailedException;
 
     boolean isNameUnique(String name, Long exceptId) throws RequestFailedException;
 

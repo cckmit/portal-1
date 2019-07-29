@@ -80,13 +80,13 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public Boolean changeState(Long productId, int stateId) throws RequestFailedException {
+    public Boolean changeState(DevUnit product) throws RequestFailedException {
 
-        log.debug( "changeState(): id={}", productId);
+        log.debug( "changeState(): product={}", product);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = productService.changeProductState(descriptor.makeAuthToken(), productId, stateId);
+        CoreResponse response = productService.changeProductState(descriptor.makeAuthToken(), product);
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
