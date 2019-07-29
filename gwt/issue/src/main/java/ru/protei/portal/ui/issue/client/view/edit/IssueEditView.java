@@ -30,9 +30,9 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -343,6 +343,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public void setTagsAddButtonEnabled(boolean enabled) {
         caseMetaView.setTagsAddButtonEnabled(enabled);
+    }
+
+    @Override
+    public void setTagsEditButtonEnabled(boolean enabled) {
+        caseMetaView.setTagsEditButtonEnabled(enabled);
     }
 
     @Override

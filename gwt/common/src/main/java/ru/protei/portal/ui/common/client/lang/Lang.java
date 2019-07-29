@@ -1632,6 +1632,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagCreate();
 
+    String tagEdit();
+
     String tagName();
 
     String tagColor();
@@ -1653,6 +1655,10 @@ public interface Lang extends Messages, ContactItemLang {
     String textJiraWikiMarkupSupport();
 
     String tagNotSpecified();
+
+    String tagAuthor();
+
+    String tagInfo();
 
     String employeeEmployeeFullNameColumnHeader();
 

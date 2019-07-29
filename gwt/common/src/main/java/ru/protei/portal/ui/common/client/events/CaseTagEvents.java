@@ -1,26 +1,36 @@
 package ru.protei.portal.ui.common.client.events;
 
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.ent.CaseTag;
 
 public class CaseTagEvents {
 
-    public static class Create {
-        private En_CaseType caseType;
-        private Company company;
-        public Create () {}
-        public Create(En_CaseType caseType) {
-            this.caseType = caseType;
+    public static class Update {
+        private CaseTag caseTag;
+        private boolean isCompanyPanelVisible;
+
+        public Update(CaseTag caseTag, boolean isCompanyPanelVisible) {
+            this.caseTag = caseTag;
+            this.isCompanyPanelVisible = isCompanyPanelVisible;
         }
-        public Create(En_CaseType caseType, Company company) {
-            this.caseType = caseType;
-            this.company = company;
+
+        public CaseTag getCaseTag() {
+            return caseTag;
         }
-        public En_CaseType getCaseType() {
-            return caseType;
+
+        public boolean isCompanyPanelVisible() {
+            return isCompanyPanelVisible;
         }
-        public Company getCompany() {
-            return company;
+    }
+
+    public static class Readonly {
+        private CaseTag caseTag;
+
+        public Readonly(CaseTag caseTag) {
+            this.caseTag = caseTag;
+        }
+
+        public CaseTag getCaseTag() {
+            return caseTag;
         }
     }
 

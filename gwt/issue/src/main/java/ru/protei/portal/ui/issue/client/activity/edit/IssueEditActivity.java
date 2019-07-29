@@ -3,8 +3,8 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -311,6 +311,8 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.links().setValue(CollectionUtils.toSet(issue.getLinks(), caseLink -> caseLink));
 
         view.setTagsAddButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
+        view.setTagsEditButtonEnabled(policyService.hasGrantAccessFor( En_Privilege.ISSUE_VIEW ));
+
         view.tags().setValue(issue.getTags() == null ? new HashSet<>() : issue.getTags());
 
         view.name().setValue(issue.getName());
