@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DocumentDAO;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DocumentQuery;
@@ -32,7 +33,7 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
 
     @Override
     public void updateState(Long productId, Document newState) {
-        partialMerge(newState, "state_id");
+        partialMerge(newState, "state");
     }
 
     @Override
@@ -153,8 +154,8 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             }
 
             if (query.getState() != null) {
-                condition.append(" and document.type_id=?");
-                args.add(query.getState().getId());
+                condition.append(" and document.state=?");
+                args.add(En_DocumentState.ACTIVE.ordinal()+1);
             }
         }));
     }

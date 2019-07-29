@@ -93,7 +93,6 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(Boolean result) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new DocumentEvents.ChangeModel());
                 fireEvent(new Back());
             }
@@ -243,7 +242,6 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(Document result) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new DocumentEvents.ChangeModel());
                 fireEvent(new Back());
             }

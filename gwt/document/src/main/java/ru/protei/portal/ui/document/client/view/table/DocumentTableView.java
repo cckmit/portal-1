@@ -187,7 +187,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
             if (!value.isActiveUnit()){
                 sb
-                        .append("<div class =\"document-name\" text-danger>")
+                        .append("<div class =\"document-name text-danger\">")
                         .append("<i class=\"fa fa-ban m-r-5\"></i> ")
                         .append(value.getName())
                         .append("</div>");

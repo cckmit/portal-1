@@ -39,7 +39,7 @@ public class Document implements Serializable, Downloadable {
     /**
      * Статус
      */
-    @JdbcColumn(name="state_id")
+    @JdbcColumn(name="state")
     private int stateId;
 
     /**
