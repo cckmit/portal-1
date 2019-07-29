@@ -111,9 +111,11 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
 
     @UiHandler("remoteIdInput")
     public void onChangeText(KeyPressEvent event){
-        unicodeCurrentChar = event.getUnicodeCharCode();
-        keyTapTimer.cancel();
-        keyTapTimer.schedule(300);
+        if(unicodeCurrentChar != '\n') {
+            unicodeCurrentChar = event.getUnicodeCharCode();
+            keyTapTimer.cancel();
+            keyTapTimer.schedule(300);
+        }
     }
 
     @UiHandler("typeSelector")
@@ -153,19 +155,17 @@ public class CreateCaseLinkPopup extends PopupPanel implements HasValueChangeHan
     private Timer keyTapTimer = new Timer() {
         @Override
         public void run() {
-            if(unicodeCurrentChar != 13) {
-                RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
-                RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
-                MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
-                MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
+            RegExp youTrackPattern = RegExp.compile("^\\w+-\\d+$");
+            RegExp cmsOldPattern = RegExp.compile("^\\d{1,5}$");
+            MatchResult youTrackMatcher = youTrackPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
+            MatchResult cmsOldMatcher = cmsOldPattern.exec(remoteIdInput.getValue() + (char)unicodeCurrentChar);
 
-                if (youTrackMatcher != null) {
-                    typeSelector.setValue(En_CaseLink.YT);
-                } else if (cmsOldMatcher != null){
-                    typeSelector.setValue(En_CaseLink.CRM_OLD);
-                } else{
-                    typeSelector.setValue(En_CaseLink.CRM);
-                }
+            if (youTrackMatcher != null) {
+                typeSelector.setValue(En_CaseLink.YT);
+            } else if (cmsOldMatcher != null){
+                typeSelector.setValue(En_CaseLink.CRM_OLD);
+            } else{
+                typeSelector.setValue(En_CaseLink.CRM);
             }
         }
     };
