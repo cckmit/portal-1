@@ -87,7 +87,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onStateChanged() {
-        tempCompany.setDeleted(!tempCompany.getDeleted());
+        tempCompany.setDeprecated(!tempCompany.getDeprecated());
     }
 
     @Override
@@ -218,7 +218,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.hideTags(company.getId() == null);
 
-        view.setStateButtonText(company.getDeleted() ? lang.buttonFromArchive() : lang.buttonToArchive());
+        view.setStateButtonText(company.getDeprecated() ? lang.buttonFromArchive() : lang.buttonToArchive());
     }
 
     private EntityOption makeCompanyOption(Company company) {

@@ -106,7 +106,7 @@
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="stateButton" styleName="btn btn-danger" text="{lang.productToArchive}"/>
+                <g:Button ui:field="stateButton" styleName="btn btn-danger" text="{lang.buttonToArchive}"/>
                 <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
                 <g:Button ui:field="cancelButton" styleName="btn btn-white" text="{lang.buttonCancel}"/>
             </div>
