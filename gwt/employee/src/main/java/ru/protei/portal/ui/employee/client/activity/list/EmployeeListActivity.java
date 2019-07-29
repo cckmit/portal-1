@@ -166,6 +166,7 @@ public abstract class EmployeeListActivity implements AbstractEmployeeListActivi
 
             itemView.setPosition( mainEntry.getPositionName() );
         }
+        itemView.setIP(employee.getIpAddress());
 
         itemView.setPhoto( LOAD_AVATAR_URL + employee.getId() + ".jpg" );
 

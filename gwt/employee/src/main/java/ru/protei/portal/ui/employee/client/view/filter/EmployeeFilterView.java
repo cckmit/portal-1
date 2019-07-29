@@ -117,6 +117,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent< String > event ) {
+        sortField.setValue(En_SortField.person_full_name);
         fireChangeTimer();
     }
 
@@ -132,6 +133,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiHandler( "ipAddress" )
     public void onIPAddressChanged( ValueChangeEvent< String > event ) {
+        sortField.setValue(En_SortField.employee_ip);
         fireChangeTimer();
     }
 

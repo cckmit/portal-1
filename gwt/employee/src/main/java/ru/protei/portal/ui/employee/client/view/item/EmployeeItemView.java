@@ -85,6 +85,12 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
+    public void setIP(String value) {
+        ipContainer.setVisible( value != null && !value.isEmpty() );
+        ip.setInnerText( value == null ? "" : value );
+    }
+
+    @Override
     public void setPhoto( String url ) {
         photo.setUrl( url );
     }
@@ -123,6 +129,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     HTMLPanel positionContainer;
 
     @UiField
+    HTMLPanel ipContainer;
+
+    @UiField
     SpanElement birthday;
 
     @UiField
@@ -139,6 +148,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
 
     @UiField
     SpanElement position;
+
+    @UiField
+    SpanElement ip;
 
     @UiField
     HTMLPanel previewContainer;

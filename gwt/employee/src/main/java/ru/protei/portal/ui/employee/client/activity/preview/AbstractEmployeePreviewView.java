@@ -12,7 +12,6 @@ public interface AbstractEmployeePreviewView extends IsWidget {
 
     void setActivity(AbstractEmployeePreviewActivity activity );
     void setID( String value );
-    void setIP( String value );
     HasWidgets getPositionsContainer();
 
     Widget asWidget(boolean isForTableView);
