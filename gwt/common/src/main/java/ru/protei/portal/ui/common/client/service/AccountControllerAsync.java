@@ -22,5 +22,5 @@ public interface AccountControllerAsync {
 
     void removeAccount( Long accountId, AsyncCallback< Boolean > async );
 
-    void updateAccountPassword(Long loginId, String currentPassword, String newPassword, AsyncCallback<Boolean> async);
+    void updateAccountPassword(Long loginId, String currentPassword, String newPassword, AsyncCallback<Void> async);
 }

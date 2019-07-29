@@ -1689,4 +1689,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errInvalidCaseUpdateCaseIsClosed();
 
     String errInvalidCurrentPassword();
+
+    String passwordUpdatedSuccessful();
 }
