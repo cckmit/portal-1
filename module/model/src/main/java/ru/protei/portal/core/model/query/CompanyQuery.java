@@ -25,6 +25,8 @@ public class CompanyQuery extends BaseQuery {
 
     private List<Long> companyIds;
 
+    private Boolean isShowDeprecated;
+
     public CompanyQuery() {
         super("", En_SortField.comp_name, En_SortDir.ASC);
     }
@@ -39,8 +41,9 @@ public class CompanyQuery extends BaseQuery {
         this.onlyHome = onlyHome;
     }
 
-    public CompanyQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
+    public CompanyQuery(String searchString, En_SortField sortField, En_SortDir sortDir, boolean isShowDeprecated) {
         super(searchString, sortField, sortDir);
+        this.isShowDeprecated = isShowDeprecated;
     }
 
     public List<Long> getCategoryIds() {
@@ -89,6 +92,14 @@ public class CompanyQuery extends BaseQuery {
 
     public List<Long> getCompanyIds() {
         return companyIds;
+    }
+
+    public Boolean getShowDeprecated() {
+        return isShowDeprecated;
+    }
+
+    public void setShowDeprecated(Boolean deprecated) {
+        isShowDeprecated = deprecated;
     }
 
     @Override

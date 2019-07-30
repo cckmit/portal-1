@@ -37,6 +37,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonChangePassword();
 
+    String buttonToArchive();
+
+    String buttonFromArchive();
+
     String errNoMatchesFound();
 
     String errGetList();
