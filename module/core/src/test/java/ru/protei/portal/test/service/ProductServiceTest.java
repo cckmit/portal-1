@@ -34,14 +34,7 @@ public class ProductServiceTest {
     @Test
     public void testCreateAndGetProduct () {
 
-        DevUnit product = new DevUnit();
-
-        product.setName("Test Product");
-        product.setCreated(new Date());
-        product.setCreatorId(1L);
-        product.setInfo("Unit-test");
-        product.setStateId(En_DevUnitState.ACTIVE.getId());
-        product.setTypeId(En_DevUnitType.PRODUCT.getId());
+        DevUnit product = createTestProduct();
 
         Assert.assertNotNull(devUnitDAO.persist(product));
 
@@ -96,6 +89,28 @@ public class ProductServiceTest {
 
     @Test
     public void testChangeProductState(){
+        DevUnit product = createTestProduct();
+
+        Assert.assertNotNull(devUnitDAO.persist(product));
+
+        product.setStateId(En_DevUnitState.DEPRECATED.getId());
+        CoreResponse toDeprecated = productService.changeProductState(null, product);
+        DevUnit productDeprecated =  devUnitDAO.get(product.getId());
+
+        Assert.assertNotNull(toDeprecated);
+        Assert.assertEquals(En_DevUnitState.DEPRECATED, productDeprecated.getState());
+
+
+        product.setStateId(En_DevUnitState.ACTIVE.getId());
+        CoreResponse toActive = productService.changeProductState(null, product);
+        DevUnit productActive =  devUnitDAO.get(product.getId());
+
+        Assert.assertNotNull(toActive);
+        Assert.assertEquals(En_DevUnitState.ACTIVE, productActive.getState());
+    }
+
+
+    private DevUnit createTestProduct(){
         DevUnit product = new DevUnit();
 
         product.setName("Test Product");
@@ -105,21 +120,7 @@ public class ProductServiceTest {
         product.setStateId(En_DevUnitState.ACTIVE.getId());
         product.setTypeId(En_DevUnitType.PRODUCT.getId());
 
-        Assert.assertNotNull(devUnitDAO.persist(product));
-
-        product.setStateId(En_DevUnitState.DEPRECATED.getId());
-        CoreResponse toDeprecated = productService.changeProductState(null, product);
-        DevUnit productDeprecated =  devUnitDAO.get(1L);
-
-        product.setStateId(En_DevUnitState.ACTIVE.getId());
-        CoreResponse toActive = productService.changeProductState(null, product);
-        DevUnit productActive =  devUnitDAO.get(1L);
-
-        Assert.assertNotNull(toDeprecated);
-        Assert.assertEquals(En_DevUnitState.DEPRECATED, productDeprecated.getState());
-
-        Assert.assertNotNull(toActive);
-        Assert.assertEquals(En_DevUnitState.ACTIVE, productActive.getState());
+        return product;
     }
 
     @Autowired
