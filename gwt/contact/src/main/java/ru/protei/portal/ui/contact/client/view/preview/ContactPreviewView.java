@@ -78,7 +78,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setPhone(String value) { this.phone.setInnerText( value ); }
 
     @Override
-    public void setEmail(String value) { this.email.setInnerText( value ); }
+    public void setEmail(String value) { this.emailAnchor.setText( value ); }
 
     @Override
     public void setMailto(String value) { this.emailAnchor.setHref("mailto:" + value); }
@@ -145,8 +145,6 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     SpanElement info;
     @UiField
     SpanElement phone;
-    @UiField
-    SpanElement email;
     @UiField
     SpanElement address;
     @UiField

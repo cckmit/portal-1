@@ -89,7 +89,7 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
     }
 
     public String allEmailsAsStringWithoutComment() {
-        return emailsStream().map(ContactItem::value).collect( Collectors.joining( ", " ) );
+        return emailsStream().map(ContactItem::value).collect( Collectors.joining( "," ) );
     }
 
     public String publicEmailsAsString () {
