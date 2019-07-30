@@ -66,6 +66,7 @@ public class BaseServiceTest {
 
     public static Company createNewCompany( CompanyCategory category ) {
         Company company = new Company();
+        company.setDeprecated(false);
         company.setCname( "Test_Company" );
         company.setCategory( category );
         return company;
