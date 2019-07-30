@@ -1,13 +1,10 @@
 package ru.protei.portal.ui.product.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -20,7 +17,9 @@ import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPrevie
 public class ProductPreviewView extends Composite implements AbstractProductPreviewView {
 
     @Inject
-    public void onInit() { initWidget(ourUiBinder.createAndBindUi(this)); }
+    public void onInit() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+    }
 
     @Override
     protected void onDetach() {
@@ -45,33 +44,39 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     }
 
     @Override
-    public void setType(String type) {
-        productType.setInnerText(type);
+    public void setTypeImage(String image) {
+        typeImage.setSrc(image);
     }
 
     @Override
     public void setInfo( String value ) {
-        this.info.setInnerText(value);
+        this.info.setText(value);
     }
 
     @Override
     public void setWikiLink(String value) {
-        this.wikiLink.setInnerText(value);
+        String href = value == null ? "#" : value;
+        wikiLink.setInnerText(value);
+
+        if ( !href.startsWith("http://") && !href.startsWith("htts://") ) {
+            href = "http://" + href;
+        }
+        wikiLink.setHref(href);
     }
 
     @Override
     public void setConfiguration(String value ) {
-        this.configuration.setInnerHTML(value);
+        this.configuration.getElement().setInnerHTML(value);
     }
 
     @Override
     public void setHistoryVersion(String value ) {
-        this.historyVersion.setInnerHTML(value);
+        this.historyVersion.getElement().setInnerHTML(value);
     }
 
     @Override
     public void setCdrDescription(String value ) {
-        this.cdrDescription.setInnerHTML(value);
+        this.cdrDescription.getElement().setInnerHTML(value);
     }
 
     @Override
@@ -82,30 +87,27 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
             rootWrapper.removeStyleName("preview-wrapper");
         }
 
-        productNameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
     @UiField
     Lang lang;
     @UiField
-    SpanElement info;
+    Label info;
+    @UiField
+    ImageElement typeImage;
     @UiField
     HTMLPanel rootWrapper;
     @UiField
-    SpanElement productName;
+    HeadingElement productName;
     @UiField
-    SpanElement productType;
+    AnchorElement wikiLink;
     @UiField
-    HTMLPanel productNameBlock;
+    HTMLPanel configuration;
     @UiField
-    SpanElement wikiLink;
+    HTMLPanel historyVersion;
     @UiField
-    DivElement configuration;
-    @UiField
-    DivElement historyVersion;
-    @UiField
-    DivElement cdrDescription;
+    HTMLPanel cdrDescription;
 
     @Inject
     FixedPositioner positioner;

@@ -1,23 +1,19 @@
 package ru.protei.portal.app.portal.client.view.app;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
-import com.google.gwt.dom.client.ParagraphElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
-import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
-import ru.protei.portal.app.portal.client.widget.navsearch.NavSearchBox;
 import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppActivity;
 import ru.protei.portal.app.portal.client.activity.app.AbstractAppView;
-import ru.protei.portal.app.portal.client.widget.locale.LocaleSelector;
 
 /**
  * Вид основной формы приложения
@@ -31,8 +27,6 @@ public class AppView extends Composite
         initWidget( ourUiBinder.createAndBindUi( this ) );
         ensureDebugIds();
         initHandlers();
-        // todo temporary set invisible
-        search.setVisible( false );
     }
 
     @Override
@@ -41,20 +35,14 @@ public class AppView extends Composite
     }
 
     @Override
-    public void setUser( String username, String company, String iconSrc ) {
-        this.username.setInnerText( username );
-        this.company.setInnerText( company );
-        this.icon.setSrc( iconSrc );
+    public void setUser( String name, String company, String photoSrc) {
+        username.setInnerText(name);
+        photo.setSrc(photoSrc);
     }
 
     @Override
     public void setAppVersion(String appVersion) {
         this.appVersion.setText(appVersion);
-    }
-
-    @Override
-    public HasValue<LocaleImage> locale() {
-        return locale;
     }
 
     @Override
@@ -80,15 +68,10 @@ public class AppView extends Composite
     @UiHandler( "logout" )
     public void onLogoutClicked( ClickEvent event ) {
         event.preventDefault();
+        menuBar.removeStyleName("show");
+
         if ( activity != null ) {
             activity.onLogoutClicked();
-        }
-    }
-
-    @UiHandler( "locale" )
-    public void onLocaleClicked( ValueChangeEvent<LocaleImage> event ) {
-        if ( activity != null ) {
-            activity.onLocaleChanged( event.getValue().getLocale() );
         }
     }
 
@@ -112,6 +95,30 @@ public class AppView extends Composite
         }
     }
 
+    @UiHandler("settings")
+    public void settingsClick(ClickEvent event) {
+        event.preventDefault();
+        menuBar.removeStyleName("show");
+
+        if (activity != null) {
+            activity.onSettingsClicked();
+        }
+    }
+
+    @UiHandler("profile")
+    public void profileClick(ClickEvent event) {
+        if (menuBar.getStyleName().contains("show")) {
+            menuBar.removeStyleName( "show" );
+        } else {
+            menuBar.addStyleName( "show" );
+        }
+    }
+
+    @UiHandler("menuBarFocus")
+    public void profileClick(MouseOutEvent event) {
+        menuBar.removeStyleName("show");
+    }
+
     @Override
     public void onKeyUp( KeyUpEvent event ) {
         if (event.getNativeKeyCode() == KeyCodes.KEY_ESCAPE && event.isControlKeyDown()) {
@@ -120,33 +127,38 @@ public class AppView extends Composite
         }
     }
 
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        menuBar.removeStyleName("show");
+    }
+
     private void ensureDebugIds() {
         globalContainer.ensureDebugId(DebugIds.APP_VIEW.GLOBAL_CONTAINER);
         logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
-        locale.setEnsureDebugId(DebugIds.APP_VIEW.LOCALE_SELECTOR);
         toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
-        userPanel.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
+        profile.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
     }
 
     private void initHandlers() {
         RootPanel.get().sinkEvents( Event.ONKEYUP );
         RootPanel.get().addHandler( this, KeyUpEvent.getType() );
 
-        userPanel.sinkEvents( Event.ONCLICK );
-        userPanel.addHandler( event -> {
-            if ( activity != null ) {
-                activity.onUserClicked();
-            }
-        }, ClickEvent.getType() );
+        navbar.sinkEvents( Event.ONMOUSEOVER );
+        navbar.addHandler( event -> {
+            RootPanel.get().addStyleName("sidebar-visible");
+            navbar.getElement().getStyle().setProperty("transform", "translate(210px, 0px)");
+        }, MouseOverEvent.getType() );
+
+        navbar.sinkEvents( Event.ONMOUSEOUT );
+        navbar.addHandler( event -> {
+            RootPanel.get().removeStyleName("sidebar-visible");
+            navbar.getElement().getStyle().setProperty("transform", "translate3d(0px, 0px, 0px)");
+        }, MouseOutEvent.getType() );
     }
 
     @UiField
     Anchor toggleButton;
-    @UiField
-    NavSearchBox search;
-    @Inject
-    @UiField( provided = true )
-    LocaleSelector locale;
     @UiField
     Anchor logout;
 
@@ -158,23 +170,29 @@ public class AppView extends Composite
     @UiField
     HTMLPanel notifyContainer;
     @UiField
-    ParagraphElement username;
-    @UiField
-    AnchorElement company;
-    @UiField
     HTMLPanel menuContainer;
     @UiField
     HTMLPanel actionBarContainer;
-    @UiField
-    HTMLPanel userPanel;
-    @UiField
-    ImageElement icon;
     @UiField
     Anchor logo;
     @UiField
     Label appVersion;
     @UiField
     HTMLPanel globalContainer;
+    @UiField
+    SpanElement username;
+    @UiField
+    HTMLPanel navbar;
+    @UiField
+    ImageElement photo;
+    @UiField
+    Anchor settings;
+    @UiField
+    FocusPanel menuBarFocus;
+    @UiField
+    HTMLPanel menuBar;
+    @UiField
+    Button profile;
 
     AbstractAppActivity activity;
 

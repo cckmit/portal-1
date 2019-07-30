@@ -1,11 +1,8 @@
 package ru.protei.portal.ui.common.client.events;
 
 import com.google.gwt.user.client.ui.HasWidgets;
-import com.google.gwt.user.client.ui.Widget;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.query.CompanyQuery;
-import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 
 /**
  * События по компаниям
@@ -16,23 +13,8 @@ public class CompanyEvents {
      * Показать grid компаний
      */
     @Url( value = "companies", primary = true )
-    public static class Show {
+    public static class Show {}
 
-        public Show () {}
-
-    }
-
-    public static class ShowDefinite {
-        public ShowDefinite (ViewType type, Widget filter, CompanyQuery query) {
-            this.viewType = type;
-            this.filter = filter;
-            this.query = query;
-        }
-
-        public ViewType viewType;
-        public Widget filter;
-        public CompanyQuery query;
-    }
 
     /**
      * Показать превью компании
@@ -52,7 +34,7 @@ public class CompanyEvents {
         public boolean isShouldWrap;
     }
 
-    @Url( value = "company", primary = false )
+    @Url( value = "company")
     public static class Edit {
 
         public Edit() {}
@@ -71,17 +53,4 @@ public class CompanyEvents {
      * Обновление списка компаний
      */
     public static class ChangeModel {}
-
-    /**
-     * Обновление списка компаний по фильтру
-     */
-    public static class UpdateData {
-        public UpdateData ( ViewType type, CompanyQuery query ) {
-            this.viewType = type;
-            this.query = query;
-        }
-
-        public ViewType viewType;
-        public CompanyQuery query;
-    }
 }

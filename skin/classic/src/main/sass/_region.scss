@@ -1,21 +1,17 @@
-.header-block {
-  overflow: hidden;
-}
 
 .region-picture {
   position: relative;
-  display: block;
-  left: calc( 100% - 120px );
+  display: inline-block;
+  left: calc(100% - 75px);
   top: -20px;
   opacity: 0.3;
 
   & > i {
     position: relative;
     display: block;
-    top: -46px;
-    left: 0px;
-
-    font-size: 10em;
+    bottom: 0.3em;
+    left: 0;
+    font-size: 6em;
   }
 }
 
@@ -31,16 +27,14 @@
 }
 
 .region-state {
-  display: inline-block;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
+  font-family: "Font Awesome 5 Free", serif;
+  font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
   &.unknown {
     &:before {
-      content: "\f29c";
+      content: "\f059";
     }
   }
 
@@ -54,6 +48,7 @@
   &.marketing {
     &:before {
       content: "\f59f";
+      font-weight: 900;
     }
     color: rgb(88, 5, 5);
   }
@@ -68,14 +63,16 @@
 
   &.talk {
     &:before {
-      content: "\f0e6"
+      content: "\f086";
+      font-weight: 900;
     }
     color: #88027b;
   }
 
   &.projecting {
     &:before {
-      content: "\f002"
+      content: "\f002";
+      font-weight: 900;
     }
     color: #0e00b9;
   }
@@ -89,14 +86,15 @@
 
   &.deployment {
     &:before {
-      content: "\f0a3"
+      content: "\f621";
+      font-weight: 900;
     }
     color: #b9ae00;
   }
 
   &.support {
     &:before {
-      content: "\f05d"
+      content: "\f058"
     }
     color: #6acc39;
   }
@@ -111,6 +109,7 @@
   &.canceled {
     &:before {
       content: "\f05e";
+      font-weight: 900;
     }
     color: #A0A0A0;
   }
@@ -121,17 +120,12 @@
     min-width: 100px;
   }
 
-  table > tbody > tr > td.status {
-    opacity: 0.5;
-  }
-
   table > tbody > tr > td.region {
     background-color: #f9f9f9;
   }
 }
 
 .preview.project {
-
   .header {
     padding: 0;
     width: 100%;
@@ -188,11 +182,11 @@
     }
   }
 
-  .btn-selector > button.btn-white {
+  .dropdown-selector > button {
     border: 1px solid white;
     box-sizing: border-box;
 
-    span.caret {
+    &:after {
       display: none;
     }
 
@@ -200,7 +194,7 @@
       border: 1px solid rgb(197, 202, 208);
       background-color: white;
 
-      span.caret {
+      &:after {
         display: inline;
       }
     }
@@ -216,9 +210,8 @@
   }
 
   .icon-selector.status-group {
-    width: 1.5em;
     padding-right: 0.5em;
-    text-align: center;
+    text-align: left;
 
     a.status {
       border: 1px solid white;
@@ -227,9 +220,7 @@
     }
 
     a.caret-anchor {
-      position: absolute;
-      top: -0.3em;
-      right: 0.32em;
+      position: relative;
       display: none;
     }
 
@@ -239,7 +230,7 @@
       }
 
       a.caret-anchor {
-        display: block;
+        display: inline-block;
       }
     }
     &:focus {
@@ -248,7 +239,7 @@
       }
 
       a.caret-anchor {
-        display: block;
+        display: inline-block;
       }
     }
   }
@@ -261,4 +252,48 @@
 // без этого фикса в выпадайке checkbox на отдельной строке рисуется
 ul > li.selectable-item > a {
   display: inline-block;
+}
+
+.selectable-panel {
+  display: inline;
+}
+
+.selectable-item {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  .selectable-item-text {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -ms-flex-negative: 1;
+    flex-shrink: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: left;
+    padding-left: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+  .selectable-item-info {
+    -webkit-box-flex: 1;
+    -ms-flex-positive: 1;
+    flex-grow: 1;
+    -ms-flex-negative: 1;
+    flex-shrink: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 45%;
+    text-align: right;
+    padding-right: 6px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
 }

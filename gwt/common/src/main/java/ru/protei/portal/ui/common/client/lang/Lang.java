@@ -1400,6 +1400,34 @@ public interface Lang extends Messages, ContactItemLang {
 
     String decimalNumbersRequired();
 
+    String proteiTitleShort();
+
+    String authDescription();
+
+    String proteiTitleFull();
+
+    String authTitle();
+
+    String companyMainInfoTitle();
+
+    String companyContactInfoTitle();
+
+    String companyContactsHeader();
+
+    String contactMainInfoTitle();
+
+    String contactContactInfoTitle();
+
+    String contactAccountTitle();
+
+    String contactAccountHint();
+
+    String projectCreateBy();
+
+    String accountFor();
+
+    String accountRolesNotFound();
+
     String projectRemoveConfirmMessage(String name);
 
     String projectRemoveSucceeded();
@@ -1574,19 +1602,13 @@ public interface Lang extends Messages, ContactItemLang {
 
     String reportTypeCaseTimeElapsedPeriod();
 
-    String proteiTitleFull();
-
-    String authTitle();
-
-    String proteiTitleShort();
-
-    String authDescription();
-
     String employeeRegistrationNumberColumn();
 
     String employeeRegistrationCurators();
 
     String employeeRegistrationValidationCurators();
+
+    String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
     String employeeRegistrationValidationProbationPeriod();
 
@@ -1624,6 +1646,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagColor();
 
+    String tagCompany();
+
     String commentEmpty();
 
     String siteFolderAttachments();
@@ -1640,6 +1664,32 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagNotSpecified();
 
+    String employeeRegistrationMainInfoTitle();
+
+    String employeeRegistrationWorkplaceTitle();
+
+    String employeeRegistrationResourceTitle();
+
+    String employeeRegistrationResourceHint();
+
+    String employeeRegistrationWorkplaceHint();
+
+    String createBy();
+
+    String companyIsAPartOfCompany(String name);
+
+    String companyIsAHeadOfCompany(String names);
+
+    String in();
+
+    String roleMainTitle();
+
+    String rolePrivilegesHint();
+
+    String caseStateDescription();
+
+    String documentWorkGroupHeader();
+
     String employeeEmployeeFullNameColumnHeader();
 
     String employeeWorkPhoneColumnHeader();
@@ -1648,7 +1698,39 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeIPAddressColumnHeader();
 
-    String countLabel(int totalCount);
+    String employeeEmailColumnHeader();
+
+    String privateComment();
+
+    String commentPreviewIsDisplay();
+
+    String timeElapsedTypeSoftInstall();
+
+    String timeElapsedTypeSoftUpdate();
+
+    String timeElapsedTypeSoftConfig();
+
+    String timeElapsedTypeTesting();
+
+    String timeElapsedTypeConsultation();
+
+    String timeElapsedTypeMeeting();
+
+    String timeElapsedTypeDiscussionOfImprovements();
+
+    String timeElapsedTypeLogAnalysis();
+
+    String timeElapsedTypeSolveProblems();
+
+    String errInvalidCaseUpdateCaseIsClosed();
+
+    String buttonSettings();
+
+    String commentSetPrivate();
+
+    String employeeRegistrationCuratorsHint();
+
+    String logoutHotKey();
 
     String documentSearchProject();
 

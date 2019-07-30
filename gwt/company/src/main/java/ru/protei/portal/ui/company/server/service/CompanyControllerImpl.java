@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
+import ru.protei.portal.core.service.CaseTagService;
 import ru.protei.portal.core.service.CompanyService;
 import ru.protei.portal.core.service.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
@@ -91,7 +92,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         CoreResponse<Boolean> response = companyService.isCompanyNameExists( name, excludeId );
 
-        log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+        log.debug( "isCompanyNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
@@ -105,7 +106,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         CoreResponse<Boolean> response = companyService.isGroupNameExists(name, excludeId);
 
-        log.debug( "isGroupNameExists(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+        log.debug( "isGroupNameExists(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
@@ -121,7 +122,7 @@ public class CompanyControllerImpl implements CompanyController {
 
         CoreResponse<Company> response = companyService.getCompany( descriptor.makeAuthToken(),  id );
 
-        log.debug( "getCompany(): response.isOk()={} | response.getData()", response.isOk(), response.getData() );
+        log.debug( "getCompany(): response.isOk()={} | response.getData() = {}", response.isOk(), response.getData() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
 
@@ -218,8 +219,16 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Override
     public List<CaseState> getCompanyCaseStates(Long companyId) throws RequestFailedException {
+        log.info( "getCompanyCaseStates() companyId={}", companyId );
         AuthToken authToken = getAuthToken(sessionService, httpServletRequest);
         return checkResultAndGetData( caseStateService.getCaseStatesForCompanyOmitPrivileges(companyId));
+    }
+
+    @Override
+    public List<CaseTag> getCompanyTags( Long companyId ) throws RequestFailedException {
+        log.info( "getCompanyTags() companyId={}", companyId );
+        AuthToken authToken = getAuthToken( sessionService, httpServletRequest );
+        return ServiceUtils.checkResultAndGetData( caseTagService.getTagsByCompanyId( authToken, companyId ));
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {
@@ -237,6 +246,9 @@ public class CompanyControllerImpl implements CompanyController {
 
     @Autowired
     private CaseStateService caseStateService;
+
+    @Autowired
+    private CaseTagService caseTagService;
 
     @Autowired
     SessionService sessionService;

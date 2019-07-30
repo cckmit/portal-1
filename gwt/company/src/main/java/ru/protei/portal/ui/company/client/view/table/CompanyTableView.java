@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
@@ -18,9 +19,8 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableActivity;
-import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.portal.ui.company.client.activity.table.AbstractCompanyTableActivity;
+import ru.protei.portal.ui.company.client.activity.table.AbstractCompanyTableView;
 
 /**
  * Created by bondarenko on 30.10.17.
@@ -45,8 +45,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         name.setColumnProvider( columnProvider );
         category.setHandler( activity );
         category.setColumnProvider( columnProvider );
-        group.setHandler( activity );
-        group.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
         table.setPagerListener( activity );
     }
@@ -111,20 +109,23 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
+
+
         category = new DynamicColumn<>(
-            lang.companyCategory(),
-            "company-category",
-            company -> company.getCategory() != null? company.getCategory().getName(): ""
-        );
-        group = new DynamicColumn<>(
-                lang.companyGroup(),
-                "company-group",
-                company -> company.getCompanyGroup() != null? company.getCompanyGroup().getName(): ""
+                lang.companyCategory(),
+                "company-category",
+                company -> {
+                    if ( company == null || company.getCategory() == null ) {
+                        return "";
+                    }
+
+                    En_CompanyCategory enCategory = En_CompanyCategory.findById(company.getCategory().getId());
+                    return "<img src='" + "./images/company_" + enCategory.name().toLowerCase() + ".svg" + "'/>";
+                }
         );
 
-        table.addColumn( name.header, name.values );
         table.addColumn( category.header, category.values );
-        table.addColumn( group.header, group.values );
+        table.addColumn( name.header, name.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
@@ -163,7 +164,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         Element icon = DOM.createElement("i");
         icon.addClassName(iconClass);
 
-        Element wrapper = DOM.createDiv();
+        Element wrapper = DOM.createElement("small");
         wrapper.addClassName("contacts");
         wrapper.appendChild(icon);
         wrapper.appendChild(element);
@@ -202,7 +203,6 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     EditClickColumn< Company > editClickColumn;
     DynamicColumn<Company> name;
     DynamicColumn<Company> category;
-    DynamicColumn<Company> group;
 
     AbstractCompanyTableActivity activity;
 

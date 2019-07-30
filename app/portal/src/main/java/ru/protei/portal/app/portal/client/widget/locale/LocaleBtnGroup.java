@@ -27,7 +27,7 @@ public class LocaleBtnGroup extends ToggleBtnGroup<LocaleImage> {
             }
             addBtnWithImage(
                     image.getImageUrl(),
-                    "btn btn-white btn-without-border",
+                    "btn btn-default no-border",
                     null,
                     image,
                     null

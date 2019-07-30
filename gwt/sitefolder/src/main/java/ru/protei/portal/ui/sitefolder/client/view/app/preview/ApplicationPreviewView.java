@@ -8,6 +8,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.struct.PathInfo;
@@ -42,7 +44,7 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
 
     @Override
     public void setName(String value) {
-        name.setInnerText(value);
+        name.setText(value);
     }
 
     @Override
@@ -57,7 +59,7 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
 
     @Override
     public void setComment(String value) {
-        comment.setInnerText(value);
+        comment.setText(value);
     }
 
     @Override
@@ -73,9 +75,9 @@ public class ApplicationPreviewView extends Composite implements AbstractApplica
     }
 
     @UiField
-    SpanElement name;
+    InlineLabel name;
     @UiField
-    SpanElement comment;
+    Label comment;
     @UiField
     SpanElement paths;
     @UiField

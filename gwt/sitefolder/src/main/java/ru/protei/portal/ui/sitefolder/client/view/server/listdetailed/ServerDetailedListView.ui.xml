@@ -4,7 +4,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="grid col-xs-12">
+    <g:HTMLPanel styleName="grid col-md-12 p-0">
 
         <platelist:PlateList ui:field="childContainer" styleName="plate-list sf-detailed-list" createButtonVisible="false"/>
 

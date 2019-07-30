@@ -3,16 +3,12 @@ package ru.protei.portal.core.service.bootstrap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.core.model.dao.CaseObjectDAO;
-import ru.protei.portal.core.model.dao.DecimalNumberDAO;
-import ru.protei.portal.core.model.dao.PlatformDAO;
-import ru.protei.portal.core.model.dao.UserRoleDAO;
+import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Platform;
-import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
@@ -44,6 +40,7 @@ public class BootstrapService {
         removeObsoletePrivileges();
 //        autoPatchDefaultRoles();
         createSFPlatformCaseObjects();
+        updateCompanyCaseTags();
     }
 
     private void autoPatchDefaultRoles () {
@@ -117,6 +114,27 @@ public class BootstrapService {
         log.info("Site folder platform database migration has ended");
     }
 
+    private void updateCompanyCaseTags() {
+        Long companyId = companyGroupHomeDAO.mainCompanyId();
+        if (companyId == null) {
+            log.info( "Main company id not found. Aborting" );
+            return;
+        }
+
+        log.info("Start update tags where company id is null, set company id {} ", companyId);
+
+        List<CaseTag> result = caseTagDAO.getListByCondition("company_id is null");
+        if (CollectionUtils.isEmpty(result)) {
+            log.info( "Not found tags. Aborting" );
+            return;
+        }
+        result.forEach(caseTag -> {
+            caseTag.setCompanyId(companyId);
+            caseTagDAO.merge(caseTag);
+        });
+        log.info("Correction company id in tags completed successfully");
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -125,4 +143,10 @@ public class BootstrapService {
     CaseObjectDAO caseObjectDAO;
     @Autowired
     PlatformDAO platformDAO;
+    @Autowired
+    CaseTagDAO caseTagDAO;
+    @Autowired
+    CompanyGroupHomeDAO companyGroupHomeDAO;
+    @Autowired
+    CaseFilterDAO caseFilterDAO;
 }

@@ -65,4 +65,6 @@ public class CaseStateEvents {
 
     public static class UpdateSelectorOptions {
     }
+
+    public static class ClosePreview {}
 }

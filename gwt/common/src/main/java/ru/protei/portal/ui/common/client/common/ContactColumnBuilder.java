@@ -12,20 +12,14 @@ public class ContactColumnBuilder {
         return new ContactColumnBuilder();
     }
 
-    public ContactColumnBuilder add ( String icon, String phone ) {
-        if ( phone != null ) {
-            Element div = DOM.createDiv();
-            div.addClassName( "contact-record" );
-            if ( icon != null ) {
-                Element i = DOM.createElement("i");
-                i.setClassName( icon );
-                div.appendChild( i );
-            }
-            Element label = DOM.createLabel();
-            label.setInnerText( phone );
-            div.appendChild( label );
-            root.appendChild( div );
+    public ContactColumnBuilder add ( String icon, String value ) {
+        if ( value == null ) {
+            return this;
         }
+
+        Element small = DOM.createElement("small");
+        small.setInnerHTML("<i class='" + icon + "'></i>" + value);
+        root.appendChild( small );
         return this;
     }
 

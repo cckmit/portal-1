@@ -47,7 +47,6 @@ public abstract class ActionBarActivity
         AbstractSectionItemView itemView = factory.get();
         itemView.setActivity( this );
         itemView.setText( header );
-        itemView.setIcon( icon );
         itemView.setEnsureDebugId( debugId );
 
         init.parent.add( itemView.asWidget() );

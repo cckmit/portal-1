@@ -4,6 +4,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -69,6 +70,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
+        description.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
+            @Override
+            public void onDisplayPreviewChanged( boolean isDisplay ) {
+                activity.onDisplayPreviewChanged( DESCRIPTION, isDisplay );
+            }
+        } );
     }
 
     @Override
@@ -192,30 +199,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public HasValidable companyValidator() { return company; }
 
     @Override
-    public HasValidable initiatorValidator() { return initiator; }
-
-    @Override
-    public HasValidable productValidator() {
-        return product;
-    }
-
-    @Override
-    public HasValidable managerValidator() {
-        return manager;
-    }
-
-    @Override
     public HasEnabled initiatorState() {
         return initiator;
     }
 
     @Override
     public HasVisibility numberVisibility(){
-        return number;
-    }
-
-    @Override
-    public HasValue<Integer> number(){
         return number;
     }
 
@@ -268,6 +257,17 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     public HasEnabled stateEnabled() {
         return state;
     }
+
+    @Override
+    public void setNumber(Integer num) {
+        if ( num == null ) {
+            number.setText("");
+            return;
+        }
+
+        number.setText("CRM-" + num);
+    }
+
 
     @Override
     public HasVisibility caseSubscriptionContainer() {
@@ -335,8 +335,18 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setTagsAddButtonEnabled(boolean enabled) {
+        caseMetaView.setTagsAddButtonEnabled(enabled);
+    }
+
+    @Override
     public void setStateWorkflow(En_CaseStateWorkflow workflow) {
         state.setWorkflow(workflow);
+    }
+
+    @Override
+    public void setDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
+        description.setDisplayPreview( isPreviewAllowed );
     }
 
     @UiHandler( "company" )
@@ -441,7 +451,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     ToggleButton local;
 
     @UiField
-    IntegerBox number;
+    Label number;
 
     @Inject
     @UiField(provided = true)
@@ -502,8 +512,6 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     AttachmentList attachmentContainer;
     @UiField
     DivElement subscriptions;
-    @UiField
-    HTMLPanel nameInputGroupContainer;
     @UiField
     HTMLPanel nameContainer;
     @UiField

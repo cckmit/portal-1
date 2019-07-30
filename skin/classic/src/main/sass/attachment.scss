@@ -1,7 +1,7 @@
 .attachment-block {
   $background: "rgba(243, 240, 240,.4)";
   background: #{$background};
-  padding: 6px 10px;
+  padding: 3px 6px;
   white-space: normal;
   .attachment-list{
     padding-left: 0;
@@ -17,15 +17,23 @@
 .attachment-list-simple {
   vertical-align: middle;
   margin: 0;
-  padding-left: 8px;
+  padding-left: 0;
 
   .attach:hover{
-      .attach-info{
-        width: 100%;
-      }
-      .attach-lnk{
-        background: none;
-      }
+    .attach-info{
+      width: 100%;
+    }
+    .attach-lnk{
+      background: none;
+    }
+  }
+
+  .attach {
+    padding-left: 0;
+  }
+
+  .attach + .attach {
+    margin-left: 10px;
   }
 }
 
@@ -38,13 +46,6 @@
 
   +.attach{
     margin-left: 23px;
-  }
-
-  .attach-preview-btn{
-    display: block;
-  }
-  .attach-download-btn{
-    display: none;
   }
 
   &.attach-minimize{
@@ -66,7 +67,7 @@
     }
     .attach-remove-btn{
       line-height: 0;
-      font-size: 15px;
+      font-size: 12px;
       display: inline;
       vertical-align: middle;
       color: #5daeae;
@@ -88,12 +89,9 @@
       display: none !important;
     }
   }
-  &.attach-hide-preview{
+  &.attach-hide-preview-btn{
     .attach-preview-btn{
       display: none !important;
-    }
-    .attach-download-btn{
-      display: block !important;
     }
   }
 
@@ -178,7 +176,7 @@
     a {
       color: white;
     }
-    .fa-search-plus, .fa-cloud-download {
+    .fa-search-plus {
       $textShadow: "1px 1px 1px rgba(0,0,0,0.3)";
       text-shadow: #{$textShadow};
       font-size: 20px;
@@ -264,11 +262,14 @@
   }
 }
 .attach-add-btn {
+  text-transform: initial;
+  cursor: pointer;
+
   & > i {
-    font-size: 14px;
+    font-size: 12px;
     color: #75808f;
     vertical-align: middle;
-    width: 16px;
+    width: 14px;
   }
   .ion-plus{
     line-height: 0;
@@ -293,7 +294,7 @@
     display: block;
   }
   .attach-add-btn {
-    background: #e2e7eb;
+    opacity: 0.5;
     .icon-verifiable {
       display: inline-block;
     }

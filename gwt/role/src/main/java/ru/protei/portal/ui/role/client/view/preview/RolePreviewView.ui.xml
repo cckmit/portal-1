@@ -3,20 +3,13 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview">
-            <fieldset class="header">
-                <legend ui:field="header"></legend>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.roleName}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="name"/>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.roleDescription}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="description"/>
-                </div>
-            </fieldset>
-        </g:HTMLPanel>
+    <g:HTMLPanel>
+        <div class="card card-default no-border">
+            <div class="card-body">
+                <h4 class="col-md-12 no-margin no-padding" ui:field="name"/>
+                <g:Label styleName="small hint-text pre-formatted-info" ui:field="description"/>
+            </div>
+        </div>
     </g:HTMLPanel>
 
 </ui:UiBinder>

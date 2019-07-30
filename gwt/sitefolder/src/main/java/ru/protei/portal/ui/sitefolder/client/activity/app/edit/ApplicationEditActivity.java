@@ -38,7 +38,6 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
 
         fireEvent(new ActionBarEvents.Clear());
         if (event.appId == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppNew()));
             Application application = new Application();
             if (event.server != null) {
                 application.setServer(event.server);
@@ -46,7 +45,6 @@ public abstract class ApplicationEditActivity implements Activity, AbstractAppli
             fillView(application);
             return;
         }
-        fireEvent(new AppEvents.InitPanelName(lang.siteFolderAppEdit()));
 
         siteFolderController.getApplication(event.appId, new RequestCallback<Application>() {
             @Override

@@ -25,14 +25,12 @@ public class CategoryBtnGroupMulti extends ToggleBtnGroupMulti< EntityOption > i
         clear();
 
         for ( EntityOption option : options ) {
-            if ( option.getId().equals( En_CompanyCategory.OFFICIAL.getId() )) {
+            En_CompanyCategory category = En_CompanyCategory.findById(option.getId());
+            if ( En_CompanyCategory.OFFICIAL.equals( category ) || category == null ) {
                 continue;
             }
-            String styleName = En_CompanyCategory.findById( option.getId() ).name().toLowerCase();
-            addBtnWithIcon( "category category-lg icon-" + styleName,
-                    "btn btn-white btn-without-border " + styleName,
-                    null,
-                    option );
+
+            addBtnWithImage( "./images/company_" + category.name().toLowerCase() + ".svg" , "btn btn-default no-border company-category", null, option, null );
             setEnsureDebugId(option, DebugIdsHelper.COMPANY_CATEGORY_BUTTON.byId(option.getId()));
         }
     }

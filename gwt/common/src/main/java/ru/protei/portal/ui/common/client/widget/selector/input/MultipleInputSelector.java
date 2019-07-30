@@ -29,6 +29,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
     }
 
     public void setHeader( String label ) {
+        this.label.removeStyleName("hide");
         this.label.getElement().setInnerText( label == null ? "" : label );
     }
 

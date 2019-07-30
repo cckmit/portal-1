@@ -33,6 +33,7 @@ public class PortalConfigData {
     private final LdapConfig ldapConfig;
 
     private final String loginSuffixConfig;
+    private final boolean taskSchedulerEnabled;
 
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
@@ -51,6 +52,7 @@ public class PortalConfigData {
         ldapConfig = new LdapConfig(wrapper);
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
+        taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
     }
 
     public CommonConfig getCommonConfig() {
@@ -111,6 +113,10 @@ public class PortalConfigData {
 
     public LdapConfig getLdapConfig() {
         return ldapConfig;
+    }
+
+    public boolean isTaskSchedulerEnabled() {
+        return taskSchedulerEnabled;
     }
 
     public static class CommonConfig {
@@ -340,13 +346,16 @@ public class PortalConfigData {
         private final boolean youtrackEnabled;
         private final boolean jiraEnabled;
 
+        private final boolean redminePatchAttachmentsEnabled;
+
         public IntegrationConfig(PropertiesWrapper properties) throws ConfigException {
             hpsmEnabled = properties.getProperty("integration.hpsm", Boolean.class, false);
             redmineEnabled = properties.getProperty("integration.redmine", Boolean.class, false);
             youtrackEnabled = properties.getProperty("integration.youtrack", Boolean.class, false);
             jiraEnabled = properties.getProperty("integration.jira", Boolean.class, false);
-        }
 
+            redminePatchAttachmentsEnabled = properties.getProperty("integration.redmine.patch.attachments", Boolean.class, false);
+        }
 
         public boolean isHpsmEnabled() {
             return hpsmEnabled;
@@ -362,6 +371,10 @@ public class PortalConfigData {
 
         public boolean isJiraEnabled() {
             return jiraEnabled;
+        }
+
+        public boolean isRedminePatchAttachmentsEnabled() {
+            return redminePatchAttachmentsEnabled;
         }
     }
 

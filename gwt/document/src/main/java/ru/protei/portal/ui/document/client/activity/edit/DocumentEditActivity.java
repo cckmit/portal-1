@@ -60,10 +60,8 @@ public abstract class DocumentEditActivity
         initDetails.parent.add(view.asWidget());
 
         if (event.id == null) {
-            fireEvent(new AppEvents.InitPanelName(lang.documentNameNew()));
             fillView(new Document());
         } else {
-            fireEvent(new AppEvents.InitPanelName(lang.documentEdit()));
             documentService.getDocument(event.id, new RequestCallback<Document>() {
                 @Override
                 public void onError(Throwable throwable) {

@@ -27,9 +27,10 @@ public class CopyClickColumn<T> extends ClickColumn<T> {
 
     @Override
     public void fillColumnValue(Element cell, T value) {
+        cell.addClassName("copy");
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref("#");
-        a.addClassName("fa-1-5x fa fa-copy");
+        a.addClassName("far fa-lg fa-copy text-info");
         a.setTitle(lang.buttonCopy());
         setCopyEnabled(a);
         cell.appendChild(a);

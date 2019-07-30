@@ -6,8 +6,8 @@
             <span ui:field="name" class="name"/>
         </div>
         <div class="sf-list-item-controls">
-            <g:Anchor ui:field="edit" styleName="fa fa-lg fa-pencil" href="#"/>
-            <g:Anchor ui:field="remove" styleName="fa fa-lg fa-trash-o" href="#"/>
+            <g:Anchor ui:field="edit" styleName="far fa-lg fa-edit" href="#"/>
+            <g:Anchor ui:field="remove" styleName="far fa-lg fa-trash-alt" href="#"/>
         </div>
         <div class="sf-list-item-separator"/>
         <div class="sf-list-item-footer">

@@ -5,47 +5,48 @@
              xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
              xmlns:district="urn:import:ru.protei.portal.ui.common.client.widget.selector.district"
              xmlns:cleanablesearchbox='urn:import:ru.protei.portal.ui.common.client.widget.cleanablesearchbox'
-             xmlns:option='urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item'>
-
+             xmlns:item="urn:import:ru.protei.portal.ui.common.client.widget.optionlist.item">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel">
-        <div class="body">
-            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-xs-12"/>
-            <div class="form-group col-xs-12">
+    <g:HTMLPanel styleName="card card-default">
+        <div class="card-body row">
+            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.productDirection}"/></label>
                 <div class="control-group">
                     <productdirection:ProductDirectionButtonSelector ui:field="direction" />
                 </div>
             </div>
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.regionDistrict}"/></label>
                 <div class="control-group">
                     <district:DistrictBtnGroupMulti ui:field="districts" />
                 </div>
             </div>
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.regionState}"/></label>
                 <div class="control-group">
                     <state:RegionStateBtnGroupMulti ui:field="states" />
                 </div>
             </div>
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
                     <sortfieldselector:SortFieldSelector ui:field="sortField" type="PRODUCT"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                 </div>
             </div>
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.accessory}"/></label>
                 <div class="control-group single-option-container">
-                    <option:OptionItem ui:field="onlyMineProjects" styleName="toggle" name="{lang.projectOnlyMine}"/>
+                    <g:CheckBox ui:field="onlyMineProjects" styleName="checkbox" text="{lang.projectOnlyMine}"/>
                 </div>
             </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        <div class="card-footer">
+            <div class="text-right">
+                <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

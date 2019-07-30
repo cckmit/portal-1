@@ -20,6 +20,10 @@ public interface RedmineService {
 
     void updateIssue(Issue issue, RedmineEndpoint endpoint) throws RedmineException;
 
+    void updateCreationDateAttachments(RedmineEndpoint endpoint);
+
+    void updateAttachmentsByCaseId(Long caseId);
+
     @EventListener
     void onAssembledCaseEvent(AssembledCaseEvent event);
 

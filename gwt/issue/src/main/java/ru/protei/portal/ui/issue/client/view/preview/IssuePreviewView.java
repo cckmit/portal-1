@@ -2,10 +2,7 @@ package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -66,18 +63,18 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setPrivateIssue( boolean privateIssue ) {
-        if ( privateIssue ) {
-            this.privateIssue.setClassName( "fa fa-fw fa-lg fa-lock text-danger pull-left" );
-            return;
-        }
-
-        this.privateIssue.setClassName( "fa fa-fw fa-lg fa-unlock-alt text-success pull-left"  );
+    public void setAuthorName(String value) {
+        this.author.setInnerText(value);
     }
 
     @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
+    public void setPrivateIssue( boolean privateIssue ) {
+        if ( privateIssue ) {
+            this.privateIssue.setClassName( "fa fa-lock text-danger m-r-10" );
+            return;
+        }
+
+        this.privateIssue.setClassName( "fa fa-unlock-alt text-success m-r-10"  );
     }
 
     @Override
@@ -88,8 +85,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setState( long value ) {
         En_CaseState caseState = En_CaseState.getById( value );
-        this.state.setClassName( "small label label-" + caseState.toString().toLowerCase());
-        this.state.setInnerText( caseStateLang.getStateName( caseState ) );
+        this.state.setInnerHTML( "<i class='fas fa-circle m-r-5 state-" + caseState.toString().toLowerCase() + "'></i>" +
+                caseStateLang.getStateName( caseState ) );
     }
 
     @Override
@@ -105,11 +102,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void setCompany( String value ) {
-        this.company.setInnerText( value );
-    }
-
-    @Override
     public void setLinks( Set<CaseLink> value ) {
         this.caseMetaView.setLinks( value );
     }
@@ -122,11 +114,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @Override
     public void setContact( String value ) {
         this.contact.setInnerHTML( value );
-    }
-
-    @Override
-    public void setOurCompany( String value ) {
-        this.ourCompany.setInnerText( value );
     }
 
     @Override
@@ -150,17 +137,6 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
-    public void showFullScreen( boolean value ) {
-        fullScreen.setVisible( !value );
-        backButton.setVisible( value );
-        if ( value ) {
-            preview.addStyleName( "issue-fullscreen col-md-12 m-t-10" );
-        } else {
-            preview.setStyleName( "preview" );
-        }
-    }
-
-    @Override
     public HasWidgets getCommentsContainer() {
         return commentsContainer;
     }
@@ -172,12 +148,18 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
 
     @Override
     public void setCaseNumber(Long caseNumber) {
+        number.setText("CRM-" + caseNumber);
         fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
     }
 
     @Override
     public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
         fileUploader.setUploadHandler(handler);
+    }
+
+    @Override
+    public HasVisibility backBtnVisibility() {
+        return backButtonContainer;
     }
 
     @Override
@@ -190,8 +172,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         return timeElapsed;
     }
 
-
-    @UiHandler( "fullScreen" )
+    @UiHandler( "number" )
     public void onFullScreenClicked ( ClickEvent event) {
         event.preventDefault();
 
@@ -218,17 +199,14 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
-        fullScreen.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
-        header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.TITLE_LABEL);
+        number.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);
         creationDate.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.DATE_CREATED_LABEL);
         criticality.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.IMPORTANCE_LABEL);
         product.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRODUCT_LABEL);
         state.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.STATE_LABEL);
         timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.TIME_ELAPSED_LABEL);
-        company.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMPANY_LABEL);
         contact.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.CONTACT_LABEL);
-        ourCompany.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.OUR_COMPANY_LABEL);
         manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER_LABEL);
         subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION_LABEL);
         name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME_LABEL);
@@ -240,13 +218,9 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     HTMLPanel preview;
     @UiField
-    Anchor fullScreen;
-    @UiField
     Element privateIssue;
     @UiField
-    Element header;
-    @UiField
-    SpanElement creationDate;
+    Element creationDate;
     @UiField
     SpanElement product;
     @UiField
@@ -256,17 +230,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField
     SpanElement criticality;
     @UiField
-    LabelElement company;
-    @UiField
     SpanElement contact;
-    @UiField
-    LabelElement ourCompany;
     @UiField
     SpanElement manager;
     @UiField
-    SpanElement name;
+    HeadingElement name;
     @UiField
-    SpanElement info;
+    DivElement info;
     @Inject
     @UiField
     Lang lang;
@@ -279,7 +249,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     @UiField(provided = true)
     AttachmentList attachmentContainer;
     @UiField
-    DivElement subscriptions;
+    Element subscriptions;
     @UiField
     HTMLPanel timeElapsedContainer;
     @Inject
@@ -290,6 +260,12 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     CaseMetaView caseMetaView;
     @UiField
     Button backButton;
+    @UiField
+    Anchor number;
+    @UiField
+    Element author;
+    @UiField
+    HTMLPanel backButtonContainer;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
     @Inject

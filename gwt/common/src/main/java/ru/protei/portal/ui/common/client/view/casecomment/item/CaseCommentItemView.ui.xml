@@ -6,27 +6,26 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel tag="li" ui:field="root" styleName="left">
-
         <ul class="list-inline m-b-10">
+            <li ui:field="date" class="date-time"/>
+            <li ui:field="owner" class="name"/>
             <li class="issue-link">
                 <issuelink:CaseMetaView ui:field="remoteLink" visible="false" enabled="false" showLabel="false"/>
             </li>
-            <li ui:field="date" class="date-time"/>
-            <li ui:field="owner" class="name"/>
+            <i ui:field="privateComment"/>
             <li ui:field="info" class="info hide p-l-5 p-r-5"/>
             <li ui:field="timeElapsed" class="time-label"/>
             <li ui:field="status" class="status"/>
             <li ui:field="options">
                 <span class="options">
-                    <i ui:field="privateComment" class="fa fa-lg fa-unlock-alt pull-left"/>
                     <g:Anchor href="javascript:;" ui:field="reply">
-                        <i class="fa fa-reply"/>
+                        <i class="fas fa-reply"/>
                     </g:Anchor>
                     <g:Anchor href="javascript:;" ui:field="edit">
-                        <i class="fa fa-pencil"/>
+                        <i class="fas fa-pencil-alt"/>
                     </g:Anchor>
                     <g:Anchor href="javascript:;" ui:field="remove">
-                        <i class="fa fa-trash"/>
+                        <i class="fas fa-trash"/>
                     </g:Anchor>
                 </span>
             </li>
@@ -39,7 +38,7 @@
                 </div>
             </div>
 
-            <div class="message">
+            <div class="message" ui:field="messageContainer">
                 <g:HTMLPanel ui:field="message" styleName="markdown"/>
                 <div class="attachment-block" ui:field="attachBlock">
                     <label style="font-size: 11px;font-weight: bold;">

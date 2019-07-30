@@ -4,23 +4,19 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="main-content grid">
-        <div class="block low col-xs-9">
+    <g:HTMLPanel styleName="p-3 row">
+        <div class="block low col-md-9">
             <platelist:PlateList ui:field="childContainer"
                                  styleName="plate-list"
                                  createButtonVisible="false"/>
             <g:HTMLPanel ui:field="loader" styleName="spinner-loader">
-                <div class="spinner-border spinner-border-md text-info" role="status">
+                <div class="spinner-border spinner-border-md text-complete" role="status">
                     <span class="sr-only">Loading...</span>
                 </div>
             </g:HTMLPanel>
-            <div class="pager-container">
-                <div class="table-pager">
-                    <div ui:field="label" class="pull-left pager-label m-l-10 m-r-5 m-t-5 m-b-5">Всего записей 0</div>
-                </div>
-            </div>
+            <g:HTMLPanel ui:field="pagerContainer" styleName="pager-container" />
         </div>
-        <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-xs-3"/>
-    </g:HTMLPanel>
 
+        <g:HTMLPanel ui:field="filterContainer" styleName="filter-container col-md-3"/>
+    </g:HTMLPanel>
 </ui:UiBinder>

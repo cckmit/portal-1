@@ -1,12 +1,31 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
-    <g:HTMLPanel ui:field="notify" styleName="notify">
-        <div class="body">
-            <span class="icon-mIcon"></span>
-            <span ui:field="message" class="text"></span>
-            <span ui:field="timer" class="timer"></span>
+    <g:HTMLPanel ui:field="notify" styleName="gritter-item-wrapper">
+        <div class="gritter-top"></div>
+        <div class="gritter-item">
+            <g:HTMLPanel styleName="gritter-image" ui:field="iconContainer">
+                <g:HTMLPanel styleName="swal-icon swal-icon--success" ui:field="iconSuccess">
+                    <span class="swal-icon--success__line swal-icon--success__line--long"></span>
+                    <span class="swal-icon--success__line swal-icon--success__line--tip"></span>
+
+                    <div class="swal-icon--success__ring"></div>
+                    <div class="swal-icon--success__hide-corners"></div>
+                </g:HTMLPanel>
+                <g:HTMLPanel styleName="swal-icon swal-icon--error" ui:field="iconError">
+                    <div class="swal-icon--error__x-mark">
+                        <span class="swal-icon--error__line swal-icon--error__line--left"></span>
+                        <span class="swal-icon--error__line swal-icon--error__line--right"></span>
+                    </div>
+                </g:HTMLPanel>
+            </g:HTMLPanel>
+            <div class="gritter-with-image">
+                <span class="gritter-title" ui:field="title"/>
+                <p ui:field="message"/>
+            </div>
+            <div style="clear:both"></div>
         </div>
+        <div class="gritter-bottom"></div>
     </g:HTMLPanel>
 
 

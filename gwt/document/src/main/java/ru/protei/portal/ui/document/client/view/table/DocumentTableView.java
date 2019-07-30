@@ -107,6 +107,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        downloadClickColumn.setDownloadCustomImage("./images/pdficon.png");
 
         columns.add(id);
         columns.add(documentName);

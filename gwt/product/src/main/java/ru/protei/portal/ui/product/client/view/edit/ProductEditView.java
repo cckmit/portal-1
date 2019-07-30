@@ -42,6 +42,25 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         historyVersion.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         configuration.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
         cdrDescription.setRenderer((text, consumer) -> activity.renderMarkdownText(text, consumer));
+
+        historyVersion.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
+            @Override
+            public void onDisplayPreviewChanged( boolean isDisplay ) {
+                activity.onDisplayPreviewChanged( HISTORY_VERSION, isDisplay );
+            }
+        } );
+        configuration.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
+            @Override
+            public void onDisplayPreviewChanged( boolean isDisplay ) {
+                activity.onDisplayPreviewChanged( CONFIGURATION, isDisplay );
+            }
+        } );
+        cdrDescription.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
+            @Override
+            public void onDisplayPreviewChanged( boolean isDisplay ) {
+                activity.onDisplayPreviewChanged( CDR_DESCRIPTION, isDisplay );
+            }
+        } );
     }
 
     @Override
@@ -74,6 +93,21 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public HasValidable productSubscriptionsValidator() {
         return subscriptions;
+    }
+
+    @Override
+    public void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed ) {
+        historyVersion.setDisplayPreview( isPreviewAllowed );
+    }
+
+    @Override
+    public void setConfigurationPreviewAllowing( boolean isPreviewAllowed ) {
+        configuration.setDisplayPreview( isPreviewAllowed );
+    }
+
+    @Override
+    public void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
+       cdrDescription.setDisplayPreview( isPreviewAllowed );
     }
 
     @Override
@@ -139,16 +173,15 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void showElements(boolean isAll) {
-        parametersPanel.setVisible(isAll);
-        typePanel.setVisible(isAll);
+        typeContainer.setVisible(isAll);
+        devUnitContainer.setVisible(isAll);
+        componentsContainer.setVisible(isAll);
         if (isAll) {
-            root.addStyleName("panel");
-            namePanel.removeStyleName("col-xs-12");
-            namePanel.addStyleName("col-xs-10");
+            nameContainer.removeStyleName("col-md-12");
+            nameContainer.addStyleName("col-md-7");
         } else {
-            root.removeStyleName("panel");
-            namePanel.removeStyleName("col-xs-10");
-            namePanel.addStyleName("col-xs-12");
+            nameContainer.removeStyleName("col-md-7");
+            nameContainer.addStyleName("col-md-12");
         }
     }
 
@@ -210,7 +243,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
 
     @UiField
-    HTMLPanel namePanel;
+    HTMLPanel nameContainer;
     @UiField
     LabelElement nameLabel;
     @UiField
@@ -252,14 +285,12 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField
     TextBox wikiLink;
     @UiField
-    HTMLPanel parametersPanel;
+    HTMLPanel typeContainer;
     @UiField
-    HTMLPanel typePanel;
-    @UiField
-    HTMLPanel root;
-
+    HTMLPanel componentsContainer;
 
     AbstractProductEditActivity activity;
+
 
     private static ProductViewUiBinder ourUiBinder = GWT.create (ProductViewUiBinder.class);
     interface ProductViewUiBinder extends UiBinder<HTMLPanel, ProductEditView > {}

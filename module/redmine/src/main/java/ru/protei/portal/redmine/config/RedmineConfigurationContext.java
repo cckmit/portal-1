@@ -7,14 +7,16 @@ import ru.protei.portal.redmine.factory.CaseUpdaterFactory;
 import ru.protei.portal.redmine.handlers.RedmineBackChannelHandler;
 import ru.protei.portal.redmine.handlers.RedmineNewIssueHandler;
 import ru.protei.portal.redmine.handlers.RedmineUpdateIssueHandler;
-import ru.protei.portal.redmine.service.CommonService;
-import ru.protei.portal.redmine.service.CommonServiceImpl;
-import ru.protei.portal.redmine.service.RedmineService;
-import ru.protei.portal.redmine.service.RedmineServiceImpl;
+import ru.protei.portal.redmine.service.*;
 
 @Configuration
 @EnableScheduling
 public class RedmineConfigurationContext {
+
+    @Bean
+    public BootstrapService getBootstrapService() {
+        return new BootstrapService();
+    }
 
     @Bean
     public RedmineBackChannelHandler getBackchannelUpdateIssueHandler() {

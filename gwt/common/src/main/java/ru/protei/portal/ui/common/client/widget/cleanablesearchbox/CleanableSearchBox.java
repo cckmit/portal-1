@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.cleanablesearchbox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.*;
@@ -114,7 +115,7 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
     }
 
     public void setAddon(String addon) {
-        this.addon.setInnerText(addon);
+        this.addonText.setInnerText(addon);
         this.addon.removeClassName("hide");
     }
 
@@ -130,10 +131,12 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
     Anchor textBoxAction;
 
     @UiField
-    SpanElement addon;
+    DivElement addon;
 
     @UiField
     Element addonIcon;
+    @UiField
+    SpanElement addonText;
 
 
     private boolean enabled = true;

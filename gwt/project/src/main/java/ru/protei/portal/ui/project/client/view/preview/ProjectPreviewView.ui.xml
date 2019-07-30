@@ -9,90 +9,97 @@
              xmlns:team="urn:import:ru.protei.portal.ui.project.client.view.widget.team"
 >
 
-    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview project">
-            <div class="pull-right">
-                <g:Button ui:field="removeBtn" styleName="btn btn-danger" title="{lang.buttonRemove}">
-                    <i class="fa fa-trash-o"/>
-                </g:Button>
-                <g:Button ui:field="fullScreenBtn" styleName="btn btn-white" title="{lang.fullScreen}">
-                    <i class="fa fa-external-link"/>
-                </g:Button>
+    <g:HTMLPanel ui:field="preview" styleName="preview project">
+        <div class="card card-default no-border">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-1 p-r-0">
+                        <g:Anchor ui:field="fullScreenBtn" styleName="fa fa-lg fa-external-link-alt m-t-5" href="#"/>
+                        <g:Anchor ui:field="removeBtn" styleName="fa fa-lg fa-trash m-t-5" href="#"/>
+                    </div>
+                    <g:TextBox ui:field="projectName" styleName="col-md-6 project-name"/>
+
+                    <div class="col-md-5 pull-right">
+                        <div class="inline m-l-10">
+                            <small>
+                                <ui:text from="{lang.projectCreateBy}"/>
+                            </small>
+                            <small ui:field="initiatorShortName" class="name no-margin bold"/>
+                            <small ui:field="creationDate" class="datetime no-margin"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <g:TextArea styleName="pre-formatted-info project-details form-control" ui:field="details"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <label class="col-md-3 bold small m-t-5">
+                        <ui:text from="{lang.projectCustomerType}"/>
+                    </label>
+                    <cutomertype:CustomerTypeSelector ui:field="customerType" addStyleNames="col-md-9"/>
+
+                    <label class="col-md-3 bold small m-t-5">
+                        <ui:text from="{lang.projectCustomerCompany}"/>
+                    </label>
+                    <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}"
+                                             addStyleNames="col-md-9"/>
+                </div>
+                <div class="row">
+                    <label class="col-md-3 bold small m-t-5">
+                        <ui:text from="{lang.projectRegion}"/>
+                    </label>
+                    <region:RegionButtonSelector ui:field="projectRegion" addStyleNames="col-md-9"/>
+                    <label class="col-md-3 bold small m-t-5">
+                        <ui:text from="{lang.projectDirection}"/>
+                    </label>
+                    <productdirection:ProductDirectionButtonSelector ui:field="projectDirection"
+                                                                     addStyleNames="col-md-9"/>
+                </div>
+                <div class="row">
+                    <label class="col-md-3 bold small ">
+                        <ui:text from="{lang.projectProducts}"/>
+                    </label>
+                    <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"
+                                                                  addStyleNames="col-md-9"/>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <h5>
+                            <ui:text from="{lang.projectTeam}"/>
+                        </h5>
+                        <team:TeamSelector ui:field="team"/>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <h5>
+                            <ui:text from="{lang.projectState}"/>
+                        </h5>
+                        <div class="col-md-4 w-i fa-3x">
+                            <state:RegionStateIconSelector ui:field="projectState"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <h5>
+                            <ui:text from="{lang.equipmentDocuments}"/>
+                        </h5>
+                        <g:HTMLPanel ui:field="documents" styleName="form-group col-md-12 main-content-padding-0 project-document-preview"/>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-md-12">
+                        <h5>
+                            <ui:text from="{lang.comments}"/>
+                        </h5>
+                        <g:HTMLPanel ui:field="commentsContainer"/>
+                    </div>
+                </div>
             </div>
-
-            <fieldset class="header grid grid-indent">
-                <legend><lable ui:field="header"/></legend>
-                <div class="col-xs-7">
-                    <g:TextBox ui:field="projectName" styleName="col-xs-12 m-b-0 project-name" />
-                </div>
-                <div class="col-xs-5">
-                    <label class="col-xs-5 col-md-5"><ui:text from="{lang.projectCreationDate}"/></label>
-                    <label class="col-xs-7 col-md-7" ui:field="creationDate"/>
-                </div>
-
-                <div class="col-xs-12 m-b-5">
-                    <label class="col-xs-12"><ui:text from="{lang.projectDescription}"/></label>
-                    <g:TextArea styleName="col-xs-12 col-md-12 pre-formatted-info project-details" ui:field="details"/>
-                </div>
-
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectRegion}"/></label>
-                    <div class="col-xs-7">
-                        <region:RegionButtonSelector ui:field="projectRegion" />
-                    </div>
-                </div>
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectDirection}"/></label>
-                    <div class="col-xs-7">
-                        <productdirection:ProductDirectionButtonSelector ui:field="projectDirection" />
-                    </div>
-                </div>
-
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectCustomerCompany}"/></label>
-                    <div class="col-xs-7">
-                        <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}"/>
-                    </div>
-                </div>
-
-                <div class="col-xs-6">
-                    <label class="col-xs-5 col-md-5 h30"><ui:text from="{lang.projectCustomerType}"/></label>
-                    <div class="col-xs-7">
-                        <cutomertype:CustomerTypeSelector ui:field="customerType"/>
-                    </div>
-                </div>
-            </fieldset>
-
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.projectTeam}"/></legend>
-                <team:TeamSelector ui:field="team" addStyleNames="form-group col-xs-12"/>
-            </fieldset>
-
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.projectProducts}"/></legend>
-                <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"
-                                          addStyleNames="form-group col-xs-12"/>
-            </fieldset>
-
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.projectState}"/></legend>
-                <div class="col-xs-2 w-i fa-3x">
-                    <state:RegionStateIconSelector ui:field="projectState" />
-                </div>
-            </fieldset>
-
-            <fieldset class="header grid grid-indent">
-                <legend><ui:text from="{lang.comments}"/></legend>
-                <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
-            </fieldset>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.equipmentDocuments}"/></legend>
-                <g:HTMLPanel ui:field="documents" styleName="form-group col-xs-12 main-content-padding-0 project-document-preview"/>
-            </fieldset>
-
-        </g:HTMLPanel>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

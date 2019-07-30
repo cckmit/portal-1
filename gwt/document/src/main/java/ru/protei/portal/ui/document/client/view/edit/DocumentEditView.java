@@ -181,7 +181,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
             @Override
             public void setVisible(boolean visible) {
                 selectFileContainer.setVisible(visible);
-                nameContainer.getElement().setClassName("form-group " + (visible ? "col-xs-6" : "col-xs-9"));
+                nameContainer.getElement().setClassName("form-group " + (visible ? "col-md-6" : "col-md-9"));
             }
         };
     }

@@ -2,14 +2,14 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:lang="urn:import:ru.protei.portal.ui.common.client.widget.subscription.locale"
              xmlns:validatefield="urn:import:ru.protei.portal.ui.common.client.widget.validatefield">
-    <g:HTMLPanel>
-        <lang:LocaleButtonSelector ui:field="locale" addStyleNames="form-group col-xs-1"/>
+    <g:HTMLPanel styleName="row form-group">
+        <lang:LocaleButtonSelector ui:field="locale" addStyleNames="col-md-2"/>
 
-        <div class="form-group col-xs-11">
+        <div class="col-md-10">
             <validatefield:ValidableTextBox ui:field="email"
                                             regexp="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
                                             notNull="false"
-                                            styleName="input-field"/>
+                                            styleName="form-control"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

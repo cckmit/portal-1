@@ -104,6 +104,7 @@ public class InputWithHintsSelector<T> extends Selector<T> implements HasValidab
     }
 
     public void setHeader( String header ) {
+        this.label.removeClassName( "hide" );
         this.label.setInnerText( header );
     }
 

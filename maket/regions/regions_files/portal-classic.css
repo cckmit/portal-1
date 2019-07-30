@@ -21418,7 +21418,7 @@ label.required:after {
   max-height: none;
 }
 
-.input-field.description, .date .description.form-control {
+.form-control.description, .date .description.form-control {
   min-height: 200px;
 }
 
@@ -21534,7 +21534,7 @@ label.bordered:after {
   margin: 0;
 }
 
-.input-field.required, .date .required.form-control,
+.form-control.required, .date .required.form-control,
 .btn.required {
   border: 1px solid #f54646 !important;
 }
@@ -22980,11 +22980,11 @@ body {
   border: transparent;
 }
 
-.btn-white, .date .btn-default {
+.btn-default, .date .btn-default {
   background-color: white;
   border-color: #ced2d7 #c5cad0 #ced2d7;
 }
-.btn-white:hover, .date .btn-default:hover {
+.btn-default:hover, .date .btn-default:hover {
   background: #e2e7eb;
   border-color: #d8dde1;
 }
@@ -23018,8 +23018,8 @@ body {
   font-weight: 600;
 }
 
-input.input-field, .date input.form-control,
-textarea.input-field,
+input.form-control, .date input.form-control,
+textarea.form-control,
 .date textarea.form-control {
   height: 30px;
   max-height: 30px;
@@ -23036,14 +23036,14 @@ textarea.input-field,
   transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
   font-size: 12px;
 }
-input.input-field:focus, .date input.form-control:focus,
-textarea.input-field:focus,
+input.form-control:focus, .date input.form-control:focus,
+textarea.form-control:focus,
 .date textarea.form-control:focus {
   outline: 0;
   border-color: #008080;
 }
 
-textarea.input-field, .date textarea.form-control {
+textarea.form-control, .date textarea.form-control {
   line-height: 1.4 !important;
   padding: 10px;
 }
@@ -23207,7 +23207,7 @@ textarea.input-field, .date textarea.form-control {
   margin: 0 -15px -15px -15px;
   background: rgba(0, 128, 128, 0.1);
 }
-.chats-footer .input-field, .chats-footer .date .form-control, .date .chats-footer .form-control {
+.chats-footer .form-control, .chats-footer .date .form-control, .date .chats-footer .form-control {
   min-height: 100px;
 }
 
@@ -23231,7 +23231,7 @@ blockquote {
   border-collapse: separate;
 }
 .input-group .form-control,
-.input-group .input-field,
+.input-group .form-control,
 .input-group .date .form-control,
 .date .input-group .form-control {
   width: 100%;
@@ -23240,7 +23240,7 @@ blockquote {
 .input-group .input-group-btn,
 .input-group .input-group-addon,
 .input-group .form-control,
-.input-group .input-field,
+.input-group .form-control,
 .input-group .date .form-control,
 .date .input-group .form-control {
   display: table-cell;

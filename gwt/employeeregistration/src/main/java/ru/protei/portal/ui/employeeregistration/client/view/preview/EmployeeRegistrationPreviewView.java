@@ -3,6 +3,7 @@ package ru.protei.portal.ui.employeeregistration.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -105,7 +106,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     }
 
     @Override
-    public void setCreated(String created) {
+    public void setCreationDate(String created) {
         this.created.setInnerText(created);
     }
 
@@ -124,7 +125,7 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
     public void setIssues(Set<CaseLink> issues) {
         this.caseMetaView.setLinks(issues);
     }
-    
+
     @Override
     public HasWidgets getCommentsContainer() {
         return commentContainer;
@@ -150,18 +151,11 @@ public class EmployeeRegistrationPreviewView extends Composite implements Abstra
         this.additionalSoft.setInnerText( additionalSoft );
     }
 
-    @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
-    }
-
-    @UiField
-    Element header;
     @Inject
     @UiField(provided = true)
     CaseMetaView caseMetaView;
     @UiField
-    SpanElement fullName;
+    HeadingElement fullName;
     @UiField
     SpanElement headOfDepartment;
     @UiField

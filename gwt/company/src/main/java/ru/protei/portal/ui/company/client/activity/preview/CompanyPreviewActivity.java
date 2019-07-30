@@ -4,10 +4,13 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -17,6 +20,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,15 +46,14 @@ public abstract class CompanyPreviewActivity
     }
 
     private void fillView( Company value ) {
-
-        if ( value.getCompanyGroup() == null ) {
-            view.setGroupVisible( false );
-        }
-
         view.setName(value.getCname());
 
-        view.setCategory( value.getCategory() == null ? "" : value.getCategory().getName() );
-        view.setParentCompany(  value.getParentCompanyName() );
+        String categoryImage = null;
+        if ( value.getCategory() != null ) {
+            En_CompanyCategory enCategory = En_CompanyCategory.findById(value.getCategory().getId());
+            categoryImage = "./images/company_" + enCategory.name().toLowerCase() + ".svg";
+        }
+        view.setCategory( categoryImage );
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
@@ -64,6 +67,7 @@ public abstract class CompanyPreviewActivity
         view.setInfo( value.getInfo() );
 
         requestSubscriptionEmails(value.getId());
+        requestTags(value.getId());
         requestParentAndChildCompanies(value.getId());
 
         view.getContactsContainer().clear();
@@ -83,11 +87,18 @@ public abstract class CompanyPreviewActivity
         }
     }
 
-    private void requestParentAndChildCompanies( Long parentCompanyId ) {
-        companyController.getCompany( parentCompanyId, new ShortRequestCallback<Company>()
+    private void requestParentAndChildCompanies( Long companyId ) {
+        companyController.getCompany( companyId, new ShortRequestCallback<Company>()
                 .setOnSuccess( company-> {
-                    view.setParentCompany( company.getParentCompanyName() );
-                    view.setChildrenCompanies(  CollectionUtils.stream( company.getChildCompanies() ).map( Company::getCname).collect( Collectors.joining(", ")) );
+
+                    if (StringUtils.isNotEmpty( company.getParentCompanyName()) ) {
+                        view.setCompanyLinksMessage( lang.companyIsAPartOfCompany( company.getParentCompanyName() ));
+                    }
+
+                    if ( CollectionUtils.isNotEmpty(company.getChildCompanies() )) {
+                        String companyNames = CollectionUtils.stream(company.getChildCompanies()).map(Company::getCname).collect(Collectors.joining(", "));
+                        view.setCompanyLinksMessage( lang.companyIsAHeadOfCompany( companyNames ));
+                    }
                 } ) );
 
     }
@@ -103,7 +114,13 @@ public abstract class CompanyPreviewActivity
                     }
                     view.setSubscriptionEmails(subscriptionsStr);
                 }));
+    }
 
+    private void requestTags(Long companyId) {
+        companyController.getCompanyTags(companyId, new ShortRequestCallback<List<CaseTag>>()
+                .setOnSuccess(tags -> {
+                    view.setTags(new HashSet<>(tags));
+                }));
     }
 
     @Inject

@@ -2,7 +2,6 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:organization="urn:import:ru.protei.portal.ui.common.client.widget.organization"
              xmlns:type="urn:import:ru.protei.portal.ui.equipment.client.widget.type"
-             xmlns:stage="urn:import:ru.protei.portal.ui.equipment.client.widget.stage"
              xmlns:person="urn:import:ru.protei.portal.ui.common.client.widget.selector.person"
              xmlns:sortfield="urn:import:ru.protei.portal.ui.common.client.widget.selector.sortfield"
              xmlns:selector="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
@@ -10,55 +9,57 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="panel">
-        <div class="body">
-            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.equipmentSearchNameOrProject}" styleName="form-group col-xs-12"/>
+    <g:HTMLPanel styleName="card card-default">
+        <div class="card-body row">
+            <cleanablesearchbox:CleanableSearchBox ui:field="name" placeholder="{lang.equipmentSearchNameOrProject}" styleName="form-group col-md-12"/>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label>
                     <ui:text from="{lang.equipmentManager}"/>
                 </label>
                 <person:EmployeeButtonSelector ui:field="manager" defaultValue="{lang.selectorAny}"/>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label>
                     <ui:text from="{lang.equipmentPrimaryUse}"/>
                 </label>
                 <selector:EquipmentButtonSelector ui:field="equipment" hasNullValue="true"/>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
                     <sortfield:SortFieldSelector ui:field="sortField" type="EQUIPMENT" hasNullValue="false"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-white sorting_button"/>
+                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
                 </div>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.equipmentOrganization}"/></label>
-                <organization:OrganizationBtnGroupMulti ui:field="organizationCode" styleName="form-group btn-group btn-group-justified"/>
+                <organization:OrganizationBtnGroupMulti ui:field="organizationCode"/>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.equipmentClassifierCode}"/></label>
-                <g:TextBox ui:field="classifierCode" styleName="input-field dn-classifier-code" maxLength="6"/>
+                <g:TextBox ui:field="classifierCode" styleName="form-control dn-classifier-code" maxLength="6"/>
             </div>
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.equipmentRegisterNumber}"/></label>
-                <g:TextBox ui:field="regNum" styleName="input-field dn-register-number" maxLength="3"/>
+                <g:TextBox ui:field="regNum" styleName="form-control dn-register-number" maxLength="3"/>
             </div>
 
 
-            <div class="form-group col-xs-12">
+            <div class="form-group col-md-12">
                 <label><ui:text from="{lang.equipmentType}"/></label>
-                <type:EquipmentTypeBtnGroupMulti ui:field="types" title="{lang.equipmentType}" styleName="form-group btn-group btn-group-justified"/>
+                <type:EquipmentTypeBtnGroupMulti ui:field="types" title="{lang.equipmentType}" addStyleNames="form-group"/>
             </div>
         </div>
-        <div class="footer">
-            <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+        <div class="card-footer">
+            <div class="text-right">
+                <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
+            </div>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

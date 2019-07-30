@@ -6,7 +6,7 @@
    <g:HTMLPanel>
            <div class="form-group">
                <label><ui:text from="{lang.equipmentNewName}"/></label>
-               <g:TextBox ui:field="name" styleName="input-field"/>
+               <g:TextBox ui:field="name" styleName="form-control"/>
            </div>
 
             <small><ui:text from="{lang.equipmentCopyMessage}"/></small>

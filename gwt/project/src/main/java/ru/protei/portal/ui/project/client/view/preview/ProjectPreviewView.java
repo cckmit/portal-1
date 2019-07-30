@@ -72,8 +72,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     }
 
     @Override
-    public void setHeader( String value ) {
-        this.header.setInnerText( value );
+    public void setInitiatorShortName(String value) {
+        this.initiatorShortName.setInnerHTML( value );
     }
 
     @Override
@@ -125,9 +125,9 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     public void showFullScreen( boolean value ) {
         this.fullScreenBtn.setVisible( !value );
         if ( value ) {
-            this.preview.addStyleName( "col-xs-12 col-lg-6" );
+            this.preview.addStyleName( "col-md-12 col-lg-6" );
         } else {
-            this.preview.removeStyleName( "col-xs-12 col-lg-6" );
+            this.preview.removeStyleName( "col-md-12 col-lg-6" );
         }
     }
 
@@ -148,6 +148,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @UiHandler( "fullScreenBtn" )
     public void onFullScreenClicked ( ClickEvent event) {
+        event.preventDefault();
         if ( activity != null ) {
             activity.onFullScreenPreviewClicked();
         }
@@ -155,6 +156,7 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
 
     @UiHandler( "removeBtn" )
     public void onRemoveBtnClicked (ClickEvent event) {
+        event.preventDefault();
         if (activity != null) {
             activity.onRemoveClicked();
         }
@@ -211,16 +213,13 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     HTMLPanel preview;
 
     @UiField
-    Button fullScreenBtn;
+    Anchor fullScreenBtn;
 
     @UiField
-    Button removeBtn;
+    Anchor removeBtn;
 
     @UiField
-    Element header;
-
-    @UiField
-    LabelElement creationDate;
+    Element creationDate;
 
     @Inject
     @UiField(provided = true)
@@ -265,6 +264,8 @@ public class ProjectPreviewView extends Composite implements AbstractProjectPrev
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+    @UiField
+    Element initiatorShortName;
 
     @UiField
     HTMLPanel documents;

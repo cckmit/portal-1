@@ -51,15 +51,10 @@ public interface AbstractIssueEditView extends IsWidget {
     HasVisibility timeElapsedContainerVisibility();
 
     HasValidable companyValidator();
-    HasValidable initiatorValidator();
-    HasValidable productValidator();
-    HasValidable managerValidator();
 
     HasEnabled initiatorState();
 
     HasVisibility numberVisibility();
-
-    HasValue<Integer> number();
 
     void setSubscriptionEmails(String value);
 
@@ -79,6 +74,8 @@ public interface AbstractIssueEditView extends IsWidget {
     HasEnabled managerEnabled();
     HasEnabled stateEnabled();
 
+    void setNumber(Integer num);
+
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
     HasVisibility timeElapsedLabelVisibility();
@@ -97,6 +94,11 @@ public interface AbstractIssueEditView extends IsWidget {
     void applyCompanyValueIfOneOption();
 
     void setTagsEnabled(boolean enabled);
+    void setTagsAddButtonEnabled(boolean enabled);
 
     void setStateWorkflow(En_CaseStateWorkflow workflow);
+
+    void setDescriptionPreviewAllowed( boolean isPreviewAllowed );
+
+    String DESCRIPTION = "description";
 }

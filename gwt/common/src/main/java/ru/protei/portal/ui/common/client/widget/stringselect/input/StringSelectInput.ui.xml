@@ -6,7 +6,7 @@
         <g:HTMLPanel ui:field="inputContainer" styleName="select2-search-field flex-parent">
             <g:TextBox ui:field="input" styleName="select2-input"/>
             <g:HTMLPanel styleName="select2-button">
-                <g:Anchor ui:field="add" href="#" visible="false" styleName="select2-button-add"/>
+                <g:Anchor ui:field="add" href="#" visible="false" styleName="select2-button-add p-t-5"/>
             </g:HTMLPanel>
         </g:HTMLPanel>
     </g:HTMLPanel>

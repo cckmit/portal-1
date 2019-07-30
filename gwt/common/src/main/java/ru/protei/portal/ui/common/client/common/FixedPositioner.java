@@ -56,5 +56,5 @@ public class FixedPositioner {
     public static final int NAVBAR_TOP_OFFSET = 50;
     private Map<Element, Integer> elemsToTopOffsets = new HashMap<>();
     private HandlerRegistration windowScrollHandler;
-    private final String FIX_CLASS_NAME = "fixed";
+    private final String FIX_CLASS_NAME = "card-fixed";
 }

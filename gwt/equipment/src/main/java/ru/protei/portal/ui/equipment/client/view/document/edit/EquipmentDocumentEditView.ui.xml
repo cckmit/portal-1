@@ -19,55 +19,55 @@
                     <ui:text from="{lang.documentCommonHeader}"/>
                     <small ui:field="created" class="pull-right document-creator-info"/>
                 </legend>
-                <div class="grid grid-indent">
-                    <g:HTMLPanel styleName="form-group col-xs-6" ui:field="nameContainer">
+                <div class="row">
+                    <g:HTMLPanel styleName="form-group col-md-6" ui:field="nameContainer">
                         <label><ui:text from="{lang.documentName}"/></label>
-                        <validatefield:ValidableTextBox ui:field="name" styleName="input-field" notNull="true"/>
+                        <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                     </g:HTMLPanel>
-                    <g:HTMLPanel styleName="form-group col-xs-3" ui:field="documentUploaderContainer">
+                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="documentUploaderContainer">
                         <label ui:field="documentUploaderLabel"><ui:text from="{lang.uploadDocuments}"/></label>
                         <div class="input-group">
-                            <g:TextBox ui:field="fileName" styleName="input-field" enabled="false"/>
+                            <g:TextBox ui:field="fileName" styleName="form-control" enabled="false"/>
                             <div class="input-group-btn">
-                                <g:Button ui:field="selectFileButton" styleName="btn btn-white">
+                                <g:Button ui:field="selectFileButton" styleName="btn btn-default">
                                     <i class="ion-upload"/>
                                 </g:Button>
                             </div>
                             <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
                         </div>
                     </g:HTMLPanel>
-                    <div class="form-group col-xs-3">
+                    <div class="form-group col-md-3">
                         <label><ui:text from="{lang.documentApproveType}"/></label>
-                        <option:OptionItem ui:field="approved" styleName="form-group col-xs-12 checkbox single document-approval" name="{lang.documentApproved}"/>
+                        <option:OptionItem ui:field="approved" styleName="form-group col-md-12 checkbox single document-approval" name="{lang.documentApproved}"/>
                     </div>
 
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-md-4">
                         <label><ui:text from="{lang.documentCategory}"/></label>
                         <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
                     </div>
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-md-4">
                         <label><ui:text from="{lang.documentType}"/></label>
                         <doctype:DocumentTypeSelector ui:field="documentType"/>
                     </div>
-                    <div class="form-group col-xs-4">
+                    <div class="form-group col-md-4">
                         <label><ui:text from="{lang.documentVersion}"/></label>
-                        <g:TextBox ui:field="version" styleName="input-field"/>
+                        <g:TextBox ui:field="version" styleName="form-control"/>
                     </div>
 
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-md-6">
                         <label><ui:text from="{lang.equipmentDecimalNumber}"/></label>
                         <text:RawTextButtonSelector ui:field="decimalNumberSelector"/>
                     </div>
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-md-6">
                         <label><ui:text from="{lang.inventoryNumber}"/></label>
-                        <g:LongBox ui:field="inventoryNumber" styleName="input-field"/>
+                        <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
                     </div>
 
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-md-6">
                         <label><ui:text from="{lang.documentRegistrar}"/></label>
                         <person:EmployeeButtonSelector ui:field="registrar"/>
                     </div>
-                    <div class="form-group col-xs-6">
+                    <div class="form-group col-md-6">
                         <label><ui:text from="{lang.documentContractor}"/></label>
                         <person:EmployeeButtonSelector ui:field="contractor"/>
                     </div>
@@ -76,24 +76,24 @@
                 <legend class="header">
                     <ui:text from="{lang.annotation}"/>
                 </legend>
-                <div class="grid grid-indent">
-                    <div class="form-group col-xs-12">
-                        <g:TextArea ui:field="annotation" styleName="input-field comment"/>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <g:TextArea ui:field="annotation" styleName="form-control comment"/>
                     </div>
                 </div>
 
                 <legend class="header">
                     <ui:text from="{lang.documentKeywords}"/>
                 </legend>
-                <div class="grid grid-indent">
-                    <div class="form-group col-xs-12">
+                <div class="row">
+                    <div class="form-group col-md-12">
                         <keyword:StringSelectInput ui:field="keywords"/>
                     </div>
                 </div>
             </div>
             <div class="footer">
-                <g:Button ui:field="saveButton" styleName="btn btn-success" text="{lang.buttonSave}"/>
-                <g:Button ui:field="cancelButton" styleName="btn btn-white close_btn" text="{lang.buttonCancel}"/>
+                <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
             </div>
         </div>
     </g:HTMLPanel>

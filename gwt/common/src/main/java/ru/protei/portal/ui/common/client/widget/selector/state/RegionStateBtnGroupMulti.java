@@ -25,7 +25,7 @@ public class RegionStateBtnGroupMulti extends ToggleBtnGroupMulti<En_RegionState
         clear();
 
         for ( En_RegionState state : En_RegionState.values() ) {
-            addBtnWithIcon( lang.getStateIcon( state )+" fa-lg", "btn btn-white", null, state );
+            addBtnWithIcon( lang.getStateIcon( state )+" fa-lg", "btn btn-default", null, state );
         }
     }
 

@@ -2,6 +2,7 @@ package ru.protei.portal.ui.contract.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -9,6 +10,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_ContractState;
 import ru.protei.portal.core.model.dict.En_ContractType;
@@ -60,7 +62,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
 
     @Override
     public void setState(String value) {
-        this.state.setInnerText(value);
+        this.state.setSrc(value);
     }
 
     @Override
@@ -75,7 +77,7 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
 
     @Override
     public void setDescription(String value) {
-        this.description.setInnerText(value);
+        this.description.setText(value);
     }
 
     @Override
@@ -123,17 +125,17 @@ public class ContractPreviewView extends Composite implements AbstractContractPr
     @UiField
     HTMLPanel commentContainer;
     @UiField
-    SpanElement type;
+    Element type;
     @UiField
     SpanElement dateSigning;
     @UiField
     SpanElement dateValid;
     @UiField
-    SpanElement description;
+    InlineLabel description;
     @UiField
     SpanElement direction;
     @UiField
-    SpanElement state;
+    ImageElement state;
     @UiField
     SpanElement organization;
     @UiField

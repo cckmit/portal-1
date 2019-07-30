@@ -56,4 +56,15 @@ public interface AbstractProductEditView extends IsWidget {
     HasValidable productSubscriptionsValidator();
 
     void showElements(boolean isAll);
+
+
+    void setHistoryVersionPreviewAllowing( boolean isPreviewAllowed );
+
+    void setConfigurationPreviewAllowing( boolean isPreviewAllowed );
+
+    void setCdrDescriptionPreviewAllowed( boolean isPreviewAllowed );
+
+    String HISTORY_VERSION = "historyVersion";
+    String CONFIGURATION = "configuration";
+    String CDR_DESCRIPTION = "cdr_description";
 }

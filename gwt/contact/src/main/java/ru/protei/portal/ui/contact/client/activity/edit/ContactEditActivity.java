@@ -45,7 +45,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
         origin = event.origin;
 
         if (event.id == null) {
-            this.fireEvent(new AppEvents.InitPanelName(lang.newContact()));
             Person newPerson = new Person();
             newPerson.setCompanyId(event.companyId);
             newPerson.setCompany(event.company);
@@ -65,7 +64,6 @@ public abstract class ContactEditActivity implements AbstractContactEditActivity
 
                         @Override
                         public void onSuccess(UserLogin userLogin) {
-                            fireEvent(new AppEvents.InitPanelName( lang.editContactHeader(person.getDisplayName())));
                             initialView(person, userLogin == null ? new UserLogin() : userLogin);
                         }
                     } );

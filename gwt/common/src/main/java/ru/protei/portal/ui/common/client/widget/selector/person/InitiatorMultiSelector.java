@@ -3,6 +3,8 @@ package ru.protei.portal.ui.common.client.widget.selector.person;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.inject.Inject;
+import liquibase.util.CollectionUtil;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.UiConstants;
@@ -11,13 +13,11 @@ import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.input.MultipleInputSelector;
 import ru.protei.portal.ui.common.client.widget.selector.item.SelectorItem;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -38,7 +38,9 @@ public class InitiatorMultiSelector
     @Override
     public void fillOptions( List< PersonShortView > options ) {
         clearOptions();
-        this.persons = options;
+        for ( PersonShortView option : emptyIfNull( options) ) {
+            addOption( option.getDisplayShortName(), option );
+        }
     }
 
     @Override
@@ -55,17 +57,14 @@ public class InitiatorMultiSelector
     }
 
     @Override
-    protected void showPopup( IsWidget relative ) {
-        if(persons != null){
-            for ( PersonShortView type : persons ) {
-                addOption( type.getDisplayShortName(), type );
-            }
-            persons = null;
+    public void refreshValue() {
+        Set<PersonShortView> value = getValue();
+        if (!isEmpty( value )) {
+            value.retainAll( getValues() );
         }
-        super.showPopup( relative );
+        setValue( value );
+        super.refreshValue();
     }
-
-    public void setFired ( boolean value ) { this.fired = value; }
 
     public void updateCompanies() {
         if (model == null || companiesSupplier == null) {
@@ -80,7 +79,7 @@ public class InitiatorMultiSelector
             setValue(null);
         }
 
-        model.updateCompanies(this, companyIds, fired);
+        model.updateCompanies(this, companyIds, false);
 
     }
 
@@ -90,9 +89,6 @@ public class InitiatorMultiSelector
 
     Lang lang;
     private InitiatorModel model;
-    private boolean fired;
-    private List<PersonShortView> persons;
-
 
 
     private Supplier<Set<EntityOption>> companiesSupplier = new Supplier<Set<EntityOption>>() {

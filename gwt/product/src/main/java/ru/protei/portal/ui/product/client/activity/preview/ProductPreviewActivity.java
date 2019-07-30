@@ -39,7 +39,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     private void fillView( DevUnit product ) {
         view.setName(product.getName());
-        view.setType(typeLang.getName(product.getType()));
+        view.setTypeImage(product.getType() == null ? null : product.getType().getImgSrc());
         view.setInfo( product.getInfo() );
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 

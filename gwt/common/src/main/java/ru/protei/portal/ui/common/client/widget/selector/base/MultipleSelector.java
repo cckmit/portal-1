@@ -65,18 +65,25 @@ public abstract class MultipleSelector<T>
     }
 
     public void addOption( String name, T value ) {
+        addOption(name, null, value);
+    }
+
+    public void addOption( String name, String info, T value ) {
         SelectableItem itemView;
         if ( value == null && hasAnyValue ) {
             itemView = makeAnySelectorItem( name );
         } else {
             itemView = itemFactory.get();
-            itemView.setName( name );
+            itemView.setText( name );
+            itemView.setInfo( info );
             itemView.addValueChangeHandler( this );
             itemViewToModel.put( itemView, value );
             itemToViewModel.put( value, itemView );
             itemToNameModel.put(value, name);
         }
-        itemToDisplayOptionModel.put( value, new DisplayOption( name ) );
+        DisplayOption displayOption = new DisplayOption( name );
+        displayOption.setInfo( info );
+        itemToDisplayOptionModel.put( value, displayOption );
         popup.getChildContainer().add( itemView.asWidget() );
     }
 
@@ -175,7 +182,7 @@ public abstract class MultipleSelector<T>
         popup.getChildContainer().clear();
 
         for ( Map.Entry< T, DisplayOption> entry : itemToDisplayOptionModel.entrySet() ) {
-            String entryText = entry.getValue().getName().toLowerCase();
+            String entryText = entry.getValue().getName().toLowerCase() + (entry.getValue().getInfo() == null ? "" : entry.getValue().getInfo().toLowerCase());
             if ( searchText.isEmpty() || entryText.contains(searchText) ) {
                 SelectableItem itemView = itemToViewModel.get( entry.getKey() );
                 if ( itemView != null ) {
@@ -248,17 +255,10 @@ public abstract class MultipleSelector<T>
         return itemToNameModel.get(item);
     }
 
-    protected void fillItemsSelection() {
-        for (Map.Entry<SelectableItem, T> entry : itemViewToModel.entrySet()) {
-            boolean isSelected = selected.contains(entry.getValue());
-            entry.getKey().setValue(isSelected);
-        }
-    }
-
     private SelectableItem makeAnySelectorItem( String name ) {
         anyItemView = itemFactory.get();
         anyItemView.addStyleName( UiConstants.Styles.MULTIPLE_ANY );
-        anyItemView.setName( name );
+        anyItemView.setText( name );
         anyItemView.addValueChangeHandler( this );
         itemToNameModel.put( null, name );
 

@@ -20,9 +20,8 @@ import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableActivity;
-import ru.protei.portal.ui.product.client.activity.list.AbstractProductTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableActivity;
+import ru.protei.portal.ui.product.client.activity.table.AbstractProductTableView;
 
 public class ProductTableView extends Composite implements AbstractProductTableView{
 
@@ -43,6 +42,8 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
         name.setHandler( activity );
         name.setColumnProvider( columnProvider );
+        description.setHandler( activity );
+        description.setColumnProvider( columnProvider );
         type.setHandler( activity );
         type.setColumnProvider( columnProvider );
         table.setLoadHandler( activity );
@@ -104,6 +105,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         name = new DynamicColumn<>(lang.productName(), "product-name", DevUnit::getName);
+        description = new DynamicColumn<>(lang.productDescription(), null, DevUnit::getInfo);
         type = new ClickColumn<DevUnit>() {
             @Override
             protected void fillColumnHeader(Element element) {
@@ -125,6 +127,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
         table.addColumn( type.header, type.values );
         table.addColumn( name.header, name.values );
+        table.addColumn( description.header, description.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
     }
 
@@ -148,6 +151,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
     ClickColumnProvider< DevUnit > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< DevUnit > editClickColumn;
     DynamicColumn<DevUnit> name;
+    DynamicColumn<DevUnit> description;
     ClickColumn<DevUnit> type;
 
     AbstractProductTableActivity activity;

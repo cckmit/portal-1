@@ -76,6 +76,11 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue< String > email() {
+        return email;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
@@ -83,6 +88,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         workPhone.setValue( "" );
         mobilePhone.setValue( "" );
         ipAddress.setValue( "" );
+        email.setValue( "" );
     }
 
     @UiHandler( "resetBtn" )
@@ -123,10 +129,16 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         fireChangeTimer();
     }
 
+    @UiHandler( "email" )
+    public void onEmailChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
     private void fireChangeTimer() {
         timer.cancel();
         timer.schedule( 300 );
     }
+
 
     @Inject
     @UiField( provided = true )
@@ -146,6 +158,9 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     CleanableSearchBox ipAddress;
+
+    @UiField
+    CleanableSearchBox email;
 
     @UiField
     Button resetBtn;

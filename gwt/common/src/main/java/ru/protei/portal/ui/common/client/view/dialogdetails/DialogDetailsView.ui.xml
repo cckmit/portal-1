@@ -12,12 +12,12 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <g:HTMLPanel ui:field="bodyContainer" styleName='col-xs-12' />
+                        <g:HTMLPanel ui:field="bodyContainer" styleName='col-md-12' />
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <g:Anchor href='#' ui:field="save" styleName="btn btn-primary"><ui:text from="{lang.buttonSave}"/></g:Anchor>
-                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-white"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
+                    <g:Anchor href='#' ui:field="save" styleName="btn btn-complete"><ui:text from="{lang.buttonSave}"/></g:Anchor>
+                    <g:Anchor href='#' ui:field="cancel" styleName="btn btn-default"><ui:text from="{lang.buttonCancel}"/></g:Anchor>
                 </div>
             </div>
         </div>

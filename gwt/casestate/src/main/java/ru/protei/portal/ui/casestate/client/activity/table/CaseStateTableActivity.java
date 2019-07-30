@@ -37,6 +37,11 @@ public abstract class CaseStateTableActivity implements Activity,
     }
 
     @Event
+    public void onClosePreview(CaseStateEvents.ClosePreview event) {
+        animation.closeDetails();
+    }
+
+    @Event
     public void onUpdateItem(CaseStateEvents.UpdateItem changedCaseState) {
         view.updateRow(changedCaseState.caseState);
     }

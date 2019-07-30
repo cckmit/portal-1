@@ -9,6 +9,7 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorWithModel;
 import ru.protei.portal.ui.common.client.widget.selector.base.SelectorModel;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
 
     @Event
     public void onInit( AuthEvents.Success event ) {
-        for (SelectorWithModel< EntityOption > subscriber : subscribers) {
+        for (SelectorWithModel<EntityOption> subscriber : subscribers) {
             subscriber.clearOptions();
         }
     }
@@ -49,26 +50,19 @@ public abstract class HomeCompanyModel implements Activity, SelectorModel<Entity
     }
 
     private void refreshOptions() {
+        companyService.getCompanyOptionList(new CompanyQuery(true).onlyVisibleFields(),
+                new FluentCallback<List<EntityOption>>()
+                        .withSuccess(companies -> {
+                            list.clear();
+                            list.addAll(companies);
 
-        companyService.getCompanyOptionList( new CompanyQuery(true).onlyVisibleFields(), new RequestCallback< List< EntityOption > >() {
-            @Override
-            public void onError( Throwable throwable ) {
-            }
-
-            @Override
-            public void onSuccess( List< EntityOption > companies ) {
-                list.clear();
-                list.addAll( companies );
-
-                notifySubscribers();
-            }
-        } );
+                            notifySubscribers();
+                        }));
     }
 
     @Inject
-    CompanyControllerAsync companyService;
+    private CompanyControllerAsync companyService;
 
     private List< EntityOption > list = new ArrayList<>();
-
-    List<SelectorWithModel> subscribers = new ArrayList<SelectorWithModel>();
+    private List<SelectorWithModel> subscribers = new ArrayList<>();
 }

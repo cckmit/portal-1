@@ -33,8 +33,18 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
     }
 
     @Override
-    public void onFieldsChanged() {
-        if ( !policyService.hasPrivilegeFor( En_Privilege.DOCUMENT_TYPE_EDIT ) ) {
+    public void onCancelClicked() {
+        fireEvent(new DocumentTypeEvents.ClosePreview());
+    }
+
+    @Override
+    public void onSaveClicked() {
+        boolean isNew = documentType.getId() == null;
+        if ( isNew && !policyService.hasPrivilegeFor( En_Privilege.DOCUMENT_TYPE_CREATE ) ) {
+            return;
+        }
+
+        if (!isNew && !policyService.hasPrivilegeFor( En_Privilege.DOCUMENT_TYPE_EDIT ) ) {
             return;
         }
 
@@ -49,7 +59,8 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
 
             @Override
             public void onSuccess(DocumentType type) {
-                fireEvent( new DocumentTypeEvents.Changed(type));
+                fireEvent( new DocumentTypeEvents.Changed(type, isNew));
+                fireEvent(new DocumentTypeEvents.ClosePreview());
             }
         });
     }
@@ -57,7 +68,6 @@ public abstract class DocumentTypePreviewActivity implements AbstractDocumentTyp
     private void fillView() {
         if (documentType == null) {
             documentType = new DocumentType();
-            return;
         }
 
         view.name().setValue(documentType.getName());

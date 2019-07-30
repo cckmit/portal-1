@@ -28,6 +28,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 
 public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCloseHandlers<CaseLink>, HasEnabled{
 
+
     public CaseLinkView() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
@@ -40,25 +41,24 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     @Override
     public void setValue(CaseLink value, boolean fireEvents) {
         caseLink = value;
-
-        icon.setText(caseLinkLang.getCaseLinkShortName(caseLink.getType()));
+        icon.setInnerText(caseLinkLang.getCaseLinkShortName(caseLink.getType()));
         switch (caseLink.getType()) {
             case CRM: {
-                icon.addStyleName("link-crm");
+                icon.addClassName("link-crm");
                 if (value.getCaseInfo() != null) {
-                    text.setText(caseLink.getCaseInfo().getCaseNumber().toString());
+                    text.setInnerText(caseLink.getCaseInfo().getCaseNumber().toString());
                     fillCaseInfo(value.getCaseInfo());
                 }
                 break;
             }
             case CRM_OLD: {
-                icon.addStyleName("link-crm-old");
-                text.setText(caseLink.getRemoteId());
+                icon.addClassName("link-crm-old");
+                text.setInnerText(caseLink.getRemoteId());
                 break;
             }
             case YT: {
-                icon.addStyleName("link-you-track");
-                text.setText(caseLink.getRemoteId());
+                icon.addClassName("link-you-track");
+                text.setInnerText(caseLink.getRemoteId());
                 break;
             }
         }
@@ -83,7 +83,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     @Override
     public boolean isEnabled() {
-        return remove.isVisible();
+        return remove.isEnabled();
     }
 
     @Override
@@ -91,24 +91,25 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
         remove.setVisible(enabled);
     }
 
-    @UiHandler("root")
+    @UiHandler("link")
     public void onClicked(ClickEvent event) {
+        event.preventDefault();
         if (caseLink != null && HelperFunc.isNotEmpty(caseLink.getLink())) {
             event.preventDefault();
             Window.open(caseLink.getLink(),"_blank","");
         }
     }
 
-    @UiHandler("root")
-    public void onMouseOver(MouseOverEvent event) {
+    @UiHandler("link")
+    public void onHover(MouseOverEvent event) {
         if ( !En_CaseLink.CRM.equals(caseLink.getType()) ){
             return;
         }
         caseInfoPanel.setVisible(true);
     }
 
-    @UiHandler("root")
-    public void onMouseOut(MouseOutEvent event) {
+    @UiHandler("link")
+    public void onHover(MouseOutEvent event) {
         caseInfoPanel.setVisible(false);
     }
 
@@ -140,19 +141,16 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     En_CaseLinkLang caseLinkLang;
     @Inject
     En_CaseStateLang caseStateLang;
-
     @Inject
     @UiField
     Lang lang;
 
     @UiField
-    FocusPanel root;
-    @UiField
     HTMLPanel panel;
     @UiField
-    InlineLabel text;
+    SpanElement text;
     @UiField
-    InlineLabel icon;
+    SpanElement icon;
     @UiField
     Anchor remove;
     @UiField
@@ -165,9 +163,11 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
     SpanElement state;
     @UiField
     DivElement info;
+    @UiField
+    Anchor link;
 
     private CaseLink caseLink = null;
 
-    interface CaseLinkViewUiBinder extends UiBinder<FocusPanel, CaseLinkView> {}
+    interface CaseLinkViewUiBinder extends UiBinder<HTMLPanel, CaseLinkView> {}
     private static CaseLinkViewUiBinder ourUiBinder = GWT.create(CaseLinkViewUiBinder.class);
 }

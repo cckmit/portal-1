@@ -11,11 +11,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.brainworm.factory.core.datetimepicker.client.view.input.range.RangePicker;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.dict.En_SortDir;
-import ru.protei.portal.core.model.dict.En_SortField;
-import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.util.CrmConstants;
 import ru.protei.portal.core.model.view.CaseFilterShortView;
@@ -186,6 +182,11 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     }
 
     @Override
+    public void presetFilterType() {
+        userFilter.updateFilterType(En_CaseFilterType.CASE_OBJECTS);
+    }
+
+    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -294,12 +295,12 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
 
     @Override
     public void changeUserFilterValueName(CaseFilterShortView value) {
-        userFilter.changeValueName(value );
+        //userFilter.changeValueName(value );
     }
 
     @Override
     public void addUserFilterDisplayOption(CaseFilterShortView value) {
-        userFilter.addDisplayOption(value);
+        //userFilter.addDisplayOption(value);
     }
 
     @Override
@@ -396,7 +397,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
         userFilter.setEnsureDebugId(DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON);
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
@@ -451,7 +452,7 @@ public class IssueFilterParamView extends Composite implements AbstractIssueFilt
     @UiField
     Label searchByCommentsWarning;
     @UiField
-    OptionItem searchByComments;
+    CheckBox searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;

@@ -7,7 +7,7 @@ import ru.protei.portal.core.model.struct.ContactItem;
 import java.util.List;
 
 /**
- * События для активити ValueComment
+ * События для активити
  */
 public class ContactItemEvents {
     public static class ShowList {

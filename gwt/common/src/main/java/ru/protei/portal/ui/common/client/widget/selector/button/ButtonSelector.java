@@ -81,6 +81,7 @@ public class ButtonSelector<T> extends Selector<T> implements HasValidable, HasE
     }
 
     public void setHeader( String header ) {
+        this.label.removeClassName("hide");
         this.label.setInnerText( header );
     }
 

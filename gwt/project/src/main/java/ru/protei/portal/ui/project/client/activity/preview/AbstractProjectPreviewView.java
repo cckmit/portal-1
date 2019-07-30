@@ -18,8 +18,10 @@ public interface AbstractProjectPreviewView extends IsWidget {
     void setActivity( AbstractProjectPreviewActivity activity );
 
     void watchForScroll( boolean isWatch );
-    void setHeader( String value );
-    void setCreationDate( String value );
+
+    void setInitiatorShortName(String value);
+
+    void setCreationDate(String value );
     HasValue<En_RegionState> state();
     HasValue<ProductDirectionInfo> direction();
     HasValue<Set<PersonProjectMemberView>> team();

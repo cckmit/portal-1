@@ -10,6 +10,7 @@ import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -25,6 +26,10 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CDR_DESCRIPTION;
+import static ru.protei.portal.ui.product.client.activity.edit.AbstractProductEditView.CONFIGURATION;
+import static ru.protei.portal.ui.product.client.view.edit.ProductEditView.HISTORY_VERSION;
 
 /**
  * Активность карточки создания и редактирования продуктов
@@ -55,7 +60,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             product = new DevUnit();
             resetView();
             resetValidationStatus();
-            fireEvent(new AppEvents.InitPanelName(lang.productNew()));
             return;
         }
 
@@ -138,6 +142,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .withSuccess(consumer));
     }
 
+
+    @Override
+    public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
+        localStorageService.set( PRODUCT + "_" + key, String.valueOf( isDisplay ) );
+    }
+
     private void goBack() {
         if (isQuickCreate) {
             fireEvent(new ProductEvents.QuickCreated());
@@ -156,7 +166,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
             @Override
             public void onSuccess( DevUnit devUnit ) {
                 product = devUnit;
-                fireEvent( new AppEvents.InitPanelName( product.getName() ) );
                 fillView( product );
                 resetValidationStatus();
             }
@@ -202,9 +211,18 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         );
 
         view.wikiLink().setValue(devUnit.getWikiLink());
+
+        view.setHistoryVersionPreviewAllowing( makePreviewDisplaying(HISTORY_VERSION) );
+        view.setConfigurationPreviewAllowing( makePreviewDisplaying(CONFIGURATION) );
+        view.setCdrDescriptionPreviewAllowed( makePreviewDisplaying(CDR_DESCRIPTION) );
+
         view.cdrDescription().setValue(devUnit.getCdrDescription());
         view.configuration().setValue(devUnit.getConfiguration());
         view.historyVersion().setValue(devUnit.getHistoryVersion());
+    }
+
+    private boolean makePreviewDisplaying( String key ) {
+        return Boolean.parseBoolean( localStorageService.getOrDefault( PRODUCT + "_" + key, "false" ) );
     }
 
     private void fillDto(DevUnit product) {
@@ -255,6 +273,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     ProductControllerAsync productService;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    LocalStorageService localStorageService;
 
     private Long productId;
     private DevUnit product;
@@ -262,4 +282,5 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     private boolean isQuickCreate;
 
     private AppEvents.InitDetails init;
+    private static final String PRODUCT = "product_view_is_preview_displayed";
 }

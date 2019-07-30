@@ -55,4 +55,6 @@ public interface AbstractCaseCommentListView extends IsWidget {
     HasValue<Boolean> privateComment();
 
     void setTextMarkupLabel(String label);
+
+    boolean isDisplayPreview();
 }

@@ -171,11 +171,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     }
 
     @Override
-    public HasValue<CaseFilterShortView> userFilter() {
-        return userFilter;
-    }
-
-    @Override
     public void resetFilter() {
         companies.setValue(null);
         products.setValue(null);
@@ -193,8 +188,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         searchPrivate.setValue(null);
         tags.setValue(null);
         toggleMsgSearchThreshold();
-
-        userFilter.setValue( null );
     }
 
     @Override
@@ -320,17 +313,10 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         onFilterChanged();
     }
 
-    @UiHandler("userFilter")
-    public void onKeyUpSearch( ValueChangeEvent<CaseFilterShortView> event ) {
-        if (activity != null) {
-            activity.onUserFilterChanged();
-        }
-    }
-
     private void ensureDebugIds() {
         search.setEnsureDebugIdTextBox(DebugIds.FILTER.SEARCH_INPUT);
         search.setEnsureDebugIdAction(DebugIds.FILTER.SEARCH_CLEAR_BUTTON);
-        searchByComments.setEnsureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
+        searchByComments.ensureDebugId(DebugIds.FILTER.SEARCH_BY_COMMENTS_TOGGLE);
         dateCreatedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         dateModifiedRange.setEnsureDebugId(DebugIds.FILTER.DATE_RANGE_SELECTOR);
         sortField.setEnsureDebugId(DebugIds.FILTER.SORT_FIELD_SELECTOR);
@@ -346,7 +332,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
         searchPrivate.setYesEnsureDebugId(DebugIds.FILTER.PRIVACY_YES_BUTTON);
         searchPrivate.setNotDefinedEnsureDebugId(DebugIds.FILTER.PRIVACY_NOT_DEFINED_BUTTON);
         searchPrivate.setNoEnsureDebugId(DebugIds.FILTER.PRIVACY_NO_BUTTON);
-        userFilter.setEnsureDebugId( DebugIds.FILTER.USER_FILTER.FILTERS_BUTTON );
     }
 
     private void onFilterChanged() {
@@ -374,9 +359,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @UiField
     Lang lang;
 
-    @Inject
-    @UiField(provided = true)
-    IssueFilterSelector userFilter;
     @UiField
     HTMLPanel body;
     @UiField
@@ -385,8 +367,6 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     HTMLPanel searchByCommentsContainer;
     @UiField
     Label searchByCommentsWarning;
-    @UiField
-    OptionItem searchByComments;
     @Inject
     @UiField(provided = true)
     RangePicker dateCreatedRange;
@@ -426,6 +406,8 @@ public class CaseObjectsReportView extends Composite implements AbstractCaseObje
     @Inject
     @UiField(provided = true)
     IssueStatesOptionList state;
+    @UiField
+    CheckBox searchByComments;
 
     private Timer timer = null;
     private AbstractIssueFilterParamActivity activity = null;

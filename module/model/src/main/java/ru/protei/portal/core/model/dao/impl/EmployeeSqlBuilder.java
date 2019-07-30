@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class EmployeeSqlBuilder {
 
-    public SqlCondition createSqlCondition( EmployeeQuery query) {
+    public SqlCondition createSqlCondition(EmployeeQuery query) {
         return new SqlCondition().build((condition, args) -> {
             condition.append("Person.company_id in (select companyId from company_group_home)");
 
@@ -29,30 +29,29 @@ public class EmployeeSqlBuilder {
                 args.add(En_Gender.UNDEFINED.getCode());
             }
 
-            if (!CollectionUtils.isEmpty(query.getHomeCompanies())) {
-                condition.append(" and WE.companyId in (")
-                        .append(query.getHomeCompanies().stream().map(option -> option.getId().toString()).collect( Collectors.joining(",")))
-                        .append(")");
-            }
-
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
                 condition.append(" and Person.displayName like ?");
                 args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
-                condition.append(" and JSON_SEARCH(Person.contactInfo, 'one', ?, '', substr(JSON_UNQUOTE(JSON_SEARCH(person.contactInfo, 'one','Рабочий')),1,10)) is not null");
+                condition.append(" and info.a = 'PUBLIC' and info.t = 'GENERAL_PHONE' and info.v like ?");
                 args.add(HelperFunc.makeLikeArg(query.getWorkPhone(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getMobilePhone())) {
-                condition.append(" and JSON_SEARCH(Person.contactInfo, 'one', ?, '', substr(JSON_UNQUOTE(JSON_SEARCH(person.contactInfo, 'one','MOBILE_PHONE')),1,10)) is not null");
+                condition.append(" and info.a = 'PUBLIC' and info.t = 'MOBILE_PHONE' and info.v like ?");
                 args.add(HelperFunc.makeLikeArg(query.getMobilePhone(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getIpAddress())) {
                 condition.append(" and Person.ipaddress like ?");
                 args.add(HelperFunc.makeLikeArg(query.getIpAddress(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getEmail())) {
+                condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
+                args.add(HelperFunc.makeLikeArg(query.getEmail(), true));
             }
         });
     }

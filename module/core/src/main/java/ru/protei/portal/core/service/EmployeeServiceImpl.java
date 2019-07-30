@@ -8,12 +8,11 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.PersonAbsence;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
-import ru.protei.portal.core.model.view.EmployeeDetailView;
-import ru.protei.portal.core.model.view.EmployeeShortView;
-import ru.protei.portal.core.model.view.PersonShortView;
-import ru.protei.portal.core.model.view.WorkerView;
+import ru.protei.portal.core.model.view.*;
+import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import ru.protei.winter.jdbc.JdbcSort;
 
@@ -42,6 +41,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     EmployeeShortViewDAO employeeShortViewDAO;
+
+    @Autowired
+    WorkerEntryShortViewDAO workerEntryShortViewDAO;
 
     @Autowired
     JdbcManyRelationsHelper jdbcManyRelationsHelper;
@@ -102,15 +104,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
-        List<EmployeeShortView> list = employeeShortViewDAO.getEmployees(query);
+    public CoreResponse<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
 
-        if (list == null)
-            new CoreResponse<List<EmployeeShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+        SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
+        List<EmployeeShortView> results = sr.getResults();
 
-        jdbcManyRelationsHelper.fill(list, "workerEntries");
-
-        return new CoreResponse<List<EmployeeShortView>>().success(list);
+        if (CollectionUtils.isNotEmpty(results)) {
+            List<Long> employeeIds = results.stream().map(e -> e.getId()).collect(Collectors.toList());
+            List<WorkerEntryShortView> workerEntries = workerEntryShortViewDAO.listByPersonIds(employeeIds);
+            results.forEach(employee ->
+                employee.setWorkerEntries(workerEntries.stream().filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId())).collect(Collectors.toList()))
+             );
+        }
+        return new CoreResponse<SearchResult<EmployeeShortView>>().success(sr);
     }
 
     @Override

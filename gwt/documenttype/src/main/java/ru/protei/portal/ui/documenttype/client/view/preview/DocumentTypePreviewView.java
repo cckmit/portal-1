@@ -1,12 +1,10 @@
 package ru.protei.portal.ui.documenttype.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasValue;
@@ -54,23 +52,31 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
         return gost;
     }
 
-    @UiHandler("documentCategory")
-    public void onCategoryChanged(ValueChangeEvent<En_DocumentCategory> event) {
-        fireValueChanged();
+    @UiHandler("saveButton")
+    public void onSaveClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onSaveClicked();
+        }
     }
 
-    @UiHandler({"name", "shortName", "gost"})
-    public void onTextFieldsChanged(KeyUpEvent event) {
-        fireValueChanged();
+    @UiHandler("cancelButton")
+    public void onCancelClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onCancelClicked();
+        }
     }
 
-    private void fireValueChanged() {
-        valueChangeTimer.cancel();
-        valueChangeTimer.schedule( 500 );
+    @Override
+    protected void onAttach() {
+        super.onAttach();
+        positioner.watch(this, FixedPositioner.NAVBAR_TOP_OFFSET);
     }
 
-    @UiField
-    HTMLPanel preview;
+    @Override
+    protected void onDetach() {
+        super.onDetach();
+        positioner.ignore(this);
+    }
 
     @Inject
     @UiField
@@ -87,14 +93,6 @@ public class DocumentTypePreviewView extends Composite implements AbstractDocume
 
     @Inject
     FixedPositioner positioner;
-
-    private Timer valueChangeTimer = new Timer() {
-        @Override
-        public void run() {
-            activity.onFieldsChanged();
-        }
-    };
-
 
     private AbstractDocumentTypePreviewActivity activity;
 

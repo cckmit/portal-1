@@ -20,7 +20,7 @@ public class PlateListAnimation {
         lastExpanded = preview;
 
         preview.asWidget().addStyleName( EXPANDED_DETAILS_STYLE );
-        preview.asWidget().setHeight( preview.asWidget().getOffsetHeight() + PADDING + previewContainer.asWidget().getOffsetHeight() + "px");
+        preview.asWidget().setHeight( preview.asWidget().getOffsetHeight() + previewContainer.asWidget().getOffsetHeight() + "px");
     }
 
     private void closePreview( IsWidget lastExpanded ) {
@@ -30,6 +30,5 @@ public class PlateListAnimation {
 
     private IsWidget lastExpanded = null;
 
-    private static final Integer PADDING = 16;
     private static final String EXPANDED_DETAILS_STYLE = "plate-list-expanded";
 }

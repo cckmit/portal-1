@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.view.EmployeeShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface EmployeeController extends RemoteService {
      * Получение списка сотрудников
      * @return список сотрудников
      */
-    List< EmployeeShortView > getEmployees ( EmployeeQuery query ) throws RequestFailedException;
+    SearchResult< EmployeeShortView > getEmployees (EmployeeQuery query ) throws RequestFailedException;
 
     /**
      * Получение списка сокращенного представления сотрудника

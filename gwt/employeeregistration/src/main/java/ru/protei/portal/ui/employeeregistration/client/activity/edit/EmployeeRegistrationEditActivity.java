@@ -81,6 +81,9 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         if (isEmpty(registration.getCuratorsIds()))
             return lang.employeeRegistrationValidationCurators();
 
+        if ( registration.getCuratorsIds().contains(registration.getHeadOfDepartment().getId()))
+            return lang.employeeRegistrationValidationHeadOfDepartmentAsCurator();
+
         return null;
     }
 

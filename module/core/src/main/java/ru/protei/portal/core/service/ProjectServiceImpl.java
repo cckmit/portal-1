@@ -426,10 +426,6 @@ public class ProjectServiceImpl implements ProjectService {
             }
         }
 
-        if (projectQuery.getCustomerType() != null) {
-            caseQuery.setLocal(projectQuery.getCustomerType().getId());
-        }
-
         caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
         caseQuery.setCreatedTo(projectQuery.getCreatedTo());
 

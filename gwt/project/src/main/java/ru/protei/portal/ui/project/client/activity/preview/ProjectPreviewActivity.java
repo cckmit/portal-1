@@ -43,7 +43,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         this.projectId = event.issueId;
 
-        fillView( projectId );
+        showView( projectId );
         view.watchForScroll( true );
         view.showFullScreen( false );
     }
@@ -55,7 +55,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
         this.projectId = event.issueId;
 
-        fillView( projectId );
+        showView( projectId );
         view.showFullScreen( true );
     }
 
@@ -113,7 +113,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         });
     }
 
-    private void fillView( Long id ) {
+    private void showView(Long id ) {
         if (id == null) {
             fireEvent( new NotifyEvents.Show( lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR ) );
             return;
@@ -127,16 +127,15 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
             @Override
             public void onSuccess( ProjectInfo project ) {
-                fireEvent( new AppEvents.InitPanelName( project.getId().toString() ) );
                 fillView( project );
             }
         } );
     }
 
-    private void fillView( ProjectInfo value ) {
+    private void fillView(ProjectInfo value ) {
         this.project = value;
         view.setName( value.getName() );
-        view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
+        view.setInitiatorShortName( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
         view.state().setValue( value.getState() );
         view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );
