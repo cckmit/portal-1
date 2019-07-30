@@ -15,9 +15,9 @@ public class EmailColumnBuilder {
         return new EmailColumnBuilder();
     }
 
-    public EmailColumnBuilder add ( String icon, String email ) {
+    public EmailColumnBuilder add ( String icon, String email, String mailto ) {
 
-        if ( email != null ) {
+        if ( email != null) {
             Element div = DOM.createDiv();
             div.addClassName( "contact-record" );
             if ( icon != null ) {
@@ -25,10 +25,6 @@ public class EmailColumnBuilder {
                 i.setClassName( icon );
                 div.appendChild( i );
             }
-            RegExp regExp = RegExp.compile("\\b.+@.+\\b");
-            MatchResult matcher = regExp.exec(email);
-
-            String mailto = matcher != null ? matcher.getGroup(0) : email;
 
             AnchorElement anchor = DOM.createAnchor().cast();
             anchor.setInnerText( email );
