@@ -111,6 +111,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         }
     }
 
+    @Event
+    public void onRemoveTag(CaseTagEvents.Remove event) {
+        issue.getTags().remove(event.getCaseTag());
+        view.tags().setValue(issue.getTags());
+    }
+
     @Override
     public void onSaveClicked() {
 

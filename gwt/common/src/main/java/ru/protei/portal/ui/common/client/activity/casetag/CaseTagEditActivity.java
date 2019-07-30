@@ -56,6 +56,7 @@ public abstract class CaseTagEditActivity implements Activity, AbstractCaseTagEd
         caseTagController.removeTag(caseTag, new FluentCallback<Void>()
                 .withSuccess(v -> {
                     dialogView.hidePopup();
+                    fireEvent(new CaseTagEvents.Remove(caseTag));
                     fireEvent(new CaseTagEvents.ChangeModel());
                 })
         );
