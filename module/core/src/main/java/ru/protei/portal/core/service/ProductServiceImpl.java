@@ -167,8 +167,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional
     public CoreResponse changeProductState(AuthToken token, DevUnit product) {
-        if (product == null || devUnitDAO.get(product.getId()) == null) {
+        if (product == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (devUnitDAO.get(product.getId()) == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
 
         devUnitDAO.updateState(product);
