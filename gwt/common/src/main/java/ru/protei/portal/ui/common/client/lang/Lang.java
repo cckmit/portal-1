@@ -999,6 +999,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String contactRemoveConfirmMessage();
 
+    String productChangeStateConfirmMessage();
+
     String decimalNumberFound();
 
     String searchByComments();

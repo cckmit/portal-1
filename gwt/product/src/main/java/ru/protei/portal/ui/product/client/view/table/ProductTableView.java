@@ -103,7 +103,19 @@ public class ProductTableView extends Composite implements AbstractProductTableV
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
-        name = new DynamicColumn<>(lang.productName(), "product-name", DevUnit::getName);
+        name = new DynamicColumn<>(lang.productName(), "product-name", devUnit ->{
+            StringBuilder stringBuilder = new StringBuilder();
+            if(!devUnit.isActiveUnit()) {
+                stringBuilder
+                        .append("<div class = text-danger>")
+                        .append("<i class=\"fa fa-ban m-r-5\"></i> ")
+                        .append(devUnit.getName())
+                        .append("</div>");
+            }
+            else
+                stringBuilder.append(devUnit.getName());
+            return stringBuilder.toString();
+        });
         type = new ClickColumn<DevUnit>() {
             @Override
             protected void fillColumnHeader(Element element) {
