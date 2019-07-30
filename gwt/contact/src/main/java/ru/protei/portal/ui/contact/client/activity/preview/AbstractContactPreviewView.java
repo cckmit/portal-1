@@ -27,6 +27,7 @@ public interface AbstractContactPreviewView extends IsWidget {
 
     void setPhone( String value );
     void setEmail( String value );
+    void setMailto( String value );
     void setAddress( String value );
     void setHomeAddress( String value );
 

@@ -60,7 +60,9 @@
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.email}"/></label>
-                    <span class="col-xs-7 col-md-7" ui:field="email"></span>
+                    <span class="col-xs-7 col-md-7">
+                        <g:Anchor ui:field="emailAnchor"/>
+                    </span>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5 col-md-5"><ui:text from="{lang.address}"/></label>
