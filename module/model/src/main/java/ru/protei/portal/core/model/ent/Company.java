@@ -65,7 +65,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     private List<CaseState> caseStates;
 
     @JdbcColumn(name = "is_deprecated")
-    private Boolean isDeprecated;
+    private boolean isDeprecated;
 
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
@@ -232,7 +232,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         isHidden = hideden;
     }
 
-    public Boolean getDeprecated() {
+    public boolean isDeprecated() {
         return isDeprecated;
     }
 

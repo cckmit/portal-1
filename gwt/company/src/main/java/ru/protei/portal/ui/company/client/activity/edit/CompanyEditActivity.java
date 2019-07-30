@@ -87,7 +87,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onStateChanged() {
-        tempCompany.setDeprecated(!tempCompany.getDeprecated());
+        tempCompany.setDeprecated(!tempCompany.isDeprecated());
     }
 
     @Override
@@ -222,7 +222,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.hideTags(company.getId() == null);
 
-        view.setStateButtonText(company.getDeprecated() ? lang.buttonFromArchive() : lang.buttonToArchive());
+        view.setStateButtonText(company.isDeprecated() ? lang.buttonFromArchive() : lang.buttonToArchive());
     }
 
     private EntityOption makeCompanyOption(Company company) {
