@@ -241,6 +241,15 @@
                 <configuration>
                     <webappDirectory>${webappDirectory}</webappDirectory>
                     <packagingExcludes>WEB-INF/lib/log4j-over-slf4j*.jar</packagingExcludes>
+                    <webResources>
+                        <resource>
+                            <directory>../../gwt/common/src/main/resources</directory>
+                            <targetPath>META-INF</targetPath>
+                            <includes>
+                                <include>version.properties</include>
+                            </includes>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
 
