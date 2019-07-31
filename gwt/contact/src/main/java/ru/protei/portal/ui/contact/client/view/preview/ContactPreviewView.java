@@ -18,6 +18,8 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewActivity;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewView;
 
+import java.util.List;
+
 /**
  * Вид превью контакта
  */
@@ -78,10 +80,15 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setPhone(String value) { this.phone.setInnerText( value ); }
 
     @Override
-    public void setEmail(String value) { this.emailAnchor.setText( value ); }
-
-    @Override
-    public void setMailto(String value) { this.emailAnchor.setHref("mailto:" + value); }
+    public void setEmail(List<String> emailList, List<String> mailtoList) {
+        StringBuilder emails = new StringBuilder();
+        for (int i = 0; i < emailList.size(); i++) {
+            emails.append(i == 0 ? "" : ", ");
+            emails.append("<a href='mailto:" + mailtoList.get(i) + "'>");
+            emails.append(emailList.get(i) + "</a>");
+        }
+        this.emailAnchor.setInnerHTML(emails.toString());
+    }
 
     @Override
     public void setAddress(String value) { this.address.setInnerHTML( value ); }
@@ -158,7 +165,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     @UiField
     Anchor fullScreen;
     @UiField
-    Anchor emailAnchor;
+    SpanElement emailAnchor;
     @UiField
     HTMLPanel contactFired;
     @UiField

@@ -4,6 +4,8 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasVisibility;
 import com.google.gwt.user.client.ui.IsWidget;
 
+import java.util.List;
+
 /**
  * Абстракция вида превью контакта
  */
@@ -26,8 +28,7 @@ public interface AbstractContactPreviewView extends IsWidget {
     void setDepartment( String value );
 
     void setPhone( String value );
-    void setEmail( String value );
-    void setMailto( String value );
+    void setEmail( List<String> emailList, List<String> mailtoList);
     void setAddress( String value );
     void setHomeAddress( String value );
 

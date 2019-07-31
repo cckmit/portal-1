@@ -73,8 +73,7 @@ public abstract class ContactPreviewActivity implements Activity, AbstractContac
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
         view.setPhone( infoFacade.allPhonesAsString() );
-        view.setEmail( infoFacade.allEmailsAsString() );
-        view.setMailto( infoFacade.allEmailsAsStringWithoutComment() );
+        view.setEmail( infoFacade.allEmailsAsList(), infoFacade.allEmailsWithoutCommentAsList() );
         view.setAddress( infoFacade.getFactAddress() );
         view.setHomeAddress( infoFacade.getHomeAddress() );
         view.setBirthday( value.getBirthday() != null ? format.format( value.getBirthday() ) : "" );

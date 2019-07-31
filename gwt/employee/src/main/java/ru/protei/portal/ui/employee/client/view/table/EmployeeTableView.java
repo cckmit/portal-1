@@ -10,6 +10,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
+import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.struct.WorkerEntryFacade;
 import ru.protei.portal.core.model.view.EmployeeShortView;
@@ -22,6 +23,12 @@ import ru.protei.portal.ui.common.client.common.EmailColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableView;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
 
 /**
  * Представление списка сотрудников
@@ -139,15 +146,15 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
         String phones = infoFacade.publicPhonesAsFormattedString(true);
-        String emails = infoFacade.publicEmailsAsString();
-        String mailto = infoFacade.allEmailsAsStringWithoutComment();
+        List<String> emailList = infoFacade.allEmailsAsList();
+        List<String> emailWithoutCommentList = infoFacade.allEmailsWithoutCommentAsList();
 
         if (!phones.isEmpty()) {
             employeeContacts.appendChild(buildElement("fa fa-phone", phones));
         }
 
-        if (!emails.isEmpty()) {
-            employeeContacts.appendChild(EmailColumnBuilder.make().add("fa fa-envelope", emails, mailto, "contacts").toElement());
+        if (!emailList.isEmpty()) {
+            employeeContacts.appendChild(EmailColumnBuilder.make().addList("fa fa-envelope", emailList, emailWithoutCommentList, "contacts").toElement());
         }
 
         return employeeContacts.getString();
