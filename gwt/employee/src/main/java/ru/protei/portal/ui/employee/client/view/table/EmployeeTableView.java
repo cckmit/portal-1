@@ -136,7 +136,6 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
         Element employeeInfo = DOM.createDiv();
-        //employeeInfo.appendChild(buildElement("fa fa-user-circle", employee.getDisplayName()));
         employeeInfo.appendChild(ContactColumnBuilder.make().add("fa fa-user-circle", employee.getDisplayName(), "contacts").toElement());
         employeeInfo.appendChild(ContactColumnBuilder.make().add("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts").toElement());
 
