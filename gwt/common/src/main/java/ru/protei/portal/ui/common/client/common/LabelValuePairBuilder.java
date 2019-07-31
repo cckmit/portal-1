@@ -12,8 +12,8 @@ public class LabelValuePairBuilder {
         return new LabelValuePairBuilder();
     }
 
-    public LabelValuePairBuilder addIconLabelWithTextPair(String icon, String text, String className ) {
-        if ( text != null ) {
+    public LabelValuePairBuilder addIconValuePair(String icon, String value, String className ) {
+        if ( value != null ) {
             Element div = DOM.createDiv();
             div.addClassName( className );
             if ( icon != null ) {
@@ -22,24 +22,24 @@ public class LabelValuePairBuilder {
                 div.appendChild( i );
             }
             Element data = DOM.createSpan();
-            data.setInnerText( text );
+            data.setInnerText( value );
             div.appendChild( data );
             root.appendChild( div );
         }
         return this;
     }
 
-    public LabelValuePairBuilder addTextLabelWithTextPair ( String iconText, String text, String className ) {
-        if ( text != null ) {
+    public LabelValuePairBuilder addLabelValuePair(String label, String value, String className ) {
+        if ( value != null ) {
             Element div = DOM.createDiv();
             div.addClassName( className );
-            if ( iconText != null ) {
+            if ( label != null ) {
                 Element b = DOM.createElement("b");
-                b.setInnerText( iconText );
+                b.setInnerText( label );
                 div.appendChild( b );
             }
             Element data = DOM.createSpan();
-            data.setInnerText( text );
+            data.setInnerText( value );
             div.appendChild( data );
             root.appendChild( div );
         }

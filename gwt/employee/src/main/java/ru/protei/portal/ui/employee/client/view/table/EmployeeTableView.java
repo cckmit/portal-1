@@ -43,6 +43,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         contacts.setColumnProvider(columnProvider);
         department.setHandler(activity);
         department.setColumnProvider(columnProvider);
+        additional.setHandler(activity);
+        additional.setColumnProvider(columnProvider);
         table.setLoadHandler(activity);
         table.setPagerListener(activity);
     }
@@ -134,8 +136,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
         Element employeeInfo = DOM.createDiv();
-        employeeInfo.appendChild(LabelValuePairBuilder.make().addIconLabelWithTextPair("fa fa-user-circle", employee.getDisplayName(), "contacts").toElement());
-        employeeInfo.appendChild(LabelValuePairBuilder.make().addIconLabelWithTextPair("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts").toElement());
+        employeeInfo.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-user-circle", employee.getDisplayName(), "contacts").toElement());
+        employeeInfo.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts").toElement());
 
         return employeeInfo.getString();
     }
@@ -148,11 +150,11 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         String emails = infoFacade.publicEmailsAsString();
 
         if (!phones.isEmpty()) {
-            employeeContacts.appendChild(LabelValuePairBuilder.make().addIconLabelWithTextPair("fa fa-phone", phones, "contacts").toElement());
+            employeeContacts.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-phone", phones, "contacts").toElement());
         }
 
         if (!emails.isEmpty()) {
-            employeeContacts.appendChild(LabelValuePairBuilder.make().addIconLabelWithTextPair("fa fa-envelope", emails, "contacts").toElement());
+            employeeContacts.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-envelope", emails, "contacts").toElement());
         }
 
         return employeeContacts.getString();
@@ -169,12 +171,12 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
         if (mainEntry != null) {
             if (mainEntry.getDepartmentParentName() != null) {
-                departmentParent.appendChild(LabelValuePairBuilder.make().addIconLabelWithTextPair("fa fa-sitemap", mainEntry.getDepartmentParentName(), "contacts").toElement());
-                department.appendChild(LabelValuePairBuilder.make().addIconLabelWithTextPair("fa fa-th-large", mainEntry.getDepartmentName(), "contacts").toElement());
+                departmentParent.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentParentName(), "contacts").toElement());
+                department.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-th-large", mainEntry.getDepartmentName(), "contacts").toElement());
 
                 employeeDepartment.appendChild(departmentParent);
             } else {
-                department.appendChild(LabelValuePairBuilder.make().addIconLabelWithTextPair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts").toElement());
+                department.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts").toElement());
             }
             employeeDepartment.appendChild(department);
         }
@@ -184,8 +186,8 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeAdditionalBlock(EmployeeShortView employee) {
         Element employeeAdditional = DOM.createDiv();
-        employeeAdditional.appendChild(LabelValuePairBuilder.make().addTextLabelWithTextPair("IP", employee.getIpAddress(), "contacts").toElement());
-        employeeAdditional.appendChild(LabelValuePairBuilder.make().addTextLabelWithTextPair("ID", String.valueOf(employee.getId()), "contacts").toElement());
+        employeeAdditional.appendChild(LabelValuePairBuilder.make().addLabelValuePair("IP", employee.getIpAddress(), "contacts").toElement());
+        employeeAdditional.appendChild(LabelValuePairBuilder.make().addLabelValuePair("ID", String.valueOf(employee.getId()), "contacts").toElement());
 
         return employeeAdditional.getString();
     }
