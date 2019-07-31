@@ -125,11 +125,9 @@ public class AccountControllerImpl implements AccountController {
 
         log.debug("updateAccountPassword(): result={}", response.isOk() ? "ok" : response.getStatus());
 
-        if (response.isOk()) {
-            return;
+        if (!response.isOk()) {
+            throw new RequestFailedException(response.getStatus());
         }
-
-        throw new RequestFailedException(response.getStatus());
     }
 
     private UserSessionDescriptor getDescriptorAndCheckSession() throws RequestFailedException {

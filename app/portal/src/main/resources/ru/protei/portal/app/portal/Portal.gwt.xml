@@ -22,8 +22,6 @@
     <inherits name="ru.protei.portal.ui.employeeregistration.EmployeeRegistration"/>
     <inherits name="ru.protei.portal.ui.contract.Contract"/>
 
-    <inherits name="com.googlecode.gwt.crypto.Crypto"/>
-
     <entry-point class='ru.protei.portal.app.portal.client.Main'/>
 
     <source path='client'/>
