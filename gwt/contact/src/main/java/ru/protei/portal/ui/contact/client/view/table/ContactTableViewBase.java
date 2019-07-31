@@ -38,14 +38,14 @@ public abstract class ContactTableViewBase extends Composite {
 
                 String phones = infoFacade.allPhonesAsString();
                 if (StringUtils.isNotBlank(phones)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-call", phones)
+                    root.appendChild(ContactColumnBuilder.make().add("ion-android-call", phones, "contact-record")
                             .toElement());
                 }
 
 
                 String emails = infoFacade.allEmailsAsString();
                 if (StringUtils.isNotBlank(emails)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-mail", emails)
+                    root.appendChild(ContactColumnBuilder.make().add("ion-android-mail", emails, "contact-record")
                             .toElement());
                 }
             }

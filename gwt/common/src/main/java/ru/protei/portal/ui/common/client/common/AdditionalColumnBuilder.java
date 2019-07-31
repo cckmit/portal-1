@@ -4,22 +4,22 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.DOM;
 
 /**
- * Билдер контактов
+ * Билдер доп информации
  */
-public class ContactColumnBuilder {
+public class AdditionalColumnBuilder {
 
-    public static ContactColumnBuilder make() {
-        return new ContactColumnBuilder();
+    public static AdditionalColumnBuilder make() {
+        return new AdditionalColumnBuilder();
     }
 
-    public ContactColumnBuilder add ( String icon, String phone, String className ) {
+    public AdditionalColumnBuilder add ( String icon, String phone, String className ) {
         if ( phone != null ) {
             Element div = DOM.createDiv();
             div.addClassName( className );
             if ( icon != null ) {
-                Element i = DOM.createElement("i");
-                i.setClassName( icon );
-                div.appendChild( i );
+                Element b = DOM.createElement("b");
+                b.setInnerText( icon );
+                div.appendChild( b );
             }
             Element data = DOM.createSpan();
             data.setInnerText( phone );

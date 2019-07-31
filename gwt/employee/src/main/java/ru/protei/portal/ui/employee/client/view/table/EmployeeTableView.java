@@ -18,6 +18,8 @@ import ru.protei.portal.core.model.view.WorkerEntryShortView;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
+import ru.protei.portal.ui.common.client.common.AdditionalColumnBuilder;
+import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
@@ -134,8 +136,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
         Element employeeInfo = DOM.createDiv();
-        employeeInfo.appendChild(buildElement("fa fa-user-circle", employee.getDisplayName()));
-        employeeInfo.appendChild(buildElement("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday())));
+        //employeeInfo.appendChild(buildElement("fa fa-user-circle", employee.getDisplayName()));
+        employeeInfo.appendChild(ContactColumnBuilder.make().add("fa fa-user-circle", employee.getDisplayName(), "contacts").toElement());
+        employeeInfo.appendChild(ContactColumnBuilder.make().add("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts").toElement());
 
         return employeeInfo.getString();
     }
@@ -148,11 +151,11 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         String emails = infoFacade.publicEmailsAsString();
 
         if (!phones.isEmpty()) {
-            employeeContacts.appendChild(buildElement("fa fa-phone", phones));
+            employeeContacts.appendChild(ContactColumnBuilder.make().add("fa fa-phone", phones, "contacts").toElement());
         }
 
         if (!emails.isEmpty()) {
-            employeeContacts.appendChild(buildElement("fa fa-envelope", emails));
+            employeeContacts.appendChild(ContactColumnBuilder.make().add("fa fa-envelope", emails, "contacts").toElement());
         }
 
         return employeeContacts.getString();
@@ -169,12 +172,12 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
         if (mainEntry != null) {
             if (mainEntry.getDepartmentParentName() != null) {
-                departmentParent.appendChild(buildElement("fa fa-sitemap", mainEntry.getDepartmentParentName()));
-                department.appendChild(buildElement("fa fa-th-large", mainEntry.getDepartmentName()));
+                departmentParent.appendChild(ContactColumnBuilder.make().add("fa fa-sitemap", mainEntry.getDepartmentParentName(), "contacts").toElement());
+                department.appendChild(ContactColumnBuilder.make().add("fa fa-th-large", mainEntry.getDepartmentName(), "contacts").toElement());
 
                 employeeDepartment.appendChild(departmentParent);
             } else {
-                department.appendChild(buildElement("fa fa-sitemap", mainEntry.getDepartmentName()));
+                department.appendChild(ContactColumnBuilder.make().add("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts").toElement());
             }
             employeeDepartment.appendChild(department);
         }
@@ -184,32 +187,12 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeAdditionalBlock(EmployeeShortView employee) {
         Element employeeAdditional = DOM.createDiv();
-        employeeAdditional.appendChild(buildElement("IP", employee.getIpAddress()));
-        employeeAdditional.appendChild(buildElement("ID", String.valueOf(employee.getId())));
+        employeeAdditional.appendChild(AdditionalColumnBuilder.make().add("IP", employee.getIpAddress(), "contacts").toElement());
+        employeeAdditional.appendChild(AdditionalColumnBuilder.make().add("ID", String.valueOf(employee.getId()), "contacts").toElement());
 
         return employeeAdditional.getString();
     }
 
-    private Element buildElement(String iconClass, String contacts) {
-        Element data = DOM.createSpan();
-        Element icon;
-        data.setInnerText(contacts);
-
-        if (iconClass.equals("ID") || iconClass.equals("IP")) {
-            icon = DOM.createElement("b");
-            icon.setInnerText(iconClass);
-        }
-        else {
-            icon = DOM.createElement("i");
-            icon.addClassName(iconClass);
-        }
-
-        Element wrapper = DOM.createDiv();
-        wrapper.addClassName("contacts");
-        wrapper.appendChild(icon);
-        wrapper.appendChild(data);
-        return wrapper;
-    }
 
     @UiField
     InfiniteTableWidget<EmployeeShortView> table;
