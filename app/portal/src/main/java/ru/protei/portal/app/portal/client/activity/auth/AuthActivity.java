@@ -2,11 +2,9 @@ package ru.protei.portal.app.portal.client.activity.auth;
 
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.inject.Inject;
-import com.googlecode.gwt.crypto.bouncycastle.DataLengthException;
-import com.googlecode.gwt.crypto.bouncycastle.InvalidCipherTextException;
-import com.googlecode.gwt.crypto.client.TripleDesCipher;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.app.portal.client.service.AuthControllerAsync;
 import ru.protei.portal.app.portal.client.widget.locale.LocaleImage;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -14,9 +12,9 @@ import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.util.LocaleUtils;
+import ru.protei.portal.ui.common.client.util.PasswordUtils;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.Profile;
-import ru.protei.portal.app.portal.client.service.AuthControllerAsync;
 import ru.protei.winter.web.common.client.events.MenuEvents;
 
 /**
@@ -115,23 +113,11 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
     }
 
     private String encrypt(String pwd) {
-        try {
-            TripleDesCipher cipher = new TripleDesCipher();
-            cipher.setKey(CIPHER_KEY);
-            return cipher.encrypt(pwd);
-        } catch (DataLengthException | IllegalStateException | InvalidCipherTextException e) {
-            return null;
-        }
+        return PasswordUtils.encrypt(pwd);
     }
 
     private String decrypt(String pwd) {
-        try {
-            TripleDesCipher cipher = new TripleDesCipher();
-            cipher.setKey(CIPHER_KEY);
-            return cipher.decrypt(pwd);
-        } catch (DataLengthException | IllegalStateException | InvalidCipherTextException e) {
-            return null;
-        }
+        return PasswordUtils.decrypt(pwd);
     }
 
     @Inject
@@ -145,5 +131,4 @@ public abstract class AuthActivity implements AbstractAuthActivity, Activity {
 
     private AuthEvents.Init init;
     private static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
-    private static final byte[] CIPHER_KEY = new byte[]{5, 4, 4, 3, 5, 4, 8, 3, 2, 7, 5, 9, 3, 1, 3, 2, 3, 6, 3, 1};
 }

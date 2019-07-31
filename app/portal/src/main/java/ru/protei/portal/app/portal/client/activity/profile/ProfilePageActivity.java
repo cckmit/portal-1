@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.UserIconUtils;
 import ru.protei.portal.ui.common.client.events.ActionBarEvents;
 import ru.protei.portal.ui.common.client.events.AppEvents;
@@ -18,11 +19,11 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.AccountControllerAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
+import ru.protei.portal.ui.common.client.util.PasswordUtils;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.portal.ui.common.shared.model.Profile;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
-import ru.protei.winter.web.common.client.events.MenuEvents;
 
 import java.util.List;
 import java.util.Objects;
@@ -97,8 +98,11 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
 
                 @Override
                 public void onSuccess(Void result) {
-                    fireEvent(new AppEvents.Logout());
-                    fireEvent(new MenuEvents.Clear());
+                    if (storage.contains(REMEMBER_ME_PREFIX + "login")) {
+                        storage.set(REMEMBER_ME_PREFIX + "pwd", PasswordUtils.encrypt(view.newPassword().getValue()));
+                    }
+
+                    fireEvent(new NotifyEvents.Show(lang.passwordUpdatedSuccessful(), NotifyEvents.NotifyType.SUCCESS));
                 }
             });
         }
@@ -141,7 +145,10 @@ public abstract class ProfilePageActivity implements Activity, AbstractProfilePa
     @Inject
     AccountControllerAsync accountService;
 
+    @Inject
+    LocalStorageService storage;
 
+    private static final String REMEMBER_ME_PREFIX = "auth_remember_me_";
     private Profile profile;
     private AppEvents.InitDetails initDetails;
 }

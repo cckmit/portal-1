@@ -191,6 +191,7 @@ public class AccountServiceImpl implements AccountService {
             return new CoreResponse().error(En_ResultStatus.INVALID_CURRENT_PASSWORD);
         }
         userLogin.setUpass(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
+        userLogin.setLastPwdChange(new Date());
 
         return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<>().success() : new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
     }
