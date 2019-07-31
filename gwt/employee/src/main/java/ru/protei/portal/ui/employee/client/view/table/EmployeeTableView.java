@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.employee.client.view.table;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -119,10 +120,16 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                 "employee-department",
                 this::getEmployeeDepartmentBlock
         );
+        additional = new DynamicColumn<>(
+                lang.employeeAdditionalInfoHeader(),
+                "employee-additional",
+                this::getEmployeeAdditionalBlock
+        );
 
         table.addColumn(name.header, name.values);
         table.addColumn(contacts.header, contacts.values);
         table.addColumn(department.header, department.values);
+        table.addColumn(additional.header, additional.values);
     }
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
@@ -175,11 +182,27 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         return employeeDepartment.getString();
     }
 
+    private String getEmployeeAdditionalBlock(EmployeeShortView employee) {
+        Element employeeAdditional = DOM.createDiv();
+        employeeAdditional.appendChild(buildElement("IP", employee.getIpAddress()));
+        employeeAdditional.appendChild(buildElement("ID", String.valueOf(employee.getId())));
+
+        return employeeAdditional.getString();
+    }
+
     private Element buildElement(String iconClass, String contacts) {
         Element data = DOM.createSpan();
+        Element icon;
         data.setInnerText(contacts);
-        Element icon = DOM.createElement("i");
-        icon.addClassName(iconClass);
+
+        if (iconClass.equals("ID") || iconClass.equals("IP")) {
+            icon = DOM.createElement("b");
+            icon.setInnerText(iconClass);
+        }
+        else {
+            icon = DOM.createElement("i");
+            icon.addClassName(iconClass);
+        }
 
         Element wrapper = DOM.createDiv();
         wrapper.addClassName("contacts");
@@ -208,6 +231,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     DynamicColumn<EmployeeShortView> name;
     DynamicColumn<EmployeeShortView> contacts;
     DynamicColumn<EmployeeShortView> department;
+    DynamicColumn<EmployeeShortView> additional;
 
     AbstractEmployeeTableActivity activity;
 
