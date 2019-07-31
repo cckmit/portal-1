@@ -5,7 +5,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -140,7 +139,7 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
             PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
-            String emails = EmailRender.streamToHtml(infoFacade.emailsStream());
+            String emails = EmailRender.renderToHtml(infoFacade.emailsStream());
             if (StringUtils.isNotBlank(emails)) {
                 com.google.gwt.dom.client.Element label = DOM.createLabel();
                 label.setInnerHTML(emails);

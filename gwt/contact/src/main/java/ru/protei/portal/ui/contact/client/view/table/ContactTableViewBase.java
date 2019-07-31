@@ -43,7 +43,7 @@ public abstract class ContactTableViewBase extends Composite {
                             .toElement());
                 }
 
-                root.appendChild(EmailRender.streamRender("ion-android-mail", infoFacade.emailsStream(), "contact-record"));
+                root.appendChild(EmailRender.renderToElement("ion-android-mail", infoFacade.emailsStream(), "contact-record"));
             }
         };
     }

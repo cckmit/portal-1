@@ -14,33 +14,33 @@ import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
  */
 public class EmailRender {
 
-    public static Element streamRender(String icon, Stream<ContactItem> stream, String className) {
+    public static Element renderToElement(String icon, Stream<ContactItem> stream, String className) {
         Element root = DOM.createDiv();
-        if (stream != null) {
-            Element div = DOM.createDiv();
-            div.addClassName(className);
-            if (icon != null) {
-                Element i = DOM.createElement("i");
-                i.setClassName(icon);
-                div.appendChild(i);
-            }
+        if (stream == null)
+            return root;
 
-            String emailsHtml = streamToHtml(stream);
-
-            Element span = DOM.createSpan();
-            span.setInnerHTML(emailsHtml);
-            div.appendChild(span);
-            root.appendChild(div);
+        Element div = DOM.createDiv();
+        div.addClassName(className);
+        if (icon != null) {
+            Element i = DOM.createElement("i");
+            i.setClassName(icon);
+            div.appendChild(i);
         }
+        String emailsHtml = renderToHtml(stream);
+
+        Element span = DOM.createSpan();
+        span.setInnerHTML(emailsHtml);
+        div.appendChild(span);
+        root.appendChild(div);
         return root;
     }
 
-    public static String streamToHtml (Stream <ContactItem> stream){
-        if (stream != null) {
-            return stream.map(
-                    e -> "<a href='mailto:" + e.value() + "'>" + e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")</a>" : "</a>")
-            ).collect(Collectors.joining("<span>, </span>"));
-        }
-        return null;
+    public static String renderToHtml(Stream <ContactItem> stream){
+        if (stream == null)
+            return null;
+
+        return stream.map(
+                e -> "<a href='mailto:" + e.value() + "'>" + e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")</a>" : "</a>")
+        ).collect(Collectors.joining("<span>, </span>"));
     }
 }

@@ -144,7 +144,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
             employeeContacts.appendChild(buildElement("fa fa-phone", phones));
         }
 
-        employeeContacts.appendChild(EmailRender.streamRender("fa fa-envelope", infoFacade.emailsStream(), "contacts"));
+        employeeContacts.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream(), "contacts"));
 
         return employeeContacts.getString();
     }
