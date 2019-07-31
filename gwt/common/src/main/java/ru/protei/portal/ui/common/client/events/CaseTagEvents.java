@@ -35,4 +35,16 @@ public class CaseTagEvents {
     }
 
     public static class ChangeModel {}
+
+    public static class Remove {
+        private CaseTag caseTag;
+
+        public Remove(CaseTag caseTag) {
+            this.caseTag = caseTag;
+        }
+
+        public CaseTag getCaseTag() {
+            return caseTag;
+        }
+    }
 }
