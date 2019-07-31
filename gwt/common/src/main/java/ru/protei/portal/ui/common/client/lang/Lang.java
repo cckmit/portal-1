@@ -793,6 +793,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentCommonHeader();
 
+    String documentSearchProjectHeader();
+
+    String documentCreateProjectHeader();
+
+    String documentCreateProductHeader();
+
     String documentName();
 
     String documentType();
