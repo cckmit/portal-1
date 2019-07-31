@@ -186,8 +186,15 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeAdditionalBlock(EmployeeShortView employee) {
         Element employeeAdditional = DOM.createDiv();
-        employeeAdditional.appendChild(LabelValuePairBuilder.make().addLabelValuePair("IP", employee.getIpAddress(), "contacts").toElement());
-        employeeAdditional.appendChild(LabelValuePairBuilder.make().addLabelValuePair("ID", String.valueOf(employee.getId()), "contacts").toElement());
+        employeeAdditional.appendChild(
+                LabelValuePairBuilder.make()
+                        .addLabelValuePair("IP", employee.getIpAddress(), "contacts")
+                        .toElement());
+
+        employeeAdditional.appendChild(
+                LabelValuePairBuilder.make()
+                        .addLabelValuePair("ID", String.valueOf(employee.getId()), "contacts")
+                        .toElement());
 
         return employeeAdditional.getString();
     }
