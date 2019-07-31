@@ -128,4 +128,14 @@ public class CollectionUtils {
         list.add(value);
         return list;
     }
+
+    public static <T> List<T> listOf(T... elements){
+        if(elements == null) return Collections.EMPTY_LIST;
+        return new ArrayList<>( Arrays.asList( elements ));
+    }
+
+    public static <T> Set<T> setOf(T... elements){
+        if(elements == null) return Collections.EMPTY_SET;
+        return new HashSet<>( Arrays.asList( elements ));
+    }
 }

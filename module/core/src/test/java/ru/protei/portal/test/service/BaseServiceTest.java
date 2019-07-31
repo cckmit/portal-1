@@ -12,9 +12,12 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static ru.protei.portal.core.model.helper.CollectionUtils.setOf;
 
 public class BaseServiceTest {
 
@@ -34,8 +37,18 @@ public class BaseServiceTest {
         return product;
     }
 
-    public static CaseObject createNewCaseObject( Person person, Long caseNo ) {
-        return createNewCaseObject(En_CaseType.CRM_SUPPORT, caseNo, person);
+    public static CaseObject createNewCaseObject( Person person, CaseTag caseTag ) {
+        CaseObject caseObject = createNewCaseObject( En_CaseType.CRM_SUPPORT, person );
+        caseObject.setTags( setOf( caseTag ) );
+        return caseObject;
+    }
+
+    public static CaseObject createNewCaseObject( Person person ) {
+        return createNewCaseObject( En_CaseType.CRM_SUPPORT, person );
+    }
+
+    public static CaseObject createNewCaseObject(  En_CaseType caseType, Person person ) {
+        return createNewCaseObject(En_CaseType.CRM_SUPPORT, generateNexCaseNumber( caseType ), person);
     }
 
     public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
@@ -86,6 +99,13 @@ public class BaseServiceTest {
         return comment;
     }
 
+    protected CaseTag createCaseTag (String name, En_CaseType type){
+        CaseTag caseTag = new CaseTag();
+        caseTag.setCaseType(type);
+        caseTag.setName( name );
+        return caseTag;
+    }
+
     public static void checkResult( CoreResponse result ) {
         assertNotNull( "Expected result", result );
         assertTrue( "Expected ok result", result.isOk() );
@@ -107,14 +127,23 @@ public class BaseServiceTest {
 
     // Create and persist
 
-    protected CaseObject makeCaseObject( Long caseNo, Person person ) {
-        return makeCaseObject(En_CaseType.CRM_SUPPORT, caseNo, person);
+    protected CaseObject makeCaseObject( Person person ) {
+        return makeCaseObject(En_CaseType.CRM_SUPPORT, person);
     }
 
-    protected CaseObject makeCaseObject( En_CaseType caseType, Long caseNo, Person person) {
+    protected CaseObject makeCaseObject( En_CaseType caseType, Person person) {
         return checkResultAndGetData(
-                caseService.saveCaseObject( getAuthToken(), createNewCaseObject( caseType, caseNo, person ), person )
+                caseService.saveCaseObject( getAuthToken(), createNewCaseObject( caseType, person ), person )
         );
+    }
+
+    protected CaseObject makeCaseObject( Person person, Long productId, Date date, CaseTag caseTag ) {
+        CaseObject caseObject = createNewCaseObject( person, caseTag );
+        caseObject.setProductId( productId );
+        caseObject.setCreated( date );
+        Long caseId = caseObjectDAO.insertCase( caseObject );
+        caseObject.setId( caseId );
+        return caseObject;
     }
 
     protected CaseComment makeCaseComment(Person person, Long caseObjectId, String text) {
@@ -143,12 +172,30 @@ public class BaseServiceTest {
         return company;
     }
 
+    protected CaseTag makeCaseTag( String tag1, En_CaseType type ) {
+        CaseTag caseTag = createCaseTag(tag1, type);
+        caseTag.setId( caseTagDAO.persist( caseTag ) );
+        return caseTag;
+    }
+
     // Remove
 
     protected boolean removeCaseObjectAndComments(CaseObject caseObject) {
         caseCommentDAO.getCaseComments(new CaseCommentQuery(caseObject.getId()))
                 .forEach(caseComment -> caseCommentDAO.remove(caseComment));
         return caseObjectDAO.remove(caseObject);
+    }
+
+    private static Long generateNexCaseNumber( En_CaseType caseType ) {
+        return caseNumberRepo.get( caseType ).incrementAndGet();
+    }
+
+    static ConcurrentHashMap<En_CaseType, AtomicLong> caseNumberRepo = new ConcurrentHashMap<>();
+
+    static {
+        for (En_CaseType type : En_CaseType.values()) {
+            caseNumberRepo.put( type, new AtomicLong( 0L ) );
+        }
     }
 
     @Autowired
@@ -158,6 +205,8 @@ public class BaseServiceTest {
 
     @Autowired
     protected CompanyDAO companyDAO;
+    @Autowired
+    protected CaseTagDAO caseTagDAO;
     @Autowired
     protected PersonDAO personDAO;
     @Autowired

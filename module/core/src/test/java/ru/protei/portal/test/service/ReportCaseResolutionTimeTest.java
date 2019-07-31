@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
@@ -17,6 +18,7 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
@@ -41,17 +43,21 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         Company company = makeCompany( new CompanyCategory( 2L ) );
         person = makePerson( company );
 
+        CaseTag caseTag = makeCaseTag( "tag1", En_CaseType.CRM_SUPPORT );
+
+        CaseObjectFactory caseObjectFactory = new CaseObjectFactory( person, productId, this::rememberCaseId );
+
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                               ^x
-        Long caseId = makeCaseObject( 1L, person, productId, day( 9 ) );
+        Long caseId = caseObjectFactory.make( day( 9 ) );
         CaseComment c1 = createNewComment( person, caseId, "One day" );
         makeComment( c1, CREATED, day( 11 ) );                              //2050-01-11 00:00:00
         makeComment( c1, OPENED, addHours( day( 11 ), 2 ) );                //2050-01-11 02:00:00
         makeComment( c1, DONE, addHours( day( 11 ), 6 ) );                  //2050-01-11 06:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                          ^----^n-^--------x     ^----------------------------------------
-        Long caseId2 = makeCaseObject( 2L, person, productId, day( 9 ) );
+        //                          ^n---^--^--------x     ^----------------------------------------
+        Long caseId2 = caseObjectFactory.make( day( 9 ), caseTag );
         CaseComment c2 = createNewComment( person, caseId2, "Week" );
         makeComment( c2, CREATED, day( 9 ) );                                      //2050-01-09 00:00:00
         makeComment( c2, null, addHours( day( 9 ), 2 ) );            //2050-01-09 02:00:00
@@ -60,8 +66,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         makeComment( c2, REOPENED, addHours( day( 17 ), 11 ) );             //2050-01-17 11:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                                     ^--------------^----------------^
-        Long caseId3 = makeCaseObject( 3L, person, productId, day( 9 ) );
+        //                                     ^--------------^---n------------^
+        Long caseId3 = caseObjectFactory.make( day( 9 ) );
         CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
         makeComment( c3, CREATED, day( 13 ) );                                     //2050-01-13 00:00:00
         makeComment( c3, OPENED, addHours( day( 18 ), 5 ) );                //2050-01-18 05:00:00
@@ -325,14 +331,6 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() ); // учтена строка с заголовком
     }
 
-    private Long makeCaseObject( Long caseNo, Person person, Long productId, Date date ) {
-        CaseObject caseObject = createNewCaseObject( person, caseNo );
-        caseObject.setProductId( productId );
-        caseObject.setCreated( date );
-        Long caseId = caseObjectDAO.insertCase( caseObject );
-        caseIds.add( caseId );
-        return caseId;
-    }
 
     private void makeComment( CaseComment comment1, Long status, Date created ) {
         comment1 = fillComment( comment1, status, created );
@@ -389,6 +387,10 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         return addHours( date1, (day_of_month - 1) * H_DAY );
     }
 
+    private void rememberCaseId( Long caseId ) {
+        caseIds.add( caseId);
+    }
+
     private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
     private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
     private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
@@ -406,4 +408,27 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private static final Long DONE = 17L;
     private static final int H_DAY = 24;
     private static final Logger log = LoggerFactory.getLogger( ReportCaseResolutionTimeTest.class );
+
+    class CaseObjectFactory {
+
+        public CaseObjectFactory( Person person, Long productId, Consumer<Long> createdIds ) {
+            this.createdIds = createdIds;
+            this.person = person;
+            this.productId = productId;
+        }
+
+        public Long make( Date day ) {
+            return make(day, null);
+        }
+
+        public Long make( Date day, CaseTag caseTag ) {
+            Long id = makeCaseObject( person, productId, day, caseTag ).getId();
+            createdIds.accept(  id   );
+            return id;
+        }
+
+        private Consumer<Long> createdIds;
+        private final Person person;
+        private final Long productId;
+    }
 }

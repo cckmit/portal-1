@@ -40,8 +40,8 @@ public class TemplateServiceImplTest {
         assertNotNull(templateService);
         Company company = CaseCommentServiceTest.createNewCompany(new CompanyCategory(2L));
         Person person = CaseCommentServiceTest.createNewPerson(company);
-        CaseObject initState = createNewCaseObject(company, person, 2 * DAY + 3 * HOUR + 21 * MINUTE);
-        CaseObject lastState = createNewCaseObject(company, person, 4 * DAY + 15 * HOUR + 48 * MINUTE);
+        CaseObject initState = createNewCaseObject(person, 2 * DAY + 3 * HOUR + 21 * MINUTE);
+        CaseObject lastState = createNewCaseObject(person, 4 * DAY + 15 * HOUR + 48 * MINUTE);
 
         AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseService, initState, lastState, person);
         List<CaseComment> comments = Collections.EMPTY_LIST;
@@ -68,8 +68,8 @@ public class TemplateServiceImplTest {
         return notificationEntry;
     }
 
-    private CaseObject createNewCaseObject(Company company, Person person, Long timeElapsed) {
-        CaseObject caseObject = CaseCommentServiceTest.createNewCaseObject(person, 1L);
+    private CaseObject createNewCaseObject(Person person, Long timeElapsed) {
+        CaseObject caseObject = CaseCommentServiceTest.createNewCaseObject(person);
         caseObject.setCaseNumber(111L);
         caseObject.setTimeElapsed(timeElapsed);
         caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());

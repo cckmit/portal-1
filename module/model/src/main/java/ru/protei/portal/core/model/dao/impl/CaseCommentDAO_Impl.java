@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
 import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
 import ru.protei.portal.core.model.util.CrmConstants;
@@ -13,11 +14,15 @@ import ru.protei.portal.core.model.util.CrmConstants;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.HelperFunc.makeInArg;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.condition;
+import static ru.protei.portal.core.model.util.sqlcondition.SqlConditionBuilder.query;
 
 /**
  * Created by michael on 20.05.16.
@@ -58,6 +63,36 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     public boolean checkExistsByRemoteIdAndRemoteLinkId( String remoteId, Long remoteLinkId ) {
         return checkExistsByCondition( " case_comment.remote_id=? and case_comment.remote_link_id=?", remoteId, remoteLinkId );
     }
+
+//    public static void main(String[] args){
+////        List<Long> productIds = CollectionUtils.listOf( CrmConstants.Product.UNDEFINED, 0L, 1L );
+//        List<Long> productIds = CollectionUtils.listOf(  0L, 1L );
+//        List<Long> productIds2 = new ArrayList<>( productIds );
+//
+//        String products = "fake";
+//        if ( productIds != null && !productIds.isEmpty() ) {
+//            if (productIds.remove(CrmConstants.Product.UNDEFINED)) {
+//                products += " and (ob.product_id is null";
+//                if (!productIds.isEmpty()) {
+//                    products += " or ob.product_id in " + makeInArg(productIds, false);
+//                }
+//                products += ")";
+//            } else {
+//                products += " and ob.product_id in " + makeInArg(productIds, false);
+//            }
+//        }
+//
+//        String products2 = condition().condition( "fake" )
+//                .and( condition().and( "ob.product_id" ).isNull( productIds2.remove( CrmConstants.Product.UNDEFINED ) ? true : null )
+//                        .or( "ob.product_id" ).in( productIds2 )
+//                )
+//                .getSqlCondition();
+//
+//        if(products.equalsIgnoreCase( products2 )){
+//            int equal = 0;
+//        }
+//        int  end = 1;
+//    }
 
     @Override
     public List<CaseComment> reportCaseResolutionTime( Date from, Date to, List<Integer> terminatedStates,
