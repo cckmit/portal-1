@@ -3,8 +3,6 @@ package ru.protei.portal.ui.contact.client.view.preview;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.regexp.shared.MatchResult;
-import com.google.gwt.regexp.shared.RegExp;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -17,8 +15,6 @@ import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewActivity;
 import ru.protei.portal.ui.contact.client.activity.preview.AbstractContactPreviewView;
-
-import java.util.List;
 
 /**
  * Вид превью контакта
@@ -80,15 +76,7 @@ public class ContactPreviewView extends Composite implements AbstractContactPrev
     public void setPhone(String value) { this.phone.setInnerText( value ); }
 
     @Override
-    public void setEmail(List<String> emailList, List<String> mailtoList) {
-        StringBuilder emails = new StringBuilder();
-        for (int i = 0; i < emailList.size(); i++) {
-            emails.append(i == 0 ? "" : ", ");
-            emails.append("<a href='mailto:" + mailtoList.get(i) + "'>");
-            emails.append(emailList.get(i) + "</a>");
-        }
-        this.emailAnchor.setInnerHTML(emails.toString());
-    }
+    public void setEmail(String value) { this.emailAnchor.setInnerHTML(value); }
 
     @Override
     public void setAddress(String value) { this.address.setInnerHTML( value ); }

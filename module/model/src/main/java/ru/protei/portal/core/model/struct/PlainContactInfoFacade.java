@@ -88,16 +88,6 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         ).collect( Collectors.joining( ", " ) );
     }
 
-    public List<String> allEmailsAsList () {
-        return emailsStream().map(
-                e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")
-        ).collect( Collectors.toList() );
-    }
-
-    public List<String> allEmailsWithoutCommentAsList () {
-        return emailsStream().map(ContactItem::value).collect( Collectors.toList() );
-    }
-
     public String publicEmailsAsString () {
         return emailsStream().filter( ci -> ci.accessType().equals( En_ContactDataAccess.PUBLIC ) ).map(
                 e -> e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")" : "")

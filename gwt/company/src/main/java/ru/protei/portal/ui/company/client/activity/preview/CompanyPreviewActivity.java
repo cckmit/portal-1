@@ -11,6 +11,7 @@ import ru.protei.portal.core.model.ent.CompanySubscription;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.events.ContactEvents;
 import ru.protei.portal.ui.common.client.events.SiteFolderPlatformEvents;
@@ -59,7 +60,7 @@ public abstract class CompanyPreviewActivity
         view.setPhone( infoFacade.allPhonesAsString() );
 
         view.setSite( infoFacade.getWebSite() );
-        view.setEmail( infoFacade.allEmailsAsString() );
+        view.setEmail( EmailRender.streamToHtml(infoFacade.emailsStream()) );
 
         view.setAddressDejure( infoFacade.getLegalAddress() );
         view.setAddressFact( infoFacade.getFactAddress() );

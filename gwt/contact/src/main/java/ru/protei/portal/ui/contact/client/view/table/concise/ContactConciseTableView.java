@@ -5,6 +5,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.inject.Inject;
@@ -19,6 +20,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
 import ru.protei.portal.ui.common.client.columns.RemoveClickColumn;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.contact.client.activity.table.concise.AbstractContactConciseTableActivity;
 import ru.protei.portal.ui.contact.client.activity.table.concise.AbstractContactConciseTableView;
@@ -135,9 +137,10 @@ public class ContactConciseTableView extends Composite implements AbstractContac
 
         @Override
         public void fillColumnValue(Element cell, Person value) {
+
             PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(value.getContactInfo());
 
-            String emails = infoFacade.allEmailsAsString();
+            String emails = EmailRender.streamToHtml(infoFacade.emailsStream());
             if (StringUtils.isNotBlank(emails)) {
                 com.google.gwt.dom.client.Element label = DOM.createLabel();
                 label.setInnerHTML(emails);
