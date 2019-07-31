@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.EmailColumnBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableView;
@@ -139,13 +140,14 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
         String phones = infoFacade.publicPhonesAsFormattedString(true);
         String emails = infoFacade.publicEmailsAsString();
+        String mailto = infoFacade.allEmailsAsStringWithoutComment();
 
         if (!phones.isEmpty()) {
             employeeContacts.appendChild(buildElement("fa fa-phone", phones));
         }
 
         if (!emails.isEmpty()) {
-            employeeContacts.appendChild(buildElement("fa fa-envelope", emails));
+            employeeContacts.appendChild(EmailColumnBuilder.make().add("fa fa-envelope", emails, mailto, "contacts").toElement());
         }
 
         return employeeContacts.getString();

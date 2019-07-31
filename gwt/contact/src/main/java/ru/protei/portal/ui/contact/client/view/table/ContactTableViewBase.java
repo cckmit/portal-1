@@ -47,7 +47,7 @@ public abstract class ContactTableViewBase extends Composite {
                 String mailto = infoFacade.allEmailsAsStringWithoutComment();
 
                 if (StringUtils.isNotBlank(emails)) {
-                    root.appendChild(EmailColumnBuilder.make().add("ion-android-mail", emails, mailto)
+                    root.appendChild(EmailColumnBuilder.make().add("ion-android-mail", emails, mailto, "contact-record")
                             .toElement());
                 }
             }

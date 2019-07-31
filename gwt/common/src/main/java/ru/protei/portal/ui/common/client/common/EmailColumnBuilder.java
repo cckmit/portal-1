@@ -15,11 +15,11 @@ public class EmailColumnBuilder {
         return new EmailColumnBuilder();
     }
 
-    public EmailColumnBuilder add ( String icon, String email, String mailto ) {
+    public EmailColumnBuilder add ( String icon, String email, String mailto, String className ) {
 
         if ( email != null) {
             Element div = DOM.createDiv();
-            div.addClassName( "contact-record" );
+            div.addClassName( className );
             if ( icon != null ) {
                 Element i = DOM.createElement("i");
                 i.setClassName( icon );
