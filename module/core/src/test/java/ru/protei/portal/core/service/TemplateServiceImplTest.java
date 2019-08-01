@@ -70,7 +70,6 @@ public class TemplateServiceImplTest {
 
     private CaseObject createNewCaseObject(Person person, Long timeElapsed) {
         CaseObject caseObject = CaseCommentServiceTest.createNewCaseObject(person);
-        caseObject.setCaseNumber(111L);
         caseObject.setTimeElapsed(timeElapsed);
         caseObject.setImpLevel(En_ImportanceLevel.BASIC.getId());
 
