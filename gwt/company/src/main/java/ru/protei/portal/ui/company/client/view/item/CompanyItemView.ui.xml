@@ -18,7 +18,7 @@
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="emailContainer" styleName="contacts">
                 <i class="fa fa-envelope"></i>
-                <a href="#" ui:field="email"></a>
+                <span ui:field="email"/>
             </g:HTMLPanel>
             <g:HTMLPanel ui:field="websiteContainer" styleName="contacts">
                 <i class="fa fa-globe"></i>
