@@ -286,6 +286,7 @@ public abstract class DocumentEditActivity
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         d.setApproved(view.isApproved().getValue());
+        d.setState(document.getState());
         return d;
     }
     private void fillView(Document document) {

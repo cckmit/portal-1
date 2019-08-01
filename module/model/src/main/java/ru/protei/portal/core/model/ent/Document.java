@@ -37,9 +37,9 @@ public class Document implements Serializable, Downloadable {
     private Long inventoryNumber;
 
     /**
-     * Статус
+     * Состояние
      */
-    @JdbcColumn(name="state")
+    @JdbcColumn(name = "state")
     @JdbcEnumerated(EnumType.ID)
     private En_DocumentState state;
 
@@ -286,7 +286,7 @@ public class Document implements Serializable, Downloadable {
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
                 ", executionType=" + executionType +
-                ", state=" + state.toString() +
+                ", state=" + state +
                 '}';
     }
 }
