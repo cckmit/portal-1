@@ -29,27 +29,12 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     @PostConstruct
     public void onInit() {
         view.setActivity(this);
-        dialogView.setActivity(this);
-        dialogView.setHeader(lang.documentSearchProject());
-        dialogView.addStyleName("modal-lg");
-        dialogView.getBodyContainer().add(view.asWidget());
     }
 
     @Event
     public void onShow(ProjectEvents.Search event) {
-        view.resetFilter();
-        dialogView.showPopup();
-    }
-
-    @Event
-    public void onCreatedProject(ProjectEvents.Created event) {
-        onSearchClicked();
-        view.createProjectContainer().clear();
-    }
-
-    @Event
-    public void onCanceledCreationProject(ProjectEvents.Canceled event) {
-        view.createProjectContainer().clear();
+        event.parent.clear();
+        event.parent.add(view.asWidget());
     }
 
     @Override
@@ -73,13 +58,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     }
 
     @Override
-    public void onCreateProjectClicked() {
-        fireEvent(new ProjectEvents.Create(view.createProjectContainer()));
-    }
-
-    @Override
     public void onSaveClicked() {
-        dialogView.hidePopup();
         ProjectInfo project = view.project().getValue();
         if (project != null) {
             fireEvent(new ProjectEvents.Set(view.project().getValue()));
@@ -88,7 +67,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
 
     @Override
     public void onCancelClicked() {
-        dialogView.hidePopup();
+
     }
 
     private ProjectQuery makeQuery() {
@@ -115,7 +94,4 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
 
     @Inject
     AbstractSearchProjectView view;
-
-    @Inject
-    AbstractDialogDetailsView dialogView;
 }

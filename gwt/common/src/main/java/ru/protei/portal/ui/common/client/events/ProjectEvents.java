@@ -102,7 +102,25 @@ public class ProjectEvents {
     /**
      * Показать форму поиска
      */
-    public static class Search {}
+    public static class Search {
+        public Search(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
+    }
+
+    /**
+     * Создать проект
+     */
+    public static class Create {
+        public Create(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
+    }
+
+    public static class Created {}
+    public static class Canceled {}
 
     /**
      * Установить выбранный проект
@@ -116,15 +134,6 @@ public class ProjectEvents {
         public ProjectInfo project;
     }
 
-    public static class Create {
-        public Create(HasWidgets parent) {
-            this.parent = parent;
-        }
-        public HasWidgets parent;
-    }
-
-    public static class Created {}
-    public static class Canceled {}
     /**
      * Показать таблицу проектов
      */
@@ -138,6 +147,5 @@ public class ProjectEvents {
         public HasWidgets parent;
         public ProjectQuery query;
     }
-
 }
 

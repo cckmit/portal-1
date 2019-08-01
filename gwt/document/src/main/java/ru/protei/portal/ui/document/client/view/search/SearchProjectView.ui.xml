@@ -8,37 +8,46 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-        <div class="form-group grid grid-indent">
-            <div class="col-xs-6">
-                <label><ui:text from="{lang.name}"/></label>
-                <g:TextBox ui:field="name" styleName="input-field"/>
-            </div>
-            <div class="col-xs-6">
-                <label><ui:text from="{lang.created}"/></label>
-                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-            </div>
-            <div class="col-xs-6">
-                <label><ui:text from="{lang.projectCustomerType}"/></label>
-                <cutomertype:CustomerTypeSelector ui:field="customerType"/>
-            </div>
-            <div class="col-xs-6">
-                <label><ui:text from="{lang.projectProducts}"/></label>
-                <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"
-                                                              addStyleNames="col-xs-12"/>
+
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><ui:text from="{lang.name}"/></label>
+                                <g:TextBox ui:field="name" styleName="form-control"/>
+                            </div>
+                            <div class="form-group">
+                                <label><ui:text from="{lang.projectCustomerType}"/></label>
+                                <cutomertype:CustomerTypeSelector ui:field="customerType"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label><ui:text from="{lang.created}"/></label>
+                                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+                            </div>
+                            <div class="form-group">
+                                <label><ui:text from="{lang.projectProducts}"/></label>
+                                <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group text-right p-t-10">
+                        <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
+                        <g:Anchor href='#' ui:field="clear" styleName="btn btn-white" text="{lang.buttonClear}"/>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="form-group grid grid-indent">
-            <div class="col-xs-12 footer">
-                <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
-                <g:Anchor href='#' ui:field="clear" styleName="btn btn-white" text="{lang.buttonClear}"/>
+
+        <div ui:field="projectsContainer" class="container-fluid padding-15 bg-white hide">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <projectlist:ProjectList ui:field="project"/>
+                </div>
             </div>
         </div>
-        <g:HTMLPanel ui:field="panel" styleName="form-group grid grid-indent" visible="false">
-            <projectlist:ProjectList ui:field="project"/>
-            <div class="col-xs-12 footer">
-                <g:Anchor href='#' ui:field="create" styleName="btn btn-primary" text="{lang.buttonCreateProject}"/>
-            </div>
-            <g:HTMLPanel ui:field="createProjectContainer" styleName="col-xs-12"/>
-        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>

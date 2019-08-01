@@ -222,6 +222,21 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         documentType.refreshValue();
     }
 
+    @Override
+    public HasWidgets searchProjectContainer() {
+        return searchProjectContainer;
+    }
+
+    @Override
+    public HasWidgets createProjectContainer() {
+        return createProjectContainer;
+    }
+
+    @Override
+    public HasWidgets createProductContainer() {
+        return createProductContainer;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -353,6 +368,13 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     HTMLPanel inventoryNumberContainer;
     @UiField
     HTMLPanel approvedContainer;
+
+    @UiField
+    HTMLPanel searchProjectContainer;
+    @UiField
+    HTMLPanel createProjectContainer;
+    @UiField
+    HTMLPanel createProductContainer;
 
     @Inject
     @UiField

@@ -13,6 +13,4 @@ public interface AbstractDocumentEditActivity {
     void onProjectChanged();
 
     void onDecimalNumberChanged();
-
-    void onSearchProjectClicked();
 }

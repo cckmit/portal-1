@@ -30,6 +30,9 @@ public abstract class DocumentEditActivity
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         this.authorizedProfile = event.profile;
+        fireEvent(new ProjectEvents.Search(view.searchProjectContainer()));
+        fireEvent(new ProjectEvents.Create(view.createProjectContainer()));
+        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
     }
 
     @PostConstruct
@@ -149,11 +152,6 @@ public abstract class DocumentEditActivity
             view.decimalNumberEnabled().setEnabled(true);
             view.setDecimalNumberHints(decimalNumbers);
         }
-    }
-
-    @Override
-    public void onSearchProjectClicked() {
-        fireEvent(new ProjectEvents.Search());
     }
 
     private void setDesignationVisibility() {

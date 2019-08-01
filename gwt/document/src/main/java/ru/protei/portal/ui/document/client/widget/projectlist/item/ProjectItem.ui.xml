@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <g:HTMLPanel ui:field="root" styleName="item-row">
-        <div class="item-cell select"><g:RadioButton ui:field="radio" name=""/></div>
+        <div class="item-cell select"><g:RadioButton ui:field="radio" name="" styleName="radio"/></div>
         <g:Label ui:field="created" styleName="item-cell created"/>
         <g:Label ui:field="name" styleName="item-cell name"/>
         <g:Label ui:field="products" styleName="item-cell products"/>

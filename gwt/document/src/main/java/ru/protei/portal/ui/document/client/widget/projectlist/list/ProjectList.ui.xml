@@ -3,7 +3,7 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="form-group project-list">
+    <g:HTMLPanel styleName="form-group table-list projects">
         <div class="list-head">
             <div class="item-row">
                 <div class="item-cell select"/>

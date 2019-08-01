@@ -7,7 +7,7 @@
         <div class="select2-container select2-container-multi multi-input-select">
             <g:HTMLPanel ui:field="itemContainer" tag="ul" styleName="select2-choices"/>
             <div class="select2-button">
-                <g:Button ui:field="caretButton" styleName="btn btn-sm btn-flat no-border">
+                <g:Button ui:field="caretButton" styleName="btn btn-flat no-border">
                     <span ui:field="addIcon" class="hide"/>
                     <span ui:field="add" class="caret"/>
                 </g:Button>
