@@ -12,6 +12,7 @@ import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ReportType;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -22,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
-import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.*;
 import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime.DAY;
 
@@ -30,7 +31,7 @@ import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTi
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
-    private void initCaseObjectsQueryTest() {
+    private void initCaseObjectsQueryTest( ) {
         if (productId == null) {
 
             DevUnit product = devUnitDAO.getByCondition( "UNIT_NAME=?", PRODUCT_NAME );
@@ -43,21 +44,26 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         Company company = makeCompany( new CompanyCategory( 2L ) );
         person = makePerson( company );
 
-        CaseTag caseTag = makeCaseTag( "tag1", En_CaseType.CRM_SUPPORT );
+        CaseTag includeTag = makeCaseTag( "tag_for_include_1", En_CaseType.CRM_SUPPORT );
+        CaseTag includeTag2 = makeCaseTag( "tag_for_include_2", En_CaseType.CRM_SUPPORT );
+        CaseTag excludeTag = makeCaseTag( "tag_for_exclude", En_CaseType.CRM_SUPPORT );
+        caseTagIncludedIds = toList( listOf( includeTag, includeTag2 ), CaseTag::getId );
 
         CaseObjectFactory caseObjectFactory = new CaseObjectFactory( person, productId, this::rememberCaseId );
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                               ^x
-        Long caseId = caseObjectFactory.make( day( 9 ) );
+        Long caseId = caseObjectFactory.make( day( 9 ), includeTag );
+        caseObjectIncludedIds.add(caseId);
         CaseComment c1 = createNewComment( person, caseId, "One day" );
         makeComment( c1, CREATED, day( 11 ) );                              //2050-01-11 00:00:00
         makeComment( c1, OPENED, addHours( day( 11 ), 2 ) );                //2050-01-11 02:00:00
         makeComment( c1, DONE, addHours( day( 11 ), 6 ) );                  //2050-01-11 06:00:00
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-        //                          ^n---^--^--------x     ^----------------------------------------
-        Long caseId2 = caseObjectFactory.make( day( 9 ), caseTag );
+        //                          ^n------^--------x     ^----------------------------------------
+        Long caseId2 = caseObjectFactory.make( day( 9 ), includeTag2 );
+        caseObjectIncludedIds.add(caseId2);
         CaseComment c2 = createNewComment( person, caseId2, "Week" );
         makeComment( c2, CREATED, day( 9 ) );                                      //2050-01-09 00:00:00
         makeComment( c2, null, addHours( day( 9 ), 2 ) );            //2050-01-09 02:00:00
@@ -67,12 +73,19 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                                     ^--------------^---n------------^
-        Long caseId3 = caseObjectFactory.make( day( 9 ) );
+        Long caseId3 = caseObjectFactory.make( day( 9 ), includeTag );
+        caseObjectIncludedIds.add(caseId3);
         CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
         makeComment( c3, CREATED, day( 13 ) );                                     //2050-01-13 00:00:00
         makeComment( c3, OPENED, addHours( day( 18 ), 5 ) );                //2050-01-18 05:00:00
         makeComment( c3, null, addHours( day( 19 ), 11 ) );          //2050-01-19 11:00:00
         makeComment( c3, DONE, addHours( day( 24 ), 11 ) );                 //2050-01-24 11:00:00
+
+        //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+        //   excluded                                ^..............................................
+        Long excludedCaseId4 = caseObjectFactory.make( day( 9 ), excludeTag );
+        CaseComment c4 = createNewComment( person, excludedCaseId4, "excluded comment" );
+        makeComment( c4, CREATED, day( 15 ) );                                     //2050-01-15 00:00:00
 
     }
 
@@ -88,13 +101,16 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             //                               ^x
             //                          ^n------^--------x     ^----------------------------------------
             //                                     ^--------------^---n-------------х
-            Report report = createReport( productId, date10, addHours( date10, numberOfDays * H_DAY ) );
+            //   excluded                                ^..............................................
+            Report report = createReport( productId, date10, addHours( date10, numberOfDays * H_DAY ), caseTagIncludedIds );
+//            Report report = createReport( productId, date10, addHours( date10, numberOfDays * H_DAY ), listOf( 2L ));
 
             ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO );
             caseCompletionTimeReport.run();
 
             List<Case> cases = caseCompletionTimeReport.getCases();
-            assertEquals( "grouping comments not worked", caseIds.size(), size( cases ) );
+            assertEquals( "grouping comments not worked", size( caseObjectIncludedIds ), size( cases ) );
+            assertEquals( "expected only included cases", caseObjectIncludedIds, stream( cases ).map( cse -> cse.caseId ).sorted().collect( Collectors.toList() ) );
             assertEquals( 9, cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
 
             List<Interval> intervals = caseCompletionTimeReport.getIntervals();
@@ -331,6 +347,11 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() ); // учтена строка с заголовком
     }
 
+    protected CaseTag makeCaseTag( String tag1, En_CaseType type ) {
+        CaseTag caseTag = super.makeCaseTag(tag1, type);
+        caseTagIds.add( caseTag.getId() );
+        return caseTag;
+    }
 
     private void makeComment( CaseComment comment1, Long status, Date created ) {
         comment1 = fillComment( comment1, status, created );
@@ -344,10 +365,11 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         return comment1;
     }
 
-    private Report createReport( Long productId, Date from, Date to ) {
+    private Report createReport( Long productId, Date from, Date to, List<Long> caseTagsIds ) {
         CaseQuery caseQuery = new CaseQuery();
         caseQuery.setProductIds( Arrays.asList( productId ) );
         caseQuery.setStateIds( activeStatesShort );
+        caseQuery.setCaseTagsIds( caseTagsIds );
 
 
         caseQuery.setCreatedFrom( from );
@@ -381,6 +403,11 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             personDAO.remove( person );
             companyDAO.removeByKey( person.getCompanyId() );
         }
+
+        if(!isEmpty( caseTagIds )){
+            caseTagDAO.removeByKeys( caseTagIds );
+            caseTagIds.clear();
+        }
     }
 
     private Date day( int day_of_month ) {
@@ -391,6 +418,8 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         caseIds.add( caseId);
     }
 
+
+
     private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
     private static Date date10 = new GregorianCalendar( 2050, Calendar.JANUARY, 10, 0, 0 ).getTime();
     private static Date date9 = new GregorianCalendar( 2050, Calendar.JANUARY, 9, 0, 0 ).getTime();
@@ -400,6 +429,9 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     private static Person person;
     private static List<Long> commentsIds = new ArrayList<>();
     private static List<Long> caseIds = new ArrayList<>();
+    private List<Long> caseObjectIncludedIds = new ArrayList<>();
+    private List<Long> caseTagIds = new ArrayList<>();
+    private List<Long> caseTagIncludedIds = new ArrayList<>();
     private static final String PRODUCT_NAME = "TestProduct";
     private static final Long CREATED = 1L;
     private static final Long OPENED = 2L;

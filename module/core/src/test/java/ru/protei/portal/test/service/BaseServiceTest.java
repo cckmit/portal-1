@@ -143,6 +143,7 @@ public class BaseServiceTest {
         caseObject.setCreated( date );
         Long caseId = caseObjectDAO.insertCase( caseObject );
         caseObject.setId( caseId );
+        caseObjectTagDAO.persist(new CaseObjectTag(caseId, caseTag.getId()));
         return caseObject;
     }
 
@@ -187,6 +188,7 @@ public class BaseServiceTest {
     }
 
     private static Long generateNexCaseNumber( En_CaseType caseType ) {
+//        caseTypeDAO.generateNextId(caseType )
         return caseNumberRepo.get( caseType ).incrementAndGet();
     }
 
@@ -207,6 +209,10 @@ public class BaseServiceTest {
     protected CompanyDAO companyDAO;
     @Autowired
     protected CaseTagDAO caseTagDAO;
+    @Autowired
+    protected CaseObjectTagDAO caseObjectTagDAO;
+    @Autowired
+    protected CaseTypeDAO caseTypeDAO;
     @Autowired
     protected PersonDAO personDAO;
     @Autowired
