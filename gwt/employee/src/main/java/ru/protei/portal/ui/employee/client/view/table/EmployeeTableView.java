@@ -19,6 +19,7 @@ import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableActivity;
 import ru.protei.portal.ui.employee.client.activity.list.AbstractEmployeeTableView;
@@ -147,15 +148,12 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(employee.getContactInfo());
         String phones = infoFacade.publicPhonesAsFormattedString(true);
-        String emails = infoFacade.publicEmailsAsString();
 
         if (!phones.isEmpty()) {
             employeeContacts.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-phone", phones, "contacts").toElement());
         }
 
-        if (!emails.isEmpty()) {
-            employeeContacts.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-envelope", emails, "contacts").toElement());
-        }
+        employeeContacts.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream(), "contacts"));
 
         return employeeContacts.getString();
     }
