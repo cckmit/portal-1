@@ -7,8 +7,7 @@ import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.common.ContactColumnBuilder;
-import ru.protei.portal.ui.common.client.common.EmailColumnBuilder;
+import ru.protei.portal.ui.common.client.common.LabelValuePairBuilder;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 public abstract class ContactTableViewBase extends Composite {
@@ -39,15 +38,16 @@ public abstract class ContactTableViewBase extends Composite {
 
                 String phones = infoFacade.allPhonesAsString();
                 if (StringUtils.isNotBlank(phones)) {
-                    root.appendChild(ContactColumnBuilder.make().add("ion-android-call", phones)
+                    root.appendChild(LabelValuePairBuilder.make().addIconValuePair("ion-android-call", phones, "contact-record")
                             .toElement());
                 }
+
 
                 String emails = infoFacade.allEmailsAsString();
                 String mailto = infoFacade.allEmailsAsStringWithoutComment();
 
                 if (StringUtils.isNotBlank(emails)) {
-                    root.appendChild(EmailColumnBuilder.make().add("ion-android-mail", emails, mailto)
+                    root.appendChild(LabelValuePairBuilder.make().addIconValuePair("ion-android-mail", emails, "contact-record")
                             .toElement());
                 }
             }

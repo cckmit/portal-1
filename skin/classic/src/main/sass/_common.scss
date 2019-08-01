@@ -1251,14 +1251,20 @@ label.bordered:after{
     i {
       padding-right: 5px;
     }
+    b {
+      padding-right: 5px;
+    }
     .employee-info {
-      width: 26%
+      width: 21%
     }
     .employee-contacts {
-      width: 36%
+      width: 31%
     }
     .employee-department {
-      width: 37%
+      width: 32%
+    }
+    .employee-additional {
+      width: 15%
     }
   }
 }
