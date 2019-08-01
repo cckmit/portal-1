@@ -40,7 +40,8 @@ public class Document implements Serializable, Downloadable {
      * Статус
      */
     @JdbcColumn(name="state")
-    private int stateId;
+    @JdbcEnumerated(EnumType.ID)
+    private En_DocumentState state;
 
     /**
      * Вид документа
@@ -232,16 +233,12 @@ public class Document implements Serializable, Downloadable {
         this.executionType = executionType;
     }
 
-    public void setStateId(int stateId) {
-        this.stateId = stateId;
-    }
-
-    public int getStateId() {
-        return stateId;
+    public void setState(En_DocumentState state) {
+        this.state = state;
     }
 
     public En_DocumentState getState(){
-        return En_DocumentState.forId(this.stateId);
+        return state;
     }
 
     public boolean isActiveUnit () {
@@ -289,7 +286,7 @@ public class Document implements Serializable, Downloadable {
                 ", keywords=" + keywords +
                 ", isApproved=" + isApproved +
                 ", executionType=" + executionType +
-                ", stateId=" + stateId +
+                ", state=" + state.toString() +
                 '}';
     }
 }

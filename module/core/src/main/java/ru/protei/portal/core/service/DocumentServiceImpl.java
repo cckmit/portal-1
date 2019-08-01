@@ -116,8 +116,6 @@ public class DocumentServiceImpl implements DocumentService {
             return new CoreResponse<Document>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        document.setStateId(En_DocumentState.ACTIVE.getId());
-
         byte[] fileData = fileItem.get();
 
         InputStream fileInputStream;
@@ -170,18 +168,16 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public CoreResponse changeDocumentState(AuthToken token, Long documentId, int stateId) {
-        if (documentId == null || En_DocumentState.forId(stateId) == null) {
+    public CoreResponse changeDocumentState(AuthToken token, Document document) {
+        if (document == null ) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        Document document = documentDAO.get(documentId);
-        if ( document == null ) {
+        if ( documentDAO.get(document.getId()) == null ) {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
-        document.setStateId(stateId);
 
-        documentDAO.updateState(documentId, document);
+        documentDAO.updateState(document);
 
         return new CoreResponse().success();
     }

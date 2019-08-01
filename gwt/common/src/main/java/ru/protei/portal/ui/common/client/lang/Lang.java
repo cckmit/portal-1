@@ -59,6 +59,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String msgObjectSaved();
 
+    String msgStatusChanged();
+
     String buttonFromArchive();
 
     String errEmptyName();

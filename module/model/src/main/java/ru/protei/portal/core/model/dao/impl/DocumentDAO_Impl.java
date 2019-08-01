@@ -32,8 +32,8 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
-    public void updateState(Long productId, Document newState) {
-        partialMerge(newState, "state");
+    public void updateState(Document document) {
+        partialMerge(document, "state");
     }
 
     @Override

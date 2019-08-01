@@ -85,14 +85,15 @@ public abstract class DocumentEditActivity
             return;
         }
 
-        document.setStateId(document.isActiveUnit() ? En_DocumentState.DEPRECATED.getId() : En_DocumentState.ACTIVE.getId());
+        document.setState(document.isActiveUnit() ? En_DocumentState.DEPRECATED : En_DocumentState.ACTIVE);
 
-        documentService.changeState(document.getId(), document.getStateId(), new RequestCallback<Boolean>() {
+        documentService.changeState(document, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {}
 
             @Override
             public void onSuccess(Boolean result) {
+                fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new DocumentEvents.ChangeModel());
                 fireEvent(new Back());
             }
@@ -242,6 +243,7 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(Document result) {
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new DocumentEvents.ChangeModel());
                 fireEvent(new Back());
             }
