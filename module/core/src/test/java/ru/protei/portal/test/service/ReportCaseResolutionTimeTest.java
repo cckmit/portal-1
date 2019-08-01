@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.support.TransactionTemplate;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -16,7 +15,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
 import ru.protei.winter.core.CoreConfigurationContext;
-import ru.protei.winter.core.utils.services.lock.LockService;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.*;
@@ -31,30 +29,34 @@ import static ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTi
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
 public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
-    private QueryModel initCaseObjectsQueryTest( QueryModel model) {
-
-        DevUnit product = devUnitDAO.getByCondition( "UNIT_NAME=?", PRODUCT_NAME );
-        if (product == null)
-            model.productId = makeProduct( PRODUCT_NAME );
-        else {
-            model.productId = product.getId();
-        }
-
-        Company company = makeCompany( new CompanyCategory( 2L ) );
-        Person person = makePerson( company );
-        model.person = person;
-
+    private QueryModel initCaseObjectsQueryTestModel( QueryModel model) {
         CaseObjectFactory factory = new CaseObjectFactory( model );
 
-        CaseTag includeTag = factory.makeTag( model.prefix + "tag_for_include_1", En_CaseType.CRM_SUPPORT );
-        CaseTag includeTag2 = factory.makeTag( model.prefix + "tag_for_include_2", En_CaseType.CRM_SUPPORT );
-        CaseTag excludeTag = factory.makeTag( model.prefix + "tag_for_exclude", En_CaseType.CRM_SUPPORT );
+//        DevUnit product = devUnitDAO.getByCondition( "UNIT_NAME=?", PRODUCT_NAME );
+//        if (product == null)
+//            model.productId = factory.makeProduct( PRODUCT_NAME );
+//        else {
+//            model.productId = product.getId();
+//        }
+
+        Company company = factory.makeCompany( new CompanyCategory( 2L ) );
+        Person person = factory.makePerson( company );
+        model.person = person;
+
+        CaseTag includeTag = factory.makeTag( model.prefix + "_tag_for_include_1", En_CaseType.CRM_SUPPORT );
+        CaseTag includeTag2 = factory.makeTag( model.prefix + "_tag_for_include_2", En_CaseType.CRM_SUPPORT );
+        CaseTag excludeTag = factory.makeTag( model.prefix + "_tag_for_exclude", En_CaseType.CRM_SUPPORT );
         model.caseTagIncludedIds = toList( listOf( includeTag, includeTag2 ), CaseTag::getId );
 
+        Long includedProduct = factory.makeProduct( model.prefix + "_product_included_1" );
+        Long includedProduct2 = factory.makeProduct( model.prefix + "_product_included_2" );
+        Long excludedProduct = factory.makeProduct( model.prefix + "_product_excluded" );
+        model.productsIncludedIds( listOf( includedProduct, includedProduct2 ) );
 
+        model.numberOfDays = 12;
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                               ^x
-        Long caseId = factory.makeCase( day( 9 ), includeTag );
+        Long caseId = factory.makeCase( day( 9 ), includeTag, includedProduct );
         model.caseObjectIncludedIds.add(caseId);
         CaseComment c1 = createNewComment( person, caseId, "One day" );
         makeComment( c1, CREATED, day( 11 ) );                              //2050-01-11 00:00:00
@@ -63,7 +65,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                          ^n------^--------x     ^----------------------------------------
-        Long caseId2 = factory.makeCase( day( 9 ), includeTag2 );
+        Long caseId2 = factory.makeCase( day( 9 ), includeTag2, includedProduct2 );
         model.caseObjectIncludedIds.add(caseId2);
         CaseComment c2 = createNewComment( person, caseId2, "Week" );
         makeComment( c2, CREATED, day( 9 ) );                                      //2050-01-09 00:00:00
@@ -74,7 +76,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //                                     ^--------------^---n------------^
-        Long caseId3 = factory.makeCase( day( 9 ), includeTag );
+        Long caseId3 = factory.makeCase( day( 9 ), includeTag, includedProduct );
         model.caseObjectIncludedIds.add(caseId3);
         CaseComment c3 = createNewComment( person, caseId3, "2 Week" );
         makeComment( c3, CREATED, day( 13 ) );                                     //2050-01-13 00:00:00
@@ -84,7 +86,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
         //   excluded                                ^..............................................
-        Long excludedCaseId4 = factory.makeCase( day( 9 ), excludeTag );
+        Long excludedCaseId4 = factory.makeCase( day( 9 ), excludeTag, excludedProduct );
         CaseComment c4 = createNewComment( person, excludedCaseId4, "excluded comment" );
         makeComment( c4, CREATED, day( 15 ) );                                     //2050-01-15 00:00:00
 
@@ -92,31 +94,20 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     }
 
     @Test
-    public void caseObjectsQueryTest() throws Exception {
-        QueryModel model = new QueryModel("caseObjectsQueryTest");
+    public void productQueryTest() throws Exception {
+        QueryModel model = new QueryModel("productQueryTest");
         try {
-            model = initCaseObjectsQueryTest( model );
+            model = initCaseObjectsQueryTestModel( model );
 
-            int numberOfDays = 12;
-            //                            | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
-            //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
-            //                            |-----------------------------------|
-            //                               ^x
-            //                          ^n------^--------x     ^----------------------------------------
-            //                                     ^--------------^---n-------------х
-            //   excluded                                ^..............................................
-            Report report = createReport( model.productId, date10, addHours( date10, numberOfDays * H_DAY ), model.caseTagIncludedIds );
-//            Report report = createReport( model.productId, date10, addHours( date10, numberOfDays * H_DAY ), listOf( 2L ));
+            CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
+            caseQuery.setProductIds( model.productIncludedIds );
 
-            ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO );
-            caseCompletionTimeReport.run();
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( createReport( caseQuery ), caseCommentDAO );
+            report.run();
 
-            List<Case> cases = caseCompletionTimeReport.getCases();
-            assertEquals( "grouping comments not worked", size( model.caseObjectIncludedIds ), size( cases ) );
-            assertEquals( "expected only included cases", model.caseObjectIncludedIds, stream( cases ).map( cse -> cse.caseId ).sorted().collect( Collectors.toList() ) );
-            assertEquals( 9, cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
+            checkCases( report.getCases(), model.caseObjectIncludedIds );
 
-            checkIntervals( caseCompletionTimeReport.getIntervals(), numberOfDays );
+            checkIntervals( report.getIntervals(), model.numberOfDays );
 
         } catch (Exception e) {
             throw e;
@@ -125,7 +116,45 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         }
     }
 
+    @Test
+    public void tagQueryTest() throws Exception {
+        QueryModel model = new QueryModel("tagQueryTest");
+        try {
+            model = initCaseObjectsQueryTestModel( model );
+
+            CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
+            caseQuery.setProductIds( model.productIds );
+            caseQuery.setCaseTagsIds( model.caseTagIncludedIds );
+
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( createReport( caseQuery ), caseCommentDAO );
+            report.run();
+
+            checkCases( report.getCases(), model.caseObjectIncludedIds );
+
+            checkIntervals( report.getIntervals(), model.numberOfDays );
+
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            clean(model);
+        }
+    }
+
+    private void checkCases( List<Case> cases, List<Long> caseObjectIncludedIds ) {
+        assertEquals( "grouping comments not worked", size( caseObjectIncludedIds ), size( cases ) );
+        assertEquals( "expected only included cases", caseObjectIncludedIds, stream( cases ).map( cse -> cse.caseId ).sorted().collect( Collectors.toList() ) );
+        assertEquals( 9, cases.stream().mapToInt( cse -> size( cse.statuses ) ).sum() );
+    }
+
     private void checkIntervals( List<Interval> intervals, int numberOfDays  ) {
+
+        //                            | 0| 1| 2| 3| 4| 5| 6| 7| 8| 9|10|11|
+        //  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 31
+        //                            |-----------------------------------|
+        //                               ^x
+        //                          ^n------^--------x     ^----------------------------------------
+        //                                     ^--------------^---n-------------х
+        //   excluded                                ^..............................................
 
         assertEquals( numberOfDays, intervals.size() );
 
@@ -170,11 +199,21 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     }
 
     @Test
-    public void caseObjectsProductsQueryTest() throws Exception {//todo
-        QueryModel model = new QueryModel("caseObjectsProductsQueryTest");
+    public void productsQueryTest() throws Exception {
+        QueryModel model = new QueryModel("productsQueryTest");
         try{
+            model = initCaseObjectsQueryTestModel( model );
 
-            model = initCaseObjectsQueryTest( model);
+            CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
+            caseQuery.setProductIds( model.productIncludedIds );
+            caseQuery.setCaseTagsIds( model.caseTagIncludedIds );
+            Report report = createReport( caseQuery );
+
+            ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO );
+            caseCompletionTimeReport.run();
+
+            checkCases( caseCompletionTimeReport.getCases(), model.caseObjectIncludedIds );
+            checkIntervals( caseCompletionTimeReport.getIntervals(), model.numberOfDays );
 
         } catch (Exception e) {
             throw e;
@@ -184,11 +223,21 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
     }
 
     @Test
-    public void caseObjectsCompaniesQueryTest() throws Exception { //todo
-        QueryModel model  = new QueryModel("caseObjectsCompaniesQueryTest");
+    public void companiesQueryTest() throws Exception { //todo
+        QueryModel model  = new QueryModel("companiesQueryTest");
         try{
+            model = initCaseObjectsQueryTestModel( model );
 
-            model = initCaseObjectsQueryTest( model );
+            CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
+            caseQuery.setProductIds( model.productIncludedIds );
+            caseQuery.setCaseTagsIds( model.caseTagIncludedIds );
+            Report report = createReport( caseQuery );
+
+            ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO );
+            caseCompletionTimeReport.run();
+
+            checkCases( caseCompletionTimeReport.getCases(), model.caseObjectIncludedIds );
+            checkIntervals( caseCompletionTimeReport.getIntervals(), model.numberOfDays );
 
         } catch (Exception e) {
             throw e;
@@ -398,16 +447,15 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         return comment1;
     }
 
-    private Report createReport( Long productId, Date from, Date to, List<Long> caseTagsIds ) {
+    private CaseQuery createCaseQuery(  Date from, Date to ) {
         CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setProductIds( Arrays.asList( productId ) );
         caseQuery.setStateIds( activeStatesShort );
-        caseQuery.setCaseTagsIds( caseTagsIds );
-
-
         caseQuery.setCreatedFrom( from );
         caseQuery.setCreatedTo( to );
+        return caseQuery;
+    }
 
+    private Report createReport( CaseQuery caseQuery ) {
         Report report = new Report();
         report.setReportType( En_ReportType.CASE_RESOLUTION_TIME );
         report.setCaseQuery( caseQuery );
@@ -429,28 +477,18 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             caseCommentDAO.removeByCondition( "CASE_ID in (" + caseIdsString + ")" );
             commentsIds.clear();
         }
-        if (model.caseIds != null) {
-            caseObjectDAO.removeByKeys( model.caseIds );
-            model.caseIds = null;
-        }
 
-        if (model.person != null) {
-            personDAO.remove( model.person );
-            companyDAO.removeByKey( model.person.getCompanyId() );
-        }
+        caseObjectDAO.removeByKeys( model.caseIds );
+        personDAO.removeByKeys( model.personIds );
+        companyDAO.removeByKeys( model.companyIds );
+        caseTagDAO.removeByKeys( model.caseTagIds );
 
-        if(!isEmpty( model.caseTagIds )){
-            caseTagDAO.removeByKeys( model.caseTagIds );
-            model.caseTagIds.clear();
-        }
         return model;
     }
 
     private Date day( int day_of_month ) {
         return addHours( date1, (day_of_month - 1) * H_DAY );
     }
-
-
 
 
     private static Date date1 = new GregorianCalendar( 2050, Calendar.JANUARY, 1, 0, 0 ).getTime();
@@ -476,23 +514,43 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             this.prefix = testDataPrefix;
         }
 
+        public void productsIncludedIds( List<Long> productIncludedIds ) {
+            this.productIncludedIds = productIncludedIds;
+        }
+
+        public void rememberProductId( Long id ) {
+            productIds.add( id );
+        }
+
+        public void rememberCompanyId( Long id ) {
+            companyIds.add( id );
+        }
+
+        public void rememberPersonId( Long id ) {
+            personIds.add(id);
+        }
+
         private void rememberCaseId( Long caseId ) {
-            caseIds.add( caseId);
+            caseIds.add( caseId );
         }
 
         private void rememberTagId( Long caseId ) {
-            caseTagIds.add( caseId);
+            caseTagIds.add( caseId );
         }
 
         public String prefix;
+        public int numberOfDays;
 
         List<Long> caseObjectIncludedIds = new ArrayList<>();
-         List<Long> caseTagIncludedIds = new ArrayList<>();
-         List<Long> caseIds = new ArrayList<>();
-         List<Long> caseTagIds = new ArrayList<>();
+        List<Long> caseTagIncludedIds = new ArrayList<>();
+        List<Long> caseIds = new ArrayList<>();
+        List<Long> caseTagIds = new ArrayList<>();
+        List<Long> productIncludedIds;
 
-        private Long productId;
         private Person person;
+        private List<Long> productIds = new ArrayList<>();
+        private List<Long> companyIds = new ArrayList<>();
+        private List<Long> personIds = new ArrayList<>();
     }
 
     class CaseObjectFactory {
@@ -500,14 +558,33 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         public CaseObjectFactory( QueryModel model ) {
             this.model = model;
         }
+
+        public Long makeProduct( String name ) {
+            Long id = ReportCaseResolutionTimeTest.this.makeProduct( name );
+            model.rememberProductId( id );
+            return id;
+        }
+
+        public Company makeCompany( CompanyCategory companyCategory ) {
+            Company company = ReportCaseResolutionTimeTest.this.makeCompany( companyCategory );
+            model.rememberCompanyId( company.getId() );
+            return company;
+        }
+
+        public Person makePerson( Company company ) {
+            Person person = ReportCaseResolutionTimeTest.this.makePerson( company );
+            model.rememberPersonId( person.getId() );
+            return person;
+        }
+
         protected CaseTag makeTag( String tag1, En_CaseType type ) {
             CaseTag caseTag = ReportCaseResolutionTimeTest.this.makeCaseTag(tag1, type);
             model.rememberTagId( caseTag.getId() );
             return caseTag;
         }
 
-        public Long makeCase( Date day, CaseTag caseTag ) {
-            Long id = ReportCaseResolutionTimeTest.this.makeCaseObject( model.person, model.productId, day, caseTag ).getId();
+        public Long makeCase( Date day, CaseTag caseTag, Long productId ) {
+            Long id = ReportCaseResolutionTimeTest.this.makeCaseObject( model.person, productId, day, caseTag ).getId();
             model.rememberCaseId( id );
             return id;
         }
