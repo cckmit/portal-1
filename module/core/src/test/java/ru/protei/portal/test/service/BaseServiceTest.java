@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -78,8 +79,12 @@ public class BaseServiceTest {
     }
 
     public static Company createNewCompany( CompanyCategory category ) {
+        return createNewCompany( "Test_Company", category );
+    }
+
+    public static Company createNewCompany( String companyName, CompanyCategory category ) {
         Company company = new Company();
-        company.setCname( "Test_Company" );
+        company.setCname( companyName );
         company.setCategory( category );
         return company;
     }
@@ -137,13 +142,30 @@ public class BaseServiceTest {
         );
     }
 
+    protected CaseObject makeCaseObject( Person person, Long productId, Date date, CaseTag caseTag, Long initiatorCompanyId ) {
+        CaseObject caseObject = createNewCaseObject( person, caseTag );
+        caseObject.setProductId( productId );
+        caseObject.setCreated( date );
+        caseObject.setInitiatorCompanyId( initiatorCompanyId );
+        return makeCaseObject(caseObject);
+    }
+
     protected CaseObject makeCaseObject( Person person, Long productId, Date date, CaseTag caseTag ) {
         CaseObject caseObject = createNewCaseObject( person, caseTag );
         caseObject.setProductId( productId );
         caseObject.setCreated( date );
+        return makeCaseObject(caseObject);
+    }
+
+    protected CaseObject makeCaseObject( CaseObject caseObject ) {
         Long caseId = caseObjectDAO.insertCase( caseObject );
         caseObject.setId( caseId );
-        caseObjectTagDAO.persist(new CaseObjectTag(caseId, caseTag.getId()));
+        caseObjectTagDAO.persistBatch(
+                caseObject.getTags()
+                        .stream()
+                        .map(tag -> new CaseObjectTag(caseId, tag.getId()))
+                        .collect( Collectors.toList())
+        );
         return caseObject;
     }
 
@@ -169,6 +191,15 @@ public class BaseServiceTest {
 
     protected Company makeCompany( CompanyCategory category ) {
         Company company = createNewCompany( category );
+        company.setId( companyDAO.persist( company ) );
+        return company;
+    }
+
+    protected Company makeCompany( String companyName,  CompanyCategory category ) {
+        return makeCompany( createNewCompany( companyName, category ) );
+    }
+
+    protected Company makeCompany( Company company ) {
         company.setId( companyDAO.persist( company ) );
         return company;
     }
