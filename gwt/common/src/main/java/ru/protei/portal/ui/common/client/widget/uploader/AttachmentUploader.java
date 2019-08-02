@@ -19,9 +19,6 @@ public class AttachmentUploader extends FileUploader{
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment);
         void onError();
-
-        default void uploadFile(String content, String filename, Long contentSize) {
-        }
     }
 
     @Override

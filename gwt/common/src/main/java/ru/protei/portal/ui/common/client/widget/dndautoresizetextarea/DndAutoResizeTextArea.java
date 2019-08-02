@@ -61,24 +61,6 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
         this.overlayText = text;
     }
 
-    private native void dropHandler(JavaScriptObject dataTransfer, DndAutoResizeTextArea view) /*-{
-            var files = dataTransfer.files;
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var reader = new FileReader();
-                reader.onload = function(evt) {
-                    var data = {
-                        base64: evt.target.result,
-                        name: file.name,
-                        type: evt.target.result.slice(5, evt.target.result.indexOf(";")),
-                        size: file.size
-                    };
-                    view.@ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea::onPastedObject(*)(data);
-                };
-                reader.readAsDataURL(file);
-            }
-    }-*/;
-
     private void setOverlayVisible(boolean isOverlayVisible) {
         if (isOverlayVisible) {
             overlayElement.setAttribute("class", "drag-overlay");
@@ -86,4 +68,25 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
             overlayElement.setAttribute("class", "drag-overlay hide");
         }
     }
+
+    private native void dropHandler(JavaScriptObject dataTransfer, DndAutoResizeTextArea view) /*-{
+        var files = dataTransfer.files;
+        for (var i = 0; i < files.length; i++) {
+            uploadFile(files[i]);
+        }
+
+        function uploadFile(file) {
+            var reader = new FileReader();
+            reader.onload = function(evt) {
+                var data = {
+                    base64: evt.target.result,
+                    name: file.name,
+                    type: evt.target.result.slice(5, evt.target.result.indexOf(";")),
+                    size: file.size
+                };
+                view.@ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea::onPastedObject(*)(data);
+            };
+            reader.readAsDataURL(file);
+        }
+    }-*/;
 }
