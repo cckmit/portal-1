@@ -27,7 +27,7 @@ public class EmailRender {
             i.setClassName(icon);
             div.appendChild(i);
         }
-        String emailsHtml = showComments ? renderToHtml(stream) :renderToHtml(stream, showComments);
+        String emailsHtml = showComments ? renderToHtml(stream) : renderToHtml(stream, false);
 
         Element span = DOM.createSpan();
         span.setInnerHTML(emailsHtml);
