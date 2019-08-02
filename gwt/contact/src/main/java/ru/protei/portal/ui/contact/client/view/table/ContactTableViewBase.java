@@ -4,6 +4,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Composite;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.columns.ClickColumn;
@@ -43,7 +44,8 @@ public abstract class ContactTableViewBase extends Composite {
                             .toElement());
                 }
 
-                root.appendChild(EmailRender.renderToElement("ion-android-mail", infoFacade.emailsStream(), "contact-record"));
+                if (!infoFacade.allEmailsAsString().isEmpty())
+                    root.appendChild(EmailRender.renderToElement("ion-android-mail", infoFacade.emailsStream(), "contact-record", true));
             }
         };
     }
