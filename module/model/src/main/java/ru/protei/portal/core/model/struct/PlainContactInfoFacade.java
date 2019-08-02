@@ -36,6 +36,10 @@ public class PlainContactInfoFacade extends CustomContactInfoFacade {
         return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue());
     }
 
+    public Stream<ContactItem> publicEmailsStream () {
+        return this.contactInfo.getItems(En_ContactItemType.EMAIL).stream().filter(item -> !item.isEmptyValue() && item.accessType().equals(En_ContactDataAccess.PUBLIC));
+    }
+
     public String allPhonesAsString () {
         return allPhonesAsString(false);
     }

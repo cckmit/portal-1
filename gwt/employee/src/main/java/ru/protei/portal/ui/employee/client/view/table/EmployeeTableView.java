@@ -119,7 +119,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                 this::getEmployeeContactsBlock
         );
         department = new DynamicColumn<>(
-                lang.department(),
+                lang.contactPosition(),
                 "employee-department",
                 this::getEmployeeDepartmentBlock
         );
@@ -137,8 +137,13 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
     private String getEmployeeInfoBlock(EmployeeShortView employee) {
         Element employeeInfo = DOM.createDiv();
-        employeeInfo.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-user-circle", employee.getDisplayName(), "contacts").toElement());
-        employeeInfo.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts").toElement());
+        employeeInfo.appendChild(LabelValuePairBuilder.make()
+                .addIconValuePair("fa fa-user-circle", employee.getDisplayName(), "contacts")
+                .toElement());
+
+        employeeInfo.appendChild(LabelValuePairBuilder.make()
+                .addIconValuePair("fa fa-birthday-cake", DateFormatter.formatDateMonth(employee.getBirthday()), "contacts")
+                .toElement());
 
         return employeeInfo.getString();
     }
@@ -150,10 +155,15 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
         String phones = infoFacade.publicPhonesAsFormattedString(true);
 
         if (!phones.isEmpty()) {
-            employeeContacts.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-phone", phones, "contacts").toElement());
+            employeeContacts.appendChild(LabelValuePairBuilder.make()
+                    .addIconValuePair("fa fa-phone", phones, "contacts")
+                    .toElement());
         }
 
-        employeeContacts.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream(), "contacts"));
+        if (!infoFacade.publicEmailsAsString().isEmpty())
+            employeeContacts.appendChild(EmailRender
+                    .renderToElement("fa fa-envelope", infoFacade.publicEmailsStream(), "contacts", false));
+
 
         return employeeContacts.getString();
     }
@@ -169,14 +179,26 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
 
         if (mainEntry != null) {
             if (mainEntry.getDepartmentParentName() != null) {
-                departmentParent.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentParentName(), "contacts").toElement());
-                department.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-th-large", mainEntry.getDepartmentName(), "contacts").toElement());
+                departmentParent.appendChild(LabelValuePairBuilder.make()
+                        .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentParentName(), "contacts")
+                        .toElement());
+
+                department.appendChild(LabelValuePairBuilder.make()
+                        .addIconValuePair("fa fa-th-large", mainEntry.getDepartmentName(), "contacts")
+                        .toElement());
 
                 employeeDepartment.appendChild(departmentParent);
             } else {
-                department.appendChild(LabelValuePairBuilder.make().addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts").toElement());
+                department.appendChild(LabelValuePairBuilder.make()
+                        .addIconValuePair("fa fa-sitemap", mainEntry.getDepartmentName(), "contacts")
+                        .toElement());
             }
             employeeDepartment.appendChild(department);
+            if (mainEntry.getPositionName() != null){
+                department.appendChild(LabelValuePairBuilder.make()
+                        .addIconValuePair("fa fa-street-view", mainEntry.getPositionName(), "contacts")
+                        .toElement());
+            }
         }
 
         return employeeDepartment.getString();
