@@ -26,7 +26,7 @@ public class ImagePasteTextArea extends TextArea implements HasPasteHandlers {
         return addHandler(handler, PasteEvent.getType());
     }
 
-    private void onPastedObject(JavaScriptObject object) {
+    protected void onPastedObject(JavaScriptObject object) {
         Base64Image base64Image = object.cast();
         String json = JsonUtils.stringify(base64Image);
         PasteEvent.fire(this, json);

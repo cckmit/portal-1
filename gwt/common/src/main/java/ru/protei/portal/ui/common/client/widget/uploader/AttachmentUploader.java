@@ -1,9 +1,7 @@
 package ru.protei.portal.ui.common.client.widget.uploader;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.core.client.JsonUtils;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
@@ -21,46 +19,9 @@ public class AttachmentUploader extends FileUploader{
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment);
         void onError();
-        enum TYPE {TEXT, BINARY, DATAURL};
 
-        // check the filename and extension and return true if you are happy with proceeding
-        // returnning false will prevent the file from being read
-        default boolean checkFileName(String fileName) {
-            return false;
+        default void uploadFile(String content, String filename, Long contentSize) {
         }
-
-        // tell the method to use to read this file
-        default TYPE specifyFileType() {
-            return null;
-        }
-
-        // do your stuff here, eg upload to a server
-        default void handleFileContent(String fileName, String fileContent) {}
-
-        default void uploadTextFile(String filename, String text) {
-        }
-    }
-
-    public AttachmentUploader() {
-        addDomHandler(DomEvent::preventDefault, DragOverEvent.getType());
-
-        addDomHandler(event -> {
-//            overlay(true);
-            GWT.log("enter");
-        }, DragEnterEvent.getType());
-
-        addDomHandler(event -> {
-//            overlay(true);
-        }, DragLeaveEvent.getType());
-
-        addDomHandler(event -> {
-            // stop default behaviour
-            event.preventDefault();
-            event.stopPropagation();
-            // starts the fetching, reading and callbacks
-            uploadBase64File(JsonUtils.stringify(event.getDataTransfer().cast()));
-//            overlay(false)
-        }, DropEvent.getType());
     }
 
     @Override
@@ -72,10 +33,6 @@ public class AttachmentUploader extends FileUploader{
     @Override
     public void changeHandler(ChangeEvent event) {
         String filename = fileUpload.getFilename();
-        uploadFile(filename);
-    }
-
-    private void uploadFile(String filename) {
         if (filename.length() != 0 && !form.getElement().hasClassName("attachment-uploading")) {
             form.addStyleName("attachment-uploading");
             if(caseNumber != null){
@@ -112,10 +69,6 @@ public class AttachmentUploader extends FileUploader{
         }
     }
 
-    public void uploadTextFile(String filename, String text) {
-        GWT.log(filename + " " + text);
-    }
-
     /**
      * При успешной загрузке файла автоматически делает связку с кейсом
      * @param caseNumber номер кейса
@@ -135,11 +88,6 @@ public class AttachmentUploader extends FileUploader{
             @Override
             public void onError() {
                 fileUploadHandler.onError();
-            }
-
-            @Override
-            public void uploadTextFile(String filename, String text) {
-                AttachmentUploader.this.uploadTextFile(filename, text);
             }
         };
     }
@@ -178,26 +126,6 @@ public class AttachmentUploader extends FileUploader{
         attachment.setCreated(new Date((long)jsonObj.get("created").isNumber().doubleValue()));
         return attachment;
     }
-
-    private final native void handleFiles(JavaScriptObject dataTransfer, FileUploadHandler fileUploadHandler) /*-{
-        var files = dataTransfer.files;
-        var reader = new FileReader();
-        reader.onload = function (event) {
-            fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader.FileUploadHandler::uploadTextFile(Ljava/lang/String;Ljava/lang/String;)(files[0].name, event.target.result);
-        }
-        reader.readAsText(files[0]);
-
-//        for(i = 0; i < files.length; i++) {
-//            file = files[i];
-//            fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader::uploadFile(Ljava/lang/String;)(file.name);
-//            if(fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader.FileUploadHandler::checkFileName(Ljava/lang/String;)(file.name)) {
-//                var type = fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader.FileUploadHandler::specifyFileType()();
-//                reader.onload = function(e) {
-//                    fileUploadHandler.@ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader.FileUploadHandler::handleFileContent(Ljava/lang/String;Ljava/lang/String;)(file.name, e.target.result);
-//                }
-//            }
-//        }
-    }-*/;
 
     private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFile";
     private static final String UPLOAD_WITH_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFileToCase";

@@ -4,7 +4,7 @@
              xmlns:attachment='urn:import:ru.protei.portal.ui.common.client.widget.attachment.list'
              xmlns:timefield='urn:import:ru.protei.portal.ui.common.client.widget.timefield'
              xmlns:timeElapsed='urn:import:ru.protei.portal.ui.common.client.view.selector'
-             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+             xmlns:dndautoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.dndautoresizetextarea">
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
@@ -19,7 +19,7 @@
                         </div>
 
                         <div class="message">
-                            <autoresizetextarea:AutoResizeTextArea
+                            <dndautoresizetextarea:DndAutoResizeTextArea
                                     ui:field="comment"
                                     styleName="input-field form-group message-input resize-vertical"
                                     enablePasteImage="true"
@@ -58,7 +58,6 @@
                                 </div>
                                 <div ui:field="commentPreview" class="message-preview-content markdown"/>
                             </div>
-
                         </div>
                     </div>
                 </g:HTMLPanel>

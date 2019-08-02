@@ -28,7 +28,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -48,6 +48,7 @@ public class CaseCommentListView
         comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
+        comment.setOverlayText(lang.dropFilesHere());
         ensureDebugIds();
     }
 
@@ -265,7 +266,7 @@ public class CaseCommentListView
     @UiField
     HTMLPanel root;
     @UiField
-    AutoResizeTextArea comment;
+    DndAutoResizeTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @UiField

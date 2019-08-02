@@ -1711,4 +1711,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveProjectNeedSelectCustomerType();
 
     String errSaveProjectNeedSelectCompany();
+
+    String dropFilesHere();
 }
