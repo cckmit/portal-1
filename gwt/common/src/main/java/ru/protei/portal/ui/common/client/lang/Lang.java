@@ -1748,4 +1748,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonCreateProject();
     String buttonCreateProduct();
+
+    String inputProjectName();
+    String selectCustomerType();
 }

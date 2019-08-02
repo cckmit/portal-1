@@ -29,7 +29,7 @@ public class ProjectList
         implements HasValue<ProjectInfo>, ValueChangeHandler<Boolean> {
 
     public ProjectList() {
-        initWidget( ourUiBinder.createAndBindUi( this ) );
+        initWidget(ourUiBinder.createAndBindUi(this));
     }
 
     @Override
@@ -51,6 +51,21 @@ public class ProjectList
         if (fireEvents) {
             ValueChangeEvent.fire(this, selected);
         }
+    }
+
+    @Override
+    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ProjectInfo> handler) {
+        return addHandler(handler, ValueChangeEvent.getType());
+    }
+
+    @Override
+    public void onValueChange(ValueChangeEvent<Boolean> event) {
+        ProjectInfo value = itemViewToModel.get(event.getSource());
+        if (value == null && !itemViewToModel.containsKey(event.getSource())) {
+            return;
+        }
+
+        setValue(value, true);
     }
 
     public void addItems(List<ProjectInfo> list) {
@@ -105,24 +120,6 @@ public class ProjectList
         return content.toString();
     }
 
-    @Override
-    public void onValueChange(ValueChangeEvent<Boolean> event) {
-        ProjectInfo value = itemViewToModel.get(event.getSource());
-        if (value == null && !itemViewToModel.containsKey(event.getSource())) {
-            return;
-        }
-
-        selected = value;
-        for (Map.Entry<ProjectInfo, ProjectItem> entry : itemToViewModel.entrySet()) {
-            entry.getValue().setValue(selected.equals(entry.getKey()));
-        }
-    }
-
-    @Override
-    public HandlerRegistration addValueChangeHandler(ValueChangeHandler<ProjectInfo> handler) {
-        return addHandler(handler, ValueChangeEvent.getType());
-    }
-
     @UiField
     FlowPanel container;
 
@@ -141,6 +138,6 @@ public class ProjectList
     @UiField
     Lang lang;
 
-    private static ProjectListUiBinder ourUiBinder = GWT.create( ProjectListUiBinder.class );
+    private static ProjectListUiBinder ourUiBinder = GWT.create(ProjectListUiBinder.class);
     interface ProjectListUiBinder extends UiBinder<HTMLPanel, ProjectList> {}
 }

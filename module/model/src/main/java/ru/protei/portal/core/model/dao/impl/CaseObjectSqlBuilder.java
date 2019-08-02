@@ -1,5 +1,6 @@
 package ru.protei.portal.core.model.dao.impl;
 
+import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -81,15 +82,24 @@ public class CaseObjectSqlBuilder {
                         .append(")");
             }
 
-            if ( query.getProductIds() != null && !query.getProductIds().isEmpty() ) {
-                if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
-                    condition.append(" and (product_id is null");
-                    if (!query.getProductIds().isEmpty()) {
-                        condition.append(" or product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+            if (CollectionUtils.isNotEmpty(query.getProductIds())) {
+                if (query.getType() != null && query.getType().equals(En_CaseType.PROJECT)) {
+                    if (!query.getProductIds().remove(CrmConstants.Product.UNDEFINED) || !query.getProductIds().isEmpty()) {
+                        condition.append(" and case_object.id in")
+                                .append(" (select project_id from project_to_product where product_id in (")
+                                .append(query.getProductIds().stream().map(Object::toString).collect(Collectors.joining( "," )))
+                                .append("))");
                     }
-                    condition.append(")");
                 } else {
-                    condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                    if (query.getProductIds().remove(CrmConstants.Product.UNDEFINED)) {
+                        condition.append(" and (product_id is null");
+                        if (!query.getProductIds().isEmpty()) {
+                            condition.append(" or product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                        }
+                        condition.append(")");
+                    } else {
+                        condition.append(" and product_id in (" + query.getProductIds().stream().map(Object::toString).collect( Collectors.joining(",")) + ")");
+                    }
                 }
             }
 
@@ -166,6 +176,11 @@ public class CaseObjectSqlBuilder {
                 }
 
                 condition.append(")");
+            }
+
+            if (query.getLocal() != null) {
+                condition.append( " and case_object.islocal = ?" );
+                args.add(query.getLocal());
             }
         });
     }

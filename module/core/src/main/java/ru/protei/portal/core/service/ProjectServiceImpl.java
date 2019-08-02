@@ -241,7 +241,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
-        return new CoreResponse<List<ProjectInfo>>().success( result );
+        return new CoreResponse<List<ProjectInfo>>().success(result);
     }
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
@@ -424,6 +424,10 @@ public class ProjectServiceImpl implements ProjectService {
             if (descriptor != null && descriptor.getPerson() != null) {
                 caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
             }
+        }
+
+        if (projectQuery.getCustomerType() != null) {
+            caseQuery.setLocal(projectQuery.getCustomerType().getId());
         }
 
         caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());

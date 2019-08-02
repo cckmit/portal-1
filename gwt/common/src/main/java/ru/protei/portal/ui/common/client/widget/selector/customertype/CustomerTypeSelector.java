@@ -6,22 +6,30 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.selector.button.ButtonSelector;
 
-
 public class CustomerTypeSelector extends ButtonSelector<En_CustomerType> {
 
     @Inject
-    public void init() {
-        setDisplayOptionCreator(o -> new DisplayOption(lang.getName(o)));
-        fillOptions();
+    public void init(En_CustomerTypeLang lang) {
+        setDisplayOptionCreator(value -> new DisplayOption(value == null ? defaultValue : lang.getName(value)));
     }
 
     public void fillOptions() {
         clearOptions();
 
-        for(En_CustomerType ct : En_CustomerType.values())
-            addOption(ct);
+        if(defaultValue != null) {
+            addOption(null);
+            setValue(null);
+        }
+
+        for (En_CustomerType type : En_CustomerType.values()) {
+            addOption(type);
+        }
     }
 
-    @Inject
-    private En_CustomerTypeLang lang;
+    public void setDefaultValue(String value) {
+        this.defaultValue = value;
+        fillOptions();
+    }
+
+    private String defaultValue = null;
 }

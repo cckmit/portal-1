@@ -3,6 +3,8 @@ package ru.protei.portal.ui.document.client.view.search;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -28,7 +30,9 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        name.getElement().setAttribute("placeholder", lang.inputProjectName());
         dateCreatedRange.setPlaceholder(lang.selectDate());
+        customerType.setDefaultValue(lang.selectCustomerType());
     }
 
     @Override
@@ -95,6 +99,13 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         event.preventDefault();
         if (activity != null) {
             activity.onClearClicked();
+        }
+    }
+
+    @UiHandler("project")
+    public void onProjectChanged(ValueChangeEvent<ProjectInfo> event) {
+        if (activity != null) {
+            activity.onProjectChanged();
         }
     }
 

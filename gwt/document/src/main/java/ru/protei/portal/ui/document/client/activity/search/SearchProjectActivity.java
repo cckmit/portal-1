@@ -24,7 +24,7 @@ import ru.protei.portal.ui.document.client.widget.projectlist.item.ProjectItem;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class SearchProjectActivity implements Activity, AbstractSearchProjectActivity, AbstractDialogDetailsActivity {
+public abstract class SearchProjectActivity implements Activity, AbstractSearchProjectActivity {
 
     @PostConstruct
     public void onInit() {
@@ -58,16 +58,11 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     }
 
     @Override
-    public void onSaveClicked() {
+    public void onProjectChanged() {
         ProjectInfo project = view.project().getValue();
         if (project != null) {
-            fireEvent(new ProjectEvents.Set(view.project().getValue()));
+            fireEvent(new ProjectEvents.Set(project));
         }
-    }
-
-    @Override
-    public void onCancelClicked() {
-
     }
 
     private ProjectQuery makeQuery() {
@@ -78,7 +73,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
             query.setCreatedTo(createdInterval.to);
         }
         query.setCustomerType(view.customerType().getValue());
-        query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect( Collectors.toList()));
+        query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect(Collectors.toList()));
         return query;
     }
 

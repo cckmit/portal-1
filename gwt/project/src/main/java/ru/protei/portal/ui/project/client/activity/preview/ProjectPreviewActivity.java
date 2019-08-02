@@ -132,7 +132,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         } );
     }
 
-    private void fillView(ProjectInfo value ) {
+    private void fillView(ProjectInfo value) {
         this.project = value;
         view.setName( value.getName() );
         view.setInitiatorShortName( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );
