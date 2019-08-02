@@ -12,8 +12,12 @@ import ru.protei.portal.core.model.query.CaseQuery;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public class ReportCaseResolutionTime {
 
@@ -25,14 +29,15 @@ public class ReportCaseResolutionTime {
 
     public boolean writeReport( ByteArrayOutputStream out, Lang.LocalizedLang localizedLang ) throws IOException {
         List<String> columnNames = new ArrayList<>();
-        if (localizedLang != null) {
+        if (localizedLang == null) {
+            columnNames.addAll( DEFAULT_COLUMN_NAMES );
+        } else {
             columnNames.add( localizedLang.get( "dateColumn" ) );
             columnNames.add( localizedLang.get( "averageColumn" ) );
             columnNames.add( localizedLang.get( "maximumColumn" ) );
             columnNames.add( localizedLang.get( "minimumColumn" ) );
             columnNames.add( localizedLang.get( "numberUncompletedCases" ) );
-        } else {
-            columnNames.addAll( DEFAULT_COLUMN_NAMES );
+            columnNames.add( localizedLang.get( "uncompletedCasesNumbers" ) );
         }
 
         XSSFWorkbook workbook = createWorkBook( intervals, columnNames );
@@ -87,14 +92,16 @@ public class ReportCaseResolutionTime {
         for (Interval interval : intervals) {
             XSSFRow row = sheet.createRow( rowid++ );
             cellIndex = 0;
-            XSSFCell dateCell = row.createCell( cellIndex++ );
-            dateCell.setCellValue( dateFormat.format( interval.from ) );
+            XSSFCell dateCell = row.createCell( cellIndex );
+            dateCell.setCellValue( makeDateFormat().format( interval.from ) );
             dateCell.setCellStyle( dateStyle );
-            row.createCell( cellIndex++ ).setCellValue( calcAverage( interval ) );
-            row.createCell( cellIndex++ ).setCellValue( calcHours( interval.maxTime ) );
-            row.createCell( cellIndex++ ).setCellValue( calcHours( interval.minTime ) );
-            row.createCell( cellIndex ).setCellValue( interval.casesCount );
+            row.createCell( ++cellIndex ).setCellValue( calcAverage( interval ) );
+            row.createCell( ++cellIndex ).setCellValue( calcHours( interval.maxTime ) );
+            row.createCell( ++cellIndex ).setCellValue( calcHours( interval.minTime ) );
+            row.createCell( ++cellIndex ).setCellValue( interval.casesCount.size() );
+            row.createCell( ++cellIndex ).setCellValue( join(interval.casesCount, ", ") );
         }
+        log.info( "createWorkBook() intervals: {}", intervals );
         return workbook;
     }
 
@@ -139,8 +146,8 @@ public class ReportCaseResolutionTime {
     }
 
     private static Integer calcAverage( Interval interval ) {
-        if (interval == null || interval.casesCount == 0) return 0;
-        return (int) ((interval.summTime / interval.casesCount) / HOUR);
+        if (interval == null || size(interval.casesCount) == 0) return 0;
+        return (int) ((interval.summTime / size(interval.casesCount)) / HOUR);
     }
 
     private static Case mapCase( Case aCase, CaseComment comment ) {
@@ -149,13 +156,17 @@ public class ReportCaseResolutionTime {
         return aCase;
     }
 
+    private static DateFormat makeDateFormat() {
+        return new SimpleDateFormat( DATE_FORMAT );
+    }
+
     public static final long SEC = 1000L;
     public static final long MINUTE = 60 * SEC;
     public static final long HOUR = 60 * MINUTE;
     public static final long DAY = 24 * HOUR;
 
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count" );
+    public static final String DATE_FORMAT = "yyyy-MM-dd" ;
+    public static final List<String> DEFAULT_COLUMN_NAMES = Arrays.asList( "Date", "Average", "Maximum", "Minimum", "Case count", "Active cases" );
 
     private List<Case> cases = new ArrayList<>();
     private List<Interval> intervals = new ArrayList<>();
@@ -179,7 +190,7 @@ public class ReportCaseResolutionTime {
                     continue;
                 }
 
-                casesCount++;
+                casesCount.add( aCase.caseId );
                 summTime += time;
                 if (time < minTime || minTime == 0) minTime = time;
                 if (time > maxTime || maxTime == 0) maxTime = time;
@@ -191,16 +202,16 @@ public class ReportCaseResolutionTime {
             return "Interval{" +
                     "from=" + new Date( from ) +
                     ", to=" + new Date( to ) +
-                    ", casesCount=" + casesCount +
                     ", summTime=" + summTime +
                     ", maxTime=" + maxTime +
                     ", minTime=" + minTime +
+                    ", casesCount=" + casesCount +
                     '}';
         }
 
         public long from;
         public long to;
-        public int casesCount;
+        public List<Long> casesCount = new ArrayList<>( );
         public long summTime;
         public long maxTime;
         public long minTime;
