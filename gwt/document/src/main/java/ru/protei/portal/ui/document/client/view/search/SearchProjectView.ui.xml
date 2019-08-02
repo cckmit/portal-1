@@ -34,7 +34,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="form-group text-right p-t-10">
+                    <div class="text-right p-t-10">
                         <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
                         <g:Anchor href='#' ui:field="clear" styleName="btn btn-white" text="{lang.buttonClear}"/>
                     </div>

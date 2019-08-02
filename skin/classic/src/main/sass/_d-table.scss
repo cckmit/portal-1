@@ -1,34 +1,47 @@
-.table-list {
-  display: table;
+.d-table.table {
 
-  .list-head,
-  .list-body {
+  .d-table-head,
+  .d-table-body {
     display: table-header-group;
 
-    .item-row {
-      display: table-row;
+    .d-table-row {
+      cursor: pointer;
 
-      &.selected {
-        background-color: #ddd;
-      }
-      .item-cell {
-        display: table-cell;
+      .d-table-cell {
         padding: 8px;
         line-height: 1.42857143;
         vertical-align: middle;
         background: #fff;
         border-bottom: 1px solid rgba(230,230,230,.7);
         font-size: 13.5px;
-        &:hover {
-          background-color: #f6f7f8;
+
+        .radio {
+          label:before {
+            bottom: -3.5px;
+          }
         }
       }
     }
   }
 
-  .list-head {
-    .item-row {
-      .item-cell {
+  .d-table-body {
+    .d-table-row {
+      &:hover {
+        .d-table-cell {
+          background-color: #daeffd !important;
+        }
+      }
+      &.selected {
+        .d-table-cell {
+          background-color: #fef6dd !important;
+        }
+      }
+    }
+  }
+
+  .d-table-head {
+    .d-table-row {
+      .d-table-cell {
         vertical-align: bottom;
         border-bottom: 2px solid #ddd;
         text-align: left;
@@ -51,12 +64,12 @@
 }
 
 .projects {
-  .list-body {
-    .item-cell {
+  .d-table-body {
+    .d-table-cell {
       height: 60px;
     }
   }
-  .item-cell {
+  .d-table-cell {
     &.select {
       width: 3%;
     }

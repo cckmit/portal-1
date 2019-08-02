@@ -3,17 +3,17 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="form-group table-list projects">
-        <div class="list-head">
-            <div class="item-row">
-                <div class="item-cell select"/>
-                <div class="item-cell created"><ui:text from="{lang.created}"/></div>
-                <div class="item-cell name"><ui:text from="{lang.name}"/></div>
-                <div class="item-cell products"><ui:text from="{lang.projectProducts}"/></div>
-                <div class="item-cell customer-type"><ui:text from="{lang.projectCustomerType}"/></div>
-                <div class="item-cell managers"><ui:text from="{lang.projectManagers}"/></div>
+    <g:HTMLPanel styleName="form-group d-table table projects">
+        <div class="d-table-head">
+            <div class="d-table-row">
+                <div class="d-table-cell select"/>
+                <div class="d-table-cell created"><ui:text from="{lang.created}"/></div>
+                <div class="d-table-cell name"><ui:text from="{lang.name}"/></div>
+                <div class="d-table-cell products"><ui:text from="{lang.projectProducts}"/></div>
+                <div class="d-table-cell customer-type"><ui:text from="{lang.projectCustomerType}"/></div>
+                <div class="d-table-cell managers"><ui:text from="{lang.projectManagers}"/></div>
             </div>
         </div>
-        <g:FlowPanel ui:field="container" styleName="list-body"/>
+        <g:FlowPanel ui:field="container" styleName="d-table-body"/>
     </g:HTMLPanel>
 </ui:UiBinder>

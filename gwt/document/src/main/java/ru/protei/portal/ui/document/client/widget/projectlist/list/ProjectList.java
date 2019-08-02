@@ -68,7 +68,7 @@ public class ProjectList
         ProjectItem itemView = itemFactory.get();
         itemView.setCreated(value.getCreated() == null ? "" : DateFormatter.formatDateTime(value.getCreated()));
         itemView.setName(value.getName());
-        itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect( Collectors.joining(", ")));
+        itemView.setProducts(value.getProducts() == null ? "" : value.getProducts().stream().map(product -> product.getName()).collect(Collectors.joining(", ")));
         itemView.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
         itemView.setManagers(makeManagers(value));
         itemView.addValueChangeHandler(this);
