@@ -2,8 +2,10 @@ package ru.protei.portal.ui.employee.client.activity.item;
 
 import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
+import ru.protei.portal.core.model.struct.ContactItem;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Представление сотрудника
@@ -18,7 +20,7 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setPhone( String value );
 
-    void setEmail( List<String> value );
+    void setEmail( String value );
 
     void setPhoto ( String photo );
 

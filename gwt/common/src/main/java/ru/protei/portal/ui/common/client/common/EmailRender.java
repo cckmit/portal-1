@@ -14,19 +14,20 @@ import static ru.protei.portal.core.model.helper.HelperFunc.isNotEmpty;
  */
 public class EmailRender {
 
-    public static Element renderToElement(String icon, Stream<ContactItem> stream, String className) {
+    public static Element renderToElement(String icon, Stream<ContactItem> stream, String className, boolean showComments) {
         Element root = DOM.createDiv();
         if (stream == null)
             return root;
 
         Element div = DOM.createDiv();
         div.addClassName(className);
+
         if (icon != null) {
             Element i = DOM.createElement("i");
             i.setClassName(icon);
             div.appendChild(i);
         }
-        String emailsHtml = renderToHtml(stream);
+        String emailsHtml = showComments ? renderToHtml(stream) :renderToHtml(stream, showComments);
 
         Element span = DOM.createSpan();
         span.setInnerHTML(emailsHtml);
@@ -40,7 +41,19 @@ public class EmailRender {
             return null;
 
         return stream.map(
-                e -> "<a href='mailto:" + e.value() + "'>" + e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")</a>" : "</a>")
+                e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() + (isNotEmpty(e.comment()) ? " (" + e.comment() + ")</a>" : "</a>") : ""
         ).collect(Collectors.joining("<span>, </span>"));
     }
+
+    public static String renderToHtml(Stream <ContactItem> stream, boolean showComments){
+        if (stream == null)
+            return null;
+
+        if (showComments) return renderToHtml(stream);
+
+        return stream.map(
+                e -> isNotEmpty(e.value()) ? "<a href='mailto:" + e.value() + "'>" + e.value() +  "</a>" : ""
+        ).collect(Collectors.joining("<span>, </span>"));
+    }
+
 }

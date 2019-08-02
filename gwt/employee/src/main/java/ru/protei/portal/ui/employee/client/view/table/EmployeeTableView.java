@@ -116,7 +116,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                 this::getEmployeeContactsBlock
         );
         department = new DynamicColumn<>(
-                lang.department(),
+                lang.contactPosition(),
                 "employee-department",
                 this::getEmployeeDepartmentBlock
         );
@@ -144,7 +144,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
             employeeContacts.appendChild(buildElement("fa fa-phone", phones));
         }
 
-        employeeContacts.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream(), "contacts"));
+        if (!EmailRender.renderToHtml(infoFacade.publicEmailsStream()).isEmpty()) {
+            employeeContacts.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.publicEmailsStream(), "contacts", false));
+        }
 
         return employeeContacts.getString();
     }
@@ -168,6 +170,9 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
                 department.appendChild(buildElement("fa fa-sitemap", mainEntry.getDepartmentName()));
             }
             employeeDepartment.appendChild(department);
+            if (mainEntry.getPositionName() != null){
+                department.appendChild(buildElement("fa fa-street-view", mainEntry.getPositionName()));
+            }
         }
 
         return employeeDepartment.getString();
