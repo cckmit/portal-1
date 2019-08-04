@@ -186,8 +186,15 @@ public class CaseCommentListView
     }
 
     @UiHandler("comment")
-    public void onCtrlEnterClicked(AddEvent event) {
+    public void onCtrlEnterClickedComment(AddEvent event) {
         if (activity != null) {
+            activity.onSendClicked();
+        }
+    }
+
+    @UiHandler("timeElapsed")
+    public void onCtrlEnterClickedTime(KeyUpEvent event) {
+        if (event.isControlKeyDown() && event.getNativeKeyCode() == KeyCodes.KEY_ENTER && activity != null) {
             activity.onSendClicked();
         }
     }
