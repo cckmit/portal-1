@@ -14,8 +14,8 @@ import ru.protei.portal.redmine.service.*;
 public class RedmineConfigurationContext {
 
     @Bean
-    public BootstrapService getBootstrapService() {
-        return new BootstrapService();
+    public RedmineBootstrapService getRedmineBootstrapService() {
+        return new RedmineBootstrapService();
     }
 
     @Bean
