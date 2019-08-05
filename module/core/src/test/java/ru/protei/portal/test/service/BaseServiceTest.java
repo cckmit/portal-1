@@ -49,7 +49,7 @@ public class BaseServiceTest {
     }
 
     public static CaseObject createNewCaseObject(  En_CaseType caseType, Person person ) {
-        return createNewCaseObject(En_CaseType.CRM_SUPPORT, generateNexCaseNumber( caseType ), person);
+        return createNewCaseObject(En_CaseType.CRM_SUPPORT, generateNextCaseNumber( caseType ), person);
     }
 
     public static CaseObject createNewCaseObject( En_CaseType caseType, Long caseNo, Person person ) {
@@ -218,8 +218,7 @@ public class BaseServiceTest {
         return caseObjectDAO.remove(caseObject);
     }
 
-    private static Long generateNexCaseNumber( En_CaseType caseType ) {
-//        caseTypeDAO.generateNextId(caseType )
+    private static Long generateNextCaseNumber( En_CaseType caseType ) {
         return caseNumberRepo.get( caseType ).incrementAndGet();
     }
 

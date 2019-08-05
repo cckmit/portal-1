@@ -204,7 +204,7 @@ public class ReportCaseResolutionTime {
                     ", summTime=" + summTime +
                     ", maxTime=" + maxTime +
                     ", minTime=" + minTime +
-                    ", casesCount=" + caseNumbers +
+                    ", caseNumbers: " + caseNumbers +
                     '}';
         }
 
