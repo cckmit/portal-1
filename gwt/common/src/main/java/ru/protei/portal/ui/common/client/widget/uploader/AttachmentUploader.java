@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.widget.uploader;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.http.client.*;
+import com.google.gwt.json.client.JSONArray;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.FormPanel;
@@ -10,6 +11,7 @@ import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Attachment;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by bondarenko on 03.07.17.
@@ -17,10 +19,10 @@ import java.util.Date;
 public class AttachmentUploader extends FileUploader{
 
     public interface FileUploadHandler{
+
         void onSuccess(Attachment attachment);
         void onError();
     }
-
     @Override
     public void submitCompleteHandler(FormPanel.SubmitCompleteEvent event) {
         resetForm();
@@ -42,13 +44,31 @@ public class AttachmentUploader extends FileUploader{
     }
 
     public void uploadBase64File(String json) {
+        sendJsonRequest(json, UPLOAD_BASE_64_FILE_URL);
+    }
+
+    public void uploadBase64Files(List<String> jsons) {
+        StringBuilder jsonsObject = new StringBuilder("[");
+
+        for (int i = 0; i < jsons.size() - 1; i++) {
+            jsonsObject.append(jsons.get(i));
+            jsonsObject.append(",");
+        }
+
+        jsonsObject.append(jsons.get(jsons.size() - 1));
+        jsonsObject.append("]");
+
+        sendJsonRequest(jsonsObject.toString(), UPLOAD_BASE_64_FILES_URL);
+    }
+
+    private void sendJsonRequest(String json, String url) {
         try {
             if (!fileUpload.isEnabled()) {
                 return;
             }
             form.addStyleName("attachment-uploading");
             fileUpload.setEnabled(false);
-            RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(UPLOAD_BASE_64_FILE_URL));
+            RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, URL.encode(url));
             builder.setHeader("Content-type", "application/json");
             builder.sendRequest(json, new RequestCallback() {
                 @Override
@@ -99,20 +119,26 @@ public class AttachmentUploader extends FileUploader{
         if (uploadHandler == null) {
             return;
         }
-        Attachment attachment = createAttachment(response);
-        if (attachment == null) {
-            uploadHandler.onError();
-        } else {
-            uploadHandler.onSuccess(attachment);
-        }
+
+        creatorDispatcher(response);
     }
 
-    private Attachment createAttachment(String json){
-        if(json == null || json.isEmpty() || json.equals("error"))
-            return null;
+    private void creatorDispatcher(String json) {
+        if (json == null || json.isEmpty() || json.equals("error")) {
+            uploadHandler.onError();
+            return;
+        }
 
         JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
 
+        if (jsonObj != null) {
+            createAttachment(jsonObj);
+        } else {
+            createAttachments(JSONParser.parseStrict(json).isArray());
+        }
+    }
+
+    private void createAttachment(JSONObject jsonObj){
         Attachment attachment = new Attachment();
         attachment.setId(Long.valueOf(jsonObj.get("id").toString()));
         attachment.setFileName(jsonObj.get("fileName").isString().stringValue());
@@ -121,11 +147,20 @@ public class AttachmentUploader extends FileUploader{
         attachment.setDataSize(Long.valueOf(jsonObj.get("dataSize").toString()));
         attachment.setMimeType(jsonObj.get("mimeType").isString().stringValue());
         attachment.setCreated(new Date((long)jsonObj.get("created").isNumber().doubleValue()));
-        return attachment;
+
+        uploadHandler.onSuccess(attachment);
     }
+
+    private void createAttachments(JSONArray array) {
+        for (int i = 0; i < array.size(); i++) {
+            createAttachment(array.get(i).isObject());
+        }
+    }
+
 
     private static final String UPLOAD_WITHOUT_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFile";
     private static final String UPLOAD_WITH_AUTOBINDING_URL = GWT.getModuleBaseURL() + "springApi/uploadFileToCase";
+    private static final String UPLOAD_BASE_64_FILES_URL = GWT.getModuleBaseURL() + "springApi/uploadBase64Files";
     private static final String UPLOAD_BASE_64_FILE_URL = GWT.getModuleBaseURL() + "springApi/uploadBase64File";
     private FileUploadHandler uploadHandler;
     private En_CaseType caseType;

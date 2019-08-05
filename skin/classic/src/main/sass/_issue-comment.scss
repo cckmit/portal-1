@@ -165,25 +165,32 @@
         color: $info_dark_color;
       }
     }
-
-    .drag-overlay {
-      pointer-events: none;
-      background: white;
-      height: 100%;
-      width: 100%;
-      opacity: .95;
-      top: 0;
-      left: 0;
-      position: absolute;
-      padding: 0;
-      border-style: dashed;
-      border-width: thin;
-      border-color: $info_dark_color;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
   }
+}
+
+.drop-zone {
+  padding: 8px;
+}
+
+.drop-zone-active * {
+  pointer-events: none;
+}
+
+.drag-overlay {
+  background: white;
+  height: 100%;
+  width: 100%;
+  opacity: .95;
+  top: 0;
+  left: 0;
+  position: absolute;
+  padding: 0;
+  border-style: dashed;
+  border-width: thin;
+  border-color: $info_dark_color;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .chats .right .list-inline {

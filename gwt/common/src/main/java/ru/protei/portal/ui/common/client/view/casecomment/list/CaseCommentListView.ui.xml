@@ -13,7 +13,7 @@
             <g:FlowPanel ui:field="commentsContainer" tag="ul" styleName="chats">
                 <g:HTMLPanel tag="li" ui:field="newMessage" styleName="left new-message">
 
-                    <div ui:field="messageBlock">
+                    <g:HTMLPanel ui:field="messageBlock">
                         <div ui:field="newCommentUserImage" class="image">
                             <img alt="" src="./images/user-icon-m.svg" ui:field="icon"/>
                         </div>
@@ -59,7 +59,7 @@
                                 <div ui:field="commentPreview" class="message-preview-content markdown"/>
                             </div>
                         </div>
-                    </div>
+                    </g:HTMLPanel>
                 </g:HTMLPanel>
             </g:FlowPanel>
         </div>

@@ -49,6 +49,7 @@ public class CaseCommentListView
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
         comment.setOverlayText(lang.dropFilesHere());
+        comment.setDropZonePanel(messageBlock);
         ensureDebugIds();
     }
 
@@ -202,7 +203,11 @@ public class CaseCommentListView
 
     @UiHandler("comment")
     public void onBase64Pasted(PasteEvent event) {
-        fileUploader.uploadBase64File(event.getJson());
+        if (event.getJsons() != null && !event.getJsons().isEmpty()) {
+            fileUploader.uploadBase64Files(event.getJsons());
+        } else {
+            fileUploader.uploadBase64File(event.getJson());
+        }
     }
 
     @UiHandler("isDisplayPreview")
@@ -303,6 +308,8 @@ public class CaseCommentListView
     SpanElement textMarkupLabel;
     @UiField
     ToggleButton isDisplayPreview;
+    @UiField
+    HTMLPanel messageBlock;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;

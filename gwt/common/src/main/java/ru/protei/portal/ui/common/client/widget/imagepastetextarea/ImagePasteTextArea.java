@@ -9,7 +9,12 @@ import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.HasPast
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteHandler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ImagePasteTextArea extends TextArea implements HasPasteHandlers {
+
+    private List<String> jsons = new ArrayList<>();
 
     public ImagePasteTextArea() {}
 
@@ -24,6 +29,17 @@ public class ImagePasteTextArea extends TextArea implements HasPasteHandlers {
     @Override
     public HandlerRegistration addPasteHandler(PasteHandler handler) {
         return addHandler(handler, PasteEvent.getType());
+    }
+
+    protected void onPastedObjects(JavaScriptObject[] objects) {
+        for (JavaScriptObject currObj : objects) {
+            Base64Image base64Image = currObj.cast();
+            String json = JsonUtils.stringify(base64Image);
+            jsons.add(json);
+        }
+
+        PasteEvent.fire(this, jsons);
+        jsons.clear();
     }
 
     protected void onPastedObject(JavaScriptObject object) {

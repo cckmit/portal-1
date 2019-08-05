@@ -41,9 +41,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
@@ -82,7 +80,7 @@ public class FileController {
             produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8"
     )
     @ResponseBody
-    public String uploadFile(HttpServletRequest request, HttpServletResponse response){
+    public String uploadFile(HttpServletRequest request, HttpServletResponse response) {
         return uploadFileToCase(request, null, null, response);
     }
 
@@ -101,13 +99,13 @@ public class FileController {
 
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
 
-        if(ud != null) {
+        if (ud != null) {
             try {
 
                 logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
 
                 for (FileItem item : upload.parseRequest(request)) {
-                    if(item.isFormField())
+                    if (item.isFormField())
                         continue;
 
                     logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
@@ -115,10 +113,10 @@ public class FileController {
                     Person creator = ud.getPerson();
                     Attachment attachment = saveAttachment(item, creator.getId());
 
-                    if(caseNumber != null) {
+                    if (caseNumber != null) {
                         En_CaseType caseType = En_CaseType.find(caseTypeId);
                         CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
-                        if(caseAttachId.isError()) {
+                        if (caseAttachId.isError()) {
                             logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
                             break;
                         }
@@ -163,17 +161,65 @@ public class FileController {
         return "error";
     }
 
+    @PostMapping(value = "/uploadBase64Files", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
+    @ResponseBody
+    public String uploadBase64Files(HttpServletRequest request, @RequestBody List<Base64Facade> base64Facades) {
+        List<String> attachmentsJsons = new ArrayList<>();
+        StringBuilder successfulResponse = new StringBuilder("[");
+
+        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
+        if (ud == null) {
+            return "error";
+        }
+
+        Person creator = ud.getPerson();
+
+        for (Base64Facade currB64facade : base64Facades) {
+            if (StringUtils.isEmpty(currB64facade.getBase64())) {
+                return "error";
+            }
+
+            String[] parts = currB64facade.getBase64().split(",");
+            if (parts.length != 2) {
+                return "error";
+            }
+
+            byte[] bytes = Base64.getDecoder().decode(parts[1]);
+
+            try {
+                Attachment attachment = saveAttachment(bytes, currB64facade, creator.getId());
+                attachmentsJsons.add(mapper.writeValueAsString(attachment));
+            } catch (IOException | SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (attachmentsJsons.size() != base64Facades.size()) {
+            return "error";
+        } else {
+            for (int i = 0; i < attachmentsJsons.size() - 1; i++) {
+                successfulResponse.append(attachmentsJsons.get(i));
+                successfulResponse.append(",");
+            }
+
+            successfulResponse.append(attachmentsJsons.get(attachmentsJsons.size() - 1));
+            successfulResponse.append("]");
+
+            return successfulResponse.toString();
+        }
+    }
+
     @RequestMapping(value = "/files/{folder}/{fileName:.+}", method = RequestMethod.GET)
     @ResponseBody
-    public void getFile (HttpServletResponse response,
-                                   @PathVariable("folder") String folder,
-                                   @PathVariable("fileName") String fileName) throws IOException{
+    public void getFile(HttpServletResponse response,
+                        @PathVariable("folder") String folder,
+                        @PathVariable("fileName") String fileName) throws IOException {
 
         logger.debug("getFile: folder=" + folder + ", fileName=" + fileName);
 
         String filePath = folder + "/" + fileName;
         FileStorage.File file = fileStorage.getFile(filePath);
-        if(file == null) {
+        if (file == null) {
             logger.debug("getFile: folder=" + folder + ", fileName=" + fileName + " | file is null");
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return;
@@ -193,10 +239,10 @@ public class FileController {
     }
 
     public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
-        if(caseId == null)
+        if (caseId == null)
             throw new RuntimeException("Case-ID is required");
 
-        if(attachmentService.saveAttachment(attachment).isError()) {
+        if (attachmentService.saveAttachment(attachment).isError()) {
             throw new SQLException("attachment not saved");
         }
 
@@ -212,13 +258,13 @@ public class FileController {
             attachment.setExtLink(filePath);
         }
 
-        if(attachmentService.saveAttachment(attachment).isError()) {
+        if (attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());
             throw new SQLException("unable to save link to file");
         }
 
         CoreResponse<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
-        if(caseAttachId.isError())
+        if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
 //        try {
@@ -230,10 +276,10 @@ public class FileController {
         return caseAttachId.getData();
     }
 
-    private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token){
+    private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
         CoreResponse<CaseObject> issue = caseService.getCaseObject(token, caseNumber);
-        if(issue.isError()){
-            logger.error("Notification error! Database exception: "+ issue.getStatus().name());
+        if (issue.isError()) {
+            logger.error("Notification error! Database exception: " + issue.getStatus().name());
             return;
         }
 
@@ -251,7 +297,7 @@ public class FileController {
         );
     }
 
-    private Attachment saveAttachment(byte[] bytes, Base64Facade facade, Long creatorId) throws IOException, SQLException{
+    private Attachment saveAttachment(byte[] bytes, Base64Facade facade, Long creatorId) throws IOException, SQLException {
         String fileName = facade.getName();
         if (StringUtils.isBlank(fileName)) {
             fileName = generateUniqueName();
@@ -259,7 +305,7 @@ public class FileController {
         return saveAttachment(new ByteArrayInputStream(bytes), creatorId, fileName, facade.getSize(), facade.getType());
     }
 
-    private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{
+    private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException {
         String fileName = getFileNameFromFileItem(item);
         return saveAttachment(item.getInputStream(), creatorId, fileName, item.getSize(), item.getContentType());
     }
@@ -308,7 +354,7 @@ public class FileController {
         return fileName;
     }
 
-    private String generateCloudFileName(Long id, String filename){
+    private String generateCloudFileName(Long id, String filename) {
         int i = filename.lastIndexOf(".");
         if (i <= 0)
             return String.valueOf(id);
@@ -327,7 +373,7 @@ public class FileController {
         return extractRealFileName(encodedFileName);
     }
 
-    private String extractRealFileName(String fileName){
+    private String extractRealFileName(String fileName) {
         final Base64.Decoder decoder = Base64.getUrlDecoder();
         final int underscorePos = fileName.indexOf('_');
         int dotLastPos = fileName.lastIndexOf('.');
