@@ -187,7 +187,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 );
             case CASE_RESOLUTION_TIME:
                 log.info( "writeReport(): Start report {}", report.getName() );
-                ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report, caseCommentDAO  );
+                ReportCaseResolutionTime caseCompletionTimeReport = new ReportCaseResolutionTime( report.getCaseQuery(), caseCommentDAO  );
                 caseCompletionTimeReport.run();
                 Lang.LocalizedLang localizedLang = lang.getFor(Locale.forLanguageTag(report.getLocale()));
                 return caseCompletionTimeReport.writeReport(  buffer, localizedLang );

@@ -7,10 +7,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import ru.protei.portal.api.struct.CaseTemplateModel;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ReportType;
+import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.report.caseresolution.ReportCaseResolutionTime;
@@ -38,7 +40,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setProductIds( model.productIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( createReport( caseQuery ), caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, caseCommentDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -60,7 +62,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setCaseTagsIds( model.caseTagIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( createReport( caseQuery ), caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery, caseCommentDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -82,7 +84,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
             CaseQuery caseQuery = createCaseQuery( date10, addHours( date10, model.numberOfDays * H_DAY ) );
             caseQuery.setCompanyIds( model.companysIncludedIds );
 
-            ReportCaseResolutionTime report = new ReportCaseResolutionTime( createReport( caseQuery ), caseCommentDAO );
+            ReportCaseResolutionTime report = new ReportCaseResolutionTime( caseQuery , caseCommentDAO );
             report.run();
 
             checkCases( report.getCases(), model.caseObjectIncludedIds );
@@ -122,7 +124,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         comments.add( createNewComment( person, 3L, "3 case 2 comment", OPENED ) );
         comments.add( createNewComment( person, 3L, "3 case 3 comment", DONE ) );
 
-        List<Case> cases = groupBayIssues( comments );
+        List<Case> cases = groupBayIssues( convert( comments ) );
 
         assertEquals( 3, cases.size() );
     }
@@ -151,7 +153,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         comments.add( fillComment( createNewComment( person, 2L, "2 case REOPENED" ), REOPENED, day( 17 ) ) );
         comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED, day( 18 ) ) );
 
-        List<Case> cases = groupBayIssues( comments );
+        List<Case> cases = groupBayIssues( convert( comments ) );
 
         for (Interval interval : intervals) {
             log.info( "\n" );
@@ -165,7 +167,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 1 * DAY, intervals.get( 1 ).minTime );
         assertEquals( 1 * DAY, intervals.get( 1 ).maxTime );
 
-        assertEquals( 2, intervals.get( 2 ).casesCount );
+        assertEquals( 2, size( intervals.get( 2 ).caseNumbers ));
         assertEquals( 3 * DAY, intervals.get( 2 ).summTime );
         assertEquals( 1 * DAY, intervals.get( 2 ).minTime );
         assertEquals( 2 * DAY, intervals.get( 2 ).maxTime );
@@ -190,7 +192,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 3 * DAY, intervals.get( 7 ).minTime );
         assertEquals( 3 * DAY, intervals.get( 7 ).maxTime );
 
-        assertEquals( 2, intervals.get( 8 ).casesCount );
+        assertEquals( 2, size( intervals.get( 8 ).caseNumbers ));
         assertEquals( 9 * DAY, intervals.get( 8 ).summTime );
         assertEquals( 4 * DAY, intervals.get( 8 ).minTime );
         assertEquals( 5 * DAY, intervals.get( 8 ).maxTime );
@@ -269,7 +271,7 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         comments.add( fillComment( createNewComment( person, 2L, "2 case VERIFIED" ), VERIFIED, day( 18 ) ) );
 
 
-        List<Case> cases = groupBayIssues( comments );
+        List<Case> cases = groupBayIssues( convert(comments) );
 
         for (Interval interval : intervals) {
             interval.fill( cases, new HashSet<>( activeStatesShort ) );
@@ -281,6 +283,16 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         assertEquals( 1, workBook.getNumberOfSheets() );
         assertNotNull( workBook.getSheetAt( 0 ) );
         assertEquals( numberOfDays, workBook.getSheetAt( 0 ).getLastRowNum() ); // учтена строка с заголовком
+    }
+
+    private List<CaseResolutionTimeReportDto> convert( List<CaseComment> comments ) {
+        return toList( comments, comment -> {
+            CaseResolutionTimeReportDto reportDto = new CaseResolutionTimeReportDto();
+            reportDto.setCaseId( comment.getCaseId() );
+            reportDto.setCaseStateId( comment.getCaseStateId() );
+            reportDto.setCreated( comment.getCreated() );
+            return reportDto;
+        } );
     }
 
     private QueryModel initCaseObjectsQueryTestModel( QueryModel model) {
@@ -359,39 +371,39 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
 
         assertEquals( numberOfDays, intervals.size() );
 
-        assertEquals( 1, intervals.get( 0 ).casesCount );
+        assertEquals( 1, size( intervals.get( 0 ).caseNumbers ));
         assertEquals( 2 * DAY, intervals.get( 0 ).minTime );
         assertEquals( 2 * DAY, intervals.get( 0 ).maxTime );
         assertEquals( 2 * DAY, intervals.get( 0 ).summTime );
 
-        assertEquals( 2, intervals.get( 1 ).casesCount );
+        assertEquals( 2, size( intervals.get( 1 ).caseNumbers ));
         assertEquals( 6 * HOUR, intervals.get( 1 ).minTime );
         assertEquals( 3 * DAY, intervals.get( 1 ).maxTime );
         assertEquals( 3 * DAY + 6 * HOUR, intervals.get( 1 ).summTime );
 
-        assertEquals( 1, intervals.get( 2 ).casesCount );
+        assertEquals( 1, size( intervals.get( 2 ).caseNumbers ));
         assertEquals( 4 * DAY, intervals.get( 2 ).minTime );
         assertEquals( 4 * DAY, intervals.get( 2 ).maxTime );
         assertEquals( 4 * DAY, intervals.get( 2 ).summTime );
 
-        assertEquals( 2, intervals.get( 3 ).casesCount );
+        assertEquals( 2, size( intervals.get( 3 ).caseNumbers ));
         assertEquals( 1 * DAY, intervals.get( 3 ).minTime );
         assertEquals( 5 * DAY, intervals.get( 3 ).maxTime );
         assertEquals( 6 * DAY, intervals.get( 3 ).summTime );
 
-        assertEquals( 1, intervals.get( 6 ).casesCount );
+        assertEquals( 1, size( intervals.get( 6 ).caseNumbers ));
         assertEquals( 4 * DAY, intervals.get( 6 ).minTime );
         assertEquals( 4 * DAY, intervals.get( 6 ).maxTime );
         assertEquals( 4 * DAY, intervals.get( 6 ).summTime );
 
-        assertEquals( 2, intervals.get( 7 ).casesCount );
+        assertEquals( 2, size( intervals.get( 7 ).caseNumbers ));
         long case3Time = 5 * DAY;
         assertEquals( case3Time, intervals.get( 7 ).minTime );
         long case2Time = 6 * DAY + 5 * HOUR + DAY - 11 * HOUR;
         assertEquals( case2Time, intervals.get( 7 ).maxTime );
         assertEquals( case2Time + case3Time, intervals.get( 7 ).summTime );
 
-        assertEquals( 2, intervals.get( 11 ).casesCount );
+        assertEquals( 2, size( intervals.get( 11 ).caseNumbers ));
         long case11minTime = 9 * DAY;
         assertEquals( case11minTime, intervals.get( 11 ).minTime );
         long case11maxTime = 7 * DAY + 5 * HOUR + 4 * DAY - 11 * HOUR;
@@ -423,13 +435,6 @@ public class ReportCaseResolutionTimeTest extends BaseServiceTest {
         caseQuery.setCreatedFrom( from );
         caseQuery.setCreatedTo( to );
         return caseQuery;
-    }
-
-    private Report createReport( CaseQuery caseQuery ) {
-        Report report = new Report();
-        report.setReportType( En_ReportType.CASE_RESOLUTION_TIME );
-        report.setCaseQuery( caseQuery );
-        return report;
     }
 
     private Date addHours( Date date, int hours ) {

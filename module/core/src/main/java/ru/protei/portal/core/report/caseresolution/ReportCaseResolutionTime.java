@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
-import ru.protei.portal.core.model.ent.CaseComment;
+import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.query.CaseQuery;
 
@@ -21,10 +21,9 @@ import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 public class ReportCaseResolutionTime {
 
-    public ReportCaseResolutionTime( Report report, CaseCommentDAO caseCommentDAO ) {
-        this.report = report;
+    public ReportCaseResolutionTime( CaseQuery caseQuery, CaseCommentDAO caseCommentDAO ) {
         this.caseCommentDAO = caseCommentDAO;
-        caseQuery = report.getCaseQuery();
+        this.caseQuery = caseQuery;
     }
 
     public boolean writeReport( ByteArrayOutputStream out, Lang.LocalizedLang localizedLang ) throws IOException {
@@ -53,7 +52,7 @@ public class ReportCaseResolutionTime {
         intervals = makeIntervals( caseQuery.getCreatedFrom(), caseQuery.getCreatedTo(), DAY );
 
         long startQuery = System.currentTimeMillis();
-        List<CaseComment> comments = caseCommentDAO.reportCaseResolutionTime(
+        List<CaseResolutionTimeReportDto> comments = caseCommentDAO.reportCaseResolutionTime(
                 caseQuery.getCreatedFrom(),
                 caseQuery.getCreatedTo(),
                 caseQuery.getStateIds(),
@@ -98,8 +97,8 @@ public class ReportCaseResolutionTime {
             row.createCell( ++cellIndex ).setCellValue( calcAverage( interval ) );
             row.createCell( ++cellIndex ).setCellValue( calcHours( interval.maxTime ) );
             row.createCell( ++cellIndex ).setCellValue( calcHours( interval.minTime ) );
-            row.createCell( ++cellIndex ).setCellValue( interval.casesCount.size() );
-            row.createCell( ++cellIndex ).setCellValue( join(interval.casesCount, ", ") );
+            row.createCell( ++cellIndex ).setCellValue( interval.caseNumbers.size() );
+            row.createCell( ++cellIndex ).setCellValue( join(interval.caseNumbers, ", ") );
         }
         log.info( "createWorkBook() intervals: {}", intervals );
         return workbook;
@@ -120,10 +119,10 @@ public class ReportCaseResolutionTime {
         return intervals;
     }
 
-    public static List<Case> groupBayIssues( List<CaseComment> comments ) {
+    public static List<Case> groupBayIssues( List<CaseResolutionTimeReportDto> comments ) {
         List<Case> cases = new ArrayList<>();
         Map<Long, Case> map = new HashMap<>();
-        for (CaseComment comment : comments) {
+        for (CaseResolutionTimeReportDto comment : comments) {
             Case aCase = map.get( comment.getCaseId() );
             if (aCase == null) {
                 aCase = new Case();
@@ -146,13 +145,14 @@ public class ReportCaseResolutionTime {
     }
 
     private static Integer calcAverage( Interval interval ) {
-        if (interval == null || size(interval.casesCount) == 0) return 0;
-        return (int) ((interval.summTime / size(interval.casesCount)) / HOUR);
+        if (interval == null || size(interval.caseNumbers ) == 0) return 0;
+        return (int) ((interval.summTime / size(interval.caseNumbers )) / HOUR);
     }
 
-    private static Case mapCase( Case aCase, CaseComment comment ) {
+    private static Case mapCase( Case aCase, CaseResolutionTimeReportDto comment ) {
         aCase.add( comment.getCreated(), comment.getCaseStateId().intValue() );
         aCase.caseId = comment.getCaseId();
+        aCase.caseNumber = comment.getCaseNumber();
         return aCase;
     }
 
@@ -170,7 +170,6 @@ public class ReportCaseResolutionTime {
 
     private List<Case> cases = new ArrayList<>();
     private List<Interval> intervals = new ArrayList<>();
-    private Report report;
     private CaseCommentDAO caseCommentDAO;
     private CaseQuery caseQuery;
 
@@ -190,7 +189,7 @@ public class ReportCaseResolutionTime {
                     continue;
                 }
 
-                casesCount.add( aCase.caseId );
+                caseNumbers.add( aCase.caseNumber );
                 summTime += time;
                 if (time < minTime || minTime == 0) minTime = time;
                 if (time > maxTime || maxTime == 0) maxTime = time;
@@ -205,13 +204,13 @@ public class ReportCaseResolutionTime {
                     ", summTime=" + summTime +
                     ", maxTime=" + maxTime +
                     ", minTime=" + minTime +
-                    ", casesCount=" + casesCount +
+                    ", casesCount=" + caseNumbers +
                     '}';
         }
 
         public long from;
         public long to;
-        public List<Long> casesCount = new ArrayList<>( );
+        public List<Long> caseNumbers = new ArrayList<>( );
         public long summTime;
         public long maxTime;
         public long minTime;
@@ -274,6 +273,7 @@ public class ReportCaseResolutionTime {
         public String toString() {
             return "Case{" +
                     "caseId=" + caseId +
+                    "caseNumber=" + caseNumber +
                     '}';
         }
 
@@ -288,6 +288,7 @@ public class ReportCaseResolutionTime {
         }
 
         public Long caseId;
+        public Long caseNumber;
         public List<Status> statuses = new ArrayList<>();
         Status previousStatus;
     }
