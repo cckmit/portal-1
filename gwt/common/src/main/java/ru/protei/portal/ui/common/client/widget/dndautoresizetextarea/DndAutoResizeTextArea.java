@@ -30,7 +30,7 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
     private void addHandlers() {
         dropZonePanel.addDomHandler(event -> {
             event.preventDefault();
-            setOverlayVisible(true);
+//            setOverlayVisible(true);
         }, DragOverEvent.getType());
 
         dropZonePanel.addDomHandler(event -> setOverlayVisible(true), DragEnterEvent.getType());

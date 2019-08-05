@@ -169,11 +169,16 @@
 }
 
 .drop-zone {
-  padding: 8px;
+  div {
+    pointer-events: none;
+    * {
+      pointer-events: auto;
+    }
+  }
 }
 
 .drop-zone-active * {
-  pointer-events: none;
+  pointer-events: none!important;
 }
 
 .drag-overlay {
