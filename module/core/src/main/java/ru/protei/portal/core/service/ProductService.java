@@ -30,11 +30,11 @@ public interface ProductService {
 
     @Privileged( En_Privilege.PRODUCT_CREATE )
     @Auditable( En_AuditType.PRODUCT_CREATE )
-    CoreResponse createProduct( AuthToken token, DevUnit product);
+    CoreResponse<DevUnit> createProduct( AuthToken token, DevUnit product);
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
     @Auditable( En_AuditType.PRODUCT_MODIFY )
-    CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product );
+    CoreResponse<DevUnit> updateProduct( AuthToken token, DevUnit product );
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
     CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);

@@ -129,7 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public CoreResponse saveProject( AuthToken token, ProjectInfo project ) {
+    public CoreResponse<ProjectInfo> saveProject( AuthToken token, ProjectInfo project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
@@ -158,25 +158,25 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return new CoreResponse().success( null );
+        return new CoreResponse<ProjectInfo>().success( ProjectInfo.fromCaseObject( caseObject ) );
     }
 
     @Override
     @Transactional
-    public CoreResponse<Long> createProject(AuthToken token, ProjectInfo project) {
+    public CoreResponse<ProjectInfo> createProject(AuthToken token, ProjectInfo project) {
 
         if (project == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return new CoreResponse<ProjectInfo>().error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
 
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return new CoreResponse<ProjectInfo>().error(En_ResultStatus.NOT_CREATED);
 
         updateProducts(caseObject, project.getProducts());
 
-        return new CoreResponse().success(id);
+        return new CoreResponse().success(ProjectInfo.fromCaseObject(caseObject));
     }
 
     private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {

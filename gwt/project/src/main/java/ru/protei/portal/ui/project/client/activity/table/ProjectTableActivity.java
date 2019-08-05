@@ -67,7 +67,7 @@ public abstract class ProjectTableActivity
             return;
         }
 
-        regionService.createProject(null, new FluentCallback<Long>()
+        regionService.createNewProject(new FluentCallback<Long>()
                 .withSuccess(projectId -> {
                     updateListAndSelect(projectId);
                     fireEvent(new ProjectEvents.ChangeModel());

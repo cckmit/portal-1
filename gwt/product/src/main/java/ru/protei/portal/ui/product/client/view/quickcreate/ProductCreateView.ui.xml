@@ -1,0 +1,41 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea">
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
+
+    <g:HTMLPanel>
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label ui:field="nameLabel">
+                                <ui:text from="{lang.productName}"/>
+                            </label>
+                            <div class="panelField verifiable">
+                                <i ui:field="verifiableIcon"/>
+                                <validablefield:ValidableTextBox ui:field="name" styleName="form-control"
+                                                                 notNull="true"/>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>
+                                <ui:text from="{lang.description}"/>
+                            </label>
+                            <autoresizetextarea:AutoResizeTextArea ui:field="info"
+                                                                   minRows="2"
+                                                                   maxRows="10"
+                                                                   styleName="form-control"/>
+                        </div>
+                    </div>
+                    <div class="text-right p-t-10">
+                        <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                        <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

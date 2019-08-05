@@ -56,5 +56,16 @@ public class ProductEvents {
         }
         public HasWidgets parent;
     }
-    public static class QuickCreated {}
+
+    /**
+     * Установить проект
+     */
+    public static class Set {
+
+        public Set(DevUnit product) {
+            this.product = product;
+        }
+
+        public DevUnit product;
+    }
 }

@@ -53,7 +53,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     }
 
     @Override
-    public void onClearClicked() {
+    public void onResetClicked() {
         view.resetFilter();
     }
 

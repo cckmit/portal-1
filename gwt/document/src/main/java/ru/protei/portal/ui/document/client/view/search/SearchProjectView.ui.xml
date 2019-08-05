@@ -8,7 +8,6 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel>
-
         <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
                 <div class="card-body">
@@ -36,7 +35,7 @@
                     </div>
                     <div class="text-right p-t-10">
                         <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
-                        <g:Anchor href='#' ui:field="clear" styleName="btn btn-white" text="{lang.buttonClear}"/>
+                        <g:Anchor href='#' ui:field="reset" styleName="btn btn-white" text="{lang.buttonReset}"/>
                     </div>
                 </div>
             </div>

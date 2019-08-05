@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
@@ -72,7 +71,7 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
 
     @Override
     public void fillProjectList(List<ProjectInfo> list) {
-        projectsContainer.removeClassName( "hide" );
+        projectsContainer.removeClassName("hide");
         project.addItems(list);
     }
 
@@ -82,7 +81,7 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         customerType.setValue(null);
         products.setValue(null);
         dateCreatedRange.setValue(null);
-        projectsContainer.addClassName( "hide" );
+        projectsContainer.addClassName("hide");
         project.clearItems();
     }
 
@@ -94,11 +93,11 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         }
     }
 
-    @UiHandler("clear")
-    public void onClearClicked(ClickEvent event) {
+    @UiHandler("reset")
+    public void onResetClicked(ClickEvent event) {
         event.preventDefault();
         if (activity != null) {
-            activity.onClearClicked();
+            activity.onResetClicked();
         }
     }
 
@@ -128,7 +127,7 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     Anchor search;
 
     @UiField
-    Anchor clear;
+    Anchor reset;
 
     @Inject
     @UiField(provided = true)
@@ -143,6 +142,6 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
 
     private AbstractSearchProjectActivity activity;
 
-    private static SearchProjectViewUiBinder ourUiBinder = GWT.create( SearchProjectViewUiBinder.class );
-    interface SearchProjectViewUiBinder extends UiBinder< HTMLPanel, SearchProjectView > {}
+    private static SearchProjectViewUiBinder ourUiBinder = GWT.create(SearchProjectViewUiBinder.class);
+    interface SearchProjectViewUiBinder extends UiBinder<HTMLPanel, SearchProjectView> {}
 }

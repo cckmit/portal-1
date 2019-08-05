@@ -45,7 +45,7 @@ public interface ProjectService {
      */
     @Privileged( En_Privilege.PROJECT_EDIT )
     @Auditable( En_AuditType.PROJECT_MODIFY )
-    CoreResponse saveProject( AuthToken token, ProjectInfo project );
+    CoreResponse<ProjectInfo> saveProject( AuthToken token, ProjectInfo project );
 
     /**
      * Создает новый проект
@@ -53,7 +53,7 @@ public interface ProjectService {
      */
     @Privileged(En_Privilege.PROJECT_CREATE)
     @Auditable(En_AuditType.PROJECT_CREATE)
-    CoreResponse<Long> createProject(AuthToken token, ProjectInfo project);
+    CoreResponse<ProjectInfo> createProject(AuthToken token, ProjectInfo project);
 
     /**
      * Создает новый проект

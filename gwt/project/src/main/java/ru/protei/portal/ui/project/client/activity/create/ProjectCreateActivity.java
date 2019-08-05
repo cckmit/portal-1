@@ -7,8 +7,8 @@ import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 
+import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
-import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
@@ -22,18 +22,13 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     }
 
     @Event
-    public void onShow(ProjectEvents.Create event) {
+    public void onShow(ProjectEvents.QuickCreate event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-        fillView();
+        resetView();
     }
 
-    @Event
-    public void onProductCreated(ProductEvents.QuickCreated event) {
-        view.createProductContainer().clear();
-    }
-
-        @Override
+    @Override
     public void onSaveClicked() {
 
         if (!validate()) {
@@ -42,29 +37,28 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         }
 
         ProjectInfo project = fillProject();
-        regionService.createProject(project, new FluentCallback<Long>()
+        regionService.saveProject(project, new FluentCallback<ProjectInfo>()
                 .withErrorMessage(lang.errNotSaved())
-                .withSuccess(aLong -> {
+                .withSuccess(projectInfo -> {
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
-                    fireEvent(new ProjectEvents.Created());
+                    fireEvent(new ProjectEvents.Set(projectInfo));
+                    resetView();
                 }));
     }
 
     @Override
-    public void onCancelClicked() {
-        fireEvent(new ProjectEvents.Canceled());
+    public void onResetClicked() {
+        resetView();
     }
 
-    @Override
-    public void onCreateProductClicked() {
-        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
-    }
-
-    private void fillView() {
+    private void resetView() {
         view.name().setValue("");
         view.description().setValue("");
-        view.company().setValue(null);
+        view.region().setValue(null);
+        view.direction().setValue(null);
         view.customerType().setValue(null);
+        view.company().setValue(null);
         view.products().setValue(null);
     }
 
@@ -72,14 +66,20 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         ProjectInfo project = new ProjectInfo();
         project.setName(view.name().getValue());
         project.setDescription(view.description().getValue());
-        project.setCustomer(Company.fromEntityOption(view.company().getValue()));
+        project.setRegion(view.region().getValue());
+        project.setProductDirection(EntityOption.fromProductDirectionInfo(view.direction().getValue()));
         project.setCustomerType(view.customerType().getValue());
+        project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setProducts(view.products().getValue());
         return project;
     }
 
     private boolean validate() {
-        return view.nameValidator().isValid();
+        return view.nameValidator().isValid() &&
+                view.regionValidator().isValid() &&
+                view.directionValidator().isValid() &&
+                view.customerTypeValidator().isValid() &&
+                view.companyValidator().isValid();
     }
 
     @Inject

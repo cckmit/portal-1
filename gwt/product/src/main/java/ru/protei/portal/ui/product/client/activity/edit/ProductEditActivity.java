@@ -53,9 +53,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productId = event.productId;
 
-        view.showElements(true);
-        isQuickCreate = false;
-
         if( productId == null ) {
             product = new DevUnit();
             resetView();
@@ -64,17 +61,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         }
 
         requestProduct(productId);
-    }
-
-    @Event
-    public void onShow (ProductEvents.QuickCreate event) {
-        event.parent.clear();
-        event.parent.add(view.asWidget());
-        product = new DevUnit();
-        resetView();
-        resetValidationStatus();
-        view.showElements(false);
-        isQuickCreate = true;
     }
 
     @Override
@@ -116,12 +102,12 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         fillDto(product);
 
-        productService.saveProduct(product, new RequestCallback<Boolean>() {
+        productService.saveProduct(product, new RequestCallback<DevUnit>() {
             @Override
             public void onError(Throwable throwable) {}
 
             @Override
-            public void onSuccess(Boolean result) {
+            public void onSuccess(DevUnit result) {
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
                 goBack();
@@ -149,11 +135,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     }
 
     private void goBack() {
-        if (isQuickCreate) {
-            fireEvent(new ProductEvents.QuickCreated());
-        } else {
-            fireEvent(new Back());
-        }
+        fireEvent(new Back());
     }
 
     private void requestProduct(Long productId) {
@@ -278,8 +260,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private Long productId;
     private DevUnit product;
-
-    private boolean isQuickCreate;
 
     private AppEvents.InitDetails init;
     private static final String PRODUCT = "product_view_is_preview_displayed";

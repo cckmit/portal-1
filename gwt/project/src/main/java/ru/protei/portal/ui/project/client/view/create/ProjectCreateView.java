@@ -8,11 +8,15 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.ProductShortView;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
+import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.project.client.activity.create.AbstractProjectCreateActivity;
@@ -43,13 +47,19 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     }
 
     @Override
-    public HasValue<EntityOption> company() {
-        return company;
-    }
+    public HasValue<EntityOption> region() { return region; }
+
+    @Override
+    public HasValue<ProductDirectionInfo> direction() { return direction; }
 
     @Override
     public HasValue<En_CustomerType> customerType() {
         return customerType;
+    }
+
+    @Override
+    public HasValue<EntityOption> company() {
+        return company;
     }
 
     @Override
@@ -63,52 +73,76 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     }
 
     @Override
-    public HasWidgets createProductContainer() {
-        return createProductContainer;
+    public HasValidable regionValidator() {
+        return region;
+    }
+
+    @Override
+    public HasValidable directionValidator() {
+        return direction;
+    }
+
+    @Override
+    public HasValidable customerTypeValidator() {
+        return customerType;
+    }
+
+    @Override
+    public HasValidable companyValidator() {
+        return company;
     }
 
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
     {
-        if (activity != null)
+        if (activity != null) {
             activity.onSaveClicked();
+        }
     }
 
-    @UiHandler("cancelBtn")
-    public void onCancelClicked(ClickEvent event)
+    @UiHandler( "resetBtn" )
+    public void onResetClicked(ClickEvent event)
     {
-        if (activity != null)
-            activity.onCancelClicked();
-    }
-
-    @UiHandler("createProductBtn")
-    public void onCreateProductClicked(ClickEvent event)
-    {
-        if (activity != null)
-            activity.onCreateProductClicked();
+        if (activity != null) {
+            activity.onResetClicked();
+        }
     }
 
     @UiField
     ValidableTextBox name;
+
     @UiField
     TextArea description;
+
     @Inject
     @UiField(provided = true)
-    CompanySelector company;
+    RegionButtonSelector region;
+
+    @Inject
+    @UiField(provided = true)
+    ProductDirectionButtonSelector direction;
+
     @Inject
     @UiField(provided = true)
     CustomerTypeSelector customerType;
+
+    @Inject
+    @UiField(provided = true)
+    CompanySelector company;
+
     @Inject
     @UiField(provided = true)
     DevUnitMultiSelector products;
+
     @UiField
     Button saveBtn;
+
     @UiField
-    Button cancelBtn;
+    Button resetBtn;
+
+    @Inject
     @UiField
-    HTMLPanel createProductContainer;
-    @UiField
-    Button createProductBtn;
+    Lang lang;
 
     AbstractProjectCreateActivity activity;
 

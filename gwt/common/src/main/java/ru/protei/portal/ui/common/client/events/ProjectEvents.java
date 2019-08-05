@@ -112,18 +112,17 @@ public class ProjectEvents {
     /**
      * Создать проект
      */
-    public static class Create {
-        public Create(HasWidgets parent) {
+    public static class QuickCreate {
+        public QuickCreate(HasWidgets parent) {
             this.parent = parent;
         }
         public HasWidgets parent;
     }
 
     public static class Created {}
-    public static class Canceled {}
 
     /**
-     * Установить выбранный проект
+     * Установить проект
      */
     public static class Set {
 

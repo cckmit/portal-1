@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -96,37 +97,37 @@ public class RegionControllerImpl implements RegionController {
     }
 
     @Override
-    public void saveProject( ProjectInfo project ) throws RequestFailedException {
-        log.debug( "saveProject(): project={}", project );
+    public ProjectInfo saveProject(ProjectInfo project) throws RequestFailedException {
+        log.debug("saveProject(): project={}", project);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = projectService.saveProject( descriptor.makeAuthToken(), project );
+        CoreResponse<ProjectInfo> response;
+        if (project.getId() == null) {
+            project.setCreated(new Date());
+            project.setCreatorId(descriptor.getPerson().getId());
+            response = projectService.createProject(descriptor.makeAuthToken(), project);
+        }
+        else {
+            response = projectService.saveProject(descriptor.makeAuthToken(), project);
+        }
+
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
 
-        return;
+        return response.getData();
     }
 
     @Override
-    public long createProject(ProjectInfo project) throws RequestFailedException {
-        log.debug("createProject(): project={}", project);
+    public long createNewProject() throws RequestFailedException {
+        log.debug( "createNewProject()" );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        Long personId = sessionService.getUserSessionDescriptor(httpServletRequest).getPerson().getId();
 
-        CoreResponse< Long > response;
-
-        if (project == null) {
-            response = projectService.createProject(descriptor.makeAuthToken(), personId);
-        } else {
-            project.setCreatorId(personId);
-            response = projectService.createProject(descriptor.makeAuthToken(), project);
-        }
-
-        if (response.isError()) {
-            throw new RequestFailedException(response.getStatus());
+        CoreResponse< Long > response = projectService.createProject( descriptor.makeAuthToken(), descriptor.getPerson().getId() );
+        if ( response.isError() ) {
+            throw new RequestFailedException( response.getStatus() );
         }
 
         return response.getData();
