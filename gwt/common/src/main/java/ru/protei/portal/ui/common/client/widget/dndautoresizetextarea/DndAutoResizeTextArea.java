@@ -61,9 +61,11 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
     private void setOverlayVisible(boolean isOverlayVisible) {
         if (isOverlayVisible) {
             dropZonePanel.addStyleName("drop-zone-active");
+            dropZonePanel.removeStyleName("drop-zone");
             overlay.setAttribute("class", "drag-overlay");
         } else {
             dropZonePanel.removeStyleName("drop-zone-active");
+            dropZonePanel.addStyleName("drop-zone");
             overlay.setAttribute("class", "drag-overlay hide");
         }
     }
