@@ -1676,6 +1676,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeEmailColumnHeader();
 
+    String employeeDepartmentColumnHeader();
+
     String privateComment();
 
     String commentPreviewIsDisplay();
