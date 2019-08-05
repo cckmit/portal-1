@@ -112,4 +112,5 @@
   <include file="2019-07-26-add-person-column-to-case-tag.xml" relativeToChangelogFile="true"/>
   <include file="2019-07-26-add-fk-person-case-tag.xml" relativeToChangelogFile="true"/>
   <include file="2019-07-29-add-is-deleted-column-to-company.xml" relativeToChangelogFile="true"/>
+  <include file="2019-07-29-add-state-column-to-document.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

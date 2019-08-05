@@ -5,12 +5,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNException;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dict.En_CustomerType;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
@@ -162,6 +164,22 @@ public class DocumentServiceImpl implements DocumentService {
                 return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
             }
         });
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse changeDocumentState(AuthToken token, Document document) {
+        if (document == null ) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if ( documentDAO.get(document.getId()) == null ) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        documentDAO.updateState(document);
+
+        return new CoreResponse().success();
     }
 
     @Override

@@ -74,6 +74,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     AbstractDocumentUploader documentUploader();
 
+    void setStateButtonText(String caption);
 
     void resetFilename();
 

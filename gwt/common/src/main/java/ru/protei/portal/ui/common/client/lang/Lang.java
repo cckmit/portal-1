@@ -37,10 +37,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonChangePassword();
 
-    String buttonToArchive();
-
-    String buttonFromArchive();
-
     String errNoMatchesFound();
 
     String errGetList();
@@ -57,13 +53,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String description();
 
-    String productToArchive();
+    String buttonToArchive();
 
     String productName();
 
     String msgObjectSaved();
 
-    String productFromArchive();
+    String msgStatusChanged();
+
+    String buttonFromArchive();
 
     String errEmptyName();
 
@@ -816,6 +814,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentKeywords();
 
     String documentContent();
+
+    String documentChangeStateConfirmMessage();
+
+    String documentShowDeprecated();
 
     String addKeyword();
 
