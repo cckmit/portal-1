@@ -5,9 +5,10 @@
 
     <g:FocusPanel ui:field="root">
         <g:HTMLPanel ui:field="panel" tag="li" styleName="case-tag">
+            <g:InlineLabel ui:field="icon" styleName="case-tag-icon"/>
             <g:InlineLabel ui:field="text" styleName="case-tag-text"/>
             <g:InlineLabel ui:field="companyName" styleName="case-tag-company-name"/>
-            <g:InlineLabel ui:field="icon" styleName="case-tag-icon"/>
+            <g:InlineLabel ui:field="editIcon" styleName="case-tag-edit"/>
         </g:HTMLPanel>
     </g:FocusPanel>
 </ui:UiBinder>

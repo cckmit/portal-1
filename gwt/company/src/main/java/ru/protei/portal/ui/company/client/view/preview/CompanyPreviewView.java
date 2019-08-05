@@ -68,7 +68,7 @@ public class CompanyPreviewView extends Composite implements AbstractCompanyPrev
 
     @Override
     public void setEmail( String value ) {
-        this.email.setInnerText( value );
+        this.email.setInnerHTML( value );
     }
 
     @Override

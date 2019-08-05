@@ -257,8 +257,8 @@ public class AssembledCaseEvent extends ApplicationEvent {
     public boolean isSendToCustomers() {
         return isCreateEvent()
                 || (
-                        (!isCommentAttached() || isAttachedCommentNotPrivate())
-                                && (!isCommentRemoved() || isRemovedCommentNotPrivate()))
+                (!isCommentAttached() || isAttachedCommentNotPrivate())
+                        && (!isCommentRemoved() || isRemovedCommentNotPrivate()))
                 || isPublicChangedWithOutComments();
     }
 

@@ -35,6 +35,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonCreate();
 
+    String buttonChangePassword();
+
+    String buttonToArchive();
+
+    String buttonFromArchive();
+
     String errNoMatchesFound();
 
     String errGetList();
@@ -571,13 +577,21 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountPassword();
 
+    String accountCurrentPassword();
+
+    String accountNewPassword();
+
     String accountPasswordNotDefinied();
 
     String errEditContactLogin();
 
+    String errEditProfile();
+
     String accountLoginInfo();
 
     String accountConfirmPassword();
+
+    String accountPasswordChange();
 
     String accountPasswordsNotMatch();
 
@@ -984,6 +998,8 @@ public interface Lang extends Messages, ContactItemLang {
     String contactFireConfirmMessage();
 
     String contactRemoveConfirmMessage();
+
+    String productChangeStateConfirmMessage();
 
     String decimalNumberFound();
 
@@ -1622,6 +1638,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagCreate();
 
+    String tagEdit();
+
     String tagName();
 
     String tagColor();
@@ -1643,6 +1661,10 @@ public interface Lang extends Messages, ContactItemLang {
     String textJiraWikiMarkupSupport();
 
     String tagNotSpecified();
+
+    String tagAuthor();
+
+    String tagInfo();
 
     String employeeEmployeeFullNameColumnHeader();
 
@@ -1676,5 +1698,25 @@ public interface Lang extends Messages, ContactItemLang {
 
     String timeElapsedTypeSolveProblems();
 
+    String newProject();
+
+    String projectEdit();
+
+    String projectName();
+
+    String goToProjects();
+
     String errInvalidCaseUpdateCaseIsClosed();
+
+    String errInvalidCurrentPassword();
+
+    String errSaveProjectNeedSelectRegion();
+
+    String errSaveProjectNeedSelectDirection();
+
+    String errSaveProjectNeedSelectCustomerType();
+
+    String errSaveProjectNeedSelectCompany();
+
+    String passwordUpdatedSuccessful();
 }

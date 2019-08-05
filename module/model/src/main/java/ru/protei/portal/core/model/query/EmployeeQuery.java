@@ -27,19 +27,21 @@ public class EmployeeQuery extends BaseQuery {
 
     private String email;
 
+    private String departmentParent;
+
     public EmployeeQuery() {
         fired = false;
     }
 
     public EmployeeQuery(String searchString, En_SortField sortField, En_SortDir sortDir) {
-        this(null, null, null, null, searchString, null, null, null, null, sortField, sortDir);
+        this(null, null, null, null, searchString, null, null, null, null, null, sortField, sortDir);
     }
 
     public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, En_SortField sortField, En_SortDir sortDir) {
-        this(fired, deleted, onlyPeople, null, null, null, null, null, null, sortField, sortDir);
+        this(fired, deleted, onlyPeople, null, null, null, null, null, null, null, sortField, sortDir);
     }
 
-    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, En_SortField sortField, En_SortDir sortDir) {
+    public EmployeeQuery(Boolean fired, Boolean deleted, Boolean onlyPeople, Set<EntityOption> homeCompanies, String searchString, String workPhone, String mobilePhone, String ipAddress, String email, String departmentParent, En_SortField sortField, En_SortDir sortDir) {
         super(searchString, sortField, sortDir);
         this.fired = fired;
         this.deleted = deleted;
@@ -49,6 +51,7 @@ public class EmployeeQuery extends BaseQuery {
         this.mobilePhone = mobilePhone;
         this.ipAddress = ipAddress;
         this.email = email;
+        this.departmentParent = departmentParent;
         this.limit = 1000;
     }
 
@@ -116,6 +119,14 @@ public class EmployeeQuery extends BaseQuery {
         this.email = email;
     }
 
+    public String getDepartment() {
+        return departmentParent;
+    }
+
+    public void setDepartmentParent(String departmentParent) {
+        this.departmentParent = departmentParent;
+    }
+
     @Override
     public String toString() {
         return "EmployeeQuery{" +
@@ -127,6 +138,7 @@ public class EmployeeQuery extends BaseQuery {
                 ", mobilePhone='" + mobilePhone + '\'' +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", email='" + email + '\'' +
+                ", departmentParent='" + departmentParent + '\'' +
                 ", searchString='" + searchString + '\'' +
                 ", sortField=" + sortField +
                 ", sortDir=" + sortDir +

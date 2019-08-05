@@ -73,6 +73,12 @@ public class CompanyServiceTest extends BaseServiceTest {
 //    }
 
     @Test
+    public void testCompanyDeprecatedField() {
+        Company company = createNewCustomerCompany();
+        Assert.assertEquals(company.isDeprecated(), false);
+    }
+
+    @Test
     public void testCompanies () {
 
         Long companyId = null;

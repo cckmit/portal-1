@@ -176,7 +176,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     {
         if (activity != null) {
             activity.onStateChanged();
-            activity.onSaveClicked();
         }
     }
 

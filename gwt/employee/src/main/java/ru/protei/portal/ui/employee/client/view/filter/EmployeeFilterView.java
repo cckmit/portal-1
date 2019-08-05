@@ -81,6 +81,11 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
     }
 
     @Override
+    public HasValue< String > departmentParent() {
+        return department;
+    }
+
+    @Override
     public void resetFilter() {
         sortField.setValue( En_SortField.person_full_name );
         sortDir.setValue( true );
@@ -89,6 +94,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
         mobilePhone.setValue( "" );
         ipAddress.setValue( "" );
         email.setValue( "" );
+        department.setValue( "" );
     }
 
     @UiHandler( "resetBtn" )
@@ -111,6 +117,7 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent< String > event ) {
+        sortField.setValue(En_SortField.person_full_name);
         fireChangeTimer();
     }
 
@@ -126,11 +133,17 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiHandler( "ipAddress" )
     public void onIPAddressChanged( ValueChangeEvent< String > event ) {
+        sortField.setValue(En_SortField.employee_ip);
         fireChangeTimer();
     }
 
     @UiHandler( "email" )
     public void onEmailChanged( ValueChangeEvent< String > event ) {
+        fireChangeTimer();
+    }
+
+    @UiHandler("department")
+    public void onDepartmentChanged( ValueChangeEvent< String > event ) {
         fireChangeTimer();
     }
 
@@ -161,6 +174,9 @@ public class EmployeeFilterView extends Composite implements AbstractEmployeeFil
 
     @UiField
     CleanableSearchBox email;
+
+    @UiField
+    CleanableSearchBox department;
 
     @UiField
     Button resetBtn;

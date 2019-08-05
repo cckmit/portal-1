@@ -66,6 +66,10 @@ public class Location implements Serializable {
         return typeId;
     }
 
+    public int getParentId() { return parentId; }
+
+    public void setParentId(int parentId) { this.parentId = parentId; }
+
     public void setTypeId(int typeId) {
         this.typeId = typeId;
     }

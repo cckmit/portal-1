@@ -15,13 +15,13 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.ent.CaseTag;
-import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
+import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextArea;
@@ -29,7 +29,6 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditActivity;
 import ru.protei.portal.ui.company.client.activity.edit.AbstractCompanyEditView;
 import ru.protei.portal.ui.company.client.widget.category.buttonselector.CategoryButtonSelector;
-import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 
 import java.util.List;
 import java.util.Set;
@@ -156,6 +155,11 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
+    public HasVisibility stateButtonVisibility() {
+        return stateButton;
+    }
+
+    @Override
     public void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter ) {
         parentCompany.setFilter( companyFilter );
     }
@@ -171,6 +175,19 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
             tagsPanel.addClassName( "hide" );
         } else {
             tagsPanel.removeClassName( "hide" );
+        }
+    }
+
+    @Override
+    public void setStateButtonText(String caption) {
+        stateButton.setText(caption);
+    }
+
+    @UiHandler("stateButton")
+    public void onStateClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onStateChanged();
+            activity.onSaveClicked();
         }
     }
 
@@ -207,6 +224,9 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     Button cancelButton;
+
+    @UiField
+    Button stateButton;
 
     @UiField
     ValidableTextBox companyName;

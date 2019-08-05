@@ -9,12 +9,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
+import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
+import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
-import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageView;
-import ru.protei.portal.app.portal.client.activity.profile.AbstractProfilePageActivity;
 
 import java.util.List;
 
@@ -61,6 +61,26 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     }
 
     @Override
+    public HasValue<String> currentPassword() {
+        return currentPassword;
+    }
+
+    @Override
+    public HasValue<String> newPassword() {
+        return newPassword;
+    }
+
+    @Override
+    public HasValue<String> confirmPassword() {
+        return confirmPassword;
+    }
+
+    @Override
+    public HasVisibility passwordContainerVisibility() {
+        return passwordContainer;
+    }
+
+    @Override
     public HasVisibility saveButtonVisibility() {
         return saveButton;
     }
@@ -75,6 +95,25 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         return subscriptions;
     }
 
+    @Override
+    public HasVisibility changePasswordButtonVisibility() {
+        return changePasswordButton;
+    }
+
+    @UiHandler("changePasswordButton")
+    public void onChangePasswordButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onChangePasswordButtonClicked();
+        }
+    }
+
+    @UiHandler("savePasswordButton")
+    public void onSavePasswordButtonClicked(ClickEvent event) {
+        if (activity != null) {
+            activity.onSavePasswordButtonClicked();
+        }
+    }
+
     @UiHandler( "saveButton" )
     public void onButtonClicked( ClickEvent event ) {
         if ( activity != null ) {
@@ -82,6 +121,10 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
         }
     }
 
+    @UiField
+    Button changePasswordButton;
+    @UiField
+    Button savePasswordButton;
     @Inject
     @UiField
     Lang lang;
@@ -96,6 +139,14 @@ public class ProfilePageView extends Composite implements AbstractProfilePageVie
     Element company;
     @UiField
     ImageElement icon;
+    @UiField
+    HTMLPanel passwordContainer;
+    @UiField
+    PasswordTextBox currentPassword;
+    @UiField
+    PasswordTextBox newPassword;
+    @UiField
+    PasswordTextBox confirmPassword;
 
     @Inject
     FixedPositioner positioner;

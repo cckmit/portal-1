@@ -217,7 +217,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
             return;
         }
         privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
-        privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON);
+        privateIssue.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PRIVACY_ICON); /* @ASK for what? */
         fullScreen.ensureDebugId(DebugIds.ISSUE_PREVIEW.FULL_SCREEN_BUTTON);
         header.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.TITLE_LABEL);
         caseMetaView.setEnsureDebugIdContainer(DebugIds.ISSUE_PREVIEW.LINKS_CONTAINER);

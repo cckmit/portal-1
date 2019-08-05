@@ -10,12 +10,14 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.UiConstants;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.ActionBarEvents;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.AuthEvents;
+import ru.protei.portal.ui.common.client.events.CompanyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterActivity;
 import ru.protei.portal.ui.company.client.activity.filter.AbstractCompanyFilterView;
-import ru.protei.winter.web.common.client.events.SectionEvents;
 
 import java.util.stream.Collectors;
 
@@ -82,7 +84,7 @@ public abstract class CompanyGridActivity implements AbstractCompanyGridActivity
     private CompanyQuery makeQuery() {
         CompanyQuery cq = new CompanyQuery(filterView.searchPattern().getValue(),
                 filterView.sortField().getValue(),
-                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC);
+                filterView.sortDir().getValue()? En_SortDir.ASC: En_SortDir.DESC, filterView.showDeprecated().getValue());
 
         if(filterView.categories().getValue() != null)
             cq.setCategoryIds(

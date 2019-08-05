@@ -6,6 +6,11 @@ package ru.protei.portal.ui.common.client.activity.dialogdetails;
 public interface AbstractDialogDetailsActivity {
 
     /**
+     * Нажата кнопка "Удалить"
+     * */
+    default void onRemoveClicked() {}
+
+    /**
      * Нажата кнопка "Сохранить"
      */
     void onSaveClicked();

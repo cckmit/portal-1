@@ -9,29 +9,49 @@ import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.service.user.AuthService;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     @Transactional
-    public CoreResponse createTag(AuthToken token, CaseTag caseTag) {
+    public CoreResponse saveTag(AuthToken authToken, CaseTag caseTag) {
         if (!isCaseTagValid(caseTag)) {
             return new CoreResponse<>().error(En_ResultStatus.VALIDATION_ERROR);
         }
-        Long id;
+        boolean result;
         try {
-            id = caseTagDAO.persist(caseTag);
+            if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
+                return new CoreResponse<>().error(En_ResultStatus.PERMISSION_DENIED);
+            }
+            result = caseTagDAO.saveOrUpdate(caseTag);
         } catch (DuplicateKeyException exception) {
             return new CoreResponse<>().error(En_ResultStatus.ALREADY_EXIST);
         }
-        return id == null ?
+        return !result ?
                 new CoreResponse<>().error(En_ResultStatus.NOT_CREATED) :
+                new CoreResponse<>().success();
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse removeTag(AuthToken authToken, CaseTag caseTag) {
+        if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
+            return new CoreResponse<>().error(En_ResultStatus.PERMISSION_DENIED);
+        }
+        return !caseTagDAO.remove(caseTag) ?
+                new CoreResponse<>().error(En_ResultStatus.NOT_REMOVED) :
                 new CoreResponse<>().success();
     }
 

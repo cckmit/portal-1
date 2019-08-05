@@ -4,9 +4,6 @@ import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.EmployeeQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
-import ru.protei.winter.core.utils.collections.CollectionUtils;
-
-import java.util.stream.Collectors;
 
 public class EmployeeSqlBuilder {
 
@@ -30,8 +27,16 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and Person.displayName like ?");
-                args.add(HelperFunc.makeLikeArg(query.getSearchString(), true));
+                if (query.getSearchString().trim().contains(" ")){
+                    condition.append(" and Person.displayname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                }
+                else {
+                    condition.append(" and (Person.lastname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                    condition.append(" or Person.firstname like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                }
             }
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone())) {
@@ -46,12 +51,25 @@ public class EmployeeSqlBuilder {
 
             if (HelperFunc.isLikeRequired(query.getIpAddress())) {
                 condition.append(" and Person.ipaddress like ?");
-                args.add(HelperFunc.makeLikeArg(query.getIpAddress(), true));
+                args.add(HelperFunc.makeLikeArg(query.getIpAddress().trim(), true));
             }
 
             if (HelperFunc.isLikeRequired(query.getEmail())) {
                 condition.append(" and info.a = 'PUBLIC' and info.t = 'EMAIL' and info.v like ?");
-                args.add(HelperFunc.makeLikeArg(query.getEmail(), true));
+                args.add(HelperFunc.makeLikeArg(query.getEmail().trim(), true));
+            }
+
+            if (HelperFunc.isLikeRequired(query.getDepartment())) {
+                String helper = HelperFunc.makeLikeArg(query.getDepartment().trim(), true);
+
+                condition
+                        .append(" and Person.id in (")
+                        .append("select personId from company_dep cd " +
+                                "left join company_dep cd2 on cd.parent_dep = cd2.id " +
+                                "inner join worker_entry we on cd.id = we.dep_id")
+                        .append(" where cd.dep_name like ? or cd2.dep_name like ?)");
+                args.add(helper);
+                args.add(helper);
             }
         });
     }
