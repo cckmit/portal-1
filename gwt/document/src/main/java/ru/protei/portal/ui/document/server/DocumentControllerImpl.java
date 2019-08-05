@@ -86,7 +86,7 @@ public class DocumentControllerImpl implements DocumentController {
             throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        log.debug("change state document, id: {}", HelperFunc.nvlt(document.getId(), "new"));
+        log.debug("change state document, id: {}", document.getId());
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         CoreResponse response = documentService.changeDocumentState(descriptor.makeAuthToken(), document);
