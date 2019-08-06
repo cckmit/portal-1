@@ -3430,7 +3430,10 @@ label {
 }
 
 .copy-issue-description {
-  margin-right: 5px;
+  margin-right: 7px;
+  .fa {
+    color: #626262;
+  }
   &:hover {
     cursor: pointer;
     .fa {

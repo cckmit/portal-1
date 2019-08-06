@@ -76,6 +76,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     void setNumber(Integer num);
 
+    String getNumber();
+
     HasVisibility caseSubscriptionContainer();
     HasVisibility privacyVisibility();
     HasVisibility timeElapsedLabelVisibility();

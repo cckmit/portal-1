@@ -1731,4 +1731,10 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationCuratorsHint();
 
     String logoutHotKey();
+
+    String issueCopyToClipboard();
+
+    String errCopyToClipboard();
+
+    String issueCopiedToClipboard();
 }

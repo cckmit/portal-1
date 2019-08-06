@@ -3,8 +3,8 @@ package ru.protei.portal.ui.issue.client.activity.edit;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.annotation.ContextAware;
 import ru.brainworm.factory.context.client.events.Back;
-import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
+import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -243,6 +243,17 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     @Override
     public void onDisplayPreviewChanged( String key, boolean isDisplay ) {
         localStorageService.set( ISSUE_EDIT + "_" + key, String.valueOf( isDisplay ) );
+    }
+
+    @Override
+    public void onCopyClicked() {
+        int status = copyToClipboard(view.getNumber() + " " + view.name().getValue());
+
+        if (status != 0) {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        }
     }
 
     private void initialView(CaseObject issue){
@@ -485,6 +496,26 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private boolean isLockedSave() {
         return saving;
     }
+
+    private native int copyToClipboard(String text) /*-{
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Fallback: Copying text command was ' + msg);
+            return 0;
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            return 1;
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }-*/;
 
     @Inject
     AbstractIssueEditView view;
