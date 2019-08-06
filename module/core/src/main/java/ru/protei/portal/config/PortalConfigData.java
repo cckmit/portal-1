@@ -35,6 +35,8 @@ public class PortalConfigData {
     private final String loginSuffixConfig;
     private final boolean taskSchedulerEnabled;
 
+    private final Long maxFileSize;
+
     public PortalConfigData (PropertiesWrapper wrapper) throws ConfigException {
         commonConfig = new CommonConfig(wrapper);
         smtpConfig = new SmtpConfig(wrapper);
@@ -53,6 +55,7 @@ public class PortalConfigData {
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
+        maxFileSize = wrapper.getProperty("max.file.size", Long.class);
     }
 
     public CommonConfig getCommonConfig() {
@@ -118,6 +121,8 @@ public class PortalConfigData {
     public boolean isTaskSchedulerEnabled() {
         return taskSchedulerEnabled;
     }
+
+    public Long getMaxFileSize() {return maxFileSize;}
 
     public static class CommonConfig {
         public CommonConfig( PropertiesWrapper properties ) {

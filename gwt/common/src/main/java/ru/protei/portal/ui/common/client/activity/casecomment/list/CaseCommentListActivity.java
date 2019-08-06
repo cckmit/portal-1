@@ -55,8 +55,11 @@ public abstract class CaseCommentListActivity
                 addTempAttachment(attachment);
             }
             @Override
-            public void onError() {
-                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            public void onError(String error) {
+                if (En_FileUploadError.getError(error).equals(En_FileUploadError.TOO_BIG))
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileTooBig(), NotifyEvents.NotifyType.ERROR));
+                else
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
         workTimeFormatter = new WorkTimeFormatter(lang);

@@ -6,6 +6,7 @@ package ru.protei.portal.core.controller.cloud;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadBase;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -20,8 +21,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_FileUploadError;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
@@ -65,6 +68,9 @@ public class FileController {
     @Autowired
     EventAssemblerService publisherService;
 
+    @Autowired
+    PortalConfig config;
+
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
@@ -74,6 +80,7 @@ public class FileController {
     public void onInit() {
         upload.setFileItemFactory(new DiskFileItemFactory());
         upload.setHeaderEncoding(StandardCharsets.UTF_8.name());
+        upload.setFileSizeMax(config.data().getMaxFileSize());
     }
 
     @RequestMapping(
@@ -131,11 +138,15 @@ public class FileController {
 
                 logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
 
-            } catch (FileUploadException | SQLException | IOException e) {
+            } catch (FileUploadBase.FileSizeLimitExceededException e){
+                logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
+                return En_FileUploadError.TOO_BIG.name();
+            }
+            catch (FileUploadException | SQLException | IOException e) {
                 logger.error("uploadFileToCase", e);
             }
         }
-        return "error";
+        return En_FileUploadError.OTHER_ERROR.toString();
     }
 
     @PostMapping(value = "/uploadBase64File", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
@@ -143,15 +154,18 @@ public class FileController {
     public String uploadBase64File(HttpServletRequest request, @RequestBody Base64Facade base64Facade) {
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
         if (ud == null) {
-            return "error";
+            return En_FileUploadError.OTHER_ERROR.toString();
+        }
+        if (base64Facade.getSize() > config.data().getMaxFileSize()){
+            return En_FileUploadError.TOO_BIG.name();
         }
         if (StringUtils.isEmpty(base64Facade.getBase64())) {
-            return "error";
+            return En_FileUploadError.OTHER_ERROR.toString();
         }
         try {
             String[] parts = base64Facade.getBase64().split(",");
             if (parts.length != 2) {
-                return "error";
+                return En_FileUploadError.OTHER_ERROR.toString();
             }
             byte[] bytes = Base64.getDecoder().decode(parts[1]);
             Person creator = ud.getPerson();
@@ -160,7 +174,7 @@ public class FileController {
         } catch (IOException | SQLException e) {
             logger.error("uploadBase64File", e);
         }
-        return "error";
+        return En_FileUploadError.OTHER_ERROR.toString();
     }
 
     @RequestMapping(value = "/files/{folder}/{fileName:.+}", method = RequestMethod.GET)

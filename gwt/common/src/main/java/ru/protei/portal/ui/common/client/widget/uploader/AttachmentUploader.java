@@ -7,6 +7,7 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.FormPanel;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_FileUploadError;
 import ru.protei.portal.core.model.ent.Attachment;
 
 import java.util.Date;
@@ -18,7 +19,7 @@ public class AttachmentUploader extends FileUploader{
 
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment);
-        void onError();
+        void onError(String code);
     }
 
     @Override
@@ -91,14 +92,14 @@ public class AttachmentUploader extends FileUploader{
         }
         Attachment attachment = createAttachment(response);
         if (attachment == null) {
-            uploadHandler.onError();
+            uploadHandler.onError(response);
         } else {
             uploadHandler.onSuccess(attachment);
         }
     }
 
     private Attachment createAttachment(String json){
-        if(json == null || json.isEmpty() || json.equals("error"))
+        if(json == null || json.isEmpty() || En_FileUploadError.isContained(json))
             return null;
 
         JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
