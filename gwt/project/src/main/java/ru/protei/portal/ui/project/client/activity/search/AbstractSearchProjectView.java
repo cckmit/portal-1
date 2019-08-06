@@ -1,7 +1,6 @@
-package ru.protei.portal.ui.document.client.activity.search;
+package ru.protei.portal.ui.project.client.activity.search;
 
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.protei.portal.core.model.dict.En_CustomerType;
@@ -11,6 +10,9 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Представление поиска проекта
+ */
 public interface AbstractSearchProjectView extends IsWidget {
     void setActivity(AbstractSearchProjectActivity activity);
     HasValue<String> name();
@@ -21,4 +23,5 @@ public interface AbstractSearchProjectView extends IsWidget {
     void clearProjectList();
     void fillProjectList(List<ProjectInfo> list);
     void resetFilter();
+    void loadProducts();
 }

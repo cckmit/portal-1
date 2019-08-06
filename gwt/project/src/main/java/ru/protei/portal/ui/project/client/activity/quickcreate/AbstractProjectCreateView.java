@@ -1,7 +1,6 @@
-package ru.protei.portal.ui.project.client.activity.create;
+package ru.protei.portal.ui.project.client.activity.quickcreate;
 
 import com.google.gwt.user.client.ui.HasValue;
-import com.google.gwt.user.client.ui.HasWidgets;
 import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.struct.ProductDirectionInfo;
@@ -11,6 +10,9 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
 import java.util.Set;
 
+/**
+ * Представление создания проекта с минимальным набором параметров
+ */
 public interface AbstractProjectCreateView extends IsWidget {
     void setActivity(AbstractProjectCreateActivity activity);
     HasValue<String> name();
@@ -25,5 +27,5 @@ public interface AbstractProjectCreateView extends IsWidget {
     HasValidable directionValidator();
     HasValidable customerTypeValidator();
     HasValidable companyValidator();
-
+    void loadProducts();
 }

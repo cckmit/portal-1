@@ -1,8 +1,9 @@
 package ru.protei.portal.ui.project.client.factory;
 
 import com.google.gwt.inject.client.AbstractGinModule;
-import ru.protei.portal.ui.project.client.activity.create.AbstractProjectCreateView;
-import ru.protei.portal.ui.project.client.activity.create.ProjectCreateActivity;
+import com.google.inject.Singleton;
+import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCreateView;
+import ru.protei.portal.ui.project.client.activity.quickcreate.ProjectCreateActivity;
 import ru.protei.portal.ui.project.client.activity.filter.AbstractProjectFilterView;
 import ru.protei.portal.ui.project.client.activity.list.AbstractProjectDocumentsListView;
 import ru.protei.portal.ui.project.client.activity.list.ProjectDocumentsListActivity;
@@ -10,15 +11,18 @@ import ru.protei.portal.ui.project.client.activity.list.item.AbstractProjectDocu
 import ru.protei.portal.ui.project.client.activity.page.ProjectPage;
 import ru.protei.portal.ui.project.client.activity.preview.AbstractProjectPreviewView;
 import ru.protei.portal.ui.project.client.activity.preview.ProjectPreviewActivity;
+import ru.protei.portal.ui.project.client.activity.search.AbstractSearchProjectView;
+import ru.protei.portal.ui.project.client.activity.search.SearchProjectActivity;
 import ru.protei.portal.ui.project.client.activity.table.AbstractProjectTableView;
 import ru.protei.portal.ui.project.client.activity.table.ProjectTableActivity;
 import ru.protei.portal.ui.project.client.activity.table.detailed.AbstractProjectDetailedTableView;
 import ru.protei.portal.ui.project.client.activity.table.detailed.ProjectDetailedTableActivity;
-import ru.protei.portal.ui.project.client.view.create.ProjectCreateView;
+import ru.protei.portal.ui.project.client.view.quickcreate.ProjectCreateView;
 import ru.protei.portal.ui.project.client.view.filter.ProjectFilterView;
 import ru.protei.portal.ui.project.client.view.list.ProjectDocumentsListView;
 import ru.protei.portal.ui.project.client.view.list.item.ProjectDocumentsListItemView;
 import ru.protei.portal.ui.project.client.view.preview.ProjectPreviewView;
+import ru.protei.portal.ui.project.client.view.search.SearchProjectView;
 import ru.protei.portal.ui.project.client.view.table.ProjectTableView;
 import ru.protei.portal.ui.project.client.view.table.detailed.ProjectDetailedTableView;
 import ru.protei.portal.ui.project.client.view.widget.team.AbstractTeamSelector;
@@ -55,6 +59,8 @@ public class ProjectClientModule extends AbstractGinModule {
         bind( ProjectCreateActivity.class ).asEagerSingleton();
         bind( AbstractProjectCreateView.class ).to( ProjectCreateView.class );
 
+        bind( SearchProjectActivity.class ).asEagerSingleton();
+        bind( AbstractSearchProjectView.class ).to( SearchProjectView.class ).in( Singleton.class );
     }
 }
 

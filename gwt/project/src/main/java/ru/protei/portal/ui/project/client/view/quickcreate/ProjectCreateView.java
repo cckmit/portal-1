@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.view.create;
+package ru.protei.portal.ui.project.client.view.quickcreate;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -19,11 +19,14 @@ import ru.protei.portal.ui.common.client.widget.selector.productdirection.Produc
 import ru.protei.portal.ui.common.client.widget.selector.region.RegionButtonSelector;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
-import ru.protei.portal.ui.project.client.activity.create.AbstractProjectCreateActivity;
-import ru.protei.portal.ui.project.client.activity.create.AbstractProjectCreateView;
+import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCreateActivity;
+import ru.protei.portal.ui.project.client.activity.quickcreate.AbstractProjectCreateView;
 
 import java.util.Set;
 
+/**
+ * Представление создания проекта с минимальным набором параметров
+ */
 public class ProjectCreateView extends Composite implements AbstractProjectCreateView {
 
     @Inject
@@ -90,6 +93,11 @@ public class ProjectCreateView extends Composite implements AbstractProjectCreat
     @Override
     public HasValidable companyValidator() {
         return company;
+    }
+
+    @Override
+    public void loadProducts() {
+        products.load();
     }
 
     @UiHandler("saveBtn")

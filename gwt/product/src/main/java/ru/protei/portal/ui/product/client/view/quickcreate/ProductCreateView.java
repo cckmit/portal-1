@@ -20,6 +20,9 @@ import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.product.client.activity.quickcreate.AbstractProductCreateActivity;
 import ru.protei.portal.ui.product.client.activity.quickcreate.AbstractProductCreateView;
 
+/**
+ * Представление создания продукта с минимальным набором параметров
+ */
 public class ProductCreateView extends Composite implements AbstractProductCreateView {
 
     public ProductCreateView() {

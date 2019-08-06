@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.view.search;
+package ru.protei.portal.ui.project.client.view.search;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
@@ -17,13 +17,16 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.document.client.activity.search.AbstractSearchProjectActivity;
-import ru.protei.portal.ui.document.client.activity.search.AbstractSearchProjectView;
-import ru.protei.portal.ui.document.client.widget.projectlist.list.ProjectList;
+import ru.protei.portal.ui.project.client.activity.search.AbstractSearchProjectActivity;
+import ru.protei.portal.ui.project.client.activity.search.AbstractSearchProjectView;
+import ru.protei.portal.ui.project.client.view.widget.projectlist.list.ProjectList;
 
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Активность поиска проекта
+ */
 public class SearchProjectView extends Composite implements AbstractSearchProjectView {
 
     @Inject
@@ -83,6 +86,11 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         dateCreatedRange.setValue(null);
         projectsContainer.addClassName("hide");
         project.clearItems();
+    }
+
+    @Override
+    public void loadProducts() {
+        products.load();
     }
 
     @UiHandler("search")

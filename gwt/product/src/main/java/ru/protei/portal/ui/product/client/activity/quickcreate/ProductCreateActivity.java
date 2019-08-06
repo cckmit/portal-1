@@ -13,6 +13,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
+/**
+ * Активность создания продукта с минимальным набором параметров
+ */
 public abstract class ProductCreateActivity implements AbstractProductCreateActivity, Activity {
 
     @PostConstruct
@@ -86,7 +89,7 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
 
     private DevUnit fillDto() {
         DevUnit product = new DevUnit();
-        product.setTypeId(En_DevUnitType.DIRECTION.getId());
+        product.setTypeId(En_DevUnitType.PRODUCT.getId());
         product.setName(view.name().getValue().trim());
         product.setInfo(view.info().getValue().trim());
         return product;

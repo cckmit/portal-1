@@ -8,14 +8,11 @@ import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilte
 import ru.protei.portal.ui.document.client.activity.page.DocumentPage;
 import ru.protei.portal.ui.document.client.activity.preview.AbstractDocumentPreviewView;
 import ru.protei.portal.ui.document.client.activity.preview.DocumentPreviewActivity;
-import ru.protei.portal.ui.document.client.activity.search.AbstractSearchProjectView;
-import ru.protei.portal.ui.document.client.activity.search.SearchProjectActivity;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableView;
 import ru.protei.portal.ui.document.client.activity.table.DocumentTableActivity;
 import ru.protei.portal.ui.document.client.view.edit.DocumentEditView;
 import ru.protei.portal.ui.document.client.view.filter.DocumentFilterView;
 import ru.protei.portal.ui.document.client.view.preview.DocumentPreviewView;
-import ru.protei.portal.ui.document.client.view.search.SearchProjectView;
 import ru.protei.portal.ui.document.client.view.table.DocumentTableView;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeModel;
 
@@ -36,8 +33,5 @@ public class DocumentClientModule extends AbstractGinModule {
         bind(AbstractDocumentPreviewView.class).to(DocumentPreviewView.class).in(Singleton.class);
 
         bind(DocumentTypeModel.class).asEagerSingleton();
-
-        bind(SearchProjectActivity.class).asEagerSingleton();
-        bind(AbstractSearchProjectView.class).to(SearchProjectView.class).in(Singleton.class);
     }
 }

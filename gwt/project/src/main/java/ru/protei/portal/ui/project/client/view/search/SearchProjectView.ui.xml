@@ -3,7 +3,7 @@
              xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
              xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'
              xmlns:range='urn:import:ru.brainworm.factory.core.datetimepicker.client.view.input.range'
-             xmlns:projectlist='urn:import:ru.protei.portal.ui.document.client.widget.projectlist.list'>
+             xmlns:projectlist='urn:import:ru.protei.portal.ui.project.client.view.widget.projectlist.list'>
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
@@ -12,25 +12,21 @@
             <div class="card card-transparent no-margin">
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><ui:text from="{lang.projectName}"/></label>
-                                <g:TextBox ui:field="name" styleName="form-control"/>
-                            </div>
-                            <div class="form-group">
-                                <label><ui:text from="{lang.projectCustomerType}"/></label>
-                                <cutomertype:CustomerTypeSelector ui:field="customerType"/>
-                            </div>
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.projectName}"/></label>
+                            <g:TextBox ui:field="name" styleName="form-control"/>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><ui:text from="{lang.created}"/></label>
-                                <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
-                            </div>
-                            <div class="form-group">
-                                <label><ui:text from="{lang.projectProducts}"/></label>
-                                <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
-                            </div>
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.created}"/></label>
+                            <range:RangePicker ui:field="dateCreatedRange" type="DATETIME" formatValue="dd.MM.yyyy HH:mm"/>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label><ui:text from="{lang.projectCustomerType}"/></label>
+                            <cutomertype:CustomerTypeSelector ui:field="customerType"/>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.projectProducts}"/></label>
+                            <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
                         </div>
                     </div>
                     <div class="text-right p-t-10">

@@ -1,7 +1,6 @@
-package ru.protei.portal.ui.document.client.widget.projectlist.list;
+package ru.protei.portal.ui.project.client.view.widget.projectlist.list;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.LabelElement;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -19,7 +18,7 @@ import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
-import ru.protei.portal.ui.document.client.widget.projectlist.item.ProjectItem;
+import ru.protei.portal.ui.project.client.view.widget.projectlist.item.ProjectItem;
 
 import java.util.*;
 import java.util.stream.Collectors;

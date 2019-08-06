@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.project.client.activity.create;
+package ru.protei.portal.ui.project.client.activity.quickcreate;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -9,11 +9,15 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 
 import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 
+/**
+ * Активность создания проекта с минимальным набором параметров
+ */
 public abstract class ProjectCreateActivity implements AbstractProjectCreateActivity, Activity {
 
     @PostConstruct
@@ -26,6 +30,17 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
         event.parent.clear();
         event.parent.add(view.asWidget());
         resetView();
+    }
+
+    @Event
+    public void onProductListChanged(ProductEvents.ProductListChanged event) {
+        view.loadProducts();
+    }
+
+    @Event
+    public void onSetProduct(ProductEvents.Set event) {
+        if (event.product == null) return;
+        view.products().getValue().add(event.product.toProductShortView());
     }
 
     @Override

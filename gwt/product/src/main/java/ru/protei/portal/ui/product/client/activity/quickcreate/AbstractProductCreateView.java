@@ -5,6 +5,9 @@ import com.google.gwt.user.client.ui.IsWidget;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 
+/**
+ * Представление создания продукта с минимальным набором параметров
+ */
 public interface AbstractProductCreateView extends IsWidget {
     void setActivity(AbstractProductCreateActivity activity);
 

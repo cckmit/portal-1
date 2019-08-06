@@ -24,21 +24,23 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
     }
 
     @Event
-    public void onProductListChanged( ProductEvents.ProductListChanged event ) {
+    public void onProductListChanged(ProductEvents.ProductListChanged event) {
         clearSubscribersOptions();
     }
+
     @Override
-    public void onSelectorLoad( SelectorWithModel<ProductShortView> selector ) {
-        if ( selector == null ) {
+    public void onSelectorLoad(SelectorWithModel<ProductShortView> selector) {
+        if (selector == null) {
             return;
         }
-        if ( selector.getValues() == null || selector.getValues().isEmpty() ) {
+        if (selector.getValues() == null || selector.getValues().isEmpty()) {
             requestOptions(selector, selectorToQuery.get(selector));
         }
     }
+
     @Override
-    public void onSelectorUnload( SelectorWithModel<ProductShortView> selector ) {
-        if ( selector == null ) {
+    public void onSelectorUnload(SelectorWithModel<ProductShortView> selector) {
+        if (selector == null) {
             return;
         }
         selector.clearOptions();
@@ -48,30 +50,33 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         updateQuery( selector, enDevUnitState, enDevUnitType );
     }
 
-    public void updateQuery( SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
-        ProductQuery query = makeQuery( enDevUnitState, enDevUnitType );
+    public void updateQuery(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
+        ProductQuery query = makeQuery(enDevUnitState, enDevUnitType);
         selectorToQuery.put(selector, query);
     }
+
     private void clearSubscribersOptions() {
         for (SelectorWithModel<ProductShortView> subscriber : selectorToQuery.keySet()) {
             subscriber.clearOptions();
         }
     }
-    private void requestOptions(SelectorWithModel<ProductShortView> selector, ProductQuery query ) {
+
+    private void requestOptions(SelectorWithModel<ProductShortView> selector, ProductQuery query) {
         productService.getProductViewList(query, new RequestCallback<List<ProductShortView>>() {
             @Override
-            public void onError( Throwable throwable ) {
+            public void onError(Throwable throwable) {
                 fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
             }
 
             @Override
-            public void onSuccess( List<ProductShortView> options ) {
-                selector.fillOptions( options );
+            public void onSuccess(List<ProductShortView> options) {
+                selector.fillOptions(options);
                 selector.refreshValue();
             }
         } );
     }
-    private ProductQuery makeQuery( En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType ) {
+
+    private ProductQuery makeQuery(En_DevUnitState enDevUnitState, En_DevUnitType enDevUnitType) {
         ProductQuery query = new ProductQuery();
         if (enDevUnitType != null) query.addType(enDevUnitType);
         query.setSortField(En_SortField.prod_name);
@@ -82,6 +87,7 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
 
     @Inject
     Lang lang;
+
     @Inject
     ProductControllerAsync productService;
 

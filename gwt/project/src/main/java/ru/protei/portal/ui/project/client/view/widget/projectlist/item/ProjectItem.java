@@ -1,4 +1,4 @@
-package ru.protei.portal.ui.document.client.widget.projectlist.item;
+package ru.protei.portal.ui.project.client.view.widget.projectlist.item;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
