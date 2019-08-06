@@ -205,6 +205,7 @@ public class DebugIds {
         String INFO_LABEL = "issue-preview-info-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";
+        String COPY_TO_CLIPBOARD_BUTTON = "issue-preview-copy-to-clipboard-button";
 
         interface COMMENT_LIST {
             String COMMENTS_LIST = "issue-preview-comment-list-comments-list";

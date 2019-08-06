@@ -19,7 +19,7 @@
         <div class="card-body">
             <div class="row p-b-10">
                 <h5 class="no-margin col-md-12">
-                    <g:Anchor ui:field="copy" styleName="copy-issue-description">
+                    <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
                         <i class="far fa-clone"/>
                     </g:Anchor>
                     <g:ToggleButton ui:field="local" styleName="btn private-btn m-r-5 inline-block"/>

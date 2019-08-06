@@ -142,6 +142,17 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
 
+    @Override
+    public void onCopyClicked() {
+        int status = copyToClipboard(view.getCaseNumber() + " " + view.getName());
+
+        if (status != 0) {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        }
+    }
+
     private void fillView(CaseObject value ) {
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
@@ -250,6 +261,26 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
         view.attachmentsContainer().add(attachs);
     }
+
+    private native int copyToClipboard(String text) /*-{
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Fallback: Copying text command was ' + msg);
+            return 0;
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+            return 1;
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }-*/;
 
     @Inject
     Lang lang;
