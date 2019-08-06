@@ -165,6 +165,7 @@ public class FileController {
     @ResponseBody
     public String uploadBase64Files(HttpServletRequest request, @RequestBody List<Base64Facade> base64Facades) {
         List<String> attachmentsJsons = new ArrayList<>();
+        List<Attachment> attachments = new ArrayList<>();
         StringBuilder successfulResponse = new StringBuilder("[");
 
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
@@ -189,12 +190,14 @@ public class FileController {
             try {
                 Attachment attachment = saveAttachment(bytes, currB64facade, creator.getId());
                 attachmentsJsons.add(mapper.writeValueAsString(attachment));
+                attachments.add(attachment);
             } catch (IOException | SQLException e) {
                 e.printStackTrace();
             }
         }
 
         if (attachmentsJsons.size() != base64Facades.size()) {
+            removeFiles(attachments);
             return "error";
         } else {
             for (int i = 0; i < attachmentsJsons.size() - 1; i++) {
@@ -274,6 +277,12 @@ public class FileController {
 //        }
 
         return caseAttachId.getData();
+    }
+
+    private void removeFiles(List<Attachment> attachments) {
+        for (Attachment currAttachment : attachments) {
+            fileStorage.deleteFile(currAttachment.getExtLink());
+        }
     }
 
     private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
