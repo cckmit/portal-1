@@ -3428,3 +3428,13 @@ label {
   display: inline-block;
   margin-bottom: -10px;
 }
+
+.copy-issue-description {
+  margin-right: 5px;
+  &:hover {
+    cursor: pointer;
+    .fa {
+      color: #5698d3;
+    }
+  }
+}
