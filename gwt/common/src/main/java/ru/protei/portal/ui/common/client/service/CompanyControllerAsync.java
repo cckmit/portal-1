@@ -99,4 +99,6 @@ public interface CompanyControllerAsync {
      * Получить список тэгов компании
      */
     void getCompanyTags( Long companyId, AsyncCallback<List<CaseTag>> async );
+
+    void changeState(Company tempCompany, AsyncCallback<Boolean> async);
 }

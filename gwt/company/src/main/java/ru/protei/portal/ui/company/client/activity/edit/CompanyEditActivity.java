@@ -85,9 +85,31 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 ));
     }
 
+    @Event
+    public void onConfirmStateChange(ConfirmDialogEvents.Confirm event) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        tempCompany.setDeprecated(!tempCompany.isDeprecated());
+
+        companyService.changeState(tempCompany, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                fireEvent(new CompanyEvents.Show());
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new CompanyEvents.ChangeModel());
+            }
+        });
+    }
+
     @Override
     public void onStateChanged() {
-        tempCompany.setDeprecated(!tempCompany.isDeprecated());
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.companyChangeStateConfirmMessage()));
     }
 
     @Override

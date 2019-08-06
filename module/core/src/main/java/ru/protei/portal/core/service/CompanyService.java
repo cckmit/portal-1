@@ -49,9 +49,12 @@ public interface CompanyService {
     CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
     CoreResponse<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
 
+    @Privileged( En_Privilege.COMPANY_EDIT )
+    @Auditable( En_AuditType.COMPANY_MODIFY )
+    CoreResponse changeCompanyState(AuthToken makeAuthToken, Company tempCompany);
+
     /**
      * methods below are for testing purpose only
      */
     CoreResponse<CompanyGroup> createGroup(String name, String info);
-
 }

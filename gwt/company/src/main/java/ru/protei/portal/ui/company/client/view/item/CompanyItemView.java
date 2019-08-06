@@ -9,7 +9,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasWidgets;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
@@ -64,6 +67,16 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
             href = "http://" + href;
         }
         website.setHref( href );
+    }
+
+    @Override
+    public void setDeprecated(boolean isDeprecated) {
+        if (isDeprecated) {
+            addStyleName("inactive");
+            return;
+        }
+
+        removeStyleName("inactive");
     }
 
     @Override

@@ -187,7 +187,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     public void onStateClicked(ClickEvent event) {
         if (activity != null) {
             activity.onStateChanged();
-            activity.onSaveClicked();
         }
     }
 

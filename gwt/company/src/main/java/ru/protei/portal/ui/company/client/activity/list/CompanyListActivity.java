@@ -28,7 +28,6 @@ import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -109,6 +108,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
         itemView.setPhone(infoFacade.allPhonesAsString());
         itemView.setEmail(infoFacade.allEmailsAsString());
         itemView.setWebsite(infoFacade.getWebSite() );
+        itemView.setDeprecated(company.isDeprecated());
 
         CompanyCategory category = company.getCategory();
         if ( category != null ) {

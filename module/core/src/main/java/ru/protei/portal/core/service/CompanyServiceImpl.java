@@ -131,6 +131,21 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<List<CompanySubscription>>().success( result );
     }
 
+    @Override
+    public CoreResponse changeCompanyState(AuthToken makeAuthToken, Company tempCompany) {
+        if (tempCompany == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (companyDAO.get(tempCompany.getId()) == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        companyDAO.updateState(tempCompany);
+
+        return new CoreResponse().success();
+    }
+
     private <T> CoreResponse<T> createUndefinedError() {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
