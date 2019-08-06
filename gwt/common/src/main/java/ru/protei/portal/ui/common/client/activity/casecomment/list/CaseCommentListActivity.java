@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.CaseAttachment;
@@ -55,9 +56,10 @@ public abstract class CaseCommentListActivity
                 addTempAttachment(attachment);
             }
             @Override
-            public void onError(String error) {
-                if (En_FileUploadError.getError(error).equals(En_FileUploadError.TOO_BIG))
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileTooBig(), NotifyEvents.NotifyType.ERROR));
+            public void onError(UploadResult result) {
+                if (result.getError().equals(En_FileUploadError.SIZE_EXCEED)) {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + result.getDetails(), NotifyEvents.NotifyType.ERROR));
+                }
                 else
                     fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }

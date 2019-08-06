@@ -4,6 +4,7 @@ package ru.protei.portal.core.controller.cloud;
  * Created by bondarenko on 26.12.16.
  */
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadBase;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadError;
@@ -74,7 +76,11 @@ public class FileController {
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
+
+
     private ServletFileUpload upload = new ServletFileUpload();
+
+    private static final int BYTES_IN_MEGABYTE = 1048576;
 
     @PostConstruct
     public void onInit() {
@@ -140,13 +146,18 @@ public class FileController {
 
             } catch (FileUploadBase.FileSizeLimitExceededException e){
                 logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
-                return En_FileUploadError.TOO_BIG.name();
+                try {
+                    long megaBytes = config.data().getMaxFileSize() / BYTES_IN_MEGABYTE;
+                    return mapper.writeValueAsString(new UploadResult(En_FileUploadError.SIZE_EXCEED, " (" + megaBytes + "Mb)"));
+                } catch (JsonProcessingException ex) {
+                    logger.error("uploadFileToCase", ex);
+                }
             }
             catch (FileUploadException | SQLException | IOException e) {
                 logger.error("uploadFileToCase", e);
             }
         }
-        return En_FileUploadError.OTHER_ERROR.toString();
+        return En_FileUploadError.INNER.toString();
     }
 
     @PostMapping(value = "/uploadBase64File", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
@@ -154,18 +165,23 @@ public class FileController {
     public String uploadBase64File(HttpServletRequest request, @RequestBody Base64Facade base64Facade) {
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
         if (ud == null) {
-            return En_FileUploadError.OTHER_ERROR.toString();
+            return En_FileUploadError.INNER.toString();
         }
         if (base64Facade.getSize() > config.data().getMaxFileSize()){
-            return En_FileUploadError.TOO_BIG.name();
+            try {
+                long megaBytes = config.data().getMaxFileSize() / BYTES_IN_MEGABYTE;
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadError.SIZE_EXCEED, " (" + megaBytes + "Mb)"));
+            } catch (JsonProcessingException ex) {
+                logger.error("uploadFileToCase", ex);
+            }
         }
         if (StringUtils.isEmpty(base64Facade.getBase64())) {
-            return En_FileUploadError.OTHER_ERROR.toString();
+            return En_FileUploadError.INNER.toString();
         }
         try {
             String[] parts = base64Facade.getBase64().split(",");
             if (parts.length != 2) {
-                return En_FileUploadError.OTHER_ERROR.toString();
+                return En_FileUploadError.INNER.toString();
             }
             byte[] bytes = Base64.getDecoder().decode(parts[1]);
             Person creator = ud.getPerson();
@@ -174,7 +190,7 @@ public class FileController {
         } catch (IOException | SQLException e) {
             logger.error("uploadBase64File", e);
         }
-        return En_FileUploadError.OTHER_ERROR.toString();
+        return En_FileUploadError.INNER.toString();
     }
 
     @RequestMapping(value = "/files/{folder}/{fileName:.+}", method = RequestMethod.GET)

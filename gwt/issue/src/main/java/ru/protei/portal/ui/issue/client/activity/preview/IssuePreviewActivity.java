@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadError;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -42,9 +43,10 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 addAttachments(Collections.singleton(attachment));
             }
             @Override
-            public void onError(String error) {
-                if (En_FileUploadError.getError(error).equals(En_FileUploadError.TOO_BIG))
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileTooBig(), NotifyEvents.NotifyType.ERROR));
+            public void onError(UploadResult result) {
+                if (result.getError().equals(En_FileUploadError.SIZE_EXCEED)) {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + result.getDetails(), NotifyEvents.NotifyType.ERROR));
+                }
                 else
                     fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }

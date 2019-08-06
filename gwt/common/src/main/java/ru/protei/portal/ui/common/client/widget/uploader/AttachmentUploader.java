@@ -6,6 +6,7 @@ import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.FormPanel;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadError;
 import ru.protei.portal.core.model.ent.Attachment;
@@ -19,7 +20,7 @@ public class AttachmentUploader extends FileUploader{
 
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment);
-        void onError(String code);
+        void onError(UploadResult result);
     }
 
     @Override
@@ -90,19 +91,29 @@ public class AttachmentUploader extends FileUploader{
         if (uploadHandler == null) {
             return;
         }
-        Attachment attachment = createAttachment(response);
-        if (attachment == null) {
-            uploadHandler.onError(response);
+        if(response == null || response.isEmpty()){
+            uploadHandler.onError(new UploadResult(En_FileUploadError.INNER, ""));
         } else {
-            uploadHandler.onSuccess(attachment);
+
+            JSONObject jsonObj = JSONParser.parseStrict(response).isObject();
+
+            if (jsonObj.containsKey("error"))
+                uploadHandler.onError(createUploadResult(jsonObj));
+            else
+                uploadHandler.onSuccess(createAttachment(jsonObj));
         }
     }
 
-    private Attachment createAttachment(String json){
-        if(json == null || json.isEmpty() || En_FileUploadError.isContained(json))
-            return null;
+    private UploadResult createUploadResult(JSONObject jsonObj){
 
-        JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
+        UploadResult result = new UploadResult();
+        result.setError(En_FileUploadError.getError(jsonObj.get("error").isString().stringValue()));
+        result.setDetails(jsonObj.get("details").isString().stringValue());
+
+        return result;
+    }
+
+    private Attachment createAttachment(JSONObject jsonObj){
 
         Attachment attachment = new Attachment();
         attachment.setId(Long.valueOf(jsonObj.get("id").toString()));
