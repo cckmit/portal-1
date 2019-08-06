@@ -3429,14 +3429,26 @@ label {
   margin-bottom: -10px;
 }
 
-.copy-issue-description {
-  margin-right: 7px;
-  .far {
-    color: #626262;
-  }
-  &:hover {
+.number-copy-panel {
+  display: inline-block!important;
+  .copy-issue-description {
+    margin-left: 3px;
+    display: none;
     .far {
-      color: #5698d3;
+      color: #929292;
+    }
+    &:hover {
+      .far {
+        color: #5698d3;
+      }
+    }
+  }
+
+  &:hover {
+    .copy-issue-description {
+      display: inline-block;
     }
   }
 }
+
+

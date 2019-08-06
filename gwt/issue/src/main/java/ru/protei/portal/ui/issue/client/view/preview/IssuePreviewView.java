@@ -295,6 +295,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     En_CaseStateLang caseStateLang;
     @Inject
     FixedPositioner positioner;
+    @UiField
+    HTMLPanel numberCopyPanel;
 
     AbstractIssuePreviewActivity activity;
 

@@ -508,6 +508,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @UiField
     Label number;
 
+    @UiField
+    HTMLPanel numberCopyPanel;
+
     @Inject
     @UiField(provided = true)
     IssueStateButtonSelector state;
