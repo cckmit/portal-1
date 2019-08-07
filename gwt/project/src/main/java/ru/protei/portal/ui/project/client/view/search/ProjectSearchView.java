@@ -2,6 +2,7 @@ package ru.protei.portal.ui.project.client.view.search;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -17,8 +18,8 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.selector.customertype.CustomerTypeSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
-import ru.protei.portal.ui.project.client.activity.search.AbstractSearchProjectActivity;
-import ru.protei.portal.ui.project.client.activity.search.AbstractSearchProjectView;
+import ru.protei.portal.ui.project.client.activity.search.AbstractProjectSearchActivity;
+import ru.protei.portal.ui.project.client.activity.search.AbstractProjectSearchView;
 import ru.protei.portal.ui.project.client.view.widget.projectlist.list.ProjectList;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.Set;
 /**
  * Активность поиска проекта
  */
-public class SearchProjectView extends Composite implements AbstractSearchProjectView {
+public class ProjectSearchView extends Composite implements AbstractProjectSearchView {
 
     @Inject
     public void onInit() {
@@ -38,7 +39,7 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     }
 
     @Override
-    public void setActivity(AbstractSearchProjectActivity activity) {
+    public void setActivity( AbstractProjectSearchActivity activity) {
         this.activity = activity;
     }
 
@@ -74,6 +75,7 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
 
     @Override
     public void fillProjectList(List<ProjectInfo> list) {
+        searchInfo.removeClassName("hide");
         projectsContainer.removeClassName("hide");
         project.addItems(list);
     }
@@ -84,13 +86,14 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
         customerType.setValue(null);
         products.setValue(null);
         dateCreatedRange.setValue(null);
+        searchInfo.addClassName("hide");
         projectsContainer.addClassName("hide");
         project.clearItems();
     }
 
     @Override
-    public void loadProducts() {
-        products.load();
+    public void refreshProducts() {
+        products.refreshOptions();
     }
 
     @UiHandler("search")
@@ -144,12 +147,15 @@ public class SearchProjectView extends Composite implements AbstractSearchProjec
     @UiField
     DivElement projectsContainer;
 
+    @UiField
+    Element searchInfo;
+
     @Inject
     @UiField
     Lang lang;
 
-    private AbstractSearchProjectActivity activity;
+    private AbstractProjectSearchActivity activity;
 
     private static SearchProjectViewUiBinder ourUiBinder = GWT.create(SearchProjectViewUiBinder.class);
-    interface SearchProjectViewUiBinder extends UiBinder<HTMLPanel, SearchProjectView> {}
+    interface SearchProjectViewUiBinder extends UiBinder<HTMLPanel, ProjectSearchView > {}
 }

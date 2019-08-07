@@ -5,6 +5,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.ent.Company;
+import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 
 import ru.protei.portal.core.model.view.EntityOption;
@@ -29,12 +30,12 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     public void onShow(ProjectEvents.QuickCreate event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-        resetView();
+        initialView(new ProjectInfo());
     }
 
     @Event
     public void onProductListChanged(ProductEvents.ProductListChanged event) {
-        view.loadProducts();
+        view.refreshProducts();
     }
 
     @Event
@@ -47,46 +48,44 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
     public void onSaveClicked() {
 
         if (!validate()) {
-            fireEvent(new NotifyEvents.Show(lang.errFieldsRequired(), NotifyEvents.NotifyType.ERROR));
             return;
         }
 
-        ProjectInfo project = fillProject();
+        fillProject();
         regionService.saveProject(project, new FluentCallback<ProjectInfo>()
                 .withErrorMessage(lang.errNotSaved())
                 .withSuccess(projectInfo -> {
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new ProjectEvents.ChangeModel());
                     fireEvent(new ProjectEvents.Set(projectInfo));
-                    resetView();
+                    initialView(new ProjectInfo());
                 }));
     }
 
     @Override
     public void onResetClicked() {
-        resetView();
+        initialView(new ProjectInfo());
     }
 
-    private void resetView() {
-        view.name().setValue("");
-        view.description().setValue("");
-        view.region().setValue(null);
-        view.direction().setValue(null);
-        view.customerType().setValue(null);
-        view.company().setValue(null);
-        view.products().setValue(null);
+    private void initialView(ProjectInfo project) {
+        this.project = project;
+        view.name().setValue(project.getName());
+        view.description().setValue(project.getDescription());
+        view.region().setValue(project.getRegion());
+        view.direction().setValue(project.getProductDirection() == null ? null : new ProductDirectionInfo(project.getProductDirection()));
+        view.customerType().setValue(project.getCustomerType());
+        view.company().setValue(EntityOption.fromCompany(project.getCustomer()));
+        view.products().setValue(project.getProducts());
     }
 
-    private ProjectInfo fillProject() {
-        ProjectInfo project = new ProjectInfo();
-        project.setName(view.name().getValue());
-        project.setDescription(view.description().getValue());
+    private void fillProject() {
+        project.setName(view.name().getValue().trim());
+        project.setDescription(view.description().getValue().trim());
         project.setRegion(view.region().getValue());
         project.setProductDirection(EntityOption.fromProductDirectionInfo(view.direction().getValue()));
         project.setCustomerType(view.customerType().getValue());
         project.setCustomer(Company.fromEntityOption(view.company().getValue()));
         project.setProducts(view.products().getValue());
-        return project;
     }
 
     private boolean validate() {
@@ -104,4 +103,6 @@ public abstract class ProjectCreateActivity implements AbstractProjectCreateActi
 
     @Inject
     Lang lang;
+
+    private ProjectInfo project;
 }

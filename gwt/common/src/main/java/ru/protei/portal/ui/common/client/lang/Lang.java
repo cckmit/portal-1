@@ -1751,4 +1751,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String inputProjectName();
     String selectCustomerType();
+
+    String errFilterParameterRequired();
+
+    String firstHundredRecords();
 }

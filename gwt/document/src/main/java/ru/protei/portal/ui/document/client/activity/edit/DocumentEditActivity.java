@@ -30,9 +30,6 @@ public abstract class DocumentEditActivity
     @Event
     public void onAuthSuccess( AuthEvents.Success event ) {
         this.authorizedProfile = event.profile;
-        fireEvent(new ProjectEvents.Search(view.searchProjectContainer()));
-        fireEvent(new ProjectEvents.QuickCreate(view.createProjectContainer()));
-        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
     }
 
     @PostConstruct
@@ -61,6 +58,9 @@ public abstract class DocumentEditActivity
     public void onShow(DocumentEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        fireEvent(new ProjectEvents.Search(view.searchProjectContainer()));
+        fireEvent(new ProjectEvents.QuickCreate(view.createProjectContainer()));
+        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
 
         if (event.id == null) {
             fillView(new Document());

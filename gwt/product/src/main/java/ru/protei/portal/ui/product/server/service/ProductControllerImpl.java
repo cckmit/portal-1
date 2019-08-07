@@ -63,7 +63,7 @@ public class ProductControllerImpl implements ProductController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        if ( product == null || !isNameUnique( product.getName(), product.getId() ) )
+        if ( product == null )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
         CoreResponse<DevUnit> response = product.getId() == null

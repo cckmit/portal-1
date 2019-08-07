@@ -13,8 +13,8 @@ import java.util.Set;
 /**
  * Представление поиска проекта
  */
-public interface AbstractSearchProjectView extends IsWidget {
-    void setActivity(AbstractSearchProjectActivity activity);
+public interface AbstractProjectSearchView extends IsWidget {
+    void setActivity( AbstractProjectSearchActivity activity);
     HasValue<String> name();
     HasValue<En_CustomerType> customerType();
     HasValue<Set<ProductShortView>> products();
@@ -23,5 +23,5 @@ public interface AbstractSearchProjectView extends IsWidget {
     void clearProjectList();
     void fillProjectList(List<ProjectInfo> list);
     void resetFilter();
-    void loadProducts();
+    void refreshProducts();
 }

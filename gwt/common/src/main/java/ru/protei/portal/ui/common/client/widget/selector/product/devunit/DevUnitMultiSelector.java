@@ -49,8 +49,8 @@ public class DevUnitMultiSelector extends MultipleInputSelector< ProductShortVie
             model.updateQuery(this, enDevUnitState, enDevUnitType);
         }
     }
-    public void load() {
-        model.onSelectorLoad(this);
+    public void refreshOptions() {
+        model.getOptionsFromServer(this);
     }
 
     private void fillOptions() {

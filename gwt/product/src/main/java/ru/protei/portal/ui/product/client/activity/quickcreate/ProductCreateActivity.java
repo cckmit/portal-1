@@ -27,7 +27,7 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
     public void onShow(ProductEvents.QuickCreate event) {
         event.parent.clear();
         event.parent.add(view.asWidget());
-        resetView();
+        initialView(new DevUnit());
     }
 
     @Override
@@ -35,7 +35,7 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
         String value = view.name().getValue().trim();
 
         //isNameUnique не принимает пустые строки!
-        if ( value.isEmpty()) {
+        if (value.isEmpty()) {
             view.setNameStatus(NameStatus.NONE);
             return;
         }
@@ -52,6 +52,7 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
                     @Override
                     public void onSuccess(Boolean isUnique) {
                         view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
+                        isNameUnique = isUnique;
                     }
                 });
     }
@@ -59,10 +60,13 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
     @Override
     public void onSaveClicked() {
 
-        if(!isValid())
+        if(!validate()) {
             return;
+        }
 
-        productService.saveProduct(fillDto(), new RequestCallback<DevUnit>() {
+        fillProduct();
+
+        productService.saveProduct(product, new RequestCallback<DevUnit>() {
             @Override
             public void onError(Throwable throwable) {}
 
@@ -71,32 +75,32 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
                 fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
                 fireEvent(new ProductEvents.Set(product));
-                resetView();
+                initialView(new DevUnit());
             }
         });
     }
 
     @Override
     public void onResetClicked() {
-        resetView();
+        initialView(new DevUnit());
     }
 
-    private void resetView() {
-        view.name().setValue("");
-        view.info().setValue("");
+    private void initialView(DevUnit product) {
+        this.product = product;
+        view.name().setValue(product.getName());
+        view.info().setValue(product.getInfo());
         view.setNameStatus(NameStatus.NONE);
     }
 
-    private DevUnit fillDto() {
-        DevUnit product = new DevUnit();
+    private void fillProduct() {
         product.setTypeId(En_DevUnitType.PRODUCT.getId());
         product.setName(view.name().getValue().trim());
         product.setInfo(view.info().getValue().trim());
-        return product;
     }
 
-    private boolean isValid() {
-        return view.nameValidator().isValid();
+    private boolean validate() {
+        return view.nameValidator().isValid() &&
+                isNameUnique;
     }
 
     @Inject
@@ -105,4 +109,7 @@ public abstract class ProductCreateActivity implements AbstractProductCreateActi
     ProductControllerAsync productService;
     @Inject
     Lang lang;
+
+    private DevUnit product;
+    private boolean isNameUnique = true;
 }

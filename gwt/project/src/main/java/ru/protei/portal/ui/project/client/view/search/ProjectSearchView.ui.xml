@@ -30,6 +30,7 @@
                         </div>
                     </div>
                     <div class="text-right p-t-10">
+                        <small ui:field="searchInfo" class="hide p-r-10 v-a-b hint-text">Показаны первые 100 записей</small>
                         <g:Anchor href='#' ui:field="search" styleName="btn btn-primary" text="{lang.buttonSearch}"/>
                         <g:Anchor href='#' ui:field="reset" styleName="btn btn-white" text="{lang.buttonReset}"/>
                     </div>

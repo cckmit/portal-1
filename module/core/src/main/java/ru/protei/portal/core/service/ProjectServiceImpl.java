@@ -189,7 +189,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setName(project.getName());
         caseObject.setInfo(project.getDescription());
         caseObject.setProducts(new HashSet<>());
-        if (project.getCustomer() == null) {
+        if (project.getCustomer() != null) {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
         if (project.getCustomerType() != null) {

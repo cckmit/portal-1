@@ -30,6 +30,10 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
 
     @Override
     public void onSelectorLoad(SelectorWithModel<ProductShortView> selector) {
+        getOptionsFromServer(selector);
+    }
+
+    public void getOptionsFromServer(SelectorWithModel<ProductShortView> selector) {
         if (selector == null) {
             return;
         }

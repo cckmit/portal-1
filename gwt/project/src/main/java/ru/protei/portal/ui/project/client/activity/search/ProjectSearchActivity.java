@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.events.ProjectEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Активность поиска проекта
  */
-public abstract class SearchProjectActivity implements Activity, AbstractSearchProjectActivity {
+public abstract class ProjectSearchActivity implements Activity, AbstractProjectSearchActivity {
 
     @PostConstruct
     public void onInit() {
@@ -37,7 +36,7 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
 
     @Event
     public void onProductListChanged(ProductEvents.ProductListChanged event) {
-        view.loadProducts();
+        view.refreshProducts();
     }
 
     @Event
@@ -65,16 +64,12 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
 
     private void requestProjects() {
         ProjectQuery query = makeQuery();
-        if (isQueryNotValid(query)) {
-            fireEvent(new NotifyEvents.Show(lang.errIncorrectParams(), NotifyEvents.NotifyType.ERROR));
-        } else {
-            view.clearProjectList();
-            regionService.getProjectsList(query, new FluentCallback<List<ProjectInfo>>()
-                    .withErrorMessage(lang.errGetList())
-                    .withSuccess(result -> {
-                        view.fillProjectList(result);
-                    }));
-        }
+        view.clearProjectList();
+        regionService.getProjectsList(query, new FluentCallback<List<ProjectInfo>>()
+                .withErrorMessage(lang.errGetList())
+                .withSuccess(result -> {
+                    view.fillProjectList(result);
+                }));
     }
 
     private ProjectQuery makeQuery() {
@@ -86,11 +81,8 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
         }
         query.setCustomerType(view.customerType().getValue());
         query.setProductIds(view.products().getValue().stream().map(product -> product.getId()).collect(Collectors.toList()));
+        query.setLimit(100);
         return query;
-    }
-
-    private boolean isQueryNotValid(ProjectQuery query) {
-        return query == null || !query.isParamsPresent();
     }
 
     @Inject
@@ -100,5 +92,5 @@ public abstract class SearchProjectActivity implements Activity, AbstractSearchP
     Lang lang;
 
     @Inject
-    AbstractSearchProjectView view;
+    AbstractProjectSearchView view;
 }
