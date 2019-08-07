@@ -45,7 +45,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
             @Override
             public void onError(En_FileUploadStatus status, String details) {
                 if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + details, NotifyEvents.NotifyType.ERROR));
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
                 }
                 else {
                     fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));

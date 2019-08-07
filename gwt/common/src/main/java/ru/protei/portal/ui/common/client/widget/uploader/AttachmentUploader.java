@@ -5,7 +5,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -93,10 +92,10 @@ public class AttachmentUploader extends FileUploader{
             return;
         }
 
-        UploadResult result = createUploadResult(response);
+        UploadResult result = parseUploadResult(response);
 
-        if (result.getStatus().equals(En_FileUploadStatus.OK)) {
-            uploadHandler.onSuccess(createAttachment(result.getDetails()));
+        if (En_FileUploadStatus.OK.equals(result.getStatus())) {
+            uploadHandler.onSuccess(parseAttachment(result.getDetails()));
         }
         else {
             uploadHandler.onError(result.getStatus(), result.getDetails());
@@ -104,7 +103,7 @@ public class AttachmentUploader extends FileUploader{
 
     }
 
-    private UploadResult createUploadResult(String json){
+    private UploadResult parseUploadResult(String json){
         UploadResult result;
 
         if(json == null || json.isEmpty()){
@@ -121,7 +120,7 @@ public class AttachmentUploader extends FileUploader{
         return result;
     }
 
-    private Attachment createAttachment(String json){
+    private Attachment parseAttachment(String json){
         JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
 
         Attachment attachment = new Attachment();
