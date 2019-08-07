@@ -114,50 +114,47 @@ public class FileController {
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
         UploadResult result = null;
 
-        if (ud != null) {
-            try {
+        if (ud == null) {
+            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null"));
+        }
 
-                logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
+        try {
+            logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
 
-                for (FileItem item : upload.parseRequest(request)) {
-                    if (item.isFormField())
-                        continue;
+            for (FileItem item : upload.parseRequest(request)) {
+                if (item.isFormField())
+                    continue;
 
-                    if (isFileSizeExceed(item.getSize(), config.data().getMaxFileSize())) {
-                        logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
-                        result = new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, String.valueOf(config.data().getMaxFileSize()));
-                        break;
-                    }
-
-                    logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
-
-                    Person creator = ud.getPerson();
-                    Attachment attachment = saveAttachment(item, creator.getId());
-
-                    if (caseNumber != null) {
-                        En_CaseType caseType = En_CaseType.find(caseTypeId);
-                        CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
-                        if (caseAttachId.isError()) {
-                            logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
-                            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "caseAttachId is Error");
-                            break;
-                        }
-                        shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
-                    }
-                    result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
+                if (isFileSizeExceed(item.getSize(), config.data().getMaxFileSize())) {
+                    logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
+                    result = new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, String.valueOf(config.data().getMaxFileSize()));
                     break;
                 }
-                logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
-            }
 
-            catch (FileUploadException | SQLException | IOException e) {
-                logger.error("uploadFileToCase", e);
-                result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
+                logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
+
+                Person creator = ud.getPerson();
+                Attachment attachment = saveAttachment(item, creator.getId());
+
+                if (caseNumber != null) {
+                    En_CaseType caseType = En_CaseType.find(caseTypeId);
+                    CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
+                    if (caseAttachId.isError()) {
+                        logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
+                        result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "caseAttachId is Error");
+                        break;
+                    }
+                    shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
+                }
+                result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
+                break;
             }
+            logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
 
         }
-        else {
-            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null");
+        catch (FileUploadException | SQLException | IOException e) {
+                logger.error("uploadFileToCase", e);
+                result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
         }
 
         if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
