@@ -27,6 +27,11 @@ public interface CompanyService {
     CoreResponse<Long> countGroups (CompanyGroupQuery query);
 
     CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
+
+    @Privileged( En_Privilege.COMPANY_EDIT )
+    @Auditable( En_AuditType.COMPANY_MODIFY )
+    CoreResponse<?> changeArchivedState(AuthToken makeAuthToken, Long id, boolean isArchived);
+
     CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
     CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
@@ -48,10 +53,6 @@ public interface CompanyService {
     CoreResponse<Boolean> updateCompanySubscriptions( Long id, List<CompanySubscription> value );
     CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId );
     CoreResponse<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId );
-
-    @Privileged( En_Privilege.COMPANY_EDIT )
-    @Auditable( En_AuditType.COMPANY_MODIFY )
-    CoreResponse changeCompanyState(AuthToken makeAuthToken, Company tempCompany);
 
     /**
      * methods below are for testing purpose only

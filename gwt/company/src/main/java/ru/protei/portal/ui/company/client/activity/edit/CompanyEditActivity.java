@@ -86,25 +86,22 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     @Event
-    public void onConfirmStateChange(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
+    public void onConfirmArchivedStateChange(ConfirmDialogEvents.Confirm event) {
+        if (event.identity.equals(getClass().getName())) {
+            companyService.changeArchivedState(tempCompany.getId(), !tempCompany.isArchived(), new RequestCallback<Boolean>() {
+                @Override
+                public void onError(Throwable throwable) {
+                }
+
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    tempCompany.setArchived(!tempCompany.isArchived());
+                    fireEvent(new CompanyEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CompanyEvents.ChangeModel());
+                }
+            });
         }
-
-        tempCompany.setDeprecated(!tempCompany.isDeprecated());
-
-        companyService.changeState(tempCompany, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                fireEvent(new CompanyEvents.Show());
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new CompanyEvents.ChangeModel());
-            }
-        });
     }
 
     @Override
@@ -244,7 +241,7 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
         view.hideTags(company.getId() == null);
 
-        view.setStateButtonText(company.isDeprecated() ? lang.buttonFromArchive() : lang.buttonToArchive());
+        view.setStateButtonText(company.isArchived() ? lang.buttonFromArchive() : lang.buttonToArchive());
     }
 
     private EntityOption makeCompanyOption(Company company) {

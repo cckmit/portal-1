@@ -75,7 +75,7 @@ public class CompanyServiceTest extends BaseServiceTest {
     @Test
     public void testCompanyDeprecatedField() {
         Company company = createNewCustomerCompany();
-        Assert.assertEquals(company.isDeprecated(), false);
+        Assert.assertEquals(company.isArchived(), false);
     }
 
     @Test

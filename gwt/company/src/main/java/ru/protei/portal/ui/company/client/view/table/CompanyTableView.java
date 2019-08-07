@@ -133,20 +133,17 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         Element cName = DOM.createDiv();
         cName.addClassName("company-name");
 
-        if (company.isDeprecated()) {
-            Element deprecatedElement = DOM.createDiv();
-            deprecatedElement.addClassName("text-danger");
+        if (company.isArchived()) {
+            cName.setPropertyString("style", "{color: #929292;}");
 
             Element banIcon = DOM.createElement("i");
-            banIcon.addClassName("fa fa-ban m-r-5");
+            banIcon.addClassName("fa fa-archive m-r-5");
 
             Element label = DOM.createLabel();
             label.setInnerText(company.getCname());
 
-            deprecatedElement.appendChild(banIcon);
-            deprecatedElement.appendChild(label);
-
-            cName.appendChild(deprecatedElement);
+            cName.appendChild(banIcon);
+            cName.appendChild(label);
         } else {
             cName.setInnerText(company.getCname());
         }

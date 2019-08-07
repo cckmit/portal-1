@@ -108,7 +108,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
         itemView.setPhone(infoFacade.allPhonesAsString());
         itemView.setEmail(infoFacade.allEmailsAsString());
         itemView.setWebsite(infoFacade.getWebSite() );
-        itemView.setDeprecated(company.isDeprecated());
+        itemView.setDeprecated(company.isArchived());
 
         CompanyCategory category = company.getCategory();
         if ( category != null ) {

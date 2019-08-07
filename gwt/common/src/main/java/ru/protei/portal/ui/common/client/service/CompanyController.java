@@ -37,6 +37,8 @@ public interface CompanyController extends RemoteService {
      */
     Boolean saveCompany ( Company company ) throws RequestFailedException;
 
+    Boolean changeArchivedState(Long id, boolean isArchived) throws RequestFailedException;
+
     /**
      * Проверка уникальности названия компании
      * @param name название компании
@@ -103,6 +105,4 @@ public interface CompanyController extends RemoteService {
      * Получить список тэгов компании
      */
     List<CaseTag> getCompanyTags( Long companyId )  throws RequestFailedException;
-
-    Boolean changeState(Company tempCompany) throws RequestFailedException;
 }
