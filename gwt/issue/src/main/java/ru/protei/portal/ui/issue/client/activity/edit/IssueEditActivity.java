@@ -48,11 +48,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             }
             @Override
             public void onError(UploadResult result) {
-                if (result.getError().equals(En_FileUploadError.SIZE_EXCEED)) {
+                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(result.getStatus())) {
                     fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + result.getDetails(), NotifyEvents.NotifyType.ERROR));
                 }
-                else
+                else {
                     fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+                }
             }
         });
     }

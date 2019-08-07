@@ -26,7 +26,7 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_FileUploadError;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
@@ -86,7 +86,6 @@ public class FileController {
     public void onInit() {
         upload.setFileItemFactory(new DiskFileItemFactory());
         upload.setHeaderEncoding(StandardCharsets.UTF_8.name());
-        upload.setFileSizeMax(config.data().getMaxFileSize());
     }
 
     @RequestMapping(
@@ -113,84 +112,81 @@ public class FileController {
     ) {
 
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
+        try {
 
-        if(ud != null) {
-            try {
+            if(ud == null) {
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "userSessionDescriptor is null"));
+            }
 
-                logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
+            logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
 
-                for (FileItem item : upload.parseRequest(request)) {
-                    if(item.isFormField())
-                        continue;
+            for (FileItem item : upload.parseRequest(request)) {
+                if(item.isFormField())
+                    continue;
 
-                    logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
+                if (item.getSize() > config.data().getMaxFileSize()){
+                    logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
+                    return fileSizeExceed(item.getSize(), config.data().getMaxFileSize());
+                }
 
-                    Person creator = ud.getPerson();
-                    Attachment attachment = saveAttachment(item, creator.getId());
+                logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
 
-                    if(caseNumber != null) {
-                        En_CaseType caseType = En_CaseType.find(caseTypeId);
-                        CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
-                        if(caseAttachId.isError()) {
-                            logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
-                            break;
-                        }
+                Person creator = ud.getPerson();
+                Attachment attachment = saveAttachment(item, creator.getId());
 
-                        shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
+                if(caseNumber != null) {
+                    En_CaseType caseType = En_CaseType.find(caseTypeId);
+                    CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
+                    if(caseAttachId.isError()) {
+                        logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
+                        break;
                     }
 
-                    return mapper.writeValueAsString(attachment);
+                    shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
                 }
 
-                logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment)));
+            }
 
-            } catch (FileUploadBase.FileSizeLimitExceededException e){
-                logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
-                try {
-                    long megaBytes = config.data().getMaxFileSize() / BYTES_IN_MEGABYTE;
-                    return mapper.writeValueAsString(new UploadResult(En_FileUploadError.SIZE_EXCEED, " (" + megaBytes + "Mb)"));
-                } catch (JsonProcessingException ex) {
-                    logger.error("uploadFileToCase", ex);
-                }
+            logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
+
             }
             catch (FileUploadException | SQLException | IOException e) {
                 logger.error("uploadFileToCase", e);
             }
-        }
-        return En_FileUploadError.INNER.toString();
+
+        return null;
     }
 
     @PostMapping(value = "/uploadBase64File", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
     @ResponseBody
     public String uploadBase64File(HttpServletRequest request, @RequestBody Base64Facade base64Facade) {
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-        if (ud == null) {
-            return En_FileUploadError.INNER.toString();
-        }
-        if (base64Facade.getSize() > config.data().getMaxFileSize()){
-            try {
-                long megaBytes = config.data().getMaxFileSize() / BYTES_IN_MEGABYTE;
-                return mapper.writeValueAsString(new UploadResult(En_FileUploadError.SIZE_EXCEED, " (" + megaBytes + "Mb)"));
-            } catch (JsonProcessingException ex) {
-                logger.error("uploadFileToCase", ex);
-            }
-        }
-        if (StringUtils.isEmpty(base64Facade.getBase64())) {
-            return En_FileUploadError.INNER.toString();
-        }
         try {
+            if (ud == null) {
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "userSessionDescriptor is null"));
+            }
+
+            if (base64Facade.getSize() > config.data().getMaxFileSize()){
+                return fileSizeExceed(base64Facade.getSize(), config.data().getMaxFileSize());
+            }
+
+            if (StringUtils.isEmpty(base64Facade.getBase64())) {
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "base64Facade is null"));
+            }
+
             String[] parts = base64Facade.getBase64().split(",");
             if (parts.length != 2) {
-                return En_FileUploadError.INNER.toString();
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "string array after split != 2"));
             }
             byte[] bytes = Base64.getDecoder().decode(parts[1]);
             Person creator = ud.getPerson();
             Attachment attachment = saveAttachment(bytes, base64Facade, creator.getId());
-            return mapper.writeValueAsString(attachment);
+            return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment)));
         } catch (IOException | SQLException e) {
             logger.error("uploadBase64File", e);
         }
-        return En_FileUploadError.INNER.toString();
+        return null;
     }
 
     @RequestMapping(value = "/files/{folder}/{fileName:.+}", method = RequestMethod.GET)
@@ -394,5 +390,17 @@ public class FileController {
         } catch (UnsupportedCharsetException e) {
             return null;
         }
+    }
+
+    private String fileSizeExceed(Long fileSize, Long maxSize){
+        if (fileSize > maxSize){
+            try {
+                long megaBytes = config.data().getMaxFileSize() / BYTES_IN_MEGABYTE;
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, " (" + megaBytes + "Mb)"));
+            } catch (JsonProcessingException e) {
+                logger.error("uploadFileToCase", e);
+            }
+        }
+        return null;
     }
 }

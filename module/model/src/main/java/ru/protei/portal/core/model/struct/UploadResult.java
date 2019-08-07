@@ -1,26 +1,26 @@
 package ru.protei.portal.core.model.struct;
 
-import ru.protei.portal.core.model.dict.En_FileUploadError;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 
 public class UploadResult {
 
-    private En_FileUploadError error;
+    private En_FileUploadStatus status;
     private String details;
 
     public UploadResult() {
     }
 
-    public UploadResult(En_FileUploadError error, String details) {
-        this.error = error;
+    public UploadResult(En_FileUploadStatus status, String details) {
+        this.status = status;
         this.details = details;
     }
 
-    public En_FileUploadError getError() {
-        return error;
+    public En_FileUploadStatus getStatus() {
+        return status;
     }
 
-    public void setError(En_FileUploadError error) {
-        this.error = error;
+    public void setStatus(En_FileUploadStatus status) {
+        this.status = status;
     }
 
     public String getDetails() {

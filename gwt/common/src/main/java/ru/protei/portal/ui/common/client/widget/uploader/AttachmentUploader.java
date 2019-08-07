@@ -5,10 +5,12 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.googlecode.gwt.crypto.util.Str;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_FileUploadError;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 
 import java.util.Date;
@@ -92,28 +94,32 @@ public class AttachmentUploader extends FileUploader{
             return;
         }
         if(response == null || response.isEmpty()){
-            uploadHandler.onError(new UploadResult(En_FileUploadError.INNER, ""));
-        } else {
+            uploadHandler.onError(new UploadResult(En_FileUploadStatus.INNER_ERROR, ""));
+        }
+        else {
+            UploadResult result = createUploadResult(response);
 
-            JSONObject jsonObj = JSONParser.parseStrict(response).isObject();
-
-            if (jsonObj.containsKey("error"))
-                uploadHandler.onError(createUploadResult(jsonObj));
-            else
-                uploadHandler.onSuccess(createAttachment(jsonObj));
+            if (result.getStatus().equals(En_FileUploadStatus.OK)) {
+                uploadHandler.onSuccess(createAttachment(result.getDetails()));
+            }
+            else {
+                uploadHandler.onError(result);
+            }
         }
     }
 
-    private UploadResult createUploadResult(JSONObject jsonObj){
+    private UploadResult createUploadResult(String json){
+        JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
 
         UploadResult result = new UploadResult();
-        result.setError(En_FileUploadError.getError(jsonObj.get("error").isString().stringValue()));
+        result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
         result.setDetails(jsonObj.get("details").isString().stringValue());
 
         return result;
     }
 
-    private Attachment createAttachment(JSONObject jsonObj){
+    private Attachment createAttachment(String json){
+        JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
 
         Attachment attachment = new Attachment();
         attachment.setId(Long.valueOf(jsonObj.get("id").toString()));
