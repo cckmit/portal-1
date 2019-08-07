@@ -101,6 +101,12 @@ public class TabWidget extends Composite implements HasWidgets, TabWidgetHandler
         onTabSelected(tabNameActiveByDefault);
     }
 
+    public void setTabNameDebugId(String tabName, String debugId) {
+        TabWidgetNavItem navItem = tabNameToNavItem.get(tabName);
+        if (navItem == null) return;
+        navItem.setTabNameDebugId(debugId);
+    }
+
     private void clearTabs() {
         navTabs.clear();
         tabNameToNavItem.clear();

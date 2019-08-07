@@ -15,7 +15,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <tab:TabWidget tabNames="{lang.documentCommonHeader}|{lang.documentSearchProjectHeader}|{lang.documentCreateProjectHeader}|{lang.documentCreateProductHeader}" styleName="py-3">
+        <tab:TabWidget ui:field="tabs" tabNames="{lang.documentCommonHeader}|{lang.documentSearchProjectHeader}|{lang.documentCreateProjectHeader}|{lang.documentCreateProductHeader}" styleName="py-3">
 
             <tab:pane.TabWidgetPane tabName="{lang.documentCommonHeader}">
                 <g:HTMLPanel>

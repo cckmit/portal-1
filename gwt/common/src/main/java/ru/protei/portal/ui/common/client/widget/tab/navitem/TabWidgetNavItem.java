@@ -33,6 +33,10 @@ public class TabWidgetNavItem extends Composite {
         anchor.setText(tabName);
     }
 
+    public void setTabNameDebugId(String debugId) {
+        anchor.ensureDebugId(debugId);
+    }
+
     @UiHandler("anchor")
     public void anchorClick(ClickEvent event) {
         event.preventDefault();
