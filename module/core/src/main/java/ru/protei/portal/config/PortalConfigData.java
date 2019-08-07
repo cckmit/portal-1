@@ -55,7 +55,7 @@ public class PortalConfigData {
 
         loginSuffixConfig = wrapper.getProperty("auth.login.suffix", "");
         taskSchedulerEnabled = wrapper.getProperty("task.scheduler.enabled", Boolean.class,false);
-        maxFileSize = wrapper.getProperty("max.file.size", Long.class);
+        maxFileSize = wrapper.getProperty("max.file.size", Long.class, DEFAULT_FILE_SIZE_MEGABYTES);
     }
 
     public CommonConfig getCommonConfig() {
@@ -568,4 +568,6 @@ public class PortalConfigData {
             return url;
         }
     }
+
+    private final static Long DEFAULT_FILE_SIZE_MEGABYTES = 10L;
 }

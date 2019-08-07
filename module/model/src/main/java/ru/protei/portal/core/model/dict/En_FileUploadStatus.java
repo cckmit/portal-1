@@ -4,7 +4,9 @@ public enum En_FileUploadStatus {
 
     OK,
 
-    INNER_ERROR,
+    SERVER_ERROR,
+
+    PARSE_ERROR,
 
     SIZE_EXCEED_ERROR;
 

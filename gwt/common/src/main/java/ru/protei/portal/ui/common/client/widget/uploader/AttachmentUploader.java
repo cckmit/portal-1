@@ -7,7 +7,6 @@ import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.googlecode.gwt.crypto.util.Str;
 import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_FileUploadStatus;
@@ -22,7 +21,7 @@ public class AttachmentUploader extends FileUploader{
 
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment);
-        void onError(UploadResult result);
+        void onError(En_FileUploadStatus status, String details);
     }
 
     @Override
@@ -93,28 +92,32 @@ public class AttachmentUploader extends FileUploader{
         if (uploadHandler == null) {
             return;
         }
-        if(response == null || response.isEmpty()){
-            uploadHandler.onError(new UploadResult(En_FileUploadStatus.INNER_ERROR, ""));
+
+        UploadResult result = createUploadResult(response);
+
+        if (result.getStatus().equals(En_FileUploadStatus.OK)) {
+            uploadHandler.onSuccess(createAttachment(result.getDetails()));
         }
         else {
-            UploadResult result = createUploadResult(response);
-
-            if (result.getStatus().equals(En_FileUploadStatus.OK)) {
-                uploadHandler.onSuccess(createAttachment(result.getDetails()));
-            }
-            else {
-                uploadHandler.onError(result);
-            }
+            uploadHandler.onError(result.getStatus(), result.getDetails());
         }
+
     }
 
     private UploadResult createUploadResult(String json){
-        JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
+        UploadResult result;
 
-        UploadResult result = new UploadResult();
-        result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
-        result.setDetails(jsonObj.get("details").isString().stringValue());
+        if(json == null || json.isEmpty()){
+            result = new UploadResult(En_FileUploadStatus.PARSE_ERROR, "");
+        }
+        else {
+            JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
 
+            result = new UploadResult();
+            result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
+            result.setDetails(jsonObj.get("details").isString().stringValue());
+
+        }
         return result;
     }
 

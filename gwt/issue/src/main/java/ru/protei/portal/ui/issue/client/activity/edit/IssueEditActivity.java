@@ -47,9 +47,9 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
                 addAttachmentsToCase(Collections.singleton(attachment));
             }
             @Override
-            public void onError(UploadResult result) {
-                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(result.getStatus())) {
-                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + result.getDetails(), NotifyEvents.NotifyType.ERROR));
+            public void onError(En_FileUploadStatus status, String details) {
+                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + details, NotifyEvents.NotifyType.ERROR));
                 }
                 else {
                     fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));

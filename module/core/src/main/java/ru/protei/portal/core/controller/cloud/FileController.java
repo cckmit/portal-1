@@ -115,7 +115,7 @@ public class FileController {
         try {
 
             if(ud == null) {
-                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "userSessionDescriptor is null"));
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null"));
             }
 
             logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
@@ -124,7 +124,7 @@ public class FileController {
                 if(item.isFormField())
                     continue;
 
-                if (item.getSize() > config.data().getMaxFileSize()){
+                if (item.getSize() > config.data().getMaxFileSize() * BYTES_IN_MEGABYTE){
                     logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
                     return fileSizeExceed(item.getSize(), config.data().getMaxFileSize());
                 }
@@ -164,20 +164,20 @@ public class FileController {
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
         try {
             if (ud == null) {
-                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "userSessionDescriptor is null"));
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null"));
             }
 
-            if (base64Facade.getSize() > config.data().getMaxFileSize()){
+            if (base64Facade.getSize() > config.data().getMaxFileSize() * BYTES_IN_MEGABYTE){
                 return fileSizeExceed(base64Facade.getSize(), config.data().getMaxFileSize());
             }
 
             if (StringUtils.isEmpty(base64Facade.getBase64())) {
-                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "base64Facade is null"));
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "base64Facade is null"));
             }
 
             String[] parts = base64Facade.getBase64().split(",");
             if (parts.length != 2) {
-                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.INNER_ERROR, "string array after split != 2"));
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "string array after split != 2"));
             }
             byte[] bytes = Base64.getDecoder().decode(parts[1]);
             Person creator = ud.getPerson();
@@ -393,10 +393,9 @@ public class FileController {
     }
 
     private String fileSizeExceed(Long fileSize, Long maxSize){
-        if (fileSize > maxSize){
+        if (fileSize > maxSize * BYTES_IN_MEGABYTE){
             try {
-                long megaBytes = config.data().getMaxFileSize() / BYTES_IN_MEGABYTE;
-                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, " (" + megaBytes + "Mb)"));
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, " (" + maxSize + "Mb)"));
             } catch (JsonProcessingException e) {
                 logger.error("uploadFileToCase", e);
             }
