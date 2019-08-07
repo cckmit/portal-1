@@ -41,7 +41,7 @@ public interface AbstractCompanyItemView extends IsWidget {
      */
     void setWebsite( String value );
 
-    void setDeprecated(boolean isDeprecated);
+    void setArchived(boolean isDeprecated);
 
     void setEditEnabled(boolean isEnabled );
 }

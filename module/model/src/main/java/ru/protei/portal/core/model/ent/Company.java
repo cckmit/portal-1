@@ -14,7 +14,7 @@ import java.util.Set;
  * @author michael
  */
 @JdbcEntity(table = "company")
-public class Company extends AuditableObject implements EntityOptionSupport {
+public class Company extends AuditableObject implements EntityOptionSupport, Archived {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -232,6 +232,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         isHidden = hideden;
     }
 
+    @Override
     public boolean isArchived() {
         return isArchived;
     }
@@ -247,16 +248,19 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", category=" + category +
                 ", groupId=" + groupId +
                 ", companyGroup=" + companyGroup +
-                ", parentCompanyId=" + parentCompanyId+
-                ", parentCompanyName=" + parentCompanyName+
+                ", parentCompanyId=" + parentCompanyId +
+                ", parentCompanyName='" + parentCompanyName + '\'' +
+                ", childCompanies=" + childCompanies +
                 ", cname='" + cname + '\'' +
                 ", contactInfo=" + contactInfo +
                 ", info='" + info + '\'' +
                 ", created=" + created +
+                ", oldId=" + oldId +
+                ", isHidden=" + isHidden +
                 ", subscriptions=" + subscriptions +
-                ", oldID=" + String.valueOf(oldId) +
+                ", tags=" + tags +
                 ", caseStates=" + caseStates +
-                ", childCompanies=" + childCompanies +
+                ", isArchived=" + isArchived +
                 '}';
     }
 }

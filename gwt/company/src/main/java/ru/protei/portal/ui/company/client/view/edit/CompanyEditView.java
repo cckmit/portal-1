@@ -155,11 +155,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
     }
 
     @Override
-    public HasVisibility stateButtonVisibility() {
-        return stateButton;
-    }
-
-    @Override
     public void setParentCompanyFilter( Selector.SelectorFilter<EntityOption> companyFilter ) {
         parentCompany.setFilter( companyFilter );
     }
@@ -175,18 +170,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
             tagsPanel.addClassName( "hide" );
         } else {
             tagsPanel.removeClassName( "hide" );
-        }
-    }
-
-    @Override
-    public void setStateButtonText(String caption) {
-        stateButton.setText(caption);
-    }
-
-    @UiHandler("stateButton")
-    public void onStateClicked(ClickEvent event) {
-        if (activity != null) {
-            activity.onStateChanged();
         }
     }
 
@@ -223,9 +206,6 @@ public class CompanyEditView extends Composite implements AbstractCompanyEditVie
 
     @UiField
     Button cancelButton;
-
-    @UiField
-    Button stateButton;
 
     @UiField
     ValidableTextBox companyName;

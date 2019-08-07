@@ -1,14 +1,12 @@
 package ru.protei.portal.ui.company.client.view.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.DivElement;
-import com.google.gwt.dom.client.HeadingElement;
-import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -70,9 +68,20 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     }
 
     @Override
-    public void setDeprecated(boolean isDeprecated) {
-        if (isDeprecated) {
+    public void setArchived(boolean isArchived) {
+        if (isArchived) {
+            Element banIcon = DOM.createElement("i");
+            banIcon.addClassName("fa fa-lock m-r-5");
+
+            Element label = DOM.createLabel();
+            label.setInnerText(name.getInnerText());
+
+            name.setInnerHTML("");
+            name.appendChild(banIcon);
+            name.appendChild(label);
+
             addStyleName("inactive");
+
             return;
         }
 
@@ -137,6 +146,8 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     HTMLPanel emailContainer;
     @UiField
     HTMLPanel websiteContainer;
+    @UiField
+    DivElement headerBlock;
 
     AbstractCompanyItemActivity activity;
 

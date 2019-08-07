@@ -87,11 +87,9 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
     @Override
     public void onEditClicked( AbstractCompanyItemView itemView ) {
         Company value = itemViewToModel.get( itemView );
-        if ( value == null ) {
-            return;
+        if (value != null && !value.isArchived()) {
+            fireEvent( new CompanyEvents.Edit ( value.getId() ));
         }
-
-        fireEvent( new CompanyEvents.Edit ( value.getId() ));
     }
 
     @Override
@@ -108,7 +106,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
         itemView.setPhone(infoFacade.allPhonesAsString());
         itemView.setEmail(infoFacade.allEmailsAsString());
         itemView.setWebsite(infoFacade.getWebSite() );
-        itemView.setDeprecated(company.isArchived());
+        itemView.setArchived(company.isArchived());
 
         CompanyCategory category = company.getCategory();
         if ( category != null ) {

@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
 
     <g:HTMLPanel ui:field="root" tag="li">
-        <div class="header-block">
+        <div ui:field="headerBlock" class="header-block">
             <h2 ui:field="name"></h2>
             <p>
                 <g:Anchor ui:field="preview" styleName="fa fa-fw fa-eye" href="#"/>

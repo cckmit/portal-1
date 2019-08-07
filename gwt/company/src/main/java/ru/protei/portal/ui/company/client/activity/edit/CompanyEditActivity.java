@@ -64,11 +64,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.siteFolderContainer().clear();
 
         if (event.getCompanyId() == null) {
-            view.stateButtonVisibility().setVisible(false);
             fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
             initialView(new Company());
         } else {
-            view.stateButtonVisibility().setVisible(true);
             fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
             requestCompany(event.getCompanyId());
         }
@@ -104,9 +102,20 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }
     }
 
-    @Override
-    public void onStateChanged() {
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.companyChangeStateConfirmMessage()));
+    @Event
+    public void onArchiveClicked(CompanyEvents.Archive event) {
+        companyService.changeArchivedState(event.getCompanyId(), event.getArchiveState(), new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                fireEvent(new CompanyEvents.Show());
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new CompanyEvents.ChangeModel());
+            }
+        });
     }
 
     @Override
@@ -240,8 +249,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }
 
         view.hideTags(company.getId() == null);
-
-        view.setStateButtonText(company.isArchived() ? lang.buttonFromArchive() : lang.buttonToArchive());
     }
 
     private EntityOption makeCompanyOption(Company company) {

@@ -1719,6 +1719,4 @@ public interface Lang extends Messages, ContactItemLang {
     String errSaveProjectNeedSelectCompany();
 
     String passwordUpdatedSuccessful();
-
-    String companyChangeStateConfirmMessage();
 }

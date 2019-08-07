@@ -14,6 +14,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
+import ru.protei.portal.ui.common.client.columns.ArchiveClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
@@ -26,9 +27,10 @@ import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView
  */
 public class CompanyTableView extends Composite implements AbstractCompanyTableView{
     @Inject
-    public void onInit(EditClickColumn<Company> editClickColumn) {
+    public void onInit(EditClickColumn<Company> editClickColumn, ArchiveClickColumn<Company> archiveClickColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
+        this.archiveClickColumn = archiveClickColumn;
         initTable();
     }
 
@@ -39,6 +41,9 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         editClickColumn.setHandler( activity );
         editClickColumn.setEditHandler( activity );
         editClickColumn.setColumnProvider( columnProvider );
+
+        archiveClickColumn.setArchiveHandler(activity);
+        archiveClickColumn.setColumnProvider(columnProvider);
 
         name.setHandler( activity );
         name.setColumnProvider( columnProvider );
@@ -109,6 +114,8 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     private void initTable () {
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
+        archiveClickColumn.setPrivilege(En_Privilege.COMPANY_EDIT);
+
         name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
         category = new DynamicColumn<>(
             lang.companyCategory(),
@@ -125,6 +132,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         table.addColumn( category.header, category.values );
         table.addColumn( group.header, group.values );
         table.addColumn( editClickColumn.header, editClickColumn.values );
+        table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
     }
 
     private String getCompanyInfoBlock(Company company){
@@ -134,10 +142,10 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         cName.addClassName("company-name");
 
         if (company.isArchived()) {
-            cName.setPropertyString("style", "{color: #929292;}");
+            cName.setPropertyString("style", "opacity: 0.7;");
 
             Element banIcon = DOM.createElement("i");
-            banIcon.addClassName("fa fa-archive m-r-5");
+            banIcon.addClassName("fa fa-lock m-r-5");
 
             Element label = DOM.createLabel();
             label.setInnerText(company.getCname());
@@ -214,6 +222,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
     ClickColumnProvider< Company > columnProvider = new ClickColumnProvider<>();
     EditClickColumn< Company > editClickColumn;
+    ArchiveClickColumn<Company> archiveClickColumn;
     DynamicColumn<Company> name;
     DynamicColumn<Company> category;
     DynamicColumn<Company> group;

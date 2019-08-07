@@ -17,11 +17,9 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Активность таблицы компаний
@@ -81,7 +79,14 @@ public abstract class CompanyTableActivity implements
 
     @Override
     public void onEditClicked(Company value) {
-        fireEvent( new CompanyEvents.Edit ( value.getId() ));
+        if (!value.isArchived()) {
+            fireEvent( new CompanyEvents.Edit ( value.getId() ));
+        }
+    }
+
+    @Override
+    public void onArchiveClicked(Company value) {
+        fireEvent(new CompanyEvents.Archive(value.getId(), !value.isArchived()));
     }
 
     private void showPreview (Company value ) {
