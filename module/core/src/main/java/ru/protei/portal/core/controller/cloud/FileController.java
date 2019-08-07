@@ -382,17 +382,6 @@ public class FileController {
         }
     }
 
-    private String fileSizeExceed(Long fileSize, Long maxSize){
-        if (fileSize > maxSize * BYTES_IN_MEGABYTE){
-            try {
-                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, " (" + maxSize + "Mb)"));
-            } catch (JsonProcessingException e) {
-                logger.error("uploadFileToCase", e);
-            }
-        }
-        return null;
-    }
-
     private String uploadResultSerialize (UploadResult result){
         try {
             if (result == null)
