@@ -10,160 +10,181 @@
              xmlns:equipment="urn:import:ru.protei.portal.ui.common.client.widget.selector.equipment"
              xmlns:execution="urn:import:ru.protei.portal.ui.document.client.widget.executiontype"
              xmlns:project="urn:import:ru.protei.portal.ui.common.client.widget.selector.project"
-             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher">
+             xmlns:switcher="urn:import:ru.protei.portal.ui.common.client.widget.switcher"
+             xmlns:tab="urn:import:ru.protei.portal.ui.common.client.widget.tab">
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang"/>
 
     <g:HTMLPanel>
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.documentCommonHeader}"/>
-                        <small ui:field="created" class="pull-right document-creator-info"/>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <g:HTMLPanel styleName="form-group col-md-6" ui:field="nameContainer">
-                            <label>
-                                <ui:text from="{lang.documentName}"/>
-                            </label>
-                            <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
-                        </g:HTMLPanel>
+        <tab:TabWidget ui:field="tabs" tabNames="{lang.documentCommonHeader}|{lang.documentSearchProjectHeader}|{lang.documentCreateProjectHeader}|{lang.documentCreateProductHeader}" styleName="py-3">
 
-                        <g:HTMLPanel styleName="form-group col-md-3" ui:field="selectFileContainer">
-                            <label>
-                                <ui:text from="{lang.uploadDocuments}"/>
-                            </label>
-                            <div class="input-group">
-                                <g:TextBox ui:field="fileName" styleName="form-control" enabled="false"/>
-                                <div class="input-group-btn">
-                                    <g:Button ui:field="selectFileButton" styleName="btn btn-default">
-                                        <i class="fa fa-cloud-upload-alt"/>
-                                    </g:Button>
+            <tab:pane.TabWidgetPane tabName="{lang.documentCommonHeader}">
+                <g:HTMLPanel>
+                    <div class="container-fluid padding-15">
+                        <div class="card card-transparent no-margin">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <small ui:field="created" class="pull-right document-creator-info"/>
                                 </div>
-                                <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
                             </div>
-                        </g:HTMLPanel>
+                            <div class="card-body">
+                                <div class="row">
+                                    <g:HTMLPanel styleName="form-group col-md-6" ui:field="nameContainer">
+                                        <label>
+                                            <ui:text from="{lang.documentName}"/>
+                                        </label>
+                                        <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
+                                    </g:HTMLPanel>
 
-                        <div class="form-group col-md-3">
-                            <label>
-                                <ui:text from="{lang.documentVersion}"/>
-                            </label>
-                            <g:TextBox ui:field="version" styleName="form-control"/>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label>
-                                <ui:text from="{lang.documentExecutionType}"/>
-                            </label>
-                            <execution:DocumentExecutionTypeSelector ui:field="executionType"   />
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label>
-                                <ui:text from="{lang.documentCategory}"/>
-                            </label>
-                            <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
-                        </div>
+                                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="selectFileContainer">
+                                        <label>
+                                            <ui:text from="{lang.uploadDocuments}"/>
+                                        </label>
+                                        <div class="input-group">
+                                            <g:TextBox ui:field="fileName" styleName="form-control" enabled="false"/>
+                                            <div class="input-group-btn">
+                                                <g:Button ui:field="selectFileButton" styleName="btn btn-default">
+                                                    <i class="fa fa-cloud-upload-alt"/>
+                                                </g:Button>
+                                            </div>
+                                            <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
+                                        </div>
+                                    </g:HTMLPanel>
 
-                        <div class="form-group col-md-3">
-                            <label>
-                                <ui:text from="{lang.documentType}"/>
-                            </label>
-                            <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectValue}"/>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label>
-                                <ui:text from="{lang.equipmentProject}"/>
-                            </label>
-                            <project:ProjectButtonSelector ui:field="project"/>
-                        </div>
+                                    <div class="form-group col-md-3">
+                                        <label>
+                                            <ui:text from="{lang.documentVersion}"/>
+                                        </label>
+                                        <g:TextBox ui:field="version" styleName="form-control"/>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>
+                                            <ui:text from="{lang.documentExecutionType}"/>
+                                        </label>
+                                        <execution:DocumentExecutionTypeSelector ui:field="executionType"   />
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>
+                                            <ui:text from="{lang.documentCategory}"/>
+                                        </label>
+                                        <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
+                                    </div>
 
-                        <g:HTMLPanel styleName="form-group col-md-3" ui:field="equipmentSelectorContainer">
-                            <label>
-                                <ui:text from="{lang.documentEquipment}"/>
-                            </label>
-                            <equipment:EquipmentButtonSelector ui:field="equipment"
-                                                         printDecimalNumbers="false"
-                                                         hasNullValue="false"/>
-                        </g:HTMLPanel>
-                        <div class="form-group col-md-3">
-                            <label>
-                                <ui:text from="{lang.documentRegistrar}"/>
-                            </label>
-                            <person:EmployeeButtonSelector ui:field="registrar"/>
-                        </div>
+                                    <div class="form-group col-md-3">
+                                        <label>
+                                            <ui:text from="{lang.documentType}"/>
+                                        </label>
+                                        <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectValue}"/>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>
+                                            <ui:text from="{lang.equipmentProject}"/>
+                                        </label>
+                                        <project:ProjectButtonSelector ui:field="project"/>
+                                    </div>
 
-                        <div class="form-group col-md-3">
-                            <label>
-                                <ui:text from="{lang.documentContractor}"/>
-                            </label>
-                            <person:EmployeeButtonSelector ui:field="contractor"/>
+                                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="equipmentSelectorContainer">
+                                        <label>
+                                            <ui:text from="{lang.documentEquipment}"/>
+                                        </label>
+                                        <equipment:EquipmentButtonSelector ui:field="equipment"
+                                                                           printDecimalNumbers="false"
+                                                                           hasNullValue="false"/>
+                                    </g:HTMLPanel>
+                                    <div class="form-group col-md-3">
+                                        <label>
+                                            <ui:text from="{lang.documentRegistrar}"/>
+                                        </label>
+                                        <person:EmployeeButtonSelector ui:field="registrar"/>
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        <label>
+                                            <ui:text from="{lang.documentContractor}"/>
+                                        </label>
+                                        <person:EmployeeButtonSelector ui:field="contractor"/>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+
+                                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="inventoryNumberContainer">
+                                        <label>
+                                            <ui:text from="{lang.inventoryNumber}"/>
+                                        </label>
+                                        <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
+                                    </g:HTMLPanel>
+
+                                    <g:HTMLPanel styleName="form-group col-md-9" ui:field="decimalNumberContainer">
+                                        <label>
+                                            <ui:text from="{lang.documentDecimalNumber}"/>
+                                        </label>
+                                        <decnum:DecimalNumberInput ui:field="decimalNumber"/>
+                                    </g:HTMLPanel>
+
+                                    <g:HTMLPanel styleName="form-group col-md-12" ui:field="approvedContainer">
+                                        <label>
+                                            <ui:text from="{lang.documentApproved}"/>
+                                        </label>
+                                        <switcher:Switcher ui:field="approved"/>
+                                    </g:HTMLPanel>
+
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row">
-
-                        <g:HTMLPanel styleName="form-group col-md-3" ui:field="inventoryNumberContainer">
-                            <label>
-                                <ui:text from="{lang.inventoryNumber}"/>
-                            </label>
-                            <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
-                        </g:HTMLPanel>
-
-                        <g:HTMLPanel styleName="form-group col-md-9" ui:field="decimalNumberContainer">
-                            <label>
-                                <ui:text from="{lang.documentDecimalNumber}"/>
-                            </label>
-                            <decnum:DecimalNumberInput ui:field="decimalNumber"/>
-                        </g:HTMLPanel>
-
-                        <g:HTMLPanel styleName="form-group col-md-12" ui:field="approvedContainer">
-                            <label>
-                                <ui:text from="{lang.documentApproved}"/>
-                            </label>
-                            <switcher:Switcher ui:field="approved"/>
-                        </g:HTMLPanel>
-
+                    <div class="container-fluid padding-15 bg-white">
+                        <div class="card card-transparent no-margin">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <ui:text from="{lang.annotation}"/>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <g:TextArea ui:field="annotation" styleName="form-control comment"/>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="container-fluid padding-15 bg-white">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.annotation}"/>
+                    <div class="container-fluid padding-15">
+                        <div class="card card-transparent no-margin">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <ui:text from="{lang.documentKeywords}"/>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <keyword:StringSelectInput ui:field="keywords"/>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <g:TextArea ui:field="annotation" styleName="form-control comment"/>
-                </div>
-            </div>
-        </div>
 
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-header">
-                    <div class="card-title">
-                        <ui:text from="{lang.documentKeywords}"/>
+                    <div class="container-fluid padding-15">
+                        <div class="card card-transparent no-margin">
+                            <div class="card-body">
+                                <div class="text-right">
+                                    <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                                    <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <keyword:StringSelectInput ui:field="keywords"/>
-                </div>
-            </div>
-        </div>
+                </g:HTMLPanel>
+            </tab:pane.TabWidgetPane>
 
-        <div class="container-fluid padding-15">
-            <div class="card card-transparent no-margin">
-                <div class="card-body">
-                    <div class="text-right">
-                        <g:Button ui:field="saveButton" styleName="btn btn-complete" text="{lang.buttonSave}"/>
-                        <g:Button ui:field="cancelButton" styleName="btn btn-default close_btn" text="{lang.buttonCancel}"/>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <tab:pane.TabWidgetPane tabName="{lang.documentSearchProjectHeader}">
+                <g:HTMLPanel ui:field="searchProjectContainer"/>
+            </tab:pane.TabWidgetPane>
+
+            <tab:pane.TabWidgetPane tabName="{lang.documentCreateProjectHeader}">
+                <g:HTMLPanel ui:field="createProjectContainer"/>
+            </tab:pane.TabWidgetPane>
+
+            <tab:pane.TabWidgetPane tabName="{lang.documentCreateProductHeader}">
+                <g:HTMLPanel ui:field="createProductContainer"/>
+            </tab:pane.TabWidgetPane>
+        </tab:TabWidget>
+
+
     </g:HTMLPanel>
 </ui:UiBinder>

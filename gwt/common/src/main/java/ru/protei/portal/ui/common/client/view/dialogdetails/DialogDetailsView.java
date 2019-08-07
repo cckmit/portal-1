@@ -62,6 +62,10 @@ public class DialogDetailsView extends PopupPanel implements AbstractDialogDetai
         this.header.setInnerText(value);
     }
 
+    @Override
+    public void addStyleName(String value) {
+        this.modalDialog.addClassName(value);
+    }
 
     @UiHandler( "save" )
     public void onSaveClicked( ClickEvent event ) {

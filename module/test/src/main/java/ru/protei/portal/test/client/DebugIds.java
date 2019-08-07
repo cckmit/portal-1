@@ -227,4 +227,11 @@ public class DebugIds {
             String CREATE_DATE = "issue-preview-comment-item-create-date";
         }
     }
+
+    public interface DOCUMENT_EDIT {
+        String COMMON_TAB = "document-edit-common-tab";
+        String SEARCH_PROJECT_TAB = "document-edit-search-project-tab";
+        String CREATE_PROJECT_TAB = "document-edit-create-project-tab";
+        String CREATE_PRODUCT_TAB = "document-edit-create-product-tab";
+    }
 }

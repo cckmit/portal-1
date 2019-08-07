@@ -1,0 +1,54 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:validablefield='urn:import:ru.protei.portal.ui.common.client.widget.validatefield'
+             xmlns:region="urn:import:ru.protei.portal.ui.common.client.widget.selector.region"
+             xmlns:productdirection="urn:import:ru.protei.portal.ui.common.client.widget.selector.productdirection"
+             xmlns:company='urn:import:ru.protei.portal.ui.common.client.widget.selector.company'
+             xmlns:cutomertype='urn:import:ru.protei.portal.ui.common.client.widget.selector.customertype'
+             xmlns:productselector='urn:import:ru.protei.portal.ui.common.client.widget.selector.product'>
+
+    <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
+
+    <g:HTMLPanel>
+        <div class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.projectName}"/></label>
+                            <validablefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.projectDescription}"/></label>
+                            <g:TextArea ui:field="description" styleName="form-control"/>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label><ui:text from="{lang.projectRegion}"/></label>
+                            <region:RegionButtonSelector ui:field="region" defaultValue="{lang.selectOfficialRegion}" validation="true"/>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label><ui:text from="{lang.projectDirection}"/></label>
+                            <productdirection:ProductDirectionButtonSelector ui:field="direction" defaultValue="{lang.contractSelectDirection}" validation="true"/>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label><ui:text from="{lang.projectCustomerType}"/></label>
+                            <cutomertype:CustomerTypeSelector ui:field="customerType" defaultValue="{lang.selectCustomerType}" validation="true"/>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label><ui:text from="{lang.projectCustomerCompany}"/></label>
+                            <company:CompanySelector ui:field="company" defaultValue="{lang.selectAccountCompany}" validation="true"/>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.projectProducts}"/></label>
+                            <productselector:devunit.DevUnitMultiSelector ui:field="products" hasNullValue="false"/>
+                        </div>
+                    </div>
+                    <div class="text-right p-t-10">
+                        <g:Button ui:field="saveBtn" styleName="btn btn-complete" text="{lang.buttonSave}"/>
+                        <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:HTMLPanel>
+</ui:UiBinder>

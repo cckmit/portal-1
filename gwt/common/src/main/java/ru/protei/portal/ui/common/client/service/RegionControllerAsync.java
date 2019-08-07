@@ -15,21 +15,21 @@ import java.util.Map;
  * Асинхронный сервис управления продуктами
  */
 public interface RegionControllerAsync {
-    void getRegionList( ProjectQuery query, AsyncCallback< List< RegionInfo > > async );
+    void getRegionList(ProjectQuery query, AsyncCallback< List< RegionInfo > > async);
 
-    void getDistrictList( AsyncCallback<List<DistrictInfo>> callback );
+    void getDistrictList(AsyncCallback<List<DistrictInfo>> callback);
 
-    void getProjectsByRegions( ProjectQuery query, AsyncCallback<Map<String,List<ProjectInfo>>> callback );
+    void getProjectsByRegions(ProjectQuery query, AsyncCallback<Map<String,List<ProjectInfo>>> callback);
 
-    void getProjectsList( AsyncCallback<List<ProjectInfo>> callback );
+    void getProjectsList(ProjectQuery query, AsyncCallback<List<ProjectInfo>> callback);
 
-    void getProject( Long id, AsyncCallback<ProjectInfo> callback );
+    void getProject(Long id, AsyncCallback<ProjectInfo> callback);
 
-    void saveProject( ProjectInfo project, AsyncCallback<Void> callback );
+    void saveProject(ProjectInfo project, AsyncCallback<ProjectInfo> callback);
 
-    void getRegionList( AsyncCallback<List<EntityOption>> callback );
+    void createNewProject(AsyncCallback<Long> callback);
 
-    void createNewProject( AsyncCallback<Long> callback );
+    void getRegionList(AsyncCallback<List<EntityOption>> callback);
 
     void removeProject(Long projectId, AsyncCallback<Boolean> async);
 }

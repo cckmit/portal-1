@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
 import ru.protei.portal.ui.common.client.widget.document.doctype.DocumentTypeSelector;
@@ -32,6 +33,7 @@ import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSe
 import ru.protei.portal.ui.common.client.widget.selector.project.ProjectButtonSelector;
 import ru.protei.portal.ui.common.client.widget.stringselect.input.StringSelectInput;
 import ru.protei.portal.ui.common.client.widget.switcher.Switcher;
+import ru.protei.portal.ui.common.client.widget.tab.TabWidget;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.document.client.activity.edit.AbstractDocumentEditActivity;
@@ -47,6 +49,7 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @Inject
     public void onInit() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        ensureDebugIds();
         fileName.getElement().setAttribute("placeholder", lang.documentUploadPlaceholder());
         equipment.setModel(equipmentModelProvider.get());
         equipment.setVisibleTypes(new HashSet<>(Arrays.asList(En_EquipmentType.values())));
@@ -222,6 +225,21 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         documentType.refreshValue();
     }
 
+    @Override
+    public HasWidgets searchProjectContainer() {
+        return searchProjectContainer;
+    }
+
+    @Override
+    public HasWidgets createProjectContainer() {
+        return createProjectContainer;
+    }
+
+    @Override
+    public HasWidgets createProductContainer() {
+        return createProductContainer;
+    }
+
     @UiHandler("saveButton")
     public void onSaveClicked(ClickEvent event) {
         if (activity != null) {
@@ -270,6 +288,12 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         fileName.setValue(documentUploader.getFilename());
     }
 
+    private void ensureDebugIds() {
+        tabs.setTabNameDebugId(lang.documentCommonHeader(), DebugIds.DOCUMENT_EDIT.COMMON_TAB);
+        tabs.setTabNameDebugId(lang.documentSearchProjectHeader(), DebugIds.DOCUMENT_EDIT.SEARCH_PROJECT_TAB);
+        tabs.setTabNameDebugId(lang.documentCreateProjectHeader(), DebugIds.DOCUMENT_EDIT.CREATE_PROJECT_TAB);
+        tabs.setTabNameDebugId(lang.documentCreateProductHeader(), DebugIds.DOCUMENT_EDIT.CREATE_PRODUCT_TAB);
+    }
 
     @UiField
     ValidableTextBox name;
@@ -355,9 +379,20 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
     @UiField
     HTMLPanel approvedContainer;
 
+    @UiField
+    HTMLPanel searchProjectContainer;
+    @UiField
+    HTMLPanel createProjectContainer;
+    @UiField
+    HTMLPanel createProductContainer;
+
+    @UiField
+    TabWidget tabs;
+
     @Inject
     @UiField
     Lang lang;
+
     @Inject
     Provider<EquipmentModel> equipmentModelProvider;
 

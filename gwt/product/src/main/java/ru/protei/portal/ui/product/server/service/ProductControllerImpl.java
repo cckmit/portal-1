@@ -57,16 +57,16 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public Boolean saveProduct( DevUnit product ) throws RequestFailedException {
+    public DevUnit saveProduct( DevUnit product ) throws RequestFailedException {
 
         log.debug( "saveProduct(): product={}", product );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        if ( product == null || !isNameUnique( product.getName(), product.getId() ) )
+        if ( product == null )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
-        CoreResponse response = product.getId() == null
+        CoreResponse<DevUnit> response = product.getId() == null
                 ? productService.createProduct( descriptor.makeAuthToken(), product )
                 : productService.updateProduct( descriptor.makeAuthToken(), product );
 
@@ -75,7 +75,7 @@ public class ProductControllerImpl implements ProductController {
 
         log.debug( "saveProduct(): response.getData()={}", response.getData() );
 
-        return response.getData() != null;
+        return response.getData();
     }
 
 

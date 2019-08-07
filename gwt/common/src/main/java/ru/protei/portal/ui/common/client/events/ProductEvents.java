@@ -3,7 +3,6 @@ package ru.protei.portal.ui.common.client.events;
 import com.google.gwt.user.client.ui.HasWidgets;
 import ru.brainworm.factory.context.client.annotation.Url;
 import ru.protei.portal.core.model.ent.DevUnit;
-import ru.protei.portal.core.model.query.ProductQuery;
 
 /**
  * События по продуктам
@@ -49,4 +48,23 @@ public class ProductEvents {
     }
 
     public static class ProductListChanged {}
+
+    public static class QuickCreate {
+        public QuickCreate(HasWidgets parent) {
+            this.parent = parent;
+        }
+        public HasWidgets parent;
+    }
+
+    /**
+     * Установить проект
+     */
+    public static class Set {
+
+        public Set(DevUnit product) {
+            this.product = product;
+        }
+
+        public DevUnit product;
+    }
 }

@@ -2534,7 +2534,6 @@ div.select2-container {
     button {
       background-color: white;
       text-align: left;
-      height: 30px;
     }
 
     span.caret {
@@ -3427,4 +3426,8 @@ label {
 .company-tags {
   display: inline-block;
   margin-bottom: -10px;
+}
+
+.v-a-b {
+  vertical-align: bottom;
 }

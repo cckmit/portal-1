@@ -99,14 +99,14 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         }
 
         readView();
-        regionService.saveProject( project, new RequestCallback<Void>(){
+        regionService.saveProject( project, new RequestCallback<ProjectInfo>(){
             @Override
             public void onError( Throwable throwable ) {
                 fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
             }
 
             @Override
-            public void onSuccess( Void aVoid ) {
+            public void onSuccess( ProjectInfo aVoid ) {
                 fireEvent( new ProjectEvents.Changed( project ) );
                 fireEvent( new ProjectEvents.ChangeModel() );
             }
@@ -132,7 +132,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         } );
     }
 
-    private void fillView(ProjectInfo value ) {
+    private void fillView(ProjectInfo value) {
         this.project = value;
         view.setName( value.getName() );
         view.setInitiatorShortName( value.getCreator() == null ? "" : value.getCreator().getDisplayShortName() );

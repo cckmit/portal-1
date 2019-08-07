@@ -793,6 +793,12 @@ public interface Lang extends Messages, ContactItemLang {
 
     String documentCommonHeader();
 
+    String documentSearchProjectHeader();
+
+    String documentCreateProjectHeader();
+
+    String documentCreateProductHeader();
+
     String documentName();
 
     String documentType();
@@ -1731,4 +1737,22 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeRegistrationCuratorsHint();
 
     String logoutHotKey();
+
+    String documentSearchProject();
+
+    String buttonSearch();
+
+    String buttonClose();
+
+    String projectName();
+
+    String buttonCreateProject();
+    String buttonCreateProduct();
+
+    String inputProjectName();
+    String selectCustomerType();
+
+    String errFilterParameterRequired();
+
+    String firstHundredRecords();
 }

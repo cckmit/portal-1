@@ -14,10 +14,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.DocumentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
@@ -61,6 +58,9 @@ public abstract class DocumentEditActivity
     public void onShow(DocumentEvents.Edit event) {
         initDetails.parent.clear();
         initDetails.parent.add(view.asWidget());
+        fireEvent(new ProjectEvents.Search(view.searchProjectContainer()));
+        fireEvent(new ProjectEvents.QuickCreate(view.createProjectContainer()));
+        fireEvent(new ProductEvents.QuickCreate(view.createProductContainer()));
 
         if (event.id == null) {
             fillView(new Document());
@@ -77,6 +77,12 @@ public abstract class DocumentEditActivity
                 }
             });
         }
+    }
+
+    @Event
+    public void onSetProject(ProjectEvents.Set event) {
+        view.project().setValue(event.project);
+        onProjectChanged();
     }
 
     @Override

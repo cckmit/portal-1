@@ -118,6 +118,11 @@ button.close {
   overflow-y: auto;
 }
 
+.modal-body .footer {
+  text-align: right;
+  margin-bottom: 30px;
+}
+
 .modal-footer {
   padding: 15px;
   text-align: right;

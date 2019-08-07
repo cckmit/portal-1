@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -105,24 +106,7 @@ public class ProjectServiceImpl implements ProjectService {
     public CoreResponse< Map< String, List< ProjectInfo > > > listProjectsByRegions( AuthToken token, ProjectQuery query ) {
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType( En_CaseType.PROJECT );
-        caseQuery.setStateIds( query.getStates().stream()
-                .map( ( state ) -> new Long( state.getId() ).intValue() )
-                .collect( toList() )
-        );
-        List<Long> productIds = null;
-        if (query.getDirectionId() != null){
-            productIds = new ArrayList<>();
-            productIds.add( query.getDirectionId() );
-        }
-        caseQuery.setProductIds( productIds );
-        if (query.isOnlyMineProjects()) {
-            UserSessionDescriptor descriptor = authService.findSession(token);
-            if (descriptor != null && descriptor.getPerson() != null) {
-                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
-            }
-        }
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery( token, query );
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {
@@ -145,7 +129,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     @Transactional
-    public CoreResponse saveProject( AuthToken token, ProjectInfo project ) {
+    public CoreResponse<ProjectInfo> saveProject( AuthToken token, ProjectInfo project ) {
 
         CaseObject caseObject = caseObjectDAO.get( project.getId() );
         helper.fillAll( caseObject );
@@ -174,7 +158,44 @@ public class ProjectServiceImpl implements ProjectService {
 
         caseObjectDAO.merge( caseObject );
 
-        return new CoreResponse().success( null );
+        return new CoreResponse<ProjectInfo>().success( ProjectInfo.fromCaseObject( caseObject ) );
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<ProjectInfo> createProject(AuthToken token, ProjectInfo project) {
+
+        if (project == null)
+            return new CoreResponse<ProjectInfo>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = createCaseObjectFromProjectInfo(project);
+
+        Long id = caseObjectDAO.persist(caseObject);
+        if (id == null)
+            return new CoreResponse<ProjectInfo>().error(En_ResultStatus.NOT_CREATED);
+
+        updateProducts(caseObject, project.getProducts());
+
+        return new CoreResponse().success(ProjectInfo.fromCaseObject(caseObject));
+    }
+
+    private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setCreated(new Date());
+        caseObject.setStateId(En_RegionState.UNKNOWN.getId());
+        caseObject.setCreatorId(project.getCreatorId());
+        caseObject.setName(project.getName());
+        caseObject.setInfo(project.getDescription());
+        caseObject.setProducts(new HashSet<>());
+        if (project.getCustomer() != null) {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+        if (project.getCustomerType() != null) {
+            caseObject.setLocal(project.getCustomerType().getId());
+        }
+        return caseObject;
     }
 
     @Override
@@ -210,17 +231,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken) {
-
-        CaseQuery caseQuery = new CaseQuery();
-        caseQuery.setType(En_CaseType.PROJECT);
-        caseQuery.setSortDir(En_SortDir.ASC);
-        caseQuery.setSortField(En_SortField.case_name);
+    public CoreResponse<List<ProjectInfo>> listProjects(AuthToken authToken, ProjectQuery query) {
+        CaseQuery caseQuery = applyProjectQueryToCaseQuery(authToken, query);
 
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+
+        helper.fill(projects, "members");
+        helper.fill(projects, "products");
+
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
-        return new CoreResponse<List<ProjectInfo>>().success( result );
+        return new CoreResponse<List<ProjectInfo>>().success(result);
     }
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {
@@ -374,5 +395,48 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
+    }
+
+    private CaseQuery applyProjectQueryToCaseQuery(AuthToken authToken, ProjectQuery projectQuery) {
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+
+        if (CollectionUtils.isNotEmpty(projectQuery.getStates())) {
+            caseQuery.setStateIds(projectQuery.getStates().stream()
+                    .map((state) -> new Long(state.getId()).intValue())
+                    .collect(toList())
+            );
+        }
+
+        List<Long> productIds = null;
+        if (projectQuery.getDirectionId() != null) {
+            productIds = new ArrayList<>();
+            productIds.add(projectQuery.getDirectionId());
+        }
+        if (CollectionUtils.isNotEmpty(projectQuery.getProductIds())) {
+            productIds = new ArrayList<>();
+            productIds.addAll(projectQuery.getProductIds());
+        }
+        caseQuery.setProductIds(productIds);
+
+        if (projectQuery.isOnlyMineProjects() != null && projectQuery.isOnlyMineProjects()) {
+            UserSessionDescriptor descriptor = authService.findSession(authToken);
+            if (descriptor != null && descriptor.getPerson() != null) {
+                caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
+            }
+        }
+
+        if (projectQuery.getCustomerType() != null) {
+            caseQuery.setLocal(projectQuery.getCustomerType().getId());
+        }
+
+        caseQuery.setCreatedFrom(projectQuery.getCreatedFrom());
+        caseQuery.setCreatedTo(projectQuery.getCreatedTo());
+
+        caseQuery.setSearchString(projectQuery.getSearchString());
+        caseQuery.setSortDir(projectQuery.getSortDir());
+        caseQuery.setSortField(projectQuery.getSortField());
+
+        return caseQuery;
     }
 }

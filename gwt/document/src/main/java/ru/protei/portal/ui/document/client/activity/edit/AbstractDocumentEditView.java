@@ -75,6 +75,13 @@ public interface AbstractDocumentEditView extends IsWidget {
     AbstractDocumentUploader documentUploader();
 
 
+    HasWidgets searchProjectContainer();
+
+    HasWidgets createProjectContainer();
+
+    HasWidgets createProductContainer();
+
+
     void resetFilename();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);

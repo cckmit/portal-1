@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.widget.selector.project;
 
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
+import ru.protei.portal.core.model.query.ProjectQuery;
 import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.ui.common.client.events.AuthEvents;
 import ru.protei.portal.ui.common.client.events.NotifyEvents;
@@ -27,7 +28,7 @@ public abstract class ProjectModel extends LifecycleSelectorModel<ProjectInfo> {
 
     @Override
     protected void refreshOptions() {
-        regionService.getProjectsList(new FluentCallback<List<ProjectInfo>>()
+        regionService.getProjectsList(new ProjectQuery(), new FluentCallback<List<ProjectInfo>>()
                 .withError(throwable -> {
                     fireEvent(new NotifyEvents.Show(lang.errGetList(), NotifyEvents.NotifyType.ERROR));
                 })
