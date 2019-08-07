@@ -76,7 +76,7 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setStateButtonText(String caption);
 
-    HasVisibility state( );
+    HasVisibility setStateButtonVisible( );
 
     void resetFilename();
 
