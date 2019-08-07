@@ -563,6 +563,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String uploadFileError();
 
+    String uploadFileSizeExceed();
+
     String uploadFileSuccess();
 
     String removeFileError();
