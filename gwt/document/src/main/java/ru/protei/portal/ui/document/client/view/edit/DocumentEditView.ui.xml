@@ -21,21 +21,85 @@
                 <g:HTMLPanel>
                     <div class="container-fluid padding-15">
                         <div class="card card-transparent no-margin">
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <small ui:field="created" class="pull-right document-creator-info"/>
-                                </div>
-                            </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <g:HTMLPanel styleName="form-group col-md-6" ui:field="nameContainer">
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="nameContainer">
                                         <label>
                                             <ui:text from="{lang.documentName}"/>
                                         </label>
                                         <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                                     </g:HTMLPanel>
+                                    <div class="form-group col-md-4">
+                                        <label>
+                                            <ui:text from="{lang.equipmentProject}"/>
+                                        </label>
+                                        <project:ProjectButtonSelector ui:field="project"/>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>
+                                            <small ui:field="created" class=""/>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label>
+                                            <ui:text from="{lang.documentCategory}"/>
+                                        </label>
+                                        <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>
+                                            <ui:text from="{lang.documentType}"/>
+                                        </label>
+                                        <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectValue}"/>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label>
+                                            <ui:text from="{lang.documentExecutionType}"/>
+                                        </label>
+                                        <execution:DocumentExecutionTypeSelector ui:field="executionType"   />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="equipmentSelectorContainer">
+                                        <label>
+                                            <ui:text from="{lang.documentEquipment}"/>
+                                        </label>
+                                        <equipment:EquipmentButtonSelector ui:field="equipment"
+                                                                           printDecimalNumbers="false"
+                                                                           hasNullValue="false"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="decimalNumberContainer">
+                                        <label>
+                                            <ui:text from="{lang.documentDecimalNumber}"/>
+                                        </label>
+                                        <decnum:DecimalNumberInput ui:field="decimalNumber"/>
+                                    </g:HTMLPanel>
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="inventoryNumberContainer">
+                                        <label>
+                                            <ui:text from="{lang.inventoryNumber}"/>
+                                        </label>
+                                        <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
+                                    </g:HTMLPanel>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-md-4">
+                                        <label>
+                                            <ui:text from="{lang.documentRegistrar}"/>
+                                        </label>
+                                        <person:EmployeeButtonSelector ui:field="registrar"/>
+                                    </div>
 
-                                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="selectFileContainer">
+                                    <div class="form-group col-md-4">
+                                        <label>
+                                            <ui:text from="{lang.documentContractor}"/>
+                                        </label>
+                                        <person:EmployeeButtonSelector ui:field="contractor"/>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="selectFileContainer">
                                         <label>
                                             <ui:text from="{lang.uploadDocuments}"/>
                                         </label>
@@ -49,85 +113,18 @@
                                             <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
                                         </div>
                                     </g:HTMLPanel>
-
-                                    <div class="form-group col-md-3">
+                                    <div class="form-group col-md-4">
                                         <label>
                                             <ui:text from="{lang.documentVersion}"/>
                                         </label>
                                         <g:TextBox ui:field="version" styleName="form-control"/>
                                     </div>
-                                    <div class="form-group col-md-3">
-                                        <label>
-                                            <ui:text from="{lang.documentExecutionType}"/>
-                                        </label>
-                                        <execution:DocumentExecutionTypeSelector ui:field="executionType"   />
-                                    </div>
-                                    <div class="form-group col-md-3">
-                                        <label>
-                                            <ui:text from="{lang.documentCategory}"/>
-                                        </label>
-                                        <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
-                                    </div>
-
-                                    <div class="form-group col-md-3">
-                                        <label>
-                                            <ui:text from="{lang.documentType}"/>
-                                        </label>
-                                        <doctype:DocumentTypeSelector ui:field="documentType" defaultValue="{lang.selectValue}"/>
-                                    </div>
-                                    <div class="form-group col-md-3">
-                                        <label>
-                                            <ui:text from="{lang.equipmentProject}"/>
-                                        </label>
-                                        <project:ProjectButtonSelector ui:field="project"/>
-                                    </div>
-
-                                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="equipmentSelectorContainer">
-                                        <label>
-                                            <ui:text from="{lang.documentEquipment}"/>
-                                        </label>
-                                        <equipment:EquipmentButtonSelector ui:field="equipment"
-                                                                           printDecimalNumbers="false"
-                                                                           hasNullValue="false"/>
-                                    </g:HTMLPanel>
-                                    <div class="form-group col-md-3">
-                                        <label>
-                                            <ui:text from="{lang.documentRegistrar}"/>
-                                        </label>
-                                        <person:EmployeeButtonSelector ui:field="registrar"/>
-                                    </div>
-
-                                    <div class="form-group col-md-3">
-                                        <label>
-                                            <ui:text from="{lang.documentContractor}"/>
-                                        </label>
-                                        <person:EmployeeButtonSelector ui:field="contractor"/>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-
-                                    <g:HTMLPanel styleName="form-group col-md-3" ui:field="inventoryNumberContainer">
-                                        <label>
-                                            <ui:text from="{lang.inventoryNumber}"/>
-                                        </label>
-                                        <g:LongBox ui:field="inventoryNumber" styleName="form-control"/>
-                                    </g:HTMLPanel>
-
-                                    <g:HTMLPanel styleName="form-group col-md-9" ui:field="decimalNumberContainer">
-                                        <label>
-                                            <ui:text from="{lang.documentDecimalNumber}"/>
-                                        </label>
-                                        <decnum:DecimalNumberInput ui:field="decimalNumber"/>
-                                    </g:HTMLPanel>
-
-                                    <g:HTMLPanel styleName="form-group col-md-12" ui:field="approvedContainer">
+                                    <g:HTMLPanel styleName="form-group col-md-4" ui:field="approvedContainer">
                                         <label>
                                             <ui:text from="{lang.documentApproved}"/>
                                         </label>
                                         <switcher:Switcher ui:field="approved"/>
                                     </g:HTMLPanel>
-
                                 </div>
                             </div>
                         </div>
