@@ -41,6 +41,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Autowired
     PortalConfig portalConfig;
 
+    @Autowired
+    YoutrackService youtrackService;
+
     @Override
     public CoreResponse<Map<En_CaseLink, String>> getLinkMap() {
         Map<En_CaseLink, String> linkMap = new HashMap<>();
@@ -117,6 +120,12 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         }
 
         return new CoreResponse<>().success();
+    }
+
+    @Override
+    public CoreResponse<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
+        YouTrackIssueInfo issueInfo = youtrackService.getIssueInfo( ytId );
+        return new CoreResponse<YouTrackIssueInfo>().success(issueInfo);
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

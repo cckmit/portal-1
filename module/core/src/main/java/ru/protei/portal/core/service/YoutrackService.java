@@ -1,5 +1,7 @@
 package ru.protei.portal.core.service;
 
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.YtAttachment;
 
@@ -15,4 +17,6 @@ public interface YoutrackService {
     String createIssue(String project, String summary, String description);
 
     Set<String> getIssueIdsByProjectAndUpdatedAfter(String projectId, Date updatedAfter);
+
+    YouTrackIssueInfo getIssueInfo( String issueId );
 }

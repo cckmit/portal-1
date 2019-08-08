@@ -8,6 +8,7 @@ import java.io.Serializable;
 @JdbcEntity(table = "case_link")
 public class CaseLink implements Serializable {
 
+
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
 
@@ -29,6 +30,8 @@ public class CaseLink implements Serializable {
 
     // not db column
     private String link = "";
+
+    YouTrackIssueInfo youTrackIssueInfo;
 
     public CaseLink() {}
 
@@ -82,6 +85,14 @@ public class CaseLink implements Serializable {
 
     public void setCaseInfo(CaseInfo caseInfo) {
         this.caseInfo = caseInfo;
+    }
+
+    public YouTrackIssueInfo getYouTrackInfo() {
+        return youTrackIssueInfo;
+    }
+
+    public void setYouTrackIssueInfo( YouTrackIssueInfo youTrackIssueInfo ) {
+        this.youTrackIssueInfo = youTrackIssueInfo;
     }
 
     @Override

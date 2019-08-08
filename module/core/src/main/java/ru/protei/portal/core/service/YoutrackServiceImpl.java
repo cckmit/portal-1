@@ -8,11 +8,16 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.yt.AttachmentResponse;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
+import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.util.UriUtils;
 
 import javax.annotation.PostConstruct;
@@ -69,6 +74,18 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
+    public YouTrackIssueInfo getIssueInfo( String issueId ) {
+        log.debug("getIssueInfo issueId={}", issueId);
+
+        ResponseEntity<Issue> resp = ytClient.exchange(
+                BASE_URL + "/issue/" + issueId, HttpMethod.GET,
+                new HttpEntity<>( authHeaders ), Issue.class
+        );
+
+        return map(resp.getBody());
+    }
+
+    @Override
     public String createIssue(String project, String summary, String description) {
         log.info("creating issue: project={}, summary={}, description={}", project, summary, description);
 
@@ -117,6 +134,47 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .map(Issue::getId)
                 .collect(Collectors.toSet());
     }
+
+    private YouTrackIssueInfo map( Issue issue ) {
+        if (issue == null) return null;
+        YouTrackIssueInfo issueInfo = new YouTrackIssueInfo();
+        issueInfo.setId( issue.getId() );
+        issueInfo.setSummary( issue.getSummary() );
+        issueInfo.setDescription( issue.getDescription() );
+        issueInfo.setState( EmployeeRegistrationYoutrackSynchronizer.toCaseState( issue.getStateId() ) );
+        issueInfo.setImportance( toCaseImportance( issue.getPriority() ) );
+        return issueInfo;
+    }
+
+    private En_ImportanceLevel toCaseImportance( String ytpriority ) {
+        En_ImportanceLevel result = null;
+
+        if (ytpriority != null) {
+            switch (ytpriority) {
+                case "Show-stopper":
+                case "Critical":
+                    result = En_ImportanceLevel.CRITICAL;
+                    break;
+                case "Important":
+                    result = En_ImportanceLevel.IMPORTANT;
+                    break;
+                case "Basic":
+                    result = En_ImportanceLevel.BASIC;
+                    break;
+                case "Low":
+                    result = En_ImportanceLevel.COSMETIC;
+                    break;
+                default:
+                    return result = null;
+            }
+
+            if (result == null) {
+                log.warn( "toCaseImportance(): Detected unknown YouTrack priority level= {}", ytpriority );
+            }
+        }
+        return result;
+    }
+
 
     private final static Logger log = LoggerFactory.getLogger(YoutrackServiceImpl.class);
     private final static int MAX_ISSUES_IN_RESPONSE = Integer.MAX_VALUE;

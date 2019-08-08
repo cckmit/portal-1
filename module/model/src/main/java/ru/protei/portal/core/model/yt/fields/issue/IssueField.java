@@ -13,6 +13,9 @@ import ru.protei.portal.core.model.yt.fields.YtFields;
         @JsonSubTypes.Type( name = YtFields.equipmentStateRus, value = StringArrayWithIdArrayIssueField.class ),
         @JsonSubTypes.Type( name = YtFields.acrmStateRus, value = StringArrayWithIdArrayIssueField.class ),
         @JsonSubTypes.Type( name = YtFields.updaterName, value = StringIssueField.class ),
+        @JsonSubTypes.Type( name = YtFields.priority, value = StringArrayWithIdArrayIssueField.class ),
+        @JsonSubTypes.Type( name = YtFields.description, value = StringIssueField.class ),
+        @JsonSubTypes.Type( name = YtFields.summary, value = StringIssueField.class ),
 } )
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IssueField {

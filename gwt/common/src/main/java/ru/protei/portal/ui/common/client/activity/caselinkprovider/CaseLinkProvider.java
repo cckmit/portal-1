@@ -4,11 +4,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseControlService;
 import ru.protei.portal.core.service.CaseServiceImpl;
 import ru.protei.portal.ui.common.client.service.CaseLinkControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
 import java.util.Map;
@@ -36,6 +38,10 @@ public class CaseLinkProvider {
 
     public void checkExistCrmLink(Long caseNumber, AsyncCallback<CaseInfo> async) {
         caseService.getIssueShortInfo(caseNumber, async);
+    }
+
+    public void checkExistYtLink( String ytId, AsyncCallback<YouTrackIssueInfo> async ) {
+        caseLinkService.getYtLinkInfo( ytId, async );
     }
 
     @Inject

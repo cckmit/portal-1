@@ -20,6 +20,7 @@ import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseLinkLang;
@@ -59,6 +60,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
             case YT: {
                 icon.addStyleName("link-you-track");
                 text.setText(caseLink.getRemoteId());
+                fillYouTrackInfo(value.getYouTrackInfo());
                 break;
             }
         }
@@ -101,7 +103,7 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
 
     @UiHandler("root")
     public void onMouseOver(MouseOverEvent event) {
-        if ( !En_CaseLink.CRM.equals(caseLink.getType()) ){
+        if ( En_CaseLink.CRM_OLD.equals(caseLink.getType()) ){
             return;
         }
         caseInfoPanel.setVisible(true);
@@ -134,6 +136,15 @@ public class CaseLinkView extends Composite implements HasValue<CaseLink>, HasCl
         state.addClassName( "label label-" + En_CaseState.getById( value.getStateId() ).toString().toLowerCase() + " m-r-5");
         state.setInnerText(caseStateLang.getStateName(En_CaseState.getById(value.getStateId())));
         info.setInnerText(value.getInfo());
+    }
+
+    private void fillYouTrackInfo( YouTrackIssueInfo youTrackInfo ) {
+        if (youTrackInfo == null) return;
+        header.setInnerText( youTrackInfo.getSummary() );
+        importance.addClassName(ImportanceStyleProvider.getImportanceIcon( youTrackInfo.getImportance() ));
+        state.addClassName( "label label-" + youTrackInfo.getCaseState().toString().toLowerCase() + " m-r-5");
+        state.setInnerText(caseStateLang.getStateName(youTrackInfo.getCaseState()));
+        info.setInnerText(youTrackInfo.getDescription());
     }
 
     @Inject

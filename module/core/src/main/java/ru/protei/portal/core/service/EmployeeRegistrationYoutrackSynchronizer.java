@@ -111,7 +111,7 @@ public class EmployeeRegistrationYoutrackSynchronizer {
                 syncCronSchedule, equipmentProjectName, adminProjectName, phoneProjectName, YOUTRACK_USER_ID);
     }
 
-    private static En_CaseState toCaseState(String ytStateId) {
+    public static En_CaseState toCaseState(String ytStateId) {
         if (ytStateId == null)
             return null;
         switch (ytStateId) {
