@@ -133,6 +133,8 @@ public class DocumentServiceImpl implements DocumentService {
                 return new CoreResponse<Document>().error(validationStatus);
             }
 
+            document.setState(document.getState() == null ? En_DocumentState.ACTIVE : document.getState());
+
             try {
                 if (!documentDAO.saveOrUpdate(document)) {
                     return new CoreResponse<Document>().error(En_ResultStatus.INTERNAL_ERROR);
