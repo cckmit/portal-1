@@ -84,25 +84,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     @Event
-    public void onConfirmArchivedStateChange(ConfirmDialogEvents.Confirm event) {
-        if (event.identity.equals(getClass().getName())) {
-            companyService.changeArchivedState(tempCompany.getId(), !tempCompany.isArchived(), new RequestCallback<Boolean>() {
-                @Override
-                public void onError(Throwable throwable) {
-                }
-
-                @Override
-                public void onSuccess(Boolean aBoolean) {
-                    tempCompany.setArchived(!tempCompany.isArchived());
-                    fireEvent(new CompanyEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new CompanyEvents.ChangeModel());
-                }
-            });
-        }
-    }
-
-    @Event
     public void onArchiveClicked(CompanyEvents.Archive event) {
         companyService.changeArchivedState(event.getCompanyId(), event.getArchiveState(), new RequestCallback<Boolean>() {
             @Override
@@ -120,24 +101,22 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
 
     @Override
     public void onSaveClicked() {
-        if (!validateFieldsAndGetResult()) {
-            return;
-        }
-
         fillDto(tempCompany);
 
-        companyService.saveCompany(tempCompany, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-            }
+        if (validateFieldsAndGetResult() && !tempCompany.isArchived()) {
+            companyService.saveCompany(tempCompany, new RequestCallback<Boolean>() {
+                @Override
+                public void onError(Throwable throwable) {
+                }
 
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                fireEvent(new CompanyEvents.Show());
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new CompanyEvents.ChangeModel());
-            }
-        });
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    fireEvent(new CompanyEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CompanyEvents.ChangeModel());
+                }
+            });
+        }
     }
 
     @Override

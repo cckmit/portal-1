@@ -142,7 +142,7 @@ public class CompanyServiceImpl implements CompanyService {
         }
 
         Company company = new Company(id);
-        company.setArchived(isArchived);
+        company.setArchived(!isArchived);
 
         if (companyDAO.updateState(company)) {
             return new CoreResponse().success();

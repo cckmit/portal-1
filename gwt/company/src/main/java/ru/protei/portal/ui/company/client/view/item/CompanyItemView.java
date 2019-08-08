@@ -11,7 +11,10 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HasWidgets;
+import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_CompanyCategory;
+import ru.protei.portal.test.client.DebugIds;
+import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
 
@@ -69,9 +72,17 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
 
     @Override
     public void setArchived(boolean isArchived) {
-        if (isArchived) {
+        setEditEnabled(!isArchived);
+
+        if (!isArchived) {
+            lock.setStyleName("fa fa-fw fa-unlock-alt");
+            lock.setTitle(lang.buttonToArchive());
+
+            removeStyleName("inactive");
+        } else {
             Element banIcon = DOM.createElement("i");
             banIcon.addClassName("fa fa-lock m-r-5");
+            banIcon.setId(DEBUG_ID_PREFIX + DebugIds.COMPANY_ITEM.LOCK_ICON);
 
             Element label = DOM.createLabel();
             label.setInnerText(name.getInnerText());
@@ -80,12 +91,11 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
             name.appendChild(banIcon);
             name.appendChild(label);
 
+            lock.setStyleName("fa fa-fw fa-lock");
+            lock.setTitle(lang.buttonFromArchive());
+
             addStyleName("inactive");
-
-            return;
         }
-
-        removeStyleName("inactive");
     }
 
     @Override
@@ -122,6 +132,14 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
         }
     }
 
+    @UiHandler("lock")
+    public void onLockClicked(ClickEvent event) {
+        event.preventDefault();
+        if ( activity != null ) {
+            activity.onLockClicked( this );
+        }
+    }
+
     @UiField
     HeadingElement name;
     @UiField
@@ -130,6 +148,8 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     Anchor edit;
     @UiField
     Anchor favorite;
+    @UiField
+    Anchor lock;
     @UiField
     HTMLPanel previewContainer;
     @UiField
@@ -150,6 +170,9 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     DivElement headerBlock;
 
     AbstractCompanyItemActivity activity;
+
+    @Inject
+    Lang lang;
 
     interface CompanyItemViewUiBinder extends UiBinder<HTMLPanel, CompanyItemView> {}
     private static CompanyItemViewUiBinder ourUiBinder = GWT.create( CompanyItemViewUiBinder.class );

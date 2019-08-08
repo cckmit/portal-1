@@ -13,6 +13,7 @@ import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ArchiveClickColumn;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
@@ -146,6 +147,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
             Element banIcon = DOM.createElement("i");
             banIcon.addClassName("fa fa-lock m-r-5");
+            banIcon.setId(DEBUG_ID_PREFIX + DebugIds.COMPANY_TABLE.LOCK_ICON);
 
             Element label = DOM.createLabel();
             label.setInnerText(company.getCname());

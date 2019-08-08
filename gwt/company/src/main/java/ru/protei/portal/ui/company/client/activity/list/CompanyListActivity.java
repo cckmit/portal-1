@@ -93,6 +93,14 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
     }
 
     @Override
+    public void onLockClicked(AbstractCompanyItemView itemView) {
+        Company value = itemViewToModel.get(itemView);
+        if (value != null) {
+            fireEvent(new CompanyEvents.Archive(value.getId(), value.isArchived()));
+        }
+    }
+
+    @Override
     public void onCreateClicked( ) { fireEvent(new CompanyEvents.Edit()); }
 
     private AbstractCompanyItemView makeView(Company company ) {

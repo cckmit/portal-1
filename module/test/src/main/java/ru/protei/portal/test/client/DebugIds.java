@@ -277,4 +277,11 @@ public class DebugIds {
         String FINISHED = "region-state-finished";
         String CANCELED = "region-state-canceled";
     }
+
+    public interface COMPANY_TABLE {
+        String LOCK_ICON = "company-table-lock-icon";
+    }
+    public interface COMPANY_ITEM {
+        String LOCK_ICON = "company-item-lock-icon";
+    }
 }

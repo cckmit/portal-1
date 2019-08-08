@@ -86,7 +86,7 @@ public abstract class CompanyTableActivity implements
 
     @Override
     public void onArchiveClicked(Company value) {
-        fireEvent(new CompanyEvents.Archive(value.getId(), !value.isArchived()));
+        fireEvent(new CompanyEvents.Archive(value.getId(), value.isArchived()));
     }
 
     private void showPreview (Company value ) {
