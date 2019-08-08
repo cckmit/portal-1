@@ -227,6 +227,9 @@ public class DocumentEditView extends Composite implements AbstractDocumentEditV
         stateButton.setText(caption);
     }
 
+    @Override
+    public HasVisibility setStateButtonVisible() { return stateButton; }
+
     @UiHandler( "stateButton" )
     public void onStateClicked (ClickEvent event)
     {

@@ -76,6 +76,8 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     void setStateButtonText(String caption);
 
+    HasVisibility setStateButtonVisible( );
+
     void resetFilename();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);

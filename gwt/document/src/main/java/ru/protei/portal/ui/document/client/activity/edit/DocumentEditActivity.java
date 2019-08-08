@@ -327,6 +327,7 @@ public abstract class DocumentEditActivity
 
         view.nameValidator().setValid(true);
 
+        view.setStateButtonVisible().setVisible(!isNew);
         view.setStateButtonText(document.isActiveUnit() ? lang.buttonToArchive() : lang.buttonFromArchive());
 
         view.resetFilename();
