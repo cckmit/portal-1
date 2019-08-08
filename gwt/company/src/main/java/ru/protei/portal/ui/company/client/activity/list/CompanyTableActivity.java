@@ -17,7 +17,6 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
-import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -30,9 +29,9 @@ public abstract class CompanyTableActivity implements
 
     @PostConstruct
     public void init() {
-        view.setActivity( this );
-        view.setAnimation( animation );
-        pagerView.setActivity( this );
+        view.setActivity(this);
+        view.setAnimation(animation);
+        pagerView.setActivity(this);
     }
 
     @Event
@@ -41,22 +40,22 @@ public abstract class CompanyTableActivity implements
     }
 
     @Event
-    public void onShow( CompanyEvents.ShowDefinite event ) {
-        if(event.viewType != ViewType.TABLE)
+    public void onShow(CompanyEvents.ShowDefinite event) {
+        if (event.viewType != ViewType.TABLE)
             return;
 
         this.query = event.query;
         init.parent.clear();
-        init.parent.add( view.asWidget() );
-        view.getPagerContainer().add( pagerView.asWidget() );
+        init.parent.add(view.asWidget());
+        view.getPagerContainer().add(pagerView.asWidget());
 
         view.getFilterContainer().add(event.filter);
         loadTable();
     }
 
     @Event
-    public void onFilterChange( CompanyEvents.UpdateData event ) {
-        if(event.viewType != ViewType.TABLE)
+    public void onFilterChange(CompanyEvents.UpdateData event) {
+        if (event.viewType != ViewType.TABLE)
             return;
 
         this.query = event.query;
@@ -81,40 +80,36 @@ public abstract class CompanyTableActivity implements
     @Override
     public void onEditClicked(Company value) {
         if (!value.isArchived()) {
-            fireEvent( new CompanyEvents.Edit ( value.getId() ));
+            fireEvent(new CompanyEvents.Edit(value.getId()));
         }
     }
 
     @Override
     public void onArchiveClicked(Company value) {
-        if (value != null) {
-            companyService.updateState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
-                @Override
-                public void onError(Throwable throwable) {
-                }
+        if (value == null) {
+            return;
+        }
 
-                @Override
-                public void onSuccess(Boolean aBoolean) {
-                    fireEvent(new CompanyEvents.Show());
+        companyService.updateState(value.getId(), value.isArchived(), new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    loadTable();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new CompanyEvents.ChangeModel());
-                }
-            });
-        }
+                }));
     }
 
-    private void showPreview (Company value ) {
+    private void showPreview(Company value) {
 
-        if ( value == null ) {
+        if (value == null) {
             animation.closeDetails();
         } else {
             animation.showDetails();
-            fireEvent( new CompanyEvents.ShowPreview( view.getPreviewContainer(), value, true, true ) );
+            fireEvent(new CompanyEvents.ShowPreview(view.getPreviewContainer(), value, true, true));
         }
     }
 
     @Override
-    public void loadData( int offset, int limit, AsyncCallback<List<Company>> asyncCallback ) {
+    public void loadData(int offset, int limit, AsyncCallback<List<Company>> asyncCallback) {
         boolean isFirstChunk = offset == 0;
         query.setOffset(offset);
         query.setLimit(limit);

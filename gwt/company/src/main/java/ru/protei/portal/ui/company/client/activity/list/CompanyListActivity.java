@@ -22,6 +22,7 @@ import ru.protei.portal.ui.common.client.events.NotifyEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemActivity;
 import ru.protei.portal.ui.company.client.activity.item.AbstractCompanyItemView;
@@ -95,20 +96,16 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
     @Override
     public void onLockClicked(AbstractCompanyItemView itemView) {
         Company value = itemViewToModel.get(itemView);
-        if (value != null) {
-            companyService.updateState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
-                @Override
-                public void onError(Throwable throwable) {
-                }
+        if (value == null) {
+            return;
+        }
 
-                @Override
-                public void onSuccess(Boolean aBoolean) {
-                    fireEvent(new CompanyEvents.Show());
+        companyService.updateState(value.getId(), value.isArchived(), new FluentCallback<Boolean>()
+                .withSuccess(result -> {
+                    requestCompanies();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new CompanyEvents.ChangeModel());
-                }
-            });
-        }
+                }));
     }
 
     @Override

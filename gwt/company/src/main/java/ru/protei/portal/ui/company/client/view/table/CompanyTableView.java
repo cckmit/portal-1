@@ -31,8 +31,8 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
     public void onInit(EditClickColumn<Company> editClickColumn, ArchiveClickColumn<Company> archiveClickColumn) {
         this.editClickColumn = editClickColumn;
         this.archiveClickColumn = archiveClickColumn;
-        editClickColumn.setIsArchivedObject(Company::isArchived);
-        archiveClickColumn.setIsArchivedObject(Company::isArchived);
+        editClickColumn.setArchivedCheckFunction(Company::isArchived);
+        archiveClickColumn.setArchivedCheckFunction(Company::isArchived);
         initWidget(ourUiBinder.createAndBindUi(this));
         initTable();
     }

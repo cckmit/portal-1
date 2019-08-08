@@ -28,7 +28,7 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
     public void fillColumnValue(Element cell, T value) {
         this.lock = DOM.createAnchor().cast();
         lock.setHref("#");
-        replaceClassName(isArchivedObject.apply(value));
+        setMutableAttributes(archivedCheckFunction.apply(value));
         setRemoveEnabled(lock);
         cell.appendChild(lock);
     }
@@ -46,8 +46,8 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         setActionHandler(archiveHandler::onArchiveClicked);
     }
 
-    public void setIsArchivedObject(Function<T, Boolean> isArchivedObject) {
-        this.isArchivedObject = isArchivedObject;
+    public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
+        this.archivedCheckFunction = archivedCheckFunction;
     }
 
     private void setRemoveEnabled(AnchorElement a) {
@@ -62,16 +62,14 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         }
     }
 
-    private void replaceClassName(boolean isArchived) {
+    private void setMutableAttributes(boolean isArchived) {
         if (isArchived) {
             lock.addClassName("archive-lock");
-            lock.addClassName("fa-2x fa fa-lock");
-            lock.removeClassName("fa-2x fa fa-unlock-alt");
+            lock.replaceClassName("fa-2x fa fa-unlock-alt", "fa-2x fa fa-lock");
             lock.setTitle(lang.buttonFromArchive());
         } else {
             lock.removeClassName("archive-lock");
-            lock.addClassName("fa-2x fa fa-unlock-alt");
-            lock.removeClassName("fa-2x fa fa-lock");
+            lock.replaceClassName("fa-2x fa fa-lock", "fa-2x fa fa-unlock-alt");
             lock.setTitle(lang.buttonToArchive());
         }
     }
@@ -83,5 +81,5 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
 
     private AnchorElement lock;
     private En_Privilege privilege;
-    private Function<T, Boolean> isArchivedObject;
+    private Function<T, Boolean> archivedCheckFunction;
 }

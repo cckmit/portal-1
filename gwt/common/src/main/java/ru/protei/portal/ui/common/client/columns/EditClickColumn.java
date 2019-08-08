@@ -34,8 +34,8 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
-        if (isArchivedObject != null) {
-            isArchived = isArchivedObject.apply(value);
+        if (archivedCheckFunction != null) {
+            isArchived = archivedCheckFunction.apply(value);
         }
         cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
@@ -54,8 +54,8 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
         setActionHandler(editHandler::onEditClicked);
     }
 
-    public void setIsArchivedObject(Function<T, Boolean> isArchivedObject) {
-        this.isArchivedObject = isArchivedObject;
+    public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
+        this.archivedCheckFunction = archivedCheckFunction;
     }
 
     private void setEditEnabled(AnchorElement a ) {
@@ -79,5 +79,5 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
     En_Privilege privilege;
 
     private boolean isArchived;
-    private Function<T, Boolean> isArchivedObject;
+    private Function<T, Boolean> archivedCheckFunction;
 }
