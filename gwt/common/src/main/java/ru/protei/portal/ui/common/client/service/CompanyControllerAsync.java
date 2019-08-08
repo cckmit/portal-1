@@ -100,5 +100,5 @@ public interface CompanyControllerAsync {
      */
     void getCompanyTags( Long companyId, AsyncCallback<List<CaseTag>> async );
 
-    void changeState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
+    void updateState(Long id, boolean isArchived, AsyncCallback<Boolean> async);
 }

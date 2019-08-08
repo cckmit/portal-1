@@ -89,17 +89,17 @@ public class CompanyControllerImpl implements CompanyController {
     }
 
     @Override
-    public Boolean changeState(Long id, boolean isArchived) throws RequestFailedException {
-        log.debug( "changeState(): companyId={}", id);
+    public Boolean updateState(Long id, boolean isArchived) throws RequestFailedException {
+        log.debug( "updateState(): companyId={}", id);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = companyService.changeArchivedState(descriptor.makeAuthToken(), id, isArchived);
+        CoreResponse response = companyService.updateState(descriptor.makeAuthToken(), id, isArchived);
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );
 
-        log.debug( "changeState(): response.getData()={}", response.isOk());
+        log.debug( "updateState(): response.getData()={}", response.isOk());
 
         return response.getData() != null;
     }

@@ -88,7 +88,7 @@ public abstract class CompanyTableActivity implements
     @Override
     public void onArchiveClicked(Company value) {
         if (value != null) {
-            companyService.changeState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
+            companyService.updateState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
                 @Override
                 public void onError(Throwable throwable) {
                 }

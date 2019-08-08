@@ -37,7 +37,7 @@ public interface CompanyController extends RemoteService {
      */
     Boolean saveCompany ( Company company ) throws RequestFailedException;
 
-    Boolean changeState(Long id, boolean isArchived) throws RequestFailedException;
+    Boolean updateState(Long id, boolean isArchived) throws RequestFailedException;
 
     /**
      * Проверка уникальности названия компании

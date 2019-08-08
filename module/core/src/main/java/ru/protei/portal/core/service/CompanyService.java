@@ -30,7 +30,7 @@ public interface CompanyService {
 
     @Privileged( En_Privilege.COMPANY_EDIT )
     @Auditable( En_AuditType.COMPANY_MODIFY )
-    CoreResponse<?> changeArchivedState(AuthToken makeAuthToken, Long id, boolean isArchived);
+    CoreResponse<?> updateState(AuthToken makeAuthToken, Long id, boolean isArchived);
 
     CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);

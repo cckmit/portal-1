@@ -96,7 +96,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
     public void onLockClicked(AbstractCompanyItemView itemView) {
         Company value = itemViewToModel.get(itemView);
         if (value != null) {
-            companyService.changeState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
+            companyService.updateState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
                 @Override
                 public void onError(Throwable throwable) {
                 }

@@ -132,7 +132,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<?> changeArchivedState(AuthToken makeAuthToken, Long id, boolean isArchived) {
+    public CoreResponse<?> updateState(AuthToken makeAuthToken, Long id, boolean isArchived) {
         if (id == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
