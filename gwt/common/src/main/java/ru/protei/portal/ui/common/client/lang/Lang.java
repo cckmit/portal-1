@@ -1608,9 +1608,9 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
-    String employeeRegistrationAdditionalSoftLengthExceed();
+    String employeeRegistrationAdditionalSoftLengthExceed(int num);
 
-    String employeeRegistrationResourceCommentLengthExceed();
+    String employeeRegistrationResourceCommentLengthExceed(int num);
 
     String employeeRegistrationValidationProbationPeriod();
 

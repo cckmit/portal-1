@@ -86,10 +86,10 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
             return lang.employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
         if (registration.getAdditionalSoft().length() > ADDITIONAL_SOFT_MAX_LENGTH)
-            return lang.employeeRegistrationAdditionalSoftLengthExceed() + " (" + ADDITIONAL_SOFT_MAX_LENGTH +")";
+            return lang.employeeRegistrationAdditionalSoftLengthExceed(ADDITIONAL_SOFT_MAX_LENGTH);
 
         if (registration.getResourceComment().length() > RESOURCE_COMMENT_MAX_LENGTH )
-            return lang.employeeRegistrationResourceCommentLengthExceed() + " (" + RESOURCE_COMMENT_MAX_LENGTH +")";
+            return lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH);
 
         return null;
     }
