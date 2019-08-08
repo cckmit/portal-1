@@ -1610,6 +1610,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
+    String employeeRegistrationAdditionalSoftLengthExceed(int num);
+
+    String employeeRegistrationResourceCommentLengthExceed(int num);
+
     String employeeRegistrationValidationProbationPeriod();
 
     String timeElapsedTypeNone();

@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.employeeregistration.client.activity.edit;
 
+import com.google.gwt.user.client.Window;
 import com.google.inject.Inject;
 import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
@@ -84,6 +85,12 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
         if ( registration.getCuratorsIds().contains(registration.getHeadOfDepartment().getId()))
             return lang.employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
+        if (registration.getAdditionalSoft().length() > ADDITIONAL_SOFT_MAX_LENGTH)
+            return lang.employeeRegistrationAdditionalSoftLengthExceed(ADDITIONAL_SOFT_MAX_LENGTH);
+
+        if (registration.getResourceComment().length() > RESOURCE_COMMENT_MAX_LENGTH )
+            return lang.employeeRegistrationResourceCommentLengthExceed(RESOURCE_COMMENT_MAX_LENGTH);
+
         return null;
     }
 
@@ -166,4 +173,7 @@ public abstract class EmployeeRegistrationEditActivity implements Activity, Abst
     private EmployeeRegistrationControllerAsync employeeRegistrationService;
 
     private AppEvents.InitDetails initDetails;
+
+    private static final int ADDITIONAL_SOFT_MAX_LENGTH = 512;
+    private static final int RESOURCE_COMMENT_MAX_LENGTH = 512;
 }
