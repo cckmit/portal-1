@@ -137,6 +137,42 @@ public class CompanyServiceTest extends BaseServiceTest {
         }
     }
 
+    @Test
+    public void testCompanyUpdateState() {
+        Long companyId = null;
+
+        try {
+            Company company = new Company();
+            company.setCreated(new Date());
+            company.setCname("Тестовая компания2");
+
+            Company dupCompany = companyDAO.getCompanyByName(company.getCname());
+            Assert.assertNull(dupCompany);
+
+            CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
+            Company companyFromService = response.getData();
+            companyId = companyFromService.getId();
+
+            boolean startState = companyFromService.isArchived();
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), startState);
+
+            boolean endState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertNotEquals(startState, endState);
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), endState);
+
+            boolean changedEndState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertEquals(startState, changedEndState);
+        } finally {
+            if (companyId != null) {
+                companyDAO.removeByCondition("id=?", companyId);
+            }
+        }
+    }
+
     @Autowired
     CompanyService companyService;
     @Autowired
