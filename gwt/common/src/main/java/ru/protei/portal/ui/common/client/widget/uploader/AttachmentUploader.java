@@ -9,6 +9,7 @@ import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.FormPanel;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.ent.Attachment;
+import ru.protei.portal.core.model.util.JsonUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -48,17 +49,7 @@ public class AttachmentUploader extends FileUploader{
     }
 
     public void uploadBase64Files(List<String> jsons) {
-        StringBuilder jsonsObject = new StringBuilder("[");
-
-        for (int i = 0; i < jsons.size() - 1; i++) {
-            jsonsObject.append(jsons.get(i));
-            jsonsObject.append(",");
-        }
-
-        jsonsObject.append(jsons.get(jsons.size() - 1));
-        jsonsObject.append("]");
-
-        sendJsonRequest(jsonsObject.toString(), UPLOAD_BASE_64_FILES_URL);
+        sendJsonRequest(JsonUtils.wrapJsonsToJsonList(jsons), UPLOAD_BASE_64_FILES_URL);
     }
 
     private void sendJsonRequest(String json, String url) {

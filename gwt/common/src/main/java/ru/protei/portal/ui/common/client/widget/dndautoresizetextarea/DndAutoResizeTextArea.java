@@ -33,9 +33,15 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
             setOverlayVisible(true);
         }, DragOverEvent.getType());
 
-        dropZonePanel.addDomHandler(event -> setOverlayVisible(true), DragEnterEvent.getType());
+        dropZonePanel.addDomHandler(event -> {
+            event.preventDefault();
+            setOverlayVisible(true);
+        }, DragEnterEvent.getType());
 
-        dropZonePanel.addDomHandler(event -> setOverlayVisible(false), DragLeaveEvent.getType());
+        dropZonePanel.addDomHandler(event -> {
+            event.preventDefault();
+            setOverlayVisible(false);
+        }, DragLeaveEvent.getType());
 
         dropZonePanel.addDomHandler(event -> {
             setOverlayVisible(false);
@@ -49,7 +55,7 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
 
     private void createOverlay() {
         overlay = DOM.createDiv();
-        overlay.setAttribute("class", "drag-overlay hide");
+        overlay.addClassName("drag-overlay hide");
 
         Element overlayLabel = DOM.createLegend();
         overlayLabel.setInnerText(overlayText);
@@ -60,13 +66,11 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
 
     private void setOverlayVisible(boolean isOverlayVisible) {
         if (isOverlayVisible) {
-            dropZonePanel.addStyleName("drop-zone-active");
-            dropZonePanel.removeStyleName("drop-zone");
-            overlay.setAttribute("class", "drag-overlay");
+            dropZonePanel.getElement().replaceClassName("drop-zone", "drop-zone-active");
+            overlay.removeClassName("hide");
         } else {
-            dropZonePanel.removeStyleName("drop-zone-active");
-            dropZonePanel.addStyleName("drop-zone");
-            overlay.setAttribute("class", "drag-overlay hide");
+            dropZonePanel.getElement().replaceClassName("drop-zone-active","drop-zone");
+            overlay.addClassName("hide");
         }
     }
 
@@ -83,7 +87,7 @@ public class DndAutoResizeTextArea extends AutoResizeTextArea {
                 var data = {
                     base64: evt.target.result,
                     name: file.name,
-                    type: evt.target.result.slice(5, evt.target.result.indexOf(";")),
+                    type: evt.target.result.slice("data:".length, evt.target.result.indexOf(";")),
                     size: file.size
                 };
 

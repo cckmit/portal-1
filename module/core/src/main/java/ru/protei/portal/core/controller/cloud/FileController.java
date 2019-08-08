@@ -26,6 +26,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
 import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
@@ -166,7 +167,6 @@ public class FileController {
     public String uploadBase64Files(HttpServletRequest request, @RequestBody List<Base64Facade> base64Facades) {
         List<String> attachmentsJsons = new ArrayList<>();
         List<Attachment> attachments = new ArrayList<>();
-        StringBuilder successfulResponse = new StringBuilder("[");
 
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
         if (ud == null) {
@@ -196,19 +196,11 @@ public class FileController {
             }
         }
 
-        if (attachmentsJsons.size() != base64Facades.size()) {
+        if (attachmentsJsons.size() == base64Facades.size()) {
+            return JsonUtils.wrapJsonsToJsonList(attachmentsJsons);
+        } else {
             removeFiles(attachments);
             return "error";
-        } else {
-            for (int i = 0; i < attachmentsJsons.size() - 1; i++) {
-                successfulResponse.append(attachmentsJsons.get(i));
-                successfulResponse.append(",");
-            }
-
-            successfulResponse.append(attachmentsJsons.get(attachmentsJsons.size() - 1));
-            successfulResponse.append("]");
-
-            return successfulResponse.toString();
         }
     }
 
