@@ -67,24 +67,6 @@ public class CompanyEvents {
 
     }
 
-    public static class Archive {
-        private final Long id;
-        private final boolean archiveState;
-
-        public Archive(Long id, boolean archiveState) {
-            this.id = id;
-            this.archiveState = archiveState;
-        }
-
-        public Long getCompanyId() {
-            return id;
-        }
-
-        public boolean getArchiveState() {
-            return archiveState;
-        }
-    }
-
     /**
      * Обновление списка компаний
      */

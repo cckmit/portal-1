@@ -29,9 +29,11 @@ import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView
 public class CompanyTableView extends Composite implements AbstractCompanyTableView{
     @Inject
     public void onInit(EditClickColumn<Company> editClickColumn, ArchiveClickColumn<Company> archiveClickColumn) {
-        initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.archiveClickColumn = archiveClickColumn;
+        editClickColumn.setIsArchivedObject(Company::isArchived);
+        archiveClickColumn.setIsArchivedObject(Company::isArchived);
+        initWidget(ourUiBinder.createAndBindUi(this));
         initTable();
     }
 

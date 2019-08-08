@@ -6,9 +6,10 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Archived;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import java.util.function.Function;
 
 /**
  * Колонка вынесения сущности в архив
@@ -27,7 +28,7 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
     public void fillColumnValue(Element cell, T value) {
         this.lock = DOM.createAnchor().cast();
         lock.setHref("#");
-        setMutableAttributes(((Archived) value).isArchived());
+        replaceClassName(isArchivedObject.apply(value));
         setRemoveEnabled(lock);
         cell.appendChild(lock);
     }
@@ -39,6 +40,14 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
     @Override
     protected void fillColumnHeader(Element columnHeader) {
         columnHeader.addClassName("edit");
+    }
+
+    public void setArchiveHandler(ArchiveHandler<T> archiveHandler) {
+        setActionHandler(archiveHandler::onArchiveClicked);
+    }
+
+    public void setIsArchivedObject(Function<T, Boolean> isArchivedObject) {
+        this.isArchivedObject = isArchivedObject;
     }
 
     private void setRemoveEnabled(AnchorElement a) {
@@ -53,7 +62,7 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         }
     }
 
-    private void setMutableAttributes(boolean isArchived) {
+    private void replaceClassName(boolean isArchived) {
         if (isArchived) {
             lock.addClassName("archive-lock");
             lock.addClassName("fa-2x fa fa-lock");
@@ -67,15 +76,12 @@ public class ArchiveClickColumn<T> extends ClickColumn<T> {
         }
     }
 
-    public void setArchiveHandler(ArchiveHandler<T> archiveHandler) {
-        setActionHandler(archiveHandler::onArchiveClicked);
-    }
-
     @Inject
     PolicyService policyService;
 
-    private AnchorElement lock;
+    Lang lang;
 
-    private final Lang lang;
+    private AnchorElement lock;
     private En_Privilege privilege;
+    private Function<T, Boolean> isArchivedObject;
 }

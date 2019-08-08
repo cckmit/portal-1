@@ -17,6 +17,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.viewtype.ViewType;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
+import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
@@ -86,7 +87,20 @@ public abstract class CompanyTableActivity implements
 
     @Override
     public void onArchiveClicked(Company value) {
-        fireEvent(new CompanyEvents.Archive(value.getId(), value.isArchived()));
+        if (value != null) {
+            companyService.changeState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
+                @Override
+                public void onError(Throwable throwable) {
+                }
+
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    fireEvent(new CompanyEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CompanyEvents.ChangeModel());
+                }
+            });
+        }
     }
 
     private void showPreview (Company value ) {

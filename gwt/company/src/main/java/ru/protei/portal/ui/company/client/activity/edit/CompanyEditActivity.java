@@ -83,22 +83,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
                 ));
     }
 
-    @Event
-    public void onArchiveClicked(CompanyEvents.Archive event) {
-        companyService.changeArchivedState(event.getCompanyId(), event.getArchiveState(), new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                fireEvent(new CompanyEvents.Show());
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new CompanyEvents.ChangeModel());
-            }
-        });
-    }
-
     @Override
     public void onSaveClicked() {
         fillDto(tempCompany);

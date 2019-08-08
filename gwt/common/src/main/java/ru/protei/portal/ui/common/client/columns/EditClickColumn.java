@@ -6,9 +6,10 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Archived;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
+
+import java.util.function.Function;
 
 /**
  * Колонка редактирования контакта.
@@ -18,9 +19,11 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
     public interface EditHandler< T > extends AbstractColumnHandler< T > {
 
         void onEditClicked( T value );
+
     }
+
     @Inject
-    public EditClickColumn( Lang lang ) {
+    public EditClickColumn(Lang lang) {
         this.lang = lang;
     }
 
@@ -31,11 +34,9 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
-        try {
-            isArchived = ((Archived) value).isArchived();
-        } catch (ClassCastException ignore) {
+        if (isArchivedObject != null) {
+            isArchived = isArchivedObject.apply(value);
         }
-
         cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
@@ -53,7 +54,11 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
         setActionHandler(editHandler::onEditClicked);
     }
 
-    private void setEditEnabled( AnchorElement a ) {
+    public void setIsArchivedObject(Function<T, Boolean> isArchivedObject) {
+        this.isArchivedObject = isArchivedObject;
+    }
+
+    private void setEditEnabled(AnchorElement a ) {
 
         if ( privilege == null ) {
             return;
@@ -66,11 +71,13 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
         }
     }
 
-    private boolean isArchived;
-
     @Inject
     PolicyService policyService;
 
     Lang lang;
+
     En_Privilege privilege;
+
+    private boolean isArchived;
+    private Function<T, Boolean> isArchivedObject;
 }

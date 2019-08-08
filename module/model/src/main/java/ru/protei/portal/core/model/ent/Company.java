@@ -14,7 +14,7 @@ import java.util.Set;
  * @author michael
  */
 @JdbcEntity(table = "company")
-public class Company extends AuditableObject implements EntityOptionSupport, Archived {
+public class Company extends AuditableObject implements EntityOptionSupport {
 
     @JdbcId(name = "id", idInsertMode = IdInsertMode.AUTO)
     private Long id;
@@ -232,7 +232,6 @@ public class Company extends AuditableObject implements EntityOptionSupport, Arc
         isHidden = hideden;
     }
 
-    @Override
     public boolean isArchived() {
         return isArchived;
     }

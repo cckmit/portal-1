@@ -96,7 +96,18 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
     public void onLockClicked(AbstractCompanyItemView itemView) {
         Company value = itemViewToModel.get(itemView);
         if (value != null) {
-            fireEvent(new CompanyEvents.Archive(value.getId(), value.isArchived()));
+            companyService.changeState(value.getId(), value.isArchived(), new RequestCallback<Boolean>() {
+                @Override
+                public void onError(Throwable throwable) {
+                }
+
+                @Override
+                public void onSuccess(Boolean aBoolean) {
+                    fireEvent(new CompanyEvents.Show());
+                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new CompanyEvents.ChangeModel());
+                }
+            });
         }
     }
 
