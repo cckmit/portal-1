@@ -144,10 +144,7 @@ public class CompanyServiceTest extends BaseServiceTest {
         try {
             Company company = new Company();
             company.setCreated(new Date());
-            company.setCname("Тестовая компания2");
-
-            Company dupCompany = companyDAO.getCompanyByName(company.getCname());
-            Assert.assertNull(dupCompany);
+            company.setCname("Тестовая компания " + new Date().getTime());
 
             CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
             Company companyFromService = response.getData();
