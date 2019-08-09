@@ -22,6 +22,8 @@ import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
 import java.util.*;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 public class CaseLinkServiceImpl implements CaseLinkService {
 
     private static Logger log = LoggerFactory.getLogger(CaseLinkServiceImpl.class);
@@ -127,6 +129,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return youtrackService.getIssueInfo( ytId );
 //        YouTrackIssueInfo issueInfo = youtrackService.getIssueInfo( ytId );
 //        return new CoreResponse<YouTrackIssueInfo>().success(issueInfo);
+    }
+
+    @Override
+    public CoreResponse<List<CaseLink>> getYoutrackLinks( Long caseId ) {
+        CaseLinkQuery caseLinkQuery = new CaseLinkQuery();
+        caseLinkQuery.setCaseId( caseId );
+        caseLinkQuery.setType( En_CaseLink.YT );
+        return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

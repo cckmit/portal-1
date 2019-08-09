@@ -11,7 +11,6 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
@@ -21,6 +20,7 @@ import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
+import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 
@@ -29,8 +29,7 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
-import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
-import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 
 /**
  * Реализация сервиса управления обращениями
@@ -166,7 +165,7 @@ public class CaseServiceImpl implements CaseService {
         if (isNotEmpty(caseObject.getLinks())) {
             List<String> youtrackIds = stream( caseObject.getLinks() ).filter( caseLink -> YT.equals( caseLink.getType() ) ).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
             for (String youtrackId : youtrackIds) {
-                youtrackService.setIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
+                youtrackService.compareAndSetIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
             }
         }
 
@@ -198,7 +197,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
 
         if (objectResultData.isUpdated()) {
             // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -222,7 +221,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, oldState, initiator);
         CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
 
         if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
@@ -248,7 +247,7 @@ public class CaseServiceImpl implements CaseService {
         );
     }
 
-    private CaseObjectUpdateResult performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
+    private CaseObjectUpdateResult performUpdateCaseObject( AuthToken token, CaseObject caseObject, CaseObject oldState, Person initiator ) {
 
         if (caseObject == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -258,19 +257,14 @@ public class CaseServiceImpl implements CaseService {
             throw new ResultStatusException(En_ResultStatus.PERMISSION_DENIED);
         }
 
-        CaseObject oldState = caseObjectDAO.get(caseObject.getId());
+        caseLinkService.getYoutrackLinks( caseObject.getId() ).ifOk( oldLinks ->
+                mergeYouTrackLinks( caseObject.getCaseNumber(), caseObject.getLinks(), oldLinks )
+        );
 
         CoreResponse mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         if (mergeLinksResponse.isError()) {
             log.info("Failed to merge links for the issue {}", caseObject.getId());
             throw new ResultStatusException(mergeLinksResponse.getStatus());
-        }
-
-        if (isNotEmpty(caseObject.getLinks())) {
-            List<String> youtrackIds = stream( caseObject.getLinks() ).filter( caseLink -> YT.equals( caseLink.getType() ) ).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
-            for (String youtrackId : youtrackIds) {
-                youtrackService.updateIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
-            }
         }
 
         synchronizeTags(caseObject, authService.findSession(token));
@@ -328,6 +322,23 @@ public class CaseServiceImpl implements CaseService {
         }
 
         return new CaseObjectUpdateResult(caseObject, true);
+    }
+
+    private void mergeYouTrackLinks( Long caseNumber, List<CaseLink> newLinks, List<CaseLink> oldLinks ) {
+        DiffCollectionResult<String> youTrackLinkIdsDiff = ru.protei.winter.core.utils.collections.CollectionUtils.
+                diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) );
+
+        for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getRemovedEntries())) {
+            youtrackService.compareAndRemoveIssueCrmNumber( youtrackId, caseNumber);
+        }
+
+        for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getAddedEntries())) {
+            youtrackService.compareAndUpdateIssueCrmNumber( youtrackId, caseNumber );
+        }
+    }
+
+    private List<String> selectYouTrackLinkRemoteIds( List<CaseLink> links ) {
+        return stream(links).filter(  caseLink -> YT.equals( caseLink.getType() )).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
     }
 
     private CaseCommentSaveOrUpdateResult performSaveOrUpdateCaseComment(AuthToken token, CaseComment caseComment, Person initiator) {
@@ -635,7 +646,8 @@ public class CaseServiceImpl implements CaseService {
     private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
         for (CaseLink link : emptyIfNull( caseLinks )) {
             if (!YT.equals( link.getType() ) || link.getRemoteId() == null) continue;
-            youtrackService.getIssueInfo( link.getRemoteId() ).ifOk( info -> link.setYouTrackIssueInfo( info ) );
+            youtrackService.getIssueInfo( link.getRemoteId() )
+                    .ifOk( info -> link.setYouTrackIssueInfo( info ) );
         }
         return caseLinks;
     }

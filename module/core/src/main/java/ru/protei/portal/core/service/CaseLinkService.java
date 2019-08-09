@@ -22,4 +22,6 @@ public interface CaseLinkService {
     CoreResponse mergeLinks(AuthToken token, Long caseId, Long caseNumber, List<CaseLink> links);
 
     CoreResponse<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId );
+
+    CoreResponse<List<CaseLink>> getYoutrackLinks( Long caseId);
 }

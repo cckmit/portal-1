@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.yt;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.HelperFunc;
+import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.core.model.yt.fields.issue.IssueField;
 import ru.protei.portal.core.model.yt.fields.issue.StringArrayWithIdArrayIssueField;
@@ -114,8 +115,8 @@ public class Issue {
         return fromStringArrayField( getField( YtFields.priority ) );
     }
 
-    public void getCrmNumber() {
-        return fromStringArrayField( getField( YtFields.crmNumber ) );
+    public Long getCrmNumber() {
+        return NumberUtils.parseLong( fromStringArrayField( getField( YtFields.crmNumber ) ) );
     }
 
     @Override

@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.yt.fields.YtFields;
         @JsonSubTypes.Type( name = YtFields.priority, value = StringArrayWithIdArrayIssueField.class ),
         @JsonSubTypes.Type( name = YtFields.description, value = StringIssueField.class ),
         @JsonSubTypes.Type( name = YtFields.summary, value = StringIssueField.class ),
+        @JsonSubTypes.Type( name = YtFields.crmNumber, value = StringArrayWithIdArrayIssueField.class ),
 } )
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IssueField {
