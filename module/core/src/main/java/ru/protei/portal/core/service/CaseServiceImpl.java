@@ -35,61 +35,6 @@ import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
  */
 public class CaseServiceImpl implements CaseService {
 
-    private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
-
-    @Autowired
-    JdbcManyRelationsHelper jdbcManyRelationsHelper;
-
-    @Autowired
-    CaseObjectDAO caseObjectDAO;
-
-    @Autowired
-    CaseShortViewDAO caseShortViewDAO;
-
-    @Autowired
-    CaseStateMatrixDAO caseStateMatrixDAO;
-
-    @Autowired
-    CaseCommentDAO caseCommentDAO;
-
-    @Autowired
-    PersonDAO personDAO;
-
-    @Autowired
-    EventPublisherService publisherService;
-
-    @Autowired
-    CaseAttachmentDAO caseAttachmentDAO;
-
-    @Autowired
-    CaseNotifierDAO caseNotifierDAO;
-
-    @Autowired
-    CaseObjectTagDAO caseObjectTagDAO;
-
-    @Autowired
-    CaseTagDAO caseTagDAO;
-
-    @Autowired
-    PolicyService policyService;
-
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    CaseLinkService caseLinkService;
-
-    @Autowired
-    CaseCommentService caseCommentService;
-
-    @Autowired
-    CaseStateWorkflowService caseStateWorkflowService;
-
-    @Autowired
-    CaseTagService caseTagService;
-
-    @Autowired
-    YoutrackService youtrackService;
 
     @Override
     public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
@@ -679,4 +624,59 @@ public class CaseServiceImpl implements CaseService {
         return caseLinks;
     }
 
+    @Autowired
+    JdbcManyRelationsHelper jdbcManyRelationsHelper;
+
+    @Autowired
+    CaseObjectDAO caseObjectDAO;
+
+    @Autowired
+    CaseShortViewDAO caseShortViewDAO;
+
+    @Autowired
+    CaseStateMatrixDAO caseStateMatrixDAO;
+
+    @Autowired
+    CaseCommentDAO caseCommentDAO;
+
+    @Autowired
+    PersonDAO personDAO;
+
+    @Autowired
+    EventPublisherService publisherService;
+
+    @Autowired
+    CaseAttachmentDAO caseAttachmentDAO;
+
+    @Autowired
+    CaseNotifierDAO caseNotifierDAO;
+
+    @Autowired
+    CaseObjectTagDAO caseObjectTagDAO;
+
+    @Autowired
+    CaseTagDAO caseTagDAO;
+
+    @Autowired
+    PolicyService policyService;
+
+    @Autowired
+    AuthService authService;
+
+    @Autowired
+    CaseLinkService caseLinkService;
+
+    @Autowired
+    CaseCommentService caseCommentService;
+
+    @Autowired
+    CaseStateWorkflowService caseStateWorkflowService;
+
+    @Autowired
+    CaseTagService caseTagService;
+
+    @Autowired
+    YoutrackService youtrackService;
+
+    private static Logger log = LoggerFactory.getLogger(CaseServiceImpl.class);
 }
