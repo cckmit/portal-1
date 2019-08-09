@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.yt.AttachmentResponse;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
+import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.util.UriUtils;
 
 import javax.annotation.PostConstruct;
@@ -137,25 +138,26 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .map( this::toInfo );
     }
 
-    public static void main(String[] args) {
-        YoutrackServiceImpl youtrackService = new YoutrackServiceImpl();
-        youtrackService.setIssueCrmNumber("PG-208", 222L);
-    }
-
     @Override
-    public void setIssueCrmNumber( String issueId, Long caseNumber ) {
-        authHeaders = new HttpHeaders();
-        authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        authHeaders.set("Authorization", "Bearer " + "perm:ZWZyZW1vdg==.cG9ydGFsLXRlc3Q=.7oXhUOe9mxT3Khs9lnCkm8vy3tpKqn");
-        BASE_URL = "https://youtrack.protei.ru/rest";
-
+    public CoreResponse<String> setIssueCrmNumber( String issueId, Long caseNumber ) {
         String uri = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue/"+issueId+"/execute")
-                .queryParam("command", "Номер обращения в CRM "+caseNumber)
+                .queryParam( "command", YtFields.crmNumber + " " + caseNumber )
                 .build()
                 .encode()
                 .toUriString();
 
-        CoreResponse<String> response = update( uri, String.class );
+       return update( uri, String.class );
+    }
+
+    @Override
+    public CoreResponse<String> updateIssueCrmNumber( String issueId, Long caseNumber ) {
+        read( BASE_URL + "/issue/"+issueId, Issue.class )
+                .map( issue -> {
+                    issue.getCrmNumber()
+
+                } )
+
+        return null;
     }
 
     private <T> CoreResponse<T> read( String url, Class<T> clazz ) {
@@ -191,7 +193,7 @@ public class YoutrackServiceImpl implements YoutrackService {
                 log.warn( "execute(): Can't get data from youtrack, request failed with error NOT_FOUND. url {} and class {}", url, clazz );
                 return errorSt( En_ResultStatus.NOT_FOUND );
             }
-            log.warn( "execute(): Can't get data from youtrack, request failed with status {}. url {} and class {}", errorHandler.getStatus(), url, clazz );
+            log.warn( "execute(): Can't execute youtrack request, request failed with status {}. url {} and class {}", errorHandler.getStatus(), url, clazz );
             return errorSt( En_ResultStatus.GET_DATA_ERROR );
         }
 

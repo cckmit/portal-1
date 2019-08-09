@@ -19,6 +19,7 @@ public class Issue {
 
 
 
+
     private String id;
     private String entityId;
     private List<IssueField> field;
@@ -111,6 +112,10 @@ public class Issue {
 
     public String getPriority() {
         return fromStringArrayField( getField( YtFields.priority ) );
+    }
+
+    public void getCrmNumber() {
+        return fromStringArrayField( getField( YtFields.crmNumber ) );
     }
 
     @Override

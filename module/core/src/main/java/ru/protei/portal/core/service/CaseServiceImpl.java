@@ -168,7 +168,6 @@ public class CaseServiceImpl implements CaseService {
             for (String youtrackId : youtrackIds) {
                 youtrackService.setIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
             }
-
         }
 
         if (isNotEmpty(caseObject.getTags())) {
@@ -265,6 +264,13 @@ public class CaseServiceImpl implements CaseService {
         if (mergeLinksResponse.isError()) {
             log.info("Failed to merge links for the issue {}", caseObject.getId());
             throw new ResultStatusException(mergeLinksResponse.getStatus());
+        }
+
+        if (isNotEmpty(caseObject.getLinks())) {
+            List<String> youtrackIds = stream( caseObject.getLinks() ).filter( caseLink -> YT.equals( caseLink.getType() ) ).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
+            for (String youtrackId : youtrackIds) {
+                youtrackService.updateIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
+            }
         }
 
         synchronizeTags(caseObject, authService.findSession(token));

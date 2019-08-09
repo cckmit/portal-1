@@ -20,5 +20,7 @@ public interface YoutrackService {
 
     CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId );
 
-    void setIssueCrmNumber( String issueId, Long caseNumber );
+    CoreResponse<String> setIssueCrmNumber( String issueId, Long caseNumber );
+
+    CoreResponse<String> updateIssueCrmNumber( String issueId, Long caseNumber );
 }

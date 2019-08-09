@@ -13,4 +13,5 @@ public interface YtFields {
     String description = "description";
     String summary = "summary";
     String priority = "Priority";
+    String crmNumber = "Номер обращения в CRM";
 }
