@@ -6,20 +6,20 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel styleName="card card-default">
-        <div class="card-body row">
-            <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
-            <div class="form-group col-md-12">
-                <label><ui:text from="{lang.sortBy}"/></label>
-                <div class="control-group">
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="ROLE"/>
-                    <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
+        <div class="card-body">
+            <div class="row">
+                <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.search}" styleName="form-group col-md-12"/>
+                <div class="form-group col-md-12">
+                    <label><ui:text from="{lang.sortBy}"/></label>
+                    <div class="control-group">
+                        <sortfieldselector:SortFieldSelector ui:field="sortField" type="ROLE"/>
+                        <g:ToggleButton ui:field="sortDir" styleName="btn btn-default sorting_button"/>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="card-footer">
-            <div class="text-right">
-                <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
-            </div>
+            <g:Button ui:field="resetBtn" styleName="btn btn-default" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
 </ui:UiBinder>

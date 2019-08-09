@@ -4,9 +4,9 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="main-content">
-        <div class="grid">
-            <g:HTMLPanel ui:field="tableContainer" styleName="global-table-container col-md-12">
+    <g:HTMLPanel>
+        <div class="row">
+            <g:HTMLPanel ui:field="tableContainer" styleName="col-md-12">
                 <table:TableWidget ui:field="table" styleName="table-hover "/>
             </g:HTMLPanel>
         </div>

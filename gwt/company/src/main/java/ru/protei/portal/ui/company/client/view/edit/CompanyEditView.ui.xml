@@ -90,11 +90,11 @@
                             <label>
                                 <ui:text from="{lang.phone}"/>
                             </label>
-                            <g:HTMLPanel ui:field="phonesContainer" styleName="form-control phone"/>
+                            <g:HTMLPanel ui:field="phonesContainer"/>
                         </div>
                         <div class="form-group col-md-6">
                             <label>Email</label>
-                            <g:HTMLPanel ui:field="emailsContainer" styleName="form-control"/>
+                            <g:HTMLPanel ui:field="emailsContainer"/>
                         </div>
                         <div class="form-group col-md-6">
                             <label>
@@ -115,19 +115,25 @@
             </div>
         </div>
 
-        <div ui:field="tagsPanel" class="form-group col-xs-12">
-            <label>
-                <ui:text from="{lang.tags}"/>
-            </label>
-            <div>
-                <g:Button ui:field="addTagButton" styleName="btn btn-flat btn-white">
-                    <i class="fa fa-plus"/>
-                </g:Button>
-                <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" tagCaseType="CRM_SUPPORT" showLabel="false" styleName="company-tags"/>
+        <div ui:field="tagsPanel" class="container-fluid padding-15">
+            <div class="card card-transparent no-margin">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-md-12">
+                            <label><ui:text from="{lang.tags}"/></label>
+                            <div>
+                                <g:Button ui:field="addTagButton" styleName="btn btn-flat btn-white">
+                                    <i class="fa fa-plus"/>
+                                </g:Button>
+                                <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" tagCaseType="CRM_SUPPORT" showLabel="false" styleName="company-tags"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <g:HTMLPanel  styleName="container-fluid padding-15">
+        <g:HTMLPanel  styleName="container-fluid padding-15 bg-white">
             <tab:TabWidget tabNames="{lang.contacts}|{lang.siteFolder}" styleName="">
                 <tab:pane.TabWidgetPane tabName="{lang.contacts}">
                     <g:HTMLPanel ui:field="contactsContainer"/>
@@ -139,7 +145,7 @@
             </tab:TabWidget>
         </g:HTMLPanel>
 
-        <div class="container-fluid padding-15 bg-white">
+        <div class="container-fluid padding-15">
             <div class="card card-transparent no-margin">
                 <div class="card-body">
                     <div class="text-right">

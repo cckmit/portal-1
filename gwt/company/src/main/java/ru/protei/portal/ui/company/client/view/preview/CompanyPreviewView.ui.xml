@@ -21,8 +21,8 @@
                 </p>
 
                 <p class="small">
-                    <legend><ui:text from="{lang.tags}"/></legend>
-                    <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-md-12" enabled="false" showLabel="false"/>
+                    <span class="bold"><ui:text from="{lang.tags}"/></span>
+                    <casemeta:CaseMetaView ui:field="caseMetaView" enabled="false" showLabel="false"/>
                 </p>
 
                 <p class="small">

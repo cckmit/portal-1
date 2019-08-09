@@ -13,7 +13,7 @@
                 <cleanablesearchbox:CleanableSearchBox ui:field="workPhone" placeholder="{lang.employeeWorkPhoneColumnHeader}" styleName="form-group col-md-12" addon="5-"/>
                 <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhoneColumnHeader}" styleName="form-group col-md-12" addonIcon="fa fa-phone"/>
                 <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddressColumnHeader}" styleName="form-group col-md-12" addon="IP"/>
-                <cleanablesearchbox:CleanableSearchBox ui:field="email" placeholder="{lang.employeeEmailColumnHeader}" styleName="form-group col-xs-12" addon="@"/>
+                <cleanablesearchbox:CleanableSearchBox ui:field="email" placeholder="{lang.employeeEmailColumnHeader}" styleName="form-group col-md-12" addon="@"/>
                 <div class="form-group col-md-12">
                     <label><ui:text from="{lang.sortBy}"/></label>
                     <div class="control-group">
@@ -23,7 +23,7 @@
                 </div>
             </div>
         </div>
-        <div class="footer">
+        <div class="card-footer">
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>
         </div>
     </g:HTMLPanel>
