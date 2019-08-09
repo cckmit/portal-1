@@ -19,4 +19,6 @@ public interface YoutrackService {
     Set<String> getIssueIdsByProjectAndUpdatedAfter(String projectId, Date updatedAfter);
 
     CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId );
+
+    void setIssueCrmNumber( String issueId, Long caseNumber );
 }

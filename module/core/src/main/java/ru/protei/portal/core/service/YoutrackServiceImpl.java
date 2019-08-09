@@ -133,18 +133,47 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId ) {
-        return execute( BASE_URL + "/issue/"+issueId, Issue.class )
+        return read( BASE_URL + "/issue/"+issueId, Issue.class )
                 .map( this::toInfo );
     }
 
-    private <T> CoreResponse<T> execute( String url, Class<T> clazz ) {
+    public static void main(String[] args) {
+        YoutrackServiceImpl youtrackService = new YoutrackServiceImpl();
+        youtrackService.setIssueCrmNumber("PG-208", 222L);
+    }
+
+    @Override
+    public void setIssueCrmNumber( String issueId, Long caseNumber ) {
+        authHeaders = new HttpHeaders();
+        authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        authHeaders.set("Authorization", "Bearer " + "perm:ZWZyZW1vdg==.cG9ydGFsLXRlc3Q=.7oXhUOe9mxT3Khs9lnCkm8vy3tpKqn");
+        BASE_URL = "https://youtrack.protei.ru/rest";
+
+        String uri = UriComponentsBuilder.fromHttpUrl(BASE_URL + "/issue/"+issueId+"/execute")
+                .queryParam("command", "Номер обращения в CRM "+caseNumber)
+                .build()
+                .encode()
+                .toUriString();
+
+        CoreResponse<String> response = update( uri, String.class );
+    }
+
+    private <T> CoreResponse<T> read( String url, Class<T> clazz ) {
+       return execute( url, clazz, HttpMethod.GET);
+    }
+
+    private <T> CoreResponse<T> update( String url, Class<T> clazz ) {
+       return execute( url, clazz, HttpMethod.POST);
+    }
+
+    private <T> CoreResponse<T> execute( String url, Class<T> clazz, HttpMethod httpMethod ) {
         RestTemplateResponseErrorHandler errorHandler = new RestTemplateResponseErrorHandler();
         RestTemplate ytClient = makeClient( errorHandler );
 
         ResponseEntity<T> result;
 
         try {
-            result = ytClient.exchange( url, HttpMethod.GET, new HttpEntity<>( authHeaders ), clazz );
+            result = ytClient.exchange( url, httpMethod, new HttpEntity<>( authHeaders ), clazz );
         } catch (Exception e) {
             log.warn( "execute(): Can't execute youtrack request for url {} and class {}, unexpected exception: {}", url, clazz, e );
             return errorSt( En_ResultStatus.GET_DATA_ERROR );

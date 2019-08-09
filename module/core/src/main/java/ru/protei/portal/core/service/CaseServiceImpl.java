@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
+import static ru.protei.portal.core.model.helper.CollectionUtils.isNotEmpty;
+import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 /**
  * Реализация сервиса управления обращениями
@@ -81,7 +83,7 @@ public class CaseServiceImpl implements CaseService {
         if ( caseObject.getManager() != null ) {
             caseObject.getManager().resetPrivacyInfo();
         }
-        if ( CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+        if ( isNotEmpty(caseObject.getNotifiers())) {
             caseObject.getNotifiers().forEach(Person::resetPrivacyInfo);
         }
 
@@ -132,7 +134,7 @@ public class CaseServiceImpl implements CaseService {
             log.error("Importance level message for the issue {} not saved!", caseId);
         }
 
-        if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
+        if(isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
                     caseObject.getAttachments()
                             .stream()
@@ -141,7 +143,7 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if(CollectionUtils.isNotEmpty(caseObject.getNotifiers())){
+        if(isNotEmpty(caseObject.getNotifiers())){
             caseNotifierDAO.persistBatch(
                     caseObject.getNotifiers()
                             .stream()
@@ -157,11 +159,19 @@ public class CaseServiceImpl implements CaseService {
             );
         }
 
-        if (CollectionUtils.isNotEmpty(caseObject.getLinks())) {
+        if (isNotEmpty(caseObject.getLinks())) {
             caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         }
 
-        if (CollectionUtils.isNotEmpty(caseObject.getTags())) {
+        if (isNotEmpty(caseObject.getLinks())) {
+            List<String> youtrackIds = stream( caseObject.getLinks() ).filter( caseLink -> YT.equals( caseLink.getType() ) ).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
+            for (String youtrackId : youtrackIds) {
+                youtrackService.setIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
+            }
+
+        }
+
+        if (isNotEmpty(caseObject.getTags())) {
             caseObjectTagDAO.persistBatch(
                     caseObject.getTags()
                             .stream()
@@ -282,7 +292,7 @@ public class CaseServiceImpl implements CaseService {
         caseObject.setModified(new Date());
         caseObject.setTimeElapsed(caseCommentService.getTimeElapsed(caseObject.getId()).getData());
 
-        if (CollectionUtils.isNotEmpty(caseObject.getNotifiers())) {
+        if (isNotEmpty(caseObject.getNotifiers())) {
             // update partially filled objects
             caseObject.setNotifiers(new HashSet<>(
                     personDAO.partialGetListByKeys(
