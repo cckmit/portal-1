@@ -2362,6 +2362,17 @@ a {
     cursor: pointer;
   }
 
+  &.link-broken .case-link-text{
+    background-color: lightgrey;
+    &:hover {
+      cursor:not-allowed
+    }
+  }
+
+  &.link-completed .case-link-text{
+    text-decoration: line-through;
+  }
+
   .case-link-text {
     padding: 0 2px 0 0;
     -webkit-touch-callout: none;

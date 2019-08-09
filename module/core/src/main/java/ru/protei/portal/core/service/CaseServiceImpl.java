@@ -1,6 +1,5 @@
 package ru.protei.portal.core.service;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.CaseTagQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
@@ -23,8 +23,12 @@ import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
+
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 
 /**
  * Реализация сервиса управления обращениями
@@ -84,6 +88,9 @@ public class CaseServiceImpl implements CaseService {
     @Autowired
     CaseTagService caseTagService;
 
+    @Autowired
+    YoutrackService youtrackService;
+
     @Override
     public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
 
@@ -110,10 +117,9 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
 
-        CoreResponse<List<CaseLink>> caseLinks = caseLinkService.getLinks(token, caseObject.getId());
-        if (caseLinks.isOk()) {
-            caseObject.setLinks(caseLinks.getData());
-        }
+        caseLinkService.getLinks( token, caseObject.getId() )
+                .map( this::fillYouTrackInfo )
+                .ifOk( caseLinks -> caseObject.setLinks( caseLinks ) );
 
         CoreResponse<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
         if (caseTags.isOk()) {
@@ -664,4 +670,13 @@ public class CaseServiceImpl implements CaseService {
         }
         return CaseStateWorkflowUtil.isCaseStateTransitionValid(response.getData(), caseStateFrom, caseStateTo);
     }
+
+    private List<CaseLink> fillYouTrackInfo( List<CaseLink> caseLinks ) {
+        for (CaseLink link : emptyIfNull( caseLinks )) {
+            if (!YT.equals( link.getType() ) || link.getRemoteId() == null) continue;
+            youtrackService.getIssueInfo( link.getRemoteId() ).ifOk( info -> link.setYouTrackIssueInfo( info ) );
+        }
+        return caseLinks;
+    }
+
 }

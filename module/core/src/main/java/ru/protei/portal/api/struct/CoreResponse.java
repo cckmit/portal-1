@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import java.util.Collection;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by michael on 27.06.16.
@@ -53,6 +55,10 @@ public class CoreResponse<T> {
         return this;
     }
 
+    /**
+     * Неясен смысл метода, везде применяется с errData = null
+     */
+    @Deprecated
     public CoreResponse<T> error (En_ResultStatus status, T errData) {
         this.status = status;
         this.data = errData;
@@ -78,5 +84,48 @@ public class CoreResponse<T> {
         this.status = En_ResultStatus.OK;
         this.dataAmountTotal = dataAmount;
         return this;
+    }
+
+    public static <T> CoreResponse<T> ok() {
+        return new CoreResponse<T>().success();
+    }
+
+    public static <T> CoreResponse<T> ok(T result) {
+        return new CoreResponse<T>().success(result);
+    }
+
+    public static <T> CoreResponse<T> errorSt(En_ResultStatus status) {
+        return new CoreResponse<T>().error( status );
+    }
+
+    /**
+     * Когда вызваемая функция возвращает не Result, а конкретное значение
+     */
+    public <U> CoreResponse<U> map( Function<? super T, ? extends U> mapper) {
+        if (mapper == null || !isOk())
+            return new CoreResponse<U>().error( status );
+        else {
+            return ok( mapper.apply( data ) );
+        }
+    }
+
+    /**
+     * Когда вызваемая функция возвращает Result
+     */
+    public <U> CoreResponse<U> flatMap(Function<? super T, CoreResponse<U>> mapper) {
+        if (mapper == null || !isOk())
+            return errorSt( status );
+        else {
+            return mapper.apply(data);
+        }
+    }
+
+    /**
+     * Если результрат успешен
+     */
+    public void ifOk( Consumer<? super T> consumer ) {
+        if (consumer != null && isOk()) {
+            consumer.accept( data );
+        }
     }
 }

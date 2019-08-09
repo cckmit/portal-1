@@ -129,6 +129,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
             case "Canceled":
             case "Отменен":
                 return En_CaseState.CANCELED;
+            case "Verified":
+                return En_CaseState.VERIFIED;
             default:
                 return En_CaseState.ACTIVE;
         }

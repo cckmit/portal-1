@@ -4,28 +4,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriComponentsBuilder;
+import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
-import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
-import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.yt.AttachmentResponse;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
-import ru.protei.portal.core.model.yt.fields.YtFields;
 import ru.protei.portal.util.UriUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.springframework.http.HttpStatus.Series.CLIENT_ERROR;
+import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
+import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 
 /**
  * Created by admin on 15/11/2017.
@@ -45,8 +52,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         authHeaders.set("Authorization", "Bearer " + portalConfig.data().youtrack().getAuthToken());
 
-        ytClient = new RestTemplate();
-        ((DefaultUriTemplateHandler)ytClient.getUriTemplateHandler()).setStrictEncoding( true );
+        ytClient = makeClient(null);
 
         BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
     }
@@ -73,17 +79,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         return resp.getBody().getAttachments();
     }
 
-    @Override
-    public YouTrackIssueInfo getIssueInfo( String issueId ) {
-        log.debug("getIssueInfo issueId={}", issueId);
 
-        ResponseEntity<Issue> resp = ytClient.exchange(
-                BASE_URL + "/issue/" + issueId, HttpMethod.GET,
-                new HttpEntity<>( authHeaders ), Issue.class
-        );
-
-        return map(resp.getBody());
-    }
 
     @Override
     public String createIssue(String project, String summary, String description) {
@@ -135,7 +131,45 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .collect(Collectors.toSet());
     }
 
-    private YouTrackIssueInfo map( Issue issue ) {
+    @Override
+    public CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId ) {
+        return execute( BASE_URL + "/issue/"+issueId, Issue.class )
+                .map( this::toInfo );
+    }
+
+    private <T> CoreResponse<T> execute( String url, Class<T> clazz ) {
+        RestTemplateResponseErrorHandler errorHandler = new RestTemplateResponseErrorHandler();
+        RestTemplate ytClient = makeClient( errorHandler );
+
+        ResponseEntity<T> result;
+
+        try {
+            result = ytClient.exchange( url, HttpMethod.GET, new HttpEntity<>( authHeaders ), clazz );
+        } catch (Exception e) {
+            log.warn( "execute(): Can't execute youtrack request for url {} and class {}, unexpected exception: {}", url, clazz, e );
+            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+        }
+        if (result == null) {
+            log.warn( "execute(): Can't execute youtrack request for url {} and class {}, result is null", url, clazz );
+            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+        }
+        if (HttpStatus.NOT_FOUND.equals( result.getStatusCode() )) {
+            log.warn( "execute(): Can't get data from youtrack, NOT_FOUND. url {} and class {}", url, clazz );
+            return errorSt( En_ResultStatus.NOT_FOUND );
+        }
+        if (!errorHandler.isOk()) {
+            if (HttpStatus.NOT_FOUND.equals( errorHandler.getStatus() )) {
+                log.warn( "execute(): Can't get data from youtrack, request failed with error NOT_FOUND. url {} and class {}", url, clazz );
+                return errorSt( En_ResultStatus.NOT_FOUND );
+            }
+            log.warn( "execute(): Can't get data from youtrack, request failed with status {}. url {} and class {}", errorHandler.getStatus(), url, clazz );
+            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+        }
+
+        return ok( result.getBody() );
+    }
+
+    private YouTrackIssueInfo toInfo( Issue issue ) {
         if (issue == null) return null;
         YouTrackIssueInfo issueInfo = new YouTrackIssueInfo();
         issueInfo.setId( issue.getId() );
@@ -175,7 +209,40 @@ public class YoutrackServiceImpl implements YoutrackService {
         return result;
     }
 
+    private RestTemplate makeClient( RestTemplateResponseErrorHandler errorHandler) {
+        RestTemplate template = new RestTemplate();
+        if (errorHandler != null) {
+            template.setErrorHandler( errorHandler );
+        }
+        ((DefaultUriTemplateHandler)template.getUriTemplateHandler()).setStrictEncoding( true );
+        return template;
+    }
+
 
     private final static Logger log = LoggerFactory.getLogger(YoutrackServiceImpl.class);
     private final static int MAX_ISSUES_IN_RESPONSE = Integer.MAX_VALUE;
+}
+
+class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
+
+    public boolean isOk(){
+        return errorStatus ==null ||  HttpStatus.OK.equals( errorStatus );
+    }
+
+    public HttpStatus getStatus() {
+        return errorStatus;
+    }
+
+    @Override
+    public boolean hasError( ClientHttpResponse httpResponse ) throws IOException {
+        return (CLIENT_ERROR == httpResponse.getStatusCode().series()
+                || SERVER_ERROR == httpResponse.getStatusCode().series());
+    }
+
+    @Override
+    public void handleError( ClientHttpResponse httpResponse ) throws IOException {
+        errorStatus = httpResponse.getStatusCode();
+    }
+
+    private HttpStatus errorStatus;
 }

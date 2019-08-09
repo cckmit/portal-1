@@ -124,8 +124,9 @@ public class CaseLinkServiceImpl implements CaseLinkService {
 
     @Override
     public CoreResponse<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
-        YouTrackIssueInfo issueInfo = youtrackService.getIssueInfo( ytId );
-        return new CoreResponse<YouTrackIssueInfo>().success(issueInfo);
+        return youtrackService.getIssueInfo( ytId );
+//        YouTrackIssueInfo issueInfo = youtrackService.getIssueInfo( ytId );
+//        return new CoreResponse<YouTrackIssueInfo>().success(issueInfo);
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){
