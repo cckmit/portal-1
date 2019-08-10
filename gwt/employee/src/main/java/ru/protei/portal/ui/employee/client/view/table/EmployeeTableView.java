@@ -233,6 +233,7 @@ public class EmployeeTableView extends Composite implements AbstractEmployeeTabl
     HTMLPanel pagerContainer;
 
     @Inject
+    @UiField
     Lang lang;
 
 
