@@ -185,7 +185,7 @@ public class CaseCommentListView
         activity.removeTempAttachment(event.getAttachment());
     }
 
-    @UiHandler("comment")
+    @UiHandler({"comment", "timeElapsed"})
     public void onCtrlEnterClicked(AddEvent event) {
         if (activity != null) {
             activity.onSendClicked();

@@ -66,6 +66,9 @@
                 </label>
                 <keyword:StringSelectInput ui:field="keywords"/>
             </div>
+            <div class="form-group col-xs-12">
+                <g:CheckBox ui:field="showDeprecated" styleName="checkbox" text="{lang.documentShowDeprecated}"/>
+            </div>
         </div>
         <div class="footer">
             <g:Button ui:field="resetBtn" styleName="btn btn-white" text="{lang.buttonReset}"/>

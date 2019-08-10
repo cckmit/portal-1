@@ -81,6 +81,7 @@ public class CompanyServiceTest extends BaseServiceTest {
     public void testCompanies () {
 
         Long companyId = null;
+        Long companyGroupId = null;
 
         try {
 
@@ -100,7 +101,8 @@ public class CompanyServiceTest extends BaseServiceTest {
             group.setCreated(new Date());
             group.setName("test");
             group.setInfo("test");
-            companyGroupDAO.persist(group);
+
+            companyGroupId = companyGroupDAO.persist( group );
             company.setGroupId(group.getId());
 
             CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
@@ -132,6 +134,9 @@ public class CompanyServiceTest extends BaseServiceTest {
             }
             if (companyId != null) {
                 companyDAO.removeByCondition("id=?", companyId);
+            }
+            if(companyGroupId!=null){
+                companyGroupDAO.removeByKey( companyGroupId );
             }
         }
     }

@@ -37,10 +37,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonChangePassword();
 
-    String buttonToArchive();
-
-    String buttonFromArchive();
-
     String errNoMatchesFound();
 
     String errGetList();
@@ -57,13 +53,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String description();
 
-    String productToArchive();
+    String buttonToArchive();
 
     String productName();
 
     String msgObjectSaved();
 
-    String productFromArchive();
+    String msgStatusChanged();
+
+    String buttonFromArchive();
 
     String errEmptyName();
 
@@ -565,6 +563,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String uploadFileError();
 
+    String uploadFileSizeExceed();
+
     String uploadFileSuccess();
 
     String removeFileError();
@@ -816,6 +816,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentKeywords();
 
     String documentContent();
+
+    String documentChangeStateConfirmMessage();
+
+    String documentShowDeprecated();
 
     String addKeyword();
 
@@ -1606,6 +1610,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
+    String employeeRegistrationAdditionalSoftLengthExceed(int num);
+
+    String employeeRegistrationResourceCommentLengthExceed(int num);
+
     String employeeRegistrationValidationProbationPeriod();
 
     String timeElapsedTypeNone();
@@ -1675,6 +1683,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeIPAddressColumnHeader();
 
     String employeeEmailColumnHeader();
+
+    String employeeDepartmentColumnHeader();
 
     String privateComment();
 

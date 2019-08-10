@@ -128,7 +128,7 @@ public class BootstrapService {
 
         log.info("Start update tags where company id is null, set company id {} ", companyId);
 
-        List<CaseTag> result = caseTagDAO.getListByCondition("company_id is null");
+        List<CaseTag> result = caseTagDAO.getListByCondition("case_tag.company_id is null");
         if (CollectionUtils.isEmpty(result)) {
             log.info( "Not found tags. Aborting" );
             return;

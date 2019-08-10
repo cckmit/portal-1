@@ -3,6 +3,7 @@ package ru.protei.portal.core.model.dao.impl;
 import org.apache.commons.lang3.StringUtils;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.DocumentDAO;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.DocumentQuery;
@@ -28,6 +29,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     public List<Document> getListByQuery(DocumentQuery query) {
         JdbcQueryParameters parameters = buildJdbcQueryParameters(query);
         return getList(parameters);
+    }
+
+    @Override
+    public void updateState(Document document) {
+        partialMerge(document, "state");
     }
 
     @Override
@@ -145,6 +151,11 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
             if (CollectionUtils.isNotEmpty(query.getEquipmentIds())) {
                 condition.append(" and document.equipment_id in ");
                 condition.append(HelperFunc.makeInArg(query.getEquipmentIds(), false));
+            }
+
+            if (query.getState() != null) {
+                condition.append(" and document.state=?");
+                args.add(En_DocumentState.ACTIVE.ordinal()+1);
             }
         }));
     }

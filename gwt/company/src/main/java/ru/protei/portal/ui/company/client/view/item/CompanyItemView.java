@@ -56,7 +56,7 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     @Override
     public void setEmail( String value ) {
         emailContainer.setVisible( value != null && !value.isEmpty() );
-        email.setInnerText( value == null ? "" : value );
+        email.setInnerHTML( value == null ? "" : value );
     }
 
     @Override
@@ -157,7 +157,7 @@ public class CompanyItemView extends Composite implements AbstractCompanyItemVie
     @UiField
     SpanElement phone;
     @UiField
-    AnchorElement email;
+    SpanElement email;
     @UiField
     AnchorElement website;
     @UiField

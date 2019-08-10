@@ -77,7 +77,7 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         }
 
         logger.debug("Updating comments");
-        updateComments(issue, event.getCaseComment(), endpoint);
+        updateComments(issue, event.getInitiator(), event.getCaseComment(), endpoint);
         logger.debug("Finished updating of comments");
 
         logger.debug("Copying case object changes to redmine issue");
@@ -121,9 +121,9 @@ public final class RedmineBackChannelHandler implements BackchannelEventHandler 
         issue.setSubject(newObj.getName());
     }
 
-    private void updateComments(Issue issue, CaseComment comment, RedmineEndpoint endpoint) {
+    private void updateComments(Issue issue, Person initiator, CaseComment comment, RedmineEndpoint endpoint) {
         if (comment != null && !comment.isPrivateComment() && !comment.getText().isEmpty()) {
-            issue.setNotes(RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + comment.getAuthor().getDisplayName() + ": " + comment.getText());
+            issue.setNotes(RedmineUtils.COMMENT_PROTEI_USER_PREFIX + ": " + initiator.getDisplayName() + ": " + comment.getText());
         }
     }
 

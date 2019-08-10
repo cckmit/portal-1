@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.query.CompanyQuery;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.animation.PlateListAnimation;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.common.PeriodicTaskService;
 import ru.protei.portal.ui.common.client.events.AppEvents;
 import ru.protei.portal.ui.common.client.events.CompanyEvents;
@@ -120,7 +121,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
 
         itemView.setPhone(infoFacade.allPhonesAsString());
-        itemView.setEmail(infoFacade.allEmailsAsString());
+        itemView.setEmail(EmailRender.renderToHtml(infoFacade.emailsStream()));
         itemView.setWebsite(infoFacade.getWebSite() );
         itemView.setArchived(company.isArchived());
 

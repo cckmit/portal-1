@@ -1,21 +1,15 @@
 package ru.protei.portal.ui.employee.client.view.item;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.*;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemActivity;
 import ru.protei.portal.ui.employee.client.activity.item.AbstractEmployeeItemView;
-
-import java.util.List;
 
 /**
  * Представление сотрудника
@@ -58,12 +52,9 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
     }
 
     @Override
-    public void setEmail( List<String> list ) {
-        boolean isEmpty = CollectionUtils.isEmpty( list );
-        emailContainer.setVisible( !isEmpty );
-        emails.removeAllChildren();
-        if ( isEmpty ) return;
-        list.forEach( value -> emails.appendChild( buildAnchorElement( value ) ) );
+    public void setEmail( String value ) {
+        emailContainer.setVisible(!value.isEmpty());
+        emails.setInnerHTML(value);
     }
 
     @Override
@@ -100,12 +91,6 @@ public class EmployeeItemView extends Composite implements AbstractEmployeeItemV
         return previewContainer;
     }
 
-    private Element buildAnchorElement( String value ){
-        AnchorElement anchor = DOM.createAnchor().cast();
-        anchor.setInnerText( value );
-        anchor.setHref( "mailto:" + value );
-        return anchor;
-    }
 
     @UiField
     HeadingElement name;

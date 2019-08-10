@@ -9,10 +9,10 @@
         <div class="body">
             <cleanablesearchbox:CleanableSearchBox ui:field="search" placeholder="{lang.employeeEmployeeFullNameColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-user"/>
             <cleanablesearchbox:CleanableSearchBox ui:field="workPhone" placeholder="{lang.employeeWorkPhoneColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-phone"/>
-            <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhoneColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-mobile"/>
+            <cleanablesearchbox:CleanableSearchBox ui:field="mobilePhone" placeholder="{lang.employeeMobilePhoneColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-mobile fa-1-1x"/>
             <cleanablesearchbox:CleanableSearchBox ui:field="ipAddress" placeholder="{lang.employeeIPAddressColumnHeader}" styleName="form-group col-xs-12" addon="IP"/>
             <cleanablesearchbox:CleanableSearchBox ui:field="email" placeholder="{lang.employeeEmailColumnHeader}" styleName="form-group col-xs-12" addon="@"/>
-            <cleanablesearchbox:CleanableSearchBox ui:field="department" placeholder="Подразделение" styleName="form-group col-xs-12" addonIcon="fa fa-sitemap"/>
+            <cleanablesearchbox:CleanableSearchBox ui:field="department" placeholder="{lang.employeeDepartmentColumnHeader}" styleName="form-group col-xs-12" addonIcon="fa fa-sitemap"/>
             <div class="form-group col-xs-12">
                 <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">

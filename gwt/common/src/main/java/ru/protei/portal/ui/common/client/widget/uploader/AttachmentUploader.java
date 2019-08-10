@@ -6,7 +6,9 @@ import com.google.gwt.http.client.*;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.user.client.ui.FormPanel;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.Attachment;
 
 import java.util.Date;
@@ -18,7 +20,7 @@ public class AttachmentUploader extends FileUploader{
 
     public interface FileUploadHandler{
         void onSuccess(Attachment attachment);
-        void onError();
+        void onError(En_FileUploadStatus status, String details);
     }
 
     @Override
@@ -89,18 +91,36 @@ public class AttachmentUploader extends FileUploader{
         if (uploadHandler == null) {
             return;
         }
-        Attachment attachment = createAttachment(response);
-        if (attachment == null) {
-            uploadHandler.onError();
-        } else {
-            uploadHandler.onSuccess(attachment);
+
+        UploadResult result = parseUploadResult(response);
+
+        if (En_FileUploadStatus.OK.equals(result.getStatus())) {
+            uploadHandler.onSuccess(parseAttachment(result.getDetails()));
         }
+        else {
+            uploadHandler.onError(result.getStatus(), result.getDetails());
+        }
+
     }
 
-    private Attachment createAttachment(String json){
-        if(json == null || json.isEmpty() || json.equals("error"))
-            return null;
+    private UploadResult parseUploadResult(String json){
+        UploadResult result;
 
+        if(json == null || json.isEmpty()){
+            result = new UploadResult(En_FileUploadStatus.PARSE_ERROR, "");
+        }
+        else {
+            JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
+
+            result = new UploadResult();
+            result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
+            result.setDetails(jsonObj.get("details").isString().stringValue());
+
+        }
+        return result;
+    }
+
+    private Attachment parseAttachment(String json){
         JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
 
         Attachment attachment = new Attachment();
