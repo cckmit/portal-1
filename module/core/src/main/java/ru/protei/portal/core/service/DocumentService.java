@@ -5,6 +5,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
@@ -46,6 +47,5 @@ public interface DocumentService {
     CoreResponse<SearchResult<Document>> getProjectDocuments(AuthToken token, Long projectId);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
-    @Auditable(En_AuditType.DOCUMENT_MODIFY)
-    CoreResponse changeDocumentState(AuthToken token, Document document);
+    CoreResponse changeDocumentState(AuthToken token, Long documentId, En_DocumentState state);
 }

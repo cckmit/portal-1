@@ -82,7 +82,7 @@ public abstract class ProductTableActivity implements
 
     @Override
     public void onEditClicked(DevUnit value) {
-        if (value.isActiveUnit()) {
+        if (!value.isDeprecatedUnit()) {
             fireEvent( new ProductEvents.Edit ( value.getId() ));
         }
     }
@@ -97,7 +97,7 @@ public abstract class ProductTableActivity implements
             @Override
             public void onSuccess(Boolean result) {
                 loadTable();
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new ProductEvents.ProductListChanged());
             }
         });

@@ -170,18 +170,24 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public CoreResponse changeDocumentState(AuthToken token, Document document) {
-        if (document == null ) {
+    public CoreResponse changeDocumentState(AuthToken token, Long documentId, En_DocumentState state) {
+        if (documentId == null ) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if ( documentDAO.get(document.getId()) == null ) {
+        if (!documentDAO.checkExistsByKey(documentId)) {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
 
-        documentDAO.updateState(document);
+        Document document = new Document();
+        document.setId(documentId);
+        document.setState(state);
 
-        return new CoreResponse().success();
+        if (documentDAO.updateState(document)) {
+            return new CoreResponse().success();
+        } else {
+            return new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+        }
     }
 
     @Override

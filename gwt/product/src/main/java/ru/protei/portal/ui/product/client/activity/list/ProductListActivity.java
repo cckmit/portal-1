@@ -86,7 +86,10 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
 
     @Override
     public void onEditClicked( AbstractProductItemView itemView ) {
-        fireEvent( new ProductEvents.Edit( itemViewToModel.get( itemView ).getId()  ) );
+        DevUnit value = itemViewToModel.get(itemView);
+        if (!value.isDeprecatedUnit()) {
+            fireEvent(new ProductEvents.Edit(value.getId()));
+        }
     }
 
     @Override

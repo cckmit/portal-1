@@ -281,7 +281,20 @@ public class DebugIds {
     public interface COMPANY_TABLE {
         String LOCK_ICON = "company-table-lock-icon";
     }
+
     public interface COMPANY_ITEM {
         String LOCK_ICON = "company-item-lock-icon";
+    }
+
+    public interface PRODUCT_TABLE {
+        String LOCK_ICON = "product-table-lock-icon";
+    }
+
+    public interface PRODUCT_ITEM {
+        String LOCK_ICON = "product-item-lock-icon";
+    }
+
+    public interface DOCUMENT_TABLE {
+        String LOCK_ICON = "document-table-lock-icon";
     }
 }

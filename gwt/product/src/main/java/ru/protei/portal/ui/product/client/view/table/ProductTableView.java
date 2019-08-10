@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.InfiniteTableWidget;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.DevUnit;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
@@ -113,7 +114,7 @@ public class ProductTableView extends Composite implements AbstractProductTableV
             if(!devUnit.isActiveUnit()) {
                 stringBuilder
                         .append("<div style=\"opacity: 0.7;\">")
-                        .append("<i class=\"fa fa-lock m-r-5\"></i> ")
+                        .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_TABLE.LOCK_ICON + "\"></i> ")
                         .append(devUnit.getName())
                         .append("</div>");
             }

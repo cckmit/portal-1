@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Document;
@@ -80,16 +81,15 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
-    public Boolean changeState (Document document) throws RequestFailedException {
-        if (document == null) {
-            log.error("null id in request");
-            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
-        }
-
-        log.debug("change state document, id: {}", document.getId());
+    public Boolean changeState(Long documentId, En_DocumentState state) throws RequestFailedException {
+        log.debug("change state document, id: {}", documentId);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse response = documentService.changeDocumentState(descriptor.makeAuthToken(), document);
+        CoreResponse response = documentService.changeDocumentState(descriptor.makeAuthToken(), documentId, state);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
 
         log.debug("change state document, result: {}", response.isOk() ? "ok" : response.getStatus());
 

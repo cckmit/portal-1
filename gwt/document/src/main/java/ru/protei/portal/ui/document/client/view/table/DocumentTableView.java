@@ -13,11 +13,9 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Document;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.animation.TableAnimation;
-import ru.protei.portal.ui.common.client.columns.ClickColumn;
-import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
-import ru.protei.portal.ui.common.client.columns.DownloadClickColumn;
-import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.columns.*;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.document.client.activity.table.AbstractDocumentTableActivity;
@@ -30,10 +28,14 @@ import java.util.List;
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn) {
+    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn, ArchiveClickColumn<Document> archiveClickColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.downloadClickColumn = downloadClickColumn;
+        this.archiveClickColumn = archiveClickColumn;
+
+        editClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
+        archiveClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         initTable();
     }
 
@@ -46,6 +48,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         editClickColumn.setColumnProvider(columnProvider);
 
         downloadClickColumn.setDownloadHandler(activity);
+
+        archiveClickColumn.setArchiveHandler(activity);
+        archiveClickColumn.setColumnProvider(columnProvider);
 
         project.setActionHandler(activity::onProjectColumnClicked);
 
@@ -107,6 +112,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        archiveClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
 
         columns.add(id);
         columns.add(documentName);
@@ -118,30 +124,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
+        table.addColumn(archiveClickColumn.header, archiveClickColumn.values);
     }
 
-    @UiField
-    InfiniteTableWidget<Document> table;
-
-    @UiField
-    HTMLPanel tableContainer;
-    @UiField
-    HTMLPanel previewContainer;
-    @UiField
-    HTMLPanel filterContainer;
-    @UiField
-    HTMLPanel pagerContainer;
-
-    @Inject
-    @UiField
-    Lang lang;
-
-    ClickColumnProvider<Document> columnProvider = new ClickColumnProvider<>();
-    EditClickColumn<Document> editClickColumn;
-    DownloadClickColumn<Document> downloadClickColumn;
-    List<ClickColumn<Document>> columns = new LinkedList<>();
-
-    AbstractDocumentTableActivity activity;
 
 
     private final ClickColumn<Document> id = new ClickColumn<Document>() {
@@ -187,8 +172,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
             if (!value.isActiveUnit()){
                 sb
-                        .append("<div class =\"document-name text-danger\">")
-                        .append("<i class=\"fa fa-ban m-r-5\"></i> ")
+                        .append("<div class =\"document-name\" style=\"opacity: 0.7;\">")
+                        .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_TABLE.LOCK_ICON + "\"></i> ")
                         .append(value.getName())
                         .append("</div>");
             }
@@ -224,8 +209,31 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     };
 
 
-    private static DocumentTableViewUiBinder ourUiBinder = GWT.create(DocumentTableViewUiBinder.class);
+    @UiField
+    InfiniteTableWidget<Document> table;
 
+    @UiField
+    HTMLPanel tableContainer;
+    @UiField
+    HTMLPanel previewContainer;
+    @UiField
+    HTMLPanel filterContainer;
+    @UiField
+    HTMLPanel pagerContainer;
+
+    @Inject
+    @UiField
+    Lang lang;
+
+    ClickColumnProvider<Document> columnProvider = new ClickColumnProvider<>();
+    EditClickColumn<Document> editClickColumn;
+    DownloadClickColumn<Document> downloadClickColumn;
+    ArchiveClickColumn<Document> archiveClickColumn;
+    List<ClickColumn<Document>> columns = new LinkedList<>();
+
+    AbstractDocumentTableActivity activity;
+    private static DocumentTableViewUiBinder ourUiBinder = GWT.create(DocumentTableViewUiBinder.class);
     interface DocumentTableViewUiBinder extends UiBinder<HTMLPanel, DocumentTableView> {
+
     }
 }

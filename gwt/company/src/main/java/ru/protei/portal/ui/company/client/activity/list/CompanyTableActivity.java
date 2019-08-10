@@ -93,7 +93,7 @@ public abstract class CompanyTableActivity implements
         companyService.updateState(value.getId(), !value.isArchived(), new FluentCallback<Boolean>()
                 .withSuccess(result -> {
                     loadTable();
-                    fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                    fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
                     fireEvent(new CompanyEvents.ChangeModel());
                 }));
     }

@@ -90,7 +90,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
         } else {
             Element banIcon = DOM.createElement("i");
             banIcon.addClassName("fa fa-lock m-r-5");
-            banIcon.setId(DEBUG_ID_PREFIX + DebugIds.COMPANY_ITEM.LOCK_ICON);
+            banIcon.setId(DEBUG_ID_PREFIX + DebugIds.PRODUCT_ITEM.LOCK_ICON);
 
             Element label = DOM.createLabel();
             label.setInnerText(name.getInnerText());
