@@ -121,7 +121,7 @@ public abstract class ProductListActivity implements Activity, AbstractProductIt
         itemView.setArchived(product.getStateId() > 1);
         itemView.setActivity(this);
         itemView.setEditEnabled( policyService.hasPrivilegeFor( En_Privilege.PRODUCT_EDIT ) );
-        itemView.setArchived(!product.isActiveUnit());
+        itemView.setArchived(product.isDeprecatedUnit());
 
         return itemView;
     }

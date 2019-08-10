@@ -28,8 +28,8 @@ public class ProductTableView extends Composite implements AbstractProductTableV
         this.editClickColumn = editClickColumn;
         this.archiveClickColumn = archiveClickColumn;
 
-        editClickColumn.setArchivedCheckFunction(devUnit -> !devUnit.isActiveUnit());
-        archiveClickColumn.setArchivedCheckFunction(devUnit -> !devUnit.isActiveUnit());
+        editClickColumn.setArchivedCheckFunction(DevUnit::isDeprecatedUnit);
+        archiveClickColumn.setArchivedCheckFunction(DevUnit::isDeprecatedUnit);
         initTable();
     }
 
