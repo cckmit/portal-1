@@ -100,7 +100,7 @@ public abstract class CompanyListActivity implements Activity, AbstractCompanyLi
             return;
         }
 
-        companyService.updateState(value.getId(), value.isArchived(), new FluentCallback<Boolean>()
+        companyService.updateState(value.getId(), !value.isArchived(), new FluentCallback<Boolean>()
                 .withSuccess(result -> {
                     requestCompanies();
                     fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));

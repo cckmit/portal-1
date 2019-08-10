@@ -30,8 +30,8 @@ public class DevUnitDAO_Impl extends PortalBaseJdbcDAO<DevUnit> implements DevUn
     }
 
     @Override
-    public void updateState(DevUnit newState) {
-        partialMerge(newState, "UNIT_STATE");
+    public boolean updateState(DevUnit newState) {
+        return partialMerge(newState, "UNIT_STATE");
     }
 
     @Override

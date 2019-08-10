@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductQuery;
 import ru.protei.portal.ui.common.client.activity.pager.AbstractPagerActivity;
@@ -21,7 +22,6 @@ import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * Активность таблицы продуктов
@@ -82,7 +82,25 @@ public abstract class ProductTableActivity implements
 
     @Override
     public void onEditClicked(DevUnit value) {
-        fireEvent( new ProductEvents.Edit ( value.getId() ));
+        if (value.isActiveUnit()) {
+            fireEvent( new ProductEvents.Edit ( value.getId() ));
+        }
+    }
+
+    @Override
+    public void onArchiveClicked(DevUnit value) {
+        productService.updateState(value.getId(), value.getState() == En_DevUnitState.DEPRECATED ? En_DevUnitState.ACTIVE : En_DevUnitState.DEPRECATED, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {
+            }
+
+            @Override
+            public void onSuccess(Boolean result) {
+                loadTable();
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new ProductEvents.ProductListChanged());
+            }
+        });
     }
 
     private void showPreview (DevUnit value ) {

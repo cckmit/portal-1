@@ -135,9 +135,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public HasVisibility state() { return stateBtn; }
-
-    @Override
     public HasValue<String> wikiLink() {
         return wikiLink;
     }
@@ -166,18 +163,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
         verifiableIcon.setClassName(status.getStyle());
     }
 
-    @Override
-    public void setStateBtnText(String caption) {
-        stateBtn.setText(caption);
-    }
-
-    @UiHandler( "stateBtn" )
-    public void onStateClicked (ClickEvent event)
-    {
-        if (activity != null) {
-            activity.onStateChanged();
-        }
-    }
 
     @UiHandler("saveBtn")
     public void onSaveClicked(ClickEvent event)
@@ -252,8 +237,6 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     Button saveBtn;
     @UiField
     Button cancelBtn;
-    @UiField
-    Button stateBtn;
 
     @Inject
     @UiField

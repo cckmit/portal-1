@@ -15,7 +15,7 @@ public interface AbstractProductItemView extends IsWidget {
 
     void setType (En_DevUnitType type);
 
-    void setDeprecated(boolean value);
+    void setArchived(boolean value);
 
     HasWidgets getPreviewContainer();
 
