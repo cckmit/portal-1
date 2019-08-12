@@ -1,5 +1,6 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
+import com.google.gwt.dom.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -45,6 +46,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
+
+        initCopyToClipboard(this);
     }
 
     @Event
@@ -144,13 +147,17 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Override
     public void onCopyClicked() {
-        int status = copyToClipboard(view.getCaseNumber() + " " + view.getName());
+        int status = copyToClipboard();
 
         if (status != 0) {
             fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
         } else {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
         }
+    }
+
+    private String getDataToCopy() {
+        return view.getCaseNumber() + " " + view.getName();
     }
 
     private void fillView(CaseObject value ) {
@@ -262,23 +269,22 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().add(attachs);
     }
 
-    private native int copyToClipboard(String text) /*-{
-        var textArea = document.createElement("textarea");
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
+    private native void initCopyToClipboard(IssuePreviewActivity activity) /*-{
+        function setData(e) {
+            e.preventDefault();
+            var text = activity.@ru.protei.portal.ui.issue.client.activity.preview.IssuePreviewActivity::getDataToCopy()();
+            e.clipboardData.setData('text/plain', text);
+        }
+        document.addEventListener('copy', setData);
+    }-*/;
 
+    private native int copyToClipboard() /*-{
         try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Fallback: Copying text command was ' + msg);
+            document.execCommand('copy');
             return 0;
         } catch (err) {
-            console.error('Fallback: Oops, unable to copy', err);
+            console.log(err);
             return 1;
-        } finally {
-            document.body.removeChild(textArea);
         }
     }-*/;
 
