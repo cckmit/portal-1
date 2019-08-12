@@ -586,7 +586,6 @@ public class CaseServiceImpl implements CaseService {
         managerChangeMessage.setAuthor(author);
         managerChangeMessage.setCreated(new Date());
         managerChangeMessage.setCaseId(caseId);
-        managerChangeMessage.setCaseChangeLog("");
         return caseCommentDAO.persist(managerChangeMessage);
     }
 

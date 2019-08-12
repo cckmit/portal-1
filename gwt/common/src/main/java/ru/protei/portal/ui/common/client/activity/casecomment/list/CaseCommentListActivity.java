@@ -374,8 +374,7 @@ public abstract class CaseCommentListActivity
         boolean isStateChangeComment = value.getCaseStateId() != null;
         boolean isImportanceChangeComment = value.getCaseImpLevel() != null;
         boolean isManagerChangeComment = value.getCaseManagerId() != null;
-        boolean isChangeLogComment = value.getCaseChangeLog() != null;
-        boolean isChangeComment = isStateChangeComment || isImportanceChangeComment || isManagerChangeComment || isChangeLogComment;
+        boolean isChangeComment = isStateChangeComment || isImportanceChangeComment || isManagerChangeComment;
 
         if ( HelperFunc.isEmpty( value.getText() ) && isChangeComment) {
             itemView.hideOptions();
@@ -395,10 +394,6 @@ public abstract class CaseCommentListActivity
 
         if ( isManagerChangeComment ) {
             itemView.setManager(value.getCaseManagerShortName());
-        }
-
-        if ( isChangeLogComment ) {
-            itemView.setChangeLog(value.getCaseChangeLog());
         }
 
         bindAttachmentsToComment(itemView, value.getCaseAttachments());

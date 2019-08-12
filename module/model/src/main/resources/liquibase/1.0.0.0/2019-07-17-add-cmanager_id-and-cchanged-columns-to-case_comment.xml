@@ -9,9 +9,6 @@
             <column name="cmanager_id" type="BIGINT">
                 <constraints nullable="true"/>
             </column>
-            <column name="cchange_log" type="VARCHAR(2048)">
-                <constraints nullable="true"/>
-            </column>
         </addColumn>
     </changeSet>
 

@@ -41,9 +41,6 @@ public class CaseComment extends AuditableObject {
     @JdbcJoinedColumn(localColumn = "cmanager_id", table = "Person", remoteColumn = "ID", mappedColumn = "displayShortName")
     private String caseManagerShortName;
 
-    @JdbcColumn(name="cchange_log")
-    private String caseChangeLog;
-
     @JdbcColumn(name="reply_to")
     private Long replyTo;
 
@@ -173,14 +170,6 @@ public class CaseComment extends AuditableObject {
         this.caseManagerShortName = caseManagerShortName;
     }
 
-    public String getCaseChangeLog() {
-        return caseChangeLog;
-    }
-
-    public void setCaseChangeLog(String caseChangeLog) {
-        this.caseChangeLog = caseChangeLog;
-    }
-
     public Long getReplyTo() {
         return replyTo;
     }
@@ -302,7 +291,6 @@ public class CaseComment extends AuditableObject {
                 ", caseImpLevel=" + caseImpLevel +
                 ", caseManagerId=" + caseManagerId +
                 ", caseManagerShortName='" + caseManagerShortName + '\'' +
-                ", caseChangeLog='" + caseChangeLog + '\'' +
                 ", replyTo=" + replyTo +
                 ", vroomId=" + vroomId +
                 ", text='" + text + '\'' +
