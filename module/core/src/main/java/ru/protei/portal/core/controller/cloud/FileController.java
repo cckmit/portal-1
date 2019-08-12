@@ -196,7 +196,7 @@ public class FileController {
         for (Base64Facade currB64facade : base64Facades) {
             UploadResult result = checkInputParams(ud, currB64facade);
 
-            if ((result != null) && (result.getStatus() != En_FileUploadStatus.SIZE_EXCEED_ERROR)) {
+            if (result != null) {
                 removeFiles(attachments);
                 return uploadResultSerialize(result);
             }
