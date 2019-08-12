@@ -192,7 +192,7 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     private CoreResponse<String> removeCrmNumberIfSame( String issueId, Long crmNumber, Long caseNumber ) {
         if (Objects.equals( crmNumber, caseNumber )) {
-            return   update( makeYoutrackCommand( issueId, YtFields.crmNumber, String.valueOf( crmNumber )), String.class );
+            return   update( makeYoutrackCommand( issueId, YtFields.crmNumber, YtFields.crmNumberEmptyValue), String.class );
         }
         return ok();
     }
@@ -244,10 +244,10 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         if (!errorHandler.isOk()) {
             if (HttpStatus.NOT_FOUND.equals( errorHandler.getStatus() )) {
-                log.warn( "execute(): Can't get data from youtrack, request failed with error NOT_FOUND. url {} and {}", url, clazz );
+                log.warn( "execute(): Can't get data from youtrack, request failed with error NOT_FOUND. url {} and {} message: {}", url, clazz, result.getBody() );
                 return errorSt( En_ResultStatus.NOT_FOUND );
             }
-            log.warn( "execute(): Can't execute youtrack request, request failed with status {}. url {} and {}", errorHandler.getStatus(), url, clazz );
+            log.warn( "execute(): Can't execute youtrack request, request failed with status {}. url {} and {} message: {} ", errorHandler.getStatus(), url, clazz, result.getBody() );
             return errorSt( En_ResultStatus.GET_DATA_ERROR );
         }
 
@@ -327,7 +327,12 @@ class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
     @Override
     public void handleError( ClientHttpResponse httpResponse ) throws IOException {
         errorStatus = httpResponse.getStatusCode();
+        log.warn( "handleError(): Youtrack http api request error. status code: {} : {}"
+                , httpResponse.getStatusCode()
+                , httpResponse.getStatusText()
+        );
     }
 
     private HttpStatus errorStatus;
+    private final static Logger log = LoggerFactory.getLogger(RestTemplateResponseErrorHandler.class);
 }
