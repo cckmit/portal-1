@@ -8,7 +8,6 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
-import ru.protei.portal.core.service.YoutrackService;
 import ru.protei.portal.ui.common.client.service.CaseLinkController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;

@@ -15,6 +15,8 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.dao.YoutrackDAO;
+import ru.protei.portal.core.dao.YoutrackDaoImpl;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
@@ -487,6 +489,11 @@ public class MainConfiguration {
     @Bean
     public WorkerEntryShortViewDAO getWorkerEntryShortViewDAO() {
         return  new WorkerEntryShortViewDAO_Impl();
+    }
+
+    @Bean
+    public YoutrackDAO getYoutrackDAO() {
+        return new YoutrackDaoImpl();
     }
 
     /* SERVICES */

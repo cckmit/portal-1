@@ -10,24 +10,24 @@ import java.util.List;
 import java.util.Set;
 
 public interface YoutrackService {
-    List<YtAttachment> getIssueAttachments(String issueId);
+    CoreResponse<List<YtAttachment>> getIssueAttachments(String issueId);
 
-    ChangeResponse getIssueChanges(String issueId);
+    CoreResponse<ChangeResponse> getIssueChanges(String issueId);
 
-    String createIssue(String project, String summary, String description);
+    CoreResponse<String> createIssue(String project, String summary, String description);
 
-    Set<String> getIssueIdsByProjectAndUpdatedAfter(String projectId, Date updatedAfter);
+    CoreResponse<Set<String>> getIssueIdsByProjectAndUpdatedAfter(String projectId, Date updatedAfter);
 
     CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId );
 
     /**
-     * Установить caseNumber только если номера нет или номер не равен caseNumber
+     * Установить caseNumber только если номер не равен caseNumber
      * (Не затирать историю изменений youtrack)
      */
     CoreResponse<String> compareAndSetIssueCrmNumber( String issueId, Long caseNumber );
 
     /**
-     * Оновить caseNumber только если номера нет или номер не равен caseNumber
+     * Обновить caseNumber только если номер не равен caseNumber
      * (Не затирать историю изменений youtrack)
      */
     CoreResponse<String> compareAndUpdateIssueCrmNumber( String issueId, Long caseNumber );

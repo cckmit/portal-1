@@ -12,6 +12,8 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.dao.YoutrackDAO;
+import ru.protei.portal.core.dao.YoutrackDaoImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -379,6 +381,11 @@ public class MainTestsConfiguration {
         return  new WorkerEntryShortViewDAO_Impl();
     }
 
+    @Bean
+    public YoutrackDAO getYoutrackDAO() {
+        return new YoutrackDaoImpl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -535,8 +542,8 @@ public class MainTestsConfiguration {
     }
 
     @Bean
-    public YoutrackService getYoutrackService() {
-        return new YoutrackServiceImpl();
+    public YoutrackDAO getYoutrackService() {
+        return new YoutrackDaoImpl();
     }
 
     @Bean

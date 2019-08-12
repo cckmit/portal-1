@@ -11,7 +11,6 @@ import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseLinkDAO;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseLink;
-import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
@@ -127,8 +126,6 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Override
     public CoreResponse<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId ) {
         return youtrackService.getIssueInfo( ytId );
-//        YouTrackIssueInfo issueInfo = youtrackService.getIssueInfo( ytId );
-//        return new CoreResponse<YouTrackIssueInfo>().success(issueInfo);
     }
 
     @Override
