@@ -1,6 +1,5 @@
 package ru.protei.portal.ui.issue.client.activity.preview;
 
-import com.google.gwt.dom.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -19,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -46,8 +46,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
             }
         });
-
-        initCopyToClipboard(this);
     }
 
     @Event
@@ -147,17 +145,13 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Override
     public void onCopyClicked() {
-        int status = copyToClipboard();
+        int status = ClipboardUtils.copyToClipboard("CRM-" + caseObject.getCaseNumber() + " " + caseObject.getName());
 
         if (status != 0) {
             fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
         } else {
             fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
         }
-    }
-
-    private String getDataToCopy() {
-        return view.getCaseNumber() + " " + view.getName();
     }
 
     private void fillView(CaseObject value ) {
@@ -209,6 +203,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withPrivateCase(isPrivateCase)
                 .withTextMarkup(textMarkup)
                 .build());
+
+        this.caseObject = value;
     }
 
     private void fillSubscriptions( CaseObject value ) {
@@ -269,25 +265,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.attachmentsContainer().add(attachs);
     }
 
-    private native void initCopyToClipboard(IssuePreviewActivity activity) /*-{
-        function setData(e) {
-            e.preventDefault();
-            var text = activity.@ru.protei.portal.ui.issue.client.activity.preview.IssuePreviewActivity::getDataToCopy()();
-            e.clipboardData.setData('text/plain', text);
-        }
-        document.addEventListener('copy', setData);
-    }-*/;
-
-    private native int copyToClipboard() /*-{
-        try {
-            document.execCommand('copy');
-            return 0;
-        } catch (err) {
-            console.log(err);
-            return 1;
-        }
-    }-*/;
-
     @Inject
     Lang lang;
     @Inject
@@ -308,4 +285,5 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private boolean isPrivateCase;
     private En_TextMarkup textMarkup;
     private AppEvents.InitDetails initDetails;
+    private CaseObject caseObject;
 }

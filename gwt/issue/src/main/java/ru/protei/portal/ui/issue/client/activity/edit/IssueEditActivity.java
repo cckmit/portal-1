@@ -24,6 +24,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.*;
 
@@ -247,7 +248,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCopyClicked() {
-        int status = copyToClipboard(view.getNumber() + " " + view.name().getValue());
+        int status = ClipboardUtils.copyToClipboard("CRM-" + issue.getCaseNumber() + " " + view.name().getValue());
 
         if (status != 0) {
             fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
@@ -496,26 +497,6 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
     private boolean isLockedSave() {
         return saving;
     }
-
-    private native int copyToClipboard(String text) /*-{
-        var textArea = document.createElement("textarea");
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-
-        try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Fallback: Copying text command was ' + msg);
-            return 0;
-        } catch (err) {
-            console.error('Fallback: Oops, unable to copy', err);
-            return 1;
-        } finally {
-            document.body.removeChild(textArea);
-        }
-    }-*/;
 
     @Inject
     AbstractIssueEditView view;
