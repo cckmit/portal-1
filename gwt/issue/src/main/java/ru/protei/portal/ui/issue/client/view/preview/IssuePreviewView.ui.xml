@@ -8,8 +8,7 @@
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
     <g:HTMLPanel styleName="panel footer-fixable">
         <div class="body">
-            <g:HTMLPanel styleName="preview-wrapper grid">
-                <g:HTMLPanel ui:field="preview" styleName="preview">
+                <g:HTMLPanel ui:field="preview" styleName="preview preview-wrapper grid">
                     <div class="col-xs-12">
                         <i ui:field="privateIssue" class="fa fa-lg fa-unlock-alt pull-left"/>
                         <g:Anchor ui:field="fullScreen" styleName="fa fa-lg fa-external-link pull-right" href="#"/>
@@ -97,7 +96,6 @@
                     </fieldset>
                     <legend><ui:text from="{lang.comments}"/></legend>
                     <g:HTMLPanel ui:field="commentsContainer" styleName="col-xs-12 col-md-12"/>
-                </g:HTMLPanel>
             </g:HTMLPanel>
         </div>
         <div class="footer">
