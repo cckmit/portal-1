@@ -42,7 +42,7 @@
             <div ui:field="sortByContainer" class="form-group col-xs-12 resize-xs-6">
                 <label><ui:text from="{lang.sortBy}"/></label>
                 <div class="control-group">
-                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="ISSUE" />
+                    <sortfieldselector:SortFieldSelector ui:field="sortField" type="REPORT" />
                     <g:ToggleButton ui:field="sortDir" styleName="btn empty btn-white sorting_button"/>
                 </div>
             </div>
