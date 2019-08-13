@@ -165,7 +165,7 @@ public class CaseServiceImpl implements CaseService {
         if (isNotEmpty(caseObject.getLinks())) {
             List<String> youtrackIds = selectYouTrackLinkRemoteIds( caseObject.getLinks() );
             for (String youtrackId : youtrackIds) {
-                youtrackService.compareAndSetIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
+                youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseObject.getCaseNumber());
             }
         }
 
@@ -329,11 +329,11 @@ public class CaseServiceImpl implements CaseService {
                 diffCollection( selectYouTrackLinkRemoteIds( oldLinks ), selectYouTrackLinkRemoteIds( newLinks ) );
 
         for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getRemovedEntries())) {
-            youtrackService.compareAndRemoveIssueCrmNumber( youtrackId, caseNumber);
+            youtrackService.removeIssueCrmNumberIfSame( youtrackId, caseNumber);
         }
 
         for (String youtrackId : emptyIfNull( youTrackLinkIdsDiff.getAddedEntries())) {
-            youtrackService.compareAndUpdateIssueCrmNumber( youtrackId, caseNumber );
+            youtrackService.setIssueCrmNumberIfDifferent( youtrackId, caseNumber );
         }
     }
 

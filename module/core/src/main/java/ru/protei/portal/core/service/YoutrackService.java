@@ -21,20 +21,14 @@ public interface YoutrackService {
     CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId );
 
     /**
-     * Установить caseNumber только если номер не равен caseNumber
+     * Установить caseNumber только если номер crm в youtrack не равен caseNumber
      * (Не затирать историю изменений youtrack)
      */
-    CoreResponse<String> compareAndSetIssueCrmNumber( String issueId, Long caseNumber );
+    CoreResponse<String> setIssueCrmNumberIfDifferent( String issueId, Long caseNumber );
 
     /**
-     * Обновить caseNumber только если номер не равен caseNumber
+     * Удалить caseNumber только если номер crm в youtrack равен caseNumber
      * (Не затирать историю изменений youtrack)
      */
-    CoreResponse<String> compareAndUpdateIssueCrmNumber( String issueId, Long caseNumber );
-
-    /**
-     * Удалить caseNumber только если номер равен caseNumber
-     * (Не затирать историю изменений youtrack)
-     */
-    CoreResponse<String> compareAndRemoveIssueCrmNumber( String youtrackId, Long caseNumber );
+    CoreResponse<String> removeIssueCrmNumberIfSame( String youtrackId, Long caseNumber );
 }

@@ -3,7 +3,6 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.dao.YoutrackDAO;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
@@ -59,26 +58,26 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Override
-    public CoreResponse<String> compareAndSetIssueCrmNumber( String issueId, Long caseNumber ) {
+    public CoreResponse<String> setIssueCrmNumberIfDifferent( String issueId, Long caseNumber ) {
         if (issueId == null || caseNumber == null) {
             log.warn( "setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         return youtrackDao.getIssue( issueId )
-                .flatMap( issue -> updateCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
+                .flatMap( issue -> replaceCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
-    @Override
-    public CoreResponse<String> compareAndUpdateIssueCrmNumber( String issueId, Long caseNumber ) {
-        if (issueId == null || caseNumber == null) {
-            log.warn( "updateIssueCrmNumber(): Can't update youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
-            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
-        }
-
-        return youtrackDao.getIssue( issueId )
-                .flatMap( issue -> updateCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
-    }
+//    @Override
+//    public CoreResponse<String> compareAndUpdateIssueCrmNumber( String issueId, Long caseNumber ) {
+//        if (issueId == null || caseNumber == null) {
+//            log.warn( "updateIssueCrmNumber(): Can't update youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
+//            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+//        }
+//
+//        return youtrackDao.getIssue( issueId )
+//                .flatMap( issue -> updateCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
+//    }
 
 //
 //    public static void main(String[] args) {
@@ -98,7 +97,7 @@ public class YoutrackServiceImpl implements YoutrackService {
 
 
     @Override
-    public CoreResponse<String> compareAndRemoveIssueCrmNumber( String issueId, Long caseNumber ) {
+    public CoreResponse<String> removeIssueCrmNumberIfSame( String issueId, Long caseNumber ) {
         if (issueId == null || caseNumber == null) {
             log.warn( "removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber  );
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
@@ -115,12 +114,12 @@ public class YoutrackServiceImpl implements YoutrackService {
         return ok();
     }
 
-    private CoreResponse<String> updateCrmNumberIfDifferent( String issueId, Long crmNumber, Long caseNumber ) {
+    private CoreResponse<String> replaceCrmNumberIfDifferent( String issueId, Long crmNumber, Long caseNumber ) {
         if (Objects.equals( crmNumber, caseNumber )) {
             return ok();
         }
 
-        return youtrackDao.updateCrmNumber( issueId, caseNumber );
+        return youtrackDao.setCrmNumber( issueId, caseNumber );
     }
 
     private YouTrackIssueInfo convertToInfo( Issue issue ) {

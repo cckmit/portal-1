@@ -22,5 +22,5 @@ public interface YoutrackDAO {
 
     CoreResponse<String> removeCrmNumber( String issueId );
 
-    CoreResponse<String> updateCrmNumber( String issueId, Long caseNumber );
+    CoreResponse<String> setCrmNumber( String issueId, Long caseNumber );
 }

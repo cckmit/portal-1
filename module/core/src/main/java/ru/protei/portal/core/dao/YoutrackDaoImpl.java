@@ -101,7 +101,7 @@ public class YoutrackDaoImpl implements YoutrackDAO {
     }
 
     @Override
-    public CoreResponse<String> updateCrmNumber( String issueId, Long caseNumber ) {
+    public CoreResponse<String> setCrmNumber( String issueId, Long caseNumber ) {
         return update( makeYoutrackCommand( issueId, YtFields.crmNumber, String.valueOf( caseNumber ) ), String.class );
     }
 
