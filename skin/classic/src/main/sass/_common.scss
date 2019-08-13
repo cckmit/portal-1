@@ -3435,3 +3435,26 @@ label {
 .prepend-fix {
   width: 15px;
 }
+.number-copy-panel {
+  display: inline-block!important;
+  .copy-issue-description {
+    margin-left: 3px;
+    display: none;
+    .far {
+      color: #929292;
+    }
+    &:hover {
+      .far {
+        color: #5698d3;
+      }
+    }
+  }
+
+  &:hover {
+    .copy-issue-description {
+      display: inline-block;
+    }
+  }
+}
+
+

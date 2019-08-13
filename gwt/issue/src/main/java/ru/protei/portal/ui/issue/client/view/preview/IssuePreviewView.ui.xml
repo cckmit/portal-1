@@ -15,8 +15,13 @@
 
 
                     <h4 class="no-margin inline">
-                        <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
-                        <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
+                        <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
+                            <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
+                            <g:Anchor ui:field="number" styleName="full-screen-link" href="#"/>
+                            <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
+                                <i class="far fa-clone fa-xs"/>
+                            </g:Anchor>
+                        </g:HTMLPanel>
                     </h4>
                     <div class="inline pull-right">
                         <small>

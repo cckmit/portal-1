@@ -1755,4 +1755,12 @@ public interface Lang extends Messages, ContactItemLang {
     String errFilterParameterRequired();
 
     String firstHundredRecords();
+
+    String issueCopyToClipboard();
+
+    String errCopyToClipboard();
+
+    String issueCopiedToClipboard();
+
+    String crmPrefix();
 }

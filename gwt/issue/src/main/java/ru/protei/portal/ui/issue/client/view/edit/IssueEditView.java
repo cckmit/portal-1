@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -31,9 +30,9 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.AttachmentList;
 import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.casemeta.CaseMetaView;
+import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
-import ru.protei.portal.ui.common.client.widget.issuestate.IssueStateButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.company.CompanySelector;
 import ru.protei.portal.ui.common.client.widget.selector.dict.ImportanceButtonSelector;
 import ru.protei.portal.ui.common.client.widget.selector.person.EmployeeButtonSelector;
@@ -70,12 +69,14 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         initiator.setDefaultValue(lang.selectIssueInitiator());
         initiator.setAddButtonText(lang.personCreateNew());
         description.setRenderer((text, consumer) -> activity.renderMarkupText(text, consumer));
-        description.setDisplayPreviewHandler( new MarkdownAreaWithPreview.DisplayPreviewHandler() {
+        description.setDisplayPreviewHandler(new MarkdownAreaWithPreview.DisplayPreviewHandler() {
             @Override
-            public void onDisplayPreviewChanged( boolean isDisplay ) {
-                activity.onDisplayPreviewChanged( DESCRIPTION, isDisplay );
+            public void onDisplayPreviewChanged(boolean isDisplay) {
+                activity.onDisplayPreviewChanged(DESCRIPTION, isDisplay);
             }
-        } );
+        });
+
+        copy.getElement().setAttribute("title", lang.issueCopyToClipboard());
     }
 
     @Override
@@ -156,22 +157,58 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Override
     public HasValue<Set<CaseLink>> links() {
         return new HasValue<Set<CaseLink>>() {
-            @Override public Set<CaseLink> getValue() { return caseMetaView.getLinks(); }
-            @Override public void setValue(Set<CaseLink> value) { caseMetaView.setLinks(value); }
-            @Override public void setValue(Set<CaseLink> value, boolean fireEvents) { caseMetaView.setLinks(value); }
-            @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) { return null; }
-            @Override public void fireEvent(GwtEvent<?> event) {}
+            @Override
+            public Set<CaseLink> getValue() {
+                return caseMetaView.getLinks();
+            }
+
+            @Override
+            public void setValue(Set<CaseLink> value) {
+                caseMetaView.setLinks(value);
+            }
+
+            @Override
+            public void setValue(Set<CaseLink> value, boolean fireEvents) {
+                caseMetaView.setLinks(value);
+            }
+
+            @Override
+            public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseLink>> handler) {
+                return null;
+            }
+
+            @Override
+            public void fireEvent(GwtEvent<?> event) {
+            }
         };
     }
 
     @Override
     public HasValue<Set<CaseTag>> tags() {
         return new HasValue<Set<CaseTag>>() {
-            @Override public Set<CaseTag> getValue() { return caseMetaView.getTags(); }
-            @Override public void setValue(Set<CaseTag> value) { caseMetaView.setTags(value); }
-            @Override public void setValue(Set<CaseTag> value, boolean fireEvents) { caseMetaView.setTags(value); }
-            @Override public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) { return null; }
-            @Override public void fireEvent(GwtEvent<?> event) {}
+            @Override
+            public Set<CaseTag> getValue() {
+                return caseMetaView.getTags();
+            }
+
+            @Override
+            public void setValue(Set<CaseTag> value) {
+                caseMetaView.setTags(value);
+            }
+
+            @Override
+            public void setValue(Set<CaseTag> value, boolean fireEvents) {
+                caseMetaView.setTags(value);
+            }
+
+            @Override
+            public HandlerRegistration addValueChangeHandler(ValueChangeHandler<Set<CaseTag>> handler) {
+                return null;
+            }
+
+            @Override
+            public void fireEvent(GwtEvent<?> event) {
+            }
         };
     }
 
@@ -196,7 +233,9 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasValidable companyValidator() { return company; }
+    public HasValidable companyValidator() {
+        return company;
+    }
 
     @Override
     public HasEnabled initiatorState() {
@@ -204,7 +243,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasVisibility numberVisibility(){
+    public HasVisibility numberVisibility() {
         return number;
     }
 
@@ -219,12 +258,12 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public HasAttachments attachmentsContainer(){
+    public HasAttachments attachmentsContainer() {
         return attachmentContainer;
     }
 
     @Override
-    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler){
+    public void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler) {
         fileUploader.setUploadHandler(handler);
     }
 
@@ -260,7 +299,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setNumber(Integer num) {
-        if ( num == null ) {
+        if (num == null) {
             number.setText("");
             return;
         }
@@ -268,6 +307,10 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         number.setText("CRM-" + num);
     }
 
+    @Override
+    public String getNumber() {
+        return number.getText();
+    }
 
     @Override
     public HasVisibility caseSubscriptionContainer() {
@@ -283,8 +326,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
             }
 
             @Override
-            public void setVisible( boolean b ) {
-                local.setVisible( b );
+            public void setVisible(boolean b) {
+                local.setVisible(b);
             }
         };
     }
@@ -301,7 +344,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     @Override
     public void setTimeElapseTypeVisibility(boolean isVisible) {
-        timeElapsedType.setVisible( isVisible );
+        timeElapsedType.setVisible(isVisible);
     }
 
     @Override
@@ -345,26 +388,27 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
-    public void setDescriptionPreviewAllowed( boolean isPreviewAllowed ) {
-        description.setDisplayPreview( isPreviewAllowed );
+    public void setDescriptionPreviewAllowed(boolean isPreviewAllowed) {
+        description.setDisplayPreview(isPreviewAllowed);
     }
 
-    @UiHandler( "company" )
-    public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
-        if ( activity != null ) {
+    @UiHandler("company")
+    public void onChangeCompany(ValueChangeEvent<EntityOption> event) {
+        if (activity != null) {
             activity.onCompanyChanged();
         }
     }
 
-    @UiHandler( "saveButton" )
-    public void onSaveClicked( ClickEvent event ) {
-        if ( activity != null ) {
+    @UiHandler("saveButton")
+    public void onSaveClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onSaveClicked();
         }
     }
-    @UiHandler( "cancelButton" )
-    public void onCancelClicked( ClickEvent event ) {
-        if ( activity != null ) {
+
+    @UiHandler("cancelButton")
+    public void onCancelClicked(ClickEvent event) {
+        if (activity != null) {
             activity.onCancelClicked();
         }
 
@@ -387,9 +431,16 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         }
     }
 
+    @UiHandler("copy")
+    public void onCopyClick(ClickEvent event) {
+        if (activity != null) {
+            activity.onCopyClicked();
+        }
+    }
+
     @Override
     public void showComments(boolean isShow) {
-        if(isShow)
+        if (isShow)
             comments.removeClassName(UiConstants.Styles.HIDE);
         else
             comments.addClassName(UiConstants.Styles.HIDE);
@@ -422,6 +473,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE.ATTACHMENT_LIST_CONTAINER);
         saveButton.ensureDebugId(DebugIds.ISSUE.SAVE_BUTTON);
         cancelButton.ensureDebugId(DebugIds.ISSUE.CANCEL_BUTTON);
+        copy.ensureDebugId(DebugIds.ISSUE.COPY_TO_CLIPBOARD_BUTTON);
 
         nameLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.NAME);
         caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
@@ -451,7 +503,13 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     ToggleButton local;
 
     @UiField
+    Anchor copy;
+
+    @UiField
     Label number;
+
+    @UiField
+    HTMLPanel numberCopyPanel;
 
     @Inject
     @UiField(provided = true)
@@ -549,6 +607,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
 
     private AbstractIssueEditActivity activity;
 
-    interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {}
+    interface IssueEditViewUiBinder extends UiBinder<HTMLPanel, IssueEditView> {
+    }
+
     private static IssueEditViewUiBinder ourUiBinder = GWT.create(IssueEditViewUiBinder.class);
 }

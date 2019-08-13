@@ -35,13 +35,18 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setContact(String value );
     void setManager( String value );
     void setName( String value );
-    void setInfo( String value );
+
+    String getName();
+
+    void setInfo(String value );
     void setSubscriptionEmails( String value );
     HasTime timeElapsed();
     HasVisibility timeElapsedContainerVisibility();
 
     HasWidgets getCommentsContainer();
     HasAttachments attachmentsContainer();
+
+    String getCaseNumber();
 
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     boolean isAttached();

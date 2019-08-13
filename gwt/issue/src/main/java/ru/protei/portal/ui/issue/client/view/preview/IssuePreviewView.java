@@ -2,7 +2,10 @@ package ru.protei.portal.ui.issue.client.view.preview;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.debug.client.DebugInfo;
-import com.google.gwt.dom.client.*;
+import com.google.gwt.dom.client.DivElement;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.HeadingElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -15,8 +18,8 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseTag;
 import ru.protei.portal.test.client.DebugIds;
-import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
+import ru.protei.portal.ui.common.client.common.ImportanceStyleProvider;
 import ru.protei.portal.ui.common.client.lang.En_CaseImportanceLang;
 import ru.protei.portal.ui.common.client.lang.En_CaseStateLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -127,6 +130,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public String getName() {
+        return name.getInnerText();
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerHTML( value );
     }
@@ -150,6 +158,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     public void setCaseNumber(Long caseNumber) {
         number.setText("CRM-" + caseNumber);
         fileUploader.autoBindingToCase(En_CaseType.CRM_SUPPORT, caseNumber);
+    }
+
+    @Override
+    public String getCaseNumber() {
+        return number.getText();
     }
 
     @Override
@@ -193,6 +206,13 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         activity.removeAttachment(event.getAttachment());
     }
 
+    @UiHandler("copy")
+    public void onCopyClick(ClickEvent event) {
+        if ( activity != null ) {
+            activity.onCopyClicked();
+        }
+    }
+
     private void ensureDebugIds() {
         if (!DebugInfo.isDebugIdEnabled()) {
             return;
@@ -213,6 +233,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO_LABEL);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);
+        copy.ensureDebugId(DebugIds.ISSUE_PREVIEW.COPY_TO_CLIPBOARD_BUTTON);
     }
 
     @UiField
@@ -266,12 +287,16 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     Element author;
     @UiField
     HTMLPanel backButtonContainer;
+    @UiField
+    Anchor copy;
     @Inject
     En_CaseImportanceLang caseImportanceLang;
     @Inject
     En_CaseStateLang caseStateLang;
     @Inject
     FixedPositioner positioner;
+    @UiField
+    HTMLPanel numberCopyPanel;
 
     AbstractIssuePreviewActivity activity;
 

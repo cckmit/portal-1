@@ -18,6 +18,7 @@ import ru.protei.portal.ui.common.client.service.AttachmentServiceAsync;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.service.IssueControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
+import ru.protei.portal.ui.common.client.util.ClipboardUtils;
 import ru.protei.portal.ui.common.client.widget.uploader.AttachmentUploader;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
@@ -142,7 +143,19 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
 
+    @Override
+    public void onCopyClicked() {
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber() + " " + caseObject.getName());
+
+        if (status != 0) {
+            fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
+        } else {
+            fireEvent(new NotifyEvents.Show(lang.issueCopiedToClipboard(), NotifyEvents.NotifyType.SUCCESS));
+        }
+    }
+
     private void fillView(CaseObject value ) {
+        this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
@@ -271,4 +284,5 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     private boolean isPrivateCase;
     private En_TextMarkup textMarkup;
     private AppEvents.InitDetails initDetails;
+    private CaseObject caseObject;
 }

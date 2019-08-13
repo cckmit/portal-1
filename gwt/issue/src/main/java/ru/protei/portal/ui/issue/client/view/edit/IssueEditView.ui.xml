@@ -19,8 +19,13 @@
         <div class="card-body">
             <div class="row p-b-10">
                 <h5 class="no-margin col-md-12">
-                    <g:ToggleButton ui:field="local" styleName="btn private-btn m-r-5 inline-block"/>
-                    <g:Label ui:field="number" styleName="inline-block"/>
+                    <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
+                        <g:ToggleButton ui:field="local" styleName="btn private-btn m-r-5 inline-block"/>
+                        <g:Label ui:field="number" styleName="inline-block"/>
+                        <g:Anchor ui:field="copy" styleName="copy-issue-description" href="#">
+                            <i class="far fa-clone fa-xs"/>
+                        </g:Anchor>
+                    </g:HTMLPanel>
                 </h5>
             </div>
 
