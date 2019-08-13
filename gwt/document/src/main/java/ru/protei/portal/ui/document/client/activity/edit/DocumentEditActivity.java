@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CustomerType;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
+import ru.protei.portal.core.model.dict.En_DocumentState;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -14,10 +15,7 @@ import ru.protei.portal.core.model.struct.ProjectInfo;
 import ru.protei.portal.core.model.view.EquipmentShortView;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.AppEvents;
-import ru.protei.portal.ui.common.client.events.AuthEvents;
-import ru.protei.portal.ui.common.client.events.DocumentEvents;
-import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.*;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.DocumentControllerAsync;
 import ru.protei.portal.ui.common.client.widget.document.uploader.UploadHandler;
@@ -79,6 +77,32 @@ public abstract class DocumentEditActivity
                 }
             });
         }
+    }
+
+    @Event
+    public void onConfirmStateChange(ConfirmDialogEvents.Confirm event) {
+        if (!event.identity.equals(getClass().getName())) {
+            return;
+        }
+
+        document.setState(document.isActiveUnit() ? En_DocumentState.DEPRECATED : En_DocumentState.ACTIVE);
+
+        documentService.changeState(document, new RequestCallback<Boolean>() {
+            @Override
+            public void onError(Throwable throwable) {}
+
+            @Override
+            public void onSuccess(Boolean result) {
+                fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
+                fireEvent(new DocumentEvents.ChangeModel());
+                fireEvent(new Back());
+            }
+        });
+    }
+
+    @Override
+    public void onStateChanged() {
+        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.documentChangeStateConfirmMessage()));
     }
 
     @Override
@@ -219,6 +243,7 @@ public abstract class DocumentEditActivity
 
             @Override
             public void onSuccess(Document result) {
+                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
                 fireEvent(new DocumentEvents.ChangeModel());
                 fireEvent(new Back());
             }
@@ -261,6 +286,7 @@ public abstract class DocumentEditActivity
         d.setProjectId(view.project().getValue() == null? null : view.project().getValue().getId());
         d.setEquipment(view.equipment().getValue() == null ? null : new Equipment(view.equipment().getValue().getId()));
         d.setApproved(view.isApproved().getValue());
+        d.setState(document.getState());
         return d;
     }
     private void fillView(Document document) {
@@ -300,6 +326,9 @@ public abstract class DocumentEditActivity
         view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
 
         view.nameValidator().setValid(true);
+
+        view.setStateButtonVisible().setVisible(!isNew);
+        view.setStateButtonText(document.isActiveUnit() ? lang.buttonToArchive() : lang.buttonFromArchive());
 
         view.resetFilename();
         view.documentUploader().resetAction();

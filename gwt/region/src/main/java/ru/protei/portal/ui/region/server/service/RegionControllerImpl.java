@@ -20,11 +20,12 @@ import ru.protei.portal.ui.common.server.service.SessionService;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Реализация сервиса управления продуктами
+ * Реализация сервиса управления регионами
  */
 @Service( "RegionController" )
 public class RegionControllerImpl implements RegionController {
@@ -67,7 +68,7 @@ public class RegionControllerImpl implements RegionController {
 
     @Override
     public Map< String, List< ProjectInfo > > getProjectsByRegions( ProjectQuery query ) throws RequestFailedException {
-        log.debug( "getProjectsByRegions(): search={} | showDeprecated={} | sortField={} | order={}",
+        log.debug( "getProjectsByRegions(): search={} | states={} | sortField={} | order={}",
                 query.getSearchString(), query.getStates(), query.getSortField(), query.getSortDir() );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
@@ -99,7 +100,16 @@ public class RegionControllerImpl implements RegionController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = projectService.saveProject( descriptor.makeAuthToken(), project );
+        CoreResponse response;
+        if (project.getId() == null) {
+            project.setCreated(new Date());
+            project.setCreatorId(descriptor.getPerson().getId());
+            response = projectService.createProject(descriptor.makeAuthToken(), project);
+        }
+        else {
+            response = projectService.saveProject( descriptor.makeAuthToken(), project );
+        }
+
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }
@@ -112,9 +122,8 @@ public class RegionControllerImpl implements RegionController {
         log.debug( "createNewProject()" );
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        Long personId = sessionService.getUserSessionDescriptor( httpServletRequest ).getPerson().getId();
 
-        CoreResponse< Long > response = projectService.createProject( descriptor.makeAuthToken(), personId );
+        CoreResponse< Long > response = projectService.createProject( descriptor.makeAuthToken(), descriptor.getPerson().getId() );
         if ( response.isError() ) {
             throw new RequestFailedException( response.getStatus() );
         }

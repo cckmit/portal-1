@@ -17,10 +17,10 @@ import ru.protei.portal.ui.common.client.animation.TableAnimation;
 import ru.protei.portal.ui.common.client.columns.ClickColumnProvider;
 import ru.protei.portal.ui.common.client.columns.DynamicColumn;
 import ru.protei.portal.ui.common.client.columns.EditClickColumn;
+import ru.protei.portal.ui.common.client.common.EmailRender;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableActivity;
 import ru.protei.portal.ui.company.client.activity.list.AbstractCompanyTableView;
-import ru.protei.winter.core.utils.beans.SearchResult;
 
 /**
  * Created by bondarenko on 30.10.17.
@@ -138,14 +138,13 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
         PlainContactInfoFacade infoFacade = new PlainContactInfoFacade(company.getContactInfo());
         String phones = infoFacade.allPhonesAsString();
-        String emails = infoFacade.allEmailsAsString();
         String website = infoFacade.getWebSite();
 
         if(!phones.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-phone", phones));
 
-        if(!emails.isEmpty())
-            companyInfo.appendChild(buildContactsElement("fa fa-envelope", emails));
+        if (!infoFacade.allEmailsAsString().isEmpty())
+            companyInfo.appendChild(EmailRender.renderToElement("fa fa-envelope", infoFacade.emailsStream(), "contacts", true));
 
         if(website != null && !website.isEmpty())
             companyInfo.appendChild(buildContactsElement("fa fa-globe", buildAnchorElement(website)));

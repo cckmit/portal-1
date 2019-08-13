@@ -6,10 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
+import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
+import ru.protei.portal.core.model.struct.ContactInfo;
+import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.annotation.PostConstruct;
@@ -41,6 +45,7 @@ public class BootstrapService {
 //        autoPatchDefaultRoles();
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
+        patchNormalizeWorkersPhoneNumbers(); // remove once executed
     }
 
     private void autoPatchDefaultRoles () {
@@ -123,7 +128,7 @@ public class BootstrapService {
 
         log.info("Start update tags where company id is null, set company id {} ", companyId);
 
-        List<CaseTag> result = caseTagDAO.getListByCondition("company_id is null");
+        List<CaseTag> result = caseTagDAO.getListByCondition("case_tag.company_id is null");
         if (CollectionUtils.isEmpty(result)) {
             log.info( "Not found tags. Aborting" );
             return;
@@ -133,6 +138,39 @@ public class BootstrapService {
             caseTagDAO.merge(caseTag);
         });
         log.info("Correction company id in tags completed successfully");
+    }
+
+    private void patchNormalizeWorkersPhoneNumbers() {
+
+        final String sqlCondition = "sex <> ? AND company_id IN (SELECT id FROM company WHERE category_id = ?)";
+        final List<Object> params = new ArrayList<>();
+        params.add(En_Gender.UNDEFINED.getCode());
+        params.add(5);
+
+        log.info("Patch for workers phone number normalization has started");
+
+        final int limit = 50;
+        int offset = 0;
+        for (;;) {
+            SearchResult<Person> result = personDAO.partialGetListByCondition(sqlCondition, params, offset, limit, "id", "contactInfo");
+            for (Person person : result.getResults()) {
+                ContactInfo ci = person.getContactInfo();
+                PlainContactInfoFacade facade = new PlainContactInfoFacade(ci);
+                facade.allPhonesStream().forEach(cci -> {
+                    String normalized = PhoneUtils.normalizePhoneNumber(cci.value());
+                    cci.modify(normalized);
+                });
+                person.setContactInfo(ci);
+                personDAO.partialMerge(person, "contactInfo");
+            }
+            if (result.getResults().size() < limit) {
+                break;
+            } else {
+                offset += limit;
+            }
+        }
+
+        log.info("Patch for workers phone number normalization has ended");
     }
 
     @Inject
@@ -149,4 +187,6 @@ public class BootstrapService {
     CompanyGroupHomeDAO companyGroupHomeDAO;
     @Autowired
     CaseFilterDAO caseFilterDAO;
+    @Autowired
+    PersonDAO personDAO;
 }

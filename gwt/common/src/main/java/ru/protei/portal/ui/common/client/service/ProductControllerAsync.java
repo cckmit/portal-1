@@ -22,6 +22,8 @@ public interface ProductControllerAsync {
 
     void saveProduct(DevUnit product, AsyncCallback<Boolean> async);
 
+    void changeState(DevUnit product, AsyncCallback<Boolean> async);
+
     void isNameUnique(String name, Long exceptId, AsyncCallback<Boolean> async);
 
     /**

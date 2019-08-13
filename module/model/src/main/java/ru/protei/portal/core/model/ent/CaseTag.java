@@ -28,6 +28,12 @@ public class CaseTag implements Serializable {
     @JdbcJoinedColumn(localColumn = "company_id", table = "company", remoteColumn = "id", mappedColumn = "cname")
     private String companyName;
 
+    @JdbcColumn(name = "person_id")
+    private Long personId;
+
+    @JdbcJoinedColumn(localColumn = "person_id", table = "person", remoteColumn = "id", mappedColumn = "displayname")
+    private String personName;
+
     public CaseTag() {}
 
     public Long getId() {
@@ -76,6 +82,22 @@ public class CaseTag implements Serializable {
 
     public void setCompanyName(String companyName) {
         this.companyName = companyName;
+    }
+
+    public Long getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(Long personId) {
+        this.personId = personId;
+    }
+
+    public String getPersonName() {
+        return personName;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
     }
 
     @Override

@@ -5,16 +5,15 @@
 
     <g:HTMLPanel ui:field="rootWrapper">
         <g:HTMLPanel styleName="preview grid">
-
+            <g:HTMLPanel ui:field="employeeNameBlock" tag="fieldset" styleName="header" visible="false">
+                <legend><ui:text from="{lang.employeeEmployeeFullNameColumnHeader}"/></legend>
+                <span ui:field="employeeName"></span>
+            </g:HTMLPanel>
             <fieldset class="header">
                 <legend><ui:text from="{lang.employeeAdditionalInfoHeader}"/></legend>
                 <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.employeeID}"/></label>
                     <span class="col-xs-7" ui:field="id"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.employeeIPAddress}"/></label>
-                    <span class="col-xs-7" ui:field="ip"></span>
                 </div>
             </fieldset>
 

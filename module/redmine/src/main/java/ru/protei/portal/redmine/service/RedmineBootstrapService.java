@@ -12,9 +12,9 @@ import javax.annotation.PostConstruct;
 /**
  * Сервис выполняющий первичную инициализацию, работу с исправлением данных
  */
-public class BootstrapService {
+public class RedmineBootstrapService {
 
-    private static Logger logger = LoggerFactory.getLogger(BootstrapService.class);
+    private static Logger logger = LoggerFactory.getLogger(RedmineBootstrapService.class);
 
     @PostConstruct
     public void init() {

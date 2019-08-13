@@ -27,8 +27,16 @@ public class EmployeeSqlBuilder {
             }
 
             if (HelperFunc.isLikeRequired(query.getSearchString())) {
-                condition.append(" and Person.displayName like ?");
-                args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                if (query.getSearchString().trim().contains(" ")){
+                    condition.append(" and Person.displayname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                }
+                else {
+                    condition.append(" and (Person.lastname like ?");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                    condition.append(" or Person.firstname like ?)");
+                    args.add(HelperFunc.makeLikeArg(query.getSearchString().trim(), true));
+                }
             }
 
             if (HelperFunc.isLikeRequired(query.getWorkPhone())) {

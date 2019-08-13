@@ -44,7 +44,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     public void getCaseCommentsDaoTest() {
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        CaseObject caseObject = makeCaseObject(1L, person);
+        CaseObject caseObject = makeCaseObject(person);
 
         CaseComment comment = createNewComment(person, caseObject.getId(), "Test_Comment");
         comment.setTimeElapsed(2 * MINUTE);
@@ -60,7 +60,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        CaseObject caseObject = makeCaseObject(caseType, 1L, person);
+        CaseObject caseObject = makeCaseObject(caseType, person);
 
         makeCaseComment(person, caseObject.getId(), "Test message");
         makeCaseComment(person, caseObject.getId(), null, (long) En_CaseState.CREATED.getId());
@@ -95,7 +95,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
 
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        CaseObject caseObject = makeCaseObject(caseType, 1L, person);
+        CaseObject caseObject = makeCaseObject(caseType, person);
 
         // create
         CaseComment comment = new CaseComment();
@@ -148,7 +148,7 @@ public class CaseCommentServiceTest extends BaseServiceTest {
     public void changeTimeElapsedTest() {
         Company company = makeCustomerCompany();
         Person person = makePerson(company);
-        CaseObject caseObject = makeCaseObject(1L, person);
+        CaseObject caseObject = makeCaseObject(person);
 
         CaseComment comment1 = createNewComment(person, caseObject.getId(), "Comment1");
         Long timeElapsed1 = 4 * MINUTE;

@@ -7,6 +7,7 @@ import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.Attachment;
 import ru.protei.portal.core.model.ent.Official;
@@ -38,8 +39,13 @@ public abstract class OfficialPreviewActivity implements AbstractOfficialPreview
             public void onSuccess(Attachment attachment) { addAttachments(Collections.singleton(attachment));
             }
             @Override
-            public void onError() {
-                fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+            public void onError(En_FileUploadStatus status, String details) {
+                if (En_FileUploadStatus.SIZE_EXCEED_ERROR.equals(status)) {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileSizeExceed() + " (" + details + "Mb)", NotifyEvents.NotifyType.ERROR));
+                }
+                else {
+                    fireEvent(new NotifyEvents.Show(lang.uploadFileError(), NotifyEvents.NotifyType.ERROR));
+                }
             }
         });
     }

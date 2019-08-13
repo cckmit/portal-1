@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class ProductQuery extends BaseQuery {
 
-    En_DevUnitState state;
+    private En_DevUnitState state;
     private Set<En_DevUnitType> types;
 
     public ProductQuery() {

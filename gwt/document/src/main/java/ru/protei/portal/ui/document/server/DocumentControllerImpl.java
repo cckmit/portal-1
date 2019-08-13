@@ -80,6 +80,23 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
+    public Boolean changeState (Document document) throws RequestFailedException {
+        if (document == null) {
+            log.error("null id in request");
+            throw new RequestFailedException(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        log.debug("change state document, id: {}", document.getId());
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+        CoreResponse response = documentService.changeDocumentState(descriptor.makeAuthToken(), document);
+
+        log.debug("change state document, result: {}", response.isOk() ? "ok" : response.getStatus());
+
+        return response.getData() != null;
+    }
+
+    @Override
     public SearchResult<Document> getProjectDocuments(Long projectId) throws RequestFailedException {
         log.debug("get projectDocuments, id: {}", projectId);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpRequest);

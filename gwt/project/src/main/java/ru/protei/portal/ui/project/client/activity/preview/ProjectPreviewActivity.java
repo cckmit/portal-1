@@ -6,20 +6,21 @@ import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.core.model.struct.ProjectInfo;
-import ru.protei.portal.core.model.view.EntityOption;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.common.DateFormatter;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.CaseCommentEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProjectEvents;
+import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
+import ru.protei.portal.ui.common.client.lang.En_PersonRoleTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.RegionControllerAsync;
-import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.stream.Collectors;
 
 /**
  * Активность превью проекта
@@ -41,7 +42,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         event.parent.clear();
         event.parent.add( view.asWidget() );
 
-        this.projectId = event.issueId;
+        this.projectId = event.projectId;
 
         fillView( projectId );
         view.watchForScroll( true );
@@ -53,64 +54,21 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         initDetails.parent.clear();
         initDetails.parent.add( view.asWidget() );
 
-        this.projectId = event.issueId;
+        this.projectId = event.projectId;
 
         fillView( projectId );
         view.showFullScreen( true );
     }
 
-    @Event
-    public void onConfirmRemove(ConfirmDialogEvents.Confirm event) {
 
-        if (!getClass().getName().equals(event.identity)) {
-            return;
-        }
-
-        if (!policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE)) {
-            return;
-        }
-
-        regionService.removeProject(project.getId(), new FluentCallback<Boolean>()
-                .withSuccess(result -> {
-                    fireEvent(new ProjectEvents.Show());
-                    fireEvent(new NotifyEvents.Show(lang.projectRemoveSucceeded(), NotifyEvents.NotifyType.SUCCESS));
-                    fireEvent(new ProjectEvents.ChangeModel());
-                })
-        );
+    @Override
+    public void onGoToProjectClicked() {
+        fireEvent(new ProjectEvents.Show());
     }
 
     @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new ProjectEvents.ShowFullScreen( projectId ) );
-    }
-
-    @Override
-    public void onRemoveClicked() {
-        if (project == null) {
-            return;
-        }
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.projectRemoveConfirmMessage(project.getName())));
-    }
-
-    @Override
-    public void onProjectChanged() {
-        if ( !policyService.hasPrivilegeFor( En_Privilege.PROJECT_EDIT ) ) {
-            return;
-        }
-
-        readView();
-        regionService.saveProject( project, new RequestCallback<Void>(){
-            @Override
-            public void onError( Throwable throwable ) {
-                fireEvent( new NotifyEvents.Show( lang.errNotSaved(), NotifyEvents.NotifyType.ERROR ) );
-            }
-
-            @Override
-            public void onSuccess( Void aVoid ) {
-                fireEvent( new ProjectEvents.Changed( project ) );
-                fireEvent( new ProjectEvents.ChangeModel() );
-            }
-        });
     }
 
     private void fillView( Long id ) {
@@ -127,7 +85,7 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
 
             @Override
             public void onSuccess( ProjectInfo project ) {
-                fireEvent( new AppEvents.InitPanelName( project.getId().toString() ) );
+                fireEvent( new AppEvents.InitPanelName( project.getName() ) );
                 fillView( project );
             }
         } );
@@ -138,40 +96,37 @@ public abstract class ProjectPreviewActivity implements AbstractProjectPreviewAc
         view.setName( value.getName() );
         view.setHeader( value.getId() == null ? "" : lang.projectHeader( value.getId().toString() ) );
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
-        view.state().setValue( value.getState() );
-        view.direction().setValue( value.getProductDirection() == null ? null : new ProductDirectionInfo( value.getProductDirection() ) );
-        view.team().setValue( new HashSet<>( value.getTeam() ) );
-        view.details().setText( value.getDescription() == null ? "" : value.getDescription() );
-        view.region().setValue( value.getRegion() );
-        Company customer = value.getCustomer();
-        view.company().setValue(customer == null ? null : customer.toEntityOption());
-        view.products().setValue(value.getProducts());
-        view.customerType().setValue(value.getCustomerType());
+        view.setState( value.getState().getId() );
+        view.setDirection( value.getProductDirection() == null ? "" : value.getProductDirection().getDisplayText() );
+        view.setDescription( value.getDescription() == null ? "" : value.getDescription() );
+        view.setRegion( value.getRegion() == null ? "" : value.getRegion().getDisplayText() );
+        view.setCompany(value.getCustomer() == null ? "" : value.getCustomer().getCname());
 
-        view.removeBtnVisibility().setVisible(policyService.hasPrivilegeFor(En_Privilege.PROJECT_REMOVE));
+        if( value.getTeam() != null ) {
+            view.setTeam( value.getTeam().stream().map( entry ->
+                    roleTypeLang.getName(entry.getRole()) + ": " + entry.getDisplayShortName() ).collect( Collectors.joining(", ")) );
+        }
+
+        if( value.getProducts() != null ) {
+            view.setProducts( value.getProducts().stream().map( ProductShortView::getName ).collect( Collectors.joining(", ")) );
+        }
+
+        view.setCustomerType(customerTypeLang.getName(value.getCustomerType()));
 
         fireEvent(new CaseCommentEvents.Show.Builder(view.getCommentsContainer())
                 .withCaseType(En_CaseType.PROJECT)
                 .withCaseId(value.getId())
                 .withModifyEnabled(policyService.hasEveryPrivilegeOf(En_Privilege.PROJECT_VIEW, En_Privilege.PROJECT_EDIT))
                 .build());
-        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId()));
-    }
-
-    private void readView() {
-        project.setName( view.getName() );
-        project.setProductDirection( EntityOption.fromProductDirectionInfo( view.direction().getValue() ) );
-        project.setTeam( new ArrayList<>(view.team().getValue()) );
-        project.setState( view.state().getValue() );
-        project.setDescription( view.details().getText() );
-        project.setRegion( view.region().getValue() );
-        project.setProducts(view.products().getValue());
-        project.setCustomer(Company.fromEntityOption(view.company().getValue()));
-        project.setCustomerType(view.customerType().getValue());
+        fireEvent(new ProjectEvents.ShowProjectDocuments(view.getDocumentsContainer(), project.getId(), false));
     }
 
     @Inject
     Lang lang;
+    @Inject
+    En_PersonRoleTypeLang roleTypeLang;
+    @Inject
+    En_CustomerTypeLang customerTypeLang;
     @Inject
     AbstractProjectPreviewView view;
     @Inject

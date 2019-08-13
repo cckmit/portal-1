@@ -9,9 +9,12 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import ru.protei.portal.core.model.ent.CaseTag;
+import ru.protei.portal.ui.common.client.events.EditEvent;
+import ru.protei.portal.ui.common.client.events.EditHandler;
+import ru.protei.portal.ui.common.client.events.HasEditHandlers;
 import ru.protei.portal.ui.common.client.util.ColorUtils;
 
-public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled{
+public class CaseTagView extends Composite implements HasValue<CaseTag>, HasCloseHandlers<CaseTag>, HasEnabled {
 
     public CaseTagView() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -73,13 +76,15 @@ public class CaseTagView extends Composite implements HasValue<CaseTag>, HasClos
         }
         CloseEvent.fire(this, caseTag);
     }
-
     @UiField
     FocusPanel root;
+
     @UiField
     HTMLPanel panel;
+
     @UiField
     Anchor remove;
+
     @UiField
     InlineLabel text;
 

@@ -64,6 +64,9 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     @JdbcManyToMany(linkTable = "case_state_to_company", localLinkColumn = "company_id", remoteLinkColumn = "state_id")
     private List<CaseState> caseStates;
 
+    @JdbcColumn(name = "is_deprecated")
+    private boolean isDeprecated;
+
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
             return null;
@@ -227,6 +230,14 @@ public class Company extends AuditableObject implements EntityOptionSupport {
 
     public void setHideden(Boolean hideden) {
         isHidden = hideden;
+    }
+
+    public boolean isDeprecated() {
+        return isDeprecated;
+    }
+
+    public void setDeprecated(Boolean deleted) {
+        isDeprecated = deleted;
     }
 
     @Override

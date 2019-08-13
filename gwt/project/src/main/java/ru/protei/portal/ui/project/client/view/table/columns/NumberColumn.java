@@ -8,7 +8,7 @@ import ru.protei.portal.ui.common.client.lang.En_CustomerTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 /**
- * Колонка со статусом проекта
+ * Колонка с номером проекта
  */
 public class NumberColumn extends ClickColumn< ProjectInfo > {
 

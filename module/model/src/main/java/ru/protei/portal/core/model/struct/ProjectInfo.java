@@ -11,8 +11,10 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +61,11 @@ public class ProjectInfo extends AuditableObject implements Removable {
      * Дата создания
      */
     Date created;
+
+    /**
+     * Создатель проекта
+     */
+    private Long creatorId;
 
     /**
      * Команда проекта
@@ -109,6 +116,14 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
     public void setCreated( Date created ) {
         this.created = created;
+    }
+
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId( Long creatorId ) {
+        this.creatorId = creatorId;
     }
 
     public EntityOption getRegion() {

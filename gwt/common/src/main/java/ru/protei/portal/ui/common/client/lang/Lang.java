@@ -35,6 +35,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String buttonCreate();
 
+    String buttonChangePassword();
+
     String errNoMatchesFound();
 
     String errGetList();
@@ -51,13 +53,15 @@ public interface Lang extends Messages, ContactItemLang {
 
     String description();
 
-    String productToArchive();
+    String buttonToArchive();
 
     String productName();
 
     String msgObjectSaved();
 
-    String productFromArchive();
+    String msgStatusChanged();
+
+    String buttonFromArchive();
 
     String errEmptyName();
 
@@ -563,6 +567,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String uploadFileError();
 
+    String uploadFileSizeExceed();
+
     String uploadFileSuccess();
 
     String removeFileError();
@@ -575,13 +581,21 @@ public interface Lang extends Messages, ContactItemLang {
 
     String accountPassword();
 
+    String accountCurrentPassword();
+
+    String accountNewPassword();
+
     String accountPasswordNotDefinied();
 
     String errEditContactLogin();
 
+    String errEditProfile();
+
     String accountLoginInfo();
 
     String accountConfirmPassword();
+
+    String accountPasswordChange();
 
     String accountPasswordsNotMatch();
 
@@ -806,6 +820,10 @@ public interface Lang extends Messages, ContactItemLang {
     String documentKeywords();
 
     String documentContent();
+
+    String documentChangeStateConfirmMessage();
+
+    String documentShowDeprecated();
 
     String addKeyword();
 
@@ -1594,6 +1612,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String employeeRegistrationValidationHeadOfDepartmentAsCurator();
 
+    String employeeRegistrationAdditionalSoftLengthExceed(int num);
+
+    String employeeRegistrationResourceCommentLengthExceed(int num);
+
     String employeeRegistrationValidationProbationPeriod();
 
     String timeElapsedTypeNone();
@@ -1626,6 +1648,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagCreate();
 
+    String tagEdit();
+
     String tagName();
 
     String tagColor();
@@ -1648,6 +1672,10 @@ public interface Lang extends Messages, ContactItemLang {
 
     String tagNotSpecified();
 
+    String tagAuthor();
+
+    String tagInfo();
+
     String employeeEmployeeFullNameColumnHeader();
 
     String employeeWorkPhoneColumnHeader();
@@ -1657,6 +1685,8 @@ public interface Lang extends Messages, ContactItemLang {
     String employeeIPAddressColumnHeader();
 
     String employeeEmailColumnHeader();
+
+    String employeeDepartmentColumnHeader();
 
     String privateComment();
 
@@ -1680,5 +1710,29 @@ public interface Lang extends Messages, ContactItemLang {
 
     String timeElapsedTypeSolveProblems();
 
+    String newProject();
+
+    String projectEdit();
+
+    String projectName();
+
+    String goToProjects();
+
     String errInvalidCaseUpdateCaseIsClosed();
+
+    String errInvalidCurrentPassword();
+
+    String errSaveProjectNeedSelectRegion();
+
+    String errSaveProjectNeedSelectDirection();
+
+    String errSaveProjectNeedSelectCustomerType();
+
+    String errSaveProjectNeedSelectCompany();
+
+    String passwordUpdatedSuccessful();
+
+    String dropFilesHere();
+
+    String productChangeStateConfirmMessage();
 }

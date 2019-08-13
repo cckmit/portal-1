@@ -36,6 +36,8 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         event.parent.clear();
         event.parent.add(view.asWidget());
 
+        isModifyEnabled = event.isModifyEnabled;
+
         view.documentsContainer().clear();
 
         if (event.projectId == null) {
@@ -90,7 +92,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
         itemView.setInfo((document.getInventoryNumber() == null ? "" : document.getInventoryNumber() + " ") + document.getName());
         itemView.setDocumentType(document.getType().getName());
         itemView.setCreated(document.getCreated());
-        itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT));
+        itemView.setEditVisible(policyService.hasPrivilegeFor(En_Privilege.DOCUMENT_EDIT) && isModifyEnabled);
         return itemView;
     }
 
@@ -107,6 +109,7 @@ public abstract class ProjectDocumentsListActivity implements Activity, Abstract
     @Inject
     Provider<AbstractProjectDocumentsListItemView> itemFactory;
 
+    private boolean isModifyEnabled;
     private Map<AbstractProjectDocumentsListItemView, Document> itemViewToModel = new HashMap<>();
     private Consumer<Document> fillViewer = document -> {
         AbstractProjectDocumentsListItemView itemView = makeItemView(document);

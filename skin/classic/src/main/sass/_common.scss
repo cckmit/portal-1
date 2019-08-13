@@ -1246,6 +1246,28 @@ label.bordered:after{
   }
 }
 
+.employees {
+  table {
+    i {
+      padding-right: 5px;
+    }
+    b {
+      padding-right: 5px;
+    }
+    .employee-info {
+      width: 21%
+    }
+    .employee-contacts {
+      width: 31%
+    }
+    .employee-department {
+      width: 32%
+    }
+    .employee-additional {
+      width: 15%
+    }
+  }
+}
 
 
 .products {
@@ -2576,7 +2598,12 @@ a {
       display: flex;
       margin: 6px;
       cursor: pointer;
-
+      .fa {
+        margin-top: 5px;
+      }
+      .case-tag-edit {
+        min-width: 14px;
+      }
       .case-tag-text {
         -webkit-box-flex: 1;
         -ms-flex-positive: 1;
@@ -3004,6 +3031,15 @@ a {
 
 /**** PROJECTS ****/
 
+.project-main-info {
+  display: flex;
+
+  .project-number {
+    max-width: 15%;
+    border-right: none;
+  }
+}
+
 .autoadd-ts-group {
 
   ul.select2-choices {
@@ -3300,6 +3336,10 @@ ul.privileges {
 
 .fa-1-5x {
   font-size: 1.5em !important;
+}
+
+.fa-1-1x {
+  font-size: 1.1em !important;
 }
 
 .link-disabled {

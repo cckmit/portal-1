@@ -9,6 +9,7 @@ import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.query.LocationQuery;
 import ru.protei.portal.core.model.query.ProjectQuery;
@@ -63,11 +64,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public CoreResponse< List< RegionInfo > > listRegions( AuthToken token, ProjectQuery query ) {
 
-        LocationQuery locationQuery = new LocationQuery();
-        locationQuery.setType( En_LocationType.REGION );
-        List< Location > regions = locationDAO.listByQuery( locationQuery );
+        List< Location > regions = locationDAO.listByQuery( makeLocationQuery(query, true ));
+        /*  здесь на выходе получается мапа с сортировкой по id по возрастанию */
         Map< Long, RegionInfo > regionInfos = regions.stream().collect(
-                Collectors.toMap( Location::getId, Location::toRegionInfo )
+                Collectors.toMap( Location::getId, Location::toRegionInfo)
         );
 
         CaseQuery caseQuery = new CaseQuery();
@@ -90,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         List< RegionInfo > result = regionInfos.values().stream()
                 .filter( ( regionInfo ) -> {
-                    if ( query.getStates() == null || query.getStates().isEmpty() ) {
+                    if (CollectionUtils.isEmpty(query.getStates())) {
                         return true;
                     }
 
@@ -106,6 +106,7 @@ public class ProjectServiceImpl implements ProjectService {
 
         Map< String, List< ProjectInfo > > regionToProjectMap = new HashMap<>();
         CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setSearchString(query.getSearchString());
         caseQuery.setType( En_CaseType.PROJECT );
         caseQuery.setStateIds( query.getStates().stream()
                 .map( ( state ) -> new Long( state.getId() ).intValue() )
@@ -117,12 +118,17 @@ public class ProjectServiceImpl implements ProjectService {
             productIds.add( query.getDirectionId() );
         }
         caseQuery.setProductIds( productIds );
+        caseQuery.setDistrictIds( new ArrayList<>(query.getDistrictIds()) );
+
         if (query.isOnlyMineProjects()) {
             UserSessionDescriptor descriptor = authService.findSession(token);
             if (descriptor != null && descriptor.getPerson() != null) {
                 caseQuery.setMemberIds(Collections.singletonList(descriptor.getPerson().getId()));
             }
         }
+
+        caseQuery.setSortField(query.getSortField());
+        caseQuery.setSortDir(query.getSortDir());
 
         List< CaseObject > projects = caseObjectDAO.listByQuery( caseQuery );
         projects.forEach( ( project ) -> {
@@ -168,13 +174,66 @@ public class ProjectServiceImpl implements ProjectService {
             caseObject.setInitiatorCompanyId(project.getCustomer().getId());
         }
 
-        updateTeam( caseObject, project.getTeam() );
-        updateLocations( caseObject, project.getRegion() );
-        updateProducts( caseObject, project.getProducts() );
+        try {
+            updateTeam( caseObject, project.getTeam() );
+            updateLocations( caseObject, project.getRegion() );
+            updateProducts( caseObject, project.getProducts() );
+        } catch (Throwable e) {
+            log.error("error during save project when update one of following parameters: team, location, or products; {}", e.getMessage());
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
 
         caseObjectDAO.merge( caseObject );
 
         return new CoreResponse().success( null );
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<Long> createProject(AuthToken token, ProjectInfo project) {
+
+        if (project == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+
+        CaseObject caseObject = createCaseObjectFromProjectInfo(project);
+
+        Long id = caseObjectDAO.persist(caseObject);
+        if (id == null)
+            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+
+        try {
+            updateTeam(caseObject, project.getTeam());
+            updateLocations(caseObject, project.getRegion());
+            updateProducts(caseObject, project.getProducts());
+        } catch (Throwable e) {
+            log.error("error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
+            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+        caseObjectDAO.merge( caseObject );
+
+        return new CoreResponse().success(id);
+    }
+
+    private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {
+        CaseObject caseObject = new CaseObject();
+        caseObject.setCaseNumber(caseTypeDAO.generateNextId(En_CaseType.PROJECT));
+        caseObject.setTypeId(En_CaseType.PROJECT.getId());
+        caseObject.setCreated(project.getCreated() == null ? new Date() : project.getCreated());
+        caseObject.setStateId(project.getState() == null ? En_RegionState.UNKNOWN.getId() : project.getState().getId());
+        caseObject.setCreatorId(project.getCreatorId());
+        caseObject.setName(project.getName());
+        caseObject.setInfo(project.getDescription());
+
+        if (project.getProductDirection() != null)
+            caseObject.setProductId(project.getProductDirection().getId());
+
+        if (project.getCustomer().getId() != null) {
+            caseObject.setInitiatorCompanyId(project.getCustomer().getId());
+        }
+        if (project.getCustomerType() != null) {
+            caseObject.setLocal(project.getCustomerType().getId());
+        }
+        return caseObject;
     }
 
     @Override
@@ -229,15 +288,17 @@ public class ProjectServiceImpl implements ProjectService {
         List<Long> toRemove = new ArrayList<>();
         List<En_DevUnitPersonRoleType> projectRoles = En_DevUnitPersonRoleType.getProjectRoles();
 
-        for (CaseMember member : caseObject.getMembers()) {
-            if (!projectRoles.contains(member.getRole())) {
-                continue;
-            }
-            int nPos = toAdd.indexOf(PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()));
-            if (nPos == -1) {
-                toRemove.add(member.getId());
-            } else {
-                toAdd.remove(nPos);
+        if (caseObject.getMembers() != null) {
+            for (CaseMember member : caseObject.getMembers()) {
+                if (!projectRoles.contains(member.getRole())) {
+                    continue;
+                }
+                int nPos = toAdd.indexOf(PersonProjectMemberView.fromPerson(member.getMember(), member.getRole()));
+                if (nPos == -1) {
+                    toRemove.add(member.getId());
+                } else {
+                    toAdd.remove(nPos);
+                }
             }
         }
 
@@ -289,8 +350,8 @@ public class ProjectServiceImpl implements ProjectService {
         if (products == null)
             return;
 
-        Set<DevUnit> oldProducts = caseObject.getProducts();
-        Set<DevUnit> newProducts = products.stream().map(DevUnit::fromProductShortView).collect(Collectors.toSet());
+        Set<DevUnit> oldProducts = caseObject.getProducts() == null ? new HashSet<>() : caseObject.getProducts();
+        Set<DevUnit> newProducts = products == null ? new HashSet<>() : products.stream().map(DevUnit::fromProductShortView).collect(Collectors.toSet());
 
         Set<DevUnit> toDelete = new HashSet<>(oldProducts);
         Set<DevUnit> toCreate = new HashSet<>(newProducts);
@@ -319,7 +380,7 @@ public class ProjectServiceImpl implements ProjectService {
         helper.fillAll( project );
 
         List< CaseLocation > locations = project.getLocations();
-        if ( locations == null || locations.isEmpty() ) {
+        if ( locations == null || locations.isEmpty()) {
             handler.accept( null );
             return;
         }
@@ -374,5 +435,21 @@ public class ProjectServiceImpl implements ProjectService {
 
         ProjectInfo projectInfo = ProjectInfo.fromCaseObject( project );
         projectInfos.add( projectInfo );
+    }
+
+    private LocationQuery makeLocationQuery( ProjectQuery query, boolean isSortByFilter ) {
+        LocationQuery locationQuery = new LocationQuery();
+        locationQuery.setType(En_LocationType.REGION);
+        locationQuery.setSearchString(query.getSearchString());
+        locationQuery.setDistrictIds(query.getDistrictIds());
+        if (isSortByFilter) {
+            locationQuery.setSortField(query.getSortField());
+            locationQuery.setSortDir(query.getSortDir());
+        }
+        else {
+            locationQuery.setSortField(En_SortField.name);
+            locationQuery.setSortDir(En_SortDir.ASC);
+        }
+        return locationQuery;
     }
 }

@@ -165,6 +165,22 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
+    public CoreResponse changeProductState(AuthToken token, DevUnit product) {
+        if (product == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        if (devUnitDAO.get(product.getId()) == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        devUnitDAO.updateState(product);
+
+        return new CoreResponse().success();
+    }
+
+    @Override
     public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
 
         if( name == null || name.isEmpty() )
@@ -177,10 +193,6 @@ public class ProductServiceImpl implements ProductService {
         DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
 
         return product == null || product.getId().equals(excludeId);
-    }
-
-    private <T> CoreResponse<T> createUndefinedError() {
-        return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     private boolean updateProductSubscriptions( Long devUnitId, List<DevUnitSubscription> devUnitSubscriptions ) {

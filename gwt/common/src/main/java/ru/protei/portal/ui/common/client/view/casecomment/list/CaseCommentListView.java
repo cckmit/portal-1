@@ -1,6 +1,7 @@
 package ru.protei.portal.ui.common.client.view.casecomment.list;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.debug.client.DebugInfo;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -15,6 +16,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_TimeElapsedType;
+import ru.protei.portal.test.client.DebugIds;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListActivity;
 import ru.protei.portal.ui.common.client.activity.casecomment.list.AbstractCaseCommentListView;
 import ru.protei.portal.ui.common.client.events.AddEvent;
@@ -26,7 +28,7 @@ import ru.protei.portal.ui.common.client.widget.attachment.list.HasAttachments;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.HasAttachmentListHandlers;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveEvent;
 import ru.protei.portal.ui.common.client.widget.attachment.list.events.RemoveHandler;
-import ru.protei.portal.ui.common.client.widget.autoresizetextarea.AutoResizeTextArea;
+import ru.protei.portal.ui.common.client.widget.dndautoresizetextarea.DndAutoResizeTextArea;
 import ru.protei.portal.ui.common.client.widget.imagepastetextarea.event.PasteEvent;
 import ru.protei.portal.ui.common.client.widget.selector.base.DisplayOption;
 import ru.protei.portal.ui.common.client.widget.timefield.HasTime;
@@ -46,6 +48,9 @@ public class CaseCommentListView
         comment.getElement().setAttribute("placeholder", lang.commentAddMessagePlaceholder());
         timeElapsedType.setDisplayOptionCreator( type -> new DisplayOption( (type == null || En_TimeElapsedType.NONE.equals( type )) ? lang.issueCommentElapsedTimeTypeLabel() : elapsedTimeTypeLang.getName( type ) ) );
         timeElapsedType.fillOptions();
+        comment.setOverlayText(lang.dropFilesHere());
+        comment.setDropZonePanel(messageBlock);
+        ensureDebugIds();
     }
 
     @Override
@@ -182,7 +187,7 @@ public class CaseCommentListView
         activity.removeTempAttachment(event.getAttachment());
     }
 
-    @UiHandler("comment")
+    @UiHandler({"comment", "timeElapsed"})
     public void onCtrlEnterClicked(AddEvent event) {
         if (activity != null) {
             activity.onSendClicked();
@@ -198,7 +203,11 @@ public class CaseCommentListView
 
     @UiHandler("comment")
     public void onBase64Pasted(PasteEvent event) {
-        fileUploader.uploadBase64File(event.getJson());
+        if (event.getJsons() != null && !event.getJsons().isEmpty()) {
+            fileUploader.uploadBase64Files(event.getJsons());
+        } else {
+            fileUploader.uploadBase64File(event.getJson());
+        }
     }
 
     @UiHandler("isDisplayPreview")
@@ -244,10 +253,25 @@ public class CaseCommentListView
         return privateComment;
     }
 
+    private void ensureDebugIds() {
+        if (!DebugInfo.isDebugIdEnabled()) {
+            return;
+        }
+
+        commentsContainer.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.COMMENTS_LIST);
+        newCommentUserImage.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.USER_ICON);
+        comment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TEXT_INPUT);
+        privateComment.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.PRIVACY_BUTTON);
+        send.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.SEND_BUTTON);
+        filesUpload.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.COMMENT_LIST.FILES_UPLOAD);
+        timeElapsed.ensureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED);
+        timeElapsedType.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.COMMENT_LIST.TIME_ELAPSED_TYPE);
+    }
+
     @UiField
     HTMLPanel root;
     @UiField
-    AutoResizeTextArea comment;
+    DndAutoResizeTextArea comment;
     @UiField
     FlowPanel commentsContainer;
     @UiField
@@ -277,9 +301,15 @@ public class CaseCommentListView
     @UiField
     DivElement commentPreview;
     @UiField
+    DivElement newCommentUserImage;
+    @UiField
+    DivElement filesUpload;
+    @UiField
     SpanElement textMarkupLabel;
     @UiField
     ToggleButton isDisplayPreview;
+    @UiField
+    HTMLPanel messageBlock;
 
     @Inject
     private TimeElapsedTypeLang elapsedTimeTypeLang;

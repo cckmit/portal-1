@@ -72,6 +72,11 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
 
     @Override
+    public void clearSelection() {
+        columnProvider.setSelectedValue(null);
+    }
+
+    @Override
     public void clearRecords() {
         table.clearRows();
     }
@@ -140,6 +145,6 @@ public class ProjectTableView extends Composite implements AbstractProjectTableV
 
     AbstractProjectTableActivity activity;
 
-    private static IssueTableViewUiBinder ourUiBinder = GWT.create( IssueTableViewUiBinder.class );
-    interface IssueTableViewUiBinder extends UiBinder< HTMLPanel, ProjectTableView> {}
+    private static ProjectTableViewUiBinder ourUiBinder = GWT.create( ProjectTableViewUiBinder.class );
+    interface ProjectTableViewUiBinder extends UiBinder< HTMLPanel, ProjectTableView> {}
 }

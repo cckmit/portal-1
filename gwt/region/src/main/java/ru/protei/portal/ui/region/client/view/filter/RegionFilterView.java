@@ -2,27 +2,25 @@ package ru.protei.portal.ui.region.client.view.filter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HasValue;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_RegionState;
-import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.struct.DistrictInfo;
-import ru.protei.portal.core.model.struct.ProductDirectionInfo;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.cleanablesearchbox.CleanableSearchBox;
-import ru.protei.portal.ui.common.client.widget.selector.productdirection.ProductDirectionButtonSelector;
-import ru.protei.portal.ui.common.client.widget.selector.sortfield.SortFieldSelector;
-import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
-import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
 import ru.protei.portal.ui.common.client.widget.selector.district.DistrictBtnGroupMulti;
 import ru.protei.portal.ui.common.client.widget.selector.state.RegionStateBtnGroupMulti;
+import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterActivity;
+import ru.protei.portal.ui.region.client.activity.filter.AbstractRegionFilterView;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,6 +32,8 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Inject
     public void onInit() {
         initWidget( ourUiBinder.createAndBindUi( this ) );
+/*        direction.setDefaultValue(lang.contractSelectDirection());*/
+/*        sortField.setType( ModuleType.REGION );*/
     }
 
     @Override
@@ -53,7 +53,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         this.activity = activity;
     }
 
-    @Override
+/*    @Override
     public HasValue<En_SortField> sortField() {
         return sortField;
     }
@@ -61,7 +61,7 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @Override
     public HasValue<Boolean> sortDir() {
         return sortDir;
-    }
+    }*/
 
     @Override
     public HasValue<String> searchPattern() {
@@ -78,16 +78,17 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         return districts;
     }
 
-    @Override
+/*    @Override
     public HasValue<ProductDirectionInfo> direction() {
         return direction;
-    }
+    }*/
 
     @Override
     public void resetFilter() {
-        sortField.setValue( En_SortField.prod_name );
-        sortDir.setValue( true );
+/*        sortField.setValue( En_SortField.name );
+        sortDir.setValue( true );*/
         search.setValue( "" );
+/*        direction.setValue( null );*/
         districts.setValue( new HashSet<>() );
         states.setValue( new HashSet<>() );
     }
@@ -100,12 +101,12 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         }
     }
 
-    @UiHandler( "sortField" )
+/*    @UiHandler( "sortField" )
     public void onSortFieldSelected( ValueChangeEvent<En_SortField> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
-    }
+    }*/
 
     @UiHandler( "states" )
     public void onStateSelected( ValueChangeEvent<Set<En_RegionState>> event ) {
@@ -121,19 +122,19 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         }
     }
 
-    @UiHandler( "direction" )
+/*    @UiHandler( "direction" )
     public void onDirectionSelected( ValueChangeEvent<ProductDirectionInfo> event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
-    }
+    }*/
 
-    @UiHandler("sortDir")
+/*    @UiHandler("sortDir")
     public void onSortDirClicked( ClickEvent event ) {
         if ( activity != null ) {
             activity.onFilterChanged();
         }
-    }
+    }*/
 
     @UiHandler( "search" )
     public void onSearchChanged( ValueChangeEvent<String> event ) {
@@ -150,12 +151,12 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
         }
     };
 
-    @Inject
+/*    @Inject
     @UiField( provided = true )
     SortFieldSelector sortField;
 
     @UiField
-    ToggleButton sortDir;
+    ToggleButton sortDir;*/
 
     @UiField
     CleanableSearchBox search;
@@ -175,9 +176,9 @@ public class RegionFilterView extends Composite implements AbstractRegionFilterV
     @UiField( provided = true )
     DistrictBtnGroupMulti districts;
 
-    @Inject
+/*    @Inject
     @UiField( provided = true )
-    ProductDirectionButtonSelector direction;
+    ProductDirectionButtonSelector direction;*/
 
     @Inject
     FixedPositioner positioner;

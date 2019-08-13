@@ -191,7 +191,7 @@ ${"<#assign "+ name +"=\""+ value +"\"/>"}
                     <td style="vertical-align:top;padding:2px 15px 2px 0;font-family: sans-serif;font-size: 14px;color: #666666;">
                         ${_description}
                     </td>
-                    <td style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;white-space:pre-wrap;"><#if infoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
+                    <td class="markdown" style="vertical-align:top;padding:2px;font-family: sans-serif;font-size: 14px;"><#if infoChanged><@diffHTML new="${(caseInfo)!''}" old="${(oldCaseInfo)!''}"/><#else>${(caseInfo)!''}</#if></td>
                 </tr>
                 <#if attachments??>
                     <tr>
