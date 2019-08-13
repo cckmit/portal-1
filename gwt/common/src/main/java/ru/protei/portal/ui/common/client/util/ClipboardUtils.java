@@ -9,6 +9,7 @@ public class ClipboardUtils {
             document.body.appendChild(textArea);
         }
 
+        textArea.removeAttribute('style');
         textArea.value = text;
         textArea.focus();
         textArea.select();
@@ -21,6 +22,8 @@ public class ClipboardUtils {
         } catch (err) {
             console.error('Fallback: Oops, unable to copy', err);
             return 1;
+        } finally {
+            textArea.style.display = 'none';
         }
     }-*/;
 }
