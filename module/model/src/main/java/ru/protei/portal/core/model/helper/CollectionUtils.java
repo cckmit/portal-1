@@ -116,7 +116,7 @@ public class CollectionUtils {
     }
 
     public static <T> T find(Collection<T> col, Predicate<T> predicate) {
-        return col.stream().filter(predicate).findAny().orElse(null);
+        return stream(col).filter(predicate).findAny().orElse(null);
     }
 
     public static <T> int size(Collection<T> col) {

@@ -3,21 +3,21 @@ package ru.protei.portal.core.controller.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.auth.SecurityDefs;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -27,10 +27,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 /**
  *  Севрис для  API
@@ -47,6 +49,8 @@ public class PortalApiController {
 
     @Autowired
     private CaseService caseService;
+    @Autowired
+    private CaseLinkService caseLinkService;
 
     private static final Logger log = LoggerFactory.getLogger( PortalApiController.class );
 
@@ -107,6 +111,39 @@ public class PortalApiController {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
+    }
+
+    @PostMapping(value = "/addyoutrackidintoissue")
+    public APIResult addYoutrackIdIntoIssue( @PathVariable("caseNumber") Long caseNumber,
+                                             @PathVariable("youtrackId") String youtrackId ) {
+
+        log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
+
+        CoreResponse<Long> result = caseLinkService.getYoutrackLinks( caseNumber ).map( caseLinks ->
+                find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) ) ).flatMap( caseLink -> {
+            if (caseLink != null) {
+                log.warn( "addYoutrackIdIntoIssue(): Link on youtrack with id {} already exists", youtrackId );
+                return ok( caseLink.getId() );
+            }
+            return addCaseLinkOnToYoutrack( caseNumber, youtrackId );
+        } );
+
+        if (result.isOk()) {
+            log.info( "addYoutrackIdIntoIssue(): status: {}", result.getStatus() );
+        } else {
+            log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}"
+                    , youtrackId, caseNumber, result.getStatus() );
+        }
+
+        return new APIResult( result.getStatus(), "" );
+    }
+
+    private CoreResponse<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId) {
+        CaseLink newLink = new CaseLink();
+        newLink.setCaseId( caseNumber );
+        newLink.setType( En_CaseLink.YT );
+        newLink.setRemoteId( youtrackId );
+        return caseLinkService.createLink( newLink );
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {

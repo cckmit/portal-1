@@ -24,4 +24,6 @@ public interface CaseLinkService {
     CoreResponse<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId );
 
     CoreResponse<List<CaseLink>> getYoutrackLinks( Long caseId);
+
+    CoreResponse<Long> createLink( CaseLink newLink );
 }
