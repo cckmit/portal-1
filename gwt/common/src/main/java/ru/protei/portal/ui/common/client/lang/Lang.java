@@ -1737,4 +1737,6 @@ public interface Lang extends Messages, ContactItemLang {
     String errCopyToClipboard();
 
     String issueCopiedToClipboard();
+
+    String crmPrefix();
 }

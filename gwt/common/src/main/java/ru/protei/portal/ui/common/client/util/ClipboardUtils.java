@@ -2,14 +2,9 @@ package ru.protei.portal.ui.common.client.util;
 
 public class ClipboardUtils {
     public static native int copyToClipboard(String text) /*-{
-        var textArea = document.getElementById("fake-text-area");
-        if (textArea == null) {
-            textArea = document.createElement("textarea");
-            textArea.id = "fake-text-area";
-            document.body.appendChild(textArea);
-        }
+        var textArea = document.createElement("textarea");
+        document.body.appendChild(textArea);
 
-        textArea.removeAttribute('style');
         textArea.value = text;
         textArea.focus();
         textArea.select();
@@ -23,7 +18,7 @@ public class ClipboardUtils {
             console.error('Fallback: Oops, unable to copy', err);
             return 1;
         } finally {
-            textArea.style.display = 'none';
+            textArea.remove();
         }
     }-*/;
 }

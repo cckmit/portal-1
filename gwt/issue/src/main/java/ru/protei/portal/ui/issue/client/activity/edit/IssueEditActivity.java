@@ -248,7 +248,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
 
     @Override
     public void onCopyClicked() {
-        int status = ClipboardUtils.copyToClipboard("CRM-" + issue.getCaseNumber() + " " + view.name().getValue());
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + issue.getCaseNumber() + " " + view.name().getValue());
 
         if (status != 0) {
             fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));

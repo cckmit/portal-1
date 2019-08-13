@@ -145,7 +145,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     @Override
     public void onCopyClicked() {
-        int status = ClipboardUtils.copyToClipboard("CRM-" + caseObject.getCaseNumber() + " " + caseObject.getName());
+        int status = ClipboardUtils.copyToClipboard(lang.crmPrefix() + caseObject.getCaseNumber() + " " + caseObject.getName());
 
         if (status != 0) {
             fireEvent(new NotifyEvents.Show(lang.errCopyToClipboard(), NotifyEvents.NotifyType.ERROR));
@@ -155,6 +155,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     private void fillView(CaseObject value ) {
+        this.caseObject = value;
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
         view.setCreationDate( value.getCreated() == null ? "" : DateFormatter.formatDateTime( value.getCreated() ) );
@@ -203,8 +204,6 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
                 .withPrivateCase(isPrivateCase)
                 .withTextMarkup(textMarkup)
                 .build());
-
-        this.caseObject = value;
     }
 
     private void fillSubscriptions( CaseObject value ) {
