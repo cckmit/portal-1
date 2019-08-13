@@ -163,7 +163,7 @@ public class CaseServiceImpl implements CaseService {
         }
 
         if (isNotEmpty(caseObject.getLinks())) {
-            List<String> youtrackIds = stream( caseObject.getLinks() ).filter( caseLink -> YT.equals( caseLink.getType() ) ).map( CaseLink::getRemoteId ).collect( Collectors.toList() );
+            List<String> youtrackIds = selectYouTrackLinkRemoteIds( caseObject.getLinks() );
             for (String youtrackId : youtrackIds) {
                 youtrackService.compareAndSetIssueCrmNumber( youtrackId, caseObject.getCaseNumber());
             }

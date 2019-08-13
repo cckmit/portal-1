@@ -128,4 +128,12 @@ public class CoreResponse<T> {
             consumer.accept( data );
         }
     }
+
+    public <X extends Throwable> T orElseThrow( Function<En_ResultStatus, ? extends X> exceptionSupplier ) throws X {
+        if (isOk()) {
+            return getData();
+        } else {
+            throw exceptionSupplier.apply( status );
+        }
+    }
 }

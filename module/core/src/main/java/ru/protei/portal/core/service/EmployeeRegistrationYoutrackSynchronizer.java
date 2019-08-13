@@ -175,7 +175,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
     private Set<String> getUpdatedIssueIds(Date lastUpdate) {
         Set<String> issueIds = new HashSet<>();
         for (String project : YOUTRACK_PROJECTS) {
-            issueIds.addAll(youtrackService.getIssueIdsByProjectAndUpdatedAfter(project, lastUpdate).getData());
+            issueIds.addAll(youtrackService.getIssueIdsByProjectAndUpdatedAfter(project, lastUpdate)
+                    .orElseThrow( status -> new RuntimeException( "Can`t update issues ids " + status) ));
         }
         return issueIds;
     }
@@ -207,7 +208,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
         Map<CaseLink, ChangeResponse> issueToChanges = new HashMap<>();
 
         for (CaseLink caseLink : caseLinks) {
-            ChangeResponse issueChanges = youtrackService.getIssueChanges(caseLink.getRemoteId()).getData();
+            ChangeResponse issueChanges = youtrackService.getIssueChanges(caseLink.getRemoteId())
+                    .orElseThrow( status -> new RuntimeException( "Can`t get issue changes " + status) );
             issueToChanges.put(caseLink, issueChanges);
         }
 
@@ -374,7 +376,8 @@ public class EmployeeRegistrationYoutrackSynchronizer {
 
         List<YtAttachment> ytAttachments = new LinkedList<>();
         for (CaseLink caseLink : caseLinks) {
-            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId()).getData();
+            List<YtAttachment> issueAttachments = youtrackService.getIssueAttachments(caseLink.getRemoteId())
+                    .orElseThrow( status -> new RuntimeException( "Can`t get issue attachments " + status) );
             ytAttachments.addAll(issueAttachments);
         }
 
