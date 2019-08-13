@@ -170,7 +170,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public CoreResponse changeDocumentState(AuthToken token, Long documentId, En_DocumentState state) {
+    public CoreResponse updateState(AuthToken token, Long documentId, En_DocumentState state) {
         if (documentId == null ) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }

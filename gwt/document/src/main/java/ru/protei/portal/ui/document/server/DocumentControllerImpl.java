@@ -81,11 +81,11 @@ public class DocumentControllerImpl implements DocumentController {
     }
 
     @Override
-    public Boolean changeState(Long documentId, En_DocumentState state) throws RequestFailedException {
+    public Boolean updateState(Long documentId, En_DocumentState state) throws RequestFailedException {
         log.debug("change state document, id: {}", documentId);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
-        CoreResponse response = documentService.changeDocumentState(descriptor.makeAuthToken(), documentId, state);
+        CoreResponse response = documentService.updateState(descriptor.makeAuthToken(), documentId, state);
 
         if (response.isError()) {
             throw new RequestFailedException(response.getStatus());

@@ -22,10 +22,7 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.AuthToken;
-import ru.protei.portal.core.model.ent.LongAuditableObject;
-import ru.protei.portal.core.model.ent.UserRole;
-import ru.protei.portal.core.model.ent.UserSessionDescriptor;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.EventPublisherService;
@@ -36,9 +33,7 @@ import ru.protei.winter.jdbc.JdbcHelper;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Mike on 06.11.2016.
@@ -127,6 +122,7 @@ public class ServiceLayerInterceptor {
 
         AuditableObject auditableObject = findAuditableObject( pjp );
         if ( auditableObject == null ) {
+            makeSimpleAudit(token, auditable.value());
             return;
         }
 
@@ -153,6 +149,17 @@ public class ServiceLayerInterceptor {
         publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
     }
 
+    private void makeSimpleAudit(AuthToken token, En_AuditType auditType) {
+        UserSessionDescriptor descriptor = authService.findSession(token);
+
+        SimpleAuditableObject auditableObject = new SimpleAuditableObject();
+        notAuditableContainer.put(AUDITABLE_TYPE, auditType.name());
+        auditableObject.setContainer(notAuditableContainer);
+
+        AuditObject auditObject = new AuditObject(auditType.getId(), descriptor, auditableObject);
+        publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
+        notAuditableContainer.clear();
+    }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
@@ -281,8 +288,14 @@ public class ServiceLayerInterceptor {
 
             Object arg = pjp.getArgs()[ i ];
             if ( !( arg instanceof AuditableObject ) ) {
+                if (!params[i].getType().equals(AuthToken.class)) {
+                    notAuditableContainer.put(params[i].getName(), arg.toString());
+                }
+
                 continue;
             }
+
+            notAuditableContainer.clear();
 
             if ( arg != null ) {
                 if ( arg instanceof Long ){
@@ -304,4 +317,7 @@ public class ServiceLayerInterceptor {
     PolicyService policyService;
     @Autowired
     EventPublisherService publisherService;
+
+    private static final String AUDITABLE_TYPE = "AuditableType";
+    private Map<String, String> notAuditableContainer = new LinkedHashMap<>();
 }

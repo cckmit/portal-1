@@ -29,7 +29,8 @@ public interface CompanyService {
     CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
 
     @Privileged( En_Privilege.COMPANY_EDIT )
-    CoreResponse<?> updateState(AuthToken makeAuthToken, Long id, boolean isArchived);
+    @Auditable( En_AuditType.COMPANY_MODIFY )
+    CoreResponse<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
 
     CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);

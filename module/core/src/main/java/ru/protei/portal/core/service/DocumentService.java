@@ -47,5 +47,6 @@ public interface DocumentService {
     CoreResponse<SearchResult<Document>> getProjectDocuments(AuthToken token, Long projectId);
 
     @Privileged(requireAny = {En_Privilege.DOCUMENT_EDIT, En_Privilege.EQUIPMENT_CREATE, En_Privilege.EQUIPMENT_EDIT})
-    CoreResponse changeDocumentState(AuthToken token, Long documentId, En_DocumentState state);
+    @Auditable(En_AuditType.DOCUMENT_MODIFY)
+    CoreResponse updateState(AuthToken token, Long documentId, En_DocumentState state);
 }

@@ -4,7 +4,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.inject.Inject;
-import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.core.datetimepicker.shared.dto.DateInterval;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
@@ -30,7 +29,6 @@ import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilte
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 
 public abstract class DocumentTableActivity
@@ -88,7 +86,7 @@ public abstract class DocumentTableActivity
             return;
         }
 
-        documentService.changeState(value.getId(), value.getState() == En_DocumentState.DEPRECATED ? En_DocumentState.ACTIVE : En_DocumentState.DEPRECATED, new RequestCallback<Boolean>() {
+        documentService.updateState(value.getId(), value.getState() == En_DocumentState.DEPRECATED ? En_DocumentState.ACTIVE : En_DocumentState.DEPRECATED, new RequestCallback<Boolean>() {
             @Override
             public void onError(Throwable throwable) {}
 

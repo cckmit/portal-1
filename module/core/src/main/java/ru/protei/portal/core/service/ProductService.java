@@ -38,6 +38,7 @@ public interface ProductService {
     CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product );
 
     @Privileged( En_Privilege.PRODUCT_EDIT )
+    @Auditable( En_AuditType.PRODUCT_MODIFY )
     CoreResponse<En_DevUnitState> updateState(AuthToken makeAuthToken, Long productId, En_DevUnitState state);
 
     @Privileged( En_Privilege.PRODUCT_VIEW )

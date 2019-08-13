@@ -12,7 +12,7 @@ public interface DocumentControllerAsync {
 
     void getDocument(Long id, AsyncCallback<Document> callback);
 
-    void changeState(Long documentId, En_DocumentState state, AsyncCallback<Boolean> callback);
+    void updateState(Long documentId, En_DocumentState state, AsyncCallback<Boolean> callback);
 
     void saveDocument(Document document, AsyncCallback<Document> callback);
 

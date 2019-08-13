@@ -132,16 +132,16 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<?> updateState(AuthToken makeAuthToken, Long id, boolean isArchived) {
-        if (id == null) {
+    public CoreResponse<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isArchived) {
+        if (companyId == null) {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!companyDAO.checkExistsByKey(id)) {
+        if (!companyDAO.checkExistsByKey(companyId)) {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
 
-        Company company = new Company(id);
+        Company company = new Company(companyId);
         company.setArchived(isArchived);
 
         if (companyDAO.updateState(company)) {
