@@ -20,19 +20,19 @@ public class AvatarUtils {
     }
 
     public static String getAvatarUrl(Long accountId, Long categoryId, En_Gender gender) {
-        if (Objects.equals(categoryId, En_CompanyCategory.HOME.getId() )) {
+        if (Objects.equals(categoryId, En_CompanyCategory.HOME.getId())) {
             return LOAD_AVATAR_URL + accountId + ".jpg";
         }
 
         return getAvatarUrlByGender(gender);
     }
 
-    public static String getAvatarUrlByGender(En_Gender gender ) {
-        if ( gender == null ) {
+    public static String getAvatarUrlByGender(En_Gender gender) {
+        if (gender == null) {
             return NO_AVATAR_PATH;
         }
 
-        switch ( gender ) {
+        switch (gender) {
             case FEMALE:
                 return FEMALE_AVATAR_URL;
             case MALE:
@@ -42,7 +42,7 @@ public class AvatarUtils {
         }
     }
 
-    private static final String NO_AVATAR_PATH = "./images/nophoto.png";
+    private static final String NO_AVATAR_PATH = "./images/user-icon.svg";
     private static final String MALE_AVATAR_URL = "./images/user-icon-m.svg";
     private static final String FEMALE_AVATAR_URL = "./images/user-icon-f.svg";
     private static final String LOAD_AVATAR_URL = GWT.getModuleBaseURL() + "springApi/avatars/";
