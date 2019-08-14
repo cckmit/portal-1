@@ -12,4 +12,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="add-cmanager_id-at-case_comment-constraint" author="buchmastov">
+        <addForeignKeyConstraint constraintName="cmanager_id_to_person_fk"
+                                 baseTableName="case_comment" baseColumnNames="cmanager_id"
+                                 referencedTableName="person" referencedColumnNames="id"
+                                 onDelete="NO ACTION" onUpdate="CASCADE"/>
+    </changeSet>
+
 </databaseChangeLog>
