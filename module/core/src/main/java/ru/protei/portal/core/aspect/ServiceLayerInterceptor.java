@@ -150,15 +150,11 @@ public class ServiceLayerInterceptor {
     }
 
     private void makeSimpleAudit(AuthToken token, En_AuditType auditType) {
-        UserSessionDescriptor descriptor = authService.findSession(token);
-
         SimpleAuditableObject auditableObject = new SimpleAuditableObject();
         notAuditableContainer.put(AUDITABLE_TYPE, auditType.name());
         auditableObject.setContainer(notAuditableContainer);
 
-        AuditObject auditObject = new AuditObject(auditType.getId(), descriptor, auditableObject);
-        publisherService.publishEvent(new CreateAuditObjectEvent(this, auditObject));
-        notAuditableContainer.clear();
+        makeAudit(token, auditType, auditableObject);
     }
 
     private void checkPrivileges( ProceedingJoinPoint pjp ) {
@@ -280,16 +276,16 @@ public class ServiceLayerInterceptor {
         return null;
     }
 
-    private AuditableObject findAuditableObject( ProceedingJoinPoint pjp ) {
+    private AuditableObject findAuditableObject(ProceedingJoinPoint pjp) {
         Method method = ((MethodSignature)pjp.getSignature()).getMethod();
         Parameter[] params = method.getParameters();
 
         for (int i = 0; i < params.length; i++) {
+            Object arg = pjp.getArgs()[i];
 
-            Object arg = pjp.getArgs()[ i ];
-            if ( !( arg instanceof AuditableObject ) ) {
+            if (!(arg instanceof AuditableObject)) {
                 if (!params[i].getType().equals(AuthToken.class)) {
-                    notAuditableContainer.put(params[i].getName(), arg.toString());
+                    notAuditableContainer.put(params[i].getName(), arg);
                 }
 
                 continue;
@@ -297,17 +293,9 @@ public class ServiceLayerInterceptor {
 
             notAuditableContainer.clear();
 
-            if ( arg != null ) {
-                if ( arg instanceof Long ){
-                    LongAuditableObject longAuditableObject = new LongAuditableObject();
-                    longAuditableObject.setId( (Long)arg );
-                    return longAuditableObject;
-                }
-                return (AuditableObject) arg;
-            }
-
-            throw new InvalidAuditableObjectException();
+            return (AuditableObject) arg;
         }
+
         return null;
     }
 
@@ -319,5 +307,5 @@ public class ServiceLayerInterceptor {
     EventPublisherService publisherService;
 
     private static final String AUDITABLE_TYPE = "AuditableType";
-    private Map<String, String> notAuditableContainer = new LinkedHashMap<>();
+    private Map<String, Object> notAuditableContainer = new LinkedHashMap<>();
 }

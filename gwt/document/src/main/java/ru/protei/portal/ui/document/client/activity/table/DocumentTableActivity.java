@@ -86,17 +86,13 @@ public abstract class DocumentTableActivity
             return;
         }
 
-        documentService.updateState(value.getId(), value.getState() == En_DocumentState.DEPRECATED ? En_DocumentState.ACTIVE : En_DocumentState.DEPRECATED, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(Boolean result) {
-                loadTable();
-                fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new DocumentEvents.ChangeModel());
-            }
-        });
+        documentService.updateState(value.getId(), value.getState() == En_DocumentState.DEPRECATED ? En_DocumentState.ACTIVE : En_DocumentState.DEPRECATED,
+                new FluentCallback<Boolean>()
+                        .withSuccess(result -> {
+                            loadTable();
+                            fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new DocumentEvents.ChangeModel());
+                        }));
     }
 
     @Event

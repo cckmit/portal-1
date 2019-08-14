@@ -1336,7 +1336,7 @@ label.bordered:after {
     }
 
     .product-name {
-      width: 90%;
+      width: 82%;
     }
   }
 }
@@ -1439,6 +1439,10 @@ label.bordered:after {
       }
     }
   }
+}
+
+.deprecated-entity {
+  opacity: .3;
 }
 
 /* table expandable width */

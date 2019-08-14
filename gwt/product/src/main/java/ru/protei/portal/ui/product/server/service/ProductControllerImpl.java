@@ -82,7 +82,7 @@ public class ProductControllerImpl implements ProductController {
     @Override
     public Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException {
 
-        log.debug( "updateState(): productId={}", productId);
+        log.debug( "updateState(): productId={} | state={}", productId, state);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 

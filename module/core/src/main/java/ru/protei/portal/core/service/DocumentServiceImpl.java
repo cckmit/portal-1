@@ -175,12 +175,12 @@ public class DocumentServiceImpl implements DocumentService {
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!documentDAO.checkExistsByKey(documentId)) {
+        Document document = documentDAO.get(documentId);
+
+        if (document == null) {
             return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
         }
 
-        Document document = new Document();
-        document.setId(documentId);
         document.setState(state);
 
         if (documentDAO.updateState(document)) {

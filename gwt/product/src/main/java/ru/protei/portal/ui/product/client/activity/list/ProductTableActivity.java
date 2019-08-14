@@ -89,18 +89,14 @@ public abstract class ProductTableActivity implements
 
     @Override
     public void onArchiveClicked(DevUnit value) {
-        productService.updateState(value.getId(), value.getState() == En_DevUnitState.DEPRECATED ? En_DevUnitState.ACTIVE : En_DevUnitState.DEPRECATED, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onSuccess(Boolean result) {
-                loadTable();
-                fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new ProductEvents.ProductListChanged());
-            }
-        });
+        productService.updateState(value.getId(), value.getState() == En_DevUnitState.DEPRECATED ? En_DevUnitState.ACTIVE : En_DevUnitState.DEPRECATED,
+                new FluentCallback<Boolean>()
+                        .withSuccess(result -> {
+                            loadTable();
+                            fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new ProductEvents.ProductListChanged());
+                        })
+        );
     }
 
     private void showPreview (DevUnit value ) {

@@ -109,17 +109,19 @@ public class ProductTableView extends Composite implements AbstractProductTableV
         editClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         archiveClickColumn.setPrivilege( En_Privilege.COMPANY_EDIT );
         
-        name = new DynamicColumn<>(lang.productName(), "product-name", devUnit ->{
+        name = new DynamicColumn<>(lang.productName(), "product-name", devUnit -> {
             StringBuilder stringBuilder = new StringBuilder();
-            if(!devUnit.isActiveUnit()) {
+
+            if (devUnit.isActiveUnit()) {
+                stringBuilder.append(devUnit.getName());
+            } else {
                 stringBuilder
-                        .append("<div style=\"opacity: 0.7;\">")
+                        .append("<div class=\"deprecated-entity\">")
                         .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.PRODUCT_TABLE.LOCK_ICON + "\"></i> ")
                         .append(devUnit.getName())
                         .append("</div>");
             }
-            else
-                stringBuilder.append(devUnit.getName());
+
             return stringBuilder.toString();
         });
         type = new ClickColumn<DevUnit>() {

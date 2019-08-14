@@ -34,9 +34,8 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
-        if (archivedCheckFunction != null) {
-            isArchived = archivedCheckFunction.apply(value);
-        }
+        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply(value);
+
         cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );

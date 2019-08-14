@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class SimpleAuditableObject extends AuditableObject {
     @JsonIgnore
-    private Map<String, String> notAuditableContainer;
+    private transient Map<String, Object> notAuditableContainer;
 
     private String params;
 
@@ -27,11 +27,11 @@ public class SimpleAuditableObject extends AuditableObject {
         return params;
     }
 
-    public Map<String, String> getNotAuditableContainer() {
+    public Map<String, Object> getNotAuditableContainer() {
         return notAuditableContainer;
     }
 
-    public void setContainer(Map<String, String> notAuditableContainer) {
+    public void setContainer(Map<String, Object> notAuditableContainer) {
         this.notAuditableContainer = notAuditableContainer;
         this.params = notAuditableContainer.toString();
     }

@@ -171,11 +171,12 @@ public class ProductServiceImpl implements ProductService {
             return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
-        if (!devUnitDAO.checkExistsByKey(productId)) {
+        DevUnit product = devUnitDAO.get(productId);
+
+        if (product == null) {
             return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.NOT_FOUND);
         }
 
-        DevUnit product = new DevUnit(productId);
         product.setStateId(state.getId());
 
         if (devUnitDAO.updateState(product)) {

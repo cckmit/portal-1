@@ -36,6 +36,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         editClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         archiveClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
+        downloadClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         initTable();
     }
 
@@ -113,6 +114,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     private void initTable() {
         editClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
         archiveClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
+        downloadClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
 
         columns.add(id);
         columns.add(documentName);
@@ -138,6 +140,9 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         @Override
         public void fillColumnValue(Element cell, Document value) {
             cell.setInnerText(value.getId().toString());
+            if (value.isDeprecatedUnit()) {
+                cell.addClassName("deprecated-entity");
+            }
         }
     };
 
@@ -150,13 +155,16 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            String html = "";
+            StringBuilder html = new StringBuilder();
 
             if (!StringUtils.isEmpty(value.getDecimalNumber())) {
-                html += "<div class=\"decimal-number\">" + value.getDecimalNumber() + "</div> ";
+                html
+                        .append("<div class=\"decimal-number\">")
+                        .append(value.getDecimalNumber())
+                        .append("</div> ");
             }
 
-            cell.setInnerHTML(html);
+            cell.setInnerHTML(html.toString());
         }
     };
     private final ClickColumn<Document> documentName = new ClickColumn<Document>() {
@@ -168,28 +176,32 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         @Override
         public void fillColumnValue(Element cell, Document value) {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder html = new StringBuilder();
 
-            if (!value.isActiveUnit()){
-                sb
-                        .append("<div class =\"document-name\" style=\"opacity: 0.7;\">")
+            if (!value.isActiveUnit()) {
+                html
+                        .append("<div class =\"document-name\">")
                         .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_TABLE.LOCK_ICON + "\"></i> ")
                         .append(value.getName())
                         .append("</div>");
+            } else {
+                html.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
             }
-            else
-                sb.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
-            if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
-                sb.append( "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>" );
-            }
-            sb.append( "<br/>" );
-            sb.append( "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>" );
-            sb.append( "<br/>" );
-            sb.append( value.getApproved() ? lang.documentApproved() : lang.documentNotApproved() );
-            sb.append( "<br/>" );
-            sb.append( "<small>" + lang.documentCreated(DateFormatter.formatDateOnly(value.getCreated())) + " " + DateFormatter.formatTimeOnly(value.getCreated()) + "</small>" );
 
-            cell.setInnerHTML(sb.toString());
+            if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
+                html.append( "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>" );
+            }
+            html.append( "<br/>" );
+            html.append( "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>" );
+            html.append( "<br/>" );
+            html.append( value.getApproved() ? lang.documentApproved() : lang.documentNotApproved() );
+            html.append( "<br/>" );
+            html.append( "<small>" + lang.documentCreated(DateFormatter.formatDateOnly(value.getCreated())) + " " + DateFormatter.formatTimeOnly(value.getCreated()) + "</small>" );
+
+            if (value.isDeprecatedUnit()) {
+                cell.addClassName("deprecated-entity");
+            }
+            cell.setInnerHTML(html.toString());
         }
     };
 
@@ -202,9 +214,15 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         @Override
         public void fillColumnValue(Element cell, Document value) {
             ProjectInfo project = value.getProjectInfo();
-            if (project == null)
+            if (project == null) {
                 return;
+            }
+
             cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
+
+            if (value.isDeprecatedUnit()) {
+                cell.addClassName("link-disabled");
+            }
         }
     };
 

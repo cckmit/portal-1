@@ -122,14 +122,39 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
 
         name = new DynamicColumn<>(lang.companyName(), "company-main-info", this::getCompanyInfoBlock);
         category = new DynamicColumn<>(
-            lang.companyCategory(),
-            "company-category",
-            company -> company.getCategory() != null? company.getCategory().getName(): ""
+                lang.companyCategory(),
+                "company-category",
+                company -> {
+                    if (company.getCategory() == null) {
+                        return "";
+                    } else {
+                        Element cCategory = DOM.createDiv();
+                        cCategory.setInnerText(company.getCategory().getName());
+                        if (company.isArchived()) {
+                            cCategory.addClassName("deprecated-entity");
+                        }
+
+                        return cCategory.getString();
+                    }
+                }
         );
+
         group = new DynamicColumn<>(
                 lang.companyGroup(),
                 "company-group",
-                company -> company.getCompanyGroup() != null? company.getCompanyGroup().getName(): ""
+                company -> {
+                    if (company.getCompanyGroup() == null) {
+                        return "";
+                    } else {
+                        Element cGroup = DOM.createDiv();
+                        cGroup.setInnerText(company.getCategory().getName());
+                        if (company.isArchived()) {
+                            cGroup.addClassName("deprecated-entity");
+                        }
+
+                        return cGroup.getString();
+                    }
+                }
         );
 
         table.addColumn( name.header, name.values );
@@ -146,7 +171,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         cName.addClassName("company-name");
 
         if (company.isArchived()) {
-            cName.setPropertyString("style", "opacity: 0.7;");
+            cName.addClassName("deprecated-entity");
 
             Element banIcon = DOM.createElement("i");
             banIcon.addClassName("fa fa-lock m-r-5");
