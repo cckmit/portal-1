@@ -66,4 +66,6 @@ public interface CaseService {
     CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber);
 
     boolean hasAccessForCaseObject(AuthToken token, En_Privilege privilege, CaseObject caseObject);
+
+    CoreResponse<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 }

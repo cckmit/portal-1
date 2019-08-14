@@ -63,10 +63,6 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
 
-        caseLinkService.getLinks( token, caseObject.getId() )
-                .map( this::fillYouTrackInfo )
-                .ifOk( caseLinks -> caseObject.setLinks( caseLinks ) );
-
         CoreResponse<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
         if (caseTags.isOk()) {
             caseObject.setTags(new HashSet<>(caseTags.getData()));
@@ -595,6 +591,12 @@ public class CaseServiceImpl implements CaseService {
             }
         }
         return true;
+    }
+
+    @Override
+    public CoreResponse<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
+       return caseLinkService.getLinks( token, caseId)
+                .map( this::fillYouTrackInfo );
     }
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObject oldState, CaseObject newState) {

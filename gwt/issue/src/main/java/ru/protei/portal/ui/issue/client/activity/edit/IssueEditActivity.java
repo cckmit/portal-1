@@ -263,6 +263,12 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         fillView(this.issue, false);
     }
 
+    private void requestCaseLinks( Long issueId ) {
+        issueService.getCaseLinks( issueId, new FluentCallback<List<CaseLink>>().withSuccess( caseLinks ->
+                view.links().setValue( caseLinks == null ? null : new HashSet<>( caseLinks ) )
+        ) );
+    }
+
     private void initialRestoredView(CaseObject issue){
         this.issue = issue;
         fillView(this.issue, true);
@@ -276,6 +282,7 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
             @Override
             public void onSuccess(CaseObject issue) {
                 successAction.accept(issue);
+                requestCaseLinks(issue.getId());
             }
         });
     }

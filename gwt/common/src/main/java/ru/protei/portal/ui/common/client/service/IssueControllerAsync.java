@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.ent.CaseInfo;
+import ru.protei.portal.core.model.ent.CaseLink;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
@@ -32,4 +33,6 @@ public interface IssueControllerAsync {
     void getStateList(AsyncCallback<List<En_CaseState>> async);
 
     void getIssueShortInfo(Long caseNumber, AsyncCallback<CaseInfo> async);
+
+    void getCaseLinks( Long caseId, AsyncCallback<List<CaseLink>> async );
 }
