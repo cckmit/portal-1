@@ -28,8 +28,6 @@ public interface AbstractCaseCommentItemView extends IsWidget {
 
     void setManager( String managerShortName );
 
-    void setChangeLog( String changeLog );
-
     void enabledEdit( boolean isEnabled );
 
     void enableReply(boolean isEnabled);

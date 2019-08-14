@@ -133,21 +133,6 @@ public class CaseCommentItemView
     }
 
     @Override
-    public void setChangeLog(String changeLog) {
-        if (root.getStyleName().contains("right")) {
-            owner.removeClassName("name");
-            owner.addClassName("status");
-            owner.setInnerText("");
-            info.setInnerText(lang.issueCommentChangeLog());
-            info.removeClassName("hide");
-        } else {
-            status.setInnerText("");
-            info.setInnerText(lang.issueCommentChangeLog());
-            info.removeClassName("hide");
-        }
-    }
-
-    @Override
     public void enabledEdit( boolean isEnabled ) {
         remove.setVisible( isEnabled );
         edit.setVisible( isEnabled );

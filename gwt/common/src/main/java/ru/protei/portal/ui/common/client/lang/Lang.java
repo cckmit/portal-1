@@ -393,8 +393,6 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentChangeManagerTo();
 
-    String issueCommentChangeLog();
-
     String errNotRemoved();
 
     String errEditIssueCommentEmpty();
