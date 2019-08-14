@@ -22,6 +22,7 @@ import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 import java.util.*;
 
 import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 public class CaseLinkServiceImpl implements CaseLinkService {
 
@@ -134,6 +135,41 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         caseLinkQuery.setCaseId( caseId );
         caseLinkQuery.setType( En_CaseLink.YT );
         return ok(caseLinkDAO.getListByQuery(caseLinkQuery));
+    }
+
+    @Override
+    @Transactional
+    public CoreResponse<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+        Long caseId = getCaseIdByCaseNumber( caseNumber );
+        return getYoutrackLinks( caseId ).map( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink -> {
+            if (caseLink != null) {
+                log.warn( "addYoutrackIdIntoIssue(): Link on youtrack with id {} already exists", youtrackId );
+                return ok( caseLink.getId() );
+            }
+            return addCaseLinkOnToYoutrack( caseId, youtrackId );
+        } );
+    }
+
+    private Long getCaseIdByCaseNumber( Long caseNumber ) {
+        return caseObjectDAO.getCaseIdByNumber( caseNumber );
+    }
+
+    private CaseLink findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
+        return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) );
+    }
+
+    private CoreResponse<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {
+        CaseLink newLink = new CaseLink();
+        newLink.setCaseId( caseNumber );
+        newLink.setType( En_CaseLink.YT );
+        newLink.setRemoteId( youtrackId );
+        Long id = caseLinkDAO.persist( newLink );
+        if (id == null) {
+            log.error( "addCaseLinkOnToYoutrack(): Can`t add link on to youtrack into case, persistence error" );
+            throw new RuntimeException( "addCaseLinkOnToYoutrack(): rollback transaction" );
+        }
+        return ok( id );
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

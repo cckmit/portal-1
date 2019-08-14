@@ -26,6 +26,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -113,20 +114,14 @@ public class PortalApiController {
         }
     }
 
-    @PostMapping(value = "/addyoutrackidintoissue")
-    public APIResult addYoutrackIdIntoIssue( @PathVariable("caseNumber") Long caseNumber,
+    @PostMapping(value = "/addyoutrackidintoissue/{caseNumber:[0-9]+}/{youtrackId}")
+    public String addYoutrackIdIntoIssue( HttpServletRequest request,
+                                             @PathVariable("caseNumber") Long caseNumber,
                                              @PathVariable("youtrackId") String youtrackId ) {
 
         log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-
-        CoreResponse<Long> result = caseLinkService.getYoutrackLinks( caseNumber ).map( caseLinks ->
-                find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) ) ).flatMap( caseLink -> {
-            if (caseLink != null) {
-                log.warn( "addYoutrackIdIntoIssue(): Link on youtrack with id {} already exists", youtrackId );
-                return ok( caseLink.getId() );
-            }
-            return addCaseLinkOnToYoutrack( caseNumber, youtrackId );
-        } );
+        Principal userPrincipal = request.getUserPrincipal();
+        CoreResponse<Long> result =  caseLinkService.addYoutrackLink(new AuthToken("","" ), caseNumber, youtrackId);
 
         if (result.isOk()) {
             log.info( "addYoutrackIdIntoIssue(): status: {}", result.getStatus() );
@@ -135,16 +130,9 @@ public class PortalApiController {
                     , youtrackId, caseNumber, result.getStatus() );
         }
 
-        return new APIResult( result.getStatus(), "" );
+        return result.getStatus().name();
     }
 
-    private CoreResponse<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId) {
-        CaseLink newLink = new CaseLink();
-        newLink.setCaseId( caseNumber );
-        newLink.setType( En_CaseLink.YT );
-        newLink.setRemoteId( youtrackId );
-        return caseLinkService.createLink( newLink );
-    }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery( En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir() );
