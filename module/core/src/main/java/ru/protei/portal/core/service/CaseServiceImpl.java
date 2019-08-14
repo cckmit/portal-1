@@ -181,6 +181,13 @@ public class CaseServiceImpl implements CaseService {
             log.error("Importance level message for the issue {} not saved!", caseId);
         }
 
+        if (caseObject.getManager() != null && caseObject.getManager().getId() != null) {
+            Long messageId = createAndPersistManagerMessage(initiator, caseObject.getId(), caseObject.getManager().getId());
+            if (messageId == null) {
+                log.error("Manager message for the issue {} not saved!", caseObject.getId());
+            }
+        }
+
         if(CollectionUtils.isNotEmpty(caseObject.getAttachments())){
             caseAttachmentDAO.persistBatch(
                     caseObject.getAttachments()
@@ -238,7 +245,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator, false);
 
         if (objectResultData.isUpdated()) {
             // From GWT-side we get partially filled object, that's why we need to refresh state from db
@@ -262,7 +269,7 @@ public class CaseServiceImpl implements CaseService {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
-        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator);
+        CaseObjectUpdateResult objectResultData = performUpdateCaseObject(token, caseObject, initiator, caseComment != null);
         CaseCommentSaveOrUpdateResult commentResultData = performSaveOrUpdateCaseComment(token, caseComment, initiator);
 
         if (objectResultData.isUpdated() || commentResultData.isUpdated()) {
@@ -288,7 +295,7 @@ public class CaseServiceImpl implements CaseService {
         );
     }
 
-    private CaseObjectUpdateResult performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator) {
+    private CaseObjectUpdateResult performUpdateCaseObject(AuthToken token, CaseObject caseObject, Person initiator, boolean isWithCommentUpdate) {
 
         if (caseObject == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -313,7 +320,7 @@ public class CaseServiceImpl implements CaseService {
 
         applyStateBasedOnManager(caseObject);
 
-        if (isCaseHasNoChanges(caseObject, oldState)) {
+        if (!isCaseChanged(caseObject, oldState)) {
             return new CaseObjectUpdateResult(caseObject, false);
         }
 
@@ -357,6 +364,21 @@ public class CaseServiceImpl implements CaseService {
             Long messageId = createAndPersistImportanceMessage(initiator, caseObject.getId(), caseObject.getImpLevel());
             if (messageId == null) {
                 log.error("Importance level message for the issue {} isn't saved!", caseObject.getId());
+            }
+        }
+
+        if (oldState.getManager() != null && caseObject.getManager() != null &&
+            !Objects.equals(oldState.getManager().getId(), caseObject.getManager().getId())) {
+            Long messageId = createAndPersistManagerMessage(initiator, caseObject.getId(), caseObject.getManager().getId());
+            if (messageId == null) {
+                log.error("Manager message for the issue {} isn't saved!", caseObject.getId());
+            }
+        }
+
+        if (!isWithCommentUpdate && isCaseChangedExceptStateImpLevelManager(oldState, caseObject)) {
+            Long messageId = createAndPersistChangeLogMessage(initiator, caseObject.getId());
+            if (messageId == null) {
+                log.error("Change log message for the issue {} isn't saved!", caseObject.getId());
             }
         }
 
@@ -541,10 +563,6 @@ public class CaseServiceImpl implements CaseService {
         return caseCommentDAO.persist(stateChangeMessage);
     }
 
-    private Long createAndPersistImportanceMessage(Person author, Long caseId, En_ImportanceLevel importance) {
-        return createAndPersistImportanceMessage(author, caseId, importance.getId());
-    }
-
     private Long createAndPersistImportanceMessage(Person author, Long caseId, Integer importance) {//int -> Integer т.к. падает unit test с NPE, неясно почему
         CaseComment stateChangeMessage = new CaseComment();
         stateChangeMessage.setAuthor(author);
@@ -552,6 +570,23 @@ public class CaseServiceImpl implements CaseService {
         stateChangeMessage.setCaseId(caseId);
         stateChangeMessage.setCaseImpLevel(importance);
         return caseCommentDAO.persist(stateChangeMessage);
+    }
+
+    private Long createAndPersistManagerMessage(Person author, Long caseId, Long managerId) {
+        CaseComment managerChangeMessage = new CaseComment();
+        managerChangeMessage.setAuthor(author);
+        managerChangeMessage.setCreated(new Date());
+        managerChangeMessage.setCaseId(caseId);
+        managerChangeMessage.setCaseManagerId(managerId);
+        return caseCommentDAO.persist(managerChangeMessage);
+    }
+
+    private Long createAndPersistChangeLogMessage(Person author, Long caseId) {
+        CaseComment managerChangeMessage = new CaseComment();
+        managerChangeMessage.setAuthor(author);
+        managerChangeMessage.setCreated(new Date());
+        managerChangeMessage.setCaseId(caseId);
+        return caseCommentDAO.persist(managerChangeMessage);
     }
 
     private void applyFilterByScope( AuthToken token, CaseQuery query ) {
@@ -583,19 +618,27 @@ public class CaseServiceImpl implements CaseService {
         }
     }
 
-    private boolean isCaseHasNoChanges(CaseObject co1, CaseObject co2){
+    private boolean isCaseChanged(CaseObject co1, CaseObject co2){
         // without notifiers
         // without links
-        return
-                Objects.equals(co1.getName(), co2.getName())
-                && Objects.equals(co1.getInfo(), co2.getInfo())
-                && Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
-                && Objects.equals(co1.getState(), co2.getState())
-                && Objects.equals(co1.getImpLevel(), co2.getImpLevel())
-                && Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
-                && Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
-                && Objects.equals(co1.getProductId(), co2.getProductId())
-                && Objects.equals(co1.getManagerId(), co2.getManagerId());
+        return     !Objects.equals(co1.getState(), co2.getState())
+                || !Objects.equals(co1.getImpLevel(), co2.getImpLevel())
+                || !Objects.equals(co1.getManagerId(), co2.getManagerId())
+                || isCaseChangedExceptStateImpLevelManager(co1, co2);
+    }
+
+    private boolean isCaseChangedExceptStateImpLevelManager(CaseObject co1, CaseObject co2) {
+        // without notifiers
+        // without links
+        // without state
+        // without imp level
+        // without manager
+        return     !Objects.equals(co1.getName(), co2.getName())
+                || !Objects.equals(co1.getInfo(), co2.getInfo())
+                || !Objects.equals(co1.isPrivateCase(), co2.isPrivateCase())
+                || !Objects.equals(co1.getInitiatorCompanyId(), co2.getInitiatorCompanyId())
+                || !Objects.equals(co1.getInitiatorId(), co2.getInitiatorId())
+                || !Objects.equals(co1.getProductId(), co2.getProductId());
     }
 
     @Override
