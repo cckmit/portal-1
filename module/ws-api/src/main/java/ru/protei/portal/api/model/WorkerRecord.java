@@ -38,6 +38,7 @@ public class WorkerRecord {
 
     private boolean isDeleted;
     private boolean isFired;
+    private String firedDate;
 
     private String workerId;
     private String departmentId;
@@ -235,6 +236,9 @@ public class WorkerRecord {
     public boolean isFired() {
         return isFired;
     }
+
+    @XmlElement(name = "fired-date")
+    public String getFiredDate() { return firedDate; }
 
     public void setFired(boolean isFired) {
         this.isFired = isFired;

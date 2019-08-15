@@ -4,6 +4,8 @@ import ru.protei.portal.core.model.dict.En_SortDir;
 import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.view.EntityOption;
 
+import java.util.Date;
+
 /**
  * Created by Mike on 02.11.2016.
  */
@@ -11,6 +13,7 @@ public class ContactQuery extends BaseQuery {
 
     private Long companyId;
     private Boolean fired;
+    private Date fireDate;
     private Boolean deleted;
 
     public ContactQuery() {

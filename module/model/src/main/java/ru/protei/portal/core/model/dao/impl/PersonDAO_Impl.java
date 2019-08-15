@@ -170,7 +170,7 @@ public class PersonDAO_Impl extends PortalBaseJdbcDAO<Person> implements PersonD
     /**
      * Query Condition builders
      */
-
+//?
     @Override
     @SqlConditionBuilder
     public SqlCondition createContactSqlCondition(ContactQuery query) {
