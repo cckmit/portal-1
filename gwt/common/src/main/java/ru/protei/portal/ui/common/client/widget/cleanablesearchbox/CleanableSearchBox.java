@@ -41,6 +41,10 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
         textBox.getElement().setAttribute("placeholder", value);
     }
 
+    public void setStyle(String style) {
+        textBox.addStyleName( style );
+    }
+
     @Override
     public boolean isEnabled() {
         return enabled;
@@ -117,11 +121,13 @@ public class CleanableSearchBox extends Composite implements HasValue<String>, H
     public void setAddon(String addon) {
         this.addonText.setInnerText(addon);
         this.addon.removeClassName("hide");
+        this.textBox.removeStyleName("rounded-left-3");
     }
 
     public void setAddonIcon(String icon) {
         this.addonIcon.setClassName(icon);
         this.addon.removeClassName("hide");
+        this.textBox.removeStyleName("rounded-left-3");
     }
 
     @UiField

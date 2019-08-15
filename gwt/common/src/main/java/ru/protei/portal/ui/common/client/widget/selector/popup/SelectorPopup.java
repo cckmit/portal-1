@@ -85,6 +85,8 @@ public class SelectorPopup
 
     public void showNearInlineRight( final IsWidget nearWidget ) {
         prepareToShow(nearWidget);
+        root.getElement().getStyle().setWidth( 150D, Style.Unit.PX );
+        search.setStyle( "input-sm" );
         setPopupPositionAndShow((popupWidth, popupHeight) -> {
             int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();
             int widthDiff = popupWidth - nearWidget.asWidget().getOffsetWidth();

@@ -43,6 +43,21 @@
 .form-control {
   padding-left: 17px;
   color: #5e5e5e;
+  border-radius: 3px;
+}
+
+.input-group-text {
+  border-radius: 3px;
+}
+
+.rounded-right-3 {
+  border-top-right-radius: 3px !important;
+  border-bottom-right-radius: 3px !important;
+}
+
+.rounded-left-3 {
+  border-top-left-radius: 3px !important;
+  border-bottom-left-radius: 3px !important;
 }
 
 .btn-xs, .btn-group-xs > .btn {

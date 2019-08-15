@@ -698,6 +698,7 @@ label.bordered:after {
             line-height: 1.2em;
             vertical-align: inherit;
             font-size: 0.9em;
+            cursor: pointer;
           }
         }
       }
@@ -1427,7 +1428,7 @@ td.info {
   font-weight: bold;
   font-size: 12px;
   color: white;
-  line-height: 30px;
+  line-height: 32px;
   display: block;
   overflow: hidden;
 }
@@ -1453,7 +1454,7 @@ td.info {
 }
 
 .dashboard .issues table .number {
-  width: 65px;
+  width: 130px;
 }
 
 .dashboard .issues table .info {
@@ -1479,8 +1480,8 @@ td.info {
 
 .dashboard-section-name .rightSide {
   float: right;
-  height: 30px;
-  line-height: 30px;
+  height: 32px;
+  line-height: 32px;
 }
 
 .dashboard-importance-filter-btn {
@@ -1489,11 +1490,10 @@ td.info {
   cursor: pointer;
   background: #eceeee;
   color: #c9d0d1;
-  text-shadow: 1px 1px white;
-  height: 30px;
+  height: 32px;
   float: left;
   vertical-align: middle;
-  line-height: 28px;
+  line-height: 32px;
 }
 
 .dashboard-importance-filter-btn:hover,
@@ -1532,13 +1532,13 @@ td.info {
   background: transparent !important;
   border: none !important;
   color: white !important;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   padding: 0 !important;
   i {
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
     vertical-align: top;
     text-align: center;
   }
@@ -1546,8 +1546,8 @@ td.info {
 
 .dashboard-search-btn {
   display: inline-block;
-  height: 30px;
-  width: 30px;
+  height: 32px;
+  width: 32px;
   vertical-align: top;
 }
 
@@ -2220,8 +2220,8 @@ td.info {
 .auth-type {
   line-height: 0 !important;
   > img {
-    height: 35px;
-    width: 35px;
+    height: 21px;
+    width: 21px;
   }
 }
 
@@ -2631,6 +2631,7 @@ div.select2-container {
 .dropdown-selector .dropdown-toggle {
   text-align: left;
   padding-right: 27px;
+  min-height: 35px;
 
   &::after {
     position: absolute;
@@ -2639,7 +2640,9 @@ div.select2-container {
   }
 
   .selector-val {
-    display: inline-block;
+    display: block;
+    width: 100%;
+    overflow: hidden;
   }
 }
 
@@ -3433,8 +3436,9 @@ label {
 }
 
 .prepend-fix {
-  width: 15px;
+  width: 35px;
 }
+
 .number-copy-panel {
   display: inline-block!important;
   .copy-issue-description {
