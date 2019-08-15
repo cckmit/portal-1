@@ -7,6 +7,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Created by michael on 27.06.16.
@@ -56,7 +57,7 @@ public class CoreResponse<T> {
     }
 
     /**
-     * Неясен смысл метода, везде применяется с errData = null
+     * Не ясен смысл метода, везде применяется с errData = null
      */
     @Deprecated
     public CoreResponse<T> error (En_ResultStatus status, T errData) {
@@ -99,11 +100,26 @@ public class CoreResponse<T> {
     }
 
     /**
+     * Если результрат успешен
+     */
+    public void ifOk( Consumer<? super T> consumer ) {
+        if (consumer != null && isOk()) {
+            consumer.accept( data );
+        }
+    }
+
+    /**
+     *  Поведение подобно Optional от CoreResponse<T>
+     *      При получении ошибки, дальнейшие действия игнорируются
+     *      ошибка продвигается к конечному результату
+     */
+
+    /**
      * Когда вызваемая функция возвращает не Result, а конкретное значение
      */
     public <U> CoreResponse<U> map( Function<? super T, ? extends U> mapper) {
         if (mapper == null || !isOk())
-            return new CoreResponse<U>().error( status );
+            return errorSt( status );
         else {
             return ok( mapper.apply( data ) );
         }
@@ -121,19 +137,41 @@ public class CoreResponse<T> {
     }
 
     /**
-     * Если результрат успешен
+     * Если результрат успешен и не null
+     * расширяет метод map проверкой значения на null
      */
-    public void ifOk( Consumer<? super T> consumer ) {
-        if (consumer != null && isOk()) {
-            consumer.accept( data );
+    public <U> CoreResponse<U> ifPresentOrElse​( Function<? super T, CoreResponse<U>> mapper,
+                                                 Function<En_ResultStatus, CoreResponse<U>> onNotPresent ) {
+        if (mapper == null || !isOk()) {
+            return errorSt( status );
         }
+        if (data != null) {
+            return mapper.apply( data );
+        }
+        if (onNotPresent == null) {
+            return errorSt( status );
+        }
+        return onNotPresent.apply( status );
     }
 
-    public <X extends Throwable> T orElseThrow( Function<En_ResultStatus, ? extends X> exceptionSupplier ) throws X {
-        if (isOk()) {
-            return getData();
-        } else {
+    /**
+     * Если результрат не успешен
+     * получить тот же результат выполнив другое действие
+     */
+    public CoreResponse<T> orElseGet( Supplier<CoreResponse<T>> supplier ) {
+        if (supplier == null) {
+            return errorSt( status );
+        }
+        if (!isOk()) {
+            return supplier.get();
+        }
+        return this;
+    }
+
+    public <X extends Throwable> CoreResponse<T> orElseThrow( Function<En_ResultStatus, ? extends X> exceptionSupplier ) throws X {
+        if (!isOk()) {
             throw exceptionSupplier.apply( status );
         }
+        return this;
     }
 }

@@ -19,6 +19,7 @@ import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 
 import static ru.protei.portal.api.struct.CoreResponse.ok;
@@ -142,13 +143,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     public CoreResponse<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Long caseId = getCaseIdByCaseNumber( caseNumber );
         return getYoutrackLinks( caseId ).map( caseLinks ->
-                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink -> {
-            if (caseLink != null) {
-                log.warn( "addYoutrackIdIntoIssue(): Link on youtrack with id {} already exists", youtrackId );
-                return ok( caseLink.getId() );
-            }
-            return addCaseLinkOnToYoutrack( caseId, youtrackId );
-        } );
+                findCaseLinkByRemoterId( caseLinks, youtrackId )).ifPresentOrElse​(
+                caseLink -> ok( caseLink.getId() ),
+                status -> addCaseLinkOnToYoutrack( caseId, youtrackId )
+        );
     }
 
     private Long getCaseIdByCaseNumber( Long caseNumber ) {
