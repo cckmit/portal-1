@@ -102,11 +102,10 @@ public class PortalApiController {
         }
     }
 
-    @RequestMapping(value = "/cases/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/cases/create")
     public APIResult<CaseObject> createCase(@RequestBody AuditableObject auditableObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
-
         if (!(auditableObject instanceof CaseObject)) {
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
         }
@@ -129,7 +128,11 @@ public class PortalApiController {
 
             CoreResponse<CaseObject> caseObjectCoreResponse = caseService.saveCaseObject(authToken, (CaseObject) auditableObject, result.getData().getPerson());
 
-            return APIResult.okWithData(caseObjectCoreResponse.getData());
+            if (caseObjectCoreResponse.isOk()) {
+                return APIResult.okWithData(caseObjectCoreResponse.getData());
+            } else {
+                return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
+            }
 
         } catch (IllegalArgumentException | IOException ex) {
             log.error(ex.getMessage());
@@ -141,9 +144,13 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/cases/update")
-    public APIResult<CaseObject> updateCase(@RequestBody CaseShortView caseShortView,
+    public APIResult<CaseObject> updateCase(@RequestBody AuditableObject auditableObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
+        if (!(auditableObject instanceof CaseObject)) {
+            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
+        }
+
         try {
             Credentials cr = Credentials.parse(request.getHeader("Authorization"));
             APIResult<CaseObject> logMsg = validateCredentials(response, cr);
@@ -159,53 +166,19 @@ public class PortalApiController {
             }
 
             AuthToken authToken = result.getData().makeAuthToken();
-
 
             if (result.isError()) {
                 log.error("API | Get case objects error {}", result.getStatus().name());
                 return APIResult.error(result.getStatus(), "Get case objects error");
             }
 
-//            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(authToken, caseObject, caseObject.getInitiator());
-            return APIResult.okWithData(null);
+            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(authToken, (CaseObject) auditableObject, result.getData().getPerson());
 
-        } catch (IllegalArgumentException | IOException ex) {
-            log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
-        }
-    }
-
-    @RequestMapping(value = "/cases/test", method = RequestMethod.POST, produces = "application/json; charset=utf-8", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public APIResult<CaseObject> testPost(@RequestBody AuditableObject auditableObject,
-                                          HttpServletRequest request,
-                                          HttpServletResponse response) {
-
-        return APIResult.okWithData((CaseObject) auditableObject);
-    }
-
-    @GetMapping("/cases/get")
-    public APIResult<CaseObject> getOne(HttpServletRequest request,
-                                        HttpServletResponse response) {
-        try {
-            Credentials cr = Credentials.parse(request.getHeader("Authorization"));
-            APIResult<CaseObject> logMsg = validateCredentials(response, cr);
-            if (logMsg != null) {
-                return logMsg;
+            if (caseObjectCoreResponse.isOk()) {
+                return APIResult.okWithData(caseObjectCoreResponse.getData());
+            } else {
+                return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
             }
-
-            CoreResponse<UserSessionDescriptor> result = tryToAuthenticate(request, cr);
-
-            AuthToken authToken = result.getData().makeAuthToken();
-
-            if (result.isError()) {
-                log.error("API | Authentification error {}", result.getStatus().name());
-                return APIResult.error(result.getStatus(), "Authentification error");
-            }
-
-            return APIResult.okWithData(caseService.getCaseObject(authToken, 1019130).getData());
 
         } catch (IllegalArgumentException | IOException ex) {
             log.error(ex.getMessage());
@@ -281,32 +254,5 @@ public class PortalApiController {
         } catch (Throwable ex) {
             return null;
         }
-    }
-}
-
-class TestObject extends AuditableObject implements Serializable {
-    private long id;
-
-    private String name;
-
-    @Override
-    public String getAuditType() {
-        return null;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
