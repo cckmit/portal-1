@@ -21,6 +21,7 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.ui.common.server.ServiceUtils.checkResultAndGetData;
 import static ru.protei.portal.ui.common.server.ServiceUtils.getAuthToken;
 
@@ -124,7 +125,7 @@ public class IssueControllerImpl implements IssueController {
 
         CoreResponse< List<En_CaseState> > result = caseService.stateList( type );
 
-        log.debug("result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0);
+        log.debug("result status: {}, data-amount: {}", result.getStatus(), size(result.getData()));
 
         if (result.isError())
             throw new RequestFailedException(result.getStatus());

@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static ru.protei.portal.core.model.helper.CollectionUtils.size;
+
 /**
  * Реализация сервиса по работе с person
  */
@@ -35,7 +37,7 @@ public class PersonControllerImpl implements PersonController {
 
         CoreResponse< List< PersonShortView > > result = personService.shortViewList( authToken, query );
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );
@@ -50,7 +52,7 @@ public class PersonControllerImpl implements PersonController {
 
         CoreResponse<Map<Long, String>> result = personService.getPersonNames(ids);
 
-        log.debug( "result status: {}, data-amount: {}", result.getStatus(), result.isOk() ? result.getDataAmountTotal() : 0 );
+        log.debug( "result status: {}, data-amount: {}", result.getStatus(), size(result.getData()) );
 
         if ( result.isError() )
             throw new RequestFailedException( result.getStatus() );

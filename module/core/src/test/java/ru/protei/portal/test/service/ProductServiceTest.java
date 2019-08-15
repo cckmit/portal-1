@@ -41,7 +41,6 @@ public class ProductServiceTest {
         CoreResponse<SearchResult<DevUnit>> result = productService.getProducts( null, new ProductQuery() );
 
         Assert.assertNotNull(result);
-        Assert.assertTrue(result.getDataAmountTotal() > 0);
 
         Assert.assertNotNull(result.getData());
         Assert.assertNotNull(result.getData().getResults());

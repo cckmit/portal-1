@@ -123,6 +123,10 @@ public class CollectionUtils {
         return col == null ? 0 : col.size();
     }
 
+    public static int size(Map<?,?> map) {
+        return map == null ? 0 : map.size();
+    }
+
     public static <R, T> Set<R> toSet( Iterable<T> iterable, Function<? super T, ? extends R> mapper ) {
         Set<R> result = new HashSet<>();
         transform( iterable, result, mapper );

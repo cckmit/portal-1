@@ -21,16 +21,6 @@ public class CoreResponse<T> {
     @JsonProperty
     private T data;
 
-    /**
-     * Используется для идентификации размера/объема данных
-     * В частности, для списочных структур может возвращать
-     * общее количество записей, которое возможно выбрать по запросу
-     *
-     * Для единичных структур данных в овете всегда равно 1
-     */
-    @JsonProperty
-    private int dataAmountTotal;
-
     public boolean isOk () {
         return status == En_ResultStatus.OK;
     }
@@ -47,22 +37,8 @@ public class CoreResponse<T> {
         return data;
     }
 
-    public int getDataAmountTotal() {
-        return dataAmountTotal;
-    }
-
     public CoreResponse<T> error (En_ResultStatus status) {
         this.status = status;
-        return this;
-    }
-
-    /**
-     * Не ясен смысл метода, везде применяется с errData = null
-     */
-    @Deprecated
-    public CoreResponse<T> error (En_ResultStatus status, T errData) {
-        this.status = status;
-        this.data = errData;
         return this;
     }
 
@@ -77,13 +53,8 @@ public class CoreResponse<T> {
     }
 
     public CoreResponse<T> success (T data) {
-        return this.success(data, data instanceof Collection ? ((Collection)data).size() : 1);
-    }
-
-    public CoreResponse<T> success (T data, int dataAmount) {
         this.data = data;
         this.status = En_ResultStatus.OK;
-        this.dataAmountTotal = dataAmount;
         return this;
     }
 

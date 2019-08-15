@@ -24,6 +24,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 
 /**
@@ -72,7 +73,7 @@ public class EquipmentServiceImpl implements EquipmentService {
                 .map(EquipmentShortView::fromEquipment)
                 .collect(Collectors.toList());
 
-        return new CoreResponse<List<EquipmentShortView>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
