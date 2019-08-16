@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.auth.SecurityDefs;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping(value = "/api", headers = "Accept=application/json")
+@EnableWebMvc
 public class PortalApiController {
 
     @Autowired
@@ -85,11 +87,6 @@ public class PortalApiController {
             AuthToken authToken = result.getData().makeAuthToken();
 
             CoreResponse<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
-
-            if (result.isError()) {
-                log.error("API | Get case objects error {}", result.getStatus().name());
-                return APIResult.error(result.getStatus(), "Get case objects error");
-            }
 
             return APIResult.okWithData(searchList.getData().getResults());
 
@@ -167,11 +164,6 @@ public class PortalApiController {
 
             AuthToken authToken = result.getData().makeAuthToken();
 
-            if (result.isError()) {
-                log.error("API | Get case objects error {}", result.getStatus().name());
-                return APIResult.error(result.getStatus(), "Get case objects error");
-            }
-
             CoreResponse<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(authToken, (CaseObject) auditableObject, result.getData().getPerson());
 
             if (caseObjectCoreResponse.isOk()) {
@@ -187,6 +179,14 @@ public class PortalApiController {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/cases/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public APIResult<CaseObject> testMethod(@RequestBody AuditableObject auditableObject,
+                                            HttpServletRequest request,
+                                            HttpServletResponse response) {
+
+            return APIResult.okWithData((CaseObject) auditableObject);
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
