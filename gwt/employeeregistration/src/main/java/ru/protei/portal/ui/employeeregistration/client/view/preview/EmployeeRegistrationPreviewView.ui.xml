@@ -10,10 +10,7 @@
                 <h4 class="col-md-12 m-t-0 m-b-0" ui:field="fullName"/>
             </div>
 
-            <div class="row">
-                <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group" enabled="false"/>
-            </div>
-
+            <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group" enabled="false" showLabel="false"/>
 
             <div class="small">
                 <b>

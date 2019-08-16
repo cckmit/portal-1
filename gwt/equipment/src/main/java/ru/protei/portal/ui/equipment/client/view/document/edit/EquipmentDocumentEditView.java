@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.*;
 import com.google.inject.Inject;
 import ru.protei.portal.core.model.dict.En_DocumentCategory;
 import ru.protei.portal.core.model.ent.DocumentType;
+import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.document.doccategory.DocumentCategorySelector;
@@ -238,7 +239,7 @@ public class EquipmentDocumentEditView extends Composite implements AbstractEqui
     @UiField(provided = true)
     DocumentUploader documentUploader;
     @UiField
-    OptionItem approved;
+    CheckBox approved;
     @Inject
     @UiField(provided = true)
     DocumentCategorySelector documentCategory;

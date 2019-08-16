@@ -63,7 +63,8 @@ public class SelectorPopup
 
     public void showNear( IsWidget nearWidget ) {
         prepareToShow(nearWidget);
-        root.getElement().getStyle().setWidth( nearWidget.asWidget().getOffsetWidth(), Style.Unit.PX );
+        int offsetWidth = nearWidget.asWidget().getOffsetWidth();
+        root.getElement().getStyle().setWidth( offsetWidth < 100 ? 150 : offsetWidth, Style.Unit.PX );
         if(searchVisible && searchAutoFocus) {
             search.setFocus(true);
         }
@@ -85,7 +86,7 @@ public class SelectorPopup
 
     public void showNearInlineRight( final IsWidget nearWidget ) {
         prepareToShow(nearWidget);
-        root.getElement().getStyle().setWidth( 150D, Style.Unit.PX );
+        root.getElement().getStyle().setWidth( 150, Style.Unit.PX );
         search.setStyle( "input-sm" );
         setPopupPositionAndShow((popupWidth, popupHeight) -> {
             int relativeLeft = nearWidget.asWidget().getAbsoluteLeft();

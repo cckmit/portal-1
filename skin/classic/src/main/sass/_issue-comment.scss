@@ -272,6 +272,7 @@ blockquote {
 
 .message-preview {
   .show-preview-btn {
+
     padding: 0;
     min-width: 20px;
     border: 0;
@@ -279,20 +280,21 @@ blockquote {
 
     font-size: 12px;
     margin-top: -12px;
+    background-color: transparent;
 
     &.btn-down:after, &.btn-up-hovering:after {
       font-family: "Font Awesome 5 Free";
       content: "\f06e";
-      font-size: 1.6em;
+      font-size: 1.3em;
       color: teal;
+      padding-left: 1.1px;
     }
 
     &.btn-up:after, &.btn-down-hovering:after {
       font-family: "Font Awesome 5 Free";
       content: "\f070";
-      font-size: 1.6em;
+      font-size: 1.3em;
       color: gray;
     }
-
   }
 }

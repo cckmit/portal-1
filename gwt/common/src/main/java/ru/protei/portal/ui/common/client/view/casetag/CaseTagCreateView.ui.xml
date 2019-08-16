@@ -17,11 +17,13 @@
                     <colorpicker:ColorPicker ui:field="color"/>
                 </div>
             </div>
-            <div class="form-group col-md-6">
-                <g:HTMLPanel ui:field="companyPanel" visible="false">
-                    <label><ui:text from="{lang.tagCompany}"/></label>
-                    <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
-                </g:HTMLPanel>
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <g:HTMLPanel ui:field="companyPanel" visible="false">
+                        <label><ui:text from="{lang.tagCompany}"/></label>
+                        <company:CompanySelector ui:field="company" validation="false" hasNullValue="false"/>
+                    </g:HTMLPanel>
+                </div>
             </div>
         </div>
     </g:HTMLPanel>

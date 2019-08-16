@@ -23,7 +23,7 @@
                         <div class="card card-transparent no-margin">
                             <div class="card-header">
                                 <div class="card-title">
-                                    <small ui:field="created" class="pull-right document-creator-info"/>
+                                    <small ui:field="created" class="document-creator-info"/>
                                 </div>
                             </div>
                             <div class="card-body">
@@ -34,7 +34,6 @@
                                         </label>
                                         <validatefield:ValidableTextBox ui:field="name" styleName="form-control" notNull="true"/>
                                     </g:HTMLPanel>
-
                                     <g:HTMLPanel styleName="form-group col-md-3" ui:field="selectFileContainer">
                                         <label>
                                             <ui:text from="{lang.uploadDocuments}"/>
@@ -49,26 +48,26 @@
                                             <fileuploader:DocumentUploader ui:field="documentUploader" visible="false"/>
                                     </div>
                                     </g:HTMLPanel>
-
                                     <div class="form-group col-md-3">
                                         <label>
                                             <ui:text from="{lang.documentVersion}"/>
                                         </label>
                                         <g:TextBox ui:field="version" styleName="form-control"/>
                                     </div>
+                                </div>
+                                <div class="row">
                                     <div class="form-group col-md-3">
                                         <label>
                                             <ui:text from="{lang.documentExecutionType}"/>
                                         </label>
                                         <execution:DocumentExecutionTypeSelector ui:field="executionType"   />
-                                </div>
+                                    </div>
                                     <div class="form-group col-md-3">
                                         <label>
                                             <ui:text from="{lang.documentCategory}"/>
                                         </label>
                                         <doccategory:DocumentCategorySelector ui:field="documentCategory"/>
                                     </div>
-
                                     <div class="form-group col-md-3">
                                         <label>
                                             <ui:text from="{lang.documentType}"/>
@@ -80,8 +79,9 @@
                                             <ui:text from="{lang.equipmentProject}"/>
                                         </label>
                                         <project:ProjectButtonSelector ui:field="project"/>
+                                    </div>
                                 </div>
-
+                                <div class="row">
                                     <g:HTMLPanel styleName="form-group col-md-3" ui:field="equipmentSelectorContainer">
                                         <label>
                                             <ui:text from="{lang.documentEquipment}"/>
@@ -96,7 +96,6 @@
                                         </label>
                                         <person:EmployeeButtonSelector ui:field="registrar"/>
                                     </div>
-
                                     <div class="form-group col-md-3">
                                         <label>
                                             <ui:text from="{lang.documentContractor}"/>
@@ -105,7 +104,6 @@
                                     </div>
                                 </div>
                                 <div class="row">
-
                                     <g:HTMLPanel styleName="form-group col-md-3" ui:field="inventoryNumberContainer">
                                         <label>
                                             <ui:text from="{lang.inventoryNumber}"/>
@@ -120,6 +118,8 @@
                                         <decnum:DecimalNumberInput ui:field="decimalNumber"/>
                                     </g:HTMLPanel>
 
+                                </div>
+                                <div class="row">
                                     <g:HTMLPanel styleName="form-group col-md-12" ui:field="approvedContainer">
                                         <label>
                                             <ui:text from="{lang.documentApproved}"/>

@@ -162,7 +162,7 @@ public abstract class EquipmentDocumentEditActivity implements Activity, Abstrac
         boolean approveMode = isNew || !document.getApproved();
 
         view.setApprovedMode(approveMode);
-        view.setCreated(isNew ? lang.documentCreate() : document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
+        view.setCreated(isNew || document.getCreated() == null ? "" : lang.documentCreated(DateFormatter.formatDateTime(document.getCreated())));
         view.name().setValue(document.getName());
         view.documentUploader().resetAction();
         view.documentUploader().resetForm();

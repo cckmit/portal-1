@@ -8,12 +8,12 @@
             <div class="card-body">
                 <h4 ui:field="header" class="m-r-50"/>
 
-                <small ui:field="type"/>
-
                 <img ui:field="state" src="" class="preview-title-image_right"/>
 
+                <small ui:field="type"/>
+
                 <div class="small hint-text pre-formatted-info">
-                    <g:InlineLabel ui:field="description"/>
+                    <g:InlineLabel ui:field="description" styleName="m-l--3"/>
                 </div>
 
                 <h5><ui:text from="{lang.contractCommonHeader}"/></h5>
