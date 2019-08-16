@@ -370,7 +370,6 @@ public class CaseObject extends AuditableObject {
         return initiatorCompany;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public En_CaseType getCaseType () {
         return En_CaseType.find(this.typeId);
     }
@@ -420,7 +419,6 @@ public class CaseObject extends AuditableObject {
         this.extAppType = extAppType;
     }
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public En_CaseState getState () {
         return En_CaseState.getById(this.stateId);
     }

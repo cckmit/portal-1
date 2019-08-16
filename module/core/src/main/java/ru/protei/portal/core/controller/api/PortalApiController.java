@@ -181,14 +181,6 @@ public class PortalApiController {
         }
     }
 
-    @RequestMapping(value = "/cases/test", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public APIResult<CaseObject> testMethod(@RequestBody AuditableObject auditableObject,
-                                            HttpServletRequest request,
-                                            HttpServletResponse response) {
-
-            return APIResult.okWithData((CaseObject) auditableObject);
-    }
-
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery( En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir() );
         query.setLimit(apiQuery.getLimit());
