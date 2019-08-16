@@ -74,7 +74,7 @@ public class TestSoapService {
             origWorker.setInfo (props.getProperty ("info"));
             origWorker.setIpAddress (props.getProperty ("ipAddress"));
             origWorker.setDeleted (new Boolean (props.getProperty ("isDeleted")));
-            origWorker.setFired (new Boolean (props.getProperty ("isFired")));
+            origWorker.setFireDate(props.getProperty ("fireDate"));
             origWorker.setWorkerId(props.getProperty ("workerId"));
             origWorker.setDepartmentId(props.getProperty ("depId"));
             origWorker.setHireDate (props.getProperty ("hireDate"));

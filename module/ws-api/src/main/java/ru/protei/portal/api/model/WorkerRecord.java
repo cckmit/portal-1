@@ -38,7 +38,7 @@ public class WorkerRecord {
 
     private boolean isDeleted;
     private boolean isFired;
-    private String firedDate;
+    private String fireDate;
 
     private String workerId;
     private String departmentId;
@@ -232,16 +232,21 @@ public class WorkerRecord {
         this.isDeleted = isDeleted;
     }
 
-    @XmlElement(name = "fired")
     public boolean isFired() {
         return isFired;
     }
 
-    @XmlElement(name = "fired-date")
-    public String getFiredDate() { return firedDate; }
-
     public void setFired(boolean isFired) {
         this.isFired = isFired;
+    }
+
+    @XmlElement(name = "fire-date")
+    public String getFireDate() { return fireDate; }
+
+
+    public void setFireDate(String fireDate) {
+        this.fireDate = fireDate;
+        this.isFired = fireDate != null;
     }
 
     @XmlElement(name = "worker-id")
@@ -326,6 +331,7 @@ public class WorkerRecord {
         setEmail (contactInfoFacade.getEmail ());
         setEmailOwn (contactInfoFacade.getEmail_own ());
         setFax (contactInfoFacade.getFax ());
+        setFireDate(p.getFireDate() == null ? null : HelperService.DATE.format(p.getFireDate()));
         setFired(p.isFired());
         setDeleted (p.isDeleted ());
     }
@@ -364,6 +370,7 @@ public class WorkerRecord {
                 ", ipAddress='" + ipAddress + '\'' +
                 ", isDeleted=" + isDeleted +
                 ", isFired=" + isFired +
+                ", fireDate='" + fireDate + '\'' +
                 ", workerId='" + workerId + '\'' +
                 ", departmentId='" + departmentId + '\'' +
                 ", registrationId=" + registrationId +

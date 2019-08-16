@@ -289,6 +289,10 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
         this.fireDate = fireDate;
     }
 
+    public Date getFireDate() {
+        return fireDate;
+    }
+
     public void setFired(boolean isFired) {
         this.isFired = isFired;
     }
