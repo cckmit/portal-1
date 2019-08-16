@@ -35,6 +35,7 @@ import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -86,22 +87,39 @@ public class TestPortalApiController extends BaseServiceTest {
     @Test
     public void testCreateIssue() throws Exception {
         CaseObject caseObject = createNewCaseObject(person);
-        String issuesName = "API_Test_Issue_from_test_create_issue";
-        caseObject.setName(issuesName);
+        String issueName = "API_Test_Issue_from_test_create_issue";
+        caseObject.setName(issueName);
 
-        String json = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL).writerWithDefaultPrettyPrinter().writeValueAsString(caseObject);
-
-        ResultActions actions = createPostResultAction("/api/cases/create", json);
-
+        ResultActions actions = createPostResultAction("/api/cases/create", caseObject);
         actions.andExpect(status().isOk());
 
         long countOfIssues = caseObjectDAO
                 .getAll()
                 .stream()
-                .filter(currCaseObj -> currCaseObj.getName().equals(issuesName))
+                .filter(currCaseObj -> currCaseObj.getName().equals(issueName))
                 .count();
 
         Assert.assertEquals("Expected 1 new created issue", 1, countOfIssues);
+    }
+
+    @Test
+    public void testUpdateIssue() throws Exception {
+        CaseObject startCaseObject = caseObjectDAO.getAll().stream().findAny().orElse(null);
+        Assert.assertNotNull(startCaseObject);
+
+        String startCaseObjectName = startCaseObject.getName();
+
+        startCaseObject.setName("API_test_update_issue");
+
+        ResultActions resultActions = createPostResultAction("/api/cases/update", startCaseObject);
+        resultActions.andExpect(status().isOk());
+
+        List<CaseObject> caseObjects = caseObjectDAO.getAll();
+        CaseObject endCaseObject = caseObjects.stream().filter(currCaseObj -> currCaseObj.getId().equals(startCaseObject.getId())).findAny().orElse(null);
+
+        Assert.assertNotNull(endCaseObject);
+        Assert.assertNotEquals(startCaseObjectName, endCaseObject.getName());
+        Assert.assertEquals("API_test_update_issue", endCaseObject.getName());
     }
 
     private void createAndPersistPerson() {
@@ -147,11 +165,18 @@ public class TestPortalApiController extends BaseServiceTest {
         for (int i = 0; i < 10; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName("API_Test_Issue_" + i);
+            caseObject.setStateId(1);
+            caseObject.setImpLevel(3);
             caseService.saveCaseObject(getAuthToken(), caseObject, person);
         }
     }
 
-    private ResultActions createPostResultAction(String url, String json) throws Exception {
+    private ResultActions createPostResultAction(String url, CaseObject caseObject) throws Exception {
+        String json = new ObjectMapper()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .writerWithDefaultPrettyPrinter()
+                .writeValueAsString(caseObject);
+
         return mockMvc.perform(
                 post(url)
                         .header("Accept", "application/json")
