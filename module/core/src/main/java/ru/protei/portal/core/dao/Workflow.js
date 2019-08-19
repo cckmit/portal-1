@@ -30,7 +30,7 @@ exports.rule = entities.Issue.onChange({
         }
 
         var connection = new http.Connection("http://192.168.100.69:9007/Portal/springApi/api/");
-        // connection.basicAuth('youtrackapiuser', 'pswrd');
+        connection.basicAuth('1', '1');
 
         var response = connection.postSync(urlParams, '');
         var text =

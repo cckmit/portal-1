@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
-import java.util.Collection;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -74,10 +72,18 @@ public class CoreResponse<T> {
     /**
      * Если результрат успешен
      */
-    public void ifOk( Consumer<? super T> consumer ) {
+    public CoreResponse<T> ifOk( Consumer<? super T> consumer ) {
         if (consumer != null && isOk()) {
             consumer.accept( data );
         }
+        return this;
+    }
+
+    public CoreResponse<T> ifError( Consumer<En_ResultStatus> consumer ) {
+        if (consumer != null && !isOk()) {
+            consumer.accept( status );
+        }
+        return this;
     }
 
     /**

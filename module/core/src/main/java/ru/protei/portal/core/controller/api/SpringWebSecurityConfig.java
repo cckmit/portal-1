@@ -1,5 +1,6 @@
 package ru.protei.portal.core.controller.api;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -12,14 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class SpringWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-    // Create 2 users for demo
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+    @Autowired
+    protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
         auth.inMemoryAuthentication()
                 .withUser("user").password("pswrd").roles("USER")
                 .and()
-                .withUser("admin").password("pswrd").roles("USER", "ADMIN");
+                .withUser("admin").password("pswrd").roles("USER", "ADMIN", "ROOR");
 
     }
 

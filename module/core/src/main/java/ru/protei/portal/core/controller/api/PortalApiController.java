@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.errorSt;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.helper.CollectionUtils.find;
@@ -114,64 +115,76 @@ public class PortalApiController {
         }
     }
 
-    @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public String addYoutrackIdIntoIssue( HttpServletRequest request,
-                                             @PathVariable("caseNumber") Long caseNumber,
-                                             @PathVariable("youtrackId") String youtrackId ) {
+    private CoreResponse<AuthToken> authenticate( HttpServletRequest request, HttpServletResponse response ) {
+        Credentials cr = null;
+        try {
+            cr = Credentials.parse( request.getHeader( "Authorization" ) );
+            if ((cr == null) || (!cr.isValid())) {
+                String logMsg = "Basic authentication required";
+                response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
+                response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
+                log.error( "API | {}", logMsg );
+                return errorSt( En_ResultStatus.INVALID_LOGIN_OR_PWD );
+            }
 
-        log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-        Principal userPrincipal = request.getUserPrincipal();
-        CoreResponse<Long> result =  caseLinkService.addYoutrackLink(new AuthToken("","" ), caseNumber, youtrackId);
-
-        if (result.isOk()) {
-            log.info( "addYoutrackIdIntoIssue(): status: {}", result.getStatus() );
-        } else {
-            log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}"
-                    , youtrackId, caseNumber, result.getStatus() );
+        } catch (IllegalArgumentException | IOException ex) {
+            log.error( "Can`t authenticate {}", ex.getMessage() );
+            return errorSt( En_ResultStatus.AUTH_FAILURE );
+        } catch (Exception ex) {
+            log.error( "Can`t authenticate {} unexpected exception: ", ex );
+            return errorSt( En_ResultStatus.AUTH_FAILURE );
         }
 
-        return result.getStatus().name();
+        String ip = request.getRemoteAddr();
+        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
+
+        log.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
+        return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent ).map( descripter ->
+                descripter.makeAuthToken() );
+    }
+
+    @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
+    public String addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+                                          @PathVariable("caseNumber") Long caseNumber,
+                                          @PathVariable("youtrackId") String youtrackId ) {
+        log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
+
+        return authenticate( request, response ).flatMap( token ->
+                caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
+                .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
+                .ifError( status -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
+                        youtrackId, caseNumber, status )
+                ).getStatus().name();
     }
 
     @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public String removeYoutrackIdIntoIssue( HttpServletRequest request,
+    public String removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
                                              @PathVariable("caseNumber") Long caseNumber,
                                              @PathVariable("youtrackId") String youtrackId ) {
-
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
-        Principal userPrincipal = request.getUserPrincipal();
-        CoreResponse<Boolean> result = caseLinkService.removeYoutrackLink( new AuthToken( "", "" ), caseNumber, youtrackId );
 
-        if (result.isOk()) {
-            log.info( "removeYoutrackIdIntoIssue(): status: {}", result.getStatus() );
-        } else {
-            log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}"
-                    , youtrackId, caseNumber, result.getStatus() );
-        }
-
-        return result.getStatus().name();
+        return authenticate( request, response ).flatMap( token ->
+                caseLinkService.removeYoutrackLink( new AuthToken( "", "" ), caseNumber, youtrackId ) )
+                .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" )
+                ).ifError( status -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
+                        youtrackId, caseNumber, status )
+                ).getStatus().name();
     }
 
     @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
-    public String changeYoutrackIdInIssue( HttpServletRequest request,
+    public String changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
                                              @PathVariable("oldCaseNumber") Long oldCaseNumber,
                                              @PathVariable("newCaseNumber") Long newCaseNumber,
                                              @PathVariable("youtrackId") String youtrackId ) {
-
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
-        Principal userPrincipal = request.getUserPrincipal();
-        CoreResponse<Long> result = caseLinkService.removeYoutrackLink( new AuthToken( "", "" ), oldCaseNumber, youtrackId ).flatMap(aBoolean ->
-                caseLinkService.addYoutrackLink(new AuthToken("","" ), newCaseNumber, youtrackId)
-        );
 
-        if (result.isOk()) {
-            log.info( "changeYoutrackIdInIssue(): status: {}", result.getStatus() );
-        } else {
-            log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}"
-                    , youtrackId, oldCaseNumber, result.getStatus() );
-        }
-
-        return result.getStatus().name();
+        return authenticate( request, response ).flatMap( token ->
+                caseLinkService.removeYoutrackLink( new AuthToken( "", "" ), oldCaseNumber, youtrackId ) ).flatMap( aBoolean ->
+                caseLinkService.addYoutrackLink( new AuthToken( "", "" ), newCaseNumber, youtrackId )
+        ).ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" )
+        ).ifError( status -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
+                youtrackId, oldCaseNumber, status )
+        ).getStatus().name();
     }
 
 
