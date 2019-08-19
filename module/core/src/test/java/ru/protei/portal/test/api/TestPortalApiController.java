@@ -1,11 +1,11 @@
 package ru.protei.portal.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -33,10 +33,7 @@ import ru.protei.portal.test.service.BaseServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -48,39 +45,66 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class, PortalApiController.class})
 @WebAppConfiguration
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestPortalApiController extends BaseServiceTest {
     @Autowired
     WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;
-
     private static ObjectMapper objectMapper;
     private static PersonDAO personDAO;
     private static CaseService caseService;
     private static AuthService authService;
     private static Person person;
-    private static final int COUNT_OF_ISSUES_WITH_MANAGER = 3;
-    private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 15;
+    private static final Logger log = LoggerFactory.getLogger(TestPortalApiController.class);
+    private static final int COUNT_OF_ISSUES_WITH_MANAGER = new Random().nextInt(10);
+    private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = new Random().nextInt(10);
+    private static final int COUNT_OF_PRIVATE_ISSUES = new Random().nextInt(10);
+    private static final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER;
 
     @BeforeClass
     public static void initClass() {
-        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class);
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
+                CoreConfigurationContext.class,
+                JdbcConfigurationContext.class,
+                DatabaseConfiguration.class,
+                MainTestsConfiguration.class
+        );
+
         objectMapper = applicationContext.getBean(ObjectMapper.class);
         personDAO = applicationContext.getBean(PersonDAO.class);
         caseService = applicationContext.getBean(CaseService.class);
         authService = applicationContext.getBean(AuthService.class);
         createAndPersistPerson();
-        createAndPersistSomeIssues(COUNT_OF_ISSUES_WITHOUT_MANAGER, null);
-        createAndPersistSomeIssues(COUNT_OF_ISSUES_WITH_MANAGER, person);
+        createAndPersistSomeIssues(COUNT_OF_ISSUES_WITHOUT_MANAGER);
+        createAndPersistSomeIssuesWithManager(COUNT_OF_ISSUES_WITH_MANAGER, person);
+        createAndPersistSomePrivateIssues(COUNT_OF_PRIVATE_ISSUES);
+
+        log.debug("issues={} | issues_with_manager={} | issues_without_manager={} | private_issues={}",
+                COUNT_OF_ISSUES,
+                COUNT_OF_ISSUES_WITH_MANAGER,
+                COUNT_OF_ISSUES_WITHOUT_MANAGER,
+                COUNT_OF_PRIVATE_ISSUES
+        );
     }
 
     @Before
-    public void init() {
+    public void initMockMvc() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    public void testGetCaseList() throws Exception {
+    public void _1_testGetCaseList_all() throws Exception {
+        ResultActions accept = createPostResultAction("/api/cases", new CaseApiQuery());
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(COUNT_OF_ISSUES)));
+    }
+
+    @Test
+    public void _1_testGetCaseList_withManager() throws Exception {
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setManagerIds(Collections.singletonList(person.getId()));
 
@@ -93,7 +117,20 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
-    public void testCreateIssue() throws Exception {
+    public void _1_testGetCaseList_publicIssues() throws Exception {
+        CaseApiQuery caseApiQuery = new CaseApiQuery();
+        caseApiQuery.setAllowViewPrivate(false);
+
+        ResultActions accept = createPostResultAction("/api/cases", caseApiQuery);
+
+        accept
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status", is(En_ResultStatus.OK.toString())))
+                .andExpect(jsonPath("$.data", hasSize(COUNT_OF_ISSUES - COUNT_OF_PRIVATE_ISSUES)));
+    }
+
+    @Test
+    public void _2_testCreateIssue() throws Exception {
         CaseObject caseObject = createNewCaseObject(person);
         String issueName = "API_Test_Issue_from_test_create_issue";
         caseObject.setName(issueName);
@@ -115,9 +152,9 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
-    public void testUpdateIssue() throws Exception {
+    public void _2_testUpdateIssue() throws Exception {
         CaseObject startCaseObject = caseObjectDAO.getAll().stream().findAny().orElse(null);
-        Assert.assertNotNull(startCaseObject);
+        Assert.assertNotNull("Expected at least 1 case object in db before update", startCaseObject);
 
         String startCaseObjectName = startCaseObject.getName();
 
@@ -131,9 +168,9 @@ public class TestPortalApiController extends BaseServiceTest {
         List<CaseObject> caseObjects = caseObjectDAO.getAll();
         CaseObject endCaseObject = caseObjects.stream().filter(currCaseObj -> currCaseObj.getId().equals(startCaseObject.getId())).findAny().orElse(null);
 
-        Assert.assertNotNull(endCaseObject);
-        Assert.assertNotEquals(startCaseObjectName, endCaseObject.getName());
-        Assert.assertEquals(ISSUES_PREFIX + "new", endCaseObject.getName());
+        Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
+        Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
+        Assert.assertEquals("Expected the name of the case object = ISSUES_PREFIX" + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
     }
 
     private static void createAndPersistPerson() {
@@ -165,7 +202,18 @@ public class TestPortalApiController extends BaseServiceTest {
                 .findFirst().get();
     }
 
-    private static void createAndPersistSomeIssues(int count, Person manager) {
+    private static void createAndPersistSomeIssues(int count) {
+        for (int i = 0; i < count; i++) {
+            CaseObject caseObject = createNewCaseObject(person);
+            caseObject.setName(ISSUES_PREFIX + i);
+            caseObject.setStateId(1);
+            caseObject.setImpLevel(3);
+            caseObject.setInitiator(person);
+            caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person);
+        }
+    }
+
+    private static void createAndPersistSomeIssuesWithManager(int count, Person manager) {
         for (int i = 0; i < count; i++) {
             CaseObject caseObject = createNewCaseObject(person);
             caseObject.setName(ISSUES_PREFIX + i);
@@ -177,15 +225,25 @@ public class TestPortalApiController extends BaseServiceTest {
         }
     }
 
-    private <T> ResultActions createPostResultAction(String url, T obj) throws Exception {
-        String json = objectMapper.writeValueAsString(obj);
+    private static void createAndPersistSomePrivateIssues(int count) {
+        for (int i = 0; i < count; i++) {
+            CaseObject caseObject = createNewCaseObject(person);
+            caseObject.setName(ISSUES_PREFIX + i);
+            caseObject.setStateId(1);
+            caseObject.setImpLevel(3);
+            caseObject.setInitiator(person);
+            caseObject.setPrivateCase(true);
+            caseService.saveCaseObject(authService.findSession(null).makeAuthToken(), caseObject, person);
+        }
+    }
 
+    private <T> ResultActions createPostResultAction(String url, T obj) throws Exception {
         return mockMvc.perform(
                 post(url)
                         .header("Accept", "application/json")
                         .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD + "1234").getBytes()))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
+                        .content(objectMapper.writeValueAsString(obj))
         );
     }
 
