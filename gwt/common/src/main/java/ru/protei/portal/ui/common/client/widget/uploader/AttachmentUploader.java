@@ -110,11 +110,15 @@ public class AttachmentUploader extends FileUploader{
             result = new UploadResult(En_FileUploadStatus.PARSE_ERROR, "");
         }
         else {
-            JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
-
             result = new UploadResult();
-            result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
-            result.setDetails(jsonObj.get("details").isString().stringValue());
+            try {
+                JSONObject jsonObj = JSONParser.parseStrict(json).isObject();
+                result.setStatus(En_FileUploadStatus.getStatus(jsonObj.get("status").isString().stringValue()));
+                result.setDetails(jsonObj.get("details").isString().stringValue());
+            } catch (Exception e){
+                result.setStatus(En_FileUploadStatus.PARSE_ERROR);
+                result.setDetails(json);
+            }
 
         }
         return result;
