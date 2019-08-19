@@ -3,8 +3,10 @@ package ru.protei.portal.core.controller.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.auth.SecurityDefs;
@@ -27,7 +29,6 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *  Севрис для  API
+ * Севрис для  API
  */
 @RestController
 @RequestMapping(value = "/api", headers = "Accept=application/json")
@@ -51,18 +52,17 @@ public class PortalApiController {
     @Autowired
     private CaseService caseService;
 
-    private static final Logger log = LoggerFactory.getLogger( PortalApiController.class );
+    private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
 
-     /**
+    /**
      * Получение списка обращений List<CaseShortView> по параметрам CaseApiQuery
      *
-     * @return List<CaseShortView>
      * @param query
      * @param request
      * @param response
      * @return
      */
-    @PostMapping( value = "/cases" )
+    @PostMapping(value = "/cases")
     public APIResult<List<CaseShortView>> getCaseList(
             @RequestBody CaseApiQuery query,
             HttpServletRequest request,
@@ -103,6 +103,9 @@ public class PortalApiController {
     public APIResult<CaseObject> createCase(@RequestBody AuditableObject auditableObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
+
+        log.debug("API | createCase(): auditableObject={}", auditableObject);
+
         if (!(auditableObject instanceof CaseObject)) {
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
         }
@@ -123,7 +126,11 @@ public class PortalApiController {
 
             AuthToken authToken = result.getData().makeAuthToken();
 
-            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.saveCaseObject(authToken, (CaseObject) auditableObject, result.getData().getPerson());
+            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.saveCaseObject(
+                    authToken,
+                    (CaseObject) auditableObject,
+                    ((CaseObject) auditableObject).getInitiator() == null ? result.getData().getPerson() : ((CaseObject) auditableObject).getInitiator()
+            );
 
             if (caseObjectCoreResponse.isOk()) {
                 return APIResult.okWithData(caseObjectCoreResponse.getData());
@@ -144,6 +151,9 @@ public class PortalApiController {
     public APIResult<CaseObject> updateCase(@RequestBody AuditableObject auditableObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
+
+        log.debug("API | updateCase(): auditableObject={}", auditableObject);
+
         if (!(auditableObject instanceof CaseObject)) {
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
         }
@@ -164,7 +174,11 @@ public class PortalApiController {
 
             AuthToken authToken = result.getData().makeAuthToken();
 
-            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(authToken, (CaseObject) auditableObject, result.getData().getPerson());
+            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(
+                    authToken,
+                    (CaseObject) auditableObject,
+                    ((CaseObject) auditableObject).getInitiator() == null ? result.getData().getPerson() : ((CaseObject) auditableObject).getInitiator()
+            );
 
             if (caseObjectCoreResponse.isOk()) {
                 return APIResult.okWithData(caseObjectCoreResponse.getData());
@@ -182,7 +196,7 @@ public class PortalApiController {
     }
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
-        CaseQuery query = new CaseQuery( En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir() );
+        CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
         query.setLimit(apiQuery.getLimit());
         query.setOffset(apiQuery.getOffset());
         // optional
@@ -199,7 +213,7 @@ public class PortalApiController {
 
     private List<Integer> getCaseStateIdList(List<String> states) {
         List<Integer> stateIds = null;
-        if (CollectionUtils.isNotEmpty(states)){
+        if (CollectionUtils.isNotEmpty(states)) {
             stateIds = Arrays.asList(En_CaseState.values()).stream()
                     .filter(state -> states.contains(state.name()))
                     .map(En_CaseState::getId)
@@ -224,18 +238,19 @@ public class PortalApiController {
         String userAgent = request.getHeader(SecurityDefs.USER_AGENT_HEADER);
 
         log.debug("API | Authentication: ip={}, user={}", ip, cr.login);
-        return authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
+        CoreResponse<UserSessionDescriptor> login = authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
+        return login;
     }
 
     private Date parseDate(String date) {
         Date res;
         if (date == null)
             return null;
-        if ((res  = doParseDate(date, "yyyy-MM-dd HH:mm:ss.S")) != null)
+        if ((res = doParseDate(date, "yyyy-MM-dd HH:mm:ss.S")) != null)
             return res;
-        if ((res  = doParseDate(date, "yyyy-MM-dd HH:mm:ss")) != null)
+        if ((res = doParseDate(date, "yyyy-MM-dd HH:mm:ss")) != null)
             return res;
-        if ((res  = doParseDate(date, "yyyy-MM-dd")) != null)
+        if ((res = doParseDate(date, "yyyy-MM-dd")) != null)
             return res;
         return null;
     }

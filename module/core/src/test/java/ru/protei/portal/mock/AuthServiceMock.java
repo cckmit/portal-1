@@ -3,6 +3,7 @@ package ru.protei.portal.mock;
 import org.apache.commons.lang3.time.DateUtils;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.service.user.AuthService;
 
@@ -82,6 +83,7 @@ public class AuthServiceMock implements AuthService {
     private HashSet<UserRole> makeRoles() {
         UserRole role = new UserRole();
         role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
+        role.setScope(En_Scope.SYSTEM);
         return new HashSet<>(Arrays.asList(role));
     }
 }
