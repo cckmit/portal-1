@@ -28,11 +28,12 @@ import java.util.List;
 public class DocumentTableView extends Composite implements AbstractDocumentTableView {
 
     @Inject
-    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn, ArchiveClickColumn<Document> archiveClickColumn) {
+    public void onInit(EditClickColumn<Document> editClickColumn, DownloadClickColumn<Document> downloadClickColumn, ArchiveClickColumn<Document> archiveClickColumn, DocumentNameColumn<Document> documentNameColumn) {
         initWidget(ourUiBinder.createAndBindUi(this));
         this.editClickColumn = editClickColumn;
         this.downloadClickColumn = downloadClickColumn;
         this.archiveClickColumn = archiveClickColumn;
+        this.documentNameColumn = documentNameColumn;
 
         editClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
         archiveClickColumn.setArchivedCheckFunction(Document::isDeprecatedUnit);
@@ -52,6 +53,8 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
 
         archiveClickColumn.setArchiveHandler(activity);
         archiveClickColumn.setColumnProvider(columnProvider);
+
+        documentNameColumn.setColumnProvider(columnProvider);
 
         project.setActionHandler(activity::onProjectColumnClicked);
 
@@ -117,12 +120,12 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
         downloadClickColumn.setPrivilege(En_Privilege.DOCUMENT_EDIT);
 
         columns.add(id);
-        columns.add(documentName);
+        columns.add(documentNameColumn);
         columns.add(decimalNumber);
 
         table.addColumn(id.header, id.values);
         table.addColumn(downloadClickColumn.header, downloadClickColumn.values);
-        table.addColumn(documentName.header, documentName.values);
+        table.addColumn(documentNameColumn.header, documentNameColumn.values);
         table.addColumn(decimalNumber.header, decimalNumber.values);
         table.addColumn(project.header, project.values);
         table.addColumn(editClickColumn.header, editClickColumn.values);
@@ -165,43 +168,10 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             }
 
             cell.setInnerHTML(html.toString());
-        }
-    };
-    private final ClickColumn<Document> documentName = new ClickColumn<Document>() {
-        @Override
-        protected void fillColumnHeader(Element columnHeader) {
-            columnHeader.setInnerText(lang.documentName());
-            columnHeader.addClassName("document-number-column");
-        }
-
-        @Override
-        public void fillColumnValue(Element cell, Document value) {
-            StringBuilder html = new StringBuilder();
-
-            if (!value.isActiveUnit()) {
-                html
-                        .append("<div class =\"document-name\">")
-                        .append("<i class=\"fa fa-lock m-r-5\" id=\"" + DebugIds.DEBUG_ID_PREFIX + DebugIds.DOCUMENT_TABLE.LOCK_ICON + "\"></i> ")
-                        .append(value.getName())
-                        .append("</div>");
-            } else {
-                html.append( "<div class=\"document-name\">" + value.getName() + "</div>" ) ;
-            }
-
-            if (value.getProjectInfo() != null && value.getProjectInfo().getCustomer() != null) {
-                html.append( "<div class=\"document-name\">" + value.getProjectInfo().getCustomer().getCname() + "</div>" );
-            }
-            html.append( "<br/>" );
-            html.append( "<b>" + value.getType().getName() + " " + DateFormatter.formatYear(value.getCreated()) + "</b>" );
-            html.append( "<br/>" );
-            html.append( value.getApproved() ? lang.documentApproved() : lang.documentNotApproved() );
-            html.append( "<br/>" );
-            html.append( "<small>" + lang.documentCreated(DateFormatter.formatDateOnly(value.getCreated())) + " " + DateFormatter.formatTimeOnly(value.getCreated()) + "</small>" );
 
             if (value.isDeprecatedUnit()) {
                 cell.addClassName("deprecated-entity");
             }
-            cell.setInnerHTML(html.toString());
         }
     };
 
@@ -221,7 +191,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
             cell.setInnerHTML("<a href=\"#\">" + project.getName() + "</a>");
 
             if (value.isDeprecatedUnit()) {
-                cell.addClassName("link-disabled");
+                cell.addClassName("deprecated-entity");
             }
         }
     };
@@ -247,6 +217,7 @@ public class DocumentTableView extends Composite implements AbstractDocumentTabl
     EditClickColumn<Document> editClickColumn;
     DownloadClickColumn<Document> downloadClickColumn;
     ArchiveClickColumn<Document> archiveClickColumn;
+    DocumentNameColumn<Document> documentNameColumn;
     List<ClickColumn<Document>> columns = new LinkedList<>();
 
     AbstractDocumentTableActivity activity;

@@ -86,7 +86,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
             lock.setStyleName("fa fa-fw fa-unlock-alt");
             lock.setTitle(lang.buttonToArchive());
 
-            removeStyleName("inactive");
+            removeStyleName("deprecated-entity");
         } else {
             Element banIcon = DOM.createElement("i");
             banIcon.addClassName("fa fa-lock m-r-5");
@@ -102,7 +102,7 @@ public class ProductItemView extends Composite implements AbstractProductItemVie
             lock.setStyleName("fa fa-fw fa-lock");
             lock.setTitle(lang.buttonFromArchive());
 
-            addStyleName("inactive");
+            addStyleName("deprecated-entity");
         }
     }
 

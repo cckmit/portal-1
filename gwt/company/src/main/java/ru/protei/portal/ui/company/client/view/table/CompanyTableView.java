@@ -171,7 +171,7 @@ public class CompanyTableView extends Composite implements AbstractCompanyTableV
         cName.addClassName("company-name");
 
         if (company.isArchived()) {
-            cName.addClassName("deprecated-entity");
+            companyInfo.addClassName("deprecated-entity");
 
             Element banIcon = DOM.createElement("i");
             banIcon.addClassName("fa fa-lock m-r-5");

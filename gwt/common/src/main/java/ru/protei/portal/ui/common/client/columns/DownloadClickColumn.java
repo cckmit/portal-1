@@ -41,6 +41,7 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         a.addClassName("fa fa-lg fa-cloud-download");
         a.setTitle(lang.download());
         setDownloadEnabled(a);
+        setDownloadDeprecated(a);
         cell.appendChild(a);
     }
 
@@ -61,10 +62,18 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
             return;
         }
 
-        if (policyService.hasPrivilegeFor(privilege) && !isArchived) {
+        if (policyService.hasPrivilegeFor(privilege)) {
             a.removeClassName("link-disabled");
         } else {
             a.addClassName("link-disabled");
+        }
+    }
+
+    private void setDownloadDeprecated(AnchorElement a) {
+        if (isArchived) {
+            a.addClassName("deprecated-entity");
+        } else {
+            a.removeClassName("deprecated-entity");
         }
     }
 
