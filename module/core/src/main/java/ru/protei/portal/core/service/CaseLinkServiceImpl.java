@@ -19,8 +19,8 @@ import ru.protei.portal.core.model.query.CaseLinkQuery;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
-import javax.swing.text.html.Option;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.find;
@@ -143,9 +143,19 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     public CoreResponse<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Long caseId = getCaseIdByCaseNumber( caseNumber );
         return getYoutrackLinks( caseId ).map( caseLinks ->
-                findCaseLinkByRemoterId( caseLinks, youtrackId )).ifPresentOrElse​(
-                caseLink -> ok( caseLink.getId() ),
-                status -> addCaseLinkOnToYoutrack( caseId, youtrackId )
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).ifPresentOrElse​( caseLink ->
+                ok( caseLink.getId() ), () ->
+                addCaseLinkOnToYoutrack( caseId, youtrackId )
+        );
+    }
+
+    @Override
+    public CoreResponse<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
+        Long caseId = getCaseIdByCaseNumber( caseNumber );
+        return getYoutrackLinks( caseId ).map( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).ifPresentOrElse​( caseLink ->
+                removeCaseLinkOnToYoutrack( caseLink ), () ->
+                ok( true )
         );
     }
 
@@ -168,6 +178,14 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             throw new RuntimeException( "addCaseLinkOnToYoutrack(): rollback transaction" );
         }
         return ok( id );
+    }
+
+    private CoreResponse<Boolean> removeCaseLinkOnToYoutrack( CaseLink caseLink ) {
+        if (!caseLinkDAO.removeByKey( caseLink.getId() )) {
+            log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
+            throw new RuntimeException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
+        }
+        return ok(true);
     }
 
     private boolean crossLinkAlreadyExist(List<CaseLink> caseLinks, Long remoteCaseId){

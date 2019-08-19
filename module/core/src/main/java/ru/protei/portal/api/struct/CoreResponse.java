@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -111,18 +112,18 @@ public class CoreResponse<T> {
      * Если результрат успешен и не null
      * расширяет метод map проверкой значения на null
      */
-    public <U> CoreResponse<U> ifPresentOrElse​( Function<? super T, CoreResponse<U>> mapper,
-                                                 Function<En_ResultStatus, CoreResponse<U>> onNotPresent ) {
-        if (mapper == null || !isOk()) {
+    public <U> CoreResponse<U> ifPresentOrElse​( Function<? super T, CoreResponse<U>> flatMapIfPresent,
+                                                 Supplier<CoreResponse<U>> onNotPresent ) {
+        if (flatMapIfPresent == null || !isOk()) {
             return errorSt( status );
         }
         if (data != null) {
-            return mapper.apply( data );
+            return flatMapIfPresent.apply( data );
         }
         if (onNotPresent == null) {
             return errorSt( status );
         }
-        return onNotPresent.apply( status );
+        return onNotPresent.get();
     }
 
     /**

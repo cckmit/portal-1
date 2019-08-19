@@ -26,4 +26,6 @@ public interface CaseLinkService {
     CoreResponse<List<CaseLink>> getYoutrackLinks( Long caseId);
 
     CoreResponse<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
+
+    CoreResponse<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 }

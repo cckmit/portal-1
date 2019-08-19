@@ -34,7 +34,11 @@ public class SpringWebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //HttpChannelOverHttp@242ecdc3{r=1,c=false,a=DISPATCHED,uri=/Portal/springApi/api/addyoutrackidintoissue/100447/PG-209}
                 .antMatchers( "/Portal/springApi/api/addyoutrackidintoissue/**").hasRole("USER")
-                .antMatchers( "/api/addyoutrackidintoissue/**").hasRole("ADMIN")
+                .antMatchers( "/springApi/api/addyoutrackidintoissue/**").hasRole("ADMIN")
+                .antMatchers( "/api/addyoutrackidintoissue/**").hasRole("ROOR")
+                .antMatchers( "Portal/springApi/api/addyoutrackidintoissue/**").hasRole("USER2")
+                .antMatchers( "springApi/api/addyoutrackidintoissue/**").hasRole("ADMIN2")
+                .antMatchers( "api/addyoutrackidintoissue/**").hasRole("ROOR2")
 //                .antMatchers(HttpMethod.POST, "/addyoutrackidintoissue").hasRole("ADMIN")
 //                .antMatchers(HttpMethod.PUT, "/addyoutrackidintoissue/**").hasRole("ADMIN")
 //                .antMatchers(HttpMethod.PATCH, "/addyoutrackidintoissue/**").hasRole("ADMIN")
