@@ -52,11 +52,12 @@ public class TestPortalApiController extends BaseServiceTest {
     @Autowired
     WebApplicationContext webApplicationContext;
 
+    private MockMvc mockMvc;
+
     private static ObjectMapper objectMapper;
     private static PersonDAO personDAO;
     private static CaseService caseService;
     private static AuthService authService;
-    private MockMvc mockMvc;
     private static Person person;
     private static final int COUNT_OF_ISSUES_WITH_MANAGER = 3;
     private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = 15;
