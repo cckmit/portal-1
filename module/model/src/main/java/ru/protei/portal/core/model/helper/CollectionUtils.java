@@ -75,46 +75,6 @@ public class CollectionUtils {
         }
     }
 
-    public static <T> void select( final Iterable<T> iterable, final Collection<T> outputCollection,
-                                   final Predicate<T> predicate ) {
-
-        if (iterable == null || predicate == null || outputCollection == null) {
-            return;
-        }
-
-        if (iterable != null && predicate != null) {
-            for (final T item : iterable) {
-                if (predicate.test( item )) {
-                    outputCollection.add( item );
-                }
-            }
-        }
-    }
-
-    public static <T> List<T> selectToList( final Iterable<T> inputCollection, final Predicate<T> predicate ) {
-        List<T> result = new ArrayList<>();
-        select( inputCollection, result, predicate );
-        return result ;
-    }
-
-    /**
-     * Вычисть из A - B
-     *
-     * @return новая коллекция
-     */
-    public static <O> Collection<O> subtract( final Collection<O> a,
-                                              final Collection<O> b ) {
-        final ArrayList<O> list = new ArrayList<O>();
-
-        for (final O element : emptyIfNull( a )) {
-            if ( contains( b, element ) ) {
-                continue;
-            }
-            list.add( element );
-        }
-        return list;
-    }
-
     public static <T> T find(Collection<T> col, Predicate<T> predicate) {
         return stream(col).filter(predicate).findAny().orElse(null);
     }

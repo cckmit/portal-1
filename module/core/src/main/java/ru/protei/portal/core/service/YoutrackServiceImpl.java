@@ -68,34 +68,6 @@ public class YoutrackServiceImpl implements YoutrackService {
                 .flatMap( issue -> replaceCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
-//    @Override
-//    public CoreResponse<String> compareAndUpdateIssueCrmNumber( String issueId, Long caseNumber ) {
-//        if (issueId == null || caseNumber == null) {
-//            log.warn( "updateIssueCrmNumber(): Can't update youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
-//            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
-//        }
-//
-//        return youtrackDao.getIssue( issueId )
-//                .flatMap( issue -> updateCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
-//    }
-
-//
-//    public static void main(String[] args) {
-//        YoutrackServiceImpl youtrackService = new YoutrackServiceImpl();
-//        youtrackService.setIssueCrmNumber("PG-208", 100451L);
-//    }
-//    public void setIssueCrmNumber( String issueId, Long caseNumber ) {
-//        authHeaders = new HttpHeaders();
-//        authHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-//        authHeaders.set("Authorization", "Bearer " + "perm:ZWZyZW1vdg==.cG9ydGFsLXRlc3Q=.7oXhUOe9mxT3Khs9lnCkm8vy3tpKqn");
-//        BASE_URL = "https://youtrack.protei.ru/rest";
-//
-////        Issue data = read( BASE_URL + "/issue/" + issueId, Issue.class ).getData();
-//        compareAndRemoveIssueCrmNumber( issueId,  caseNumber);
-//        int stop = 0;
-//    }
-
-
     @Override
     public CoreResponse<String> removeIssueCrmNumberIfSame( String issueId, Long caseNumber ) {
         if (issueId == null || caseNumber == null) {
