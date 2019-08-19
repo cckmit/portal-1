@@ -1,5 +1,3 @@
-
-
 .chats {
   margin: 0;
   padding: 12px 15px 15px;
@@ -64,7 +62,7 @@
 
 .chats .time-label {
   font-weight: bold;
-  color: teal;
+  color: $success_color;
   display: inline-block;
 }
 
@@ -273,7 +271,8 @@ blockquote {
 .message-preview {
   .show-preview-btn {
 
-    padding: 0;
+    padding-left: 0;
+    padding-top: 3px;
     min-width: 20px;
     border: 0;
     height: 20px;
@@ -286,7 +285,7 @@ blockquote {
       font-family: "Font Awesome 5 Free";
       content: "\f06e";
       font-size: 1.3em;
-      color: teal;
+      color: $success_color;
       padding-left: 1.1px;
     }
 
@@ -294,7 +293,7 @@ blockquote {
       font-family: "Font Awesome 5 Free";
       content: "\f070";
       font-size: 1.3em;
-      color: gray;
+      color: $master_color;
     }
   }
 }

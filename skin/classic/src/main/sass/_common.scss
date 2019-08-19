@@ -1,5 +1,4 @@
 $danger_color: #d52020;
-$danger_color: #d52020;
 
 $info_dark_color: #5481c1;
 $info_color: #42a5f5;
@@ -9,6 +8,10 @@ $success_dark_color: teal;
 
 $purple_color: #9675ce;
 $error_color: #f54646;
+
+$master_color: #626262;
+$success_color: #10cfbd;
+$danger_color: #f55753;
 
 .hide {
   display: none !important
@@ -501,17 +504,12 @@ label.bordered:after {
   margin: 0;
 }
 
-.panelField.verifiable {
-  > i::before {
-    vertical-align: middle;
-    position: absolute;
-    right: 5px;
-    font-size: 18px;
-    top: 50%;
-    line-height: 0;
-    color: #a2acb3;
-    animation: animation-8 1s linear 0s infinite normal forwards running;
-  }
+.verifiable {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  font-size: 18px;
+  line-height: 1.5;
 }
 
 .form-control.required,
@@ -1354,9 +1352,9 @@ td.info {
   &.btn-up:after,
   &.btn-up-hovering:after {
     font-family: "Font Awesome 5 Free", serif;
-    content: "\f09c";
+    content: "\f13e";
     font-size: 1.6em;
-    color: $success_dark_color;
+    color: $success_color;
     font-weight: 900;
   }
 }
@@ -2531,7 +2529,6 @@ div.select2-container {
 
   div.select2-button {
     button {
-      background-color: white;
       text-align: left;
     }
 
@@ -2551,12 +2548,6 @@ div.select2-container {
       li.select2-search-choice {
         display: inline !important;
         padding-right: 10px;
-      }
-    }
-    div.select2-button {
-      button {
-        background: teal;
-        color: white;
       }
     }
   }
@@ -2810,12 +2801,6 @@ div.select2-container {
       li.select2-search-choice {
         display: inline !important;
         padding-right: 10px;
-      }
-    }
-    div.select2-button {
-      button {
-        background: teal;
-        color: white;
       }
     }
   }
@@ -3499,4 +3484,16 @@ label {
 
 .m-l--3 {
   margin-left: -3px;
+}
+
+form-group .verifiable-after
+
+.form-group.verifiable-after:after {
+  color: #f55753;
+  content: "*";
+  font-family: arial;
+  font-size: 20px;
+  position: absolute;
+  right: 12px;
+  top: 6px;
 }

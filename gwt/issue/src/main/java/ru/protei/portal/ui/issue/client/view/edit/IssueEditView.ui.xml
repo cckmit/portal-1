@@ -115,7 +115,7 @@
                     <label ui:field="notifiersLabel">
                         <ui:text from="{lang.caseSubscription}"/>
                     </label>
-                    <person:EmployeeMultiSelector styleName="case-subscribers" ui:field="notifiers"/>
+                    <person:EmployeeMultiSelector ui:field="notifiers" styleName="case-subscribers" buttonStyle="btn-info btn-xs"/>
                 </g:HTMLPanel>
 
                 <div class="form-group col-md-12">

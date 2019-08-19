@@ -213,13 +213,11 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="form-group col-md-4">
-                            <label class="">
-                                <ui:text from="{lang.accountLogin}"/>
-                            </label>
-                            <div class="panelField verifiable">
+                            <label><ui:text from="{lang.accountLogin}"/></label>
+                            <div class="verifiable">
                                 <i ui:field="verifiableIcon"/>
-                                <g:TextBox ui:field="login" styleName="form-control"/>
                             </div>
+                            <g:TextBox ui:field="login" styleName="form-control"/>
                         </div>
                         <g:HTMLPanel ui:field="infoPanel" styleName="col-md-12 p-t-15">
                             <ui:text from="{lang.accountLoginInfo}"/>

@@ -13,7 +13,6 @@
             <div class="card card-default">
                 <div class="card-body">
 
-
                     <h4 class="no-margin inline">
                         <g:HTMLPanel ui:field="numberCopyPanel" styleName="number-copy-panel">
                             <i ui:field="privateIssue" class="fa fa-unlock-alt m-r-5"/>
@@ -65,29 +64,25 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row clearfix">
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label><ui:text from="{lang.issueInitiator}"/></label>
+                                    <span ui:field="contact"/>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group form-group-default">
+                                    <label><ui:text from="{lang.issueManager}"/></label>
+                                    <span ui:field="manager"/>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <h5 ui:field="name"/>
 
                     <div class="form-group small hint-text pre-formatted-info markdown" ui:field="info"/>
-
-                    <h5>
-                        <ui:text from="{lang.issueContactHeader}"/>
-                    </h5>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <b>
-                                <ui:text from="{lang.issueInitiator}: "/>
-                            </b>
-                            <span ui:field="contact"/>
-                        </div>
-                        <div class="col-md-12">
-                            <b>
-                                <ui:text from="{lang.issueManager}: "/>
-                            </b>
-                            <span ui:field="manager"/>
-                        </div>
-                    </div>
 
                     <h5>
                         <ui:text from="{lang.companySubscription}"/>

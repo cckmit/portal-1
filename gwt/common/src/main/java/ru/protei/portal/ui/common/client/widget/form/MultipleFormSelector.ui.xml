@@ -7,11 +7,11 @@
         <div class="select2 select2-container select2-container--default select2-container--below select2-container--focus">
             <g:HTMLPanel ui:field="itemContainer" tag="ul" styleName="selection"/>
             <div class="select2-button">
-                <g:Button ui:field="caretButton" styleName="btn btn-flat btn-default">
+                <g:Button ui:field="caretButton" styleName="btn btn-flat bg-white btn-default">
                     <span ui:field="addIcon" class="hide"/>
                     <span ui:field="add" class="caret"/>
                 </g:Button>
-                <g:Button ui:field="clearButton" styleName="btn btn-flat btn-default">
+                <g:Button ui:field="clearButton" styleName="btn btn-flat bg-white btn-default">
                     <span ui:field="clearIcon" class="hide"/>
                     <span ui:field="clear" class="fa fa-times"/>
                 </g:Button>

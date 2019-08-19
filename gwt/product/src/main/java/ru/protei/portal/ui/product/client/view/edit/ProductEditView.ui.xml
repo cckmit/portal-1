@@ -21,8 +21,10 @@
                             <label ui:field="nameLabel">
                                 <ui:text from="{lang.productName}"/>
                             </label>
-                            <div class="panelField verifiable input-group">
-                                <i ui:field="verifiableIcon"/>
+                            <div class="input-group">
+                                <div class="verifiable">
+                                    <i ui:field="verifiableIcon"/>
+                                </div>
                                 <validablefield:ValidableTextBox ui:field="name" styleName="form-control rounded-left-3"
                                                                  notNull="true"/>
                                 <typebtn:ProductTypeBtnGroup ui:field="type" styleName="input-group-append du-selector-inline"/>
@@ -54,11 +56,11 @@
                             <label>
                                 <ui:text from="{lang.components}"/>
                             </label>
-                            <component:ComponentMultiSelector styleName="components-selector" ui:field="components"/>
+                            <component:ComponentMultiSelector ui:field="components" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
                         </g:HTMLPanel>
                         <g:HTMLPanel ui:field="devUnitContainer" styleName="form-group col-md-6">
                             <label><ui:text from="{lang.belongsTo}"/></label>
-                            <devunit:DevUnitMultiSelector styleName="components-selector" ui:field="devUnits"/>
+                            <devunit:DevUnitMultiSelector ui:field="devUnits" styleName="components-selector" buttonStyle="btn-info btn-xs"/>
                         </g:HTMLPanel>
                     </div>
                 </div>

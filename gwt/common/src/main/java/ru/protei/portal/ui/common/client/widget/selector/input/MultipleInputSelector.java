@@ -92,7 +92,7 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         setAddName(null, text);
     }
 
-    public void setAddName( String icon, String text ) {
+    public void setAddName(String icon, String text) {
         if (icon != null) {
             addIcon.setClassName("fa " + icon);
         } else {
@@ -114,6 +114,15 @@ public class MultipleInputSelector<T> extends MultipleSelector<T> implements Has
         }
         clear.setInnerText(text);
         clear.setClassName("");
+    }
+
+    public void setButtonStyle(String style) {
+        if (style != null) {
+            caretButton.removeStyleName("bg-white no-border");
+            clearButton.removeStyleName("bg-white no-border");
+            caretButton.addStyleName(style);
+            clearButton.addStyleName(style);
+        }
     }
 
     private void clearValues(boolean fireEvents) {

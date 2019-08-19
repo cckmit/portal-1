@@ -5,9 +5,9 @@ package ru.protei.portal.ui.common.client.common;
  */
 public enum NameStatus {
 
-    SUCCESS ("fas fa-check-circle"),
-    ERROR ("fas fa-exclamation-circle"),
-    UNDEFINED ("fal fa-circle-notch"),
+    SUCCESS ("fas fa-check-circle text-success"),
+    ERROR ("fas fa-exclamation-circle text-danger"),
+    UNDEFINED ("fas fa-spinner fa-spin"),
     NONE ("");
 
     private final String style;
