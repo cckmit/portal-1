@@ -163,13 +163,13 @@ public class CompanyServiceTest extends BaseServiceTest {
 
             boolean startState = companyFromService.isArchived();
 
-            companyService.updateState(getAuthToken(), companyFromService.getId(), startState);
+            companyService.updateState(getAuthToken(), companyFromService.getId(), !startState);
 
             boolean endState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
 
             Assert.assertNotEquals(startState, endState);
 
-            companyService.updateState(getAuthToken(), companyFromService.getId(), endState);
+            companyService.updateState(getAuthToken(), companyFromService.getId(), !endState);
 
             boolean changedEndState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
 
