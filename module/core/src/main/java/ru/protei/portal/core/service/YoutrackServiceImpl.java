@@ -65,7 +65,7 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return restDao.getIssue( issueId )
+        return apiDao.getIssue( issueId )
                 .flatMap( issue -> replaceCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
@@ -134,7 +134,6 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
         return result;
     }
-
 
     @Autowired
     YoutrackRestDAO restDao;

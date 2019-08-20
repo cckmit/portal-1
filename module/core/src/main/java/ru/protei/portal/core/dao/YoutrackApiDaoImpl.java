@@ -39,7 +39,10 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
 //        qury.customFields( IssueApi.CustomFields.id );
 //        String build = qury.build();
 //
-//
+//        IssueQueryBuilder qury = new IssueQueryBuilder();
+//        qury.fields().id().name().summary().idReadable()
+//                .customFields().customId().customName().emptyFieldText().valueFields().localizedName();
+//        String build = qury.build();
 //        if(true) return;
 
 
@@ -60,7 +63,7 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
         qury.fields().id().name().summary().idReadable()
                 .customFields().customId().customName().emptyFieldText().valueFields().localizedName();
         String build = qury.build();
-//        if(true) return;
+//        if (true) return;
 //        String customFields = "customFields(projectCustomField(id,name,emptyFieldText,field(id,name,type)),value(id,name))";
 //        String fieldsString = "id,idReadable,summary" + "," + customFields;
 
@@ -74,6 +77,8 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
         IssueApi data = response.getData();
 
         log.info( "main(): {}", data );
+
+        Long crmNumber = data.getCrmNumber();
         int stop = 0;
     }
 
@@ -105,7 +110,7 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
     private final static Logger log = LoggerFactory.getLogger( YoutrackApiDaoImpl.class );
 }
 
-class IssueQueryBuilder implements BuilderFields, BuilderCustomFields, BuilderValueFields {
+class IssueQueryBuilder implements QueryBuilder, BuilderFields, BuilderCustomFields, BuilderValueFields {
     List<String> fields = null;
     List<String> customFields = null;
     List<String> valueFields = null;
@@ -122,12 +127,12 @@ class IssueQueryBuilder implements BuilderFields, BuilderCustomFields, BuilderVa
         fields = new ArrayList<>();
         return this;
     }
-
+    @Override
     public BuilderValueFields valueFields() {
         valueFields = new ArrayList<>();
         return this;
     }
-
+    @Override
     public BuilderCustomFields customFields() {
         customFields = new ArrayList<>();
         return this;
@@ -144,19 +149,17 @@ class IssueQueryBuilder implements BuilderFields, BuilderCustomFields, BuilderVa
             sb.append( join( fields, "," ) );
         }
         if (customFields != null) {
-            StringBuilder valueFields = new StringBuilder( "value(id,name,type" ); //всегда нужны
+            StringBuilder valueFields = new StringBuilder( "value(name" ); //всегда нужны
             if (this.valueFields != null) {
-                valueFields = join( valueFields,",",join( this.valueFields, "," ), ")" );
+                valueFields = join( valueFields, ",", join( this.valueFields, "," ) );
             }
-//            else {
-//                valueFields = join( valueFields, "id,name,type", ")" );
-//            }
+            valueFields = join( valueFields, ")" );
 //            customFields(projectCustomField(id,name,emptyFieldText,field(id,name,type)),value(id,name))
             if (sb.length() > 0) sb.append( "," );
             sb = join( sb,
                     "customFields(id,name,projectCustomField(",
-                    join( customFields, "," )
-                    , ",field(id,name,type))", ",", valueFields,
+                    join( customFields, "," ), (customFields.size() > 0 ? "," : "")
+                    , "field(id,name,type))", ",", valueFields,
                     ")" );
         }
         return sb.toString();
@@ -214,11 +217,11 @@ class IssueQueryBuilder implements BuilderFields, BuilderCustomFields, BuilderVa
 
     /* Value */
 
-//    @Override
-//    public BuilderValueFields valueId() {
-//        valueFields.add( IssueApi.Value.id );
-//        return this;
-//    }
+    @Override
+    public BuilderValueFields valueId() {
+        valueFields.add( IssueApi.Value.id );
+        return this;
+    }
 //
 //    @Override
 //    public BuilderValueFields valueName() {
@@ -233,40 +236,36 @@ class IssueQueryBuilder implements BuilderFields, BuilderCustomFields, BuilderVa
     }
 }
 
-interface BuilderCustomFields {
-    IssueQueryBuilder builder();
-
-    BuilderValueFields valueFields();
-
-    BuilderCustomFields customId();
-
-    BuilderCustomFields customName();
-
-    BuilderCustomFields emptyFieldText();
-
-    BuilderCustomFields crmNumber();
-}
-
 interface BuilderFields {
-    IssueQueryBuilder builder();
-
+    QueryBuilder builder();
     BuilderCustomFields customFields();
 
     BuilderFields id();
-
     BuilderFields idReadable();
-
     BuilderFields name();
-
     BuilderFields summary();
 }
 
+interface BuilderCustomFields {
+    QueryBuilder builder();
+    BuilderValueFields valueFields();
+
+    BuilderCustomFields customId();
+    BuilderCustomFields customName();
+    BuilderCustomFields emptyFieldText();
+    BuilderCustomFields crmNumber();
+}
+
 interface BuilderValueFields {
-    IssueQueryBuilder builder();
+    QueryBuilder builder();
 
-//    BuilderValueFields valueId(); // Всегда добавляется
-//
+    BuilderValueFields valueId();
 //    BuilderValueFields valueName(); // Всегда добавляется
-
     BuilderValueFields localizedName();
+}
+
+interface QueryBuilder {
+    BuilderCustomFields customFields();
+    BuilderFields fields();
+    String build();
 }

@@ -1,24 +1,23 @@
 package ru.protei.portal.core.model.yt.api.issue;
 
-import ru.protei.portal.core.model.yt.api.CustomField;
+import ru.protei.portal.core.model.yt.api.YoutrackObject;
+import ru.protei.portal.core.model.yt.api.project.ProjectCustomField;
+import ru.protei.portal.core.model.yt.api.value.FieldValue;
 
-public class IssueCustomField extends CustomField {
-    public CustomField projectCustomField;
-    public CustomField value;
+public abstract class IssueCustomField extends YoutrackObject {
+    public ProjectCustomField projectCustomField;
 
-    public CustomField getProjectCustomField() {
-        return projectCustomField;
-    }
+    public String name;
 
-    public void setProjectCustomField( CustomField projectCustomField ) {
-        this.projectCustomField = projectCustomField;
-    }
+    public abstract String getValue();
 
-    public CustomField getValue() {
-        return value;
-    }
-
-    public void setValue( CustomField value ) {
-        this.value = value;
+    @Override
+    public String toString() {
+        return "IssueCustomField{" +
+                "$type='" + $type + '\'' +
+                ", id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", projectCustomField=" + projectCustomField +
+                '}';
     }
 }

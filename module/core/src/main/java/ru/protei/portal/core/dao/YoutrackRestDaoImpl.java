@@ -83,16 +83,19 @@ public class YoutrackRestDaoImpl implements YoutrackRestDAO {
         return client.read( uri, Issue[].class ).map( Arrays::asList );
     }
 
+    @Deprecated
     @Override
     public CoreResponse<String> removeCrmNumber( String issueId ) {
         return client.update( makeYoutrackCommand( issueId, YtFields.crmNumber, YtFields.crmNumberEmptyValue ), String.class );
     }
 
+    @Deprecated
     @Override
     public CoreResponse<String> setCrmNumber( String issueId, Long caseNumber ) {
         return client.update( makeYoutrackCommand( issueId, YtFields.crmNumber, String.valueOf( caseNumber ) ), String.class );
     }
 
+    @Deprecated
     @Override
     public CoreResponse<Issue> getIssue( String issueId ) {
         return client.read( BASE_URL + "/issue/" + issueId, Issue.class );
