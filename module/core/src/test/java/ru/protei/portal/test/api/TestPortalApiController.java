@@ -16,16 +16,19 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dao.PersonDAO;
+import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseObject;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -53,6 +56,7 @@ public class TestPortalApiController extends BaseServiceTest {
     private MockMvc mockMvc;
     private static ObjectMapper objectMapper;
     private static PersonDAO personDAO;
+    private static UserLoginDAO userLoginDAO;
     private static CaseService caseService;
     private static AuthService authService;
     private static Person person;
@@ -63,7 +67,7 @@ public class TestPortalApiController extends BaseServiceTest {
     private static final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER;
 
     @BeforeClass
-    public static void initClass() {
+    public static void initClass() throws Exception {
         ApplicationContext applicationContext = new AnnotationConfigApplicationContext(
                 CoreConfigurationContext.class,
                 JdbcConfigurationContext.class,
@@ -75,7 +79,10 @@ public class TestPortalApiController extends BaseServiceTest {
         personDAO = applicationContext.getBean(PersonDAO.class);
         caseService = applicationContext.getBean(CaseService.class);
         authService = applicationContext.getBean(AuthService.class);
+        userLoginDAO = applicationContext.getBean(UserLoginDAO.class);
+
         createAndPersistPerson();
+        createAndPersistUserLogin();
         createAndPersistSomeIssues(COUNT_OF_ISSUES_WITHOUT_MANAGER);
         createAndPersistSomeIssuesWithManager(COUNT_OF_ISSUES_WITH_MANAGER, person);
         createAndPersistSomePrivateIssues(COUNT_OF_PRIVATE_ISSUES);
@@ -170,7 +177,7 @@ public class TestPortalApiController extends BaseServiceTest {
 
         Assert.assertNotNull("Expected at least 1 case object in db after update", endCaseObject);
         Assert.assertNotEquals("Expected the names of the case object are different before and after case object update", startCaseObjectName, endCaseObject.getName());
-        Assert.assertEquals("Expected the name of the case object = ISSUES_PREFIX" + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
+        Assert.assertEquals("Expected the name of the case object = " + ISSUES_PREFIX + "new after case object update", ISSUES_PREFIX + "new", endCaseObject.getName());
     }
 
     private static void createAndPersistPerson() {
@@ -200,6 +207,17 @@ public class TestPortalApiController extends BaseServiceTest {
                 .stream()
                 .filter(currPerson -> currPerson.getFirstName().equals(personFirstName))
                 .findFirst().get();
+    }
+
+    private static void createAndPersistUserLogin() throws Exception {
+        UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
+        userLogin.setUlogin(person.getFirstName());
+        userLogin.setUpass(DigestUtils.md5DigestAsHex(QWERTY_PASSWORD.getBytes()));
+        userLogin.setPersonId(person.getId());
+        userLogin.setAuthTypeId(1);
+        userLogin.setAdminStateId(2);
+
+        userLoginDAO.persist(userLogin);
     }
 
     private static void createAndPersistSomeIssues(int count) {
@@ -241,7 +259,7 @@ public class TestPortalApiController extends BaseServiceTest {
         return mockMvc.perform(
                 post(url)
                         .header("Accept", "application/json")
-                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD + "1234").getBytes()))
+                        .header("authorization", "Basic " + Base64.getEncoder().encodeToString((person.getFirstName() + ":" + QWERTY_PASSWORD).getBytes()))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(obj))
         );

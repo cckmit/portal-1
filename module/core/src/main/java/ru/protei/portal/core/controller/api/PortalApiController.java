@@ -24,6 +24,7 @@ import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
+import ru.protei.winter.core.utils.Pair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,19 +73,21 @@ public class PortalApiController {
 
         try {
             Credentials cr = Credentials.parse(request.getHeader("Authorization"));
-            APIResult<List<CaseShortView>> logMsg = validateCredentials(response, cr);
-            if (logMsg != null) {
-                return logMsg;
+
+            Pair<APIResult<List<CaseShortView>>, CoreResponse<UserSessionDescriptor>> authResult = tryToAuthenticate(request, response, cr);
+
+            if (authResult.getA() != null) {
+                return authResult.getA();
             }
 
-            CoreResponse<UserSessionDescriptor> result = tryToAuthenticate(request, cr);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorCoreResponse = authResult.getB();
 
-            if (result.isError()) {
-                log.error("API | Authentification error {}", result.getStatus().name());
-                return APIResult.error(result.getStatus(), "Authentification error");
+            if (userSessionDescriptorCoreResponse.isError()) {
+                log.error("API | Authentification error {}", userSessionDescriptorCoreResponse.getStatus().name());
+                return APIResult.error(userSessionDescriptorCoreResponse.getStatus(), "Authentification error");
             }
 
-            AuthToken authToken = result.getData().makeAuthToken();
+            AuthToken authToken = userSessionDescriptorCoreResponse.getData().makeAuthToken();
 
             CoreResponse<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
 
@@ -112,24 +115,26 @@ public class PortalApiController {
 
         try {
             Credentials cr = Credentials.parse(request.getHeader("Authorization"));
-            APIResult<CaseObject> logMsg = validateCredentials(response, cr);
-            if (logMsg != null) {
-                return logMsg;
+
+            Pair<APIResult<CaseObject>, CoreResponse<UserSessionDescriptor>> authResult = tryToAuthenticate(request, response, cr);
+
+            if (authResult.getA() != null) {
+                return authResult.getA();
             }
 
-            CoreResponse<UserSessionDescriptor> result = tryToAuthenticate(request, cr);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorCoreResponse = authResult.getB();
 
-            if (result.isError()) {
-                log.error("API | Authentification error {}", result.getStatus().name());
-                return APIResult.error(result.getStatus(), "Authentification error");
+            if (userSessionDescriptorCoreResponse.isError()) {
+                log.error("API | Authentification error {}", userSessionDescriptorCoreResponse.getStatus().name());
+                return APIResult.error(userSessionDescriptorCoreResponse.getStatus(), "Authentification error");
             }
 
-            AuthToken authToken = result.getData().makeAuthToken();
+            AuthToken authToken = userSessionDescriptorCoreResponse.getData().makeAuthToken();
 
             CoreResponse<CaseObject> caseObjectCoreResponse = caseService.saveCaseObject(
                     authToken,
                     (CaseObject) auditableObject,
-                    ((CaseObject) auditableObject).getInitiator() == null ? result.getData().getPerson() : ((CaseObject) auditableObject).getInitiator()
+                    userSessionDescriptorCoreResponse.getData().getPerson()
             );
 
             if (caseObjectCoreResponse.isOk()) {
@@ -160,24 +165,26 @@ public class PortalApiController {
 
         try {
             Credentials cr = Credentials.parse(request.getHeader("Authorization"));
-            APIResult<CaseObject> logMsg = validateCredentials(response, cr);
-            if (logMsg != null) {
-                return logMsg;
+
+            Pair<APIResult<CaseObject>, CoreResponse<UserSessionDescriptor>> authResult = tryToAuthenticate(request, response, cr);
+
+            if (authResult.getA() != null) {
+                return authResult.getA();
             }
 
-            CoreResponse<UserSessionDescriptor> result = tryToAuthenticate(request, cr);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorCoreResponse = authResult.getB();
 
-            if (result.isError()) {
-                log.error("API | Authentification error {}", result.getStatus().name());
-                return APIResult.error(result.getStatus(), "Authentification error");
+            if (userSessionDescriptorCoreResponse.isError()) {
+                log.error("API | Authentification error {}", userSessionDescriptorCoreResponse.getStatus().name());
+                return APIResult.error(userSessionDescriptorCoreResponse.getStatus(), "Authentification error");
             }
 
-            AuthToken authToken = result.getData().makeAuthToken();
+            AuthToken authToken = userSessionDescriptorCoreResponse.getData().makeAuthToken();
 
             CoreResponse<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(
                     authToken,
                     (CaseObject) auditableObject,
-                    ((CaseObject) auditableObject).getInitiator() == null ? result.getData().getPerson() : ((CaseObject) auditableObject).getInitiator()
+                    userSessionDescriptorCoreResponse.getData().getPerson()
             );
 
             if (caseObjectCoreResponse.isOk()) {
@@ -222,24 +229,20 @@ public class PortalApiController {
         return stateIds;
     }
 
-    private <T> APIResult<T> validateCredentials(HttpServletResponse response, Credentials cr) throws IOException {
+    private <T> Pair<APIResult<T>, CoreResponse<UserSessionDescriptor>> tryToAuthenticate(HttpServletRequest request, HttpServletResponse response, Credentials cr) throws IOException {
         if ((cr == null) || (!cr.isValid())) {
             String logMsg = "Basic authentication required";
             response.setHeader("WWW-Authenticate", "Basic realm=\"" + logMsg + "\"");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
             log.error("API | {}", logMsg);
-            return APIResult.error(En_ResultStatus.INVALID_LOGIN_OR_PWD, logMsg);
+            return new Pair<>(APIResult.error(En_ResultStatus.INVALID_LOGIN_OR_PWD, logMsg), null);
         }
-        return null;
-    }
 
-    private CoreResponse<UserSessionDescriptor> tryToAuthenticate(HttpServletRequest request, Credentials cr) {
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader(SecurityDefs.USER_AGENT_HEADER);
-
         log.debug("API | Authentication: ip={}, user={}", ip, cr.login);
-        CoreResponse<UserSessionDescriptor> login = authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
-        return login;
+
+        return new Pair<>(null, authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent));
     }
 
     private Date parseDate(String date) {
