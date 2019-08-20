@@ -24,4 +24,6 @@ public interface CompanyDAO extends PortalBaseDAO<Company> {
      * @return
      */
     Map<Long,Long> mapLegacyId ();
+
+    boolean updateState(Company tempCompany);
 }

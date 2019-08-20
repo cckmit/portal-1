@@ -29,7 +29,6 @@ import ru.protei.portal.ui.document.client.activity.filter.AbstractDocumentFilte
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 
 public abstract class DocumentTableActivity
@@ -81,6 +80,21 @@ public abstract class DocumentTableActivity
         Window.open(GWT.getModuleBaseURL() + DOWNLOAD_PATH + value.getProjectId() + "/" + value.getId(), value.getName(), "");
     }
 
+    @Override
+    public void onArchiveClicked(Document value) {
+        if (value == null) {
+            return;
+        }
+
+        documentService.updateState(value.getId(), value.getState() == En_DocumentState.DEPRECATED ? En_DocumentState.ACTIVE : En_DocumentState.DEPRECATED,
+                new FluentCallback<Boolean>()
+                        .withSuccess(result -> {
+                            loadTable();
+                            fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
+                            fireEvent(new DocumentEvents.ChangeModel());
+                        }));
+    }
+
     @Event
     public void onInitDetails(AppEvents.InitDetails initDetails) {
         this.init = initDetails;
@@ -101,7 +115,9 @@ public abstract class DocumentTableActivity
 
     @Override
     public void onEditClicked(Document value) {
-        fireEvent(DocumentEvents.Edit.byId(value.getId()));
+        if (!value.isDeprecatedUnit()) {
+            fireEvent(DocumentEvents.Edit.byId(value.getId()));
+        }
     }
 
     @Override

@@ -6,58 +6,51 @@ import com.google.gwt.user.client.Element;
 import com.google.inject.Inject;
 import ru.brainworm.factory.widget.table.client.helper.AbstractColumnHandler;
 import ru.protei.portal.core.model.dict.En_Privilege;
-import ru.protei.portal.core.model.ent.Downloadable;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
 import java.util.function.Function;
 
-public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> {
-
-    public interface DownloadHandler<T> extends AbstractColumnHandler<T> {
-        void onDownloadClicked(T value);
+/**
+ * Колонка вынесения сущности в архив
+ */
+public class ArchiveClickColumn<T> extends ClickColumn<T> {
+    public interface ArchiveHandler<T> extends AbstractColumnHandler<T> {
+        void onArchiveClicked(T value);
     }
 
     @Inject
-    public DownloadClickColumn(Lang lang) {
+    public ArchiveClickColumn(Lang lang) {
         this.lang = lang;
     }
 
     @Override
-    protected void fillColumnHeader(Element columnHeader) {
-        columnHeader.addClassName("download");
-    }
-
-    @Override
     public void fillColumnValue(Element cell, T value) {
-        if (!value.isAllowedDownload()) {
-            return;
-        }
-
-        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply(value);
-
-        AnchorElement a = DOM.createAnchor().cast();
-        a.setHref("#");
-        a.addClassName("fa fa-lg fa-cloud-download");
-        a.setTitle(lang.download());
-        setDownloadEnabled(a);
-        setDownloadDeprecated(a);
-        cell.appendChild(a);
+        this.lock = DOM.createAnchor().cast();
+        lock.setHref("#");
+        setMutableAttributes(archivedCheckFunction.apply(value));
+        setRemoveEnabled(lock);
+        cell.appendChild(lock);
     }
 
     public void setPrivilege(En_Privilege privilege) {
         this.privilege = privilege;
     }
 
-    public void setDownloadHandler(DownloadHandler<T> downloadHandler) {
-        setActionHandler(downloadHandler::onDownloadClicked);
+    @Override
+    protected void fillColumnHeader(Element columnHeader) {
+        columnHeader.addClassName("edit");
+    }
+
+    public void setArchiveHandler(ArchiveHandler<T> archiveHandler) {
+        setActionHandler(archiveHandler::onArchiveClicked);
     }
 
     public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
         this.archivedCheckFunction = archivedCheckFunction;
     }
 
-    private void setDownloadEnabled(AnchorElement a) {
+    private void setRemoveEnabled(AnchorElement a) {
         if (privilege == null) {
             return;
         }
@@ -69,11 +62,15 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
         }
     }
 
-    private void setDownloadDeprecated(AnchorElement a) {
+    private void setMutableAttributes(boolean isArchived) {
         if (isArchived) {
-            a.addClassName("deprecated-entity");
+            lock.addClassName("archive-lock");
+            lock.replaceClassName("fa-2x fa fa-unlock-alt", "fa-2x fa fa-lock");
+            lock.setTitle(lang.buttonFromArchive());
         } else {
-            a.removeClassName("deprecated-entity");
+            lock.removeClassName("archive-lock");
+            lock.replaceClassName("fa-2x fa fa-lock", "fa-2x fa fa-unlock-alt");
+            lock.setTitle(lang.buttonToArchive());
         }
     }
 
@@ -81,8 +78,8 @@ public class DownloadClickColumn<T extends Downloadable> extends ClickColumn<T> 
     PolicyService policyService;
 
     Lang lang;
-    En_Privilege privilege;
 
-    private boolean isArchived;
+    private AnchorElement lock;
+    private En_Privilege privilege;
     private Function<T, Boolean> archivedCheckFunction;
 }

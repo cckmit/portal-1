@@ -9,7 +9,6 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.core.model.view.ProductShortViewSupport;
 import ru.protei.winter.jdbc.annotations.*;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -185,6 +184,10 @@ public class DevUnit extends AuditableObject implements ProductShortViewSupport 
 
     public boolean isActiveUnit () {
         return getState() == En_DevUnitState.ACTIVE;
+    }
+
+    public boolean isDeprecatedUnit() {
+        return getState() == En_DevUnitState.DEPRECATED;
     }
 
     public En_DevUnitType getType () {

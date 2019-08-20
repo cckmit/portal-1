@@ -245,6 +245,10 @@ public class Document implements Serializable, Downloadable {
         return getState() == En_DocumentState.ACTIVE;
     }
 
+    public boolean isDeprecatedUnit() {
+        return getState() == En_DocumentState.DEPRECATED;
+    }
+
     public boolean isValid() {
         // Основная проверка, дополнительные проверки обрабатываются в клиенте и сервере отдельно
         return  this.getType() != null &&

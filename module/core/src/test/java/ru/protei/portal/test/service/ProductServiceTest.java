@@ -21,7 +21,6 @@ import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
 
-import javax.validation.constraints.AssertTrue;
 import java.util.Date;
 
 /**
@@ -94,7 +93,7 @@ public class ProductServiceTest {
         Assert.assertNotNull(devUnitDAO.persist(product));
 
         product.setStateId(En_DevUnitState.DEPRECATED.getId());
-        CoreResponse toDeprecated = productService.changeProductState(null, product);
+        CoreResponse toDeprecated = productService.updateState(null, product.getId(), En_DevUnitState.DEPRECATED);
         DevUnit productDeprecated =  devUnitDAO.get(product.getId());
 
         Assert.assertNotNull(toDeprecated);
@@ -102,7 +101,7 @@ public class ProductServiceTest {
 
 
         product.setStateId(En_DevUnitState.ACTIVE.getId());
-        CoreResponse toActive = productService.changeProductState(null, product);
+        CoreResponse toActive = productService.updateState(null, product.getId(), En_DevUnitState.ACTIVE);
         DevUnit productActive =  devUnitDAO.get(product.getId());
 
         Assert.assertNotNull(toActive);

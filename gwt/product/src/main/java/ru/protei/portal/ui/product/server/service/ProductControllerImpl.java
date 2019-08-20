@@ -80,18 +80,19 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public Boolean changeState(DevUnit product) throws RequestFailedException {
+    public Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException {
 
-        log.debug( "changeState(): product={}", product);
+        log.debug( "updateState(): productId={} | state={}", productId, state);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = productService.changeProductState(descriptor.makeAuthToken(), product);
+        CoreResponse<En_DevUnitState> response = productService.updateState(descriptor.makeAuthToken(), productId, state);
 
-        if ( response.isError() )
-            throw new RequestFailedException( response.getStatus() );
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
 
-        log.debug( "changeState(): response.getData()={}", response.getData() );
+        log.debug( "updateState(): response.getData()={}", response.getData() );
 
         return response.getData() != null;
     }

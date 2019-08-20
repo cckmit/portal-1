@@ -13,8 +13,6 @@ public interface AbstractProductEditActivity {
 
     void onNameChanged ();
 
-    void onStateChanged ();
-
     void renderMarkdownText(String text, Consumer<String> consumer);
 
     void onDisplayPreviewChanged( String key, boolean isDisplay );

@@ -21,6 +21,7 @@ import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.CompanyControllerAsync;
 import ru.protei.portal.ui.common.client.widget.selector.base.Selector;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
+import ru.protei.portal.ui.common.shared.model.FluentCallback;
 import ru.protei.portal.ui.common.shared.model.RequestCallback;
 import ru.protei.portal.ui.common.shared.model.ShortRequestCallback;
 
@@ -64,11 +65,9 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         view.siteFolderContainer().clear();
 
         if (event.getCompanyId() == null) {
-            view.stateButtonVisibility().setVisible(false);
             fireEvent(new AppEvents.InitPanelName(lang.companyNew()));
             initialView(new Company());
         } else {
-            view.stateButtonVisibility().setVisible(true);
             fireEvent(new AppEvents.InitPanelName(lang.companyEdit()));
             requestCompany(event.getCompanyId());
         }
@@ -86,30 +85,18 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
     }
 
     @Override
-    public void onStateChanged() {
-        tempCompany.setDeprecated(!tempCompany.isDeprecated());
-    }
-
-    @Override
     public void onSaveClicked() {
-        if (!validateFieldsAndGetResult()) {
-            return;
+        if (validateFieldsAndGetResult() && !tempCompany.isArchived()) {
+            fillDto(tempCompany);
+
+            companyService.saveCompany(tempCompany, new FluentCallback<Boolean>()
+                    .withSuccess(result -> {
+                        fireEvent(new CompanyEvents.Show());
+                        fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
+                        fireEvent(new CompanyEvents.ChangeModel());
+                    })
+            );
         }
-
-        fillDto(tempCompany);
-
-        companyService.saveCompany(tempCompany, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {
-            }
-
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                fireEvent(new CompanyEvents.Show());
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new CompanyEvents.ChangeModel());
-            }
-        });
     }
 
     @Override
@@ -221,8 +208,6 @@ public abstract class CompanyEditActivity implements AbstractCompanyEditActivity
         }
 
         view.hideTags(company.getId() == null);
-
-        view.setStateButtonText(company.isDeprecated() ? lang.buttonFromArchive() : lang.buttonToArchive());
     }
 
     private EntityOption makeCompanyOption(Company company) {

@@ -79,32 +79,6 @@ public abstract class DocumentEditActivity
         }
     }
 
-    @Event
-    public void onConfirmStateChange(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName())) {
-            return;
-        }
-
-        document.setState(document.isActiveUnit() ? En_DocumentState.DEPRECATED : En_DocumentState.ACTIVE);
-
-        documentService.changeState(document, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(Boolean result) {
-                fireEvent(new NotifyEvents.Show(lang.msgStatusChanged(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new DocumentEvents.ChangeModel());
-                fireEvent(new Back());
-            }
-        });
-    }
-
-    @Override
-    public void onStateChanged() {
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.documentChangeStateConfirmMessage()));
-    }
-
     @Override
     public void onSaveClicked() {
         if (!view.saveEnabled().isEnabled())
@@ -326,9 +300,6 @@ public abstract class DocumentEditActivity
         view.inventoryNumberEnabled().setEnabled(inventoryNumberIsNotSet);
 
         view.nameValidator().setValid(true);
-
-        view.setStateButtonVisible().setVisible(!isNew);
-        view.setStateButtonText(document.isActiveUnit() ? lang.buttonToArchive() : lang.buttonFromArchive());
 
         view.resetFilename();
         view.documentUploader().resetAction();

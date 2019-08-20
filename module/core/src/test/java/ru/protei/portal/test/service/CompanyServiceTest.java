@@ -73,10 +73,16 @@ public class CompanyServiceTest extends BaseServiceTest {
 //    }
 
     @Test
-    public void testCompanyDeprecatedField() {
+    public void createdCompanyIsNotArchived () {
         Company company = createNewCustomerCompany();
-        Assert.assertEquals(company.isDeprecated(), false);
+        Assert.assertEquals("Expected company created by createNewCustomerCompany() is not archived", company.isArchived(), false);
     }
+
+    @Test
+    public void newCompanyIsNotArchived () {
+        Assert.assertEquals("Expected new company is not archived", new Company().isArchived(), false);
+    }
+
 
     @Test
     public void testCompanies () {
@@ -138,6 +144,39 @@ public class CompanyServiceTest extends BaseServiceTest {
             }
             if(companyGroupId!=null){
                 companyGroupDAO.removeByKey( companyGroupId );
+            }
+        }
+    }
+
+    @Test
+    public void testCompanyUpdateState() {
+        Long companyId = null;
+
+        try {
+            Company company = new Company();
+            company.setCreated(new Date());
+            company.setCname("Тестовая компания " + new Date().getTime());
+
+            CoreResponse<Company> response = companyService.createCompany(getAuthToken(), company);
+            Company companyFromService = response.getData();
+            companyId = companyFromService.getId();
+
+            boolean startState = companyFromService.isArchived();
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), startState);
+
+            boolean endState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertNotEquals(startState, endState);
+
+            companyService.updateState(getAuthToken(), companyFromService.getId(), endState);
+
+            boolean changedEndState = companyService.getCompany(getAuthToken(), companyFromService.getId()).getData().isArchived();
+
+            Assert.assertEquals(startState, changedEndState);
+        } finally {
+            if (companyId != null) {
+                companyDAO.removeByCondition("id=?", companyId);
             }
         }
     }

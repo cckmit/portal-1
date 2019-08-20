@@ -65,7 +65,7 @@ public class Company extends AuditableObject implements EntityOptionSupport {
     private List<CaseState> caseStates;
 
     @JdbcColumn(name = "is_deprecated")
-    private boolean isDeprecated;
+    private boolean isArchived;
 
     public static Company fromEntityOption(EntityOption entityOption){
         if(entityOption == null)
@@ -232,12 +232,12 @@ public class Company extends AuditableObject implements EntityOptionSupport {
         isHidden = hideden;
     }
 
-    public boolean isDeprecated() {
-        return isDeprecated;
+    public boolean isArchived() {
+        return isArchived;
     }
 
-    public void setDeprecated(Boolean deleted) {
-        isDeprecated = deleted;
+    public void setArchived(Boolean deleted) {
+        isArchived = deleted;
     }
 
     @Override
@@ -247,16 +247,19 @@ public class Company extends AuditableObject implements EntityOptionSupport {
                 ", category=" + category +
                 ", groupId=" + groupId +
                 ", companyGroup=" + companyGroup +
-                ", parentCompanyId=" + parentCompanyId+
-                ", parentCompanyName=" + parentCompanyName+
+                ", parentCompanyId=" + parentCompanyId +
+                ", parentCompanyName='" + parentCompanyName + '\'' +
+                ", childCompanies=" + childCompanies +
                 ", cname='" + cname + '\'' +
                 ", contactInfo=" + contactInfo +
                 ", info='" + info + '\'' +
                 ", created=" + created +
+                ", oldId=" + oldId +
+                ", isHidden=" + isHidden +
                 ", subscriptions=" + subscriptions +
-                ", oldID=" + String.valueOf(oldId) +
+                ", tags=" + tags +
                 ", caseStates=" + caseStates +
-                ", childCompanies=" + childCompanies +
+                ", isArchived=" + isArchived +
                 '}';
     }
 }
