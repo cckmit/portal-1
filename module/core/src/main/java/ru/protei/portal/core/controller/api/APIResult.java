@@ -85,4 +85,8 @@ public class APIResult<T>
     public static <T> APIResult<T> error (En_ResultStatus resultStatus, String msg) {
         return new APIResult<>(resultStatus, msg);
     }
+
+    public static <T> APIResult<T> error (String status, String msg) {
+        return new APIResult<>(status, msg);
+    }
 }

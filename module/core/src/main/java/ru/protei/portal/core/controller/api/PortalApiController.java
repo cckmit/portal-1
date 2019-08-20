@@ -72,12 +72,10 @@ public class PortalApiController {
         log.debug("API | getCaseList(): query={}", query);
 
         try {
-            Credentials cr = Credentials.parse(request.getHeader("Authorization"));
-
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response, cr);
+            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isFail()) {
-                return APIResult.error(En_ResultStatus.INTERNAL_ERROR, userSessionDescriptorAPIResult.getMessage());
+                return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
@@ -107,12 +105,10 @@ public class PortalApiController {
         }
 
         try {
-            Credentials cr = Credentials.parse(request.getHeader("Authorization"));
-
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response, cr);
+            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isFail()) {
-                return APIResult.error(En_ResultStatus.INTERNAL_ERROR, userSessionDescriptorAPIResult.getMessage());
+                return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
@@ -150,12 +146,10 @@ public class PortalApiController {
         }
 
         try {
-            Credentials cr = Credentials.parse(request.getHeader("Authorization"));
-
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response, cr);
+            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isFail()) {
-                return APIResult.error(En_ResultStatus.INTERNAL_ERROR, userSessionDescriptorAPIResult.getMessage());
+                return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
@@ -208,7 +202,9 @@ public class PortalApiController {
         return stateIds;
     }
 
-    private APIResult<UserSessionDescriptor> tryToAuthenticate(HttpServletRequest request, HttpServletResponse response, Credentials cr) throws IOException {
+    private APIResult<UserSessionDescriptor> tryToAuthenticate(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        Credentials cr = Credentials.parse(request.getHeader("Authorization"));
+
         if ((cr == null) || (!cr.isValid())) {
             String logMsg = "Basic authentication required";
             response.setHeader("WWW-Authenticate", "Basic realm=\"" + logMsg + "\"");
