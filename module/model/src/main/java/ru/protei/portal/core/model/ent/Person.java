@@ -82,7 +82,7 @@ public class Person extends AuditableObject implements PersonShortViewSupport, R
     @JdbcColumn(name = "isfired")
     private boolean isFired;
 
-    @JdbcColumn(name = "fireDate")
+    @JdbcColumn(name = "firedate")
     private Date fireDate;
 
     @JdbcColumn(name = "contactInfo", converterType = ConverterType.JSON)
