@@ -161,6 +161,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setName( value.getName() == null ? "" : value.getName() );
+        view.setPlatform(value.getPlatform() == null ? "" : value.getPlatform().getName());
+        view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
         Company initiator = value.getInitiatorCompany();
         if ( initiator == null ) {

@@ -787,6 +787,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueNameHeader();
 
+    String issuePlatformHeader();
+
     String noChanges();
 
     String roleRemoveConfirmMessage();
@@ -1265,6 +1267,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String selectManager();
 
+    String selectPlatform();
+
     String employees();
 
     String privilegeCategoryEmployee();
@@ -1733,4 +1737,6 @@ public interface Lang extends Messages, ContactItemLang {
     String dropFilesHere();
 
     String productChangeStateConfirmMessage();
+
+    String errSaveIssueNeedSelectPlatform();
 }

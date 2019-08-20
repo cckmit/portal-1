@@ -12,7 +12,8 @@
              xmlns:devunit="urn:import:ru.protei.portal.ui.common.client.widget.selector.product.devunit"
              xmlns:autoresizetextarea="urn:import:ru.protei.portal.ui.common.client.widget.autoresizetextarea"
              xmlns:issuestate="urn:import:ru.protei.portal.ui.common.client.widget.issuestate"
-             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown">
+             xmlns:makdown="urn:import:ru.protei.portal.ui.common.client.widget.makdown"
+             xmlns:platform='urn:import:ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector'>
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
     <g:HTMLPanel ui:field="root" styleName="panel footer-fixable">
@@ -31,17 +32,21 @@
                 <casemeta:CaseMetaView ui:field="caseMetaView" styleName="form-group col-xs-12 m-b-0" tagCaseType="CRM_SUPPORT"/>
             </div>
             <div class="grid grid-indent">
-                <div class="form-group col-xs-6">
+                <div ui:field="stateContainer" class="form-group col-xs-6">
                     <label ui:field="stateLabel">
                         <ui:text from="{lang.issueState}"/>
                     </label>
                     <issuestate:IssueStateButtonSelector ui:field="state" validation="true"/>
                 </div>
-                <div class="form-group col-xs-6">
+                <div ui:field="importanceContainer" class="form-group col-xs-6">
                     <label ui:field="importanceLabel">
                         <ui:text from="{lang.issueImportance}"/>
                     </label>
                     <importance:ImportanceButtonSelector ui:field="importance" validation="true"/>
+                </div>
+                <div ui:field="platformContainer" class="form-group col-xs-4" style="display: none;">
+                    <label><ui:text from="{lang.siteFolderPlatform}"/></label>
+                    <platform:PlatformButtonSelector ui:field="platform" validation="true" styleName="btn-selector" defaultValue="{lang.selectPlatform}"/>
                 </div>
                 <div class="form-group col-xs-3">
                     <label ui:field="companyLabel">

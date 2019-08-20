@@ -68,6 +68,12 @@ public interface AbstractIssueEditView extends IsWidget {
     void setFileUploadHandler(AttachmentUploader.FileUploadHandler handler);
     void setCaseNumber(Long caseNumber);
 
+    HasValue<EntityOption> platform();
+
+    void setPlatformVisibility(boolean isVisible);
+
+    HasValidable platformValidable();
+
     void showComments(boolean isShow);
     boolean isAttached();
 

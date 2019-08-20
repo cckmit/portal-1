@@ -35,7 +35,12 @@ public interface AbstractIssuePreviewView extends IsWidget {
     void setOurCompany( String value );
     void setManager( String value );
     void setName( String value );
-    void setInfo( String value );
+
+    void setPlatform(String value);
+
+    void setPlatformVisibility(boolean isVisible);
+
+    void setInfo(String value );
     void setSubscriptionEmails( String value );
     HasTime timeElapsed();
     HasVisibility timeElapsedContainerVisibility();

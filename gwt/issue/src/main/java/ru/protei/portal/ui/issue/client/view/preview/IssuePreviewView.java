@@ -140,6 +140,20 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public void setPlatform(String value) {
+        this.platform.setInnerText(value);
+    }
+
+    @Override
+    public void setPlatformVisibility(boolean isVisible) {
+        if (!isVisible) {
+            this.platformContainer.setAttribute("style", "display: none;");
+        } else {
+            this.platformContainer.removeAttribute("style");
+        }
+    }
+
+    @Override
     public void setInfo( String value ) {
         this.info.setInnerHTML( value );
     }
@@ -265,6 +279,10 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     SpanElement name;
+    @UiField
+    SpanElement platform;
+    @UiField
+    DivElement platformContainer;
     @UiField
     SpanElement info;
     @Inject

@@ -48,6 +48,7 @@ import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
 import ru.protei.portal.ui.common.client.widget.validatefield.ValidableTextBox;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditActivity;
 import ru.protei.portal.ui.issue.client.activity.edit.AbstractIssueEditView;
+import ru.protei.portal.ui.sitefolder.client.view.platform.widget.selector.PlatformButtonSelector;
 
 import java.util.Set;
 
@@ -360,6 +361,29 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         description.setDisplayPreview( isPreviewAllowed );
     }
 
+    @Override
+    public HasValue<EntityOption> platform() {
+        return platform;
+    }
+
+    @Override
+    public void setPlatformVisibility(boolean isVisible) {
+        if (!isVisible) {
+            stateContainer.replaceClassName("col-xs-4", "col-xs-6");
+            importanceContainer.replaceClassName("col-xs-4", "col-xs-6");
+            platformContainer.setAttribute("style", "display: none;");
+        } else {
+            stateContainer.replaceClassName("col-xs-6", "col-xs-4");
+            importanceContainer.replaceClassName("col-xs-6", "col-xs-4");
+            platformContainer.removeAttribute("style");
+        }
+    }
+
+    @Override
+    public HasValidable platformValidable() {
+        return platform;
+    }
+
     @UiHandler( "company" )
     public void onChangeCompany( ValueChangeEvent< EntityOption > event ){
         if ( activity != null ) {
@@ -503,6 +527,19 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     @Inject
     @UiField(provided = true)
     EmployeeMultiSelector notifiers;
+
+    @Inject
+    @UiField(provided = true)
+    PlatformButtonSelector platform;
+
+    @UiField
+    DivElement stateContainer;
+
+    @UiField
+    DivElement importanceContainer;
+
+    @UiField
+    DivElement platformContainer;
 
     @UiField
     Button saveButton;

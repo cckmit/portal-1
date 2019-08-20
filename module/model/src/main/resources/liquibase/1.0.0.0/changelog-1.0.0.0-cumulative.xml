@@ -115,4 +115,5 @@
   <include file="2019-07-29-add-state-column-to-document.xml" relativeToChangelogFile="true"/>
   <include file="2019-08-08-modify-employee_registration-table.xml" relativeToChangelogFile="true"/>
   <include file="2019-08-13-add-cmanager_id-column-to-case_comment.xml" relativeToChangelogFile="true"/>
+  <include file="2019-08-20-add-platform_id-column-to-case_object.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

@@ -33,6 +33,7 @@ public class BootstrapService {
             En_Privilege.ISSUE_COMPANY_EDIT,
             En_Privilege.ISSUE_PRODUCT_EDIT,
             En_Privilege.ISSUE_MANAGER_EDIT,
+            En_Privilege.ISSUE_PLATFORM_EDIT,
             En_Privilege.ISSUE_PRIVACY_VIEW,
             En_Privilege.DASHBOARD_ALL_COMPANIES_VIEW,
             En_Privilege.DOCUMENT_TYPE_REMOVE

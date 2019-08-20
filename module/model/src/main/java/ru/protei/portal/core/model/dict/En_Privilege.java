@@ -94,8 +94,10 @@ public enum En_Privilege {
     ISSUE_COMPANY_EDIT(ISSUE, null),
     ISSUE_PRODUCT_EDIT(ISSUE, null),
     ISSUE_MANAGER_EDIT(ISSUE, null),
+    ISSUE_PLATFORM_EDIT(ISSUE, null),
     ISSUE_PRIVACY_VIEW(ISSUE, null),
     ISSUE_WORK_TIME_VIEW(ISSUE, null),
+    ISSUE_PLATFORM_VIEW(ISSUE, null),
 
     ISSUE_FILTER_COMPANY_VIEW(ISSUE, null),
     ISSUE_FILTER_MANAGER_VIEW(ISSUE, null),
@@ -111,8 +113,10 @@ public enum En_Privilege {
             ISSUE_COMPANY_EDIT,
             ISSUE_PRODUCT_EDIT,
             ISSUE_MANAGER_EDIT,
+            ISSUE_PLATFORM_EDIT,
             ISSUE_PRIVACY_VIEW,
             ISSUE_WORK_TIME_VIEW,
+            ISSUE_PLATFORM_VIEW,
 
             ISSUE_FILTER_COMPANY_VIEW,
             ISSUE_FILTER_MANAGER_VIEW,

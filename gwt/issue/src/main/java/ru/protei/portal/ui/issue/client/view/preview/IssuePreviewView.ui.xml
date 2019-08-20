@@ -72,6 +72,15 @@
                             </div>
                         </fieldset>
 
+                        <div ui:field="platformContainer">
+                            <fieldset class="header">
+                                <legend><ui:text from="{lang.issuePlatformHeader}"/></legend>
+                                <div class="col-xs-12">
+                                    <span class="col-xs-12 col-md-12" ui:field="platform"></span>
+                                </div>
+                            </fieldset>
+                        </div>
+
                         <fieldset class="header">
                             <legend><ui:text from="{lang.issueInfoHeader}"/></legend>
                             <div class="col-xs-12">

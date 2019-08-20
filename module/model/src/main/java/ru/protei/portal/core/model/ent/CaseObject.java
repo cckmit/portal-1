@@ -126,6 +126,12 @@ public class CaseObject extends AuditableObject {
     @JdbcManyToMany(linkTable = "case_object_tag", localLinkColumn = "case_id", remoteLinkColumn = "tag_id")
     private Set<CaseTag> tags;
 
+    @JdbcColumn(name = "platform_id")
+    private Long platformId;
+
+    @JdbcJoinedObject(localColumn = "platform_id", remoteColumn = "id")
+    private Platform platform;
+
     // not db column
     private List<CaseLink> links;
 
@@ -478,6 +484,22 @@ public class CaseObject extends AuditableObject {
         this.tags = tags;
     }
 
+    public Long getPlatformId() {
+        return platformId;
+    }
+
+    public void setPlatformId(Long platformId) {
+        this.platformId = platformId;
+    }
+
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
+
     @Override
     public String getAuditType() {
         return "CaseObject";
@@ -513,11 +535,19 @@ public class CaseObject extends AuditableObject {
                 ", creatorInfo='" + creatorInfo + '\'' +
                 ", deleted=" + deleted +
                 ", privateCase=" + privateCase +
+                ", isAttachmentExists=" + isAttachmentExists +
+                ", attachments=" + attachments +
                 ", locations=" + locations +
                 ", members=" + members +
-                ", links=" + links +
+                ", extAppType='" + extAppType + '\'' +
+                ", notifiers=" + notifiers +
                 ", timeElapsed=" + timeElapsed +
+                ", products=" + products +
                 ", tags=" + tags +
+                ", platformId=" + platformId +
+                ", platform=" + platform +
+                ", links=" + links +
+                ", timeElapsedType=" + timeElapsedType +
                 '}';
     }
 }
