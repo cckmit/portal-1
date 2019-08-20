@@ -76,7 +76,7 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return restDao.getIssue( issueId )
+        return apiDao.getIssue( issueId )
                 .flatMap( issue -> removeCrmNumberIfSame( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
@@ -92,7 +92,7 @@ public class YoutrackServiceImpl implements YoutrackService {
             return ok();
         }
 
-        return restDao.setCrmNumber( issueId, caseNumber );
+        return apiDao.setCrmNumber( issueId, caseNumber );
     }
 
     private YouTrackIssueInfo convertToInfo( Issue issue ) {
