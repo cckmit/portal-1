@@ -3,6 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.dao.YoutrackDAO;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
