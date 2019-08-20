@@ -12,23 +12,21 @@ import com.atlassian.renderer.v2.components.block.*;
 import com.atlassian.renderer.v2.components.list.ListBlockRenderer;
 import com.atlassian.renderer.v2.components.phrase.DashRendererComponent;
 import com.atlassian.renderer.v2.components.phrase.ForceNewLineRendererComponent;
-import com.atlassian.renderer.v2.components.phrase.NewLineRendererComponent;
 import com.atlassian.renderer.v2.components.phrase.PhraseRendererComponent;
 import com.atlassian.renderer.v2.components.table.TableBlockRenderer;
-import com.atlassian.renderer.v2.macro.DefaultMacroManager;
-import com.atlassian.renderer.v2.macro.Macro;
-import com.atlassian.renderer.v2.macro.MacroManager;
-import com.atlassian.renderer.v2.macro.code.CodeMacro;
-import com.atlassian.renderer.v2.macro.code.formatter.AbstractFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.renderer.JiraWikiMarkupRenderer;
+import ru.protei.portal.core.renderer.impl.markup.custom.userlink.UserLinkRendererComponent;
+import ru.protei.portal.core.renderer.impl.markup.jira.link.LinkRendererComponent;
+import ru.protei.portal.core.renderer.impl.markup.jira.macro.CustomMacroManager;
+import ru.protei.portal.core.renderer.impl.markup.jira.macro.MacroRendererComponent;
+import ru.protei.portal.core.renderer.impl.markup.jira.phrase.NewLineRendererComponent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,15 +35,20 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
 
     @Override
     public String plain2html(String text) {
+        return plain2html(text, true);
+    }
+
+    @Override
+    public String plain2html(String text, boolean renderIcons) {
         if (StringUtils.isBlank(text)) {
             return text;
         }
-        text = doConvert(text);
+        text = doConvert(text, renderIcons);
         return text;
     }
 
-    private String doConvert(String text) {
-        RenderContext context = makeRenderContext();
+    private String doConvert(String text, boolean renderIcons) {
+        RenderContext context = makeRenderContext(renderIcons);
         V2RendererFacade renderer = getRendererFacade();
         String content = renderer.convertWikiToXHtml(context, text);
         return restoreContentFromContentStore(context, content);
@@ -87,6 +90,7 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         components.add(new BackslashEscapeRendererComponent());
         components.add(new LinkRendererComponent(makeLinkResolver()));
         components.add(new UrlRendererComponent(makeLinkResolver()));
+        components.add(new UserLinkRendererComponent());
         components.add(new EmbeddedImageRendererComponent());
         components.add(new EmbeddedUnembeddableRendererComponent());
         components.add(new EmbeddedObjectRendererComponent());
@@ -101,10 +105,10 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         components.add(new ForceNewLineRendererComponent());
         components.add(new MacroRendererComponent(getMacroManager(), getSubRenderer()));
         components.add(new DashRendererComponent());
-        components.add(new NewLineRendererComponent()); /* Remove if new line on "\n" no needed */
+        components.add(new NewLineRendererComponent());
         List<BlockRenderer> blockRendererList = new ArrayList<>();
-        blockRendererList.add(new HeadingBlockRenderer());
         blockRendererList.add(new TableBlockRenderer());
+        blockRendererList.add(new HeadingBlockRenderer());
         blockRendererList.add(new BlockquoteBlockRenderer());
         blockRendererList.add(new ListBlockRenderer());
         blockRendererList.add(new HorizontalRuleBlockRenderer());
@@ -135,22 +139,18 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         return rendererFacade;
     }
 
-    private MacroManager getMacroManager() {
+    private CustomMacroManager getMacroManager() {
         if (macroManager != null) {
             return macroManager;
         }
-        DefaultMacroManager macroManager = new DefaultMacroManager(getSubRenderer());
-        Macro codeMacro = new CodeMacro(getSubRenderer(), Collections.singletonList(new JiraWikiMarkupMacroNoneFormatter()));
-        macroManager.unregisterMacro("code");
-        macroManager.registerMacro("code", codeMacro);
-        return this.macroManager = macroManager;
+        return this.macroManager = new CustomMacroManager(getSubRenderer());
     }
 
-    private RenderContext makeRenderContext() {
+    private RenderContext makeRenderContext(boolean renderIcons) {
         RenderContext renderContext = new RenderContext();
         renderContext.setSiteRoot(config.data().getCommonConfig().getCrmUrlCurrent());
         renderContext.setImagePath(renderContext.getSiteRoot() + "images");
-        renderContext.setLinkRenderer(new V2LinkRenderer(getSubRenderer(), makeIconManager(), makeRendererConfiguration()));
+        renderContext.setLinkRenderer(new V2LinkRenderer(getSubRenderer(), makeIconManager(renderIcons), makeRendererConfiguration()));
         renderContext.setEmbeddedResourceRenderer(new DefaultEmbeddedResourceRenderer());
         renderContext.setCharacterEncoding(CHARACTER_ENCODING);
         renderContext.setRenderingForWysiwyg(false);
@@ -173,13 +173,14 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
         };
     }
 
-    private IconManager makeIconManager() {
+    private IconManager makeIconManager(boolean renderIcons) {
         return new IconManager() {
             @Override
             public Icon getLinkDecoration(String s) {
+                int size = renderIcons ? 10 : 0;
                 switch (s) {
-                    case "mailto": return Icon.makeRenderIcon("mail_small.png", 1, 10, 10);
-                    case "external": return Icon.makeRenderIcon("link_small.png", 1, 10, 10);
+                    case "mailto": return Icon.makeRenderIcon("mail_small.png", 1, size, size);
+                    case "external": return Icon.makeRenderIcon("link_small.png", 1, size, size);
                 }
                 return null;
             }
@@ -212,19 +213,6 @@ public class JiraWikiMarkupRendererImpl implements JiraWikiMarkupRenderer {
     private Renderer renderer;
     private V2SubRenderer subRenderer;
     private V2RendererFacade rendererFacade;
-    private MacroManager macroManager;
+    private CustomMacroManager macroManager;
     private static final String CHARACTER_ENCODING = StandardCharsets.UTF_8.name();
-
-    /**
-     * "java" language used by default when no language defined
-     * @see com.atlassian.renderer.v2.macro.code.formatter.NoneFormatter
-     * @see com.atlassian.renderer.v2.macro.code.CodeMacro#getLanguage(java.util.Map)
-     */
-    private class JiraWikiMarkupMacroNoneFormatter extends AbstractFormatter {
-        private final String[] SUPPORTED_LANGUAGES = new String[]{"none", "java"};
-        @Override
-        public String[] getSupportedLanguages() {
-            return SUPPORTED_LANGUAGES;
-        }
-    }
 }

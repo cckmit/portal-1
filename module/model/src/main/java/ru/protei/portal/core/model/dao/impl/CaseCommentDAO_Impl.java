@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import ru.protei.portal.core.model.annotations.SqlConditionBuilder;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
+import ru.protei.portal.core.model.dto.CaseResolutionTimeReportDto;
 import ru.protei.portal.core.model.ent.CaseComment;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.query.SqlCondition;
@@ -60,9 +61,9 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
     }
 
     @Override
-    public List<CaseComment> reportCaseResolutionTime( Date from, Date to, List<Integer> terminatedStates,
-                                                       List<Long> companiesIds, List<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
-                                                       List<Long> tagsIds) {
+    public List<CaseResolutionTimeReportDto> reportCaseResolutionTime( Date from, Date to, List<Integer> terminatedStates,
+                                                                       List<Long> companiesIds, List<Long> productIds, List<Long> managersIds, List<Integer> importanceIds,
+                                                                       List<Long> tagsIds) {
         String fromTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( from );
         String toTime = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" ).format( to );
         String acceptableStates = makeInArg( terminatedStates);
@@ -121,8 +122,8 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                 ;
 
         String query =
-                "SELECT case_id, created, CSTATE_ID" +
-                        " FROM case_comment outerComment" +
+                "SELECT case_id, outerComment.created as commentCreated, CSTATE_ID, ob.CASENO as caseObjectNumber" +
+                        " FROM case_comment outerComment LEFT JOIN case_object ob on ob.id = outerComment.CASE_ID" +
                         " WHERE outerComment.case_id in (" +
                         "   SELECT DISTINCT case_id" +
                         "   from (" +
@@ -131,8 +132,8 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
                         activeCasesInInterval +
                         "        ) as beforeAndInInterval " +
                         " )" +
-                        " and created < '" + toTime + "' " + //# правая граница
-                        "  ORDER BY created ASC;";
+                        " and outerComment.created < '" + toTime + "' " + //# правая граница
+                        "  ORDER BY outerComment.created ASC;";
 
         try {
             return jdbcTemplate.query( query, rm );
@@ -141,15 +142,16 @@ public class CaseCommentDAO_Impl extends PortalBaseJdbcDAO<CaseComment> implemen
         }
     }
 
-    RowMapper<CaseComment> rm = new RowMapper<CaseComment>() {
+    RowMapper<CaseResolutionTimeReportDto> rm = new RowMapper<CaseResolutionTimeReportDto>() {
         @Override
-        public CaseComment mapRow( ResultSet r, int i ) throws SQLException {
-            CaseComment comment = new CaseComment();
+        public CaseResolutionTimeReportDto mapRow( ResultSet r, int i ) throws SQLException {
+            CaseResolutionTimeReportDto comment = new CaseResolutionTimeReportDto();
 
             comment.setCaseId( r.getLong( "case_id" ) );
+            comment.setCaseNumber(r.getLong( "caseObjectNumber" ));
             Long cstateId = r.getLong( "CSTATE_ID" );
             comment.setCaseStateId( r.wasNull() ? null : cstateId );
-            comment.setCreated( new Date( r.getTimestamp( "created" ).getTime() ) );
+            comment.setCreated( new Date( r.getTimestamp( "commentCreated" ).getTime() ) );
 
             return comment;
         }

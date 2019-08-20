@@ -4,6 +4,7 @@ package ru.protei.portal.core.controller.cloud;
  * Created by bondarenko on 26.12.16.
  */
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -20,12 +21,16 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.api.struct.FileStorage;
+import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.model.struct.UploadResult;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dict.En_CaseType;
+import ru.protei.portal.core.model.dict.En_FileUploadStatus;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.struct.Base64Facade;
 import ru.protei.portal.core.model.struct.FileStream;
+import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.EventAssemblerService;
@@ -41,9 +46,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Objects;
+import java.util.*;
 
 import static ru.protei.portal.util.EncodeUtils.encodeToRFC2231;
 
@@ -65,10 +68,15 @@ public class FileController {
     @Autowired
     EventAssemblerService publisherService;
 
+    @Autowired
+    PortalConfig config;
+
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorage.class);
     private ObjectMapper mapper = new ObjectMapper();
     private ServletFileUpload upload = new ServletFileUpload();
+
+    private static final int BYTES_IN_MEGABYTE = 1048576;
 
     @PostConstruct
     public void onInit() {
@@ -82,7 +90,7 @@ public class FileController {
             produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8"
     )
     @ResponseBody
-    public String uploadFile(HttpServletRequest request, HttpServletResponse response){
+    public String uploadFile(HttpServletRequest request, HttpServletResponse response) {
         return uploadFileToCase(request, null, null, response);
     }
 
@@ -100,80 +108,126 @@ public class FileController {
     ) {
 
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
+        UploadResult result = null;
 
-        if(ud != null) {
-            try {
+        if (ud == null) {
+            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null"));
+        }
 
-                logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
+        try {
+            logger.debug("uploadFileToCase: caseNumber={}", caseNumber);
 
-                for (FileItem item : upload.parseRequest(request)) {
-                    if(item.isFormField())
-                        continue;
+            for (FileItem item : upload.parseRequest(request)) {
+                if (item.isFormField())
+                    continue;
 
-                    logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
-
-                    Person creator = ud.getPerson();
-                    Attachment attachment = saveAttachment(item, creator.getId());
-
-                    if(caseNumber != null) {
-                        En_CaseType caseType = En_CaseType.find(caseTypeId);
-                        CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
-                        if(caseAttachId.isError()) {
-                            logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
-                            break;
-                        }
-
-                        shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
-                    }
-
-                    return mapper.writeValueAsString(attachment);
+                if (isFileSizeExceed(item.getSize(), config.data().getMaxFileSize())) {
+                    logger.debug("uploadFileToCase: caseNumber={} | file is too big", caseNumber);
+                    result = new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, String.valueOf(config.data().getMaxFileSize()));
+                    break;
                 }
 
-                logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
+                logger.debug("uploadFileToCase: caseNumber={} | found file to be uploaded", caseNumber);
 
-            } catch (FileUploadException | SQLException | IOException e) {
-                logger.error("uploadFileToCase", e);
+                Person creator = ud.getPerson();
+                Attachment attachment = saveAttachment(item, creator.getId());
+
+                if (caseNumber != null) {
+                    En_CaseType caseType = En_CaseType.find(caseTypeId);
+                    CoreResponse<Long> caseAttachId = caseService.bindAttachmentToCaseNumber(ud.makeAuthToken(), caseType, attachment, caseNumber);
+                    if (caseAttachId.isError()) {
+                        logger.debug("uploadFileToCase: caseNumber=" + caseNumber + " | failed to bind attachment to case | status=" + caseAttachId.getStatus().name());
+                        result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "caseAttachId is Error");
+                        break;
+                    }
+                    shareNotification(attachment, caseNumber, creator, ud.makeAuthToken());
+                }
+                result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
+                break;
             }
+            logger.debug("uploadFileToCase: caseNumber={} | file to be uploaded not found", caseNumber);
+
         }
-        return "error";
+        catch (FileUploadException | SQLException | IOException e) {
+                logger.error("uploadFileToCase", e);
+                result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
+        }
+
+        if (result == null) result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "UploadResult is null");
+
+        return uploadResultSerialize(result);
     }
 
     @PostMapping(value = "/uploadBase64File", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
     @ResponseBody
     public String uploadBase64File(HttpServletRequest request, @RequestBody Base64Facade base64Facade) {
         UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
-        if (ud == null) {
-            return "error";
-        }
-        if (StringUtils.isEmpty(base64Facade.getBase64())) {
-            return "error";
-        }
+
+        UploadResult result = checkInputParams (ud, base64Facade);
+
         try {
-            String[] parts = base64Facade.getBase64().split(",");
-            if (parts.length != 2) {
-                return "error";
+            if (result == null) {
+                String[] parts = base64Facade.getBase64().split(",");
+                byte[] bytes = Base64.getDecoder().decode(parts[1]);
+                Person creator = ud.getPerson();
+                Attachment attachment = saveAttachment(bytes, base64Facade, creator.getId());
+                result = new UploadResult(En_FileUploadStatus.OK, mapper.writeValueAsString(attachment));
             }
-            byte[] bytes = Base64.getDecoder().decode(parts[1]);
-            Person creator = ud.getPerson();
-            Attachment attachment = saveAttachment(bytes, base64Facade, creator.getId());
-            return mapper.writeValueAsString(attachment);
         } catch (IOException | SQLException e) {
             logger.error("uploadBase64File", e);
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught");
         }
-        return "error";
+        return uploadResultSerialize(result);
+    }
+
+    @PostMapping(value = "/uploadBase64Files", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.TEXT_HTML_VALUE + ";charset=UTF-8")
+    @ResponseBody
+    public String uploadBase64Files(HttpServletRequest request, @RequestBody List<Base64Facade> base64Facades) {
+        List<String> attachmentsJsons = new ArrayList<>();
+        List<Attachment> attachments = new ArrayList<>();
+
+        UserSessionDescriptor ud = authService.getUserSessionDescriptor(request);
+        if (ud == null) {
+            return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "auth error"));
+        }
+
+        Person creator = ud.getPerson();
+
+        for (Base64Facade currB64facade : base64Facades) {
+            UploadResult result = checkInputParams(ud, currB64facade);
+
+            if (result != null) {
+                removeFiles(attachments);
+                return uploadResultSerialize(result);
+            }
+
+            String[] parts = currB64facade.getBase64().split(",");
+            byte[] bytes = Base64.getDecoder().decode(parts[1]);
+
+            try {
+                Attachment attachment = saveAttachment(bytes, currB64facade, creator.getId());
+                attachmentsJsons.add(mapper.writeValueAsString(attachment));
+                attachments.add(attachment);
+            } catch (IOException | SQLException e) {
+                logger.error("uploadBase64Files", e);
+                return uploadResultSerialize(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "exception caught"));
+            }
+        }
+
+        return uploadResultSerialize(new UploadResult(En_FileUploadStatus.OK, JsonUtils.wrapJsonsToJsonList(attachmentsJsons)));
     }
 
     @RequestMapping(value = "/files/{folder}/{fileName:.+}", method = RequestMethod.GET)
     @ResponseBody
-    public void getFile (HttpServletResponse response,
-                                   @PathVariable("folder") String folder,
-                                   @PathVariable("fileName") String fileName) throws IOException{
+    public void getFile(HttpServletResponse response,
+                        @PathVariable("folder") String folder,
+                        @PathVariable("fileName") String fileName) throws IOException {
 
         logger.debug("getFile: folder=" + folder + ", fileName=" + fileName);
 
         String filePath = folder + "/" + fileName;
         FileStorage.File file = fileStorage.getFile(filePath);
-        if(file == null) {
+        if (file == null) {
             logger.debug("getFile: folder=" + folder + ", fileName=" + fileName + " | file is null");
             response.setStatus(HttpStatus.NOT_FOUND.value());
             return;
@@ -193,10 +247,10 @@ public class FileController {
     }
 
     public Long saveAttachment(Attachment attachment, InputStreamSource content, long fileSize, String contentType, Long caseId) throws IOException, SQLException {
-        if(caseId == null)
+        if (caseId == null)
             throw new RuntimeException("Case-ID is required");
 
-        if(attachmentService.saveAttachment(attachment).isError()) {
+        if (attachmentService.saveAttachment(attachment).isError()) {
             throw new SQLException("attachment not saved");
         }
 
@@ -212,13 +266,13 @@ public class FileController {
             attachment.setExtLink(filePath);
         }
 
-        if(attachmentService.saveAttachment(attachment).isError()) {
+        if (attachmentService.saveAttachment(attachment).isError()) {
             fileStorage.deleteFile(attachment.getExtLink());
             throw new SQLException("unable to save link to file");
         }
 
         CoreResponse<Long> caseAttachId = caseService.attachToCaseId(attachment, caseId);
-        if(caseAttachId.isError())
+        if (caseAttachId.isError())
             throw new SQLException("unable to bind attachment to case");
 
 //        try {
@@ -230,10 +284,16 @@ public class FileController {
         return caseAttachId.getData();
     }
 
-    private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token){
+    private void removeFiles(List<Attachment> attachments) {
+        for (Attachment currAttachment : attachments) {
+            fileStorage.deleteFile(currAttachment.getExtLink());
+        }
+    }
+
+    private void shareNotification(Attachment attachment, Long caseNumber, Person initiator, AuthToken token) {
         CoreResponse<CaseObject> issue = caseService.getCaseObject(token, caseNumber);
-        if(issue.isError()){
-            logger.error("Notification error! Database exception: "+ issue.getStatus().name());
+        if (issue.isError()) {
+            logger.error("Notification error! Database exception: " + issue.getStatus().name());
             return;
         }
 
@@ -251,7 +311,7 @@ public class FileController {
         );
     }
 
-    private Attachment saveAttachment(byte[] bytes, Base64Facade facade, Long creatorId) throws IOException, SQLException{
+    private Attachment saveAttachment(byte[] bytes, Base64Facade facade, Long creatorId) throws IOException, SQLException {
         String fileName = facade.getName();
         if (StringUtils.isBlank(fileName)) {
             fileName = generateUniqueName();
@@ -259,7 +319,7 @@ public class FileController {
         return saveAttachment(new ByteArrayInputStream(bytes), creatorId, fileName, facade.getSize(), facade.getType());
     }
 
-    private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException{
+    private Attachment saveAttachment(FileItem item, Long creatorId) throws IOException, SQLException {
         String fileName = getFileNameFromFileItem(item);
         return saveAttachment(item.getInputStream(), creatorId, fileName, item.getSize(), item.getContentType());
     }
@@ -308,7 +368,7 @@ public class FileController {
         return fileName;
     }
 
-    private String generateCloudFileName(Long id, String filename){
+    private String generateCloudFileName(Long id, String filename) {
         int i = filename.lastIndexOf(".");
         if (i <= 0)
             return String.valueOf(id);
@@ -327,7 +387,7 @@ public class FileController {
         return extractRealFileName(encodedFileName);
     }
 
-    private String extractRealFileName(String fileName){
+    private String extractRealFileName(String fileName) {
         final Base64.Decoder decoder = Base64.getUrlDecoder();
         final int underscorePos = fileName.indexOf('_');
         int dotLastPos = fileName.lastIndexOf('.');
@@ -364,5 +424,46 @@ public class FileController {
         } catch (UnsupportedCharsetException e) {
             return null;
         }
+    }
+
+    private String uploadResultSerialize (UploadResult result){
+        try {
+            if (result == null)
+                return mapper.writeValueAsString(new UploadResult(En_FileUploadStatus.SERVER_ERROR, "Serialize error"));
+            return mapper.writeValueAsString(result);
+        }
+        catch (JsonProcessingException e){
+            logger.error("uploadResultSerialize( " + result + " ) ", e);
+            return null;
+            }
+        }
+
+
+    private boolean isFileSizeExceed(Long fileSize, Long maxSize){
+        return fileSize > maxSize * BYTES_IN_MEGABYTE;
+    }
+
+    private UploadResult checkInputParams (UserSessionDescriptor ud, Base64Facade base64Facade){
+        UploadResult result = null;
+
+        if (ud == null) {
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "userSessionDescriptor is null");
+        }
+
+        else if (isFileSizeExceed(base64Facade.getSize(), config.data().getMaxFileSize())){
+            result = new UploadResult(En_FileUploadStatus.SIZE_EXCEED_ERROR, String.valueOf(config.data().getMaxFileSize()));
+        }
+
+        else if (StringUtils.isEmpty(base64Facade.getBase64())) {
+            result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "base64Facade is null");
+        }
+
+        else {
+            String[] parts = base64Facade.getBase64().split(",");
+            if (parts.length != 2) {
+                result = new UploadResult(En_FileUploadStatus.SERVER_ERROR, "string array after split != 2");
+            }
+        }
+        return result;
     }
 }

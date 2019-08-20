@@ -17,15 +17,15 @@ public interface AbstractEmployeeItemView extends IsWidget {
 
     void setEmail( String value );
 
-    void setPhoto (String photo );
+    void setPhoto ( String photo );
 
-    void setDepartmentParent(String value);
+    void setDepartmentParent( String value);
 
-    void setDepartment(String value );
+    void setDepartment( String value );
 
     void setPosition( String value );
 
-    void setIP(String value );
+    void setIP( String value );
 
     HasWidgets getPreviewContainer();
 }

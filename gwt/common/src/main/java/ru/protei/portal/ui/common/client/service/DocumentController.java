@@ -7,8 +7,6 @@ import ru.protei.portal.core.model.query.DocumentQuery;
 import ru.protei.portal.ui.common.shared.exception.RequestFailedException;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.util.List;
-
 @RemoteServiceRelativePath("springGwtServices/DocumentController")
 public interface DocumentController extends RemoteService {
 
@@ -17,6 +15,8 @@ public interface DocumentController extends RemoteService {
     Document getDocument(Long id) throws RequestFailedException;
 
     Document saveDocument(Document document) throws RequestFailedException;
+
+    Boolean changeState(Document document) throws RequestFailedException;
 
     SearchResult<Document> getProjectDocuments(Long projectId) throws RequestFailedException;
 }
