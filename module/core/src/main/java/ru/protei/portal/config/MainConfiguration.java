@@ -15,8 +15,7 @@ import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
-import ru.protei.portal.core.dao.YoutrackDAO;
-import ru.protei.portal.core.dao.YoutrackDaoImpl;
+import ru.protei.portal.core.dao.*;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
@@ -492,8 +491,13 @@ public class MainConfiguration {
     }
 
     @Bean
-    public YoutrackDAO getYoutrackDAO() {
-        return new YoutrackDaoImpl();
+    public YoutrackRestDAO getYoutrackRestDAO() {
+        return new YoutrackRestDaoImpl();
+    }
+
+    @Bean
+    public YoutrackApiDAO getYoutrackApiDAO() {
+        return new YoutrackApiDaoImpl();
     }
 
     /* SERVICES */
@@ -757,6 +761,11 @@ public class MainConfiguration {
     @Bean
     public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
         return new JiraWikiMarkupRendererImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackClient(){
+        return new YoutrackHttpClientImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

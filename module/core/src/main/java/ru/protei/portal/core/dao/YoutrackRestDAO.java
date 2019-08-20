@@ -8,7 +8,7 @@ import ru.protei.portal.core.model.yt.YtAttachment;
 import java.util.Date;
 import java.util.List;
 
-public interface YoutrackDAO {
+public interface YoutrackRestDAO {
 
     CoreResponse<Issue> getIssue( String issueId );
 

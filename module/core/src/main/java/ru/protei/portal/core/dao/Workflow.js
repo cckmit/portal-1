@@ -12,7 +12,12 @@ var http = require('@jetbrains/youtrack-scripting-api/http');
 exports.rule = entities.Issue.onChange({
     title: 'On_crm_number_change',
     guard: function (ctx) {
-        return ctx.issue.fields.isChanged("Номер обращения в CRM");
+        var isCrmField = ctx.issue.fields.isChanged("Номер обращения в CRM");
+        var isPortalUser = true;
+        if (ctx.currentUser) {
+            isPortalUser = ("portal" === ctx.currentUser.login);
+        }
+        return isCrmField && !isPortalUser;
     },
     action: function (ctx) {
 
@@ -24,7 +29,7 @@ exports.rule = entities.Issue.onChange({
         if (!crmNumber) {
             urlParams = "removeyoutrackidfromissue/" + issueName + "/" + oldCrmNumber;
         } else if (oldCrmNumber) {
-            urlParams = "changeyoutrackidinissue/" + issueName + "/" + oldCrmNumber+ "/" + crmNumber;
+            urlParams = "changeyoutrackidinissue/" + issueName + "/" + oldCrmNumber + "/" + crmNumber;
         } else {
             urlParams = "addyoutrackidintoissue/" + issueName + "/" + crmNumber;
         }
@@ -35,7 +40,7 @@ exports.rule = entities.Issue.onChange({
         var response = connection.postSync(urlParams, '');
         var text =
             // "oldCrmNumber="+oldCrmNumber+" "+
-            "oldCrmNumber2=" + oldCrmNumber + " " + urlParams;
+            "oldCrmNumber2=" + oldCrmNumber + " " + urlParams + "\n " + ctx.currentUser.login + "\n ";
         if (response && response.code === 200) {
             text = "Success. Add youtrack issue  " + issueName + " into portal issue with number " + crmNumber + "\n urlParams: " + text;
         } else {
@@ -48,6 +53,7 @@ exports.rule = entities.Issue.onChange({
             } else {
                 text = text + " response: " + response;
             }
+            // ctx.issue.fields.CrmNumber = oldCrmNumber; // не позволяет исправить неверный (не существующий) номер. Нельзя удалить или поменять.
         }
         ctx.issue.addComment(text);
     },

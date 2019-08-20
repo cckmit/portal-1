@@ -3,9 +3,9 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.dao.YoutrackDAO;
+import ru.protei.portal.core.dao.YoutrackApiDAO;
+import ru.protei.portal.core.dao.YoutrackRestDAO;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
@@ -27,22 +27,22 @@ public class YoutrackServiceImpl implements YoutrackService {
 
     @Override
     public CoreResponse<ChangeResponse> getIssueChanges( String issueId ) {
-        return youtrackDao.getIssueChanges( issueId );
+        return restDao.getIssueChanges( issueId );
     }
 
     @Override
     public CoreResponse<List<YtAttachment>> getIssueAttachments( String issueId ) {
-        return youtrackDao.getIssueAttachments( issueId );
+        return restDao.getIssueAttachments( issueId );
     }
 
     @Override
     public CoreResponse<String> createIssue( String project, String summary, String description ) {
-        return youtrackDao.createIssue( project, summary, description );
+        return restDao.createIssue( project, summary, description );
     }
 
     @Override
     public CoreResponse<Set<String>> getIssueIdsByProjectAndUpdatedAfter( String projectId, Date updatedAfter ) {
-        return youtrackDao.getIssuesByProjectAndUpdated( projectId, updatedAfter )
+        return restDao.getIssuesByProjectAndUpdated( projectId, updatedAfter )
                 .map( issues -> stream( issues ).map( Issue::getId )
                         .collect( Collectors.toSet() ) );
     }
@@ -54,7 +54,7 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return youtrackDao.getIssue( issueId )
+        return restDao.getIssue( issueId )
                 .map( this::convertToInfo );
     }
 
@@ -65,7 +65,7 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return youtrackDao.getIssue( issueId )
+        return restDao.getIssue( issueId )
                 .flatMap( issue -> replaceCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
@@ -76,13 +76,13 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return youtrackDao.getIssue( issueId )
+        return restDao.getIssue( issueId )
                 .flatMap( issue -> removeCrmNumberIfSame( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
     private CoreResponse<String> removeCrmNumberIfSame( String issueId, Long crmNumber, Long caseNumber ) {
         if (Objects.equals( crmNumber, caseNumber )) {
-            return youtrackDao.removeCrmNumber( issueId );
+            return apiDao.removeCrmNumber( issueId );
         }
         return ok();
     }
@@ -92,7 +92,7 @@ public class YoutrackServiceImpl implements YoutrackService {
             return ok();
         }
 
-        return youtrackDao.setCrmNumber( issueId, caseNumber );
+        return restDao.setCrmNumber( issueId, caseNumber );
     }
 
     private YouTrackIssueInfo convertToInfo( Issue issue ) {
@@ -137,7 +137,11 @@ public class YoutrackServiceImpl implements YoutrackService {
 
 
     @Autowired
-    YoutrackDAO youtrackDao;
+    YoutrackRestDAO restDao;
+
+
+    @Autowired
+    YoutrackApiDAO apiDao;
 
     private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
 

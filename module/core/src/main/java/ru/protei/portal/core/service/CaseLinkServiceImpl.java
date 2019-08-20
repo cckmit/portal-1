@@ -185,6 +185,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             log.error( "removeCaseLinkOnToYoutrack(): Can`t remove link on to youtrack, persistence error" );
             throw new RuntimeException( "removeCaseLinkOnToYoutrack(): rollback transaction" );
         }
+        log.info( "removeCaseLinkOnToYoutrack(): removed CaseLink with id={}", caseLink.getId() );
         return ok(true);
     }
 
