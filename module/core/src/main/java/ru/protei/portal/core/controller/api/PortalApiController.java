@@ -74,14 +74,24 @@ public class PortalApiController {
         try {
             APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
 
+            log.debug("========================== 1");
+
+
             if (userSessionDescriptorAPIResult.isFail()) {
                 log.error("================================== Exception in get Case List : AUTH");
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
+            log.debug("========================== 2");
+
+
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
+            log.debug("========================== 3");
+
             CoreResponse<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
+
+            log.debug("========================== 4");
 
             return APIResult.okWithData(searchList.getData().getResults());
 
@@ -90,7 +100,7 @@ public class PortalApiController {
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            log.error("================================== Exception in get Case List");
+            log.error("================================== Exception in get Case List " + ex);
             return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }
