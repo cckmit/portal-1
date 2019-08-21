@@ -94,7 +94,7 @@ public class PortalApiController {
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            log.error("================================== Exception in get Case List " + ex);
+            log.error("================================== Exception!! in get Case List!!! " + ex);
             return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }
