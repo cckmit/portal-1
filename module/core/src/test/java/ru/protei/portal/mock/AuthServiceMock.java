@@ -64,16 +64,21 @@ public class AuthServiceMock implements AuthService {
         logger.debug("============================= IN MOCK!");
         logger.debug("============================= ulDAO " + userLoginDAO);
         logger.debug("============================= person " + personDAO);
+        logger.debug("============================= login " + login);
         logger.debug("============================= pwd " + pwd);
         UserLogin ulogin = userLoginDAO.findByLogin(login);
+        logger.debug("============================= ulogin " + ulogin);
         if (ulogin == null) {
             return new CoreResponse<UserSessionDescriptor>().success(descriptor);
         } else {
+            logger.debug("============================= ulogin.getUpass " + ulogin.getUpass());
             Person person = personDAO.get(ulogin.getId());
             UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
+            logger.debug("============================= before makeUserSession ");
             userSessionDescriptor.init(makeUserSession(ulogin, person));
             userSessionDescriptor.login(ulogin, person, person.getCompany());
 
+            logger.debug("============================= before condition");
             if (!ulogin.getUpass().equalsIgnoreCase(DigestUtils.md5DigestAsHex(pwd.getBytes()))) {
                 return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
             }
