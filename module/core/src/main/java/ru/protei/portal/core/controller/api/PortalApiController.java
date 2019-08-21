@@ -153,8 +153,8 @@ public class PortalApiController {
                 caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
                 .ifError( status -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
-                        youtrackId, caseNumber, status )
-                ).getStatus().name();
+                        youtrackId, caseNumber, status ) )
+                .getStatus().name();
     }
 
     @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
@@ -164,27 +164,27 @@ public class PortalApiController {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
         return authenticate( request, response ).flatMap( token ->
-                caseLinkService.removeYoutrackLink( new AuthToken( "", "" ), caseNumber, youtrackId ) )
-                .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" )
-                ).ifError( status -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
-                        youtrackId, caseNumber, status )
-                ).getStatus().name();
+                caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
+                .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
+                .ifError( status -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
+                        youtrackId, caseNumber, status ) )
+                .getStatus().name();
     }
 
     @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
     public String changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
-                                             @PathVariable("oldCaseNumber") Long oldCaseNumber,
-                                             @PathVariable("newCaseNumber") Long newCaseNumber,
-                                             @PathVariable("youtrackId") String youtrackId ) {
+                                           @PathVariable("oldCaseNumber") Long oldCaseNumber,
+                                           @PathVariable("newCaseNumber") Long newCaseNumber,
+                                           @PathVariable("youtrackId") String youtrackId ) {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
         return authenticate( request, response ).flatMap( token ->
-                caseLinkService.removeYoutrackLink( new AuthToken( "", "" ), oldCaseNumber, youtrackId ) ).flatMap( aBoolean ->
-                caseLinkService.addYoutrackLink( new AuthToken( "", "" ), newCaseNumber, youtrackId )
-        ).ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" )
-        ).ifError( status -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
-                youtrackId, oldCaseNumber, status )
-        ).getStatus().name();
+                caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
+                caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
+                .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
+                .ifError( status -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
+                        youtrackId, oldCaseNumber, status ) )
+                .getStatus().name();
     }
 
 

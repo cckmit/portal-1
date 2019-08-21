@@ -25,6 +25,8 @@ exports.rule = entities.Issue.onChange({
         var crmNumber = ctx.issue.fields.CrmNumber;
         var oldCrmNumber = ctx.issue.oldValue("Номер обращения в CRM");
 
+        if (crmNumber === oldCrmNumber) return;
+
         var urlParams = "";
         if (!crmNumber) {
             urlParams = "removeyoutrackidfromissue/" + issueName + "/" + oldCrmNumber;
