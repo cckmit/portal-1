@@ -68,7 +68,7 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
 
         return apiDao.getIssue( issueId ).flatMap( issue ->
-                replaceCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
+                replaceCrmNumberIfDifferent( issue, issue.getCrmNumber(), caseNumber ) );
     }
 
     @Override
@@ -89,12 +89,12 @@ public class YoutrackServiceImpl implements YoutrackService {
         return ok();
     }
 
-    private CoreResponse<String> replaceCrmNumberIfDifferent( String issueId, Long crmNumber, Long caseNumber ) {
+    private CoreResponse<String> replaceCrmNumberIfDifferent(IssueApi issue, Long crmNumber, Long caseNumber ) {
         if (Objects.equals( crmNumber, caseNumber )) {
             return ok();
         }
 
-        return apiDao.setCrmNumber( issueId, caseNumber );
+        return apiDao.setCrmNumber( issue, caseNumber );
     }
 
     private YouTrackIssueInfo convertToInfo( Issue issue ) {

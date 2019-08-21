@@ -8,10 +8,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
-import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.yt.api.IssueApi;
 import ru.protei.portal.core.model.yt.api.issue.IssueCustomField;
-import ru.protei.portal.core.model.yt.fields.YtFields;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -70,7 +68,13 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
         String build = qury.build();
 
         QueryBuilder qury2 = IssueQueryBuilder.create( BASE_URL, "PG-209" );
-        String url = qury2.customFields().builder().build();
+
+        String url = qury2.preset().idAndCustomFieldsDefaults()
+//                .fields().id()
+//                .customFields().customId().customName()
+//                .valueFields().valueId().valueName()
+//                .builder()
+                .build();
 //        if (true) return;
 //        String customFields = "customFields(projectCustomField(id,name,emptyFieldText,field(id,name,type)),value(id,name))";
 //        String fieldsString = "id,idReadable,summary" + "," + customFields;
@@ -88,10 +92,16 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
 
         Long crmNumber = issue.getCrmNumber();
 
-        String url3 = IssueQueryBuilder.create( BASE_URL, issue.id ).build();
-        String body = makeChangeCustomField( issue.getCrmNumberField(), null );
-        String body4 = makeChangeCustomField( issue.getCrmNumberField(), String.valueOf( 100456L ) );
+//        String url3 = IssueQueryBuilder.create( BASE_URL, issue.id ).build();
+//        String body = makeChangeCustomField( issue.getCrmNumberField(), null );
+//        String body4 = makeChangeCustomField( issue.getCrmNumberField(), String.valueOf( 100456L ) );
 //        CoreResponse<String> update = client.update( url3, String.class, body );
+
+
+        String url2 = IssueQueryBuilder.create( BASE_URL, issue.id ).build();
+//        String body = makeChangeCustomField( issue.getCrmNumberField(),String.valueOf(  100456L ));
+        String body = makeChangeCustomField( issue.getCrmNumberField(), null );
+        CoreResponse<String> update = client.update( url2, String.class, body );
 
         int stop = 0;
     }
@@ -103,22 +113,22 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
         return client.update( url, String.class, body );
     }
 
-    private static String makeChangeCustomField( IssueCustomField customField, String value ) {
-        return join( "{ \"customFields\": [ {\"id\":\"", customField.id, "\",\"$type\":\"", customField.$type, "\",\"value\":", value, "} ] }" ).toString();
-
-    }
-
     @Override
-    public CoreResponse<String> setCrmNumber( String issueId, Long caseNumber ) {
-        String body = "{ \"customFields\": [ {\"name\":\"" + YtFields.crmNumber + "\",\"$type\":\"SimpleIssueCustomField\",\"value\":" + String.valueOf( caseNumber ) + "} ] }";
-        return client.update( BASE_URL + "/issues/" + issueId, String.class, body );
+    public CoreResponse<String> setCrmNumber( IssueApi issue, Long caseNumber ) {
+        String url = IssueQueryBuilder.create( BASE_URL, issue.id ).build();
+        String body = makeChangeCustomField( issue.getCrmNumberField(), String.valueOf( caseNumber ) );
+        return client.update( url, String.class, body );
     }
 
     @Override
     public CoreResponse<IssueApi> getIssue( String issueId ) {
-        QueryBuilder qury = IssueQueryBuilder.create( BASE_URL, issueId );
-        String url = qury.customFields().builder().build();
+        String url = IssueQueryBuilder.create( BASE_URL, issueId ).preset().
+                idAndCustomFieldsDefaults().build();
         return client.read( url, IssueApi.class );
+    }
+
+    private static String makeChangeCustomField( IssueCustomField customField, String value ) {
+        return join( "{ \"customFields\": [ {\"id\":\"", customField.id, "\",\"$type\":\"", customField.$type, "\",\"value\":", value, "} ] }" ).toString();
     }
 
     @Autowired
@@ -131,7 +141,7 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
     private final static Logger log = LoggerFactory.getLogger( YoutrackApiDaoImpl.class );
 }
 
-class IssueQueryBuilder implements QueryBuilder, FieldsBuilder, CustomFieldsBuilder, BuilderValueFields, ProjectCustomFieldsBuilder {
+class IssueQueryBuilder implements QueryBuilder, FieldsBuilder, CustomFieldsBuilder, BuilderValueFields, ProjectCustomFieldsBuilder, PresetsBuilder {
 
     public static QueryBuilder create( String base_url, String issueId ) {
         return new IssueQueryBuilder( base_url, issueId );
@@ -257,6 +267,8 @@ class IssueQueryBuilder implements QueryBuilder, FieldsBuilder, CustomFieldsBuil
         return join( fields, "," );
     }
 
+    /* Issue Fields */
+
     @Override
     public FieldsBuilder id() {
         fields.add( IssueApi.Fields.id );
@@ -323,7 +335,6 @@ class IssueQueryBuilder implements QueryBuilder, FieldsBuilder, CustomFieldsBuil
         return this;
     }
 
-    //// Всегда добавляется
     @Override
     public BuilderValueFields valueName() {
         valueFields.add( IssueApi.Value.name );
@@ -336,14 +347,53 @@ class IssueQueryBuilder implements QueryBuilder, FieldsBuilder, CustomFieldsBuil
         return this;
     }
 
+    /* Presets */
+
+    @Override
+    public PresetsBuilder preset() {
+        return this;
+    }
+
+    @Override
+    public QueryBuilder fieldsDefaults() {
+        return fields().id().idReadable().builder();
+    }
+
+    @Override
+    public QueryBuilder customFieldsDefaults() {
+        return customFields().customId().customName()
+                .valueFields().valueId().valueName()
+                .builder();
+    }
+
+
+    @Override
+    public QueryBuilder idAndCustomFieldsDefaults() {
+        return fields().id()
+                .customFields().customId().customName()
+                .valueFields().valueId().valueName()
+                .builder();
+    }
+
     private String base_url;
     private String issueId;
 }
 
+interface PresetsBuilder {
+
+    QueryBuilder fieldsDefaults();
+
+    QueryBuilder customFieldsDefaults();
+
+    QueryBuilder idAndCustomFieldsDefaults();
+}
+
 interface QueryBuilder {
+    FieldsBuilder fields();
+
     CustomFieldsBuilder customFields();
 
-    FieldsBuilder fields();
+    PresetsBuilder preset();
 
     String build();
 }
