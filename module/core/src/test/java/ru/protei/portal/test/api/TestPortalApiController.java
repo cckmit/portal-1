@@ -289,7 +289,7 @@ public class TestPortalApiController extends BaseServiceTest {
             En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
     };
 
-    private static final String QWERTY_PASSWORD = "qwerty";
+    private static final String QWERTY_PASSWORD = "qwerty_test_API" + new Date().getTime();
 
     private static final String ISSUES_PREFIX = "Portal_API_issue_test_";
 

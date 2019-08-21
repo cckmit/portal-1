@@ -75,6 +75,7 @@ public class AuthServiceMock implements AuthService {
             Person person = personDAO.get(ulogin.getId());
             UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
             logger.debug("============================= before makeUserSession ");
+            logger.debug("============================= person " + person);
             userSessionDescriptor.init(makeUserSession(ulogin, person));
             userSessionDescriptor.login(ulogin, person, person.getCompany());
 
