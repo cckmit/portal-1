@@ -216,6 +216,7 @@ public class PortalApiController {
         log.debug("=================================== after parsing credentials");
 
         if ((cr == null) || (!cr.isValid())) {
+            log.debug("=================================== if block");
             String logMsg = "Basic authentication required";
             response.setHeader("WWW-Authenticate", "Basic realm=\"" + logMsg + "\"");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
@@ -223,11 +224,15 @@ public class PortalApiController {
             return APIResult.error(En_ResultStatus.INVALID_LOGIN_OR_PWD, logMsg);
         }
 
+        log.debug("=================================== before request.getRemoteAddr");
         String ip = request.getRemoteAddr();
+        log.debug("=================================== after request.getRemoteAddr");
         String userAgent = request.getHeader(SecurityDefs.USER_AGENT_HEADER);
         log.debug("API | Authentication: ip={}, user={}", ip, cr.login);
 
+        log.debug("=================================== before authService.login");
         CoreResponse<UserSessionDescriptor> authResult = authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
+        log.debug("=================================== after authService.login");
 
         if (authResult.isError()) {
             log.error("API | Authentification error {}", authResult.getStatus().name());
