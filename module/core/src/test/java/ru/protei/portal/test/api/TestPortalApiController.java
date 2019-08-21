@@ -267,7 +267,7 @@ public class TestPortalApiController extends BaseServiceTest {
         );
     }
 
-    private static final String QWERTY_PASSWORD = "qwerty";
+    private static final String QWERTY_PASSWORD = "Portal_API_qwerty_" + new Date().getTime();
 
     private static final String ISSUES_PREFIX = "Portal_API_issue_test_";
 }
