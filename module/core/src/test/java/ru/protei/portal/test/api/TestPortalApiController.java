@@ -27,6 +27,7 @@ import ru.protei.portal.core.model.dict.En_ContactItemType;
 import ru.protei.portal.core.model.dict.En_Gender;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.CaseObject;
+import ru.protei.portal.core.model.ent.Company;
 import ru.protei.portal.core.model.ent.Person;
 import ru.protei.portal.core.model.ent.UserLogin;
 import ru.protei.portal.core.model.query.CaseApiQuery;
@@ -184,6 +185,7 @@ public class TestPortalApiController extends BaseServiceTest {
         Person p = new Person();
         String personFirstName = "Test" + new Date().getTime();
 
+        p.setCompany(new Company(1L));
         p.setCompanyId(1L);
         p.setFirstName(personFirstName);
         p.setLastName("API");

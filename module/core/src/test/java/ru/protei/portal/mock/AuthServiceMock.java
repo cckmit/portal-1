@@ -65,7 +65,7 @@ public class AuthServiceMock implements AuthService {
             Person person = personDAO.get(ulogin.getId());
             UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
             userSessionDescriptor.init(makeUserSession(ulogin, person));
-            userSessionDescriptor.login(ulogin, person, new Company(0L));
+            userSessionDescriptor.login(ulogin, person, person.getCompany());
 
             if (!ulogin.getUpass().equalsIgnoreCase(DigestUtils.md5DigestAsHex(pwd.getBytes()))) {
                 return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
