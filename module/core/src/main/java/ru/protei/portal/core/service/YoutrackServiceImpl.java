@@ -54,8 +54,8 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return restDao.getIssue( issueId )
-                .map( this::convertToInfo );
+        return restDao.getIssue( issueId ).map(
+                this::convertToInfo );
     }
 
     @Override
@@ -65,8 +65,8 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return apiDao.getIssue( issueId )
-                .flatMap( issue -> replaceCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
+        return apiDao.getIssue( issueId ).flatMap( issue ->
+                replaceCrmNumberIfDifferent( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
     @Override
@@ -76,8 +76,8 @@ public class YoutrackServiceImpl implements YoutrackService {
             return errorSt( En_ResultStatus.INCORRECT_PARAMS );
         }
 
-        return apiDao.getIssue( issueId )
-                .flatMap( issue -> removeCrmNumberIfSame( issueId, issue.getCrmNumber(), caseNumber ) );
+        return apiDao.getIssue( issueId ).flatMap( issue ->
+                removeCrmNumberIfSame( issueId, issue.getCrmNumber(), caseNumber ) );
     }
 
     private CoreResponse<String> removeCrmNumberIfSame( String issueId, Long crmNumber, Long caseNumber ) {

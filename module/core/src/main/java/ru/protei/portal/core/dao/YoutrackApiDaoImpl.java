@@ -59,15 +59,19 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
 
 //        CoreResponse<String> response =
 //                client.update( BASE_URL + "/issues/PG-209", String.class, body );
-        IssueQueryBuilder qury = new IssueQueryBuilder();
+        IssueQueryBuilder qury = new IssueQueryBuilder(BASE_URL, "PG-209");
+
         qury.fields().id().name().summary().idReadable()
                 .customFields().customId().customName().emptyFieldText().valueFields().localizedName();
         String build = qury.build();
-//        if (true) return;
+
+        QueryBuilder qury2 = new IssueQueryBuilder(BASE_URL, "PG-209");
+        String url = qury2.customFields().builder().build();
+        if (true) return;
 //        String customFields = "customFields(projectCustomField(id,name,emptyFieldText,field(id,name,type)),value(id,name))";
 //        String fieldsString = "id,idReadable,summary" + "," + customFields;
 
-        String url = UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issues/PG-209" )
+        String url2 = UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issues/PG-209" )
                 .queryParam( "fields", build )
                 .build()
                 .encode()
@@ -79,6 +83,8 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
         log.info( "main(): {}", data );
 
         Long crmNumber = data.getCrmNumber();
+
+
         int stop = 0;
     }
 
@@ -96,9 +102,10 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
 
     @Override
     public CoreResponse<IssueApi> getIssue( String issueId ) {
-        return client.read( BASE_URL + "/issue/" + issueId, IssueApi.class );
+        QueryBuilder qury = new IssueQueryBuilder(BASE_URL, issueId);
+        String url = qury.customFields().builder().build();
+        return client.read( url, IssueApi.class );
     }
-
 
     @Autowired
     private PortalConfig portalConfig;
@@ -111,6 +118,11 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
 }
 
 class IssueQueryBuilder implements QueryBuilder, BuilderFields, BuilderCustomFields, BuilderValueFields {
+    public IssueQueryBuilder( String base_url, String issueId ) {
+        this.base_url = base_url;
+        this.issueId = issueId;
+    }
+
     List<String> fields = null;
     List<String> customFields = null;
     List<String> valueFields = null;
@@ -162,7 +174,16 @@ class IssueQueryBuilder implements QueryBuilder, BuilderFields, BuilderCustomFie
                     , "field(id,name,type))", ",", valueFields,
                     ")" );
         }
-        return sb.toString();
+
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl( base_url + "/issues/" + issueId );
+        if(sb.length()>0) {
+                uriBuilder.queryParam( "fields", sb.toString() );
+        }
+
+        return uriBuilder.build()
+                .encode()
+                .toUriString();
+
     }
 
     @Override
@@ -234,6 +255,9 @@ class IssueQueryBuilder implements QueryBuilder, BuilderFields, BuilderCustomFie
         valueFields.add( IssueApi.Value.localizedName );
         return this;
     }
+
+    private String base_url;
+    private String issueId;
 }
 
 interface BuilderFields {
