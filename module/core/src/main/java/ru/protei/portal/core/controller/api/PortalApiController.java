@@ -69,29 +69,23 @@ public class PortalApiController {
             HttpServletRequest request,
             HttpServletResponse response) {
 
+        log.debug("================================= first log ");
         log.debug("API | getCaseList(): query={}", query);
 
         try {
+            log.debug("================================ in try block");
+
             APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
 
-            log.debug("========================== 1");
-
+            log.debug("================================ after auth ");
 
             if (userSessionDescriptorAPIResult.isFail()) {
-                log.error("================================== Exception in get Case List : AUTH");
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
-            log.debug("========================== 2");
-
-
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
-            log.debug("========================== 3");
-
             CoreResponse<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
-
-            log.debug("========================== 4");
 
             return APIResult.okWithData(searchList.getData().getResults());
 
@@ -215,7 +209,11 @@ public class PortalApiController {
     }
 
     private APIResult<UserSessionDescriptor> tryToAuthenticate(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        log.debug("=================================== in tryToAuth method ");
+
         Credentials cr = Credentials.parse(request.getHeader("Authorization"));
+
+        log.debug("=================================== after parsing credentials");
 
         if ((cr == null) || (!cr.isValid())) {
             String logMsg = "Basic authentication required";
