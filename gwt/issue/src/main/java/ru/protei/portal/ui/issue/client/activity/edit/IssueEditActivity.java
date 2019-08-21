@@ -378,7 +378,10 @@ public abstract class IssueEditActivity implements AbstractIssueEditActivity, Ac
         view.manager().setValue( PersonShortView.fromPerson( issue.getManager() ) );
         view.saveVisibility().setVisible( policyService.hasPrivilegeFor( En_Privilege.ISSUE_EDIT ) );
         view.initiatorSelectorAllowAddNew( policyService.hasPrivilegeFor( En_Privilege.CONTACT_CREATE ) );
-        view.platform().setValue(issue.getPlatform() == null ? null : issue.getPlatform().toEntityOption());
+        view.platform().setValue(issue.getPlatformId() == null ? null : new EntityOption() {{
+            setId(issue.getPlatformId());
+            setDisplayText(issue.getPlatformName());
+        }});
         view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_EDIT));
         view.platformValidable().setValid(true);
 

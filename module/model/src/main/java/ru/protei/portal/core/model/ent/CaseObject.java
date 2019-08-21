@@ -129,8 +129,8 @@ public class CaseObject extends AuditableObject {
     @JdbcColumn(name = "platform_id")
     private Long platformId;
 
-    @JdbcJoinedObject(localColumn = "platform_id", remoteColumn = "id")
-    private Platform platform;
+    @JdbcJoinedColumn(localColumn = "platform_id", table = "platform", remoteColumn = "id", mappedColumn = "name")
+    private String platformName;
 
     // not db column
     private List<CaseLink> links;
@@ -492,12 +492,12 @@ public class CaseObject extends AuditableObject {
         this.platformId = platformId;
     }
 
-    public Platform getPlatform() {
-        return platform;
+    public String getPlatformName() {
+        return platformName;
     }
 
-    public void setPlatform(Platform platform) {
-        this.platform = platform;
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
     }
 
     @Override
@@ -545,7 +545,7 @@ public class CaseObject extends AuditableObject {
                 ", products=" + products +
                 ", tags=" + tags +
                 ", platformId=" + platformId +
-                ", platform=" + platform +
+                ", platformName=" + platformName +
                 ", links=" + links +
                 ", timeElapsedType=" + timeElapsedType +
                 '}';

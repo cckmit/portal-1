@@ -144,11 +144,19 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
     }
 
     @Override
+    public void onPlatformExtLinkClicked() {
+        if (platformId != null) {
+            fireEvent(new SiteFolderPlatformEvents.ShowFullScreen(platformId));
+        }
+    }
+
+    @Override
     public void onFullScreenPreviewClicked() {
         fireEvent( new IssueEvents.ShowFullScreen(issueCaseNumber) );
     }
 
     private void fillView(CaseObject value ) {
+        this.platformId = value.getPlatformId();
         view.setPrivateIssue( value.isPrivateCase() );
         view.setCaseNumber(value.getCaseNumber());
         view.setHeader( value.getCaseNumber() == null ? "" : lang.issueHeader( value.getCaseNumber().toString() ) );
@@ -161,7 +169,8 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
         view.setOurCompany( ourCompany == null ? "" : ourCompany.getCname() );
         view.setManager( value.getManager() == null ? "" : value.getManager().getDisplayName() );
         view.setName( value.getName() == null ? "" : value.getName() );
-        view.setPlatform(value.getPlatform() == null ? "" : value.getPlatform().getName());
+        view.setPlatform(value.getPlatformId() == null ? "" : value.getPlatformName());
+        view.platformExtLinkButtonVisibility().setVisible(value.getPlatformId() != null);
         view.setPlatformVisibility(policyService.hasPrivilegeFor(En_Privilege.ISSUE_PLATFORM_VIEW));
         view.setInfo( value.getInfo() == null ? "" : value.getInfo() );
         Company initiator = value.getInitiatorCompany();
@@ -276,6 +285,7 @@ public abstract class IssuePreviewActivity implements AbstractIssuePreviewActivi
 
     private Long issueCaseNumber;
     private Long issueId;
+    private Long platformId;
     private boolean isPrivateCase;
     private En_TextMarkup textMarkup;
     private AppEvents.InitDetails initDetails;

@@ -145,6 +145,11 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     }
 
     @Override
+    public HasVisibility platformExtLinkButtonVisibility() {
+        return platformExtLink;
+    }
+
+    @Override
     public void setPlatformVisibility(boolean isVisible) {
         if (!isVisible) {
             this.platformContainer.setAttribute("style", "display: none;");
@@ -221,6 +226,15 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         }
     }
 
+    @UiHandler("platformExtLink")
+    public void onPlatformExtLinkClicked(ClickEvent event) {
+        event.preventDefault();
+
+        if (activity != null) {
+            activity.onPlatformExtLinkClicked();
+        }
+    }
+
     @UiHandler("attachmentContainer")
     public void attachmentContainerRemove(RemoveEvent event) {
         activity.removeAttachment(event.getAttachment());
@@ -280,6 +294,8 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
     SpanElement manager;
     @UiField
     SpanElement name;
+    @UiField
+    Anchor platformExtLink;
     @UiField
     SpanElement platform;
     @UiField

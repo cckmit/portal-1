@@ -5,57 +5,65 @@
 
     <ui:with field="lang" type="ru.protei.portal.ui.common.client.lang.Lang" />
 
-    <g:HTMLPanel styleName="preview-wrapper grid">
-        <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
-            <div class="actions col-xs-12">
-                <g:Button styleName="btn btn-white" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
-            </div>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.siteFolderPlatform}"/></legend>
-
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderName}"/></label>
-                    <span class="col-xs-8" ui:field="name"/>
+    <g:HTMLPanel styleName="panel footer-fixable">
+        <g:HTMLPanel styleName="preview-wrapper">
+            <g:HTMLPanel ui:field="preview" styleName="preview site-folder">
+                <div class="actions col-xs-12">
+                    <g:Button styleName="btn btn-white" ui:field="fullScreen" title="{lang.fullScreen}">
+                        <i class="fa fa-external-link"></i>
+                    </g:Button>
+                    <g:Button styleName="btn btn-white m-r-5" ui:field="openServersButton" text="{lang.siteFolderServers}"/>
                 </div>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderCompany}"/></label>
-                    <span class="col-xs-8" ui:field="company"/>
-                </div>
+                <fieldset class="header">
+                    <legend><ui:text from="{lang.siteFolderPlatform}"/></legend>
 
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderManager}"/></label>
-                    <span class="col-xs-8" ui:field="manager"/>
-                </div>
-
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderParams}"/></label>
-                    <span class="col-xs-8 pre-formatted-info" ui:field="parameters"/>
-                </div>
-
-                <div class="col-xs-12">
-                    <label class="col-xs-4"><ui:text from="{lang.siteFolderComment}"/></label>
-                    <span class="col-xs-8 pre-formatted-info" ui:field="comment"/>
-                </div>
-
-            </fieldset>
-
-            <fieldset class="header">
-                <legend><ui:text from="{lang.siteFolderAttachments}"/></legend>
-                <div class="col-xs-12 col-md-12">
-                    <div class="panel">
-                        <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
+                    <div class="col-xs-12">
+                        <label class="col-xs-4"><ui:text from="{lang.siteFolderName}"/></label>
+                        <span class="col-xs-8" ui:field="name"/>
                     </div>
-                </div>
-            </fieldset>
 
-            <w:collapse.CollapsablePanel ui:field="serversContainer" styleName="collapsable header"
-                                         legend="{lang.siteFolderServers}"/>
+                    <div class="col-xs-12">
+                        <label class="col-xs-4"><ui:text from="{lang.siteFolderCompany}"/></label>
+                        <span class="col-xs-8" ui:field="company"/>
+                    </div>
 
-            <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
-                                         legend="{lang.siteFolderCompanyContacts}"/>
+                    <div class="col-xs-12">
+                        <label class="col-xs-4"><ui:text from="{lang.siteFolderManager}"/></label>
+                        <span class="col-xs-8" ui:field="manager"/>
+                    </div>
 
+                    <div class="col-xs-12">
+                        <label class="col-xs-4"><ui:text from="{lang.siteFolderParams}"/></label>
+                        <span class="col-xs-8 pre-formatted-info" ui:field="parameters"/>
+                    </div>
+
+                    <div class="col-xs-12">
+                        <label class="col-xs-4"><ui:text from="{lang.siteFolderComment}"/></label>
+                        <span class="col-xs-8 pre-formatted-info" ui:field="comment"/>
+                    </div>
+
+                </fieldset>
+
+                <fieldset class="header">
+                    <legend><ui:text from="{lang.siteFolderAttachments}"/></legend>
+                    <div class="col-xs-12 col-md-12">
+                        <div class="panel">
+                            <w:attachment.list.AttachmentList ui:field="attachmentContainer" addStyleNames="p-l-0"/>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <w:collapse.CollapsablePanel ui:field="serversContainer" styleName="collapsable header"
+                                             legend="{lang.siteFolderServers}"/>
+
+                <w:collapse.CollapsablePanel ui:field="contactsContainer" styleName="collapsable header"
+                                             legend="{lang.siteFolderCompanyContacts}"/>
+
+            </g:HTMLPanel>
         </g:HTMLPanel>
+        <div class="footer">
+            <g:Button ui:field="backButton" styleName="btn btn-success" text="{lang.goToPlatforms}"/>
+        </div>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -1468,6 +1468,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String goToIssues();
 
+    String goToPlatforms();
+
     String employeeWithoutManager();
 
     String commentPreview();
