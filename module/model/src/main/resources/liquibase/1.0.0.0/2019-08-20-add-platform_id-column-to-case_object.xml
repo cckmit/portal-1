@@ -16,7 +16,7 @@
         <addForeignKeyConstraint constraintName="platform_id_to_platform_fk"
                                  baseTableName="case_object" baseColumnNames="platform_id"
                                  referencedTableName="platform" referencedColumnNames="id"
-                                 onDelete="NO ACTION" onUpdate="CASCADE"/>
+                                 onDelete="SET NULL"/>
     </changeSet>
 
 </databaseChangeLog>

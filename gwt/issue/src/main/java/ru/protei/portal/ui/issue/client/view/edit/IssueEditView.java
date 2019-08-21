@@ -64,6 +64,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         ensureDebugIds();
         // state.setDefaultValue(lang.selectIssueState());
         importance.setDefaultValue(lang.selectIssueImportance());
+        platform.setDefaultValue(lang.selectPlatform());
         company.setDefaultValue(lang.selectIssueCompany());
         product.setDefaultValue(lang.selectIssueProduct());
         manager.setDefaultValue(lang.selectIssueManager());
@@ -367,6 +368,11 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     }
 
     @Override
+    public void setPlatformDefaultValue(String value) {
+        platform.setDefaultValue(value);
+    }
+
+    @Override
     public void setPlatformVisibility(boolean isVisible) {
         if (!isVisible) {
             stateContainer.replaceClassName("col-xs-4", "col-xs-6");
@@ -444,6 +450,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         caseMetaView.setEnsureDebugIdApply(DebugIds.ISSUE.LINKS_APPLY_BUTTON);
         state.setEnsureDebugId(DebugIds.ISSUE.STATE_SELECTOR);
         importance.setEnsureDebugId(DebugIds.ISSUE.IMPORTANCE_SELECTOR);
+        platform.setEnsureDebugId(DebugIds.ISSUE.PLATFORM_SELECTOR);
         company.setEnsureDebugId(DebugIds.ISSUE.COMPANY_SELECTOR);
         initiator.setEnsureDebugId(DebugIds.ISSUE.INITIATOR_SELECTOR);
         product.setEnsureDebugId(DebugIds.ISSUE.PRODUCT_SELECTOR);
@@ -462,6 +469,7 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
         caseMetaView.setEnsureDebugIdLabel(DebugIds.ISSUE.LABEL.LINKS);
         stateLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.STATE);
         importanceLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.IMPORTANCE);
+        platformLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PLATFORM);
         companyLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.COMPANY);
         initiatorLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.CONTACT);
         productLabel.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE.LABEL.PRODUCT);
@@ -578,6 +586,8 @@ public class IssueEditView extends Composite implements AbstractIssueEditView {
     LabelElement stateLabel;
     @UiField
     LabelElement importanceLabel;
+    @UiField
+    LabelElement platformLabel;
     @UiField
     LabelElement companyLabel;
     @UiField

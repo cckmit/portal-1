@@ -153,6 +153,7 @@ public class DebugIds {
         @Deprecated String LINKS_ERROR_LABEL = "issue-links-error-label";
         String STATE_SELECTOR = "issue-state-selector";
         String IMPORTANCE_SELECTOR = "issue-importance-selector";
+        String PLATFORM_SELECTOR = "issue-platform-selector";
         String COMPANY_SELECTOR = "issue-company-selector";
         String INITIATOR_SELECTOR = "issue-initiator-selector";
         String PRODUCT_SELECTOR = "issue-product-selector";
@@ -172,6 +173,7 @@ public class DebugIds {
             String LINKS = "issue-label-links";
             String STATE = "issue-label-state";
             String IMPORTANCE = "issue-label-importance";
+            String PLATFORM = "issue-label-platform";
             String COMPANY = "issue-label-company";
             String CONTACT = "issue-label-contact";
             String PRODUCT = "issue-label-product";
@@ -200,6 +202,7 @@ public class DebugIds {
         String MANAGER_LABEL = "issue-preview-manager-label";
         String SUBSCRIPTION_LABEL = "issue-preview-subscription-label";
         String NAME_LABEL = "issue-preview-name-label";
+        String PLATFORM_LABEL = "issue-preview-platform-label";
         String INFO_LABEL = "issue-preview-info-label";
         String ATTACHMENT_UPLOAD_BUTTON = "issue-preview-attachment-upload-button";
         String ATTACHMENT_LIST_CONTAINER = "issue-preview-attachment-list-container";

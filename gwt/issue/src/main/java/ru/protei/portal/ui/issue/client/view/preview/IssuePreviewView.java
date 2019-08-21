@@ -246,6 +246,7 @@ public class IssuePreviewView extends Composite implements AbstractIssuePreviewV
         manager.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.MANAGER_LABEL);
         subscriptions.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.SUBSCRIPTION_LABEL);
         name.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.NAME_LABEL);
+        platform.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.PLATFORM_LABEL);
         info.setId(DebugIds.DEBUG_ID_PREFIX + DebugIds.ISSUE_PREVIEW.INFO_LABEL);
         fileUploader.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_UPLOAD_BUTTON);
         attachmentContainer.setEnsureDebugId(DebugIds.ISSUE_PREVIEW.ATTACHMENT_LIST_CONTAINER);

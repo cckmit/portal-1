@@ -70,6 +70,8 @@ public interface AbstractIssueEditView extends IsWidget {
 
     HasValue<EntityOption> platform();
 
+    void setPlatformDefaultValue(String value);
+
     void setPlatformVisibility(boolean isVisible);
 
     HasValidable platformValidable();
