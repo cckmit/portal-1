@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -111,6 +112,21 @@ public class CoreResponse<T> {
             return errorSt( status );
         else {
             return mapper.apply(data);
+        }
+    }
+
+    /**
+     * Антипаттерн, - превращает цепочку в головоломку
+     */
+    @Deprecated
+    public CoreResponse<T> filter( Predicate<? super T> predicate) {
+        if (predicate  == null || !isOk()) {
+            return errorSt( status );
+        }
+        if (data == null) {
+            return this;
+        } else {
+            return predicate.test(data) ? this : ok();
         }
     }
 

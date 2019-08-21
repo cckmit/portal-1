@@ -15,6 +15,10 @@ public class StringUtils {
         return null == string || string.isEmpty();
     }
 
+    public static boolean isEmpty( CharSequence cs ) {
+        return null == cs || cs.length() < 1;
+    }
+
     /**
      * Checks if a String is whitespace, empty ("") or null.
      */
@@ -89,8 +93,11 @@ public class StringUtils {
         }
 
         while (iterator.hasNext()) {
-            buf.append( delimiter );
-            T obj = iterator.next();if (obj != null) {
+            T obj = iterator.next();
+            if (obj != null) {
+                if(buf.length() > 0) {
+                    buf.append( delimiter );
+                }
                 buf.append( mapper.apply( obj ) );
             }
         }

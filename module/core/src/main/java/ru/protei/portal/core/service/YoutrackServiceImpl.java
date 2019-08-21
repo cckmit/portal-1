@@ -12,6 +12,8 @@ import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
+import ru.protei.portal.core.model.yt.api.IssueApi;
+import ru.protei.portal.core.model.yt.api.issue.IssueCustomField;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -77,12 +79,12 @@ public class YoutrackServiceImpl implements YoutrackService {
         }
 
         return apiDao.getIssue( issueId ).flatMap( issue ->
-                removeCrmNumberIfSame( issueId, issue.getCrmNumber(), caseNumber ) );
+                removeCrmNumberIfSame( issue, issue.getCrmNumber(), caseNumber ) );
     }
 
-    private CoreResponse<String> removeCrmNumberIfSame( String issueId, Long crmNumber, Long caseNumber ) {
+    private CoreResponse<String> removeCrmNumberIfSame( IssueApi issue, Long crmNumber, Long caseNumber ) {
         if (Objects.equals( crmNumber, caseNumber )) {
-            return apiDao.removeCrmNumber( issueId );
+            return apiDao.removeCrmNumber( issue );
         }
         return ok();
     }

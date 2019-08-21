@@ -7,7 +7,7 @@ public interface YoutrackApiDAO {
 
     CoreResponse<IssueApi> getIssue( String issueId );
 
-    CoreResponse<String> removeCrmNumber( String issueId );
+    CoreResponse<String> removeCrmNumber( IssueApi issueId );
 
     CoreResponse<String> setCrmNumber( String issueId, Long caseNumber );
 }

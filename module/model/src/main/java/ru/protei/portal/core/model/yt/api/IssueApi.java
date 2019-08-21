@@ -20,10 +20,13 @@ import java.util.Objects;
 public class IssueApi {
 
     public Long getCrmNumber() {
-        IssueCustomField field = getField( YtFields.crmNumber );
+        IssueCustomField field = getCrmNumberField();
         if(field==null) return null;
         return NumberUtils.parseLong( field.getValue() );
+    }
 
+    public IssueCustomField getCrmNumberField() {
+        return getField( YtFields.crmNumber );
     }
 
     @Override
@@ -36,6 +39,8 @@ public class IssueApi {
                 ", customFields=" + customFields +
                 '}';
     }
+
+
 
     public String $type;
     public String id;
@@ -62,8 +67,15 @@ public class IssueApi {
         String id = "id";
         String type = "type";
         String name = "name";
-        String emptyFieldText = "emptyFieldText";
+
         String crm = YtFields.crmNumber;
+    }
+
+    public interface Project {
+        String id = "id";
+        String type = "type";
+        String name = "name";
+        String emptyFieldText = "emptyFieldText";
     }
 
     private IssueCustomField getField( String name ) {
