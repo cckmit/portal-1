@@ -20,8 +20,6 @@ import java.util.Date;
 import java.util.HashSet;
 
 public class AuthServiceMock implements AuthService {
-    private static Logger logger = LoggerFactory.getLogger(AuthServiceMock.class);
-
     @Autowired
     UserLoginDAO userLoginDAO;
 
@@ -66,7 +64,6 @@ public class AuthServiceMock implements AuthService {
             return new CoreResponse<UserSessionDescriptor>().success(descriptor);
         } else {
             Person person = personDAO.getByCondition("firstname like ?", ulogin.getUlogin());
-            logger.debug("============================= person " + person);
             UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
             userSessionDescriptor.init(makeUserSession(ulogin, person));
             userSessionDescriptor.login(ulogin, person, person.getCompany());

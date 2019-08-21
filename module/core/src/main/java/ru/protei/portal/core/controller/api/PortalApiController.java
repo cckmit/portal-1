@@ -69,15 +69,10 @@ public class PortalApiController {
             HttpServletRequest request,
             HttpServletResponse response) {
 
-        log.debug("================================= first log ");
         log.debug("API | getCaseList(): query={}", query);
 
         try {
-            log.debug("================================ in try block");
-
             APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
-
-            log.debug("================================ after auth ");
 
             if (userSessionDescriptorAPIResult.isFail()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
@@ -94,7 +89,6 @@ public class PortalApiController {
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            log.error("================================== Exception!! in get Case List!!! " + ex);
             return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }
@@ -222,10 +216,6 @@ public class PortalApiController {
         String ip = request.getRemoteAddr();
         String userAgent = request.getHeader(SecurityDefs.USER_AGENT_HEADER);
         log.debug("API | Authentication: ip={}, user={}", ip, cr.login);
-
-        log.debug("=================================== authService " + authService);
-        log.debug("=================================== sidGen " + sidGen);
-        log.debug("=================================== cr " + cr);
 
         CoreResponse<UserSessionDescriptor> authResult = authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
 

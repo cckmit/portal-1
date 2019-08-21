@@ -92,7 +92,6 @@ public class ServiceLayerInterceptor {
             }
         }
 
-        logger.error("================================== Exception in SLI!");
         return handleReturn(pjp.getSignature(), En_ResultStatus.INTERNAL_ERROR);
     }
 

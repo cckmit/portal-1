@@ -25,7 +25,6 @@ public class Credentials {
 
         try
         {
-            log.debug("============================ start parsing cred ");
             int index = auth.indexOf(' ');
             if (index <= 0)
                 return null;
@@ -34,9 +33,7 @@ public class Credentials {
             if (!auth_type.equalsIgnoreCase("basic"))
                 return null;
 
-            log.debug("============================ before decode ");
             String xdata = new String(Base64.getDecoder().decode(auth.substring(index + 1)));
-            log.debug("============================ after decode");
 
             index = xdata.indexOf(':');
             if (index < 0)
