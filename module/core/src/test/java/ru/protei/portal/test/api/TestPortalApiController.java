@@ -23,13 +23,10 @@ import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
-import ru.protei.portal.core.model.dict.En_ContactItemType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.CaseObject;
-import ru.protei.portal.core.model.ent.Company;
-import ru.protei.portal.core.model.ent.Person;
-import ru.protei.portal.core.model.ent.UserLogin;
+import ru.protei.portal.core.model.dao.UserRoleDAO;
+import ru.protei.portal.core.model.dao.impl.UserLoginDAO_Impl;
+import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
@@ -60,12 +57,14 @@ public class TestPortalApiController extends BaseServiceTest {
     private static UserLoginDAO userLoginDAO;
     private static CaseService caseService;
     private static AuthService authService;
+    private static UserRoleDAO userRoleDAO;
     private static Person person;
     private static final Logger log = LoggerFactory.getLogger(TestPortalApiController.class);
     private static final int COUNT_OF_ISSUES_WITH_MANAGER = new Random().nextInt(10);
     private static final int COUNT_OF_ISSUES_WITHOUT_MANAGER = new Random().nextInt(10);
     private static final int COUNT_OF_PRIVATE_ISSUES = new Random().nextInt(10);
     private static final int COUNT_OF_ISSUES = COUNT_OF_PRIVATE_ISSUES + COUNT_OF_ISSUES_WITH_MANAGER + COUNT_OF_ISSUES_WITHOUT_MANAGER;
+    private static UserRole mainRole;
 
     @BeforeClass
     public static void initClass() throws Exception {
@@ -81,8 +80,10 @@ public class TestPortalApiController extends BaseServiceTest {
         caseService = applicationContext.getBean(CaseService.class);
         authService = applicationContext.getBean(AuthService.class);
         userLoginDAO = applicationContext.getBean(UserLoginDAO.class);
+        userRoleDAO = applicationContext.getBean(UserRoleDAO.class);
 
         createAndPersistPerson();
+        createAndPersistUserRoles();
         createAndPersistUserLogin();
         createAndPersistSomeIssues(COUNT_OF_ISSUES_WITHOUT_MANAGER);
         createAndPersistSomeIssuesWithManager(COUNT_OF_ISSUES_WITH_MANAGER, person);
@@ -211,6 +212,18 @@ public class TestPortalApiController extends BaseServiceTest {
                 .findFirst().get();
     }
 
+    private static void createAndPersistUserRoles() {
+        UserRole role = new UserRole();
+        role.setCode(PORTAL_API_TEST_ROLE_CODE);
+        role.setInfo(PORTAL_API_TEST_ROLE_CODE);
+        role.setPrivileges(new HashSet<>(Arrays.asList(PRIVILEGES)));
+        role.setScope(En_Scope.SYSTEM);
+
+        userRoleDAO.persist(role);
+
+        mainRole = userRoleDAO.getByCondition("role_code like ?", "%" + PORTAL_API_TEST_ROLE_CODE + "%");
+    }
+
     private static void createAndPersistUserLogin() throws Exception {
         UserLogin userLogin = userLoginDAO.createNewUserLogin(person);
         userLogin.setUlogin(person.getFirstName());
@@ -218,6 +231,7 @@ public class TestPortalApiController extends BaseServiceTest {
         userLogin.setPersonId(person.getId());
         userLogin.setAuthTypeId(1);
         userLogin.setAdminStateId(2);
+        userLogin.setRoles(Collections.singleton(mainRole));
 
         userLoginDAO.persist(userLogin);
     }
@@ -267,7 +281,13 @@ public class TestPortalApiController extends BaseServiceTest {
         );
     }
 
+    private static final En_Privilege[] PRIVILEGES = new En_Privilege[] {
+            En_Privilege.ISSUE_VIEW, En_Privilege.ISSUE_EDIT, En_Privilege.ISSUE_CREATE,
+    };
+
     private static final String QWERTY_PASSWORD = "qwerty";
 
     private static final String ISSUES_PREFIX = "Portal_API_issue_test_";
+
+    private static final String PORTAL_API_TEST_ROLE_CODE = "portal_api_test_role";
 }
