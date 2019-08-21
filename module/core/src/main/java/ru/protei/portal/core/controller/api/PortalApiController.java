@@ -75,6 +75,7 @@ public class PortalApiController {
             APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isFail()) {
+                log.error("================================== Exception in get Case List : AUTH");
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
@@ -89,6 +90,7 @@ public class PortalApiController {
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
             log.error(ex.getMessage());
+            log.error("================================== Exception in get Case List");
             return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }

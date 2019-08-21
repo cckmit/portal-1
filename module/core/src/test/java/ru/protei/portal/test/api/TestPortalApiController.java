@@ -113,6 +113,7 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Ignore
     public void _1_testGetCaseList_withManager() throws Exception {
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setManagerIds(Collections.singletonList(person.getId()));
@@ -126,6 +127,7 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Ignore
     public void _1_testGetCaseList_publicIssues() throws Exception {
         CaseApiQuery caseApiQuery = new CaseApiQuery();
         caseApiQuery.setAllowViewPrivate(false);
@@ -139,6 +141,7 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Ignore
     public void _2_testCreateIssue() throws Exception {
         CaseObject caseObject = createNewCaseObject(person);
         String issueName = "API_Test_Issue_from_test_create_issue";
@@ -161,6 +164,7 @@ public class TestPortalApiController extends BaseServiceTest {
     }
 
     @Test
+    @Ignore
     public void _2_testUpdateIssue() throws Exception {
         CaseObject startCaseObject = caseObjectDAO.getAll().stream().findAny().orElse(null);
         Assert.assertNotNull("Expected at least 1 case object in db before update", startCaseObject);

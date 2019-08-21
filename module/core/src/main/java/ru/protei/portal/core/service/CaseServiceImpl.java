@@ -86,8 +86,11 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
+        log.debug("============================= WE GET CASE OBJECTS");
 
         applyFilterByScope(token, query);
+
+        log.debug("============================= WE APPLIED FILTER BY SCOPE");
 
         SearchResult<CaseShortView> sr = caseShortViewDAO.getSearchResult(query);
 
