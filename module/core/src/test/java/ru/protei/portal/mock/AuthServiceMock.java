@@ -1,6 +1,8 @@
 package ru.protei.portal.mock;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import ru.protei.portal.api.struct.CoreResponse;
@@ -18,6 +20,7 @@ import java.util.Date;
 import java.util.HashSet;
 
 public class AuthServiceMock implements AuthService {
+    private static Logger logger = LoggerFactory.getLogger(AuthServiceMock.class);
 
     @Autowired
     UserLoginDAO userLoginDAO;
@@ -58,6 +61,10 @@ public class AuthServiceMock implements AuthService {
 
     @Override
     public CoreResponse<UserSessionDescriptor> login(String appSessionID, String login, String pwd, String ip, String userAgent) {
+        logger.debug("============================= IN MOCK!");
+        logger.debug("============================= ulDAO " + userLoginDAO);
+        logger.debug("============================= person " + personDAO);
+        logger.debug("============================= pwd " + pwd);
         UserLogin ulogin = userLoginDAO.findByLogin(login);
         if (ulogin == null) {
             return new CoreResponse<UserSessionDescriptor>().success(descriptor);

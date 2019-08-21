@@ -162,6 +162,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+        logger.debug("================================ NOT IN MOCK!!");
         if ( StringUtils.isEmpty(ulogin) || StringUtils.isEmpty(pwd) ) {
             logger.debug("null login or pwd, auth-failed");
             return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
