@@ -62,7 +62,7 @@ public class AuthServiceMock implements AuthService {
         if (ulogin == null) {
             return new CoreResponse<UserSessionDescriptor>().success(descriptor);
         } else {
-            Person person = personDAO.getByCondition("firstname like ?", ulogin.getUlogin());
+            Person person = personDAO.get(ulogin.getPersonId());
             UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
             userSessionDescriptor.init(makeUserSession(ulogin, person));
             userSessionDescriptor.login(ulogin, person, person.getCompany());
