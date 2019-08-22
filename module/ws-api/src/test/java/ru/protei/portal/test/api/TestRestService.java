@@ -241,7 +241,8 @@ public class TestRestService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-        origWorker.setFireDate("2016-07-06");
+        //origWorker.setFireDate("");
+        //origWorker.setId(7995L);
         HttpEntity<WorkerRecord> entity = new HttpEntity<>(origWorker, headers);
 
         ResponseEntity<ServiceResult> response = restTemplate.exchange(URI, HttpMethod.PUT, entity, ServiceResult.class);

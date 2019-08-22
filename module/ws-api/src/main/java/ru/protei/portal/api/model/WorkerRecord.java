@@ -246,7 +246,7 @@ public class WorkerRecord {
 
     public void setFireDate(String fireDate) {
         this.fireDate = fireDate;
-        this.isFired = fireDate != null;
+        this.isFired = fireDate != null && !fireDate.isEmpty();
     }
 
     @XmlElement(name = "worker-id")
