@@ -1730,6 +1730,7 @@ public interface Lang extends Messages, ContactItemLang {
 
     String passwordUpdatedSuccessful();
 
+    String issueLinkIncorrectYouTrackCaseNotFound( String p0 );
     String dropFilesHere();
 
     String productChangeStateConfirmMessage();

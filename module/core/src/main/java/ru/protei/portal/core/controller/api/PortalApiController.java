@@ -3,13 +3,11 @@ package ru.protei.portal.core.controller.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.auth.SecurityDefs;
+import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -21,6 +19,7 @@ import ru.protei.portal.core.model.query.CaseApiQuery;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.CaseShortView;
+import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
@@ -30,11 +29,15 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
+import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 /**
  * Севрис для  API
@@ -52,6 +55,8 @@ public class PortalApiController {
 
     @Autowired
     private CaseService caseService;
+    @Autowired
+    private CaseLinkService caseLinkService;
 
     private static final Logger log = LoggerFactory.getLogger(PortalApiController.class);
 
@@ -72,9 +77,9 @@ public class PortalApiController {
         log.debug("API | getCaseList(): query={}", query);
 
         try {
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
-            if (userSessionDescriptorAPIResult.isFail()) {
+            if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
@@ -84,7 +89,7 @@ public class PortalApiController {
 
             return APIResult.okWithData(searchList.getData().getResults());
 
-        } catch (IllegalArgumentException | IOException ex) {
+        } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
@@ -105,9 +110,9 @@ public class PortalApiController {
         }
 
         try {
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
-            if (userSessionDescriptorAPIResult.isFail()) {
+            if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
@@ -125,7 +130,7 @@ public class PortalApiController {
                 return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
             }
 
-        } catch (IllegalArgumentException | IOException ex) {
+        } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
@@ -146,9 +151,9 @@ public class PortalApiController {
         }
 
         try {
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
-            if (userSessionDescriptorAPIResult.isFail()) {
+            if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
@@ -166,7 +171,7 @@ public class PortalApiController {
                 return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
             }
 
-        } catch (IllegalArgumentException | IOException ex) {
+        } catch (IllegalArgumentException  ex) {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
@@ -174,6 +179,51 @@ public class PortalApiController {
             return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }
+
+
+    @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
+    public CoreResponse<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+                                                      @PathVariable("caseNumber") Long caseNumber,
+                                                      @PathVariable("youtrackId") String youtrackId ) {
+        log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
+
+        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+                caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
+                .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
+                .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
+                        youtrackId, caseNumber, result ) );
+
+    }
+
+    @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
+    public CoreResponse<Boolean> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+                                                            @PathVariable("caseNumber") Long caseNumber,
+                                                            @PathVariable("youtrackId") String youtrackId ) {
+        log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
+
+        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+                caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
+                .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
+                .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
+                        youtrackId, caseNumber, result ) );
+    }
+
+    @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
+    public CoreResponse<Long> changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
+                                                       @PathVariable("oldCaseNumber") Long oldCaseNumber,
+                                                       @PathVariable("newCaseNumber") Long newCaseNumber,
+                                                       @PathVariable("youtrackId") String youtrackId ) {
+        log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
+
+        // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
+        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
+                caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
+                caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
+                .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
+                .ifError( result -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
+                        youtrackId, oldCaseNumber, result ) );
+    }
+
 
     private CaseQuery makeCaseQuery(CaseApiQuery apiQuery) {
         CaseQuery query = new CaseQuery(En_CaseType.CRM_SUPPORT, apiQuery.getSearchString(), apiQuery.getSortField(), apiQuery.getSortDir());
@@ -202,29 +252,35 @@ public class PortalApiController {
         return stateIds;
     }
 
-    private APIResult<UserSessionDescriptor> tryToAuthenticate(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Credentials cr = Credentials.parse(request.getHeader("Authorization"));
+    private CoreResponse<UserSessionDescriptor> authenticate( HttpServletRequest request, HttpServletResponse response ) {
+        Credentials cr = null;
+        try {
+            cr = Credentials.parse( request.getHeader( "Authorization" ) );
+            if ((cr == null) || (!cr.isValid())) {
+                String logMsg = "Basic authentication required";
+                response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
+                response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
+                log.error( "API | {}", logMsg );
+                return errorSt( En_ResultStatus.INVALID_LOGIN_OR_PWD );
+            }
 
-        if ((cr == null) || (!cr.isValid())) {
-            String logMsg = "Basic authentication required";
-            response.setHeader("WWW-Authenticate", "Basic realm=\"" + logMsg + "\"");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            log.error("API | {}", logMsg);
-            return APIResult.error(En_ResultStatus.INVALID_LOGIN_OR_PWD, logMsg);
+        } catch (IllegalArgumentException | IOException ex) {
+            log.error( "Can`t authenticate {}", ex.getMessage() );
+            return errorSt( En_ResultStatus.AUTH_FAILURE );
+        } catch (Exception ex) {
+            log.error( "Can`t authenticate {} unexpected exception: ", ex );
+            return errorSt( En_ResultStatus.AUTH_FAILURE );
         }
 
         String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader(SecurityDefs.USER_AGENT_HEADER);
-        log.debug("API | Authentication: ip={}, user={}", ip, cr.login);
+        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
 
-        CoreResponse<UserSessionDescriptor> authResult = authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
-
-        if (authResult.isError()) {
-            log.error("API | Authentification error {}", authResult.getStatus().name());
-            return APIResult.error(authResult.getStatus(), "Authentification error");
-        }
-
-        return APIResult.okWithData(authResult.getData());
+        log.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
+        return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent )
+                .ifError( result -> {
+                    result.setMessage( "Authentification error" );
+                    log.error( "API | error {}", result );
+                } );
     }
 
     private Date parseDate(String date) {

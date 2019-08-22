@@ -12,6 +12,12 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
@@ -489,6 +495,21 @@ public class MainConfiguration {
         return  new WorkerEntryShortViewDAO_Impl();
     }
 
+    @Bean
+    public YoutrackRestClient getYoutrackRestDAO() {
+        return new YoutrackRestClientImpl();
+    }
+
+    @Bean
+    public YoutrackApiClient getYoutrackApiDAO() {
+        return new YoutrackApiClientImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -750,6 +771,11 @@ public class MainConfiguration {
     @Bean
     public JiraWikiMarkupRenderer getJiraWikiMarkupRenderer() {
         return new JiraWikiMarkupRendererImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackClient(){
+        return new YoutrackHttpClientImpl();
     }
 
     /* ASPECT/INTERCEPTORS */

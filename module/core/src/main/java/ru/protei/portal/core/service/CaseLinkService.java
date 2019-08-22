@@ -6,6 +6,7 @@ import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.CaseLink;
+import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -19,4 +20,12 @@ public interface CaseLinkService {
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     CoreResponse mergeLinks(AuthToken token, Long caseId, Long caseNumber, List<CaseLink> links);
+
+    CoreResponse<YouTrackIssueInfo> getIssueInfo( AuthToken authToken, String ytId );
+
+    CoreResponse<List<CaseLink>> getYoutrackLinks( Long caseId);
+
+    CoreResponse<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
+
+    CoreResponse<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId );
 }

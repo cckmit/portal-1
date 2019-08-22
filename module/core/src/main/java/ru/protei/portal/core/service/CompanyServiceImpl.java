@@ -23,6 +23,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 
 /**
@@ -80,7 +81,7 @@ public class CompanyServiceImpl implements CompanyService {
                 .sorted(( o1, o2 ) -> placeHomeCompaniesAtBegin( query, o1, o2 ) )
                 .map(Company::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return new CoreResponse<List<EntityOption>>().success(result);
     }
 
     @Override
@@ -166,7 +167,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<EntityOption> result = list.stream().map(CompanyGroup::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
@@ -192,7 +193,7 @@ public class CompanyServiceImpl implements CompanyService {
 
         List<EntityOption> result = list.stream().map(CompanyCategory::toEntityOption).collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override

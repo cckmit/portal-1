@@ -21,6 +21,9 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Override
@@ -80,7 +83,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         SearchResult<ServerApplication> serverApplications = serverApplicationDAO.getSearchResultByQuery(query);
         if (serverApplications == null) {
-            return new CoreResponse<SearchResult<Server>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return errorSt(En_ResultStatus.GET_DATA_ERROR);
         }
 
         Map<Long, Server> servers = new HashMap<>();
@@ -105,14 +108,14 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         List<Platform> result = platformDAO.listByQuery(query);
 
         if (result == null) {
-            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return errorSt(En_ResultStatus.GET_DATA_ERROR);
         }
 
         List<EntityOption> options = result.stream()
                 .map(p -> new EntityOption(p.getName(), p.getId()))
                 .collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(options, options.size());
+        return ok(options);
     }
 
     @Override
@@ -121,14 +124,14 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         List<Server> result = serverDAO.listByQuery(query);
 
         if (result == null) {
-            return new CoreResponse<List<EntityOption>>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return errorSt(En_ResultStatus.GET_DATA_ERROR);
         }
 
         List<EntityOption> options = result.stream()
                 .map(p -> new EntityOption(p.getName(), p.getId()))
                 .collect(Collectors.toList());
 
-        return new CoreResponse<List<EntityOption>>().success(options, options.size());
+        return ok(options);
     }
 
 
@@ -138,7 +141,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Platform result = platformDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return errorSt(En_ResultStatus.GET_DATA_ERROR);
         }
 
         jdbcManyRelationsHelper.fill(result, "attachments");
@@ -152,7 +155,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Server result = serverDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return errorSt(En_ResultStatus.GET_DATA_ERROR);
         }
 
         return new CoreResponse<Server>().success(result);
@@ -164,7 +167,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Application result = applicationDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.GET_DATA_ERROR, null);
+            return errorSt(En_ResultStatus.GET_DATA_ERROR);
         }
 
         return new CoreResponse<Application>().success(result);
@@ -216,13 +219,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long id = serverDAO.persist(server);
 
         if (id == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.NOT_CREATED, null);
+            return errorSt(En_ResultStatus.NOT_CREATED);
         }
 
         Server result = serverDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return errorSt(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return new CoreResponse<Server>().success(result);
@@ -246,13 +249,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long id = applicationDAO.persist(application);
 
         if (id == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.NOT_CREATED, null);
+            return errorSt(En_ResultStatus.NOT_CREATED);
         }
 
         Application result = applicationDAO.get(id);
 
         if (result == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return errorSt(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return new CoreResponse<Application>().success(result);
@@ -265,13 +268,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = platformDAO.merge(platform);
 
         if (!status) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.NOT_UPDATED, null);
+            return errorSt(En_ResultStatus.NOT_UPDATED);
         }
 
         Platform result = platformDAO.get(platform.getId());
 
         if (result == null) {
-            return new CoreResponse<Platform>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return errorSt(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return new CoreResponse<Platform>().success(result);
@@ -283,13 +286,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = serverDAO.merge(server);
 
         if (!status) {
-            return new CoreResponse<Server>().error(En_ResultStatus.NOT_UPDATED, null);
+            return errorSt(En_ResultStatus.NOT_UPDATED);
         }
 
         Server result = serverDAO.get(server.getId());
 
         if (result == null) {
-            return new CoreResponse<Server>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return errorSt(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return new CoreResponse<Server>().success(result);
@@ -301,13 +304,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = applicationDAO.merge(application);
 
         if (!status) {
-            return new CoreResponse<Application>().error(En_ResultStatus.NOT_UPDATED, null);
+            return errorSt(En_ResultStatus.NOT_UPDATED);
         }
 
         Application result = applicationDAO.get(application.getId());
 
         if (result == null) {
-            return new CoreResponse<Application>().error(En_ResultStatus.INTERNAL_ERROR, null);
+            return errorSt(En_ResultStatus.INTERNAL_ERROR);
         }
 
         return new CoreResponse<Application>().success(result);

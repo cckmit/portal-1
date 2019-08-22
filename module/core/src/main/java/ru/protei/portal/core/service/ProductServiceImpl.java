@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 /**
  * Реализация сервиса управления продуктами
  */
@@ -71,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductShortView> result = list.stream().map(DevUnit::toProductShortView).collect(Collectors.toList());
 
-        return new CoreResponse<List<ProductShortView>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override
@@ -84,7 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<ProductDirectionInfo> result = list.stream().map(DevUnit::toProductDirectionInfo).collect(Collectors.toList());
 
-        return new CoreResponse<List<ProductDirectionInfo>>().success(result,result.size());
+        return ok(result);
     }
 
     @Override

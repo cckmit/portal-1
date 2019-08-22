@@ -9,9 +9,15 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+ import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClientImpl;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClientImpl;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.renderer.HTMLRenderer;
@@ -379,6 +385,21 @@ public class MainTestsConfiguration {
         return  new WorkerEntryShortViewDAO_Impl();
     }
 
+    @Bean
+    public YoutrackApiClient getYoutrackApiClient() {
+        return new YoutrackApiClientImpl();
+    }
+
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
+    }
+
+    @Bean
+    public YoutrackService getYoutrackService() {
+        return new YoutrackServiceImpl();
+    }
+
     /* SERVICES */
 
     @Bean
@@ -535,8 +556,8 @@ public class MainTestsConfiguration {
     }
 
     @Bean
-    public YoutrackService getYoutrackService() {
-        return new YoutrackServiceImpl();
+    public YoutrackRestClient getYoutrackRestClient() {
+        return new YoutrackRestClientImpl();
     }
 
     @Bean
