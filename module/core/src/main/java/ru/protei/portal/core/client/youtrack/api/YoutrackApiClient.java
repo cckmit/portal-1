@@ -1,4 +1,4 @@
-package ru.protei.portal.core.client.youtrack;
+package ru.protei.portal.core.client.youtrack.api;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.yt.api.IssueApi;

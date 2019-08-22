@@ -215,6 +215,7 @@ public class PortalApiController {
                                                        @PathVariable("youtrackId") String youtrackId ) {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
+        // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
         return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )

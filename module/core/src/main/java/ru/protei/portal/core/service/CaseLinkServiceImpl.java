@@ -20,8 +20,8 @@ import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
 import java.util.*;
-import java.util.function.Supplier;
 
+import static ru.protei.portal.api.struct.CoreResponse.errorSt;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
@@ -142,19 +142,18 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     @Transactional
     public CoreResponse<Long> addYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Long caseId = getCaseIdByCaseNumber( caseNumber );
-        return getYoutrackLinks( caseId ).map( caseLinks ->
-                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).ifPresentOrElse​( caseLink ->
-                ok( caseLink.getId() ), () ->
-                addCaseLinkOnToYoutrack( caseId, youtrackId )
-        );
+        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).map(
+                CaseLink::getCaseId ).orElseGet( ignore ->
+                addCaseLinkOnToYoutrack( caseId, youtrackId ) );
     }
 
     @Override
     public CoreResponse<Boolean> removeYoutrackLink( AuthToken authToken, Long caseNumber, String youtrackId ) {
         Long caseId = getCaseIdByCaseNumber( caseNumber );
-        return getYoutrackLinks( caseId ).map( caseLinks ->
-                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).ifPresentOrElse​( caseLink ->
-                removeCaseLinkOnToYoutrack( caseLink ), () ->
+        return getYoutrackLinks( caseId ).flatMap( caseLinks ->
+                findCaseLinkByRemoterId( caseLinks, youtrackId ) ).flatMap( caseLink ->
+                removeCaseLinkOnToYoutrack( caseLink )).orElseGet( ignore ->
                 ok( true )
         );
     }
@@ -163,8 +162,10 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         return caseObjectDAO.getCaseIdByNumber( caseNumber );
     }
 
-    private CaseLink findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
-        return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) );
+    private CoreResponse<CaseLink> findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
+        return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) )
+                .map( CoreResponse::ok )
+                .orElse( errorSt( En_ResultStatus.NOT_FOUND ) );
     }
 
     private CoreResponse<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {

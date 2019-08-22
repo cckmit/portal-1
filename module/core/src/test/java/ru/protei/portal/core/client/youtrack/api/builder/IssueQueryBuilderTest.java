@@ -1,4 +1,4 @@
-package ru.protei.portal.core.client.youtrack;
+package ru.protei.portal.core.client.youtrack.api.builder;
 
 import org.junit.Test;
 

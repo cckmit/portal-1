@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.client.youtrack.YoutrackApiClient;
-import ru.protei.portal.core.client.youtrack.YoutrackRestClient;
-import ru.protei.portal.core.model.dict.En_ImportanceLevel;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.YoutrackConstansMapping;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClient;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
 import ru.protei.portal.core.model.yt.ChangeResponse;
@@ -101,43 +101,13 @@ public class YoutrackServiceImpl implements YoutrackService {
         issueInfo.setId( issue.getId() );
         issueInfo.setSummary( issue.getSummary() );
         issueInfo.setDescription( issue.getDescription() );
-        issueInfo.setState( EmployeeRegistrationYoutrackSynchronizer.toCaseState( issue.getStateId() ) );
-        issueInfo.setImportance( toCaseImportance( issue.getPriority() ) );
+        issueInfo.setState( YoutrackConstansMapping.toCaseState( issue.getStateId() ) );
+        issueInfo.setImportance( YoutrackConstansMapping.toCaseImportance( issue.getPriority() ) );
         return issueInfo;
-    }
-
-    private En_ImportanceLevel toCaseImportance( String ytpriority ) {
-        En_ImportanceLevel result = null;
-
-        if (ytpriority != null) {
-            switch (ytpriority) {
-                case "Show-stopper":
-                case "Critical":
-                    result = En_ImportanceLevel.CRITICAL;
-                    break;
-                case "Important":
-                    result = En_ImportanceLevel.IMPORTANT;
-                    break;
-                case "Basic":
-                    result = En_ImportanceLevel.BASIC;
-                    break;
-                case "Low":
-                    result = En_ImportanceLevel.COSMETIC;
-                    break;
-                default:
-                    return result = null;
-            }
-
-            if (result == null) {
-                log.warn( "toCaseImportance(): Detected unknown YouTrack priority level= {}", ytpriority );
-            }
-        }
-        return result;
     }
 
     @Autowired
     YoutrackRestClient restDao;
-
 
     @Autowired
     YoutrackApiClient apiDao;

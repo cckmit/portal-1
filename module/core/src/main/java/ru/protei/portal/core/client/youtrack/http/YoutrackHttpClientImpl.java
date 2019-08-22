@@ -1,29 +1,25 @@
-package ru.protei.portal.core.client.youtrack;
+package ru.protei.portal.core.client.youtrack.http;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriTemplateHandler;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.client.youtrack.rest.YoutrackRestClientImpl;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-import static org.springframework.http.HttpStatus.Series.CLIENT_ERROR;
-import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
 import static ru.protei.portal.api.struct.CoreResponse.errorSt;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 
 /**
- *
+ * Перевод исключений от RestTemplate в CoreResponse
  */
 public class YoutrackHttpClientImpl implements YoutrackHttpClient {
 
@@ -117,31 +113,3 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
     private final static Logger log = LoggerFactory.getLogger( YoutrackRestClientImpl.class );
 }
 
-class RestTemplateResponseErrorHandler implements ResponseErrorHandler {
-
-    public boolean isOk() {
-        return errorStatus == null || HttpStatus.OK.equals( errorStatus );
-    }
-
-    public HttpStatus getStatus() {
-        return errorStatus;
-    }
-
-    @Override
-    public boolean hasError( ClientHttpResponse httpResponse ) throws IOException {
-        return (CLIENT_ERROR == httpResponse.getStatusCode().series()
-                || SERVER_ERROR == httpResponse.getStatusCode().series());
-    }
-
-    @Override
-    public void handleError( ClientHttpResponse httpResponse ) throws IOException {
-        errorStatus = httpResponse.getStatusCode();
-        log.warn( "handleError(): Youtrack http api request error. status code: {} : {}"
-                , httpResponse.getStatusCode()
-                , httpResponse.getStatusText()
-        );
-    }
-
-    private HttpStatus errorStatus;
-    private final static Logger log = LoggerFactory.getLogger( RestTemplateResponseErrorHandler.class );
-}

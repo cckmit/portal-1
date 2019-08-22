@@ -1,6 +1,7 @@
-package ru.protei.portal.core.client.youtrack;
+package ru.protei.portal.core.client.youtrack.rest;
 
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.client.youtrack.api.YoutrackApiClient;
 import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;

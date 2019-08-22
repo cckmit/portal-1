@@ -1,13 +1,11 @@
-package ru.protei.portal.core.client.youtrack;
+package ru.protei.portal.core.client.youtrack.http;
 
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import ru.protei.portal.api.struct.CoreResponse;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public interface YoutrackHttpClient {
     <T> CoreResponse<T> read( String url, Class<T> returnObjectClass );

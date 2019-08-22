@@ -1,4 +1,4 @@
-package ru.protei.portal.core.client.youtrack;
+package ru.protei.portal.core.client.youtrack.rest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +7,7 @@ import org.springframework.http.*;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
+import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.core.model.yt.AttachmentResponse;
 import ru.protei.portal.core.model.yt.ChangeResponse;
@@ -31,7 +32,7 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
 
     @PostConstruct
     public void initAuthHeadersAndUrl() {
-        BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
+        BASE_URL = portalConfig.data().youtrack().getApiBaseUrl() + "/rest";
     }
 
     @Override

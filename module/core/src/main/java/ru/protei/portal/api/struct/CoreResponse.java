@@ -124,9 +124,18 @@ public class CoreResponse<T> {
     }
 
     /**
-     *  Поведение подобно Optional от CoreResponse<T>
+     *  Поведение подобно Optional от CoreResponse<T> на основании En_ResultStatus вместо проверки на null
      *      При получении ошибки, дальнейшие действия игнорируются
      *      ошибка продвигается к конечному результату
+     *
+     * Optional функции фильтрации и проверки на пустое значение в данном контексте являются Антипаттерном,
+     * так как имеют название не отражающее суть обработки и переносят механизи обработки из бизнеслогики на цепочку:
+     *
+     *     Result<T> filter( Predicate<? super T> predicate ) {}
+     *     <U> Result<U> ifPresentOrElse​( Function<? super T, Result<U>> flatMapIfPresent, Supplier<Result<U>> onNotPresent ) {}
+     *
+     *  Вместо них рекомендуется исользовать mapping, передавая данные в функцию
+     *  с названием отражающим конкретный смысл фильтрации или проверки.
      */
 
     /**
@@ -154,56 +163,16 @@ public class CoreResponse<T> {
     }
 
     /**
-     * Антипаттерн, - перенос логики в цепочку!
-     * Рекомендуется исользовать map с передачей данных в функцию с названием отражающим смысл фильтрации.
-     */
-    @Deprecated
-    @JsonIgnore
-    public CoreResponse<T> filter( Predicate<? super T> predicate) {
-        if (predicate  == null || !isOk()) {
-            return errorSt( status, message );
-        }
-        if (data == null) {
-            return this;
-        } else {
-            return predicate.test(data) ? this : ok();
-        }
-    }
-
-    /**
-     * Антипаттерн, - перенос логики в цепочку!
-     * Рекомендуется исользовать map с передачей данных в функцию с названием отражающим смысл проверки.
-     *
-     * Если результрат успешен и не null
-     * расширяет метод map проверкой значения на null
-     */
-    @Deprecated
-    @JsonIgnore
-    public <U> CoreResponse<U> ifPresentOrElse​( Function<? super T, CoreResponse<U>> flatMapIfPresent,
-                                                 Supplier<CoreResponse<U>> onNotPresent ) {
-        if (flatMapIfPresent == null || !isOk()) {
-            return errorSt( status, message );
-        }
-        if (data != null) {
-            return flatMapIfPresent.apply( data );
-        }
-        if (onNotPresent == null) {
-            return errorSt( status, message );
-        }
-        return onNotPresent.get();
-    }
-
-    /**
      * Если результрат не успешен
      * получить тот же результат выполнив другое действие
      */
     @JsonIgnore
-    public CoreResponse<T> orElseGet( Supplier<CoreResponse<T>> supplier ) {
-        if (supplier == null) {
+    public CoreResponse<T> orElseGet( Function<CoreResponse<T>, CoreResponse<T>> mapper ) {
+        if (mapper == null) {
             return errorSt( status, message );
         }
         if (!isOk()) {
-            return supplier.get();
+            return mapper.apply(this);
         }
         return this;
     }

@@ -75,8 +75,8 @@ public class CollectionUtils {
         }
     }
 
-    public static <T> T find(Collection<T> col, Predicate<T> predicate) {
-        return stream(col).filter(predicate).findAny().orElse(null);
+    public static <T> Optional<T> find(Collection<T> col, Predicate<T> predicate) {
+        return stream(col).filter(predicate).findAny();
     }
 
     public static <T> int size(Collection<T> col) {

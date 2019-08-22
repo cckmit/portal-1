@@ -7,8 +7,6 @@ import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.NumberUtils;
 import ru.protei.portal.core.model.yt.api.issue.IssueCustomField;
 import ru.protei.portal.core.model.yt.fields.YtFields;
-import ru.protei.portal.core.model.yt.fields.issue.IssueField;
-import ru.protei.portal.core.model.yt.fields.issue.StringArrayWithIdArrayIssueField;
 
 import java.util.List;
 import java.util.Objects;
@@ -39,8 +37,6 @@ public class IssueApi {
                 ", customFields=" + customFields +
                 '}';
     }
-
-
 
     public String $type;
     public String id;
