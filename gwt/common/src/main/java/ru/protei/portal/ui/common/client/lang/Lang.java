@@ -391,6 +391,8 @@ public interface Lang extends Messages, ContactItemLang {
 
     String issueCommentChangeImportanceTo();
 
+    String issueCommentChangeManagerTo();
+
     String errNotRemoved();
 
     String errEditIssueCommentEmpty();
@@ -1002,8 +1004,6 @@ public interface Lang extends Messages, ContactItemLang {
     String contactFireConfirmMessage();
 
     String contactRemoveConfirmMessage();
-
-    String productChangeStateConfirmMessage();
 
     String decimalNumberFound();
 
@@ -1731,4 +1731,7 @@ public interface Lang extends Messages, ContactItemLang {
     String passwordUpdatedSuccessful();
 
     String issueLinkIncorrectYouTrackCaseNotFound( String p0 );
+    String dropFilesHere();
+
+    String productChangeStateConfirmMessage();
 }

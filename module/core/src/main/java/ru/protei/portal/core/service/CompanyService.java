@@ -27,6 +27,11 @@ public interface CompanyService {
     CoreResponse<Long> countGroups (CompanyGroupQuery query);
 
     CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query);
+
+    @Privileged( En_Privilege.COMPANY_EDIT )
+    @Auditable( En_AuditType.COMPANY_MODIFY )
+    CoreResponse<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated);
+
     CoreResponse<List<EntityOption>> groupOptionList();
     CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query);
     CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial);
@@ -53,5 +58,4 @@ public interface CompanyService {
      * methods below are for testing purpose only
      */
     CoreResponse<CompanyGroup> createGroup(String name, String info);
-
 }

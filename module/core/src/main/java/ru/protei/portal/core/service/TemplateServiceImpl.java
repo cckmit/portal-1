@@ -294,6 +294,7 @@ public class TemplateServiceImpl implements TemplateService {
                     }
                     mailComment.put( "caseState", En_CaseState.getById( comment.getCaseStateId() ) );
                     mailComment.put( "caseImportance", En_ImportanceLevel.getById( comment.getCaseImpLevel() ) );
+                    mailComment.put( "caseManager", comment.getCaseManagerShortName() );
                     mailComment.put( "isPrivateComment", comment.isPrivateComment() );
                     mailComment.put( "changed", isNew);
                     if (isChanged) {
@@ -309,7 +310,7 @@ public class TemplateServiceImpl implements TemplateService {
         if (text == null) {
             return null;
         }
-        text = htmlRenderer.plain2html(text, textMarkup);
+        text = htmlRenderer.plain2html(text, textMarkup, false);
         return text;
     }
 

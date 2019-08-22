@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -81,18 +82,19 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
-    public Boolean changeState(DevUnit product) throws RequestFailedException {
+    public Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException {
 
-        log.debug( "changeState(): product={}", product);
+        log.debug( "updateState(): productId={} | state={}", productId, state);
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse response = productService.changeProductState(descriptor.makeAuthToken(), product);
+        CoreResponse<En_DevUnitState> response = productService.updateState(descriptor.makeAuthToken(), productId, state);
 
-        if ( response.isError() )
-            throw new RequestFailedException( response.getStatus() );
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
 
-        log.debug( "changeState(): response.getData()={}", response.getData() );
+        log.debug( "updateState(): response.getData()={}", response.getData() );
 
         return response.getData() != null;
     }

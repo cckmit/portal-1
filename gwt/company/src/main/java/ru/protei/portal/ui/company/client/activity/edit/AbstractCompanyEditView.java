@@ -45,13 +45,9 @@ public interface AbstractCompanyEditView extends IsWidget {
     HasVisibility tableContainerVisibility();
     HasVisibility siteFolderContainerVisibility();
 
-    HasVisibility stateButtonVisibility();
-
     void setParentCompanyFilter(Selector.SelectorFilter<EntityOption> companyFilter );
 
     void setParentCompanyEnabled( boolean isEnabled );
 
     void hideTags( boolean isShow );
-
-    void setStateButtonText(String caption);
 }

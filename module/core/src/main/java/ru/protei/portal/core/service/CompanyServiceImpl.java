@@ -132,6 +132,27 @@ public class CompanyServiceImpl implements CompanyService {
         return new CoreResponse<List<CompanySubscription>>().success( result );
     }
 
+    @Override
+    public CoreResponse<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
+        if (companyId == null) {
+            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        Company company = companyDAO.get(companyId);
+
+        if (company == null) {
+            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        }
+
+        company.setArchived(isDeprecated);
+
+        if (companyDAO.updateState(company)) {
+            return new CoreResponse().success();
+        } else {
+            return new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+        }
+    }
+
     private <T> CoreResponse<T> createUndefinedError() {
         return new CoreResponse<T>().error(En_ResultStatus.INTERNAL_ERROR);
     }

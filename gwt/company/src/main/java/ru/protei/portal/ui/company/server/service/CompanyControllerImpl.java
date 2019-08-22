@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.model.dict.*;
+import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.portal.core.model.dict.En_SortDir;
+import ru.protei.portal.core.model.dict.En_SortField;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.query.CompanyGroupQuery;
 import ru.protei.portal.core.model.query.CompanyQuery;
@@ -82,6 +85,23 @@ public class CompanyControllerImpl implements CompanyController {
         log.debug( "saveCompany(): response.isOk()={}", response.isOk() );
 
         if ( response.isError() ) throw new RequestFailedException(response.getStatus());
+
+        return response.getData() != null;
+    }
+
+    @Override
+    public Boolean updateState(Long companyId, boolean isArchived) throws RequestFailedException {
+        log.debug("updateState(): companyId={} | isArchived={}", companyId, isArchived);
+
+        UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
+
+        CoreResponse response = companyService.updateState(descriptor.makeAuthToken(), companyId, isArchived);
+
+        if (response.isError()) {
+            throw new RequestFailedException(response.getStatus());
+        }
+
+        log.debug("updateState(): response.getData()={}", response.isOk());
 
         return response.getData() != null;
     }

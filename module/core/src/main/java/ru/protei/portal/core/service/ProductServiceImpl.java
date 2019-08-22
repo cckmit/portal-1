@@ -168,18 +168,24 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public CoreResponse changeProductState(AuthToken token, DevUnit product) {
+    public CoreResponse<En_DevUnitState> updateState(AuthToken makeAuthToken, Long productId, En_DevUnitState state) {
+        if (productId == null) {
+            return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.INCORRECT_PARAMS);
+        }
+
+        DevUnit product = devUnitDAO.get(productId);
+
         if (product == null) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.NOT_FOUND);
         }
 
-        if (devUnitDAO.get(product.getId()) == null) {
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+        product.setStateId(state.getId());
+
+        if (devUnitDAO.updateState(product)) {
+            return new CoreResponse<En_DevUnitState>().success(state);
+        } else {
+            return new CoreResponse<En_DevUnitState>().error(En_ResultStatus.INTERNAL_ERROR);
         }
-
-        devUnitDAO.updateState(product);
-
-        return new CoreResponse().success();
     }
 
     @Override

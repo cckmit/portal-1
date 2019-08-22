@@ -5,14 +5,15 @@ import ru.brainworm.factory.context.client.events.Back;
 import ru.brainworm.factory.generator.activity.client.activity.Activity;
 import ru.brainworm.factory.generator.activity.client.annotations.Event;
 import ru.brainworm.factory.generator.injector.client.PostConstruct;
-import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.LocalStorageService;
 import ru.protei.portal.ui.common.client.common.NameStatus;
-import ru.protei.portal.ui.common.client.events.*;
+import ru.protei.portal.ui.common.client.events.AppEvents;
+import ru.protei.portal.ui.common.client.events.NotifyEvents;
+import ru.protei.portal.ui.common.client.events.ProductEvents;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.ProductControllerAsync;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
@@ -62,28 +63,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         requestProduct(productId);
     }
 
-    @Event
-    public void onConfirmStateChange(ConfirmDialogEvents.Confirm event) {
-        if (!event.identity.equals(getClass().getName()) || !isValid()) {
-            return;
-        }
-
-        product.setStateId(product.isActiveUnit() ? En_DevUnitState.DEPRECATED.getId() : En_DevUnitState.ACTIVE.getId());
-
-        productService.changeState(product, new RequestCallback<Boolean>() {
-            @Override
-            public void onError(Throwable throwable) {}
-
-            @Override
-            public void onSuccess(Boolean result) {
-                fireEvent(new NotifyEvents.Show(lang.msgObjectSaved(), NotifyEvents.NotifyType.SUCCESS));
-                fireEvent(new ProductEvents.ProductListChanged());
-                resetView();
-                goBack();
-            }
-        });
-    }
-
     @Override
     public void onNameChanged() {
         String value = view.name().getValue().trim();
@@ -108,11 +87,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                         view.setNameStatus(isUnique ? NameStatus.SUCCESS : NameStatus.ERROR);
                     }
                 });
-    }
-
-    @Override
-    public void onStateChanged() {
-        fireEvent(new ConfirmDialogEvents.Show(getClass().getName(), lang.productChangeStateConfirmMessage()));
     }
 
     @Override
@@ -183,7 +157,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.parents().setValue(null);
         view.components().setValue(null);
         view.info().setValue("");
-        view.state().setVisible(false);
         view.productSubscriptions().setValue(Collections.emptyList());
     }
 
@@ -195,8 +168,6 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.name().setValue(devUnit.getName());
         view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
         view.info().setValue(devUnit.getInfo());
-        view.state().setVisible( true );
-        view.setStateBtnText(devUnit.isActiveUnit() ? lang.buttonToArchive() : lang.buttonFromArchive());
         view.productSubscriptions().setValue(
                 devUnit.getSubscriptions().stream()
                         .map( Subscription::fromProductSubscription )

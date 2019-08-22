@@ -2,6 +2,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -24,7 +25,7 @@ public interface ProductController extends RemoteService {
 
     Boolean saveProduct(DevUnit product) throws RequestFailedException;
 
-    Boolean changeState(DevUnit product) throws RequestFailedException;
+    Boolean updateState(Long productId, En_DevUnitState state) throws RequestFailedException;
 
     boolean isNameUnique(String name, Long exceptId) throws RequestFailedException;
 

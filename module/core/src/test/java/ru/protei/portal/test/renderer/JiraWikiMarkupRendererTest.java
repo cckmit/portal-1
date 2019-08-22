@@ -184,13 +184,11 @@ public class JiraWikiMarkupRendererTest {
                 "<th class='confluenceTh'>heading 1</th>\n" +
                 "<th class='confluenceTh'>heading 2</th>\n" +
                 "<th class='confluenceTh'>heading 3</th>\n" +
-                "<th class='confluenceTh'><br/></th>\n" +
                 "</tr>\n" +
                 "<tr>\n" +
                 "<td class='confluenceTd'>col A1</td>\n" +
                 "<td class='confluenceTd'>col A2</td>\n" +
                 "<td class='confluenceTd'>col A3</td>\n" +
-                "<td class='confluenceTd'><br/></td>\n" +
                 "</tr>\n" +
                 "<tr>\n" +
                 "<td class='confluenceTd'>col B1</td>\n" +

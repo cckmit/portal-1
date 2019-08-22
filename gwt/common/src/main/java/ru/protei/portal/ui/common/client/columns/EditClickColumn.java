@@ -9,17 +9,21 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.ui.common.client.activity.policy.PolicyService;
 import ru.protei.portal.ui.common.client.lang.Lang;
 
+import java.util.function.Function;
+
 /**
  * Колонка редактирования контакта.
  */
 public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.columns.ClickColumn< T > {
 
     public interface EditHandler< T > extends AbstractColumnHandler< T > {
+
         void onEditClicked( T value );
+
     }
 
     @Inject
-    public EditClickColumn( Lang lang ) {
+    public EditClickColumn(Lang lang) {
         this.lang = lang;
     }
 
@@ -30,6 +34,8 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
 
     @Override
     public void fillColumnValue( Element cell, T value ) {
+        isArchived = archivedCheckFunction == null ? false : archivedCheckFunction.apply(value);
+
         cell.addClassName( "edit" );
         AnchorElement a = DOM.createAnchor().cast();
         a.setHref( "#" );
@@ -47,13 +53,17 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
         setActionHandler(editHandler::onEditClicked);
     }
 
-    private void setEditEnabled( AnchorElement a ) {
+    public void setArchivedCheckFunction(Function<T, Boolean> archivedCheckFunction) {
+        this.archivedCheckFunction = archivedCheckFunction;
+    }
+
+    private void setEditEnabled(AnchorElement a ) {
 
         if ( privilege == null ) {
             return;
         }
 
-        if ( policyService.hasPrivilegeFor( privilege ) ) {
+        if ( policyService.hasPrivilegeFor( privilege ) && !isArchived ) {
             a.removeClassName( "link-disabled" );
         } else {
             a.addClassName( "link-disabled" );
@@ -64,5 +74,9 @@ public class EditClickColumn< T > extends ru.protei.portal.ui.common.client.colu
     PolicyService policyService;
 
     Lang lang;
+
     En_Privilege privilege;
+
+    private boolean isArchived;
+    private Function<T, Boolean> archivedCheckFunction;
 }

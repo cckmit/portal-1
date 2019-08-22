@@ -367,7 +367,6 @@ public class CaseObject extends AuditableObject {
         return initiatorCompany;
     }
 
-
     public En_CaseType getCaseType () {
         return En_CaseType.find(this.typeId);
     }

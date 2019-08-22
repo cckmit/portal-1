@@ -32,8 +32,8 @@ public class DocumentDAO_Impl extends PortalBaseJdbcDAO<Document> implements Doc
     }
 
     @Override
-    public void updateState(Document document) {
-        partialMerge(document, "state");
+    public boolean updateState(Document document) {
+        return partialMerge(document, "state");
     }
 
     @Override

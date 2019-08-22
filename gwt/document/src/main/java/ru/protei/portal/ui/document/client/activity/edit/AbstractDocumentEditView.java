@@ -74,10 +74,6 @@ public interface AbstractDocumentEditView extends IsWidget {
 
     AbstractDocumentUploader documentUploader();
 
-    void setStateButtonText(String caption);
-
-    HasVisibility setStateButtonVisible( );
-
     void resetFilename();
 
     void setDecimalNumberHints(List<DecimalNumber> decimalNumberHints);
