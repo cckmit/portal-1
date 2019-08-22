@@ -505,6 +505,11 @@ public class MainConfiguration {
         return new YoutrackApiClientImpl();
     }
 
+    @Bean
+    public YoutrackHttpClient getYoutrackHttpClient() {
+        return new YoutrackHttpClientImpl();
+    }
+
     /* SERVICES */
 
     @Bean
