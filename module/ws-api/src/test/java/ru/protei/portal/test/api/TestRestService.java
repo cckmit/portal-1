@@ -68,7 +68,6 @@ public class TestRestService {
             origWorker.setInfo (props.getProperty ("info"));
             origWorker.setIpAddress (props.getProperty ("ipAddress"));
             origWorker.setDeleted (new Boolean (props.getProperty ("isDeleted")));
-            origWorker.setFireDate(props.getProperty ("firedate"));
             origWorker.setWorkerId(props.getProperty ("workerId"));
             origWorker.setDepartmentId(props.getProperty ("depId"));
             origWorker.setHireDate (props.getProperty ("hireDate"));
