@@ -1,4 +1,4 @@
-package ru.protei.portal.core.dao;
+package ru.protei.portal.core.client.youtrack;
 
 import org.junit.Test;
 

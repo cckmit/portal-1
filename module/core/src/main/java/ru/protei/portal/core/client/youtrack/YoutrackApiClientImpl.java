@@ -1,10 +1,8 @@
-package ru.protei.portal.core.dao;
+package ru.protei.portal.core.client.youtrack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.config.PortalConfig;
@@ -23,87 +21,14 @@ import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
 /**
- *
+ *  Api youtrack
  */
-public class YoutrackApiDaoImpl implements YoutrackApiDAO {
+public class YoutrackApiClientImpl implements YoutrackApiClient {
 
     @PostConstruct
     public void initAuthHeadersAndUrl() {
         BASE_URL = portalConfig.data().youtrack().getApiBaseUrl();
         BASE_URL = BASE_URL.replaceAll( "/rest", "/api" );
-    }
-
-    public static void main( String[] args ) {
-//        IssueQueryBuilder qury = new IssueQueryBuilder();
-//        qury.fields( IssueApi.Fields.id, IssueApi.Fields.name, IssueApi.Fields.summary );
-//        qury.customFields( IssueApi.CustomFields.id );
-//        String build = qury.build();
-//
-//        IssueQueryBuilder qury = new IssueQueryBuilder();
-//        qury.fields().id().name().summary().idReadable()
-//                .customFields().customId().customName().emptyFieldText().valueFields().localizedName();
-//        String build = qury.build();
-//        if(true) return;
-
-
-        YoutrackApiDaoImpl dao = new YoutrackApiDaoImpl();
-        HttpHeaders authHeaders = new HttpHeaders();
-        authHeaders.setAccept( Arrays.asList( MediaType.APPLICATION_JSON ) );
-        authHeaders.setContentType( MediaType.APPLICATION_JSON_UTF8 );
-        authHeaders.set( "Authorization", "Bearer perm:cG9ydGFs.cG9ydGFs.IOOlyzNfo22S7FpoanxYQB7Ap9FW7e" );
-        YoutrackHttpClientImpl client = new YoutrackHttpClientImpl();
-        client.setAuthHeaders( authHeaders );
-        String BASE_URL = "https://youtrack.protei.ru/api";
-
-//        String body =  "{ \"customFields\": [ {\"name\":\""+YtFields.crmNumber+"\",\"$type\":\"SimpleIssueCustomField\",\"value\":"+String.valueOf( 100451L)+"} ] }";
-
-//        CoreResponse<String> response =
-//                client.update( BASE_URL + "/issues/PG-209", String.class, body );
-        QueryBuilder qury = IssueQueryBuilder.create( BASE_URL, "PG-209" );
-
-        qury.fields().id().name().summary().idReadable()
-                .customFields().customId().customName()
-//                .emptyFieldText()
-                .valueFields().localizedName();
-        String build = qury.build();
-
-        QueryBuilder qury2 = IssueQueryBuilder.create( BASE_URL, "PG-209" );
-
-        String url = qury2.preset().idAndCustomFieldsDefaults()
-//                .fields().id()
-//                .customFields().customId().customName()
-//                .valueFields().valueId().valueName()
-//                .builder()
-                .build();
-//        if (true) return;
-//        String customFields = "customFields(projectCustomField(id,name,emptyFieldText,field(id,name,type)),value(id,name))";
-//        String fieldsString = "id,idReadable,summary" + "," + customFields;
-
-//        String url2 = UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issues/PG-209" )
-//                .queryParam( "fields", build )
-//                .build()
-//                .encode()
-//                .toUriString();
-
-        CoreResponse<IssueApi> response = client.read( url, IssueApi.class );
-        IssueApi issue = response.getData();
-
-        log.info( "main(): {}", issue );
-
-        Long crmNumber = issue.getCrmNumber();
-
-//        String url3 = IssueQueryBuilder.create( BASE_URL, issue.id ).build();
-//        String body = makeChangeCustomField( issue.getCrmNumberField(), null );
-//        String body4 = makeChangeCustomField( issue.getCrmNumberField(), String.valueOf( 100456L ) );
-//        CoreResponse<String> update = client.update( url3, String.class, body );
-
-
-        String url2 = IssueQueryBuilder.create( BASE_URL, issue.id ).build();
-//        String body = makeChangeCustomField( issue.getCrmNumberField(),String.valueOf(  100456L ));
-        String body = makeChangeCustomField( issue.getCrmNumberField(), null );
-        CoreResponse<String> update = client.update( url2, String.class, body );
-
-        int stop = 0;
     }
 
     @Override
@@ -138,7 +63,7 @@ public class YoutrackApiDaoImpl implements YoutrackApiDAO {
 
     private String BASE_URL;
 
-    private final static Logger log = LoggerFactory.getLogger( YoutrackApiDaoImpl.class );
+    private final static Logger log = LoggerFactory.getLogger( YoutrackApiClientImpl.class );
 }
 
 class IssueQueryBuilder implements QueryBuilder, FieldsBuilder, CustomFieldsBuilder, BuilderValueFields, ProjectCustomFieldsBuilder, PresetsBuilder {
@@ -152,7 +77,7 @@ class IssueQueryBuilder implements QueryBuilder, FieldsBuilder, CustomFieldsBuil
         this.issueId = issueId;
     }
 
-    private List<String> fields = null; //listOf( "id" ); // всегда запрашивать id
+    private List<String> fields = null;
     private List<String> customFields = null;
     private List<String> valueFields = null;
     private List<String> projectCustomFields = null;

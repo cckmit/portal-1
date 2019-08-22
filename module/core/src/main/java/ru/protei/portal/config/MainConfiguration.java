@@ -12,10 +12,10 @@ import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptor;
 import ru.protei.portal.core.aspect.ServiceLayerInterceptorLogging;
+import ru.protei.portal.core.client.youtrack.*;
 import ru.protei.portal.core.controller.auth.AuthInterceptor;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.controller.document.DocumentStorageIndexImpl;
-import ru.protei.portal.core.dao.*;
 import ru.protei.portal.core.renderer.MarkdownRenderer;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.renderer.impl.JiraWikiMarkupRendererImpl;
@@ -491,13 +491,13 @@ public class MainConfiguration {
     }
 
     @Bean
-    public YoutrackRestDAO getYoutrackRestDAO() {
-        return new YoutrackRestDaoImpl();
+    public YoutrackRestClient getYoutrackRestDAO() {
+        return new YoutrackRestClientImpl();
     }
 
     @Bean
-    public YoutrackApiDAO getYoutrackApiDAO() {
-        return new YoutrackApiDaoImpl();
+    public YoutrackApiClient getYoutrackApiDAO() {
+        return new YoutrackApiClientImpl();
     }
 
     /* SERVICES */

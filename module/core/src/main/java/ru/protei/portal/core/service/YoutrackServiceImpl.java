@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.api.struct.CoreResponse;
-import ru.protei.portal.core.dao.YoutrackApiDAO;
-import ru.protei.portal.core.dao.YoutrackRestDAO;
+import ru.protei.portal.core.client.youtrack.YoutrackApiClient;
+import ru.protei.portal.core.client.youtrack.YoutrackRestClient;
 import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
@@ -13,7 +13,6 @@ import ru.protei.portal.core.model.yt.ChangeResponse;
 import ru.protei.portal.core.model.yt.Issue;
 import ru.protei.portal.core.model.yt.YtAttachment;
 import ru.protei.portal.core.model.yt.api.IssueApi;
-import ru.protei.portal.core.model.yt.api.issue.IssueCustomField;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -93,7 +92,6 @@ public class YoutrackServiceImpl implements YoutrackService {
         if (Objects.equals( crmNumber, caseNumber )) {
             return ok();
         }
-
         return apiDao.setCrmNumber( issue, caseNumber );
     }
 
@@ -138,11 +136,11 @@ public class YoutrackServiceImpl implements YoutrackService {
     }
 
     @Autowired
-    YoutrackRestDAO restDao;
+    YoutrackRestClient restDao;
 
 
     @Autowired
-    YoutrackApiDAO apiDao;
+    YoutrackApiClient apiDao;
 
     private final static Logger log = LoggerFactory.getLogger( YoutrackServiceImpl.class );
 

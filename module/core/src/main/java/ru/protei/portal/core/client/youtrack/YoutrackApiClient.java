@@ -1,9 +1,9 @@
-package ru.protei.portal.core.dao;
+package ru.protei.portal.core.client.youtrack;
 
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.yt.api.IssueApi;
 
-public interface YoutrackApiDAO {
+public interface YoutrackApiClient {
 
     CoreResponse<IssueApi> getIssue( String issueId );
 

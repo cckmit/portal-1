@@ -13,11 +13,14 @@ exports.rule = entities.Issue.onChange({
     title: 'On_crm_number_change',
     guard: function (ctx) {
         var isCrmField = ctx.issue.fields.isChanged("Номер обращения в CRM");
-        var isPortalUser = true;
+        if (!isCrmField) return false;
+
+        var isChangedFromApi = true;
         if (ctx.currentUser) {
-            isPortalUser = ("portal" === ctx.currentUser.login);
+            isChangedFromApi = ("portal" === ctx.currentUser.login)
+                || ("efremov" === ctx.currentUser.login);
         }
-        return isCrmField && !isPortalUser;
+        return !isChangedFromApi;
     },
     action: function (ctx) {
 

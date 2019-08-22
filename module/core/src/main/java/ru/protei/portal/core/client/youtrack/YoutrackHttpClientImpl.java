@@ -1,4 +1,4 @@
-package ru.protei.portal.core.dao;
+package ru.protei.portal.core.client.youtrack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +16,6 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static org.springframework.http.HttpStatus.Series.CLIENT_ERROR;
 import static org.springframework.http.HttpStatus.Series.SERVER_ERROR;
@@ -116,7 +114,7 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
 
     private HttpHeaders authHeaders;
 
-    private final static Logger log = LoggerFactory.getLogger( YoutrackRestDaoImpl.class );
+    private final static Logger log = LoggerFactory.getLogger( YoutrackRestClientImpl.class );
 }
 
 class RestTemplateResponseErrorHandler implements ResponseErrorHandler {

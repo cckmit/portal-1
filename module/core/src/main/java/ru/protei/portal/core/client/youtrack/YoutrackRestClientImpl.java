@@ -1,4 +1,4 @@
-package ru.protei.portal.core.dao;
+package ru.protei.portal.core.client.youtrack;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_CREATED;
 /**
  * Created by admin on 15/11/2017.
  */
-public class YoutrackRestDaoImpl implements YoutrackRestDAO {
+public class YoutrackRestClientImpl implements YoutrackRestClient {
 
     @PostConstruct
     public void initAuthHeadersAndUrl() {
@@ -119,6 +119,6 @@ public class YoutrackRestDaoImpl implements YoutrackRestDAO {
     private String BASE_URL;
 
     private final static int MAX_ISSUES_IN_RESPONSE = Integer.MAX_VALUE;
-    private final static Logger log = LoggerFactory.getLogger( YoutrackRestDaoImpl.class );
+    private final static Logger log = LoggerFactory.getLogger( YoutrackRestClientImpl.class );
 }
 
