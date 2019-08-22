@@ -77,9 +77,9 @@ public class PortalApiController {
         log.debug("API | getCaseList(): query={}", query);
 
         try {
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
-            if (userSessionDescriptorAPIResult.isFail()) {
+            if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
@@ -89,7 +89,7 @@ public class PortalApiController {
 
             return APIResult.okWithData(searchList.getData().getResults());
 
-        } catch (IllegalArgumentException | IOException ex) {
+        } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
@@ -110,9 +110,9 @@ public class PortalApiController {
         }
 
         try {
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
-            if (userSessionDescriptorAPIResult.isFail()) {
+            if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
@@ -130,7 +130,7 @@ public class PortalApiController {
                 return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
             }
 
-        } catch (IllegalArgumentException | IOException ex) {
+        } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
@@ -151,9 +151,9 @@ public class PortalApiController {
         }
 
         try {
-            APIResult<UserSessionDescriptor> userSessionDescriptorAPIResult = tryToAuthenticate(request, response);
+            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
-            if (userSessionDescriptorAPIResult.isFail()) {
+            if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
@@ -171,7 +171,7 @@ public class PortalApiController {
                 return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
             }
 
-        } catch (IllegalArgumentException | IOException ex) {
+        } catch (IllegalArgumentException  ex) {
             log.error(ex.getMessage());
             return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
@@ -180,76 +180,47 @@ public class PortalApiController {
         }
     }
 
-    private CoreResponse<AuthToken> authenticate( HttpServletRequest request, HttpServletResponse response ) {
-        Credentials cr = null;
-        try {
-            cr = Credentials.parse( request.getHeader( "Authorization" ) );
-            if ((cr == null) || (!cr.isValid())) {
-                String logMsg = "Basic authentication required";
-                response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
-                response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
-                log.error( "API | {}", logMsg );
-                return errorSt( En_ResultStatus.INVALID_LOGIN_OR_PWD );
-            }
-
-        } catch (IllegalArgumentException | IOException ex) {
-            log.error( "Can`t authenticate {}", ex.getMessage() );
-            return errorSt( En_ResultStatus.AUTH_FAILURE );
-        } catch (Exception ex) {
-            log.error( "Can`t authenticate {} unexpected exception: ", ex );
-            return errorSt( En_ResultStatus.AUTH_FAILURE );
-        }
-
-        String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
-
-        log.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
-        return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent ).map( descripter ->
-                descripter.makeAuthToken() );
-    }
 
     @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public String addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                          @PathVariable("caseNumber") Long caseNumber,
-                                          @PathVariable("youtrackId") String youtrackId ) {
+    public CoreResponse<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+                                                      @PathVariable("caseNumber") Long caseNumber,
+                                                      @PathVariable("youtrackId") String youtrackId ) {
         log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return authenticate( request, response ).flatMap( token ->
+        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( id -> log.info( "addYoutrackIdIntoIssue(): OK " ) )
-                .ifError( status -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
-                        youtrackId, caseNumber, status ) )
-                .getStatus().name();
+                .ifError( result -> log.warn( "addYoutrackIdIntoIssue(): Can`t add youtrack id {} into case with number {}. status: {}",
+                        youtrackId, caseNumber, result ) );
+
     }
 
     @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public String removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                             @PathVariable("caseNumber") Long caseNumber,
-                                             @PathVariable("youtrackId") String youtrackId ) {
+    public CoreResponse<Boolean> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+                                                            @PathVariable("caseNumber") Long caseNumber,
+                                                            @PathVariable("youtrackId") String youtrackId ) {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
-        return authenticate( request, response ).flatMap( token ->
+        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, caseNumber, youtrackId ) )
                 .ifOk( isSucces -> log.info( "removeYoutrackIdIntoIssue(): OK" ) )
-                .ifError( status -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
-                        youtrackId, caseNumber, status ) )
-                .getStatus().name();
+                .ifError( result -> log.warn( "removeYoutrackIdIntoIssue(): Can`t remove youtrack id {} from case with number {}. status: {}",
+                        youtrackId, caseNumber, result ) );
     }
 
     @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
-    public String changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
-                                           @PathVariable("oldCaseNumber") Long oldCaseNumber,
-                                           @PathVariable("newCaseNumber") Long newCaseNumber,
-                                           @PathVariable("youtrackId") String youtrackId ) {
+    public CoreResponse<Long> changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
+                                                       @PathVariable("oldCaseNumber") Long oldCaseNumber,
+                                                       @PathVariable("newCaseNumber") Long newCaseNumber,
+                                                       @PathVariable("youtrackId") String youtrackId ) {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
-        return authenticate( request, response ).flatMap( token ->
+        return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
                 caseLinkService.removeYoutrackLink( token, oldCaseNumber, youtrackId ).flatMap( aBoolean -> ok( token ) ) ).flatMap( token ->
                 caseLinkService.addYoutrackLink( token, newCaseNumber, youtrackId ) )
                 .ifOk( linkId -> log.info( "changeYoutrackIdInIssue(): OK" ) )
-                .ifError( status -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
-                        youtrackId, oldCaseNumber, status ) )
-                .getStatus().name();
+                .ifError( result -> log.warn( "changeYoutrackIdInIssue(): Can`t change youtrack id {} in case with number {}. status: {}",
+                        youtrackId, oldCaseNumber, result ) );
     }
 
 
@@ -280,29 +251,35 @@ public class PortalApiController {
         return stateIds;
     }
 
-    private APIResult<UserSessionDescriptor> tryToAuthenticate(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Credentials cr = Credentials.parse(request.getHeader("Authorization"));
+    private CoreResponse<UserSessionDescriptor> authenticate( HttpServletRequest request, HttpServletResponse response ) {
+        Credentials cr = null;
+        try {
+            cr = Credentials.parse( request.getHeader( "Authorization" ) );
+            if ((cr == null) || (!cr.isValid())) {
+                String logMsg = "Basic authentication required";
+                response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
+                response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
+                log.error( "API | {}", logMsg );
+                return errorSt( En_ResultStatus.INVALID_LOGIN_OR_PWD );
+            }
 
-        if ((cr == null) || (!cr.isValid())) {
-            String logMsg = "Basic authentication required";
-            response.setHeader("WWW-Authenticate", "Basic realm=\"" + logMsg + "\"");
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-            log.error("API | {}", logMsg);
-            return APIResult.error(En_ResultStatus.INVALID_LOGIN_OR_PWD, logMsg);
+        } catch (IllegalArgumentException | IOException ex) {
+            log.error( "Can`t authenticate {}", ex.getMessage() );
+            return errorSt( En_ResultStatus.AUTH_FAILURE );
+        } catch (Exception ex) {
+            log.error( "Can`t authenticate {} unexpected exception: ", ex );
+            return errorSt( En_ResultStatus.AUTH_FAILURE );
         }
 
         String ip = request.getRemoteAddr();
-        String userAgent = request.getHeader(SecurityDefs.USER_AGENT_HEADER);
-        log.debug("API | Authentication: ip={}, user={}", ip, cr.login);
+        String userAgent = request.getHeader( SecurityDefs.USER_AGENT_HEADER );
 
-        CoreResponse<UserSessionDescriptor> authResult = authService.login(sidGen.generateId(), cr.login, cr.password, ip, userAgent);
-
-        if (authResult.isError()) {
-            log.error("API | Authentification error {}", authResult.getStatus().name());
-            return APIResult.error(authResult.getStatus(), "Authentification error");
-        }
-
-        return APIResult.okWithData(authResult.getData());
+        log.debug( "API | Authentication: ip={}, user={}", ip, cr.login );
+        return authService.login( sidGen.generateId(), cr.login, cr.password, ip, userAgent )
+                .ifError( result -> {
+                    result.setMessage( "Authentification error" );
+                    log.error( "API | error {}", result );
+                } );
     }
 
     private Date parseDate(String date) {
