@@ -1733,4 +1733,6 @@ public interface Lang extends Messages, ContactItemLang {
     String dropFilesHere();
 
     String productChangeStateConfirmMessage();
+
+    String complexName();
 }

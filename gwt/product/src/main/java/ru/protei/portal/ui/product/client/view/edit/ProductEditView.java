@@ -18,8 +18,9 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
+import ru.protei.portal.ui.common.client.widget.selector.product.complex.ComplexMultiSelector;
 import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductMultiSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -70,7 +71,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setCurrentProduct(ProductShortView product) {
-        devUnits.exclude(product);
+        complexes.exclude(product);
+        products.exclude(product);
         components.exclude(product);
     }
 
@@ -111,13 +113,31 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     }
 
     @Override
-    public void setIsProduct(boolean isProduct) {
-        if (isProduct) {
+    public void setMutableState(En_DevUnitType type) {
+        complexContainerLabel.setText(lang.belongsTo());
+        componentContainerLabel.setText(lang.components());
+
+        if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
+            nameLabel.setInnerText(lang.complexName());
+            productContainer.removeStyleName("hide");
+            complexContainer.addStyleName("hide");
+            componentContainer.addStyleName("hide");
+
+            productContainerLabel.setText(lang.products());
+
+        } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
-            devUnitContainer.addStyleName("hide");
-        } else {
+            productContainer.addStyleName("hide");
+            complexContainer.removeStyleName("hide");
+            componentContainer.removeStyleName("hide");
+
+        } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
-            devUnitContainer.removeStyleName("hide");
+            complexContainer.addStyleName("hide");
+            productContainer.removeStyleName("hide");
+            componentContainer.removeStyleName("hide");
+
+            productContainerLabel.setText(lang.belongsTo());
         }
     }
 
@@ -125,8 +145,13 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public HasValue<String> info() { return info; }
 
     @Override
-    public HasValue<Set<ProductShortView>> parents() {
-        return devUnits;
+    public HasValue<Set<ProductShortView>> complexes() {
+        return complexes;
+    }
+
+    @Override
+    public HasValue<Set<ProductShortView>> products() {
+        return products;
     }
 
     @Override
@@ -190,7 +215,10 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @UiHandler( "type" )
     public void onTypeChanged(ValueChangeEvent<En_DevUnitType> event) {
-        setIsProduct(En_DevUnitType.PRODUCT.equals(event.getValue()));
+        if (activity != null) {
+            activity.onTypeChanged(event.getValue());
+        }
+        setMutableState(event.getValue());
     }
 
     private void checkName ()
@@ -222,10 +250,23 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField(provided = true)
     ProductTypeBtnGroup type;
     @UiField
-    HTMLPanel devUnitContainer;
+    HTMLPanel complexContainer;
+    @UiField
+    HTMLPanel productContainer;
+    @UiField
+    HTMLPanel componentContainer;
+    @UiField
+    Label complexContainerLabel;
+    @UiField
+    Label productContainerLabel;
+    @UiField
+    Label componentContainerLabel;
     @Inject
     @UiField(provided = true)
-    DevUnitMultiSelector devUnits;
+    ComplexMultiSelector complexes;
+    @Inject
+    @UiField(provided = true)
+    ProductMultiSelector products;
     @Inject
     @UiField(provided = true)
     ComponentMultiSelector components;

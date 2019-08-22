@@ -130,6 +130,19 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         localStorageService.set( PRODUCT + "_" + key, String.valueOf( isDisplay ) );
     }
 
+    @Override
+    public void onTypeChanged(En_DevUnitType type) {
+        if (type.getId() != product.getTypeId()) {
+            view.complexes().setValue(null);
+            view.products().setValue(null);
+            view.components().setValue(null);
+
+            return;
+        }
+
+        fillView(product);
+    }
+
     private void goBack() {
         fireEvent(new Back());
     }
@@ -154,7 +167,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     private void resetView () {
         view.name().setValue("");
         view.type().setValue(En_DevUnitType.PRODUCT, true);
-        view.parents().setValue(null);
+        view.complexes().setValue(null);
+        view.products().setValue(null);
         view.components().setValue(null);
         view.info().setValue("");
         view.productSubscriptions().setValue(Collections.emptyList());
@@ -174,17 +188,40 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                         .collect(Collectors.toList())
         );
 
-        view.setIsProduct(devUnit.isProduct());
-        view.parents().setValue(devUnit.isComponent() && devUnit.getParents() != null ? devUnit.getParents().stream()
-                .map(DevUnit::toProductShortView)
-                .collect(Collectors.toSet())
-                : null
-        );
-        view.components().setValue(devUnit.getChildren() != null ? devUnit.getChildren().stream()
-                .map(DevUnit::toProductShortView)
-                .collect(Collectors.toSet())
-                : null
-        );
+        view.setMutableState(devUnit.getType());
+
+        if (devUnit.isComplex()) {
+            view.products().setValue(devUnit.getChildren() != null ? devUnit.getChildren().stream()
+                    .map(DevUnit::toProductShortView)
+                    .collect(Collectors.toSet())
+                    : null
+            );
+        }
+
+        if (devUnit.isProduct()) {
+            view.complexes().setValue(devUnit.getParents() != null ? devUnit.getParents().stream()
+                    .map(DevUnit::toProductShortView)
+                    .collect(Collectors.toSet())
+                    : null
+            );
+        }
+
+        if (devUnit.isComponent()) {
+            view.products().setValue(devUnit.getParents() != null ? devUnit.getParents().stream()
+                    .map(DevUnit::toProductShortView)
+                    .collect(Collectors.toSet())
+                    : null
+            );
+        }
+
+        if (devUnit.isProduct() || devUnit.isComponent()) {
+            view.components().setValue(devUnit.getChildren() != null ? devUnit.getChildren().stream()
+                    .map(DevUnit::toProductShortView)
+                    .collect(Collectors.toSet())
+                    : null
+            );
+        }
+
 
         view.wikiLink().setValue(devUnit.getWikiLink());
 
@@ -209,22 +246,47 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
                 .map( Subscription::toProductSubscription )
                 .collect(Collectors.toList())
         );
-        if (product.isComponent()) {
-            Set<ProductShortView> productShortViews = view.parents().getValue();
+
+        if (product.isComplex()) {
+            Set<ProductShortView> productShortViews = view.products().getValue();
             if (productShortViews != null) {
-                product.setParents(productShortViews.stream()
+                product.setChildren(productShortViews.stream()
                         .map(DevUnit::fromProductShortView)
                         .collect(Collectors.toList())
                 );
             }
         }
-        Set<ProductShortView> productShortViews = view.components().getValue();
-        if (productShortViews != null) {
-            product.setChildren(productShortViews.stream()
-                    .map(DevUnit::fromProductShortView)
-                    .collect(Collectors.toList())
-            );
+
+        if (product.isProduct()) {
+            Set<ProductShortView> productShortViewsParents = view.complexes().getValue();
+            if (productShortViewsParents != null) {
+                product.setParents(productShortViewsParents.stream()
+                        .map(DevUnit::fromProductShortView)
+                        .collect(Collectors.toList())
+                );
+            }
         }
+
+        if (product.isComponent()) {
+            Set<ProductShortView> productShortViewsParents = view.products().getValue();
+            if (productShortViewsParents != null) {
+                product.setParents(productShortViewsParents.stream()
+                        .map(DevUnit::fromProductShortView)
+                        .collect(Collectors.toList())
+                );
+            }
+        }
+
+        if (product.isProduct() || product.isComponent()) {
+            Set<ProductShortView> productShortViewsChildren = view.components().getValue();
+            if (productShortViewsChildren != null) {
+                product.setChildren(productShortViewsChildren.stream()
+                        .map(DevUnit::fromProductShortView)
+                        .collect(Collectors.toList())
+                );
+            }
+        }
+
 
         product.setWikiLink(view.wikiLink().getValue());
         product.setCdrDescription(view.cdrDescription().getValue());
