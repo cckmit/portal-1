@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_CaseState;
@@ -21,13 +21,13 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Override
-    public CoreResponse<SearchResult<Platform>> getPlatforms(AuthToken token, PlatformQuery query) {
+    public Result<SearchResult<Platform>> getPlatforms( AuthToken token, PlatformQuery query) {
 
         SearchResult<Platform> sr = platformDAO.getSearchResultByQuery(query);
 
@@ -52,7 +52,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<SearchResult<Server>> getServers(AuthToken token, ServerQuery query) {
+    public Result<SearchResult<Server>> getServers( AuthToken token, ServerQuery query) {
 
         SearchResult<Server> sr = serverDAO.getSearchResultByQuery(query);
 
@@ -73,13 +73,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<SearchResult<Application>> getApplications(AuthToken token, ApplicationQuery query) {
+    public Result<SearchResult<Application>> getApplications( AuthToken token, ApplicationQuery query) {
         SearchResult<Application> sr = applicationDAO.getSearchResultByQuery(query);
         return ok(sr);
     }
 
     @Override
-    public CoreResponse<SearchResult<Server>> getServersWithAppsNames(AuthToken token, ServerQuery query) {
+    public Result<SearchResult<Server>> getServersWithAppsNames( AuthToken token, ServerQuery query) {
 
         SearchResult<ServerApplication> serverApplications = serverApplicationDAO.getSearchResultByQuery(query);
         if (serverApplications == null) {
@@ -103,7 +103,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
-    public CoreResponse<List<EntityOption>> listPlatformsOptionList(AuthToken token, PlatformQuery query) {
+    public Result<List<EntityOption>> listPlatformsOptionList( AuthToken token, PlatformQuery query) {
 
         List<Platform> result = platformDAO.listByQuery(query);
 
@@ -119,7 +119,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<List<EntityOption>> listServersOptionList(AuthToken token, ServerQuery query) {
+    public Result<List<EntityOption>> listServersOptionList( AuthToken token, ServerQuery query) {
 
         List<Server> result = serverDAO.listByQuery(query);
 
@@ -136,7 +136,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
-    public CoreResponse<Platform> getPlatform(AuthToken token, long id) {
+    public Result<Platform> getPlatform( AuthToken token, long id) {
 
         Platform result = platformDAO.get(id);
 
@@ -150,7 +150,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Server> getServer(AuthToken token, long id) {
+    public Result<Server> getServer( AuthToken token, long id) {
 
         Server result = serverDAO.get(id);
 
@@ -162,7 +162,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Application> getApplication(AuthToken token, long id) {
+    public Result<Application> getApplication( AuthToken token, long id) {
 
         Application result = applicationDAO.get(id);
 
@@ -176,7 +176,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
     @Override
     @Transactional
-    public CoreResponse<Platform> createPlatform(AuthToken token, Platform platform) {
+    public Result<Platform> createPlatform( AuthToken token, Platform platform) {
 
         Long id = platformDAO.persist(platform);
 
@@ -214,7 +214,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Server> createServer(AuthToken token, Server server) {
+    public Result<Server> createServer( AuthToken token, Server server) {
 
         Long id = serverDAO.persist(server);
 
@@ -232,9 +232,9 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Server> createServerAndCloneApps(AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
+    public Result<Server> createServerAndCloneApps( AuthToken token, Server server, Long serverIdOfAppsToBeCloned) {
 
-        CoreResponse<Server> response = createServer(token, server);
+        Result<Server> response = createServer(token, server);
 
         if (response.isOk() && response.getData() != null) {
             cloneApplicationsForServer(response.getData().getId(), serverIdOfAppsToBeCloned);
@@ -244,7 +244,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Application> createApplication(AuthToken token, Application application) {
+    public Result<Application> createApplication( AuthToken token, Application application) {
 
         Long id = applicationDAO.persist(application);
 
@@ -263,7 +263,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
-    public CoreResponse<Platform> updatePlatform(AuthToken token, Platform platform) {
+    public Result<Platform> updatePlatform( AuthToken token, Platform platform) {
 
         boolean status = platformDAO.merge(platform);
 
@@ -281,7 +281,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Server> updateServer(AuthToken token, Server server) {
+    public Result<Server> updateServer( AuthToken token, Server server) {
 
         boolean status = serverDAO.merge(server);
 
@@ -299,7 +299,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Application> updateApplication(AuthToken token, Application application) {
+    public Result<Application> updateApplication( AuthToken token, Application application) {
 
         boolean status = applicationDAO.merge(application);
 
@@ -318,7 +318,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
 
     @Override
-    public CoreResponse<Boolean> removePlatform(AuthToken token, long id) {
+    public Result<Boolean> removePlatform( AuthToken token, long id) {
 
         boolean result = platformDAO.removeByKey(id);
 
@@ -326,7 +326,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Boolean> removeServer(AuthToken token, long id) {
+    public Result<Boolean> removeServer( AuthToken token, long id) {
 
         boolean result = serverDAO.removeByKey(id);
 
@@ -334,7 +334,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
     }
 
     @Override
-    public CoreResponse<Boolean> removeApplication(AuthToken token, long id) {
+    public Result<Boolean> removeApplication( AuthToken token, long id) {
 
         boolean result = applicationDAO.removeByKey(id);
 

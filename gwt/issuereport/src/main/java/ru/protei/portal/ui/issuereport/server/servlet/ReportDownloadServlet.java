@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.Report;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.struct.ReportContent;
@@ -61,14 +61,14 @@ public class ReportDownloadServlet extends HttpServlet {
             throw new ServletException("Not authorized");
         }
 
-        CoreResponse<ReportContent> response = reportService.downloadReport(descriptor.makeAuthToken(), reportId);
+        Result<ReportContent> response = reportService.downloadReport(descriptor.makeAuthToken(), reportId);
 
         if (response.isError()) {
             throw new ServletException(response.getStatus().name());
         }
 
         String name = null;
-        CoreResponse<Report> responseReport = reportService.getReport(descriptor.makeAuthToken(), reportId);
+        Result<Report> responseReport = reportService.getReport(descriptor.makeAuthToken(), reportId);
         if (responseReport.isOk()) {
             name = responseReport.getData().getName() + ".xlsx";
         }

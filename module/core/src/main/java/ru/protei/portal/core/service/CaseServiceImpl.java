@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CaseObjectCommentEvent;
 import ru.protei.portal.core.event.CaseObjectEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 import static org.apache.commons.collections4.CollectionUtils.emptyIfNull;
 import static ru.protei.portal.core.model.dict.En_CaseLink.YT;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Реализация сервиса управления обращениями
@@ -40,7 +40,7 @@ public class CaseServiceImpl implements CaseService {
 
 
     @Override
-    public CoreResponse<SearchResult<CaseShortView>> getCaseObjects(AuthToken token, CaseQuery query) {
+    public Result<SearchResult<CaseShortView>> getCaseObjects( AuthToken token, CaseQuery query) {
 
         applyFilterByScope(token, query);
 
@@ -50,7 +50,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseObject> getCaseObject( AuthToken token, long number ) {
+    public Result<CaseObject> getCaseObject( AuthToken token, long number ) {
 
         CaseObject caseObject = caseObjectDAO.getCase( En_CaseType.CRM_SUPPORT, number );
 
@@ -65,7 +65,7 @@ public class CaseServiceImpl implements CaseService {
         jdbcManyRelationsHelper.fill( caseObject, "attachments");
         jdbcManyRelationsHelper.fill( caseObject, "notifiers");
 
-        CoreResponse<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
+        Result<List<CaseTag>> caseTags = caseTagService.getTagsByCaseId(token, caseObject.getId());
         if (caseTags.isOk()) {
             caseObject.setTags(new HashSet<>(caseTags.getData()));
         }
@@ -89,7 +89,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public Result< CaseObject > saveCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         if (caseObject == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -198,7 +198,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
+    public Result< CaseObject > updateCaseObject( AuthToken token, CaseObject caseObject, Person initiator ) {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
@@ -222,7 +222,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment(AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {
+    public Result<CaseObjectWithCaseComment> updateCaseObjectAndSaveComment( AuthToken token, CaseObject caseObject, CaseComment caseComment, Person initiator) {
 
         CaseObject oldState = caseObjectDAO.get(caseObject.getId());
 
@@ -247,7 +247,7 @@ public class CaseServiceImpl implements CaseService {
                     .build());
         }
 
-        return CoreResponse.ok(
+        return Result.ok(
                 new CaseObjectWithCaseComment(objectResultData.getCaseObject(), commentResultData.getCaseComment())
         );
     }
@@ -266,7 +266,7 @@ public class CaseServiceImpl implements CaseService {
                 mergeYouTrackLinks( caseObject.getCaseNumber(), caseObject.getLinks(), oldLinks )
         );
 
-        CoreResponse mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
+        Result mergeLinksResponse = caseLinkService.mergeLinks(token, caseObject.getId(), caseObject.getCaseNumber(), caseObject.getLinks());
         if (mergeLinksResponse.isError()) {
             log.info("Failed to merge links for the issue {}", caseObject.getId());
             throw new ResultStatusException(mergeLinksResponse.getStatus());
@@ -365,7 +365,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseComment == null) {
             return new CaseCommentSaveOrUpdateResult();
         }
-        CoreResponse<CaseCommentSaveOrUpdateResult> response;
+        Result<CaseCommentSaveOrUpdateResult> response;
         if (caseComment.getId() == null) {
             response = caseCommentService.addCaseCommentWithoutEvent(token, En_CaseType.CRM_SUPPORT, caseComment);
         } else {
@@ -379,7 +379,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<List<En_CaseState>> stateList( En_CaseType caseType ) {
+    public Result<List<En_CaseState>> stateList( En_CaseType caseType ) {
         List<En_CaseState> states = caseStateMatrixDAO.getStatesByCaseType(caseType);
 
         if (states == null)
@@ -389,7 +389,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
+    public Result<Boolean> updateCaseModified( AuthToken token, Long caseId, Date modified) {
         if(caseId == null || !caseObjectDAO.checkExistsByKey(caseId))
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -402,7 +402,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId, boolean flag){
+    public Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag){
         if(caseId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -416,12 +416,12 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateExistsAttachmentsFlag(Long caseId){
+    public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
         return updateExistsAttachmentsFlag(caseId, isExistsAttachments(caseId));
     }
 
     @Override
-    public CoreResponse<Long> getEmailLastId(Long caseId) {
+    public Result<Long> getEmailLastId( Long caseId) {
         if (caseId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -435,7 +435,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateEmailLastId(Long caseId, Long emailLastId) {
+    public Result<Boolean> updateEmailLastId( Long caseId, Long emailLastId) {
         if (caseId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -446,7 +446,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<CaseInfo> getCaseShortInfo(AuthToken token, Long caseNumber) {
+    public Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber) {
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_VIEW, caseObjectDAO.getCase(En_CaseType.CRM_SUPPORT, caseNumber) ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
         }
@@ -470,7 +470,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> bindAttachmentToCaseNumber(AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
+    public Result<Long> bindAttachmentToCaseNumber( AuthToken token, En_CaseType caseType, Attachment attachment, long caseNumber) {
         CaseObject caseObject = caseObjectDAO.getCase(caseType, caseNumber);
         if ( !hasAccessForCaseObject( token, En_Privilege.ISSUE_EDIT, caseObject ) ) {
             return error(En_ResultStatus.PERMISSION_DENIED );
@@ -480,7 +480,7 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> attachToCaseId(Attachment attachment, long caseId) {
+    public Result<Long> attachToCaseId( Attachment attachment, long caseId) {
         CaseAttachment caseAttachment = new CaseAttachment(caseId, attachment.getId());
         Long caseAttachId = caseAttachmentDAO.persist(caseAttachment);
 
@@ -639,7 +639,7 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public CoreResponse<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
+    public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
        return caseLinkService.getLinks( token, caseId)
                 .map( this::fillYouTrackInfo );
     }
@@ -682,7 +682,7 @@ public class CaseServiceImpl implements CaseService {
         if (caseStateFrom == caseStateTo) {
             return true;
         }
-        CoreResponse<CaseStateWorkflow> response = caseStateWorkflowService.getWorkflow(workflow);
+        Result<CaseStateWorkflow> response = caseStateWorkflowService.getWorkflow(workflow);
         if (response.isError()) {
             log.error("Failed to get case state workflow, status={}", response.getStatus());
             return false;

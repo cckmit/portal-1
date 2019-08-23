@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseObjectTagDAO;
 import ru.protei.portal.core.model.dao.CaseTagDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -21,13 +21,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     @Transactional
-    public CoreResponse saveTag(AuthToken authToken, CaseTag caseTag) {
+    public Result saveTag( AuthToken authToken, CaseTag caseTag) {
         if (!isCaseTagValid(caseTag)) {
             return error(En_ResultStatus.VALIDATION_ERROR);
         }
@@ -41,23 +41,23 @@ public class CaseTagServiceImpl implements CaseTagService {
             return error(En_ResultStatus.ALREADY_EXIST);
         }
         return !result ?
-                CoreResponse.error( En_ResultStatus.NOT_CREATED) :
+                Result.error( En_ResultStatus.NOT_CREATED) :
                 ok();
     }
 
     @Override
     @Transactional
-    public CoreResponse removeTag(AuthToken authToken, CaseTag caseTag) {
+    public Result removeTag( AuthToken authToken, CaseTag caseTag) {
         if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
         return !caseTagDAO.remove(caseTag) ?
-                CoreResponse.error( En_ResultStatus.NOT_REMOVED) :
+                Result.error( En_ResultStatus.NOT_REMOVED) :
                 ok();
     }
 
     @Override
-    public CoreResponse<List<CaseTag>> getTagsByCaseId(AuthToken token, long caseId) {
+    public Result<List<CaseTag>> getTagsByCaseId( AuthToken token, long caseId) {
         CaseTagQuery query = new CaseTagQuery();
 
         query.setCaseId(caseId);
@@ -66,7 +66,7 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
-    public CoreResponse<List<CaseTag>> getTagsByCaseType(AuthToken token, En_CaseType caseType) {
+    public Result<List<CaseTag>> getTagsByCaseType( AuthToken token, En_CaseType caseType) {
         CaseTagQuery query = new CaseTagQuery();
 
         query.setCaseTypes(Collections.singletonList(caseType));
@@ -75,7 +75,7 @@ public class CaseTagServiceImpl implements CaseTagService {
     }
 
     @Override
-    public CoreResponse<List<CaseTag>> getTagsByCompanyId(AuthToken token, long companyId) {
+    public Result<List<CaseTag>> getTagsByCompanyId( AuthToken token, long companyId) {
         CaseTagQuery query = new CaseTagQuery();
 
         query.setCompanyId(companyId);
@@ -83,7 +83,7 @@ public class CaseTagServiceImpl implements CaseTagService {
         return getTagsByPermission(token, query);
     }
 
-    private CoreResponse<List<CaseTag>> getTagsByPermission(AuthToken token, CaseTagQuery query){
+    private Result<List<CaseTag>> getTagsByPermission( AuthToken token, CaseTagQuery query){
         UserSessionDescriptor descriptor = authService.findSession( token );
         Set< UserRole > roles = descriptor.getLogin().getRoles();
         if ( !policyService.hasGrantAccessFor( roles, En_Privilege.ISSUE_VIEW ) ) {

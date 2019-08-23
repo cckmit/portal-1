@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.Contract;
@@ -36,7 +36,7 @@ public class ContractControllerImpl implements ContractController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse<Contract> response = contractService.getContract(descriptor.makeAuthToken(), id);
+        Result<Contract> response = contractService.getContract(descriptor.makeAuthToken(), id);
         log.debug(" get contract, id: {} -> {} ", id, response.isError() ? "error" : response.getData());
 
         if (response.isError()) {
@@ -57,7 +57,7 @@ public class ContractControllerImpl implements ContractController {
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
         contract.setCreatorId(descriptor.getPerson().getId());
 
-        CoreResponse<Long> response;
+        Result<Long> response;
         if ( contract.getId() == null ) {
             response = contractService.createContract(descriptor.makeAuthToken(), contract);
         } else {

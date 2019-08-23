@@ -1,7 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseStateDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -13,8 +13,8 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static ru.protei.portal.core.model.ent.En_CaseStateUsageInCompanies.SELECTED;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 public class CaseStateServiceImpl implements CaseStateService {
 
     @Inject
@@ -24,7 +24,7 @@ public class CaseStateServiceImpl implements CaseStateService {
     private JdbcManyRelationsHelper jdbcManyRelationsHelper;
 
     @Override
-    public CoreResponse<List<CaseState>> caseStateList(AuthToken authToken) {
+    public Result<List<CaseState>> caseStateList( AuthToken authToken) {
         List<CaseState> list = caseStateDAO.getAllByCaseType( En_CaseType.CRM_SUPPORT );
 
         if ( list == null )
@@ -34,12 +34,12 @@ public class CaseStateServiceImpl implements CaseStateService {
     }
 
     @Override
-    public CoreResponse<List<CaseState>> getCaseStatesOmitPrivileges(AuthToken authToken) {
+    public Result<List<CaseState>> getCaseStatesOmitPrivileges( AuthToken authToken) {
         return caseStateList(authToken);
     }
 
     @Override
-    public CoreResponse<CaseState> getCaseState(AuthToken authToken, long id) {
+    public Result<CaseState> getCaseState( AuthToken authToken, long id) {
         CaseState state = caseStateDAO.get(id);
         if (state == null)
             return error(En_ResultStatus.GET_DATA_ERROR);
@@ -53,7 +53,7 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     @Transactional
-    public CoreResponse saveCaseState(AuthToken authToken, CaseState state) {
+    public Result saveCaseState( AuthToken authToken, CaseState state) {
         if (state == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -70,7 +70,7 @@ public class CaseStateServiceImpl implements CaseStateService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseState> updateCaseState(AuthToken authToken, CaseState state) {
+    public Result<CaseState> updateCaseState( AuthToken authToken, CaseState state) {
         if (state == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
@@ -84,7 +84,7 @@ public class CaseStateServiceImpl implements CaseStateService {
     }
 
     @Override
-    public CoreResponse<List<CaseState>> getCaseStatesForCompanyOmitPrivileges(Long companyId) {
+    public Result<List<CaseState>> getCaseStatesForCompanyOmitPrivileges( Long companyId) {
         if (companyId == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 

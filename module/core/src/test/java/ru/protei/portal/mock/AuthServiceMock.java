@@ -3,7 +3,7 @@ package ru.protei.portal.mock;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import static ru.protei.portal.api.struct.CoreResponse.ok;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 public class AuthServiceMock implements AuthService {
 
     @Autowired
@@ -60,7 +60,7 @@ public class AuthServiceMock implements AuthService {
     }
 
     @Override
-    public CoreResponse<UserSessionDescriptor> login(String appSessionID, String login, String pwd, String ip, String userAgent) {
+    public Result<UserSessionDescriptor> login( String appSessionID, String login, String pwd, String ip, String userAgent) {
         UserLogin ulogin = userLoginDAO.findByLogin(login);
         if (ulogin == null) {
             return ok( descriptor);

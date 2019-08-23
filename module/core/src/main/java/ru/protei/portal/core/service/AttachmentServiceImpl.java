@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.api.struct.FileStorage;
 import ru.protei.portal.core.event.CaseAttachmentEvent;
 import ru.protei.portal.core.model.dao.AttachmentDAO;
@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Created by bondarenko on 23.01.17.
@@ -60,7 +60,7 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeAttachmentEverywhere(AuthToken token, En_CaseType caseType, Long id) {
+    public Result<Boolean> removeAttachmentEverywhere( AuthToken token, En_CaseType caseType, Long id) {
         CaseAttachment ca = caseAttachmentDAO.getByAttachmentId(id);
         if (ca != null) {
             boolean isDeleted = caseAttachmentDAO.removeByKey(ca.getId());
@@ -77,7 +77,7 @@ public class AttachmentServiceImpl implements AttachmentService {
             Attachment attachment = attachmentDAO.get(id);
             UserSessionDescriptor ud = authService.findSession( token );
 
-            CoreResponse<Boolean> result = removeAttachment( token, caseType, id);
+            Result<Boolean> result = removeAttachment( token, caseType, id);
 
             if(result.isOk() && issue != null && ud != null ) {
                 jdbcManyRelationsHelper.fill(issue, "attachments");
@@ -99,7 +99,7 @@ public class AttachmentServiceImpl implements AttachmentService {
      */
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeAttachment(AuthToken token, En_CaseType caseType, Long id) {
+    public Result<Boolean> removeAttachment( AuthToken token, En_CaseType caseType, Long id) {
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
         if(attachment == null)
             return error( En_ResultStatus.NOT_FOUND);
@@ -116,7 +116,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachmentsByCaseId(AuthToken token, En_CaseType caseType, Long caseId) {
+    public Result<List<Attachment>> getAttachmentsByCaseId( AuthToken token, En_CaseType caseType, Long caseId) {
         List<Attachment> list = attachmentDAO.getListByCondition(
                 "ID in (Select ATT_ID from case_attachment where CASE_ID = ?)", caseId
         );
@@ -128,7 +128,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, List<Long> ids) {
+    public Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, List<Long> ids) {
         List<Attachment> list = attachmentDAO.getListByKeys(ids);
 
         if(list == null)
@@ -138,7 +138,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments) {
+    public Result<List<Attachment>> getAttachments( AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments) {
         if(caseAttachments == null || caseAttachments.isEmpty())
             return ok( Collections.emptyList());
 
@@ -149,7 +149,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<Long> saveAttachment(Attachment attachment) {
+    public Result<Long> saveAttachment( Attachment attachment) {
         /* В redmine и jira дата устанавливается из источника */
         if (attachment.getCreated() == null) {
             attachment.setCreated(new Date());
@@ -168,7 +168,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public CoreResponse<String> getAttachmentNameByExtLink(String extLink) {
+    public Result<String> getAttachmentNameByExtLink( String extLink) {
         Attachment attachment = attachmentDAO.partialGetByCondition("ext_link = ?", Collections.singletonList(extLink), "file_name");
         if (attachment == null) {
             return error( En_ResultStatus.NOT_FOUND);

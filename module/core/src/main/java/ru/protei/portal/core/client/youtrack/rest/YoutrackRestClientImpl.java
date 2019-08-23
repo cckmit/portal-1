@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.util.UriComponentsBuilder;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.client.youtrack.http.YoutrackHttpClient;
 import ru.protei.portal.core.model.helper.StringUtils;
@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_CREATED;
 
 /**
@@ -36,18 +36,18 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
     }
 
     @Override
-    public CoreResponse<ChangeResponse> getIssueChanges( String issueId ) {
+    public Result<ChangeResponse> getIssueChanges( String issueId ) {
         return client.read( BASE_URL + "/issue/" + issueId + "/changes", ChangeResponse.class );
     }
 
     @Override
-    public CoreResponse<List<YtAttachment>> getIssueAttachments( String issueId ) {
+    public Result<List<YtAttachment>> getIssueAttachments( String issueId ) {
         return client.read( BASE_URL + "/issue/" + issueId + "/attachment", AttachmentResponse.class )
                 .map( ar -> ar.getAttachments() );
     }
 
     @Override
-    public CoreResponse<String> createIssue( String project, String summary, String description ) {
+    public Result<String> createIssue( String project, String summary, String description ) {
         String uri = UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issue" )
                 .queryParam( "project", project )
                 .queryParam( "summary", summary )
@@ -69,7 +69,7 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
     }
 
     @Override
-    public CoreResponse<List<Issue>> getIssuesByProjectAndUpdated( String projectId, Date updatedAfter ) {
+    public Result<List<Issue>> getIssuesByProjectAndUpdated( String projectId, Date updatedAfter ) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl( BASE_URL + "/issue/byproject/" + projectId )
                 .queryParam( "with", "id" )
                 .queryParam( "max", MAX_ISSUES_IN_RESPONSE );
@@ -86,19 +86,19 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
 
     @Deprecated
     @Override
-    public CoreResponse<String> removeCrmNumber( String issueId ) {
+    public Result<String> removeCrmNumber( String issueId ) {
         return client.update( makeYoutrackCommand( issueId, YtFields.crmNumber, YtFields.crmNumberEmptyValue ), String.class );
     }
 
     @Deprecated
     @Override
-    public CoreResponse<String> setCrmNumber( String issueId, Long caseNumber ) {
+    public Result<String> setCrmNumber( String issueId, Long caseNumber ) {
         return client.update( makeYoutrackCommand( issueId, YtFields.crmNumber, String.valueOf( caseNumber ) ), String.class );
     }
 
     @Deprecated
     @Override
-    public CoreResponse<Issue> getIssue( String issueId ) {
+    public Result<Issue> getIssue( String issueId ) {
         return client.read( BASE_URL + "/issue/" + issueId, Issue.class );
     }
 

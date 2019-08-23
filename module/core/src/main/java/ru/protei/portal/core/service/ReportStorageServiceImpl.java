@@ -4,7 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.struct.ReportContent;
@@ -12,8 +12,8 @@ import ru.protei.portal.core.model.struct.ReportContent;
 import java.io.*;
 import java.util.List;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class ReportStorageServiceImpl implements ReportStorageService {
 
@@ -23,7 +23,7 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     PortalConfig config;
 
     @Override
-    public CoreResponse saveContent(ReportContent reportContent) {
+    public Result saveContent( ReportContent reportContent) {
         String reportPath = makeReportPath(reportContent.getReportId(), config.data().reportConfig().getStoragePath());
         FileOutputStream outputStream = null;
         try {
@@ -47,7 +47,7 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     }
 
     @Override
-    public CoreResponse<ReportContent> getContent(Long reportId) {
+    public Result<ReportContent> getContent( Long reportId) {
         String reportPath = makeReportPath(reportId, config.data().reportConfig().getStoragePath());
         try {
             ReportContent content = new ReportContent(reportId);
@@ -60,7 +60,7 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     }
 
     @Override
-    public CoreResponse removeContent(Long reportId) {
+    public Result removeContent( Long reportId) {
         String reportPath = makeReportPath(reportId, config.data().reportConfig().getStoragePath());
         try {
             File file = new File(reportPath);
@@ -75,10 +75,10 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     }
 
     @Override
-    public CoreResponse removeContent(List<Long> reportIds) {
-        CoreResponse coreResponse = ok();
+    public Result removeContent( List<Long> reportIds) {
+        Result coreResponse = ok();
         for (Long reportId : reportIds) {
-            CoreResponse result = removeContent(reportId);
+            Result result = removeContent(reportId);
             if (result.isError()) {
                 coreResponse = result;
             }
@@ -87,7 +87,7 @@ public class ReportStorageServiceImpl implements ReportStorageService {
     }
 
     @Override
-    public CoreResponse<String> getFileName(String reportId) {
+    public Result<String> getFileName( String reportId) {
         return ok("report-" + reportId + ".xlsx");
     }
 

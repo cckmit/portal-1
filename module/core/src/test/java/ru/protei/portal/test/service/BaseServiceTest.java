@@ -1,7 +1,7 @@
 package ru.protei.portal.test.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
@@ -111,12 +111,12 @@ public class BaseServiceTest {
         return caseTag;
     }
 
-    public static void checkResult( CoreResponse result ) {
+    public static void checkResult( Result result ) {
         assertNotNull( "Expected result", result );
         assertTrue( "Expected ok result", result.isOk() );
     }
 
-    public static <T> T checkResultAndGetData( CoreResponse<T> result ) {
+    public static <T> T checkResultAndGetData( Result<T> result ) {
         checkResult( result );
         return result.getData();
     }

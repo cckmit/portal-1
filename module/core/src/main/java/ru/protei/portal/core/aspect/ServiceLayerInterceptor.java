@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
@@ -37,7 +37,7 @@ import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.*;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.Result.error;
 /**
  * Created by Mike on 06.11.2016.
  */
@@ -47,7 +47,7 @@ public class ServiceLayerInterceptor {
 
     private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);
 
-    @Pointcut("execution(public ru.protei.portal.api.struct.CoreResponse *(..))")
+    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
 //    @Pointcut("call(public ru.protei.portal.api.struct.CoreResponse *(..))")
     private void coreResponseMethod() {}
 
@@ -97,7 +97,7 @@ public class ServiceLayerInterceptor {
         if (!(signature instanceof MethodSignature))
             return null;
 
-        if (CoreResponse.class.isAssignableFrom(((MethodSignature)signature).getReturnType())) {
+        if (Result.class.isAssignableFrom(((MethodSignature)signature).getReturnType())) {
             return error(status);
         }
 
@@ -107,7 +107,7 @@ public class ServiceLayerInterceptor {
 
     private void tryDoAudit( ProceedingJoinPoint pjp, Object result ) {
 
-        if ( result instanceof CoreResponse && !((CoreResponse)result).getStatus().equals( En_ResultStatus.OK ) ){
+        if ( result instanceof Result && !((Result)result).getStatus().equals( En_ResultStatus.OK ) ){
             return;
         }
 

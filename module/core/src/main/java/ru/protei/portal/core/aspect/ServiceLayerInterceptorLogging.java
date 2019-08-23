@@ -6,7 +6,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.Order;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
 import java.io.Serializable;
@@ -25,7 +25,7 @@ public class ServiceLayerInterceptorLogging {
 
     HashMap<String, MethodProfile> profiling = new HashMap<>();
 
-    @Pointcut("execution(public ru.protei.portal.api.struct.CoreResponse *(..))")
+    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
     private void coreResponseMethod() {}
 
     @Pointcut("within(ru.protei.portal.core.service..*)")
@@ -41,10 +41,10 @@ public class ServiceLayerInterceptorLogging {
         log.debug("calling : {} args: {}", methodName, securedArguments);
         long currentTimeMillis = System.currentTimeMillis();
 
-        CoreResponse result = ERROR_RESPONSE;
+        Result result = ERROR_RESPONSE;
         try {
 
-            result = (CoreResponse) pjp.proceed();
+            result = (Result) pjp.proceed();
 
         } finally {
             Long executionTime = System.currentTimeMillis() - currentTimeMillis;
@@ -79,7 +79,7 @@ public class ServiceLayerInterceptorLogging {
         return arguments;
     }
 
-    private String makeResultAsString( CoreResponse result ) {
+    private String makeResultAsString( Result result ) {
         if ( result == null ) {
             return "Result is null.";
         }
@@ -100,14 +100,14 @@ public class ServiceLayerInterceptorLogging {
         return String.valueOf( resultObject );
     }
 
-    private Serializable makeStatusString(CoreResponse result ) {
+    private Serializable makeStatusString( Result result ) {
         return result == null ? "Result is null." : result.getStatus();
     }
 
     private static final Map<String, List<Integer>> SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP = new HashMap<String, List<Integer>>() {{
         put("AuthService.login(..)", Arrays.asList(2));
     }};
-      private static final CoreResponse<Object> ERROR_RESPONSE = CoreResponse.error( En_ResultStatus.INTERNAL_ERROR);
+      private static final Result<Object> ERROR_RESPONSE = Result.error( En_ResultStatus.INTERNAL_ERROR);
 
 }
 

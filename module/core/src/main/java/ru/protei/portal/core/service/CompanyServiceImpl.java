@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CompanyCategoryDAO;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.CompanyGroupDAO;
@@ -23,10 +23,10 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 /**
  * Реализация сервиса управления компаниями
  */
@@ -56,7 +56,7 @@ public class CompanyServiceImpl implements CompanyService {
     AuthService authService;
 
     @Override
-    public CoreResponse<SearchResult<Company>> getCompanies(AuthToken token, CompanyQuery query) {
+    public Result<SearchResult<Company>> getCompanies( AuthToken token, CompanyQuery query) {
 
         applyFilterByScope(token, query);
 
@@ -66,12 +66,12 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Long> countGroups(CompanyGroupQuery query) {
+    public Result<Long> countGroups( CompanyGroupQuery query) {
         return ok(companyGroupDAO.count(query));
     }
 
     @Override
-    public CoreResponse<List<EntityOption>> companyOptionList(AuthToken token, CompanyQuery query) {
+    public Result<List<EntityOption>> companyOptionList( AuthToken token, CompanyQuery query) {
         List<Company> list = getCompanyList(token, query);
 
 
@@ -86,7 +86,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<CompanyGroup> createGroup(String name, String info) {
+    public Result<CompanyGroup> createGroup( String name, String info) {
 
         CompanyGroup group = new CompanyGroup();
         group.setCreated(new Date());
@@ -101,7 +101,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse< Boolean > updateCompanySubscriptions( Long companyId, List< CompanySubscription > subscriptions ) {
+    public Result< Boolean > updateCompanySubscriptions( Long companyId, List< CompanySubscription > subscriptions ) {
         if ( companyId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -111,7 +111,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
+    public Result<List<CompanySubscription>> getCompanySubscriptions( Long companyId ) {
         if ( companyId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -121,7 +121,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId ) {
+    public Result<List<CompanySubscription>> getCompanyWithParentCompanySubscriptions( AuthToken authToken, Long companyId ) {
         if ( companyId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -134,7 +134,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<?> updateState(AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
+    public Result<?> updateState( AuthToken makeAuthToken, Long companyId, boolean isDeprecated) {
         if (companyId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -154,13 +154,13 @@ public class CompanyServiceImpl implements CompanyService {
         }
     }
 
-    private <T> CoreResponse<T> createUndefinedError() {
+    private <T> Result<T> createUndefinedError() {
         return error(En_ResultStatus.INTERNAL_ERROR);
     }
 
 
     @Override
-    public CoreResponse<List<EntityOption>> groupOptionList() {
+    public Result<List<EntityOption>> groupOptionList() {
         List<CompanyGroup> list = companyGroupDAO.getListByQuery(new CompanyGroupQuery(null, En_SortField.group_name, En_SortDir.ASC));
 
         if (list == null)
@@ -172,14 +172,14 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<List<CompanyGroup>> groupList(CompanyGroupQuery query) {
-        return CoreResponse.ok(
+    public Result<List<CompanyGroup>> groupList( CompanyGroupQuery query) {
+        return Result.ok(
                 companyGroupDAO.getListByQuery(query)
         );
     }
 
     @Override
-    public CoreResponse<List<EntityOption>> categoryOptionList(boolean hasOfficial) {
+    public Result<List<EntityOption>> categoryOptionList( boolean hasOfficial) {
 
         List<CompanyCategory> list;
 
@@ -198,7 +198,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> getCompany( AuthToken token, Long id ) {
+    public Result<Company> getCompany( AuthToken token, Long id ) {
 
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -222,7 +222,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> createCompany( AuthToken token, Company company ) {
+    public Result<Company> createCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -240,7 +240,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Company> updateCompany( AuthToken token, Company company ) {
+    public Result<Company> updateCompany( AuthToken token, Company company ) {
 
         if (!isValidCompany(company)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -256,7 +256,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Boolean> isCompanyNameExists(String name, Long excludeId) {
+    public Result<Boolean> isCompanyNameExists( String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -265,7 +265,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public CoreResponse<Boolean> isGroupNameExists(String name, Long excludeId) {
+    public Result<Boolean> isGroupNameExists( String name, Long excludeId) {
 
         if (name == null || name.trim().isEmpty())
             return error(En_ResultStatus.INCORRECT_PARAMS);

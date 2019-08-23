@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.event.EmployeeRegistrationEvent;
 import ru.protei.portal.core.model.dao.*;
@@ -24,8 +24,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -61,13 +61,13 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     }
 
     @Override
-    public CoreResponse<SearchResult<EmployeeRegistration>> getEmployeeRegistrations(AuthToken token, EmployeeRegistrationQuery query) {
+    public Result<SearchResult<EmployeeRegistration>> getEmployeeRegistrations( AuthToken token, EmployeeRegistrationQuery query) {
         SearchResult<EmployeeRegistration> sr = employeeRegistrationDAO.getSearchResult(query);
         return ok(sr);
     }
 
     @Override
-    public CoreResponse<EmployeeRegistration> getEmployeeRegistration(AuthToken token, Long id) {
+    public Result<EmployeeRegistration> getEmployeeRegistration( AuthToken token, Long id) {
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
             return error(En_ResultStatus.NOT_FOUND);
@@ -80,7 +80,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
 
     @Override
     @Transactional
-    public CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration) {
+    public Result<Long> createEmployeeRegistration( AuthToken token, EmployeeRegistration employeeRegistration) {
         if (employeeRegistration == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 

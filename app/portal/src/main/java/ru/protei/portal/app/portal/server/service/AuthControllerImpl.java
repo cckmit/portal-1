@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.app.portal.client.service.AuthController;
 import ru.protei.portal.core.model.dict.En_AuthType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -45,7 +45,7 @@ public class AuthControllerImpl implements AuthController {
 
         log.debug( "authentificate: login={}", login );
 
-        CoreResponse< UserSessionDescriptor > result = authService.login(
+        Result< UserSessionDescriptor > result = authService.login(
                 httpRequest.getSession().getId(),
                 login,
                 password,

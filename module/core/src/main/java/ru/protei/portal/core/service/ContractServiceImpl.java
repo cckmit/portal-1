@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.CaseTypeDAO;
@@ -17,8 +17,8 @@ import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class ContractServiceImpl implements ContractService {
 
@@ -40,7 +40,7 @@ public class ContractServiceImpl implements ContractService {
     AuthService authService;
 
     @Override
-    public CoreResponse<SearchResult<Contract>> getContracts(AuthToken token, ContractQuery query) {
+    public Result<SearchResult<Contract>> getContracts( AuthToken token, ContractQuery query) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
             query.setManagerIds(CollectionUtils.singleValueList(getCurrentPerson(token).getId()));
         }
@@ -49,7 +49,7 @@ public class ContractServiceImpl implements ContractService {
     }
 
     @Override
-    public CoreResponse<Contract> getContract(AuthToken token, Long id) {
+    public Result<Contract> getContract( AuthToken token, Long id) {
 
         Contract contract;
         if (hasGrantAccessFor(token, En_Privilege.CONTRACT_VIEW)) {
@@ -77,7 +77,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> createContract(AuthToken token, Contract contract) {
+    public Result<Long> createContract( AuthToken token, Contract contract) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_CREATE)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }
@@ -104,7 +104,7 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> updateContract(AuthToken token, Contract contract) {
+    public Result<Long> updateContract( AuthToken token, Contract contract) {
         if (!hasGrantAccessFor(token, En_Privilege.CONTRACT_EDIT)) {
             return error(En_ResultStatus.PERMISSION_DENIED);
         }

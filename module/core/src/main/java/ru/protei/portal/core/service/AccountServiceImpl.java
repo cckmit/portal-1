@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.UserLoginUpdateEvent;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
@@ -26,8 +26,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Реализация сервиса управления учетными записями
@@ -57,7 +57,7 @@ public class AccountServiceImpl implements AccountService {
     EventPublisherService publisherService;
 
     @Override
-    public CoreResponse<SearchResult<UserLogin>> getAccounts(AuthToken token, AccountQuery query) {
+    public Result<SearchResult<UserLogin>> getAccounts( AuthToken token, AccountQuery query) {
 
         applyFilterByScope(token, query);
 
@@ -69,7 +69,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< UserLogin > getAccount( AuthToken token, long id ) {
+    public Result< UserLogin > getAccount( AuthToken token, long id ) {
         UserLogin userLogin = userLoginDAO.get( id );
 
         if ( userLogin == null ) {
@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< UserLogin > getContactAccount(AuthToken authToken, long personId ) {
+    public Result< UserLogin > getContactAccount( AuthToken authToken, long personId ) {
         UserLogin userLogin = userLoginDAO.findByPersonId( personId );
 
         if ( userLogin == null ) {
@@ -96,7 +96,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail ) {
+    public Result< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail ) {
         if ( !isValidLogin( userLogin ) )
             return error( En_ResultStatus.VALIDATION_ERROR );
 
@@ -150,7 +150,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<UserLogin> saveContactAccount(AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail) {
+    public Result<UserLogin> saveContactAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail) {
 
         if (userLogin.getId() == null) {
             Set<UserRole> userRoles = new HashSet<>(userRoleDAO.getDefaultContactRoles());
@@ -161,7 +161,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId ) {
+    public Result< Boolean > checkUniqueLogin( String login, Long excludeId ) {
 
         if( HelperFunc.isEmpty( login ) )
             return error( En_ResultStatus.INCORRECT_PARAMS);
@@ -170,7 +170,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse< Boolean > removeAccount( AuthToken token, Long accountId ) {
+    public Result< Boolean > removeAccount( AuthToken token, Long accountId ) {
 
         if ( userLoginDAO.removeByKey( accountId ) ) {
             return ok( true );
@@ -180,7 +180,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CoreResponse<?> updateAccountPassword(AuthToken token, Long loginId, String currentPassword, String newPassword) {
+    public Result<?> updateAccountPassword( AuthToken token, Long loginId, String currentPassword, String newPassword) {
         UserLogin userLogin = getAccount(token, loginId).getData();
 
         Long personIdFromSession = authService.findSession(token).getPerson().getId();

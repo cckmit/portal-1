@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.CaseCommentDAO;
@@ -29,8 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 public class ReportControlServiceImpl implements ReportControlService {
 
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
@@ -66,14 +66,14 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     @Scheduled(fixedRate = 30 * 1000) // every 30 seconds
     public void processNewReportsSchedule() {
-        CoreResponse response = processNewReports();
+        Result response = processNewReports();
         if (!response.isOk()) {
             log.warn("fail to process reports : status={}", response.getStatus());
         }
     }
 
     @Override
-    public CoreResponse processNewReports() {
+    public Result processNewReports() {
         synchronized (sync) {
             int reportThreadsNumber = config.data().reportConfig().getThreadsNumber();
             int activeThreads = reportExecutorService.getActiveCount();
@@ -81,7 +81,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 log.debug("all threads to process reports are busy");
                 return error(En_ResultStatus.NOT_AVAILABLE);
             }
-            CoreResponse<List<Report>> result = getReportsToProcess(reportThreadsNumber - activeThreads);
+            Result<List<Report>> result = getReportsToProcess(reportThreadsNumber - activeThreads);
             if (!result.isOk()) {
                 return result;
             }
@@ -96,7 +96,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         }
     }
 
-    private CoreResponse<List<Report>> getReportsToProcess(final int limit) {
+    private Result<List<Report>> getReportsToProcess( final int limit) {
         try {
             List<Report> reports = reportDAO.getReportsByStatuses(
                     Collections.singletonList(En_ReportStatus.CREATED),
@@ -125,7 +125,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 return;
             }
         }
-        CoreResponse storageResult = null;
+        Result storageResult = null;
         try {
             log.debug("start process report : reportId={}", report.getId());
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
@@ -205,14 +205,14 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     @Scheduled(cron = "0 0 5 * * ?") // at 05:00:00 am every day
     public void processOldReportsSchedule() {
-        CoreResponse response = processOldReports();
+        Result response = processOldReports();
         if (!response.isOk()) {
             log.warn("fail to process reports : status={}", response.getStatus());
         }
     }
 
     @Override
-    public CoreResponse processOldReports() {
+    public Result processOldReports() {
         List<Report> reports = reportDAO.getReportsByStatuses(
                 Arrays.asList(En_ReportStatus.READY, En_ReportStatus.ERROR),
                 new Date(System.currentTimeMillis() - config.data().reportConfig().getLiveTime())
@@ -242,14 +242,14 @@ public class ReportControlServiceImpl implements ReportControlService {
     @Override
     @Scheduled(fixedRate = 60 * 60 * 1000) // every hour
     public void processHangReportsSchedule() {
-        CoreResponse response = processHangReports();
+        Result response = processHangReports();
         if (!response.isOk()) {
             log.warn("fail to process reports : status={}", response.getStatus());
         }
     }
 
     @Override
-    public CoreResponse processHangReports() {
+    public Result processHangReports() {
         synchronized (reportsInProcess) {
             List<Report> reports = reportDAO.getReportsByStatuses(
                     Collections.singletonList(En_ReportStatus.PROCESS),

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DevUnitChildRefDAO;
 import ru.protei.portal.core.model.dao.DevUnitDAO;
 import ru.protei.portal.core.model.dao.ProductSubscriptionDAO;
@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 /**
  * Реализация сервиса управления продуктами
  */
@@ -56,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
     ProductSubscriptionDAO productSubscriptionDAO;
 
     @Override
-    public CoreResponse<SearchResult<DevUnit>> getProducts(AuthToken token, ProductQuery query) {
+    public Result<SearchResult<DevUnit>> getProducts( AuthToken token, ProductQuery query) {
 
         SearchResult<DevUnit> sr = devUnitDAO.getSearchResultByQuery(query);
 
@@ -64,7 +64,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<List<ProductShortView>> shortViewList(AuthToken token, ProductQuery query ) {
+    public Result<List<ProductShortView>> shortViewList( AuthToken token, ProductQuery query ) {
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -77,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query ) {
+    public Result<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query ) {
 
         List<DevUnit> list = devUnitDAO.listByQuery(query);
 
@@ -90,7 +90,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<DevUnit> getProduct( AuthToken token, Long id ) {
+    public Result<DevUnit> getProduct( AuthToken token, Long id ) {
 
         if (id == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -107,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> createProduct( AuthToken token, DevUnit product) {
+    public Result<Long> createProduct( AuthToken token, DevUnit product) {
 
         if (product == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -136,7 +136,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public CoreResponse<Boolean> updateProduct( AuthToken token, DevUnit product ) {
+    public Result<Boolean> updateProduct( AuthToken token, DevUnit product ) {
 
         if( product == null || product.getId() == null )
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -168,7 +168,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public CoreResponse<En_DevUnitState> updateState(AuthToken makeAuthToken, Long productId, En_DevUnitState state) {
+    public Result<En_DevUnitState> updateState( AuthToken makeAuthToken, Long productId, En_DevUnitState state) {
         if (productId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -189,7 +189,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
+    public Result<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
 
         if( name == null || name.isEmpty() )
             return error(En_ResultStatus.INCORRECT_PARAMS);

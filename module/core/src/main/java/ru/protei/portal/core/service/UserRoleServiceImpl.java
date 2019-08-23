@@ -4,7 +4,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.UserRoleDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 /**
  * Реализация сервиса управления ролями
  */
@@ -40,7 +40,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     AuthService authService;
 
     @Override
-    public CoreResponse<List<UserRole>> userRoleList( AuthToken token, UserRoleQuery query ) {
+    public Result<List<UserRole>> userRoleList( AuthToken token, UserRoleQuery query ) {
         applyFilterByScope(token, query);
         List<UserRole> list = userRoleDAO.listByQuery(query);
 
@@ -51,17 +51,17 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    public CoreResponse<UserRole> getUserRole( AuthToken authToken, Long id ) {
+    public Result<UserRole> getUserRole( AuthToken authToken, Long id ) {
 
         UserRole person = userRoleDAO.get(id);
 
-        return person != null ? CoreResponse.ok( person)
+        return person != null ? Result.ok( person)
                 : error( En_ResultStatus.NOT_FOUND);
     }
 
 
     @Override
-    public CoreResponse<UserRole> saveUserRole( AuthToken token, UserRole role ) {
+    public Result<UserRole> saveUserRole( AuthToken token, UserRole role ) {
 
         if (HelperFunc.isEmpty(role.getCode())) {
             return error(En_ResultStatus.VALIDATION_ERROR);
@@ -75,7 +75,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    public CoreResponse< List< EntityOption > > userRoleOptionList( AuthToken token, UserRoleQuery query ) {
+    public Result< List< EntityOption > > userRoleOptionList( AuthToken token, UserRoleQuery query ) {
         applyFilterByScope(token, query);
         List<UserRole> list = userRoleDAO.listByQuery(query);
 
@@ -87,7 +87,7 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    public CoreResponse<Boolean> removeRole( AuthToken authToken, Long id ) {
+    public Result<Boolean> removeRole( AuthToken authToken, Long id ) {
         if ( userRoleDAO.removeByKey( id ) ) {
             return ok(true );
         }

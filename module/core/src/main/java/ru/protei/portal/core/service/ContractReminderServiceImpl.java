@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.ContractDateOneDayRemainingEvent;
 import ru.protei.portal.core.model.dao.ContractDAO;
 import ru.protei.portal.core.model.dao.ContractDateDAO;
@@ -24,12 +24,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class ContractReminderServiceImpl implements ContractReminderService {
 
     @Override
-    public CoreResponse<Integer> notifyAboutDates() {
+    public Result<Integer> notifyAboutDates() {
         log.info("notifyAboutDates(): start");
 
         LocalDateTime tomorrowStart = makeTomorrowWithTime(0, 0, 0);

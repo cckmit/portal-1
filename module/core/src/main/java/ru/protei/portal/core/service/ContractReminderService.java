@@ -1,8 +1,8 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 
 public interface ContractReminderService {
 
-    CoreResponse<Integer> notifyAboutDates();
+    Result<Integer> notifyAboutDates();
 }

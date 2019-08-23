@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.AuditObjectDAO;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.query.AuditQuery;
@@ -11,8 +11,8 @@ import ru.protei.portal.core.model.struct.AuditObject;
 
 import java.util.List;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Реализация сервиса управления аудитом
@@ -25,7 +25,7 @@ public class AuditServiceImpl implements AuditService {
     AuditObjectDAO auditObjectDAO;
 
     @Override
-    public CoreResponse< AuditObject > getAuditObject( long id ) {
+    public Result< AuditObject > getAuditObject( long id ) {
 
         AuditObject auditObject = auditObjectDAO.get( id );
 
@@ -36,7 +36,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public CoreResponse< List< AuditObject > > auditObjectList( AuditQuery query ) {
+    public Result< List< AuditObject > > auditObjectList( AuditQuery query ) {
 
         List< AuditObject > list = auditObjectDAO.getAuditObjectList( query );
 
@@ -47,7 +47,7 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public CoreResponse< AuditObject > saveAuditObject( AuditObject auditObject ) {
+    public Result< AuditObject > saveAuditObject( AuditObject auditObject ) {
 
         if (auditObject == null)
             return error( En_ResultStatus.INCORRECT_PARAMS);

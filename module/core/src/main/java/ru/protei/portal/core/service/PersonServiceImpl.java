@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -18,8 +18,8 @@ import ru.protei.portal.core.service.user.AuthService;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 /**
  * Сервис управления person
  */
@@ -29,7 +29,7 @@ public class PersonServiceImpl implements PersonService {
     PersonDAO personDAO;
 
     @Override
-    public CoreResponse< List< PersonShortView > > shortViewList(AuthToken authToken, PersonQuery query) {
+    public Result< List< PersonShortView > > shortViewList( AuthToken authToken, PersonQuery query) {
         query = processQueryByPolicyScope(authToken, query);
 
         List<Person> list = personDAO.getPersons( query );
@@ -43,7 +43,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public CoreResponse<Map<Long, String>> getPersonNames(Collection<Long> ids) {
+    public Result<Map<Long, String>> getPersonNames( Collection<Long> ids) {
         Collection<Person> list = personDAO.partialGetListByKeys(ids, "id", "displayname");
 
         if ( list == null )

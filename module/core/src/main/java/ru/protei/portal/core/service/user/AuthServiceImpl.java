@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.config.PortalConfig;
 import ru.protei.portal.core.model.dao.CompanyDAO;
 import ru.protei.portal.core.model.dao.PersonDAO;
@@ -20,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
 
 /**
@@ -162,7 +162,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+    public Result<UserSessionDescriptor> login( String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
         if ( StringUtils.isEmpty(ulogin) || StringUtils.isEmpty(pwd) ) {
             logger.debug("null login or pwd, auth-failed");
             return error( En_ResultStatus.INVALID_LOGIN_OR_PWD);

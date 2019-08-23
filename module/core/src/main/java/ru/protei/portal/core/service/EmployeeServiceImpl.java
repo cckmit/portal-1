@@ -1,7 +1,7 @@
 package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.ok;
 
 
 /**
@@ -67,7 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse< Person > getEmployee( Long id ) {
+    public Result< Person > getEmployee( Long id ) {
         Person person = personDAO.getEmployee(id);
         if ( person == null ) {
             return ok(person);
@@ -94,11 +94,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<PersonShortView>> shortViewList(EmployeeQuery query) {
+    public Result<List<PersonShortView>> shortViewList( EmployeeQuery query) {
         List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            CoreResponse.error( En_ResultStatus.GET_DATA_ERROR);
+            Result.error( En_ResultStatus.GET_DATA_ERROR);
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
@@ -106,7 +106,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<SearchResult<EmployeeShortView>> employeeList(AuthToken token, EmployeeQuery query) {
+    public Result<SearchResult<EmployeeShortView>> employeeList( AuthToken token, EmployeeQuery query) {
 
         SearchResult<EmployeeShortView> sr = employeeShortViewDAO.getSearchResult(query);
         List<EmployeeShortView> results = sr.getResults();
@@ -122,7 +122,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public CoreResponse<List<WorkerView>> list(String param) {
+    public Result<List<WorkerView>> list( String param) {
 
         // temp-hack, hardcoded company-id. must be replaced to sys_config.ownCompanyId
         Company our_comp = companyDAO.get(1L);

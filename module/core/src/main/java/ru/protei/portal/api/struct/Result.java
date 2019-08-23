@@ -12,7 +12,7 @@ import java.util.function.Function;
  * Created by michael on 27.06.16.
  */
 @JsonAutoDetect
-public class CoreResponse<T> {
+public class Result<T> {
 
     @JsonProperty
     private En_ResultStatus status;
@@ -49,34 +49,34 @@ public class CoreResponse<T> {
         this.message = message;
     }
 
-    public CoreResponse( En_ResultStatus status, T data, String message ) {
+    public Result( En_ResultStatus status, T data, String message ) {
         this.status = status;
         this.data = data;
         this.message = message;
     }
 
     @JsonIgnore
-    public static <T> CoreResponse<T> error( En_ResultStatus status ) {
+    public static <T> Result<T> error( En_ResultStatus status ) {
         return error( status, null);
     }
     @JsonIgnore
-    public static <T> CoreResponse<T> error( En_ResultStatus status, String message ) {
-        return new CoreResponse<T>( status, null, message);
+    public static <T> Result<T> error( En_ResultStatus status, String message ) {
+        return new Result<T>( status, null, message);
     }
 
     @JsonIgnore
-    public CoreResponse<T> redirect (String to) {
+    public Result<T> redirect ( String to) {
         return this;
     }
 
     @JsonIgnore
-    public static <T> CoreResponse<T> ok() {
+    public static <T> Result<T> ok() {
         return ok(null);
     }
 
     @JsonIgnore
-    public static <T> CoreResponse<T> ok( T data ) {
-        return new CoreResponse<T>( En_ResultStatus.OK, data, null);
+    public static <T> Result<T> ok( T data ) {
+        return new Result<T>( En_ResultStatus.OK, data, null);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class CoreResponse<T> {
      * Если результрат успешен
      */
     @JsonIgnore
-    public CoreResponse<T> ifOk( Consumer<? super T> consumer ) {
+    public Result<T> ifOk( Consumer<? super T> consumer ) {
         if (consumer != null && isOk()) {
             consumer.accept( data );
         }
@@ -100,7 +100,7 @@ public class CoreResponse<T> {
     }
 
     @JsonIgnore
-    public CoreResponse<T> ifError( Consumer<CoreResponse<T>> consumer ) {
+    public Result<T> ifError( Consumer<Result<T>> consumer ) {
         if (consumer != null && !isOk()) {
             consumer.accept( this );
         }
@@ -126,7 +126,7 @@ public class CoreResponse<T> {
      * Когда вызваемая функция возвращает не Result, а конкретное значение
      */
     @JsonIgnore
-    public <U> CoreResponse<U> map( Function<? super T, ? extends U> mapper) {
+    public <U> Result<U> map( Function<? super T, ? extends U> mapper) {
         if (mapper == null || !isOk())
             return error( status, message );
         else {
@@ -138,7 +138,7 @@ public class CoreResponse<T> {
      * Когда вызваемая функция возвращает Result
      */
     @JsonIgnore
-    public <U> CoreResponse<U> flatMap(Function<? super T, CoreResponse<U>> mapper) {
+    public <U> Result<U> flatMap( Function<? super T, Result<U>> mapper) {
         if (mapper == null || !isOk())
             return error( status, message );
         else {
@@ -151,7 +151,7 @@ public class CoreResponse<T> {
      * получить тот же результат выполнив другое действие
      */
     @JsonIgnore
-    public CoreResponse<T> orElseGet( Function<CoreResponse<T>, CoreResponse<T>> mapper ) {
+    public Result<T> orElseGet( Function<Result<T>, Result<T>> mapper ) {
         if (mapper == null) {
             return error( status, message );
         }
@@ -162,7 +162,7 @@ public class CoreResponse<T> {
     }
 
     @JsonIgnore
-    public <X extends Throwable> CoreResponse<T> orElseThrow( Function<CoreResponse<T>, ? extends X> exceptionSupplier ) throws X {
+    public <X extends Throwable> Result<T> orElseThrow( Function<Result<T>, ? extends X> exceptionSupplier ) throws X {
         if (!isOk()) {
             throw exceptionSupplier.apply( this );
         }

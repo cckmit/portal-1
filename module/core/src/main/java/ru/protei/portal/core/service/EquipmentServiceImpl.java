@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.DecimalNumberDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
 import ru.protei.portal.core.model.dao.EquipmentDAO;
@@ -24,10 +24,10 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 /**
  * Реализация сервиса управления оборудованием
  */
@@ -54,7 +54,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     DocumentService documentService;
 
     @Override
-    public CoreResponse<SearchResult<Equipment>> getEquipments(AuthToken token, EquipmentQuery query) {
+    public Result<SearchResult<Equipment>> getEquipments( AuthToken token, EquipmentQuery query) {
 
         SearchResult<Equipment> sr = equipmentDAO.getSearchResult(query);
 
@@ -64,7 +64,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query ) {
+    public Result< List< EquipmentShortView > > shortViewList( AuthToken token, EquipmentQuery query ) {
 
         SearchResult<Equipment> sr = equipmentDAO.getSearchResult(query);
 
@@ -78,7 +78,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Equipment> getEquipment( AuthToken token, long id) {
+    public Result<Equipment> getEquipment( AuthToken token, long id) {
 
         Equipment equipment = equipmentDAO.get(id);
         jdbcManyRelationsHelper.fill(equipment, "decimalNumbers");
@@ -89,7 +89,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<List<DecimalNumber>> getDecimalNumbersOfEquipment(AuthToken token, long id) {
+    public Result<List<DecimalNumber>> getDecimalNumbersOfEquipment( AuthToken token, long id) {
 
         List<DecimalNumber> numbers = decimalNumberDAO.getDecimalNumbersByEquipmentId(id);
 
@@ -102,7 +102,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     @Override
     @Transactional
-    public CoreResponse<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
+    public Result<Equipment> saveEquipment( AuthToken token, Equipment equipment ) {
         if (StringUtils.isBlank(equipment.getName())) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -134,7 +134,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Integer> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberQuery query ) {
+    public Result<Integer> getNextAvailableDecimalNumber( AuthToken token, DecimalNumberQuery query ) {
         if ( query == null || query.getNumber() == null
                 || query.getNumber().getOrganizationCode() == null
                 || query.getNumber().getClassifierCode() == null ) {
@@ -146,7 +146,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Integer> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery query ) {
+    public Result<Integer> getNextAvailableDecimalNumberModification( AuthToken token, DecimalNumberQuery query ) {
         if ( query == null || query.getNumber() == null || query.getNumber().isEmpty() ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -156,13 +156,13 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse< Boolean > checkIfExistDecimalNumber( DecimalNumber number ) {
+    public Result< Boolean > checkIfExistDecimalNumber( DecimalNumber number ) {
         boolean isExist = decimalNumberDAO.checkExists( number );
         return ok(isExist );
     }
 
     @Override
-    public CoreResponse<DecimalNumber> findDecimalNumber(AuthToken token, DecimalNumber number) {
+    public Result<DecimalNumber> findDecimalNumber( AuthToken token, DecimalNumber number) {
         DecimalNumber foundedNumber = decimalNumberDAO.find(number);
         if (foundedNumber == null)
             return error(En_ResultStatus.NOT_FOUND);
@@ -170,7 +170,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
+    public Result<Long> copyEquipment( AuthToken token, Long equipmentId, String newName, Long authorId ) {
         if (equipmentId == null || newName == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -194,7 +194,7 @@ public class EquipmentServiceImpl implements EquipmentService {
     }
 
     @Override
-    public CoreResponse<Boolean> removeEquipment( AuthToken token, Long equipmentId ) {
+    public Result<Boolean> removeEquipment( AuthToken token, Long equipmentId ) {
 
         if (equipmentId == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -316,7 +316,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 
     private void removeLinkedDocuments(AuthToken token, Long equipmentId) {
 
-        CoreResponse<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
+        Result<List<Document>> documentsResponse = documentService.documentList(token, equipmentId);
 
         if (documentsResponse.isError()) {
             return;

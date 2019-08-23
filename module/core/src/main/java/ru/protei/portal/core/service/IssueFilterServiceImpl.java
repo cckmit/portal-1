@@ -3,7 +3,7 @@ package ru.protei.portal.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dao.CaseFilterDAO;
 import ru.protei.portal.core.model.dict.En_CaseFilterType;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -18,8 +18,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 /**
  * Реализация сервиса управления фильтрами обращений на DAO слое
  */
@@ -37,7 +37,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
+    public Result< List< CaseFilterShortView > > getIssueFilterShortViewList( Long loginId, En_CaseFilterType filterType ) {
 
         log.debug( "getIssueFilterShortViewList(): accountId={}, filterType={} ", loginId, filterType );
 
@@ -52,7 +52,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public CoreResponse< CaseFilter > getIssueFilter( Long id ) {
+    public Result< CaseFilter > getIssueFilter( Long id ) {
 
         log.debug( "getIssueFilter(): id={} ", id );
 
@@ -63,7 +63,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public CoreResponse<CaseFilter> saveIssueFilter(AuthToken token, CaseFilter filter) {
+    public Result<CaseFilter> saveIssueFilter( AuthToken token, CaseFilter filter) {
 
         log.debug("saveIssueFilter(): filter={} ", filter);
 
@@ -85,7 +85,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
     }
 
     @Override
-    public CoreResponse< Boolean > removeIssueFilter( Long id ) {
+    public Result< Boolean > removeIssueFilter( Long id ) {
 
         log.debug( "removeIssueFilter(): id={} ", id );
 

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.YouTrackIssueInfo;
@@ -25,7 +25,7 @@ public class CaseLinkControllerImpl implements CaseLinkController {
     public Map<En_CaseLink, String> getLinkMap() throws RequestFailedException {
         log.debug("get case link map");
 
-        CoreResponse<Map<En_CaseLink, String>> response = caseLinkService.getLinkMap();
+        Result<Map<En_CaseLink, String>> response = caseLinkService.getLinkMap();
 
         log.debug("get case link map -> {} ", response.isOk() ? "ok" : response.getStatus());
 

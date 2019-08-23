@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.transaction.annotation.Transactional;
 import org.tmatesoft.svn.core.SVNException;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.controller.document.DocumentStorageIndex;
 import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dao.DocumentDAO;
@@ -31,8 +31,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import static com.mysql.jdbc.StringUtils.isEmptyOrWhitespaceOnly;
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class DocumentServiceImpl implements DocumentService {
 
@@ -54,14 +54,14 @@ public class DocumentServiceImpl implements DocumentService {
     DocumentSvnService documentSvnService;
 
     @Override
-    public CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, Long equipmentId) {
+    public Result<SearchResult<Document>> getDocuments( AuthToken token, Long equipmentId) {
         DocumentQuery query = new DocumentQuery();
         query.setEquipmentIds(Collections.singletonList(equipmentId));
         return getDocuments(token, query);
     }
 
     @Override
-    public CoreResponse<SearchResult<Document>> getDocuments(AuthToken token, DocumentQuery query) {
+    public Result<SearchResult<Document>> getDocuments( AuthToken token, DocumentQuery query) {
 
         try {
             checkApplyFullTextSearchFilter(query);
@@ -77,7 +77,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<List<Document>> documentList(AuthToken token, Long equipmentId) {
+    public Result<List<Document>> documentList( AuthToken token, Long equipmentId) {
         DocumentQuery query = new DocumentQuery();
         query.setEquipmentIds(Collections.singletonList(equipmentId));
 
@@ -98,7 +98,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<Document> getDocument(AuthToken token, Long id) {
+    public Result<Document> getDocument( AuthToken token, Long id) {
 
         Document document = documentDAO.get(id);
 
@@ -112,7 +112,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<Document> createDocument(AuthToken token, Document document, FileItem fileItem) {
+    public Result<Document> createDocument( AuthToken token, Document document, FileItem fileItem) {
 
         if (document == null || !isValidDocument(document)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -172,7 +172,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     @Transactional
-    public CoreResponse updateState(AuthToken token, Long documentId, En_DocumentState state) {
+    public Result updateState( AuthToken token, Long documentId, En_DocumentState state) {
         if (documentId == null ) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -193,7 +193,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<Document> updateDocument(AuthToken token, Document document) {
+    public Result<Document> updateDocument( AuthToken token, Document document) {
 
         if (document == null || !isValidDocument(document)) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -221,7 +221,7 @@ public class DocumentServiceImpl implements DocumentService {
         return ok(document);
     }
     @Override
-    public CoreResponse<Document> updateDocumentAndContent(AuthToken token, Document document, FileItem fileItem) {
+    public Result<Document> updateDocumentAndContent( AuthToken token, Document document, FileItem fileItem) {
 
         if (document == null || !isValidDocument(document) || document.getId() == null || fileItem == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -280,7 +280,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<Document> removeDocument(AuthToken token, Document document) {
+    public Result<Document> removeDocument( AuthToken token, Document document) {
 
         if (document == null || document.getId() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
@@ -300,7 +300,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public CoreResponse<SearchResult<Document>> getProjectDocuments(AuthToken token, Long projectId) {
+    public Result<SearchResult<Document>> getProjectDocuments( AuthToken token, Long projectId) {
         DocumentQuery query = new DocumentQuery();
         query.setProjectId(projectId);
         return getDocuments(token, query);

@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.event.CaseCommentEvent;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.dao.CaseAttachmentDAO;
@@ -25,14 +25,14 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
-    public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, long caseObjectId) {
+    public Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, long caseObjectId) {
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseObjectId);
         if (checkAccessStatus != null) {
             return error( checkAccessStatus);
@@ -43,14 +43,14 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
+    public Result<List<CaseComment>> getCaseCommentList( AuthToken token, En_CaseType caseType, CaseCommentQuery query) {
         applyFilterByScope( token, query );
         return getList(query);
     }
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> addCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+    public Result<CaseComment> addCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
 
         if (comment == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -58,7 +58,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
 
-        CoreResponse<CaseCommentSaveOrUpdateResult> result = addCaseCommentWithoutEvent(token, caseType, comment);
+        Result<CaseCommentSaveOrUpdateResult> result = addCaseCommentWithoutEvent(token, caseType, comment);
         if (result.isError()) {
             throw new ResultStatusException(result.getStatus());
         }
@@ -80,7 +80,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent(AuthToken token, En_CaseType caseType, CaseComment comment) {
+    public Result<CaseCommentSaveOrUpdateResult> addCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment) {
 
         if (comment == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -140,11 +140,11 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseComment> updateCaseComment(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+    public Result<CaseComment> updateCaseComment( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
 
         CaseObject caseObjectOld = caseObjectDAO.get(comment.getCaseId());
 
-        CoreResponse<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, person);
+        Result<CaseCommentSaveOrUpdateResult> result = updateCaseCommentWithoutEvent(token, caseType, comment, person);
         if (result.isError()) {
             throw new ResultStatusException(result.getStatus());
         }
@@ -168,7 +168,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public CoreResponse<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent(AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
+    public Result<CaseCommentSaveOrUpdateResult> updateCaseCommentWithoutEvent( AuthToken token, En_CaseType caseType, CaseComment comment, Person person) {
 
         if (comment == null || comment.getId() == null || person == null) {
             throw new ResultStatusException(En_ResultStatus.INCORRECT_PARAMS);
@@ -234,7 +234,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public CoreResponse<Boolean> removeCaseComment(AuthToken token, En_CaseType caseType, CaseComment removedComment, Person person) {
+    public Result<Boolean> removeCaseComment( AuthToken token, En_CaseType caseType, CaseComment removedComment, Person person) {
 
         En_ResultStatus checkAccessStatus = null;
         if (removedComment == null || removedComment.getId() == null || person == null || person.getId() == null) {
@@ -299,7 +299,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public CoreResponse<Long> getTimeElapsed(Long caseId) {
+    public Result<Long> getTimeElapsed( Long caseId) {
         List<CaseComment> allCaseComments = caseCommentDAO.partialGetListByCondition("CASE_ID=?", Collections.singletonList(caseId), "id", "time_elapsed");
         long sum = stream(allCaseComments)
                 .filter(cmnt -> cmnt.getTimeElapsed() != null)
@@ -308,13 +308,13 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
     @Override
-    public CoreResponse<Boolean> updateTimeElapsed(AuthToken token, Long caseId) {
+    public Result<Boolean> updateTimeElapsed( AuthToken token, Long caseId) {
         long timeElapsed = getTimeElapsed(caseId).getData();
         return updateCaseTimeElapsed(token, caseId, timeElapsed);
     }
 
     @Override
-    public CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed) {
+    public Result<Boolean> updateCaseTimeElapsed( AuthToken token, Long caseId, long timeElapsed) {
         if (caseId == null || !caseObjectDAO.checkExistsByKey(caseId)) {
             return error( En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -329,7 +329,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     @Override
     @Transactional
-    public CoreResponse<Long> addCommentOnSentReminder( CaseComment comment ) {
+    public Result<Long> addCommentOnSentReminder( CaseComment comment ) {
         comment.setCreated( new Date() );
         comment.setAuthorId( CrmConstants.Person.SYSTEM_USER_ID );
         Long commentId = caseCommentDAO.persist(comment);
@@ -342,7 +342,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     }
 
 
-    private CoreResponse<List<CaseComment>> getList(CaseCommentQuery query) {
+    private Result<List<CaseComment>> getList( CaseCommentQuery query) {
         List<CaseComment> comments = caseCommentDAO.getCaseComments(query);
         return getList(comments);
     }
@@ -366,7 +366,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         }
     }
 
-    private CoreResponse<List<CaseComment>> getList(List<CaseComment> comments) {
+    private Result<List<CaseComment>> getList( List<CaseComment> comments) {
         if (comments == null) {
             return error( En_ResultStatus.GET_DATA_ERROR);
         }

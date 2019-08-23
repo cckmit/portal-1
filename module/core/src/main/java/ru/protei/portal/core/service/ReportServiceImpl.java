@@ -2,7 +2,7 @@ package ru.protei.portal.core.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.Lang;
 import ru.protei.portal.core.model.dao.ReportDAO;
 import ru.protei.portal.core.model.dict.En_Privilege;
@@ -25,8 +25,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 public class ReportServiceImpl implements ReportService {
 
@@ -49,7 +49,7 @@ public class ReportServiceImpl implements ReportService {
     PolicyService policyService;
 
     @Override
-    public CoreResponse<Long> createReport(AuthToken token, Report report) {
+    public Result<Long> createReport( AuthToken token, Report report) {
         if (report == null || report.getReportType() == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -89,7 +89,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse recreateReport(AuthToken token, Long id) {
+    public Result recreateReport( AuthToken token, Long id) {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -113,7 +113,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse<Report> getReport(AuthToken token, Long id) {
+    public Result<Report> getReport( AuthToken token, Long id) {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -125,7 +125,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse<SearchResult<Report>> getReports(AuthToken token, ReportQuery query) {
+    public Result<SearchResult<Report>> getReports( AuthToken token, ReportQuery query) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, null);
@@ -133,7 +133,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse<ReportContent> downloadReport(AuthToken token, Long id) {
+    public Result<ReportContent> downloadReport( AuthToken token, Long id) {
         if (id == null) {
             return error(En_ResultStatus.INCORRECT_PARAMS);
         }
@@ -152,7 +152,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse removeReports(AuthToken token, Set<Long> include, Set<Long> exclude) {
+    public Result removeReports( AuthToken token, Set<Long> include, Set<Long> exclude) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         List<Report> reports = reportDAO.getReportsByIds(descriptor.getPerson().getId(), include, exclude);
@@ -162,7 +162,7 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public CoreResponse removeReports(AuthToken token, ReportQuery query, Set<Long> exclude) {
+    public Result removeReports( AuthToken token, ReportQuery query, Set<Long> exclude) {
 
         UserSessionDescriptor descriptor = authService.findSession(token);
         SearchResult<Report> sr = reportDAO.getSearchResult(descriptor.getPerson().getId(), query, exclude);

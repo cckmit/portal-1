@@ -1,6 +1,6 @@
 package ru.protei.portal.core.service;
 
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
@@ -19,20 +19,20 @@ import java.util.List;
 public interface ContactService {
 
     @Privileged({ En_Privilege.CONTACT_VIEW })
-    CoreResponse<SearchResult<Person>> getContactsSearchResult(AuthToken token, ContactQuery query);
+    Result<SearchResult<Person>> getContactsSearchResult( AuthToken token, ContactQuery query);
 
-    CoreResponse<List<PersonShortView>> shortViewList(AuthToken token, ContactQuery query);
+    Result<List<PersonShortView>> shortViewList( AuthToken token, ContactQuery query);
 
     @Privileged( En_Privilege.CONTACT_VIEW )
-    CoreResponse<Person> getContact( AuthToken token, long id );
+    Result<Person> getContact( AuthToken token, long id );
 
     @Privileged( requireAny = { En_Privilege.CONTACT_EDIT, En_Privilege.CONTACT_CREATE })
     @Auditable( En_AuditType.CONTACT_MODIFY )
-    CoreResponse<Person> saveContact( AuthToken token, Person p );
+    Result<Person> saveContact( AuthToken token, Person p );
 
     @Privileged( En_Privilege.CONTACT_EDIT )
-    CoreResponse<Boolean> fireContact( AuthToken token, long id );
+    Result<Boolean> fireContact( AuthToken token, long id );
 
     @Privileged( En_Privilege.CONTACT_REMOVE )
-    CoreResponse<Boolean> removeContact( AuthToken token, long id );
+    Result<Boolean> removeContact( AuthToken token, long id );
 }

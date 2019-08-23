@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.controller.auth.SecurityDefs;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
@@ -33,8 +33,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.error;
-import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.Result.error;
+import static ru.protei.portal.api.struct.Result.ok;
 
 /**
  * Севрис для  API
@@ -74,7 +74,7 @@ public class PortalApiController {
         log.debug("API | getCaseList(): query={}", query);
 
         try {
-            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
@@ -82,7 +82,7 @@ public class PortalApiController {
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
-            CoreResponse<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
+            Result<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
 
             return APIResult.okWithData(searchList.getData().getResults());
 
@@ -107,7 +107,7 @@ public class PortalApiController {
         }
 
         try {
-            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
@@ -115,7 +115,7 @@ public class PortalApiController {
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
-            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.saveCaseObject(
+            Result<CaseObject> caseObjectCoreResponse = caseService.saveCaseObject(
                     authToken,
                     (CaseObject) auditableObject,
                     userSessionDescriptorAPIResult.getData().getPerson()
@@ -148,7 +148,7 @@ public class PortalApiController {
         }
 
         try {
-            CoreResponse<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
+            Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isError()) {
                 return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
@@ -156,7 +156,7 @@ public class PortalApiController {
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
-            CoreResponse<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(
+            Result<CaseObject> caseObjectCoreResponse = caseService.updateCaseObject(
                     authToken,
                     (CaseObject) auditableObject,
                     userSessionDescriptorAPIResult.getData().getPerson()
@@ -179,9 +179,9 @@ public class PortalApiController {
 
 
     @PostMapping(value = "/addyoutrackidintoissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public CoreResponse<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                      @PathVariable("caseNumber") Long caseNumber,
-                                                      @PathVariable("youtrackId") String youtrackId ) {
+    public Result<Long> addYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+                                                @PathVariable("caseNumber") Long caseNumber,
+                                                @PathVariable("youtrackId") String youtrackId ) {
         log.info( "addYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
         return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
@@ -193,9 +193,9 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/removeyoutrackidfromissue/{youtrackId}/{caseNumber:[0-9]+}")
-    public CoreResponse<Boolean> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
-                                                            @PathVariable("caseNumber") Long caseNumber,
-                                                            @PathVariable("youtrackId") String youtrackId ) {
+    public Result<Boolean> removeYoutrackIdIntoIssue( HttpServletRequest request, HttpServletResponse response,
+                                                      @PathVariable("caseNumber") Long caseNumber,
+                                                      @PathVariable("youtrackId") String youtrackId ) {
         log.info( "removeYoutrackIdIntoIssue() caseNumber={} youtrackId={}", caseNumber, youtrackId );
 
         return authenticate( request, response ).map( descripter -> descripter.makeAuthToken() ).flatMap( token ->
@@ -206,10 +206,10 @@ public class PortalApiController {
     }
 
     @PostMapping(value = "/changeyoutrackidinissue/{youtrackId}/{oldCaseNumber:[0-9]+}/{newCaseNumber:[0-9]+}")
-    public CoreResponse<Long> changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
-                                                       @PathVariable("oldCaseNumber") Long oldCaseNumber,
-                                                       @PathVariable("newCaseNumber") Long newCaseNumber,
-                                                       @PathVariable("youtrackId") String youtrackId ) {
+    public Result<Long> changeYoutrackIdInIssue( HttpServletRequest request, HttpServletResponse response,
+                                                 @PathVariable("oldCaseNumber") Long oldCaseNumber,
+                                                 @PathVariable("newCaseNumber") Long newCaseNumber,
+                                                 @PathVariable("youtrackId") String youtrackId ) {
         log.info( "changeYoutrackIdInIssue() oldCaseNumber={} newCaseNumber={} youtrackId={}", oldCaseNumber, newCaseNumber, youtrackId );
 
         // Нужно отвязать youtrack задачу от старого обращения и затем привязать к новому обращению
@@ -249,7 +249,7 @@ public class PortalApiController {
         return stateIds;
     }
 
-    private CoreResponse<UserSessionDescriptor> authenticate( HttpServletRequest request, HttpServletResponse response ) {
+    private Result<UserSessionDescriptor> authenticate( HttpServletRequest request, HttpServletResponse response ) {
         Credentials cr = null;
         try {
             cr = Credentials.parse( request.getHeader( "Authorization" ) );

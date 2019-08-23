@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.protei.portal.api.struct.CoreResponse;
+import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.UserLogin;
@@ -29,7 +29,7 @@ public class AccountControllerImpl implements AccountController {
     public SearchResult<UserLogin> getAccounts(AccountQuery query) throws RequestFailedException {
         log.debug("getAccounts(): query={}", query);
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
-        CoreResponse<SearchResult<UserLogin>> result = accountService.getAccounts(token, query);
+        Result<SearchResult<UserLogin>> result = accountService.getAccounts(token, query);
         return ServiceUtils.checkResultAndGetData(result);
     }
 
@@ -39,7 +39,7 @@ public class AccountControllerImpl implements AccountController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< UserLogin > response = accountService.getAccount( descriptor.makeAuthToken(), id );
+        Result< UserLogin > response = accountService.getAccount( descriptor.makeAuthToken(), id );
 
         log.debug( "getAccount(): id={} -> {} ", id, response.isError() ? "error" : response.getData().getUlogin() );
 
@@ -52,7 +52,7 @@ public class AccountControllerImpl implements AccountController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< UserLogin > response = accountService.getContactAccount( descriptor.makeAuthToken(), personId );
+        Result< UserLogin > response = accountService.getContactAccount( descriptor.makeAuthToken(), personId );
 
         log.debug( "getContactAccount(): personId={} -> {} ", personId, response.isError() ? "error" : response.getData().getUlogin() );
 
@@ -72,7 +72,7 @@ public class AccountControllerImpl implements AccountController {
         if ( !isLoginUnique( userLogin.getUlogin(), userLogin.getId() ) )
             throw new RequestFailedException ( En_ResultStatus.ALREADY_EXIST );
 
-        CoreResponse< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
+        Result< UserLogin > response = accountService.saveAccount( descriptor.makeAuthToken(), userLogin, sendWelcomeEmail );
 
         log.debug( "saveAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
@@ -89,7 +89,7 @@ public class AccountControllerImpl implements AccountController {
 
         log.debug( "isLoginUnique(): login={}, excludeId={}", login, excludeId );
 
-        CoreResponse< Boolean > response = accountService.checkUniqueLogin( login, excludeId );
+        Result< Boolean > response = accountService.checkUniqueLogin( login, excludeId );
 
         log.debug( "isLoginUnique() -> {}, {}", response.getStatus(), response.getData() != null ? response.getData() : null );
 
@@ -105,7 +105,7 @@ public class AccountControllerImpl implements AccountController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        CoreResponse< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), accountId );
+        Result< Boolean > response = accountService.removeAccount( descriptor.makeAuthToken(), accountId );
         log.debug( "removeAccount(): result={}", response.isOk() ? "ok" : response.getStatus() );
 
         if (response.isOk()) {
@@ -121,7 +121,7 @@ public class AccountControllerImpl implements AccountController {
 
         AuthToken token = ServiceUtils.getAuthToken(sessionService, httpServletRequest);
 
-        CoreResponse<?> response = accountService.updateAccountPassword(token, loginId, currentPassword, newPassword);
+        Result<?> response = accountService.updateAccountPassword(token, loginId, currentPassword, newPassword);
 
         log.debug("updateAccountPassword(): result={}", response.isOk() ? "ok" : response.getStatus());
 
