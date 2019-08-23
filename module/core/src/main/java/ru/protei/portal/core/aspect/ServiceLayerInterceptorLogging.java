@@ -18,7 +18,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Журналирование
  */
 @Aspect
-@Order(1)
+@Order(0)
 public class ServiceLayerInterceptorLogging {
 
     private static final Logger log = getLogger("service");

@@ -42,7 +42,7 @@ import static ru.protei.portal.api.struct.Result.error;
  * Created by Mike on 06.11.2016.
  */
 @Aspect
-@Order(0)
+@Order(1)
 public class ServiceLayerInterceptor {
 
     private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);
