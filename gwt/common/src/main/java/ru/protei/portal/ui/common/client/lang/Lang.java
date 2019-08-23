@@ -1737,4 +1737,10 @@ public interface Lang extends Messages, ContactItemLang {
     String complexName();
 
     String devUnitComplex();
+
+    String complexesAndProducts();
+
+    String componentDescription();
+
+    String complexDescription();
 }

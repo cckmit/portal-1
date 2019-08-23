@@ -2,6 +2,7 @@ package ru.protei.portal.ui.product.client.activity.preview;
 
 import com.google.gwt.user.client.ui.IsWidget;
 import com.google.gwt.user.client.ui.Widget;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 
 /**
  * Абстракция вида карточки просмотра продукта
@@ -9,7 +10,7 @@ import com.google.gwt.user.client.ui.Widget;
 public interface AbstractProductPreviewView extends IsWidget {
 
     void setName( String name );
-    void setType( String type );
+    void setType(En_DevUnitType type );
     void setActivity( AbstractProductPreviewActivity activity );
     void watchForScroll(boolean isWatch);
     void setInfo( String value );

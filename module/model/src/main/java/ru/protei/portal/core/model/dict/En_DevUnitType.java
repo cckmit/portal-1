@@ -32,6 +32,6 @@ public enum En_DevUnitType {
     }
 
     public static En_DevUnitType[] getValidValues() {
-        return new En_DevUnitType[] {PRODUCT, COMPONENT, COMPLEX};
+        return new En_DevUnitType[] {COMPLEX, PRODUCT, COMPONENT};
     }
 }

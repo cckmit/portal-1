@@ -75,6 +75,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         productService.isNameUnique(
                 value,
+                currType,
                 productId,
                 new RequestCallback<Boolean>() {
                     @Override
@@ -132,6 +133,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     @Override
     public void onTypeChanged(En_DevUnitType type) {
+        currType = type;
         if (type.getId() != product.getTypeId()) {
             view.parents().setValue(null);
             view.children().setValue(null);
@@ -174,6 +176,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
     private void resetView () {
         view.name().setValue("");
         view.type().setValue(En_DevUnitType.PRODUCT, true);
+        currType = En_DevUnitType.PRODUCT;
         view.parents().setValue(null);
         view.children().setValue(null);
         view.info().setValue("");
@@ -187,6 +190,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
         view.setCurrentProduct(devUnit.toProductShortView());
         view.name().setValue(devUnit.getName());
         view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
+        currType = isCreate ? En_DevUnitType.PRODUCT : devUnit.getType();
         view.info().setValue(devUnit.getInfo());
         view.productSubscriptions().setValue(
                 devUnit.getSubscriptions().stream()
@@ -274,6 +278,7 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private Long productId;
     private DevUnit product;
+    private En_DevUnitType currType;
 
     private AppEvents.InitDetails init;
     private static final String PRODUCT = "product_view_is_preview_displayed";

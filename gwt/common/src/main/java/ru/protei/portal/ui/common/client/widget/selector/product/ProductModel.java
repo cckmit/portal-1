@@ -49,13 +49,14 @@ public abstract class ProductModel implements Activity, SelectorModel<ProductSho
         updateQuery(selector, enDevUnitState, enDevUnitTypes);
     }
 
-    public void subscribeAndRequest(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
-        requestOptions(selector, makeQuery(enDevUnitState, enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet())));
-    }
-
     public void updateQuery( SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes ) {
         ProductQuery query = makeQuery(enDevUnitState, enDevUnitTypes == null ? null : Arrays.stream(enDevUnitTypes).collect(Collectors.toSet()));
         selectorToQuery.put(selector, query);
+    }
+
+    public void updateQueryAndRequest(SelectorWithModel<ProductShortView> selector, En_DevUnitState enDevUnitState, En_DevUnitType... enDevUnitTypes) {
+        updateQuery(selector, enDevUnitState, enDevUnitTypes);
+        requestOptions(selector, selectorToQuery.get(selector));
     }
     private void clearSubscribersOptions() {
         for (SelectorWithModel<ProductShortView> subscriber : selectorToQuery.keySet()) {

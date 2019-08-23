@@ -18,7 +18,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
-import ru.protei.portal.ui.common.client.widget.selector.product.common.CommonProductMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.devunit.DevUnitMultiSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -112,19 +112,24 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @Override
     public void setMutableState(En_DevUnitType type) {
         parentsContainerLabel.setText(lang.belongsTo());
-        childrenContainerLabel.setText(lang.components());
         parentsContainer.removeStyleName("hide");
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
+            childrenContainerLabel.setText(lang.products());
+
             parentsContainer.addStyleName("hide");
             children.setTypes(En_DevUnitType.PRODUCT);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
+            childrenContainerLabel.setText(lang.components());
+
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
+            childrenContainerLabel.setText(lang.components());
+
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
             children.setTypes(En_DevUnitType.COMPONENT);
         }
@@ -203,6 +208,7 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
             activity.onTypeChanged(event.getValue());
         }
         setMutableState(event.getValue());
+        checkName();
     }
 
     private void checkName ()
@@ -243,10 +249,10 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     Label childrenContainerLabel;
     @Inject
     @UiField(provided = true)
-    CommonProductMultiSelector parents;
+    DevUnitMultiSelector parents;
     @Inject
     @UiField(provided = true)
-    CommonProductMultiSelector children;
+    DevUnitMultiSelector children;
     @UiField
     Element verifiableIcon;
     @UiField
