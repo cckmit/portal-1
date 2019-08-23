@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import protei.sql.query.Tm_SqlQueryHelper;
 import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
@@ -35,6 +36,7 @@ import static ru.protei.portal.core.model.helper.PhoneUtils.normalizePhoneNumber
 
 @RestController
 @RequestMapping(value = "/api/worker", headers = "Accept=application/xml")
+@EnableWebMvc
 public class WorkerController {
 
     private static Logger logger = LoggerFactory.getLogger(WorkerController.class);
