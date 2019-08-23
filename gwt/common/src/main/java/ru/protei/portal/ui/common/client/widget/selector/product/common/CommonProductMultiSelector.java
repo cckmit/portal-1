@@ -1,6 +1,7 @@
-package ru.protei.portal.ui.common.client.widget.selector.product.complex;
+package ru.protei.portal.ui.common.client.widget.selector.product.common;
 
 import com.google.inject.Inject;
+import ru.protei.portal.core.model.dict.En_DevUnitState;
 import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.lang.Lang;
@@ -12,10 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ComplexMultiSelector extends MultipleInputSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
+public class CommonProductMultiSelector extends MultipleInputSelector<ProductShortView> implements SelectorWithModel<ProductShortView> {
     @Inject
     public void init(ProductModel model, Lang lang) {
-        model.subscribe(this, null, En_DevUnitType.COMPLEX);
+        this.model = model;
+        model.subscribe(this, En_DevUnitState.ACTIVE, null);
         setSelectorModel(model);
         setAddName(lang.buttonAdd());
         setClearName(lang.buttonClear());
@@ -33,6 +35,10 @@ public class ComplexMultiSelector extends MultipleInputSelector<ProductShortView
         fillOptions();
     }
 
+    public void setTypes(En_DevUnitType... types) {
+        model.subscribeAndRequest(this, null, types);
+    }
+
     private void fillOptions() {
         clearOptions();
         options.stream()
@@ -40,6 +46,8 @@ public class ComplexMultiSelector extends MultipleInputSelector<ProductShortView
                 .forEach(option -> addOption(option.getName(), option));
     }
 
+
     private List<ProductShortView> options = new ArrayList<>();
     private ProductShortView exclude = null;
+    private ProductModel model;
 }

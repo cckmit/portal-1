@@ -18,9 +18,7 @@ import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.portal.ui.common.client.common.NameStatus;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.widget.makdown.MarkdownAreaWithPreview;
-import ru.protei.portal.ui.common.client.widget.selector.product.complex.ComplexMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.component.ComponentMultiSelector;
-import ru.protei.portal.ui.common.client.widget.selector.product.product.ProductMultiSelector;
+import ru.protei.portal.ui.common.client.widget.selector.product.common.CommonProductMultiSelector;
 import ru.protei.portal.ui.common.client.widget.subscription.list.SubscriptionList;
 import ru.protei.portal.ui.common.client.widget.subscription.model.Subscription;
 import ru.protei.portal.ui.common.client.widget.validatefield.HasValidable;
@@ -71,9 +69,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setCurrentProduct(ProductShortView product) {
-        complexes.exclude(product);
-        products.exclude(product);
-        components.exclude(product);
+        parents.exclude(product);
+        children.exclude(product);
     }
 
     @Override
@@ -114,30 +111,22 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
     @Override
     public void setMutableState(En_DevUnitType type) {
-        complexContainerLabel.setText(lang.belongsTo());
-        componentContainerLabel.setText(lang.components());
+        parentsContainerLabel.setText(lang.belongsTo());
+        childrenContainerLabel.setText(lang.components());
+        parentsContainer.removeStyleName("hide");
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
-            productContainer.removeStyleName("hide");
-            complexContainer.addStyleName("hide");
-            componentContainer.addStyleName("hide");
-
-            productContainerLabel.setText(lang.products());
-
+            parentsContainer.addStyleName("hide");
+            children.setTypes(En_DevUnitType.PRODUCT);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
-            productContainer.addStyleName("hide");
-            complexContainer.removeStyleName("hide");
-            componentContainer.removeStyleName("hide");
-
+            parents.setTypes(En_DevUnitType.COMPLEX);
+            children.setTypes(En_DevUnitType.COMPONENT);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
-            complexContainer.addStyleName("hide");
-            productContainer.removeStyleName("hide");
-            componentContainer.removeStyleName("hide");
-
-            productContainerLabel.setText(lang.belongsTo());
+            parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
+            children.setTypes(En_DevUnitType.COMPONENT);
         }
     }
 
@@ -145,18 +134,13 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     public HasValue<String> info() { return info; }
 
     @Override
-    public HasValue<Set<ProductShortView>> complexes() {
-        return complexes;
+    public HasValue<Set<ProductShortView>> parents() {
+        return parents;
     }
 
     @Override
-    public HasValue<Set<ProductShortView>> products() {
-        return products;
-    }
-
-    @Override
-    public HasValue<Set<ProductShortView>> components() {
-        return components;
+    public HasValue<Set<ProductShortView>> children() {
+        return children;
     }
 
     @Override
@@ -250,26 +234,19 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     @UiField(provided = true)
     ProductTypeBtnGroup type;
     @UiField
-    HTMLPanel complexContainer;
+    HTMLPanel parentsContainer;
     @UiField
-    HTMLPanel productContainer;
+    HTMLPanel childrenContainer;
     @UiField
-    HTMLPanel componentContainer;
+    Label parentsContainerLabel;
     @UiField
-    Label complexContainerLabel;
-    @UiField
-    Label productContainerLabel;
-    @UiField
-    Label componentContainerLabel;
+    Label childrenContainerLabel;
     @Inject
     @UiField(provided = true)
-    ComplexMultiSelector complexes;
+    CommonProductMultiSelector parents;
     @Inject
     @UiField(provided = true)
-    ProductMultiSelector products;
-    @Inject
-    @UiField(provided = true)
-    ComponentMultiSelector components;
+    CommonProductMultiSelector children;
     @UiField
     Element verifiableIcon;
     @UiField

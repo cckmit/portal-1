@@ -1735,4 +1735,6 @@ public interface Lang extends Messages, ContactItemLang {
     String productChangeStateConfirmMessage();
 
     String complexName();
+
+    String devUnitComplex();
 }

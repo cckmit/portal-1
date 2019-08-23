@@ -29,11 +29,9 @@ public interface AbstractProductEditView extends IsWidget {
 
     HasValue<String> info();
 
-    HasValue<Set<ProductShortView>> complexes();
+    HasValue<Set<ProductShortView>> parents();
 
-    HasValue<Set<ProductShortView>> products();
-
-    HasValue<Set<ProductShortView>> components();
+    HasValue<Set<ProductShortView>> children();
 
     void setNameStatus ( NameStatus status );
 
