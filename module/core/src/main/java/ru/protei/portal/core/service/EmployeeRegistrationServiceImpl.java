@@ -24,6 +24,8 @@ import static ru.protei.portal.core.model.helper.CollectionUtils.contains;
 import static ru.protei.portal.core.model.helper.CollectionUtils.isEmpty;
 import static ru.protei.portal.core.model.helper.StringUtils.isBlank;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 
 public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationService {
 
@@ -61,43 +63,43 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
     @Override
     public CoreResponse<SearchResult<EmployeeRegistration>> getEmployeeRegistrations(AuthToken token, EmployeeRegistrationQuery query) {
         SearchResult<EmployeeRegistration> sr = employeeRegistrationDAO.getSearchResult(query);
-        return new CoreResponse<SearchResult<EmployeeRegistration>>().success(sr);
+        return ok(sr);
     }
 
     @Override
     public CoreResponse<EmployeeRegistration> getEmployeeRegistration(AuthToken token, Long id) {
         EmployeeRegistration employeeRegistration = employeeRegistrationDAO.get(id);
         if (employeeRegistration == null)
-            return new CoreResponse<EmployeeRegistration>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         jdbcManyRelationsHelper.fillAll(employeeRegistration);
         if(!isEmpty(employeeRegistration.getCuratorsIds())){
             employeeRegistration.setCurators ( personDAO.partialGetListByKeys( employeeRegistration.getCuratorsIds(), "id", "displayShortName" ) );
         }
-        return new CoreResponse<EmployeeRegistration>().success(employeeRegistration);
+        return ok(employeeRegistration);
     }
 
     @Override
     @Transactional
     public CoreResponse<Long> createEmployeeRegistration(AuthToken token, EmployeeRegistration employeeRegistration) {
         if (employeeRegistration == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = createCaseObjectFromEmployeeRegistration(employeeRegistration);
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
 
         employeeRegistration.setId(id);
         Long employeeRegistrationId = employeeRegistrationDAO.persist(employeeRegistration);
 
         if (employeeRegistrationId == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
         // Заполнить связанные поля
         employeeRegistration = employeeRegistrationDAO.get( employeeRegistrationId );
 
         if(employeeRegistration == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
 
         publisherService.publishEvent(new EmployeeRegistrationEvent(this, employeeRegistration));
 
@@ -107,7 +109,7 @@ public class EmployeeRegistrationServiceImpl implements EmployeeRegistrationServ
             createEquipmentYoutrackIssueIfNeeded(employeeRegistration);
         }
 
-        return new CoreResponse<Long>().success(id);
+        return ok(id);
     }
 
     private CaseObject createCaseObjectFromEmployeeRegistration(EmployeeRegistration employeeRegistration) {

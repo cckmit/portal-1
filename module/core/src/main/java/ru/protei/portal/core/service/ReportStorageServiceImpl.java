@@ -12,6 +12,9 @@ import ru.protei.portal.core.model.struct.ReportContent;
 import java.io.*;
 import java.util.List;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 public class ReportStorageServiceImpl implements ReportStorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(ReportStorageServiceImpl.class);
@@ -36,11 +39,11 @@ public class ReportStorageServiceImpl implements ReportStorageService {
             }
         } catch (IOException e) {
             logger.warn("Failed to save content", e);
-            return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
         } finally {
             IOUtils.closeQuietly(outputStream);
         }
-        return new CoreResponse().success(null);
+        return ok();
     }
 
     @Override
@@ -49,10 +52,10 @@ public class ReportStorageServiceImpl implements ReportStorageService {
         try {
             ReportContent content = new ReportContent(reportId);
             content.setContent(new FileInputStream(reportPath));
-            return new CoreResponse<ReportContent>().success(content);
+            return ok(content);
         } catch (FileNotFoundException e) {
             logger.warn("Failed to get content", e);
-            return new CoreResponse().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
     }
 
@@ -64,16 +67,16 @@ public class ReportStorageServiceImpl implements ReportStorageService {
             if (file.exists() && file.isFile()) {
                 file.delete();
             }
-            return new CoreResponse().success(null);
+            return ok();
         } catch (Throwable t) {
             logger.warn("Failed to remove content", t);
-            return new CoreResponse().error(En_ResultStatus.NOT_REMOVED);
+            return error(En_ResultStatus.NOT_REMOVED);
         }
     }
 
     @Override
     public CoreResponse removeContent(List<Long> reportIds) {
-        CoreResponse coreResponse = new CoreResponse().success(null);
+        CoreResponse coreResponse = ok();
         for (Long reportId : reportIds) {
             CoreResponse result = removeContent(reportId);
             if (result.isError()) {
@@ -85,7 +88,7 @@ public class ReportStorageServiceImpl implements ReportStorageService {
 
     @Override
     public CoreResponse<String> getFileName(String reportId) {
-        return new CoreResponse<String>().success("report-" + reportId + ".xlsx");
+        return ok("report-" + reportId + ".xlsx");
     }
 
     private String makeReportPath(Long reportId, String rootPath) {

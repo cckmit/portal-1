@@ -13,6 +13,9 @@ import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.service.user.AuthService;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 @RestController
 public class LoginController {
 
@@ -34,10 +37,10 @@ public class LoginController {
         CoreResponse<UserSessionDescriptor> result = authService.login(appSessionId, ulogin, upass, userIp, userAgent);
 
         if (result.isError())
-            return new CoreResponse().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+            return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
 
 
-        return new CoreResponse<String>().success("ok").redirect(SecurityDefs.MAIN_WORKSPACE_URI);
+        return ok("ok").redirect(SecurityDefs.MAIN_WORKSPACE_URI);
       }
 
 
@@ -50,7 +53,7 @@ public class LoginController {
             logger.debug("logout success, sid=" + appSessionId);
         }
 
-        return new CoreResponse<String>().redirect(SecurityDefs.LOGIN_PAGE_URI);
+        return new CoreResponse<String>(null,null,null).redirect(SecurityDefs.LOGIN_PAGE_URI);
     }
 
 }

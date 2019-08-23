@@ -26,6 +26,9 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 /**
  * Реализация сервиса управления учетными записями
  */
@@ -62,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
 
         jdbcManyRelationsHelper.fill(sr.getResults(), "roles");
 
-        return new CoreResponse<SearchResult<UserLogin>>().success(sr);
+        return ok( sr);
     }
 
     @Override
@@ -70,12 +73,12 @@ public class AccountServiceImpl implements AccountService {
         UserLogin userLogin = userLoginDAO.get( id );
 
         if ( userLogin == null ) {
-            return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+            return  error( En_ResultStatus.NOT_FOUND );
         }
 
         jdbcManyRelationsHelper.fill( userLogin, "roles" );
 
-        return new CoreResponse< UserLogin >().success( userLogin );
+        return ok( userLogin );
     }
 
     @Override
@@ -83,27 +86,27 @@ public class AccountServiceImpl implements AccountService {
         UserLogin userLogin = userLoginDAO.findByPersonId( personId );
 
         if ( userLogin == null ) {
-            return  new CoreResponse< UserLogin >().error( En_ResultStatus.NOT_FOUND );
+            return  error( En_ResultStatus.NOT_FOUND );
         }
 
         jdbcManyRelationsHelper.fill( userLogin, "roles" );
 
-        return new CoreResponse< UserLogin >().success( userLogin );
+        return ok( userLogin );
     }
 
     @Override
     @Transactional
     public CoreResponse< UserLogin > saveAccount( AuthToken token, UserLogin userLogin, Boolean sendWelcomeEmail ) {
         if ( !isValidLogin( userLogin ) )
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.VALIDATION_ERROR );
+            return error( En_ResultStatus.VALIDATION_ERROR );
 
         if ( !isUniqueLogin( userLogin.getUlogin(), userLogin.getId() ) ) {
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.ALREADY_EXIST );
+            return error( En_ResultStatus.ALREADY_EXIST );
         }
 
         if (userLogin.getRoles() == null || userLogin.getRoles().size() == 0) {
             log.warn("saveAccount(): Can't save account. Expected one or more Roles.");
-            return new CoreResponse< UserLogin >().error( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         userLogin.setUlogin( userLogin.getUlogin().trim() );
@@ -140,10 +143,10 @@ public class AccountServiceImpl implements AccountService {
                 publisherService.publishEvent(userLoginUpdateEvent);
             }
 
-            return new CoreResponse< UserLogin >().success( userLogin );
+            return ok( userLogin );
         }
 
-        return new CoreResponse< UserLogin >().error( En_ResultStatus.INTERNAL_ERROR );
+        return error( En_ResultStatus.INTERNAL_ERROR );
     }
 
     @Override
@@ -161,19 +164,19 @@ public class AccountServiceImpl implements AccountService {
     public CoreResponse< Boolean > checkUniqueLogin( String login, Long excludeId ) {
 
         if( HelperFunc.isEmpty( login ) )
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error( En_ResultStatus.INCORRECT_PARAMS);
 
-        return new CoreResponse< Boolean >().success( isUniqueLogin( login, excludeId ) );
+        return ok( isUniqueLogin( login, excludeId ) );
     }
 
     @Override
     public CoreResponse< Boolean > removeAccount( AuthToken token, Long accountId ) {
 
         if ( userLoginDAO.removeByKey( accountId ) ) {
-            return new CoreResponse< Boolean >().success( true );
+            return ok( true );
         }
 
-        return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
+        return error( En_ResultStatus.INTERNAL_ERROR );
     }
 
     @Override
@@ -183,17 +186,17 @@ public class AccountServiceImpl implements AccountService {
         Long personIdFromSession = authService.findSession(token).getPerson().getId();
 
         if (userLogin.isLDAP_Auth() || !Objects.equals(personIdFromSession, userLogin.getPersonId())) {
-            return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
+            return error( En_ResultStatus.NOT_AVAILABLE);
         }
 
         String md5Password = DigestUtils.md5DigestAsHex(currentPassword.getBytes());
         if (!userLogin.getUpass().equalsIgnoreCase(md5Password)) {
-            return new CoreResponse().error(En_ResultStatus.INVALID_CURRENT_PASSWORD);
+            return error( En_ResultStatus.INVALID_CURRENT_PASSWORD);
         }
         userLogin.setUpass(DigestUtils.md5DigestAsHex(newPassword.getBytes()));
         userLogin.setLastPwdChange(new Date());
 
-        return userLoginDAO.saveOrUpdate(userLogin) ? new CoreResponse<>().success() : new CoreResponse().error(En_ResultStatus.INTERNAL_ERROR);
+        return userLoginDAO.saveOrUpdate(userLogin) ? ok() : error( En_ResultStatus.INTERNAL_ERROR);
     }
 
     private boolean isValidLogin( UserLogin userLogin ) {

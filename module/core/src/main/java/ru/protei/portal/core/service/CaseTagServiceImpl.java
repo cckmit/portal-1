@@ -21,38 +21,39 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 public class CaseTagServiceImpl implements CaseTagService {
 
     @Override
     @Transactional
     public CoreResponse saveTag(AuthToken authToken, CaseTag caseTag) {
         if (!isCaseTagValid(caseTag)) {
-            return new CoreResponse<>().error(En_ResultStatus.VALIDATION_ERROR);
+            return error(En_ResultStatus.VALIDATION_ERROR);
         }
         boolean result;
         try {
             if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
-                return new CoreResponse<>().error(En_ResultStatus.PERMISSION_DENIED);
+                return error(En_ResultStatus.PERMISSION_DENIED);
             }
             result = caseTagDAO.saveOrUpdate(caseTag);
         } catch (DuplicateKeyException exception) {
-            return new CoreResponse<>().error(En_ResultStatus.ALREADY_EXIST);
+            return error(En_ResultStatus.ALREADY_EXIST);
         }
         return !result ?
-                new CoreResponse<>().error(En_ResultStatus.NOT_CREATED) :
-                new CoreResponse<>().success();
+                CoreResponse.error( En_ResultStatus.NOT_CREATED) :
+                ok();
     }
 
     @Override
     @Transactional
     public CoreResponse removeTag(AuthToken authToken, CaseTag caseTag) {
         if (caseTag.getId() != null && !Objects.equals(caseTagDAO.get(caseTag.getId()).getPersonId(), caseTag.getPersonId())) {
-            return new CoreResponse<>().error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
         return !caseTagDAO.remove(caseTag) ?
-                new CoreResponse<>().error(En_ResultStatus.NOT_REMOVED) :
-                new CoreResponse<>().success();
+                CoreResponse.error( En_ResultStatus.NOT_REMOVED) :
+                ok();
     }
 
     @Override
@@ -91,7 +92,7 @@ public class CaseTagServiceImpl implements CaseTagService {
 
         List<CaseTag> caseTags = caseTagDAO.getListByQuery(query);
 
-        return new CoreResponse<List<CaseTag>>().success(caseTags);
+        return ok(caseTags);
     }
 
     private boolean isCaseTagValid(CaseTag caseTag) {

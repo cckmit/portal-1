@@ -21,7 +21,7 @@ import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 
 import java.util.*;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.error;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
@@ -53,35 +53,35 @@ public class CaseLinkServiceImpl implements CaseLinkService {
         linkMap.put(En_CaseLink.CRM, portalConfig.data().getCaseLinkConfig().getLinkCrm());
         linkMap.put(En_CaseLink.CRM_OLD, portalConfig.data().getCaseLinkConfig().getLinkOldCrm());
         linkMap.put(En_CaseLink.YT, portalConfig.data().getCaseLinkConfig().getLinkYouTrack());
-        return new CoreResponse<Map<En_CaseLink, String>>().success(linkMap);
+        return ok(linkMap);
     }
 
     @Override
     public CoreResponse<List<CaseLink>> getLinks(AuthToken token, Long caseId) {
         if ( caseId == null ) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         List<CaseLink> caseLinks = caseLinkDAO.getListByQuery(new CaseLinkQuery(caseId, isShowOnlyPrivateLinks(token)));
-        return new CoreResponse<List<CaseLink>>().success(caseLinks);
+        return ok(caseLinks);
     }
 
     @Override
     @Transactional
     public CoreResponse mergeLinks(AuthToken token, Long caseId, Long caseNumber, List<CaseLink> caseLinks) {
         if (caseLinks == null) {
-            return new CoreResponse<>().success();
+            return ok();
         }
 
         caseLinks.forEach(link -> link.setCaseId(caseId));
         if ( caseId == null || caseNumber == null || !checkLinksIsValid(caseLinks)) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         boolean isShowOnlyPrivate = isShowOnlyPrivateLinks(token);
         // запрещено изменение ссылок вне зоны видимости
         if ( isShowOnlyPrivate && caseLinks.stream().anyMatch(CaseLink::isPrivate) ) {
-            return new CoreResponse().error(En_ResultStatus.PERMISSION_DENIED);
+            return error(En_ResultStatus.PERMISSION_DENIED);
         }
 
         // работаем только с пулом доступных линков по приватности
@@ -122,7 +122,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
             caseLinkDAO.persistBatch(toAddLinks);
         }
 
-        return new CoreResponse<>().success();
+        return ok();
     }
 
     @Override
@@ -165,7 +165,7 @@ public class CaseLinkServiceImpl implements CaseLinkService {
     private CoreResponse<CaseLink> findCaseLinkByRemoterId( Collection<CaseLink> caseLinks, String youtrackId ) {
         return find( caseLinks, caseLink -> Objects.equals( caseLink.getRemoteId(), youtrackId ) )
                 .map( CoreResponse::ok )
-                .orElse( errorSt( En_ResultStatus.NOT_FOUND ) );
+                .orElse( error( En_ResultStatus.NOT_FOUND ) );
     }
 
     private CoreResponse<Long> addCaseLinkOnToYoutrack( Long caseNumber, String youtrackId ) {

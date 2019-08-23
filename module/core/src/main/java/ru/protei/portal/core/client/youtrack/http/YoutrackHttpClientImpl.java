@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.error;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 
 /**
@@ -70,23 +70,23 @@ public class YoutrackHttpClientImpl implements YoutrackHttpClient {
             response = work.apply( ytClient, authHeaders );
         } catch (Exception e) {
             log.warn( "execute(): Can't execute youtrack request, unexpected exception: {}", e );
-            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+            return error( En_ResultStatus.GET_DATA_ERROR );
         }
         if (response == null) {
             log.warn( "execute(): Can't execute youtrack request, result is null" );
-            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+            return error( En_ResultStatus.GET_DATA_ERROR );
         }
         if (HttpStatus.NOT_FOUND.equals( response.getStatusCode() )) {
             log.warn( "execute(): Can't get data from youtrack, NOT_FOUND. " );
-            return errorSt( En_ResultStatus.NOT_FOUND );
+            return error( En_ResultStatus.NOT_FOUND );
         }
         if (!errorHandler.isOk()) {
             if (HttpStatus.NOT_FOUND.equals( errorHandler.getStatus() )) {
                 log.warn( "execute(): Can't get data from youtrack, request failed with error NOT_FOUND. message: {}", response.getBody() );
-                return errorSt( En_ResultStatus.NOT_FOUND );
+                return error( En_ResultStatus.NOT_FOUND );
             }
             log.warn( "execute(): Can't execute youtrack request, request failed with status {}. message: {} ", errorHandler.getStatus(), response.getBody() );
-            return errorSt( En_ResultStatus.GET_DATA_ERROR );
+            return error( En_ResultStatus.GET_DATA_ERROR );
         }
 
         return ok( response );

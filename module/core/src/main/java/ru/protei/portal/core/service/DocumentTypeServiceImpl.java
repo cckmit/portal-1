@@ -9,6 +9,8 @@ import ru.protei.portal.core.model.ent.DocumentType;
 import ru.protei.portal.core.model.query.DocumentTypeQuery;
 
 import java.util.List;
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 
 public class DocumentTypeServiceImpl implements DocumentTypeService {
     @Autowired
@@ -18,17 +20,17 @@ public class DocumentTypeServiceImpl implements DocumentTypeService {
     public CoreResponse<List<DocumentType>> documentTypeList(AuthToken token, DocumentTypeQuery query) {
         List<DocumentType> list = documentTypeDAO.listByQuery(query);
         if (list == null) {
-            return new CoreResponse<List<DocumentType>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
-        return new CoreResponse<List<DocumentType>>().success(list);
+        return ok(list);
     }
 
     @Override
     public CoreResponse<DocumentType> saveDocumentType(AuthToken token, DocumentType documentType ) {
         if ( !documentTypeDAO.saveOrUpdate(documentType) ) {
-            return new CoreResponse<DocumentType>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<DocumentType>().success(documentType);
+        return ok(documentType);
     }
 }

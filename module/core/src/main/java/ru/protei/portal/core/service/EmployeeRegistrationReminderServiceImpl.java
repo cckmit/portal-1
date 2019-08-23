@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.ent.Person;
 
 import java.util.*;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.*;
 import static ru.protei.portal.core.model.helper.StringUtils.join;
 
@@ -33,7 +34,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             addCaseComment( employeeRegistration.getId(), makeEmployeeFeedbackComment( employeeRegistration.getPerson() ) );
         }
 
-        return new CoreResponse<Boolean>().success( true );
+        return ok(true );
     }
 
 
@@ -49,7 +50,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             addCaseComment( employeeRegistration.getId(), makeDevelopmentAgendaComment( employeeRegistration.getPerson() ) );
         }
 
-        return new CoreResponse<Boolean>().success( true );
+        return ok(true );
     }
 
     @Override
@@ -77,7 +78,7 @@ public class EmployeeRegistrationReminderServiceImpl implements EmployeeRegistra
             addCaseComment( employeeRegistration.getId(), message.toString() );
         }
 
-        return new CoreResponse<Boolean>().success( true );
+        return ok(true );
     }
 
     private StringBuilder makeProbationComment( String headOfDepartmentName ) {

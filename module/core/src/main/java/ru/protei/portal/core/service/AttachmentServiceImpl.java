@@ -20,6 +20,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 /**
  * Created by bondarenko on 23.01.17.
  */
@@ -62,7 +65,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         if (ca != null) {
             boolean isDeleted = caseAttachmentDAO.removeByKey(ca.getId());
             if(!isDeleted)
-                return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_REMOVED);
+                return error( En_ResultStatus.NOT_REMOVED);
 
             caseService.updateCaseModified( token, ca.getCaseId(), new Date() );
 
@@ -99,7 +102,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     public CoreResponse<Boolean> removeAttachment(AuthToken token, En_CaseType caseType, Long id) {
         Attachment attachment = attachmentDAO.partialGet(id, "ext_link");
         if(attachment == null)
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+            return error( En_ResultStatus.NOT_FOUND);
 
         boolean result =
                 fileStorage.deleteFile(attachment.getExtLink())
@@ -107,9 +110,9 @@ public class AttachmentServiceImpl implements AttachmentService {
                 attachmentDAO.removeByKey(id);
 
         if (!result)
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_REMOVED);
+            return error( En_ResultStatus.NOT_REMOVED);
 
-        return new CoreResponse<Boolean>().success(true);
+        return ok( true);
     }
 
     @Override
@@ -119,9 +122,9 @@ public class AttachmentServiceImpl implements AttachmentService {
         );
 
         if(list == null)
-            return new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
+            return error( En_ResultStatus.GET_DATA_ERROR);
 
-        return new CoreResponse<List<Attachment>>().success(list);
+        return ok( list);
     }
 
     @Override
@@ -129,15 +132,15 @@ public class AttachmentServiceImpl implements AttachmentService {
         List<Attachment> list = attachmentDAO.getListByKeys(ids);
 
         if(list == null)
-            return new CoreResponse().error(En_ResultStatus.GET_DATA_ERROR);
+            return error( En_ResultStatus.GET_DATA_ERROR);
 
-        return new CoreResponse<List<Attachment>>().success(list);
+        return ok( list);
     }
 
     @Override
     public CoreResponse<List<Attachment>> getAttachments(AuthToken token, En_CaseType caseType, Collection<CaseAttachment> caseAttachments) {
         if(caseAttachments == null || caseAttachments.isEmpty())
-            return new CoreResponse<List<Attachment>>().success(Collections.emptyList());
+            return ok( Collections.emptyList());
 
         return getAttachments(
                 token, caseType,
@@ -156,20 +159,20 @@ public class AttachmentServiceImpl implements AttachmentService {
             id = attachmentDAO.persist(attachment);
 
             if(id == null)
-                return new CoreResponse().error(En_ResultStatus.NOT_CREATED);
+                return error( En_ResultStatus.NOT_CREATED);
         }
         else
             attachmentDAO.merge(attachment);
 
-        return new CoreResponse<Long>().success(id);
+        return ok( id);
     }
 
     @Override
     public CoreResponse<String> getAttachmentNameByExtLink(String extLink) {
         Attachment attachment = attachmentDAO.partialGetByCondition("ext_link = ?", Collections.singletonList(extLink), "file_name");
         if (attachment == null) {
-            return new CoreResponse<String>().error(En_ResultStatus.NOT_FOUND);
+            return error( En_ResultStatus.NOT_FOUND);
         }
-        return new CoreResponse<String>().success(attachment.getFileName());
+        return ok( attachment.getFileName());
     }
 }

@@ -20,8 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.StringUtils.isEmpty;
-import static ru.protei.portal.core.model.helper.StringUtils.isNotEmpty;
 
 /**
  * Created by michael on 29.06.16.
@@ -164,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
     public CoreResponse<UserSessionDescriptor> login(String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
         if ( StringUtils.isEmpty(ulogin) || StringUtils.isEmpty(pwd) ) {
             logger.debug("null login or pwd, auth-failed");
-            return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+            return error( En_ResultStatus.INVALID_LOGIN_OR_PWD);
         }
         String loginSuffix = config.data().getLoginSuffix();
 
@@ -193,7 +194,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if ( loginResponse != En_ResultStatus.OK ) {
-            return new CoreResponse<UserSessionDescriptor>().error(loginResponse);
+            return error( loginResponse);
         }
 
         jdbcManyRelationsHelper.fill(login, "roles");
@@ -204,12 +205,12 @@ public class AuthServiceImpl implements AuthService {
                 logger.warn("Security exception, client " + login.getUlogin() + " from host " + ip
                         + " is trying to accessType session " + descriptor.getSessionId()
                         + " created for " + descriptor.getLogin().getUlogin() + "@" + descriptor.getSession().getClientIp());
-                return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
+                return error( En_ResultStatus.INVALID_SESSION_ID);
             }
 
             if (!descriptor.getSession().getClientIp().equals(ip)) {
                 logger.warn("Security exception, host " + ip + " is trying to accessType session " + descriptor.getSessionId() + " created for " + descriptor.getSession().getClientIp());
-                return new CoreResponse().error(En_ResultStatus.INVALID_SESSION_ID);
+                return error( En_ResultStatus.INVALID_SESSION_ID);
             }
         } else {
             descriptor = new UserSessionDescriptor();
@@ -218,7 +219,7 @@ public class AuthServiceImpl implements AuthService {
         Person person = personDAO.get(login.getPersonId());
         if (person.isFired() || person.isDeleted()) {
             logger.debug("login [{}] - person {}, access denied", ulogin, person.isFired() ? "fired" : "deleted");
-            return new CoreResponse().error(En_ResultStatus.PERMISSION_DENIED);
+            return error( En_ResultStatus.PERMISSION_DENIED);
         }
 
         Company company = companyDAO.get(person.getCompanyId());
@@ -245,7 +246,7 @@ public class AuthServiceImpl implements AuthService {
         sessionDAO.persist(descriptor.getSession());
 
         sessionCache.put(descriptor.getSessionId(), descriptor);
-        return new CoreResponse().success(descriptor);
+        return ok( descriptor);
     }
 
     @Override

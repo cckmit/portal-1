@@ -17,6 +17,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 public class AuthServiceMock implements AuthService {
 
     @Autowired
@@ -60,7 +63,7 @@ public class AuthServiceMock implements AuthService {
     public CoreResponse<UserSessionDescriptor> login(String appSessionID, String login, String pwd, String ip, String userAgent) {
         UserLogin ulogin = userLoginDAO.findByLogin(login);
         if (ulogin == null) {
-            return new CoreResponse<UserSessionDescriptor>().success(descriptor);
+            return ok( descriptor);
         } else {
             Person person = personDAO.get(ulogin.getPersonId());
             UserSessionDescriptor userSessionDescriptor = new UserSessionDescriptor();
@@ -68,10 +71,10 @@ public class AuthServiceMock implements AuthService {
             userSessionDescriptor.login(ulogin, person, person.getCompany());
 
             if (!ulogin.getUpass().equalsIgnoreCase(DigestUtils.md5DigestAsHex(pwd.getBytes()))) {
-                return new CoreResponse<UserSessionDescriptor>().error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
+                return error(En_ResultStatus.INVALID_LOGIN_OR_PWD);
             }
 
-            return new CoreResponse<UserSessionDescriptor>().success(userSessionDescriptor);
+            return ok( userSessionDescriptor);
         }
     }
 

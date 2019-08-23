@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.controller.auth.SecurityDefs;
-import ru.protei.portal.core.model.dict.En_CaseLink;
 import ru.protei.portal.core.model.dict.En_CaseState;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
@@ -23,21 +22,19 @@ import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
 import ru.protei.portal.core.service.user.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
-import ru.protei.winter.core.utils.Pair;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.error;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
-import static ru.protei.portal.core.model.helper.CollectionUtils.emptyIfNull;
-import static ru.protei.portal.core.model.helper.CollectionUtils.find;
 
 /**
  * Севрис для  API
@@ -261,15 +258,15 @@ public class PortalApiController {
                 response.setHeader( "WWW-Authenticate", "Basic realm=\"" + logMsg + "\"" );
                 response.sendError( HttpServletResponse.SC_UNAUTHORIZED );
                 log.error( "API | {}", logMsg );
-                return errorSt( En_ResultStatus.INVALID_LOGIN_OR_PWD );
+                return error( En_ResultStatus.INVALID_LOGIN_OR_PWD );
             }
 
         } catch (IllegalArgumentException | IOException ex) {
             log.error( "Can`t authenticate {}", ex.getMessage() );
-            return errorSt( En_ResultStatus.AUTH_FAILURE );
+            return error( En_ResultStatus.AUTH_FAILURE );
         } catch (Exception ex) {
             log.error( "Can`t authenticate {} unexpected exception: ", ex );
-            return errorSt( En_ResultStatus.AUTH_FAILURE );
+            return error( En_ResultStatus.AUTH_FAILURE );
         }
 
         String ip = request.getRemoteAddr();

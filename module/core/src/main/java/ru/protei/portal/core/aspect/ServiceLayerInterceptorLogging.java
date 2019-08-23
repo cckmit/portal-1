@@ -107,7 +107,7 @@ public class ServiceLayerInterceptorLogging {
     private static final Map<String, List<Integer>> SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP = new HashMap<String, List<Integer>>() {{
         put("AuthService.login(..)", Arrays.asList(2));
     }};
-      private static final CoreResponse<Object> ERROR_RESPONSE = new CoreResponse<>().error(En_ResultStatus.INTERNAL_ERROR);
+      private static final CoreResponse<Object> ERROR_RESPONSE = CoreResponse.error( En_ResultStatus.INTERNAL_ERROR);
 
 }
 

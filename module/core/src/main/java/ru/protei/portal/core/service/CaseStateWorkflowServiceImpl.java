@@ -9,27 +9,28 @@ import ru.protei.portal.core.model.ent.CaseStateWorkflow;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.List;
-
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 public class CaseStateWorkflowServiceImpl implements CaseStateWorkflowService {
 
     @Override
     public CoreResponse<List<CaseStateWorkflow>> getWorkflowList() {
         List<CaseStateWorkflow> workflowList = caseStateWorkflowDAO.getAll();
         if (workflowList == null) {
-            return new CoreResponse<List<CaseStateWorkflow>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
         jdbcManyRelationsHelper.fill(workflowList, "caseStateWorkflowLinks");
-        return new CoreResponse<List<CaseStateWorkflow>>().success(workflowList);
+        return ok(workflowList);
     }
 
     @Override
     public CoreResponse<CaseStateWorkflow> getWorkflow(En_CaseStateWorkflow caseStateWorkflow) {
         CaseStateWorkflow workflow = caseStateWorkflowDAO.get(caseStateWorkflow.getId());
         if (workflow == null) {
-            return new CoreResponse<CaseStateWorkflow>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
         jdbcManyRelationsHelper.fill(workflow, "caseStateWorkflowLinks");
-        return new CoreResponse<CaseStateWorkflow>().success(workflow);
+        return ok(workflow);
     }
 
     @Autowired

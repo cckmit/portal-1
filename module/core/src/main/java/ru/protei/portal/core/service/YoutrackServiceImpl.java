@@ -17,7 +17,7 @@ import ru.protei.portal.core.model.yt.api.IssueApi;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.error;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
@@ -52,7 +52,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public CoreResponse<YouTrackIssueInfo> getIssueInfo( String issueId ) {
         if (issueId == null) {
             log.warn( "getIssueInfo(): Can't get issue info. Argument issueId is mandatory" );
-            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         return restDao.getIssue( issueId ).map(
@@ -63,7 +63,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public CoreResponse<String> setIssueCrmNumberIfDifferent( String issueId, Long caseNumber ) {
         if (issueId == null || caseNumber == null) {
             log.warn( "setIssueCrmNumber(): Can't set youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber );
-            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         return apiDao.getIssue( issueId ).flatMap( issue ->
@@ -74,7 +74,7 @@ public class YoutrackServiceImpl implements YoutrackService {
     public CoreResponse<String> removeIssueCrmNumberIfSame( String issueId, Long caseNumber ) {
         if (issueId == null || caseNumber == null) {
             log.warn( "removeIssueCrmNumber(): Can't remove youtrack issue crm number. All arguments are mandatory issueId={} caseNumber={}", issueId, caseNumber  );
-            return errorSt( En_ResultStatus.INCORRECT_PARAMS );
+            return error( En_ResultStatus.INCORRECT_PARAMS );
         }
 
         return apiDao.getIssue( issueId ).flatMap( issue ->

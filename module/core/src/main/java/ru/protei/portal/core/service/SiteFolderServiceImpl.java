@@ -21,7 +21,7 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.error;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 
 public class SiteFolderServiceImpl implements SiteFolderService {
@@ -32,7 +32,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         SearchResult<Platform> sr = platformDAO.getSearchResultByQuery(query);
 
         if ( CollectionUtils.isEmpty(sr.getResults())) {
-            return new CoreResponse<SearchResult<Platform>>().success(sr);
+            return ok(sr);
         }
 
         Map<Long, Long> map = serverDAO.countByPlatformIds(sr.getResults().stream()
@@ -48,7 +48,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             }
         });
 
-        return new CoreResponse<SearchResult<Platform>>().success(sr);
+        return ok(sr);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         SearchResult<Server> sr = serverDAO.getSearchResultByQuery(query);
 
         if (CollectionUtils.isEmpty(sr.getResults())) {
-            return new CoreResponse<SearchResult<Server>>().success(sr);
+            return ok(sr);
         }
 
         Map<Long, Long> map = applicationDAO.countByServerIds(sr.getResults().stream()
@@ -69,13 +69,13 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             server.setApplicationsCount(count);
         });
 
-        return new CoreResponse<SearchResult<Server>>().success(sr);
+        return ok(sr);
     }
 
     @Override
     public CoreResponse<SearchResult<Application>> getApplications(AuthToken token, ApplicationQuery query) {
         SearchResult<Application> sr = applicationDAO.getSearchResultByQuery(query);
-        return new CoreResponse<SearchResult<Application>>().success(sr);
+        return ok(sr);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         SearchResult<ServerApplication> serverApplications = serverApplicationDAO.getSearchResultByQuery(query);
         if (serverApplications == null) {
-            return errorSt(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         Map<Long, Server> servers = new HashMap<>();
@@ -98,7 +98,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         });
 
         SearchResult<Server> sr = new SearchResult<>(new ArrayList<>(servers.values()));
-        return new CoreResponse<SearchResult<Server>>().success(sr);
+        return ok(sr);
     }
 
 
@@ -108,7 +108,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         List<Platform> result = platformDAO.listByQuery(query);
 
         if (result == null) {
-            return errorSt(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         List<EntityOption> options = result.stream()
@@ -124,7 +124,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         List<Server> result = serverDAO.listByQuery(query);
 
         if (result == null) {
-            return errorSt(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         List<EntityOption> options = result.stream()
@@ -141,12 +141,12 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Platform result = platformDAO.get(id);
 
         if (result == null) {
-            return errorSt(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
         jdbcManyRelationsHelper.fill(result, "attachments");
 
-        return new CoreResponse<Platform>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -155,10 +155,10 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Server result = serverDAO.get(id);
 
         if (result == null) {
-            return errorSt(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return new CoreResponse<Server>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -167,10 +167,10 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Application result = applicationDAO.get(id);
 
         if (result == null) {
-            return errorSt(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
         }
 
-        return new CoreResponse<Application>().success(result);
+        return ok(result);
     }
 
 
@@ -210,7 +210,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
             throw new ResultStatusException(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Platform>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -219,16 +219,16 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long id = serverDAO.persist(server);
 
         if (id == null) {
-            return errorSt(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
         }
 
         Server result = serverDAO.get(id);
 
         if (result == null) {
-            return errorSt(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Server>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -249,16 +249,16 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         Long id = applicationDAO.persist(application);
 
         if (id == null) {
-            return errorSt(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
         }
 
         Application result = applicationDAO.get(id);
 
         if (result == null) {
-            return errorSt(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Application>().success(result);
+        return ok(result);
     }
 
 
@@ -268,16 +268,16 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = platformDAO.merge(platform);
 
         if (!status) {
-            return errorSt(En_ResultStatus.NOT_UPDATED);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Platform result = platformDAO.get(platform.getId());
 
         if (result == null) {
-            return errorSt(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Platform>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -286,16 +286,16 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = serverDAO.merge(server);
 
         if (!status) {
-            return errorSt(En_ResultStatus.NOT_UPDATED);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Server result = serverDAO.get(server.getId());
 
         if (result == null) {
-            return errorSt(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Server>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -304,16 +304,16 @@ public class SiteFolderServiceImpl implements SiteFolderService {
         boolean status = applicationDAO.merge(application);
 
         if (!status) {
-            return errorSt(En_ResultStatus.NOT_UPDATED);
+            return error(En_ResultStatus.NOT_UPDATED);
         }
 
         Application result = applicationDAO.get(application.getId());
 
         if (result == null) {
-            return errorSt(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
-        return new CoreResponse<Application>().success(result);
+        return ok(result);
     }
 
 
@@ -322,7 +322,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         boolean result = platformDAO.removeByKey(id);
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -330,7 +330,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         boolean result = serverDAO.removeByKey(id);
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -338,7 +338,7 @@ public class SiteFolderServiceImpl implements SiteFolderService {
 
         boolean result = applicationDAO.removeByKey(id);
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
 

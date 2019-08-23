@@ -70,13 +70,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public CoreResponse< Person > getEmployee( Long id ) {
         Person person = personDAO.getEmployee(id);
         if ( person == null ) {
-            return new CoreResponse<Person>().success(person);
+            return ok(person);
         }
 
         // RESET PRIVACY INFO
         person.setPassportInfo(null);
 
-        return new CoreResponse<Person>().success(person);
+        return ok(person);
     }
 
     public EmployeeDetailView getEmployeeProfile(Long id){
@@ -98,7 +98,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Person> list = personDAO.getEmployees(query);
 
         if (list == null)
-            new CoreResponse<List<PersonShortView>>().error(En_ResultStatus.GET_DATA_ERROR);
+            CoreResponse.error( En_ResultStatus.GET_DATA_ERROR);
 
         List<PersonShortView> result = list.stream().map( Person::toShortNameShortView ).collect(Collectors.toList());
 
@@ -118,7 +118,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 employee.setWorkerEntries(workerEntries.stream().filter(workerEntry -> workerEntry.getPersonId().equals(employee.getId())).collect(Collectors.toList()))
              );
         }
-        return new CoreResponse<SearchResult<EmployeeShortView>>().success(sr);
+        return ok(sr);
     }
 
     @Override

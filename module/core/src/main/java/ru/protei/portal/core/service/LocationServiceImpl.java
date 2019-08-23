@@ -15,6 +15,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
 /**
  * Реализация сервиса управления местоположениями
  */
@@ -29,10 +30,10 @@ public class LocationServiceImpl implements LocationService {
         List<Location> list = locationDAO.listByQuery(query);
 
         if (list == null)
-            return new CoreResponse<List<DistrictInfo>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error(En_ResultStatus.GET_DATA_ERROR);
 
-        return new CoreResponse<List<DistrictInfo>>().success(
-            list.stream()
+        return CoreResponse.ok(
+                list.stream()
                 .map( ( item ) -> item.toDistrictInfo() )
                 .collect( Collectors.toList() )
         );
@@ -44,8 +45,8 @@ public class LocationServiceImpl implements LocationService {
         locationQuery.setType( En_LocationType.REGION );
         List<Location> regions = locationDAO.listByQuery( locationQuery );
 
-        return new CoreResponse<List<EntityOption>>().success(
-            regions.stream()
+        return CoreResponse.ok(
+                regions.stream()
                 .map( Location::toEntityOption )
                 .collect( Collectors.toList() )
         );

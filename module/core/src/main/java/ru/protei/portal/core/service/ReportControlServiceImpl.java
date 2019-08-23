@@ -29,7 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static ru.protei.portal.core.model.helper.CollectionUtils.size;
-
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 public class ReportControlServiceImpl implements ReportControlService {
 
     private static Logger log = LoggerFactory.getLogger(ReportControlServiceImpl.class);
@@ -78,7 +79,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             int activeThreads = reportExecutorService.getActiveCount();
             if (activeThreads >= reportThreadsNumber) {
                 log.debug("all threads to process reports are busy");
-                return new CoreResponse().error(En_ResultStatus.NOT_AVAILABLE);
+                return error(En_ResultStatus.NOT_AVAILABLE);
             }
             CoreResponse<List<Report>> result = getReportsToProcess(reportThreadsNumber - activeThreads);
             if (!result.isOk()) {
@@ -86,12 +87,12 @@ public class ReportControlServiceImpl implements ReportControlService {
             }
             log.debug( "reports to process : {}", size( result.getData() ) );
             if (size( result.getData() ) == 0) {
-                return new CoreResponse().success(null);
+                return ok();
             }
             for (final Report report : result.getData()) {
                 reportExecutorService.submit(() -> processReport(report));
             }
-            return new CoreResponse().success(null);
+            return ok();
         }
     }
 
@@ -102,7 +103,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                     limit
             );
             if (CollectionUtils.isEmpty(reports)) {
-                return new CoreResponse<List<Report>>().success(reports);
+                return ok(reports);
             }
             Date now = new Date();
             for (Report report : reports) {
@@ -110,10 +111,10 @@ public class ReportControlServiceImpl implements ReportControlService {
                 report.setModified(now);
             }
             reportDAO.mergeBatch(reports);
-            return new CoreResponse<List<Report>>().success(reports);
+            return ok(reports);
         } catch (Throwable t) {
             log.info("fail get reports to process", t);
-            return new CoreResponse<List<Report>>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
     }
 
@@ -130,7 +131,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
             if (!writeReport(report, buffer)) {
-                mergeErrorStatus(report);
+                mergeerroratus(report);
                 return;
             }
 
@@ -138,7 +139,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             storageResult = reportStorageService.saveContent(reportContent);
 
             if (!storageResult.isOk()) {
-                mergeErrorStatus(report);
+                mergeerroratus(report);
                 return;
             }
 
@@ -149,7 +150,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             if (storageResult != null) {
                 reportStorageService.removeContent(report.getId());
             }
-            mergeErrorStatus(report);
+            mergeerroratus(report);
         } finally {
             reportsInProcess.remove(report.getId());
         }
@@ -162,7 +163,7 @@ public class ReportControlServiceImpl implements ReportControlService {
         log.debug("process report : reportId={}, status={}", report.getId(), status.name());
     }
 
-    private void mergeErrorStatus(Report report) {
+    private void mergeerroratus(Report report) {
         report.setStatus(En_ReportStatus.ERROR);
         report.setModified(new Date());
         reportDAO.partialMerge(report, "status", "modified");
@@ -218,11 +219,11 @@ public class ReportControlServiceImpl implements ReportControlService {
         );
         if (CollectionUtils.isEmpty(reports)) {
             log.debug("old reports to process : 0");
-            return new CoreResponse().success(null);
+            return ok();
         }
         log.info("old reports to process : {}", reports.size());
         removeReports(reports);
-        return new CoreResponse().success(null);
+        return ok();
     }
 
     private void removeReports(List<Report> reports) {
@@ -256,7 +257,7 @@ public class ReportControlServiceImpl implements ReportControlService {
             );
             if (CollectionUtils.isEmpty(reports)) {
                 log.debug("hang reports to process : 0");
-                return new CoreResponse().success(null);
+                return ok();
             }
             log.debug("hang reports to process : {}", reports.size());
             Date currentDate = new Date();
@@ -272,7 +273,7 @@ public class ReportControlServiceImpl implements ReportControlService {
                 }
             }
             reportDAO.mergeBatch(reports);
-            return new CoreResponse().success(null);
+            return ok();
         }
     }
 }

@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static ru.protei.portal.api.struct.CoreResponse.ok;
+
 public class ContractReminderServiceImpl implements ContractReminderService {
 
     @Override
@@ -38,7 +40,7 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         List<ContractDate> contractDates = contractDateDAO.getNotifyBetweenDates(convertLocalDateTimeToDate(tomorrowStart), convertLocalDateTimeToDate(tomorrowEnd));
         if (CollectionUtils.isEmpty(contractDates)) {
             log.info("notifyAboutDates(): contractDates is empty for tomorrow");
-            return new CoreResponse<Integer>().success(0);
+            return ok(0);
         }
 
         int notificationSentAmount = 0;
@@ -65,7 +67,7 @@ public class ContractReminderServiceImpl implements ContractReminderService {
         }
 
         log.info("notifyAboutDates(): done {} notification(s)", notificationSentAmount);
-        return new CoreResponse<Integer>().success(notificationSentAmount);
+        return ok(notificationSentAmount);
     }
 
     private LocalDateTime makeTomorrowWithTime(int hour, int min, int sec) {

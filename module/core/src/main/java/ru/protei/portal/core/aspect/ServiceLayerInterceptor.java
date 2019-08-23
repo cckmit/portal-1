@@ -13,7 +13,6 @@ import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.event.CreateAuditObjectEvent;
 import ru.protei.portal.core.exception.InsufficientPrivilegesException;
-import ru.protei.portal.core.exception.InvalidAuditableObjectException;
 import ru.protei.portal.core.exception.InvalidAuthTokenException;
 import ru.protei.portal.core.exception.ResultStatusException;
 import ru.protei.portal.core.model.annotations.Auditable;
@@ -22,7 +21,10 @@ import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
-import ru.protei.portal.core.model.ent.*;
+import ru.protei.portal.core.model.ent.AuthToken;
+import ru.protei.portal.core.model.ent.SimpleAuditableObject;
+import ru.protei.portal.core.model.ent.UserRole;
+import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.EventPublisherService;
@@ -35,6 +37,7 @@ import java.lang.reflect.Parameter;
 import java.sql.SQLException;
 import java.util.*;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
 /**
  * Created by Mike on 06.11.2016.
  */
@@ -95,7 +98,7 @@ public class ServiceLayerInterceptor {
             return null;
 
         if (CoreResponse.class.isAssignableFrom(((MethodSignature)signature).getReturnType())) {
-            return new CoreResponse<>().error(status);
+            return error(status);
         }
 
         return null;

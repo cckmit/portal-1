@@ -18,7 +18,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 /**
  * Реализация сервиса управления фильтрами обращений на DAO слое
  */
@@ -43,11 +44,11 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         List< CaseFilter > list = caseFilterDAO.getListByLoginIdAndFilterType( loginId, filterType );
 
         if ( list == null )
-            return new CoreResponse< List< CaseFilterShortView > >().error( En_ResultStatus.GET_DATA_ERROR );
+            return error(En_ResultStatus.GET_DATA_ERROR );
 
         List< CaseFilterShortView > result = list.stream().map( CaseFilter::toShortView ).collect( Collectors.toList() );
 
-        return new CoreResponse< List< CaseFilterShortView > >().success( result );
+        return ok(result );
     }
 
     @Override
@@ -57,8 +58,8 @@ public class IssueFilterServiceImpl implements IssueFilterService {
 
         CaseFilter filter = caseFilterDAO.get( id );
 
-        return filter != null ? new CoreResponse< CaseFilter >().success( filter )
-                : new CoreResponse< CaseFilter >().error( En_ResultStatus.NOT_FOUND );
+        return filter != null ? ok( filter )
+                : error( En_ResultStatus.NOT_FOUND );
     }
 
     @Override
@@ -67,7 +68,7 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         log.debug("saveIssueFilter(): filter={} ", filter);
 
         if (isNotValid(filter)) {
-            return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
         }
 
         UserSessionDescriptor descriptor = authService.findSession(token);
@@ -77,10 +78,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         applyFilterByScope(descriptor, filter);
 
         if (caseFilterDAO.saveOrUpdate(filter)) {
-            return new CoreResponse<CaseFilter>().success(filter);
+            return ok(filter);
         }
 
-        return new CoreResponse<CaseFilter>().error(En_ResultStatus.INTERNAL_ERROR);
+        return error(En_ResultStatus.INTERNAL_ERROR);
     }
 
     @Override
@@ -89,10 +90,10 @@ public class IssueFilterServiceImpl implements IssueFilterService {
         log.debug( "removeIssueFilter(): id={} ", id );
 
         if ( caseFilterDAO.removeByKey( id ) ) {
-            return new CoreResponse< Boolean >().success( true );
+            return ok(true );
         }
 
-        return new CoreResponse< Boolean >().error( En_ResultStatus.INTERNAL_ERROR );
+        return error(En_ResultStatus.INTERNAL_ERROR );
     }
 
     private boolean isNotValid( CaseFilter filter ) {

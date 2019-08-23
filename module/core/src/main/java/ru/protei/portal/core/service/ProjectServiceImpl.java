@@ -26,7 +26,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
-
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 /**
  * Реализация сервиса управления проектами
  */
@@ -98,7 +99,7 @@ public class ProjectServiceImpl implements ProjectService {
                 } )
                 .collect( toList() );
 
-        return new CoreResponse< List< RegionInfo > >().success( result );
+        return ok(result );
     }
 
     @Override
@@ -137,7 +138,7 @@ public class ProjectServiceImpl implements ProjectService {
             } );
         } );
 
-        return new CoreResponse< Map< String, List< ProjectInfo > > >().success( regionToProjectMap );
+        return ok(regionToProjectMap );
     }
 
     @Override
@@ -146,7 +147,7 @@ public class ProjectServiceImpl implements ProjectService {
         CaseObject caseObject = caseObjectDAO.get( id );
         helper.fillAll( caseObject );
 
-        return new CoreResponse< ProjectInfo >().success( ProjectInfo.fromCaseObject( caseObject ) );
+        return ok(ProjectInfo.fromCaseObject( caseObject ) );
     }
 
     @Override
@@ -180,12 +181,12 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts( caseObject, project.getProducts() );
         } catch (Throwable e) {
             log.error("error during save project when update one of following parameters: team, location, or products; {}", e.getMessage());
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
 
         caseObjectDAO.merge( caseObject );
 
-        return new CoreResponse().success( null );
+        return ok();
     }
 
     @Override
@@ -193,13 +194,13 @@ public class ProjectServiceImpl implements ProjectService {
     public CoreResponse<Long> createProject(AuthToken token, ProjectInfo project) {
 
         if (project == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error(En_ResultStatus.INCORRECT_PARAMS);
 
         CaseObject caseObject = createCaseObjectFromProjectInfo(project);
 
         Long id = caseObjectDAO.persist(caseObject);
         if (id == null)
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return error(En_ResultStatus.NOT_CREATED);
 
         try {
             updateTeam(caseObject, project.getTeam());
@@ -207,11 +208,11 @@ public class ProjectServiceImpl implements ProjectService {
             updateProducts(caseObject, project.getProducts());
         } catch (Throwable e) {
             log.error("error during create project when set one of following parameters: team, location, or products; {}", e.getMessage());
-            return new CoreResponse<Long>().error(En_ResultStatus.INTERNAL_ERROR);
+            return error(En_ResultStatus.INTERNAL_ERROR);
         }
         caseObjectDAO.merge( caseObject );
 
-        return new CoreResponse().success(id);
+        return ok(id);
     }
 
     private CaseObject createCaseObjectFromProjectInfo(ProjectInfo project) {
@@ -250,7 +251,7 @@ public class ProjectServiceImpl implements ProjectService {
         caseObject.setCreatorId( creatorId );
 
         Long newId = caseObjectDAO.persist( caseObject );
-        return new CoreResponse< Long >().success( newId );
+        return ok(newId );
     }
 
     @Override
@@ -259,13 +260,13 @@ public class ProjectServiceImpl implements ProjectService {
         CaseObject caseObject = caseObjectDAO.get(projectId);
 
         if (caseObject == null) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.NOT_FOUND);
+            return error(En_ResultStatus.NOT_FOUND);
         }
 
         caseObject.setDeleted(true);
         boolean result = caseObjectDAO.partialMerge(caseObject, "deleted");
 
-        return new CoreResponse<Boolean>().success(result);
+        return ok(result);
     }
 
     @Override
@@ -279,7 +280,7 @@ public class ProjectServiceImpl implements ProjectService {
         List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
         List<ProjectInfo> result = projects.stream()
                 .map(ProjectInfo::fromCaseObject).collect(toList());
-        return new CoreResponse<List<ProjectInfo>>().success( result );
+        return ok(result );
     }
 
     private void updateTeam(CaseObject caseObject, List<PersonProjectMemberView> team) {

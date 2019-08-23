@@ -25,6 +25,8 @@ import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static ru.protei.portal.api.struct.CoreResponse.error;
+import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.helper.CollectionUtils.stream;
 
 public class CaseCommentServiceImpl implements CaseCommentService {
@@ -33,7 +35,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     public CoreResponse<List<CaseComment>> getCaseCommentList(AuthToken token, En_CaseType caseType, long caseObjectId) {
         En_ResultStatus checkAccessStatus = checkAccessForCaseObject(token, caseType, caseObjectId);
         if (checkAccessStatus != null) {
-            return new CoreResponse<List<CaseComment>>().error(checkAccessStatus);
+            return error( checkAccessStatus);
         }
         CaseCommentQuery query = new CaseCommentQuery(caseObjectId);
         applyFilterByScope( token, query );
@@ -73,7 +75,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     .build());
         }
 
-        return new CoreResponse<CaseComment>().success(comment);
+        return ok( comment);
     }
 
     @Override
@@ -133,7 +135,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 addedAttachmentsIds
         ).getData();
 
-        return new CoreResponse<CaseCommentSaveOrUpdateResult>().success(new CaseCommentSaveOrUpdateResult(comment, addedAttachments));
+        return ok( new CaseCommentSaveOrUpdateResult(comment, addedAttachments));
     }
 
     @Override
@@ -161,7 +163,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                     .build());
         }
 
-        return new CoreResponse<CaseComment>().success(resultData.getCaseComment());
+        return ok( resultData.getCaseComment());
     }
 
     @Override
@@ -227,7 +229,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 HelperFunc.subtract(comment.getCaseAttachments(), prevComment.getCaseAttachments())
         ).getData();
 
-        return new CoreResponse<CaseCommentSaveOrUpdateResult>().success(new CaseCommentSaveOrUpdateResult(comment, prevComment, addedAttachments, removedAttachments));
+        return ok( new CaseCommentSaveOrUpdateResult(comment, prevComment, addedAttachments, removedAttachments));
     }
 
     @Override
@@ -293,7 +295,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
                 .withPerson(person)
                 .build());
 
-        return new CoreResponse<Boolean>().success(isRemoved);
+        return ok( isRemoved);
     }
 
     @Override
@@ -302,7 +304,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         long sum = stream(allCaseComments)
                 .filter(cmnt -> cmnt.getTimeElapsed() != null)
                 .mapToLong(CaseComment::getTimeElapsed).sum();
-        return new CoreResponse<Long>().success(sum);
+        return ok( sum);
     }
 
     @Override
@@ -314,7 +316,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     @Override
     public CoreResponse<Boolean> updateCaseTimeElapsed(AuthToken token, Long caseId, long timeElapsed) {
         if (caseId == null || !caseObjectDAO.checkExistsByKey(caseId)) {
-            return new CoreResponse<Boolean>().error(En_ResultStatus.INCORRECT_PARAMS);
+            return error( En_ResultStatus.INCORRECT_PARAMS);
         }
 
         CaseObject caseObject = new CaseObject(caseId);
@@ -322,7 +324,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
         boolean isUpdated = caseObjectDAO.partialMerge(caseObject, "time_elapsed");
 
-        return new CoreResponse<Boolean>().success(isUpdated);
+        return ok( isUpdated);
     }
 
     @Override
@@ -333,10 +335,10 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         Long commentId = caseCommentDAO.persist(comment);
 
         if (commentId == null) {
-            return new CoreResponse<Long>().error(En_ResultStatus.NOT_CREATED);
+            return error( En_ResultStatus.NOT_CREATED);
         }
 
-        return new CoreResponse<Long>().success(commentId);
+        return ok( commentId);
     }
 
 
@@ -366,7 +368,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
 
     private CoreResponse<List<CaseComment>> getList(List<CaseComment> comments) {
         if (comments == null) {
-            return new CoreResponse<List<CaseComment>>().error(En_ResultStatus.GET_DATA_ERROR);
+            return error( En_ResultStatus.GET_DATA_ERROR);
         }
 
         jdbcManyRelationsHelper.fill(comments, "caseAttachments");
@@ -378,7 +380,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
             }
         });
 
-        return new CoreResponse<List<CaseComment>>().success(comments);
+        return ok( comments);
     }
 
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {

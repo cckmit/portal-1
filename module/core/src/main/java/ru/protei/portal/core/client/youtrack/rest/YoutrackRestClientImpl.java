@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static ru.protei.portal.api.struct.CoreResponse.errorSt;
+import static ru.protei.portal.api.struct.CoreResponse.error;
 import static ru.protei.portal.api.struct.CoreResponse.ok;
 import static ru.protei.portal.core.model.dict.En_ResultStatus.NOT_CREATED;
 
@@ -61,7 +61,7 @@ public class YoutrackRestClientImpl implements YoutrackRestClient {
             String issueId = UriUtils.getLastPathSegment( response.getHeaders().getLocation() );
             if (issueId == null) {
                 log.error( "failed to create issue: failed to extract issue id from response Location header: {}", response.getHeaders().getLocation() );
-                errorSt( NOT_CREATED );
+                error( NOT_CREATED );
             }
             log.debug("created issue with id = {}", issueId);
             return ok( issueId );
