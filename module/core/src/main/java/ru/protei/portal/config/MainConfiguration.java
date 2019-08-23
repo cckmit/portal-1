@@ -773,11 +773,6 @@ public class MainConfiguration {
         return new JiraWikiMarkupRendererImpl();
     }
 
-    @Bean
-    public YoutrackHttpClient getYoutrackClient(){
-        return new YoutrackHttpClientImpl();
-    }
-
     /* ASPECT/INTERCEPTORS */
 
     @Bean
