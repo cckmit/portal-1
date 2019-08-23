@@ -139,6 +139,8 @@ public class DebugIds {
         String INFO_REQUEST = "issue-state-info-request";
         String CANCELED = "issue-state-canceled";
         String CUST_PENDING = "issue-state-cust-pending";
+        String NX_REQUEST = "issue-state-nx-request";
+        String CUST_REQUEST = "issue-state-cust-request";
     }
 
     public interface ISSUE {
