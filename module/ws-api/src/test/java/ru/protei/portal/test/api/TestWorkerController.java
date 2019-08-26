@@ -41,33 +41,13 @@ public class TestWorkerController {
     private static Logger logger = LoggerFactory.getLogger(TestRestService.class);
     private MockMvc mockMvc;
     private static String BASE_URI;
-    private static DepartmentRecord origDepartment = new DepartmentRecord();
     private static Marshaller marshaller;
     private static Unmarshaller unmarshaller;
 
     @BeforeClass
     public static void initClass() throws Exception {
-        JAXBContext context = JAXBContext.newInstance(WorkerRecord.class, WorkerRecordList.class,
-                DepartmentRecord.class, IdList.class,
-                Photo.class, PhotoList.class,
-                ServiceResult.class, ServiceResultList.class);
-        marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        unmarshaller = context.createUnmarshaller();
-        InputStream is = null;
-        try {
-            is = TestSoapService.class.getResourceAsStream("/service.properties");
-            Properties props = new Properties();
-            props.load(is);
-            BASE_URI = props.getProperty("service_publish_address");
-        } catch (Exception e) {
-            logger.error("Can not read config!", e);
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
-        }
+        initJAXB();
+        createBaseUri();
     }
 
 
@@ -178,34 +158,34 @@ public class TestWorkerController {
 
         WorkerRecord wr = getWorkerByUri(uriBuilder);
 
-        Assert.assertNotNull ("Result of get.person is null!", wr);
+        Assert.assertNotNull("Result of get.person is null!", wr);
         Assert.assertEquals("get.person: added and got person are different", sr.getId(), wr.getId());
 
         deleteWorker(worker);
 
-        logger.debug ("The person is received.");
-        logger.debug ("id = " + wr.getId ());
-        logger.debug ("firstName = " + wr.getFirstName ());
-        logger.debug ("lastName = " + wr.getLastName ());
-        logger.debug ("secondName = " + wr.getSecondName ());
-        logger.debug ("sex = " + wr.getSex ());
-        logger.debug ("birthday = " + wr.getBirthday ());
-        logger.debug ("phoneWork = " + wr.getPhoneWork ());
-        logger.debug ("phoneHome = " + wr.getPhoneHome ());
-        logger.debug ("phoneMobile = " + wr.getPhoneMobile ());
-        logger.debug ("email = " + wr.getEmail ());
-        logger.debug ("emailOwn = " + wr.getEmailOwn ());
-        logger.debug ("fax = " + wr.getFax ());
-        logger.debug ("address = " + wr.getAddress ());
-        logger.debug ("addressHome = " + wr.getAddressHome ());
-        logger.debug ("passportInfo = " + wr.getPassportInfo ());
-        logger.debug ("info = " + wr.getInfo ());
-        logger.debug ("ipAddress = " + wr.getIpAddress ());
-        logger.debug ("isDeleted = " + wr.isDeleted ());
+        logger.debug("The person is received.");
+        logger.debug("id = " + wr.getId());
+        logger.debug("firstName = " + wr.getFirstName());
+        logger.debug("lastName = " + wr.getLastName());
+        logger.debug("secondName = " + wr.getSecondName());
+        logger.debug("sex = " + wr.getSex());
+        logger.debug("birthday = " + wr.getBirthday());
+        logger.debug("phoneWork = " + wr.getPhoneWork());
+        logger.debug("phoneHome = " + wr.getPhoneHome());
+        logger.debug("phoneMobile = " + wr.getPhoneMobile());
+        logger.debug("email = " + wr.getEmail());
+        logger.debug("emailOwn = " + wr.getEmailOwn());
+        logger.debug("fax = " + wr.getFax());
+        logger.debug("address = " + wr.getAddress());
+        logger.debug("addressHome = " + wr.getAddressHome());
+        logger.debug("passportInfo = " + wr.getPassportInfo());
+        logger.debug("info = " + wr.getInfo());
+        logger.debug("ipAddress = " + wr.getIpAddress());
+        logger.debug("isDeleted = " + wr.isDeleted());
     }
 
     @Test
-    public void testGetWorker() throws Exception{
+    public void testGetWorker() throws Exception {
         String uri = BASE_URI + "get.worker";
         WorkerRecord worker = createWorkerRecord();
         addWorker(worker);
@@ -217,30 +197,30 @@ public class TestWorkerController {
 
         WorkerRecord wr = getWorkerByUri(uriBuilder);
 
-        Assert.assertNotNull ("Result of get.worker is null!", wr);
+        Assert.assertNotNull("Result of get.worker is null!", wr);
         Assert.assertEquals("get.worker: added and got worker are different", worker.getWorkerId(), wr.getWorkerId());
 
         deleteWorker(worker);
 
-        logger.debug ("The worker is received.");
-        logger.debug ("id = " + wr.getId ());
-        logger.debug ("firstName = " + wr.getFirstName ());
-        logger.debug ("lastName = " + wr.getLastName ());
-        logger.debug ("secondName = " + wr.getSecondName ());
-        logger.debug ("sex = " + wr.getSex ());
-        logger.debug ("birthday = " + wr.getBirthday ());
-        logger.debug ("phoneWork = " + wr.getPhoneWork ());
-        logger.debug ("phoneHome = " + wr.getPhoneHome ());
-        logger.debug ("phoneMobile = " + wr.getPhoneMobile ());
-        logger.debug ("email = " + wr.getEmail ());
-        logger.debug ("emailOwn = " + wr.getEmailOwn ());
-        logger.debug ("fax = " + wr.getFax ());
-        logger.debug ("address = " + wr.getAddress ());
-        logger.debug ("addressHome = " + wr.getAddressHome ());
-        logger.debug ("passportInfo = " + wr.getPassportInfo ());
-        logger.debug ("info = " + wr.getInfo ());
-        logger.debug ("ipAddress = " + wr.getIpAddress ());
-        logger.debug ("isDeleted = " + wr.isDeleted ());
+        logger.debug("The worker is received.");
+        logger.debug("id = " + wr.getId());
+        logger.debug("firstName = " + wr.getFirstName());
+        logger.debug("lastName = " + wr.getLastName());
+        logger.debug("secondName = " + wr.getSecondName());
+        logger.debug("sex = " + wr.getSex());
+        logger.debug("birthday = " + wr.getBirthday());
+        logger.debug("phoneWork = " + wr.getPhoneWork());
+        logger.debug("phoneHome = " + wr.getPhoneHome());
+        logger.debug("phoneMobile = " + wr.getPhoneMobile());
+        logger.debug("email = " + wr.getEmail());
+        logger.debug("emailOwn = " + wr.getEmailOwn());
+        logger.debug("fax = " + wr.getFax());
+        logger.debug("address = " + wr.getAddress());
+        logger.debug("addressHome = " + wr.getAddressHome());
+        logger.debug("passportInfo = " + wr.getPassportInfo());
+        logger.debug("info = " + wr.getInfo());
+        logger.debug("ipAddress = " + wr.getIpAddress());
+        logger.debug("isDeleted = " + wr.isDeleted());
         logger.debug("workerId = " + wr.getWorkerId());
         logger.debug("departmentId = " + wr.getDepartmentId());
         logger.debug("positionName = " + wr.getPositionName());
@@ -250,20 +230,20 @@ public class TestWorkerController {
     }
 
     @Test
-    public void testGetDepartment() throws Exception{
+    public void testGetDepartment() throws Exception {
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
         DepartmentRecord dr = getDepartment(department);
 
-        Assert.assertNotNull ("Result of get.department is null!", dr);
+        Assert.assertNotNull("Result of get.department is null!", dr);
         Assert.assertEquals("get.department: added and got worker are different", department.getDepartmentId(), dr.getDepartmentId());
 
-        logger.debug ("The department is received.");
-        logger.debug ("departmentId = " + dr.getDepartmentId());
-        logger.debug ("departmentName = " + dr.getDepartmentName());
-        logger.debug ("parentId = " + dr.getParentId());
-        logger.debug ("headId = " + dr.getHeadId());
+        logger.debug("The department is received.");
+        logger.debug("departmentId = " + dr.getDepartmentId());
+        logger.debug("departmentName = " + dr.getDepartmentName());
+        logger.debug("parentId = " + dr.getParentId());
+        logger.debug("headId = " + dr.getHeadId());
 
         deleteDepartment(department);
     }
@@ -274,10 +254,10 @@ public class TestWorkerController {
 
         ServiceResult sr = createOrUpdateDepartment(department);
 
-        Assert.assertNotNull ("Result update.department is null!", sr);
-        Assert.assertEquals ("update.department is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
-        Assert.assertTrue ("update.department must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
-        logger.debug ("The department is updated. id = " + sr.getId ());
+        Assert.assertNotNull("Result update.department is null!", sr);
+        Assert.assertEquals("update.department is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertTrue("update.department must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
+        logger.debug("The department is updated. id = " + sr.getId());
 
         deleteDepartment(department);
     }
@@ -289,72 +269,73 @@ public class TestWorkerController {
 
         ServiceResult sr = deleteDepartment(department);
 
-        Assert.assertNotNull ("Result delete.department is null!", sr);
-        Assert.assertEquals ("delete.department is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
-        Assert.assertTrue ("delete.department must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
-        logger.debug ("The department is deleted. id = " + sr.getId ());
+        Assert.assertNotNull("Result delete.department is null!", sr);
+        Assert.assertEquals("delete.department is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertTrue("delete.department must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
+        logger.debug("The department is deleted. id = " + sr.getId());
     }
 
 
+    @Test
+    public void testUpdatePosition() throws Exception {
+        String uri = BASE_URI + "update.position";
+        WorkerRecord worker = createWorkerRecord();
+        String newPosition = createPositionName();
 
-  /*  @Test
-    public void testUpdatePosition() {
-        String URI = BASE_URI + "update.position";
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(getMessageConverters());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
-                .queryParam("oldName", origWorker.getPositionName())
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
+                .queryParam("oldName", worker.getPositionName())
                 .queryParam("newName", newPosition)
-                .queryParam("companyCode", origWorker.getCompanyCode());
+                .queryParam("companyCode", worker.getCompanyCode());
         String uriBuilder = builder.build().toUriString();
 
-        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.PUT, entity, ServiceResult.class);
-        ServiceResult sr = response.getBody();
+        ResultActions result = mockMvc.perform(
+                put(uriBuilder)
+                        .header("Accept", "application/xml")
+                        .contentType(MediaType.APPLICATION_XML)
+        );
+        ServiceResult sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
 
-        Assert.assertNotNull(sr);
-        Assert.assertNotNull ("Result update.position is null!", sr);
-        Assert.assertEquals ("update.position is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
-        Assert.assertTrue ("update.position must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
-        logger.debug ("The position is updated. id = " + sr.getId ());
+        Assert.assertNotNull("Result update.position is null!", sr);
+        Assert.assertEquals("update.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertTrue("update.position must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
+        logger.debug("The position is updated. id = " + sr.getId());
+
+        deleteWorker(worker);
     }
 
     @Test
-    public void testDeletePosition() {
+    public void testDeletePosition() throws Exception {
 
-        String URI = BASE_URI + "delete.position";
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(getMessageConverters());
+        String uri = BASE_URI + "delete.position";
+        WorkerRecord worker = createWorkerRecord();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(URI)
-                .queryParam("name", origWorker.getPositionName())
-                .queryParam("companyCode", origWorker.getCompanyCode());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
+                .queryParam("name", worker.getPositionName())
+                .queryParam("companyCode", worker.getCompanyCode());
         String uriBuilder = builder.build().toUriString();
 
-        ResponseEntity<ServiceResult> response = restTemplate.exchange(uriBuilder, HttpMethod.DELETE, entity, ServiceResult.class);
-        ServiceResult sr = response.getBody();
+        ResultActions result = mockMvc.perform(
+                delete(uriBuilder)
+                        .header("Accept", "application/xml")
+                        .contentType(MediaType.APPLICATION_XML)
+        );
+        ServiceResult sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
 
-        Assert.assertNotNull ("Result delete.position is null!", sr);
-        Assert.assertEquals ("delete.position is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
-        Assert.assertTrue ("delete.position must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
-        logger.debug ("The position is deleted. id = " + sr.getId ());
+        Assert.assertNotNull("Result delete.position is null!", sr);
+        Assert.assertEquals("delete.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
+        Assert.assertTrue("delete.position must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
+        logger.debug("The position is deleted. id = " + sr.getId());
+
+        deleteWorker(worker);
     }
 
-    @Test
+ /*   @Test
     public void testPosition() {
 
         logger.debug ("" + origWorker.getPositionName());
-    }
+    }*/
 
-    @Test
+  /*  @Test
     public void testUpdatePhoto() {
 
         Long id = new Long (140);
@@ -382,8 +363,8 @@ public class TestWorkerController {
         Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
         Assert.assertTrue ("updatePhoto() must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
         logger.debug ("The photo of worker is updated. id = " + sr.getId ());
-    }
-
+    }*/
+/*
     @Test
     public void testGetPhotos() {
         IdList list = new IdList ();
@@ -431,7 +412,6 @@ public class TestWorkerController {
             is = TestSoapService.class.getResourceAsStream("/service.properties");
             Properties props = new Properties();
             props.load(is);
-            BASE_URI = props.getProperty("service_publish_address");
             worker.setCompanyCode(props.getProperty("companyCode"));
             worker.setId(props.getProperty("personId") != null && !props.getProperty("personId").equals("") ? new Long(props.getProperty("personId")) : null);
             worker.setFirstName(props.getProperty("firstName"));
@@ -475,7 +455,6 @@ public class TestWorkerController {
             is = TestSoapService.class.getResourceAsStream("/service.properties");
             Properties props = new Properties();
             props.load(is);
-            BASE_URI = props.getProperty("service_publish_address");
             department.setCompanyCode(props.getProperty("companyCode"));
             department.setDepartmentId(props.getProperty("departmentId"));
             department.setDepartmentName(props.getProperty("departmentName"));
@@ -490,6 +469,52 @@ public class TestWorkerController {
             }
         }
         return department;
+    }
+
+    private String createPositionName() {
+        String positionName = null;
+        InputStream is = null;
+        try {
+            is = TestSoapService.class.getResourceAsStream("/service.properties");
+            Properties props = new Properties();
+            props.load(is);
+            positionName = props.getProperty("newPositionName");
+        } catch (Exception e) {
+            logger.error("Can not read config!", e);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+            }
+        }
+        return positionName;
+    }
+
+    private static void initJAXB() throws Exception {
+        JAXBContext context = JAXBContext.newInstance(WorkerRecord.class, WorkerRecordList.class,
+                DepartmentRecord.class, IdList.class,
+                Photo.class, PhotoList.class,
+                ServiceResult.class, ServiceResultList.class);
+        marshaller = context.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        unmarshaller = context.createUnmarshaller();
+    }
+
+    private static void createBaseUri() throws Exception {
+        InputStream is = null;
+        try {
+            is = TestSoapService.class.getResourceAsStream("/service.properties");
+            Properties props = new Properties();
+            props.load(is);
+            BASE_URI = props.getProperty("service_publish_address");
+        } catch (Exception e) {
+            logger.error("Can not read config!", e);
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+            }
+        }
     }
 
 
@@ -539,7 +564,7 @@ public class TestWorkerController {
         return (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
     }
 
-    private WorkerRecord getWorkerByUri(String uri) throws Exception{
+    private WorkerRecord getWorkerByUri(String uri) throws Exception {
         ResultActions result = mockMvc.perform(
                 get(uri)
                         .header("Accept", "application/xml")
@@ -549,7 +574,7 @@ public class TestWorkerController {
         return (WorkerRecord) fromXml(result.andReturn().getResponse().getContentAsString());
     }
 
-    private ServiceResult createOrUpdateDepartment(DepartmentRecord department) throws Exception{
+    private ServiceResult createOrUpdateDepartment(DepartmentRecord department) throws Exception {
         String uri = BASE_URI + "update.department";
 
         String departmentXml = toXml(department);
@@ -563,7 +588,7 @@ public class TestWorkerController {
         return (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
     }
 
-    private ServiceResult deleteDepartment(DepartmentRecord department) throws Exception{
+    private ServiceResult deleteDepartment(DepartmentRecord department) throws Exception {
         String uri = BASE_URI + "delete.department";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
@@ -579,7 +604,7 @@ public class TestWorkerController {
         return (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
     }
 
-    private DepartmentRecord getDepartment (DepartmentRecord department) throws Exception{
+    private DepartmentRecord getDepartment(DepartmentRecord department) throws Exception {
         String uri = BASE_URI + "get.department";
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
