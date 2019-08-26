@@ -3,6 +3,7 @@ package ru.protei.portal.ui.common.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.query.ProductDirectionQuery;
 import ru.protei.portal.core.model.query.ProductQuery;
@@ -25,8 +26,6 @@ public interface ProductControllerAsync {
 
     void updateState(Long productId, En_DevUnitState state, AsyncCallback<Boolean> async);
 
-    void isNameUnique(String name, Long exceptId, AsyncCallback<Boolean> async);
-
     /**
      * Получение списка сокращенного представления продукта
      * @param query запрос
@@ -40,4 +39,6 @@ public interface ProductControllerAsync {
      * @param callback
      */
     void getProductDirectionList( ProductDirectionQuery query, AsyncCallback<List<ProductDirectionInfo>> callback );
+
+    void isNameUnique(String name, En_DevUnitType type, Long exceptId, AsyncCallback<Boolean> async);
 }

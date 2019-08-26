@@ -113,7 +113,7 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!checkUniqueProduct(product.getName(), product.getId()))
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return error(En_ResultStatus.ALREADY_EXIST);
 
         product.setCreated(new Date());
@@ -142,7 +142,7 @@ public class ProductServiceImpl implements ProductService {
         if( product == null || product.getId() == null )
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!checkUniqueProduct(product.getName(), product.getId()))
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return error(En_ResultStatus.ALREADY_EXIST);
 
         DevUnit oldProduct = devUnitDAO.get(product.getId());
@@ -190,16 +190,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Result<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
+    public Result<Boolean> checkUniqueProductByName( AuthToken token, String name, En_DevUnitType type, Long excludeId) {
 
         if( name == null || name.isEmpty() )
             return error(En_ResultStatus.INCORRECT_PARAMS);
 
-        return ok(checkUniqueProduct(name, excludeId));
+        return ok(checkUniqueProduct(name, type, excludeId));
     }
 
-    private boolean checkUniqueProduct (String name, Long excludeId) {
-        DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
+    private boolean checkUniqueProduct (String name, En_DevUnitType type, Long excludeId) {
+        DevUnit product = devUnitDAO.checkExistsByName(type, name);
 
         return product == null || product.getId().equals(excludeId);
     }

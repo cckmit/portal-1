@@ -1734,4 +1734,14 @@ public interface Lang extends Messages, ContactItemLang {
     String dropFilesHere();
 
     String productChangeStateConfirmMessage();
+
+    String complexName();
+
+    String devUnitComplex();
+
+    String complexesAndProducts();
+
+    String componentDescription();
+
+    String complexDescription();
 }

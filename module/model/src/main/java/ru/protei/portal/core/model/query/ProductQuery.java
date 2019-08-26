@@ -52,4 +52,14 @@ public class ProductQuery extends BaseQuery {
         }
         this.types.add(type);
     }
+
+    public void addTypes(Set<En_DevUnitType> types) {
+        if (this.types == null) {
+            this.types = new HashSet<>();
+        }
+
+        if (types != null) {
+            this.types.addAll(types);
+        }
+    }
 }

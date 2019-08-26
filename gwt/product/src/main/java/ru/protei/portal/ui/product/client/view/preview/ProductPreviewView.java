@@ -7,6 +7,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
@@ -41,12 +42,12 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setName(String name) {
-        productName.setInnerText(name);
+        this.name.setInnerText(name);
     }
 
     @Override
     public void setType(String type) {
-        productType.setInnerText(type);
+        typeLabel.setText(type);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
             rootWrapper.removeStyleName("preview-wrapper");
         }
 
-        productNameBlock.setVisible(isForTableView);
+        nameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
@@ -93,11 +94,9 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     HTMLPanel rootWrapper;
     @UiField
-    SpanElement productName;
+    SpanElement name;
     @UiField
-    SpanElement productType;
-    @UiField
-    HTMLPanel productNameBlock;
+    HTMLPanel nameBlock;
     @UiField
     SpanElement wikiLink;
     @UiField
@@ -106,6 +105,8 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     DivElement historyVersion;
     @UiField
     DivElement cdrDescription;
+    @UiField
+    Label typeLabel;
 
     @Inject
     FixedPositioner positioner;

@@ -5,15 +5,13 @@
 
     <g:HTMLPanel ui:field="rootWrapper">
         <g:HTMLPanel styleName="preview">
-            <g:HTMLPanel ui:field="productNameBlock" tag="fieldset" styleName="header" visible="false">
-                <legend><ui:text from="{lang.product}"/></legend>
+            <g:HTMLPanel ui:field="nameBlock" tag="fieldset" styleName="header" visible="false">
+                <legend>
+                    <g:Label ui:field="typeLabel"/>
+                </legend>
                 <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.productName}"/></label>
-                    <span class="col-xs-7" ui:field="productName"></span>
-                </div>
-                <div class="col-xs-12">
-                    <label class="col-xs-5"><ui:text from="{lang.productType}"/></label>
-                    <span class="col-xs-7" ui:field="productType"></span>
+                    <label class="col-xs-5"><ui:text from="{lang.name}"/></label>
+                    <span class="col-xs-7" ui:field="name"></span>
                 </div>
                 <div class="col-xs-12">
                     <label class="col-xs-5"><ui:text from="{lang.productWikiLink}"/></label>
@@ -21,7 +19,9 @@
                 </div>
             </g:HTMLPanel>
             <g:HTMLPanel tag="fieldset" styleName="header">
-                <legend><ui:text from="{lang.productDescription}"/></legend>
+                <legend>
+                    <ui:text from="{lang.description}"/>
+                </legend>
                 <span ui:field="info" class="pre-formatted-info"></span>
             </g:HTMLPanel>
 

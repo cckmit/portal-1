@@ -5,6 +5,7 @@ import ru.protei.portal.core.model.annotations.Auditable;
 import ru.protei.portal.core.model.annotations.Privileged;
 import ru.protei.portal.core.model.dict.En_AuditType;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -42,7 +43,7 @@ public interface ProductService {
     Result<En_DevUnitState> updateState( AuthToken makeAuthToken, Long productId, En_DevUnitState state);
 
     @Privileged( En_Privilege.PRODUCT_VIEW )
-    Result<Boolean> checkUniqueProductByName( AuthToken token, String name, Long id);
+    Result<Boolean> checkUniqueProductByName(AuthToken token, String name, En_DevUnitType type, Long id);
 
     Result<List<ProductDirectionInfo>> productDirectionList( AuthToken token, ProductDirectionQuery query );
 }

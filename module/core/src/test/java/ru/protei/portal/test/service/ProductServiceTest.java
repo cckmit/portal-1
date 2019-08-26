@@ -61,7 +61,7 @@ public class ProductServiceTest {
 
         log.info(" product with " + name + " is not exist | product " + product);
 
-        Result<Boolean> result = productService.checkUniqueProductByName( null, name, 1L);
+        Result<Boolean> result = productService.checkUniqueProductByName( null, name, En_DevUnitType.PRODUCT, 1L);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
@@ -76,7 +76,7 @@ public class ProductServiceTest {
 
         log.info(" product with " + name + " is not exist");
 
-        result = productService.checkUniqueProductByName( null, name, null);
+        result = productService.checkUniqueProductByName( null, name, En_DevUnitType.PRODUCT,null);
 
         Assert.assertFalse(result.isError());
         Assert.assertTrue(result.isOk());
