@@ -6,14 +6,15 @@
         <Property name="extension" value=".log"/>
         <Property name="appFileName" value="portal.app"/>
         <Property name="apiFileName" value="portal.api"/>
-        <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] - %m%n"/>
+        <Property name="pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] [%M] - %m%n"/>
+        <Property name="patternForTest" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%c{1}] [%t] [%M] - %m%n"/>
         <Property name="maxFileSize" value="32MB"/>
     </Properties>
 
     <Loggers>
 
         <Root level="DEBUG">
-            <AppenderRef ref="Console"/>
+            <AppenderRef ref="COMMON"/>
         </Root>
         <Logger name="ru.protei" level="DEBUG">
             <!--<AppenderRef ref="COMMON"/>-->
@@ -24,12 +25,19 @@
         <Logger name="ru.protei.portal.api" level="DEBUG">
             <AppenderRef ref="API"/>
         </Logger>
+        <Logger name="ru.protei.portal.test.api" level="DEBUG">
+            <AppenderRef ref="ConsoleTest"/>
+        </Logger>
 
     </Loggers>
 
     <Appenders>
         <Console name="Console">
             <PatternLayout pattern="${pattern}"/>
+        </Console>
+
+        <Console name="ConsoleTest">
+            <PatternLayout pattern="${patternForTest}"/>
         </Console>
 
         <RollingFile name="COMMON"
