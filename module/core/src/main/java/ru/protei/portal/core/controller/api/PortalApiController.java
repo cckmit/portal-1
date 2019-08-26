@@ -28,9 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.error;
@@ -66,7 +64,7 @@ public class PortalApiController {
      * @return
      */
     @PostMapping(value = "/cases")
-    public APIResult<List<CaseShortView>> getCaseList(
+    public Result<List<CaseShortView>> getCaseList(
             @RequestBody CaseApiQuery query,
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -77,40 +75,40 @@ public class PortalApiController {
             Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isError()) {
-                return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
 
             Result<SearchResult<CaseShortView>> searchList = caseService.getCaseObjects(authToken, makeCaseQuery(query));
 
-            return APIResult.okWithData(searchList.getData().getResults());
+            return searchList.map( SearchResult::getResults );
 
         } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }
 
     @PostMapping(value = "/cases/create")
-    public APIResult<CaseObject> createCase(@RequestBody AuditableObject auditableObject,
+    public Result<CaseObject> createCase(@RequestBody AuditableObject auditableObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
 
         log.debug("API | createCase(): auditableObject={}", auditableObject);
 
         if (!(auditableObject instanceof CaseObject)) {
-            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
         }
 
         try {
             Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isError()) {
-                return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
@@ -121,37 +119,34 @@ public class PortalApiController {
                     userSessionDescriptorAPIResult.getData().getPerson()
             );
 
-            if (caseObjectCoreResponse.isOk()) {
-                return APIResult.okWithData(caseObjectCoreResponse.getData());
-            } else {
-                return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
-            }
+            return caseObjectCoreResponse.orElseGet( result ->
+                    error( result.getStatus(),  "Service Error" ));
 
         } catch (IllegalArgumentException ex) {
             log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }
 
     @PostMapping(value = "/cases/update")
-    public APIResult<CaseObject> updateCase(@RequestBody AuditableObject auditableObject,
+    public Result<CaseObject> updateCase(@RequestBody AuditableObject auditableObject,
                                             HttpServletRequest request,
                                             HttpServletResponse response) {
 
         log.debug("API | updateCase(): auditableObject={}", auditableObject);
 
         if (!(auditableObject instanceof CaseObject)) {
-            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
+            return error(En_ResultStatus.INCORRECT_PARAMS, "Incorrect AuditType");
         }
 
         try {
             Result<UserSessionDescriptor> userSessionDescriptorAPIResult = authenticate(request, response);
 
             if (userSessionDescriptorAPIResult.isError()) {
-                return APIResult.error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
+                return error(userSessionDescriptorAPIResult.getStatus(), userSessionDescriptorAPIResult.getMessage());
             }
 
             AuthToken authToken = userSessionDescriptorAPIResult.getData().makeAuthToken();
@@ -162,18 +157,15 @@ public class PortalApiController {
                     userSessionDescriptorAPIResult.getData().getPerson()
             );
 
-            if (caseObjectCoreResponse.isOk()) {
-                return APIResult.okWithData(caseObjectCoreResponse.getData());
-            } else {
-                return APIResult.error(caseObjectCoreResponse.getStatus(), "Service Error");
-            }
+            return caseObjectCoreResponse.orElseGet( result ->
+                    error( result.getStatus(),  "Service Error" ));
 
         } catch (IllegalArgumentException  ex) {
             log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
+            return error(En_ResultStatus.INCORRECT_PARAMS, ex.getMessage());
         } catch (Exception ex) {
             log.error(ex.getMessage());
-            return APIResult.error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
+            return error(En_ResultStatus.INTERNAL_ERROR, ex.getMessage());
         }
     }
 

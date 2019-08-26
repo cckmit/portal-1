@@ -2,6 +2,7 @@ package ru.protei.portal.api.struct;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 
@@ -11,6 +12,7 @@ import java.util.function.Function;
 /**
  * Created by michael on 27.06.16.
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect
 public class Result<T> {
 
