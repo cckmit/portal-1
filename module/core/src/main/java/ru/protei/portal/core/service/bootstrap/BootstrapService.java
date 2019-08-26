@@ -4,21 +4,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.protei.portal.core.model.dao.*;
-import ru.protei.portal.core.model.dict.En_CaseState;
-import ru.protei.portal.core.model.dict.En_CaseType;
-import ru.protei.portal.core.model.dict.En_Gender;
-import ru.protei.portal.core.model.dict.En_Privilege;
+import ru.protei.portal.core.model.dict.*;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.CollectionUtils;
 import ru.protei.portal.core.model.helper.PhoneUtils;
 import ru.protei.portal.core.model.query.CaseQuery;
 import ru.protei.portal.core.model.struct.ContactInfo;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
+import ru.protei.portal.core.model.struct.ProjectInfo;
+import ru.protei.portal.core.model.view.ProductShortView;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -46,6 +46,7 @@ public class BootstrapService {
         createSFPlatformCaseObjects();
         updateCompanyCaseTags();
         patchNormalizeWorkersPhoneNumbers(); // remove once executed
+        uniteSeveralProductsInProjectToComplex();
     }
 
     private void autoPatchDefaultRoles () {
@@ -173,6 +174,45 @@ public class BootstrapService {
         log.info("Patch for workers phone number normalization has ended");
     }
 
+    private void uniteSeveralProductsInProjectToComplex() {
+        CaseQuery caseQuery = new CaseQuery();
+        caseQuery.setType(En_CaseType.PROJECT);
+        caseQuery.setSortDir(En_SortDir.ASC);
+        caseQuery.setSortField(En_SortField.case_name);
+
+        List<CaseObject> projects = caseObjectDAO.listByQuery(caseQuery);
+        List<ProjectInfo> result = projects.stream()
+                .map(ProjectInfo::fromCaseObject).collect(toList());
+
+        if (result.isEmpty()) {
+            return;
+        }
+
+        result = result
+                .stream()
+                .filter(project -> project.getProducts() != null && project.getProducts().size() > 1)
+                .collect(toList());
+
+        if (result.isEmpty()) {
+            return;
+        }
+
+        result.forEach(project -> {
+            if (project.getProducts().stream().anyMatch(currProduct -> currProduct.getName().contains("uniteSeveralProductsInProjectToComplex_"))) {
+                return;
+            }
+
+            DevUnit complex = new DevUnit();
+            String complexName = project.getProducts().stream().map(ProductShortView::getName).reduce((name1, name2) -> name1 + " " + name2).get();
+            complex.setName("uniteSeveralProductsInProjectToComplex_" + complexName);
+            complex.setTypeId(En_DevUnitType.COMPLEX.getId());
+            complex.setChildren(project.getProducts().stream().map(DevUnit::fromProductShortView).collect(toList()));
+            complex.setCreated(new Date());
+
+            devUnitDAO.persist(complex);
+        });
+    }
+
     @Inject
     UserRoleDAO userRoleDAO;
     @Inject
@@ -189,4 +229,6 @@ public class BootstrapService {
     CaseFilterDAO caseFilterDAO;
     @Autowired
     PersonDAO personDAO;
+    @Autowired
+    DevUnitDAO devUnitDAO;
 }

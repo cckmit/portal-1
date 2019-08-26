@@ -11,10 +11,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.model.view.PersonProjectMemberView;
 import ru.protei.portal.core.model.view.ProductShortView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -197,6 +194,17 @@ public class ProjectInfo extends AuditableObject implements Removable {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public ProductShortView getComplex() {
+        ProductShortView lastShortView = products.stream().findFirst().get();
+        for (ProductShortView currProduct : products) {
+            if (currProduct.getId() > lastShortView.getId()) {
+                lastShortView = currProduct;
+            }
+        }
+
+        return lastShortView;
     }
 
     @Override
