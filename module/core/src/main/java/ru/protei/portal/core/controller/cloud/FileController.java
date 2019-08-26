@@ -33,8 +33,8 @@ import ru.protei.portal.core.model.struct.FileStream;
 import ru.protei.portal.core.model.util.JsonUtils;
 import ru.protei.portal.core.service.AttachmentService;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.EventAssemblerService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.auth.AuthService;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;

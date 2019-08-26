@@ -16,7 +16,7 @@ import ru.protei.portal.core.model.view.EntityOption;
 import ru.protei.portal.core.service.CaseStateService;
 import ru.protei.portal.core.service.CaseTagService;
 import ru.protei.portal.core.service.CompanyService;
-import ru.protei.portal.core.service.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.ui.common.client.service.CompanyController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;

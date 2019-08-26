@@ -11,7 +11,9 @@ import ru.protei.portal.core.model.dao.CaseObjectDAO;
 import ru.protei.portal.core.model.dict.En_CaseType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.events.EventAssemblerService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.Collection;
@@ -69,9 +71,11 @@ public class AttachmentServiceImpl implements AttachmentService {
 
             caseService.updateCaseModified( token, ca.getCaseId(), new Date() );
 
-            if (!caseService.isExistsAttachments(ca.getCaseId())) {
-                caseService.updateExistsAttachmentsFlag(ca.getCaseId(), false);
-            }
+            caseService.isExistsAttachments( ca.getCaseId() ).ifOk( isExists -> {
+                if (!isExists) {
+                    caseService.updateExistsAttachmentsFlag( ca.getCaseId(), false );
+                }
+            } );
 
             CaseObject issue = caseObjectDAO.get(ca.getCaseId());
             Attachment attachment = attachmentDAO.get(id);

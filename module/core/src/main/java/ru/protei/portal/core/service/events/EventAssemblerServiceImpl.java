@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.events;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import protei.utils.common.Tuple;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.Person;
+import ru.protei.portal.core.service.EventExpirationControl;
+import ru.protei.portal.core.service.EventPublisherService;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -116,7 +118,6 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         return assembledEventsMap.size();
     }
 
-    @Override
     @Scheduled(fixedRate = SCHEDULE_TIME)
     public void checkEventsMap() {
         //Measured in ms

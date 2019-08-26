@@ -1,6 +1,5 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.events;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import ru.protei.portal.core.event.*;
 import ru.protei.portal.core.model.ent.Person;
 
@@ -20,5 +19,4 @@ public interface EventAssemblerService {
 
     int getEventsCount();
 
-    void checkEventsMap();
 }

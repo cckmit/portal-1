@@ -16,6 +16,7 @@ import ru.protei.portal.core.model.query.ContactQuery;
 import ru.protei.portal.core.model.struct.ContactItem;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.model.view.PersonShortView;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 
 import java.util.Date;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
+
 /**
  * Реализация сервиса управления контактами
  */

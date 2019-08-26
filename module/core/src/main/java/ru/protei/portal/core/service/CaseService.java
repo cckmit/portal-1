@@ -55,7 +55,7 @@ public interface CaseService {
 
     Result<Long> attachToCaseId( Attachment attachment, long caseId);
 
-    boolean isExistsAttachments(Long caseId);
+    Result<Boolean>  isExistsAttachments(Long caseId);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId, boolean flag);
     Result<Boolean> updateExistsAttachmentsFlag( Long caseId);
 
@@ -64,8 +64,6 @@ public interface CaseService {
 
     @Privileged({ En_Privilege.ISSUE_VIEW })
     Result<CaseInfo> getCaseShortInfo( AuthToken token, Long caseNumber);
-
-    boolean hasAccessForCaseObject(AuthToken token, En_Privilege privilege, CaseObject caseObject);
 
     Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId );
 }

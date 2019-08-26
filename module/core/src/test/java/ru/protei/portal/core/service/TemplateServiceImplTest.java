@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
 import ru.protei.portal.core.event.AssembledCaseEvent;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
@@ -15,6 +14,7 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.template.PreparedTemplate;
+import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.portal.test.service.CaseCommentServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
 import ru.protei.winter.jdbc.JdbcConfigurationContext;
@@ -44,7 +44,8 @@ public class TemplateServiceImplTest {
         CaseObject initState = createNewCaseObject(person, 2 * DAY + 3 * HOUR + 21 * MINUTE);
         CaseObject lastState = createNewCaseObject(person, 4 * DAY + 15 * HOUR + 48 * MINUTE);
 
-        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(new Object(), initState, lastState, person);
+        Object dummyCaseService = new Object();
+        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(dummyCaseService, initState, lastState, person);
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
 

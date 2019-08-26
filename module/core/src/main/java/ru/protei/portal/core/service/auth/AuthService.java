@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.service.auth;
 
 import ru.protei.portal.api.struct.Result;
 import ru.protei.portal.core.model.ent.AuthToken;

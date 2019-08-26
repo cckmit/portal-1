@@ -1,7 +1,6 @@
 package ru.protei.portal.core.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -28,8 +27,8 @@ import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.struct.AuditObject;
 import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.service.EventPublisherService;
-import ru.protei.portal.core.service.PolicyService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcHelper;
 
 import java.lang.reflect.Method;
@@ -45,31 +44,44 @@ import static ru.protei.portal.api.struct.Result.error;
 @Order(1)
 public class ServiceLayerInterceptor {
 
-    private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);
-
+    /**
+     *  Сервис методы "Фасада", строго в пакете service, прочие сервисы в подпакетах
+     */
     @Pointcut("within(ru.protei.portal.core.service.*)")
-    private void inServiceLayer() {}
-
-    @Pointcut("within(ru.protei.portal.core.service.user.*)")
-    public void secureServiceMethod() {
+    private void inServiceFacade() {
     }
 
-    @Around("secureServiceMethod()")
-    public Object unhandledExceptionSecureMethods( ProceedingJoinPoint pjp ) {
+    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
+    private void methodWithResult() {}
+
+    @Pointcut("within(ru.protei.portal.core.service.auth.*)")
+    public void authServiceMethod() {
+    }
+
+    @Around("methodWithResult() && authServiceMethod()")
+    public Object unhandledExceptionAuthMethods( ProceedingJoinPoint pjp ) {
         try {
             return pjp.proceed();
         } catch (Throwable t) {
-            logger.warn( "Unhandled exception from secure methods: {}", pjp.getSignature(), t );
+            logger.warn( "Unhandled exception from auth methods: {}", pjp.getSignature(), t );
             return null;
         }
     }
 
-    @Around("inServiceLayer()")
-    public Object unhandledException (ProceedingJoinPoint pjp) {
+    /**
+     * Все сервис методы "Фасада" обязаны возвращать объект результата выполения "Result",
+     * принимать признак безопасности "AuthToken", могут быть аннотированы как @Privileged.
+     * Если метод не возврщает "Result", не требует авторизации или не попадает в журнал аудита,
+     * то наверное такой сервис метод не относится к "Фасаду"
+     * и должен быть размещен в отдельном пакете и обрабатываться иначе.
+     */
+    @Around("inServiceFacade()")
+    public Object serviceFacadeProcessing (ProceedingJoinPoint pjp) {
 
         try {
             checkPrivileges( pjp );
-            Object result = pjp.proceed();
+            // Все сервис методы "Фасада" обязаны возвращать объект результата выполения "Result"...
+            Result result = (Result) pjp.proceed(); // Нужно падать если не приводтся к Result!
             tryDoAudit( pjp, result );
             return result;
         }
@@ -306,4 +318,5 @@ public class ServiceLayerInterceptor {
 
     private static final String AUDITABLE_TYPE = "AuditableType";
     private Map<String, Object> notAuditableContainer = new LinkedHashMap<>();
+    private static Logger logger = LoggerFactory.getLogger("Service");
 }

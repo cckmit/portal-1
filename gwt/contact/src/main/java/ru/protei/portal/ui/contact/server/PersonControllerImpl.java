@@ -9,7 +9,7 @@ import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.query.PersonQuery;
 import ru.protei.portal.core.model.view.PersonShortView;
 import ru.protei.portal.core.service.PersonService;
-import ru.protei.portal.core.service.PolicyService;
+import ru.protei.portal.core.service.policy.PolicyService;
 import ru.protei.portal.ui.common.client.service.PersonController;
 import ru.protei.portal.ui.common.server.ServiceUtils;
 import ru.protei.portal.ui.common.server.service.SessionService;

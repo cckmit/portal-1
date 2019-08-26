@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service;
+package ru.protei.portal.core.service.template;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -16,8 +16,6 @@ import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.helper.HTMLHelper;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.helper.StringUtils;
-import ru.protei.portal.core.service.template.PreparedTemplate;
-import ru.protei.portal.core.service.template.TextUtils;
 import ru.protei.portal.core.utils.WorkTimeFormatter;
 
 import javax.annotation.PostConstruct;

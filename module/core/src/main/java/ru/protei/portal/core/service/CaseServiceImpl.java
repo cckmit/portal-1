@@ -18,7 +18,8 @@ import ru.protei.portal.core.model.struct.CaseObjectUpdateResult;
 import ru.protei.portal.core.model.struct.CaseObjectWithCaseComment;
 import ru.protei.portal.core.model.util.CaseStateWorkflowUtil;
 import ru.protei.portal.core.model.view.CaseShortView;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.core.utils.beans.SearchResult;
 import ru.protei.winter.core.utils.collections.DiffCollectionResult;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
@@ -417,7 +418,8 @@ public class CaseServiceImpl implements CaseService {
 
     @Override
     public Result<Boolean> updateExistsAttachmentsFlag( Long caseId){
-        return updateExistsAttachmentsFlag(caseId, isExistsAttachments(caseId));
+      return isExistsAttachments(caseId).flatMap( isExists ->
+         updateExistsAttachmentsFlag(caseId, isExists));
     }
 
     @Override
@@ -499,8 +501,14 @@ public class CaseServiceImpl implements CaseService {
     }
 
     @Override
-    public boolean isExistsAttachments(Long caseId) {
-        return caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId);
+    public Result<Boolean> isExistsAttachments(Long caseId) {
+        return ok(caseAttachmentDAO.checkExistsByCondition("case_id = ?", caseId));
+    }
+
+    @Override
+    public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
+        return caseLinkService.getLinks( token, caseId)
+                .map( this::fillYouTrackInfo );
     }
 
     private void synchronizeTags(CaseObject caseObject, UserSessionDescriptor descriptor) {
@@ -617,32 +625,11 @@ public class CaseServiceImpl implements CaseService {
                 || !Objects.equals(co1.getProductId(), co2.getProductId());
     }
 
-    @Override
-    public boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
+    private boolean hasAccessForCaseObject( AuthToken token, En_Privilege privilege, CaseObject caseObject ) {
         UserSessionDescriptor descriptor = authService.findSession( token );
-        Set< UserRole > roles = descriptor.getLogin().getRoles();
-        if ( !policyService.hasGrantAccessFor( roles, privilege ) && policyService.hasScopeForPrivilege( roles, privilege, En_Scope.COMPANY ) ) {
-            if ( caseObject == null ) {
-                return false;
-            }
-
-            Collection<Long> companyIds = descriptor.getAllowedCompaniesIds();
-            if ( !companyIds.contains( caseObject.getInitiatorCompanyId() ) ) {
-                return false;
-            }
-
-            if ( caseObject.isPrivateCase() ) {
-                return false;
-            }
-        }
-        return true;
+        return policyService.hasAccessForCaseObject( descriptor, privilege, caseObject );
     }
 
-    @Override
-    public Result<List<CaseLink>> getCaseLinks( AuthToken token, Long caseId ) {
-       return caseLinkService.getLinks( token, caseId)
-                .map( this::fillYouTrackInfo );
-    }
 
     private boolean isStateReopenNotAllowed(AuthToken token, CaseObject oldState, CaseObject newState) {
         return oldState.getState() == En_CaseState.VERIFIED &&

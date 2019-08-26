@@ -10,7 +10,7 @@ import ru.protei.portal.core.model.dict.En_Privilege;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.dict.En_Scope;
 import ru.protei.portal.core.model.ent.*;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ import java.util.HashSet;
 
 import static ru.protei.portal.api.struct.Result.ok;
 import static ru.protei.portal.api.struct.Result.error;
-import static ru.protei.portal.api.struct.Result.ok;
+
 public class AuthServiceMock implements AuthService {
 
     @Autowired

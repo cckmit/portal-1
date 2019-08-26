@@ -20,7 +20,7 @@ import ru.protei.portal.core.model.struct.AuditableObject;
 import ru.protei.portal.core.model.view.CaseShortView;
 import ru.protei.portal.core.service.CaseLinkService;
 import ru.protei.portal.core.service.CaseService;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.portal.core.utils.SessionIdGen;
 import ru.protei.winter.core.utils.beans.SearchResult;
 

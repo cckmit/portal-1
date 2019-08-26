@@ -14,7 +14,8 @@ import ru.protei.portal.core.model.ent.UserSessionDescriptor;
 import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.UserRoleQuery;
 import ru.protei.portal.core.model.view.EntityOption;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 
 import java.util.Collections;
 import java.util.List;

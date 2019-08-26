@@ -4,48 +4,45 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.Result;
-import ru.protei.portal.core.model.dict.En_ResultStatus;
+import ru.protei.winter.core.utils.beans.SearchResult;
 
-import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.protei.portal.api.struct.Result.error;
 
 /**
  * Журналирование
  */
 @Aspect
-@Order(0)
+@Order(0)//Оборачивает прочие - первым вызывается, последним отдает результат.
 public class ServiceLayerInterceptorLogging {
 
-    private static final Logger log = getLogger("service");
-
-    HashMap<String, MethodProfile> profiling = new HashMap<>();
+    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
+    private void methodWithResult() {}
 
     @Pointcut("within(ru.protei.portal.core.service.*)")
-    private void inServiceLayer() {}
+    private void inServiceFacade() {}
 
-    @Pointcut("within(ru.protei.portal.core.service.user.*)")
-    public void secureServiceMethod() {
+    @Pointcut("within(ru.protei.portal.core.service.auth.*)")
+    public void authServiceMethod() {
     }
 
-    @Around("inServiceLayer()")
-    public Object serviceMethodLogging(ProceedingJoinPoint pjp) throws Throwable {
+    @Around("methodWithResult() && authServiceMethod()")
+    public Object authorizeServiceLogging(ProceedingJoinPoint pjp) throws Throwable {
         String methodName = pjp.getSignature().toShortString();
-        log.debug("calling : {} args: {}", methodName, pjp.getArgs());
+        log.debug("calling : {} : <secure>", methodName);
 
         return invokeMethod( methodName, pjp);
     }
 
-    @Around("secureServiceMethod()")
-    public Object authorizeSecureProcess(ProceedingJoinPoint pjp) throws Throwable {
+    @Around("inServiceFacade()")
+    public Object serviceFacadeLogging(ProceedingJoinPoint pjp) throws Throwable {
         String methodName = pjp.getSignature().toShortString();
-        log.debug("calling : {} : <secure>", methodName);
+        log.debug("calling : {} args: {}", methodName, pjp.getArgs());
 
         return invokeMethod( methodName, pjp);
     }
@@ -107,8 +104,17 @@ public class ServiceLayerInterceptorLogging {
             log.trace( "ResultObject: {}", resultObject );
             return "map size=" + ((Map) resultObject).size();
         }
-        return null;
+
+        if ( resultObject instanceof SearchResult) {
+            log.trace( "ResultObject: {}", ((SearchResult) resultObject).getResults() );
+            return "SearchResult total=" + ((SearchResult) resultObject).getTotalCount();
+        }
+        return String.valueOf( resultObject );
     }
+
+
+    Map<String, MethodProfile> profiling = new ConcurrentHashMap<>();
+    private static final Logger log = getLogger("service");
 
 }
 

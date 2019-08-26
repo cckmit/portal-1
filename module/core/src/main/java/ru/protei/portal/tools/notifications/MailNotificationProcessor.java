@@ -19,7 +19,9 @@ import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.NotificationEntry;
 import ru.protei.portal.core.model.struct.PlainContactInfoFacade;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.events.CaseSubscriptionService;
 import ru.protei.portal.core.service.template.PreparedTemplate;
+import ru.protei.portal.core.service.template.TemplateService;
 import ru.protei.winter.core.utils.services.lock.LockService;
 
 import javax.mail.MessagingException;

@@ -19,7 +19,8 @@ import ru.protei.portal.core.model.helper.HelperFunc;
 import ru.protei.portal.core.model.query.CaseCommentQuery;
 import ru.protei.portal.core.model.struct.CaseCommentSaveOrUpdateResult;
 import ru.protei.portal.core.model.util.CrmConstants;
-import ru.protei.portal.core.service.user.AuthService;
+import ru.protei.portal.core.service.policy.PolicyService;
+import ru.protei.portal.core.service.auth.AuthService;
 import ru.protei.winter.jdbc.JdbcManyRelationsHelper;
 
 import java.util.*;
@@ -271,9 +272,12 @@ public class CaseCommentServiceImpl implements CaseCommentService {
         if (CollectionUtils.isNotEmpty(removedComment.getCaseAttachments())) {
             caseAttachmentDAO.removeByCommentId(caseId);
             removedComment.getCaseAttachments().forEach(ca -> attachmentService.removeAttachment(token, caseType, ca.getAttachmentId()));
-            if (!caseService.isExistsAttachments(removedComment.getCaseId())) {
-                isCaseChanged = caseService.updateExistsAttachmentsFlag(removedComment.getCaseId(), false).getData();
-            }
+            isCaseChanged = caseService.isExistsAttachments( removedComment.getCaseId() ).flatMap( isExists -> {
+                if (isExists) {
+                    return ok( false );
+                }
+                return caseService.updateExistsAttachmentsFlag( removedComment.getCaseId(), false );
+            } ).orElseGet( result -> ok( false ) ).getData();
         }
         isCaseChanged &= caseService.updateCaseModified(token, caseId, new Date()).getData();
         if (!isCaseChanged) {
@@ -386,7 +390,7 @@ public class CaseCommentServiceImpl implements CaseCommentService {
     private En_ResultStatus checkAccessForCaseObject(AuthToken token, En_CaseType caseType, long caseObjectId) {
         if (En_CaseType.CRM_SUPPORT.equals(caseType)) {
             CaseObject caseObject = caseObjectDAO.get(caseObjectId);
-            if (!caseService.hasAccessForCaseObject(token, En_Privilege.ISSUE_VIEW, caseObject)) {
+            if (!policyService.hasAccessForCaseObject(authService.findSession( token ), En_Privilege.ISSUE_VIEW, caseObject)) {
                 return En_ResultStatus.PERMISSION_DENIED;
             }
         }

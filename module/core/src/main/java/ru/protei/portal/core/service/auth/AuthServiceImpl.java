@@ -1,4 +1,4 @@
-package ru.protei.portal.core.service.user;
+package ru.protei.portal.core.service.auth;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
