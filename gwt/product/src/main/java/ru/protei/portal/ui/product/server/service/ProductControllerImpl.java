@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.protei.portal.api.struct.CoreResponse;
 import ru.protei.portal.core.model.dict.En_DevUnitState;
+import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.core.model.dict.En_ResultStatus;
 import ru.protei.portal.core.model.ent.AuthToken;
 import ru.protei.portal.core.model.ent.DevUnit;
@@ -66,7 +67,7 @@ public class ProductControllerImpl implements ProductController {
 
         UserSessionDescriptor descriptor = getDescriptorAndCheckSession();
 
-        if ( product == null || !isNameUnique( product.getName(), product.getId() ) )
+        if ( product == null || !isNameUnique( product.getName(), product.getType(), product.getId() ) )
             throw new RequestFailedException (En_ResultStatus.INCORRECT_PARAMS);
 
         CoreResponse response = product.getId() == null
@@ -101,14 +102,14 @@ public class ProductControllerImpl implements ProductController {
 
 
     @Override
-    public boolean isNameUnique( String name, Long excludeId ) throws RequestFailedException {
+    public boolean isNameUnique(String name, En_DevUnitType type, Long excludeId ) throws RequestFailedException {
 
         log.debug( "isNameUnique(): name={}", name );
 
         if ( name == null || name.isEmpty() )
             throw new RequestFailedException ();
 
-        CoreResponse< Boolean > response = productService.checkUniqueProductByName( getDescriptorAndCheckSession().makeAuthToken(), name, excludeId );
+        CoreResponse< Boolean > response = productService.checkUniqueProductByName( getDescriptorAndCheckSession().makeAuthToken(), name, type, excludeId );
 
         if ( response.isError() )
             throw new RequestFailedException( response.getStatus() );

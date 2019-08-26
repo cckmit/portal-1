@@ -112,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
         if (product == null)
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!checkUniqueProduct(product.getName(), product.getId()))
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
         product.setCreated(new Date());
@@ -141,7 +141,7 @@ public class ProductServiceImpl implements ProductService {
         if( product == null || product.getId() == null )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        if (!checkUniqueProduct(product.getName(), product.getId()))
+        if (!checkUniqueProduct(product.getName(), product.getType(), product.getId()))
             return new CoreResponse().error(En_ResultStatus.ALREADY_EXIST);
 
         DevUnit oldProduct = devUnitDAO.get(product.getId());
@@ -189,16 +189,16 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, Long excludeId) {
+    public CoreResponse<Boolean> checkUniqueProductByName( AuthToken token, String name, En_DevUnitType type, Long excludeId) {
 
         if( name == null || name.isEmpty() )
             return new CoreResponse().error(En_ResultStatus.INCORRECT_PARAMS);
 
-        return new CoreResponse<Boolean>().success(checkUniqueProduct(name, excludeId));
+        return new CoreResponse<Boolean>().success(checkUniqueProduct(name, type, excludeId));
     }
 
-    private boolean checkUniqueProduct (String name, Long excludeId) {
-        DevUnit product = devUnitDAO.checkExistsByName(En_DevUnitType.PRODUCT, name);
+    private boolean checkUniqueProduct (String name, En_DevUnitType type, Long excludeId) {
+        DevUnit product = devUnitDAO.checkExistsByName(type, name);
 
         return product == null || product.getId().equals(excludeId);
     }

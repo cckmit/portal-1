@@ -13,6 +13,8 @@ public class En_DevUnitTypeLang {
                 return lang.devUnitProduct();
             case DIRECTION:
                 return lang.devUnitDirection();
+            case COMPLEX:
+                return lang.devUnitComplex();
 
             default:
                 return lang.unknownField();
