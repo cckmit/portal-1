@@ -44,7 +44,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//TODO restore test data
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class,
         DatabaseConfiguration.class, MainTestsConfiguration.class, PortalApiController.class})
@@ -207,8 +206,6 @@ public class TestPortalApiController extends BaseServiceTest {
         person = personDAO
                 .getAll()
                 .stream()
-                .filter( person-> person!=null)
-                .filter( person-> person.getFirstName()!=null)
                 .filter(currPerson -> currPerson.getFirstName().equals(personFirstName))
                 .findFirst().get();
     }

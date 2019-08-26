@@ -24,7 +24,7 @@ public class TestSvnUploading {
     private final String FILE_PATH = "scoring.pdf";
 
 
-//    @Test
+    @Test
     public void testSvnConnection() {
         DAVRepositoryFactory.setup();
         try {
