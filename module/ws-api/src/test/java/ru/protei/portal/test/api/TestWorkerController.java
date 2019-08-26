@@ -19,27 +19,27 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.APIConfigurationContext;
 import ru.protei.portal.api.model.*;
+import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.core.model.struct.Photo;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Properties;
+import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {APIConfigurationContext.class})
+@ContextConfiguration(classes = {APIConfigurationContext.class, DatabaseConfiguration.class})
 public class TestWorkerController {
+
     @Autowired
     WebApplicationContext webApplicationContext;
     private static Logger logger = LoggerFactory.getLogger(TestRestService.class);
-    private MockMvc mockMvc;
+    private static MockMvc mockMvc;
     private static String BASE_URI;
     private static Marshaller marshaller;
     private static Unmarshaller unmarshaller;
@@ -47,24 +47,20 @@ public class TestWorkerController {
     @BeforeClass
     public static void initClass() throws Exception {
         initJAXB();
-        createBaseUri();
+        BASE_URI = "http://localhost:8090/api/worker/";
     }
-
 
     @Before
     public void initMockMvc() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-        try {
-            deleteWorker(createWorkerRecord());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Test
     public void testAddWorker() throws Exception {
         WorkerRecord worker = createWorkerRecord();
         ServiceResult sr;
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
 
         sr = addWorker(new WorkerRecord());
         Assert.assertNotNull("Result add.worker is null!", sr);
@@ -87,14 +83,18 @@ public class TestWorkerController {
         Assert.assertEquals("add.worker: already exist worker was added! " + sr.getErrInfo(), false, sr.isSuccess());
 
         deleteWorker(worker);
+        deleteDepartment(department);
     }
 
 
     @Test
     public void testUpdateWorker() throws Exception {
         WorkerRecord worker = createWorkerRecord();
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
         ServiceResult successServiceResult = addWorker(worker);
         ServiceResult sr;
+
 
         sr = updateWorker(worker);
         Assert.assertNotNull("Result update.worker is null!", sr);
@@ -118,6 +118,8 @@ public class TestWorkerController {
         sr = updateWorker(worker);
         Assert.assertNotNull("Result update.worker is null!", sr);
         Assert.assertEquals("update.worker fired worker was updated!", false, sr.isSuccess());
+
+        deleteDepartment(department);
     }
 
 
@@ -125,6 +127,8 @@ public class TestWorkerController {
     public void testDeleteWorker() throws Exception {
         WorkerRecord worker = createWorkerRecord();
         ServiceResult sr;
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
 
         WorkerRecord emptyWorker = new WorkerRecord();
         emptyWorker.setWorkerId(worker.getWorkerId());
@@ -144,6 +148,8 @@ public class TestWorkerController {
         Assert.assertNotNull("Result delete.worker is null!", sr);
         Assert.assertEquals("delete.worker: the deleted worker was deleted! ", false, sr.isSuccess());
 
+        deleteDepartment(department);
+
     }
 
     @Test
@@ -151,6 +157,8 @@ public class TestWorkerController {
         String uri = BASE_URI + "get.person";
 
         WorkerRecord worker = createWorkerRecord();
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
         ServiceResult sr = addWorker(worker);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri).queryParam("id", sr.getId());
@@ -182,12 +190,16 @@ public class TestWorkerController {
         logger.debug("info = " + wr.getInfo());
         logger.debug("ipAddress = " + wr.getIpAddress());
         logger.debug("isDeleted = " + wr.isDeleted());
+
+        deleteDepartment(department);
     }
 
     @Test
     public void testGetWorker() throws Exception {
         String uri = BASE_URI + "get.worker";
         WorkerRecord worker = createWorkerRecord();
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
         addWorker(worker);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
@@ -227,6 +239,8 @@ public class TestWorkerController {
         logger.debug("hireDate = " + wr.getHireDate());
         logger.debug("hireOrderNo = " + wr.getHireOrderNo());
         logger.debug("active = " + wr.getActive());
+
+        deleteDepartment(department);
     }
 
     @Test
@@ -279,8 +293,11 @@ public class TestWorkerController {
     @Test
     public void testUpdatePosition() throws Exception {
         String uri = BASE_URI + "update.position";
+        DepartmentRecord department = createDepartmentRecord();
+        createOrUpdateDepartment(department);
         WorkerRecord worker = createWorkerRecord();
-        String newPosition = createPositionName();
+        addWorker(worker);
+        String newPosition = "Test position " + System.currentTimeMillis();
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
                 .queryParam("oldName", worker.getPositionName())
@@ -301,6 +318,7 @@ public class TestWorkerController {
         logger.debug("The position is updated. id = " + sr.getId());
 
         deleteWorker(worker);
+        deleteDepartment(department);
     }
 
     @Test
@@ -329,11 +347,6 @@ public class TestWorkerController {
         deleteWorker(worker);
     }
 
- /*   @Test
-    public void testPosition() {
-
-        logger.debug ("" + origWorker.getPositionName());
-    }*/
 
   /*  @Test
     public void testUpdatePhoto() {
@@ -407,87 +420,44 @@ public class TestWorkerController {
 
     private WorkerRecord createWorkerRecord() {
         WorkerRecord worker = new WorkerRecord();
-        InputStream is = null;
-        try {
-            is = TestSoapService.class.getResourceAsStream("/service.properties");
-            Properties props = new Properties();
-            props.load(is);
-            worker.setCompanyCode(props.getProperty("companyCode"));
-            worker.setId(props.getProperty("personId") != null && !props.getProperty("personId").equals("") ? new Long(props.getProperty("personId")) : null);
-            worker.setFirstName(props.getProperty("firstName"));
-            worker.setLastName(props.getProperty("lastName"));
-            worker.setSecondName(props.getProperty("secondName"));
-            worker.setSex(new Integer(props.getProperty("sex")));
-            worker.setBirthday(props.getProperty("birthday"));
-            worker.setPhoneWork(props.getProperty("phoneWork"));
-            worker.setPhoneHome(props.getProperty("phoneHome"));
-            worker.setPhoneMobile(props.getProperty("phoneMobile"));
-            worker.setEmail(props.getProperty("email"));
-            worker.setEmailOwn(props.getProperty("emailOwn"));
-            worker.setFax(props.getProperty("fax"));
-            worker.setAddress(props.getProperty("address"));
-            worker.setAddressHome(props.getProperty("addressHome"));
-            worker.setPassportInfo(props.getProperty("passportInfo"));
-            worker.setInfo(props.getProperty("info"));
-            worker.setIpAddress(props.getProperty("ipAddress"));
-            worker.setDeleted(new Boolean(props.getProperty("isDeleted")));
-            worker.setWorkerId(props.getProperty("workerId"));
-            worker.setDepartmentId(props.getProperty("depId"));
-            worker.setHireDate(props.getProperty("hireDate"));
-            worker.setHireOrderNo(props.getProperty("hireOrderNo"));
-            worker.setActive(new Integer(props.getProperty("active")));
-            worker.setPositionName(props.getProperty("positionName"));
-        } catch (Exception e) {
-            logger.error("Can not read config!", e);
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
-        }
+
+        worker.setCompanyCode("protei");
+        worker.setId(100000L + new Random().nextInt(100000));
+        worker.setFirstName("TestFirstName" + System.currentTimeMillis());
+        worker.setLastName("TestLastName" + System.currentTimeMillis());
+        worker.setSecondName("TestSecondName" + System.currentTimeMillis());
+        worker.setSex(2);
+        worker.setBirthday("1998-07-15");
+        worker.setPhoneWork(String.valueOf(new Random().nextInt(899) + 100));
+        worker.setPhoneHome("999-55-55");
+        worker.setPhoneMobile("+79610000000");
+        worker.setEmail(System.currentTimeMillis() + "test3_up@protei.ru");
+        worker.setEmailOwn(System.currentTimeMillis() + "test3@protei.ru");
+        worker.setFax(worker.getPhoneWork());
+        worker.setAddress("test address 3 up");
+        worker.setAddressHome("test address 3");
+        worker.setPassportInfo("test passport info 3 up");
+        worker.setInfo("test info 3 up");
+        worker.setIpAddress("192.168.100." + new Random().nextInt(255));
+        worker.setDeleted(new Boolean(false));
+        worker.setWorkerId(String.valueOf(System.currentTimeMillis()));
+        worker.setDepartmentId("111111111");
+        worker.setHireDate("2015-06-05");
+        worker.setHireOrderNo("Order № " + System.currentTimeMillis());
+        worker.setActive(1);
+        worker.setPositionName("Test position");
+
         return worker;
     }
 
     private DepartmentRecord createDepartmentRecord() {
         DepartmentRecord department = new DepartmentRecord();
-        InputStream is = null;
-        try {
-            is = TestSoapService.class.getResourceAsStream("/service.properties");
-            Properties props = new Properties();
-            props.load(is);
-            department.setCompanyCode(props.getProperty("companyCode"));
-            department.setDepartmentId(props.getProperty("departmentId"));
-            department.setDepartmentName(props.getProperty("departmentName"));
-            department.setParentId(props.getProperty("parentId") != null && !props.getProperty("parentId").equals("") ? props.getProperty("parentId") : null);
-            department.setHeadId(props.getProperty("headId") != null && !props.getProperty("headId").equals("") ? props.getProperty("headId") : null);
-        } catch (Exception e) {
-            logger.error("Can not read config!", e);
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
-        }
-        return department;
-    }
 
-    private String createPositionName() {
-        String positionName = null;
-        InputStream is = null;
-        try {
-            is = TestSoapService.class.getResourceAsStream("/service.properties");
-            Properties props = new Properties();
-            props.load(is);
-            positionName = props.getProperty("newPositionName");
-        } catch (Exception e) {
-            logger.error("Can not read config!", e);
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
-        }
-        return positionName;
+        department.setCompanyCode("protei");
+        department.setDepartmentId("111111111");
+        department.setDepartmentName("TestDepartment1");
+
+        return department;
     }
 
     private static void initJAXB() throws Exception {
@@ -498,23 +468,6 @@ public class TestWorkerController {
         marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         unmarshaller = context.createUnmarshaller();
-    }
-
-    private static void createBaseUri() throws Exception {
-        InputStream is = null;
-        try {
-            is = TestSoapService.class.getResourceAsStream("/service.properties");
-            Properties props = new Properties();
-            props.load(is);
-            BASE_URI = props.getProperty("service_publish_address");
-        } catch (Exception e) {
-            logger.error("Can not read config!", e);
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-            }
-        }
     }
 
 

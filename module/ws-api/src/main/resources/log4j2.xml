@@ -13,7 +13,7 @@
     <Loggers>
 
         <Root level="DEBUG">
-            <AppenderRef ref="COMMON"/>
+            <AppenderRef ref="Console"/>
         </Root>
         <Logger name="ru.protei" level="DEBUG">
             <!--<AppenderRef ref="COMMON"/>-->
