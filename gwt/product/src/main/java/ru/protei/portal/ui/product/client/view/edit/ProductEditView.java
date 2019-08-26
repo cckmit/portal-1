@@ -116,18 +116,21 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
 
         if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
             nameLabel.setInnerText(lang.complexName());
+            descriptionLabel.setInnerText(lang.complexDescription());
             childrenContainerLabel.setText(lang.products());
 
             parentsContainer.addStyleName("hide");
             children.setTypes(En_DevUnitType.PRODUCT);
         } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
             nameLabel.setInnerText(lang.productName());
+            descriptionLabel.setInnerText(lang.productDescription());
             childrenContainerLabel.setText(lang.components());
 
             parents.setTypes(En_DevUnitType.COMPLEX);
             children.setTypes(En_DevUnitType.COMPONENT);
         } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
             nameLabel.setInnerText(lang.componentName());
+            descriptionLabel.setInnerText(lang.componentDescription());
             childrenContainerLabel.setText(lang.components());
 
             parents.setTypes(En_DevUnitType.PRODUCT, En_DevUnitType.COMPONENT);
@@ -234,6 +237,8 @@ public class ProductEditView extends Composite implements AbstractProductEditVie
     HTMLPanel nameContainer;
     @UiField
     LabelElement nameLabel;
+    @UiField
+    LabelElement descriptionLabel;
     @UiField
     ValidableTextBox name;
     @Inject

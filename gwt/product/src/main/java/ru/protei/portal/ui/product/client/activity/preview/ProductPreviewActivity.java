@@ -8,6 +8,7 @@ import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.DevUnit;
 import ru.protei.portal.core.model.helper.StringUtils;
 import ru.protei.portal.ui.common.client.events.ProductEvents;
+import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.common.client.service.TextRenderControllerAsync;
 import ru.protei.portal.ui.common.shared.model.FluentCallback;
@@ -36,7 +37,7 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
 
     private void fillView( DevUnit product ) {
         view.setName(product.getName());
-        view.setType(product.getType());
+        view.setType(typeLang.getName(product.getType()));
         view.setInfo( product.getInfo() );
         view.setWikiLink(StringUtils.emptyIfNull(product.getWikiLink()));
 
@@ -67,4 +68,6 @@ public abstract class ProductPreviewActivity implements AbstractProductPreviewAc
     AbstractProductPreviewView view;
     @Inject
     TextRenderControllerAsync textRenderController;
+    @Inject
+    En_DevUnitTypeLang typeLang;
 }

@@ -26,7 +26,7 @@
                 </div>
 
                 <div class="form-group col-xs-12">
-                    <label><ui:text from="{lang.description}"/></label>
+                    <label ui:field="descriptionLabel"/>
                     <g:TextArea ui:field="info" styleName="input-field description" />
                 </div>
 

@@ -10,9 +10,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.inject.Inject;
-import ru.protei.portal.core.model.dict.En_DevUnitType;
 import ru.protei.portal.ui.common.client.common.FixedPositioner;
-import ru.protei.portal.ui.common.client.lang.En_DevUnitTypeLang;
 import ru.protei.portal.ui.common.client.lang.Lang;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewActivity;
 import ru.protei.portal.ui.product.client.activity.preview.AbstractProductPreviewView;
@@ -44,24 +42,12 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
 
     @Override
     public void setName(String name) {
-        productName.setInnerText(name);
+        this.name.setInnerText(name);
     }
 
     @Override
-    public void setType(En_DevUnitType type) {
-        if (type.getId() == En_DevUnitType.COMPLEX.getId()) {
-            devUnit.setText(lang.devUnitComplex());
-            devUnitName.setText(lang.complexName());
-            devUnitDescription.setText(lang.complexDescription());
-        } else if (type.getId() == En_DevUnitType.PRODUCT.getId()) {
-            devUnit.setText(lang.devUnitProduct());
-            devUnitName.setText(lang.productName());
-            devUnitDescription.setText(lang.productDescription());
-        } else if (type.getId() == En_DevUnitType.COMPONENT.getId()) {
-            devUnit.setText(lang.devUnitComponent());
-            devUnitName.setText(lang.componentName());
-            devUnitDescription.setText(lang.componentDescription());
-        }
+    public void setType(String type) {
+        typeLabel.setText(type);
     }
 
     @Override
@@ -97,7 +83,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
             rootWrapper.removeStyleName("preview-wrapper");
         }
 
-        productNameBlock.setVisible(isForTableView);
+        nameBlock.setVisible(isForTableView);
         return asWidget();
     }
 
@@ -108,9 +94,9 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     HTMLPanel rootWrapper;
     @UiField
-    SpanElement productName;
+    SpanElement name;
     @UiField
-    HTMLPanel productNameBlock;
+    HTMLPanel nameBlock;
     @UiField
     SpanElement wikiLink;
     @UiField
@@ -120,11 +106,7 @@ public class ProductPreviewView extends Composite implements AbstractProductPrev
     @UiField
     DivElement cdrDescription;
     @UiField
-    Label devUnit;
-    @UiField
-    Label devUnitName;
-    @UiField
-    Label devUnitDescription;
+    Label typeLabel;
 
     @Inject
     FixedPositioner positioner;

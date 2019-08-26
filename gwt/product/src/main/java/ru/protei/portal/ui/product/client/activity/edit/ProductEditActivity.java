@@ -175,8 +175,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
     private void resetView () {
         view.name().setValue("");
-        view.type().setValue(En_DevUnitType.PRODUCT, true);
-        currType = En_DevUnitType.PRODUCT;
+        view.type().setValue(En_DevUnitType.COMPLEX, true);
+        currType = En_DevUnitType.COMPLEX;
         view.parents().setValue(null);
         view.children().setValue(null);
         view.info().setValue("");
@@ -189,8 +189,8 @@ public abstract class ProductEditActivity implements AbstractProductEditActivity
 
         view.setCurrentProduct(devUnit.toProductShortView());
         view.name().setValue(devUnit.getName());
-        view.type().setValue(isCreate ? En_DevUnitType.PRODUCT : devUnit.getType());
-        currType = isCreate ? En_DevUnitType.PRODUCT : devUnit.getType();
+        view.type().setValue(isCreate ? En_DevUnitType.COMPLEX : devUnit.getType());
+        currType = isCreate ? En_DevUnitType.COMPLEX : devUnit.getType();
         view.info().setValue(devUnit.getInfo());
         view.productSubscriptions().setValue(
                 devUnit.getSubscriptions().stream()
