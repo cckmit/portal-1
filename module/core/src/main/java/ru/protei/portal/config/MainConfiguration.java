@@ -29,6 +29,8 @@ import ru.protei.portal.core.model.dao.*;
 import ru.protei.portal.core.model.dao.impl.*;
 import ru.protei.portal.core.model.ent.CaseInfo;
 import ru.protei.portal.core.service.*;
+import ru.protei.portal.core.service.AccountService;
+import ru.protei.portal.core.service.AccountServiceImpl;
 import ru.protei.portal.core.service.bootstrap.BootstrapService;
 import ru.protei.portal.core.report.caseobjects.ReportCase;
 import ru.protei.portal.core.report.caseobjects.ReportCaseImpl;

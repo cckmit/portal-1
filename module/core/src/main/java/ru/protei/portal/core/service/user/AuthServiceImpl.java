@@ -163,6 +163,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public Result<UserSessionDescriptor> login( String appSessionId, String ulogin, String pwd, String ip, String userAgent) {
+        logger.info( "login(): {} {} {} {} {}",  appSessionId,  ulogin,  makePasswordString(pwd),  ip,  userAgent );
         if ( StringUtils.isEmpty(ulogin) || StringUtils.isEmpty(pwd) ) {
             logger.debug("null login or pwd, auth-failed");
             return error( En_ResultStatus.INVALID_LOGIN_OR_PWD);
@@ -251,6 +252,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public boolean logout(String appSessionId, String ip, String userAgent) {
+        logger.info( "logout(): {} {} {} ", appSessionId, ip, userAgent );
         UserSessionDescriptor descriptor = getSessionDescriptor(appSessionId);
 
         if (descriptor == null) return false;
@@ -267,6 +269,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserSessionDescriptor getUserSessionDescriptor(HttpServletRequest request) {
+        logger.info( "getUserSessionDescriptor(): {}", request );
         return ((UserSessionDescriptor)request.getSession().getAttribute( "auth-session-data" ));
     }
 
@@ -274,5 +277,13 @@ public class AuthServiceImpl implements AuthService {
         sessionDAO.remove(descriptor.getSession());
         sessionCache.remove(descriptor.getSessionId());
         descriptor.close();
+    }
+
+    public static String makePasswordString(String password) {
+        if (isEmpty(password)) {
+            return password;
+        } else {
+            return "********";
+        }
     }
 }

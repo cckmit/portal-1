@@ -116,6 +116,7 @@ public class EventAssemblerServiceImpl implements EventAssemblerService {
         return assembledEventsMap.size();
     }
 
+    @Override
     @Scheduled(fixedRate = SCHEDULE_TIME)
     public void checkEventsMap() {
         //Measured in ms

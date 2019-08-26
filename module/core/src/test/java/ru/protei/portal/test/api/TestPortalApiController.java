@@ -2,17 +2,12 @@ package ru.protei.portal.test.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.*;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -20,7 +15,6 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.config.MainTestsConfiguration;
-import ru.protei.portal.core.controller.api.PortalApiController;
 import ru.protei.portal.core.model.dao.PersonDAO;
 import ru.protei.portal.core.model.dao.UserLoginDAO;
 import ru.protei.portal.core.model.dict.En_ContactItemType;
@@ -45,13 +39,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+//TODO restore test data
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class, PortalApiController.class})
 //@WebAppConfiguration
 //@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestPortalApiController extends BaseServiceTest {
-    @Autowired
+//    @Autowired
     WebApplicationContext webApplicationContext;
 
     private MockMvc mockMvc;

@@ -13,6 +13,7 @@ import ru.protei.portal.core.model.dict.En_ImportanceLevel;
 import ru.protei.portal.core.model.dict.En_TextMarkup;
 import ru.protei.portal.core.model.ent.*;
 import ru.protei.portal.core.model.struct.NotificationEntry;
+import ru.protei.portal.core.renderer.HTMLRenderer;
 import ru.protei.portal.core.service.template.PreparedTemplate;
 import ru.protei.portal.test.service.CaseCommentServiceTest;
 import ru.protei.winter.core.CoreConfigurationContext;
@@ -26,12 +27,12 @@ import static org.junit.Assert.assertNotNull;
 import static ru.protei.portal.core.utils.WorkTimeFormatter.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, DatabaseConfiguration.class, MainTestsConfiguration.class})
+@ContextConfiguration(classes = {CoreConfigurationContext.class, JdbcConfigurationContext.class, MainTestsConfiguration.class})
 public class TemplateServiceImplTest {
 
     @Test
     public void escapeTextComment_ReplaceLineBreaks() {
-        String result = ((TemplateServiceImpl) templateService).escapeTextAndRenderHTML( commentTextWithBreaks, En_TextMarkup.MARKDOWN );
+        String result = htmlRenderer.plain2html( commentTextWithBreaks, En_TextMarkup.MARKDOWN, false );
         assertEquals( commentTextWithBreaksFormatted, result );
     }
 
@@ -43,7 +44,7 @@ public class TemplateServiceImplTest {
         CaseObject initState = createNewCaseObject(person, 2 * DAY + 3 * HOUR + 21 * MINUTE);
         CaseObject lastState = createNewCaseObject(person, 4 * DAY + 15 * HOUR + 48 * MINUTE);
 
-        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(caseService, initState, lastState, person);
+        AssembledCaseEvent assembledCaseEvent = new AssembledCaseEvent(new Object(), initState, lastState, person);
         List<CaseComment> comments = Collections.EMPTY_LIST;
 
 
@@ -79,7 +80,7 @@ public class TemplateServiceImplTest {
     @Autowired
     TemplateService templateService;
     @Autowired
-    CaseService caseService;
+    HTMLRenderer htmlRenderer;
 
     private String commentTextWithBreaks = " ```\n" +
             "ls -l\n" +

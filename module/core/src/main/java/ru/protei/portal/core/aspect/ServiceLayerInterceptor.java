@@ -47,16 +47,24 @@ public class ServiceLayerInterceptor {
 
     private static Logger logger = LoggerFactory.getLogger(ServiceLayerInterceptor.class);
 
-    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
-//    @Pointcut("call(public ru.protei.portal.api.struct.CoreResponse *(..))")
-    private void coreResponseMethod() {}
-
-
-    @Pointcut("within(ru.protei.portal.core.service..*)")
+    @Pointcut("within(ru.protei.portal.core.service.*)")
     private void inServiceLayer() {}
 
+    @Pointcut("within(ru.protei.portal.core.service.user.*)")
+    public void secureServiceMethod() {
+    }
 
-    @Around("coreResponseMethod() && inServiceLayer()")
+    @Around("secureServiceMethod()")
+    public Object unhandledExceptionSecureMethods( ProceedingJoinPoint pjp ) {
+        try {
+            return pjp.proceed();
+        } catch (Throwable t) {
+            logger.warn( "Unhandled exception from secure methods: {}", pjp.getSignature(), t );
+            return null;
+        }
+    }
+
+    @Around("inServiceLayer()")
     public Object unhandledException (ProceedingJoinPoint pjp) {
 
         try {
@@ -66,44 +74,31 @@ public class ServiceLayerInterceptor {
             return result;
         }
         catch (Throwable e) {
-            logger.debug("service layer unhandled exception", e);
+            logger.warn("service layer unhandled exception", e);
 
             if (JdbcHelper.isTemporaryDatabaseError (e)) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.DB_TEMP_ERROR);
+                return error( En_ResultStatus.DB_TEMP_ERROR);
             }
 
             if (e instanceof SQLException) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.DB_COMMON_ERROR);
+                return error( En_ResultStatus.DB_COMMON_ERROR);
             }
 
             if (e instanceof InvalidAuthTokenException ) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.INVALID_SESSION_ID );
+                return error( En_ResultStatus.INVALID_SESSION_ID );
             }
 
             if ( e instanceof InsufficientPrivilegesException ) {
-                return handleReturn(pjp.getSignature(), En_ResultStatus.PERMISSION_DENIED );
+                return error( En_ResultStatus.PERMISSION_DENIED );
             }
 
             if ( e instanceof ResultStatusException ) {
-                En_ResultStatus resultStatus = ((ResultStatusException) e).getResultStatus();
-                return handleReturn(pjp.getSignature(), resultStatus);
+                return error( ((ResultStatusException) e).getResultStatus());
             }
+
+            return error( En_ResultStatus.INTERNAL_ERROR );
         }
-
-        return handleReturn(pjp.getSignature(), En_ResultStatus.INTERNAL_ERROR);
     }
-
-    private Object handleReturn (Signature signature, En_ResultStatus status) {
-        if (!(signature instanceof MethodSignature))
-            return null;
-
-        if (Result.class.isAssignableFrom(((MethodSignature)signature).getReturnType())) {
-            return error(status);
-        }
-
-        return null;
-    }
-
 
     private void tryDoAudit( ProceedingJoinPoint pjp, Object result ) {
 

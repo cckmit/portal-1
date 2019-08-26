@@ -4,6 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.springframework.core.annotation.Order;
 import ru.protei.portal.api.struct.Result;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 import java.util.*;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static ru.protei.portal.api.struct.Result.error;
 
 /**
  * Журналирование
@@ -25,26 +27,39 @@ public class ServiceLayerInterceptorLogging {
 
     HashMap<String, MethodProfile> profiling = new HashMap<>();
 
-    @Pointcut("execution(public ru.protei.portal.api.struct.Result *(..))")
-    private void coreResponseMethod() {}
-
-    @Pointcut("within(ru.protei.portal.core.service..*)")
+    @Pointcut("within(ru.protei.portal.core.service.*)")
     private void inServiceLayer() {}
 
-    @Around("coreResponseMethod() && inServiceLayer()")
+    @Pointcut("within(ru.protei.portal.core.service.user.*)")
+    public void secureServiceMethod() {
+    }
+
+    @Around("inServiceLayer()")
     public Object serviceMethodLogging(ProceedingJoinPoint pjp) throws Throwable {
-        String threadName = Thread.currentThread().getName();
         String methodName = pjp.getSignature().toShortString();
+        log.debug("calling : {} args: {}", methodName, pjp.getArgs());
+
+        return invokeMethod( methodName, pjp);
+    }
+
+    @Around("secureServiceMethod()")
+    public Object authorizeSecureProcess(ProceedingJoinPoint pjp) throws Throwable {
+        String methodName = pjp.getSignature().toShortString();
+        log.debug("calling : {} : <secure>", methodName);
+
+        return invokeMethod( methodName, pjp);
+    }
+
+    private Object invokeMethod( final String methodName, ProceedingJoinPoint pjp )throws Throwable {
+        String threadName = Thread.currentThread().getName();
         Thread.currentThread().setName("T-" + Thread.currentThread().getId() + " " + methodName);
 
-        Object[] securedArguments = makeSecuredArguments(methodName, pjp.getArgs());
-        log.debug("calling : {} args: {}", methodName, securedArguments);
+        Object result = null;
         long currentTimeMillis = System.currentTimeMillis();
 
-        Result result = ERROR_RESPONSE;
         try {
 
-            result = (Result) pjp.proceed();
+            result = pjp.proceed();
 
         } finally {
             Long executionTime = System.currentTimeMillis() - currentTimeMillis;
@@ -65,49 +80,35 @@ public class ServiceLayerInterceptorLogging {
         return result;
     }
 
-    private Object[] makeSecuredArguments(String methodName, Object[] arguments) {
-        if (!SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP.containsKey(methodName)) {
-            return arguments;
-        }
-        List<Integer> securedArgumentIndexes = SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP.get(methodName);
-        for (Integer index : securedArgumentIndexes) {
-            if (index < 0 || index >= arguments.length) {
-                continue;
-            }
-            arguments[index] = "<secured>";
-        }
-        return arguments;
-    }
-
-    private String makeResultAsString( Result result ) {
+    private String makeResultAsString( Object result ) {
         if ( result == null ) {
             return "Result is null.";
         }
-        Object resultObject = result.getData();
+
+        if (result instanceof Result) {
+            Result resultObject = ((Result) result);
+            return resultObject.getStatus() + " " + makeStringFromObject( resultObject.getData() );
+        }
+
+        return makeStringFromObject( result );
+    }
+
+    private String makeStringFromObject( Object resultObject ) {
         if ( resultObject == null ) {
-            return makeStatusString( result ) + " ResultObject is null.";
+            return "ResultObject is null.";
         }
 
         if ( resultObject instanceof Collection<?>) {
             log.trace( "ResultObject: {}", resultObject );
-            return makeStatusString( result ) + " collection size=" + ((Collection) resultObject).size();
+            return "collection size=" + ((Collection) resultObject).size();
         }
 
         if ( resultObject instanceof Map<?, ?>) {
             log.trace( "ResultObject: {}", resultObject );
-            return makeStatusString( result ) + " map size=" + ((Map) resultObject).size();
+            return "map size=" + ((Map) resultObject).size();
         }
-        return String.valueOf( resultObject );
+        return null;
     }
-
-    private Serializable makeStatusString( Result result ) {
-        return result == null ? "Result is null." : result.getStatus();
-    }
-
-    private static final Map<String, List<Integer>> SECURED_METHOD_TO_ARGUMENT_INDEXES_MAP = new HashMap<String, List<Integer>>() {{
-        put("AuthService.login(..)", Arrays.asList(2));
-    }};
-      private static final Result<Object> ERROR_RESPONSE = Result.error( En_ResultStatus.INTERNAL_ERROR);
 
 }
 
