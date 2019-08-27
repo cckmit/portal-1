@@ -1,6 +1,5 @@
 package ru.protei.portal.test.jira;
 
-import com.atlassian.jira.rest.client.api.domain.Issue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,19 +14,13 @@ public class IssueMappingTest {
 
     @Test
     public void createIssue() {
-/*
-        Issue issue = new Issue();
-        Project, CreationDate, UpdateDate, Reporter, Status, FieldByName(CustomJiraIssueParser.SEVERITY_CODE_NAME), Comments, Attachments, Key
-*/
     }
 
     @Test
     public void updateIssue() {
-
     }
 
     @Test
     public void createIssueComment() {
-
     }
 }
