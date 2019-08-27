@@ -138,6 +138,7 @@ public class AppView extends Composite
         logout.ensureDebugId(DebugIds.APP_VIEW.LOGOUT_BUTTON);
         toggleButton.ensureDebugId(DebugIds.APP_VIEW.TOGGLE_SIDEBAR_BUTTON);
         profile.ensureDebugId(DebugIds.APP_VIEW.USER_PANEL);
+        notifyContainer.ensureDebugId(DebugIds.APP_VIEW.NOTIFICATION_CONTAINER);
     }
 
     private void initHandlers() {
