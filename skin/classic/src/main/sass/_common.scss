@@ -1894,9 +1894,8 @@ td.info {
   font-weight: bold;
 }
 
-
 .label-opened, .label-workaround, .label-info_request,
-.label-technical_project,
+.label-technical_project, .label-nx_request, label-cust_request,
 .option-technical_project .option-name,
 .option-opened .option-name,
 .option-workaround .option-name,
@@ -1915,7 +1914,8 @@ td.info {
   font-weight: bold;
 }
 
-.case-opened, .case-workaround, .case-info_request {
+.case-opened, .case-workaround, .case-info_request,
+.case-nx_request, .case-cust_request {
   color: $info_color;
   font-weight: bold;
 }
