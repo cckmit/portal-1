@@ -26,7 +26,6 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
-import java.util.Properties;
 import java.util.Random;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -59,82 +58,60 @@ public class TestWorkerController {
 
     @Test
     public void testAddWorker() throws Exception {
-        logger.debug("START =======================================================================");
-
         WorkerRecord worker = createWorkerRecord();
         ServiceResult sr;
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
         sr = addWorker(new WorkerRecord());
-        Assert.assertNotNull("Result add.worker is null!", sr);
         Assert.assertEquals("add.worker: empty worker was added! ", false, sr.isSuccess());
 
         worker.setFireDate("2019-05-05");
         sr = addWorker(worker);
-        Assert.assertNotNull("Result add.worker is null!", sr);
         Assert.assertEquals("add.worker: fired worker was added! ", false, sr.isSuccess());
 
         worker.setFireDate(null);
         worker.setFired(false);
         sr = addWorker(worker);
-        Assert.assertNotNull("Result add.worker is null!", sr);
         Assert.assertEquals("add.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("add.worker must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
 
         sr = addWorker(worker);
-        Assert.assertNotNull("Result add.worker is null!", sr);
         Assert.assertEquals("add.worker: already exist worker was added! " + sr.getErrInfo(), false, sr.isSuccess());
 
         deleteWorker(worker);
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
 
     @Test
     public void testUpdateWorker() throws Exception {
-        logger.debug("START =======================================================================");
-
         WorkerRecord worker = createWorkerRecord();
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
         ServiceResult successServiceResult = addWorker(worker);
         ServiceResult sr;
 
-
         sr = updateWorker(worker);
-        Assert.assertNotNull("Result update.worker is null!", sr);
         Assert.assertEquals("update.worker worker with nonexistent personId was updated!", false, sr.isSuccess());
 
         worker.setId(successServiceResult.getId());
         sr = updateWorker(worker);
-        Assert.assertNotNull("Result update.worker is null!", sr);
         Assert.assertEquals("update.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("update.worker must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
 
         worker.setFireDate("2019-05-05");
         worker.setDeleted(true);
         sr = updateWorker(worker);
-        Assert.assertNotNull("Result update.worker is null!", sr);
         Assert.assertEquals("update.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("update.worker must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
 
         sr = updateWorker(worker);
-        Assert.assertNotNull("Result update.worker is null!", sr);
         Assert.assertEquals("update.worker fired worker was updated!", false, sr.isSuccess());
 
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
 
     @Test
     public void testDeleteWorker() throws Exception {
-        logger.debug("START =======================================================================");
-
         WorkerRecord worker = createWorkerRecord();
         ServiceResult sr;
         DepartmentRecord department = createDepartmentRecord();
@@ -144,28 +121,20 @@ public class TestWorkerController {
         emptyWorker.setWorkerId(worker.getWorkerId());
         emptyWorker.setCompanyCode(worker.getCompanyCode());
         sr = deleteWorker(emptyWorker);
-        Assert.assertNotNull("Result delete.worker is null!", sr);
         Assert.assertEquals("delete.worker: empty worker was deleted! ", false, sr.isSuccess());
 
         addWorker(worker);
         sr = deleteWorker(worker);
-        Assert.assertNotNull("Result delete.worker is null!", sr);
         Assert.assertEquals("delete.worker is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("delete.worker must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
 
         sr = deleteWorker(worker);
-        Assert.assertNotNull("Result delete.worker is null!", sr);
-        Assert.assertEquals("delete.worker: the deleted worker was deleted! ", false, sr.isSuccess());
+        Assert.assertEquals("delete.worker: already deleted worker was deleted! ", false, sr.isSuccess());
 
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
     @Test
     public void testGetPerson() throws Exception {
-        logger.debug("START =======================================================================");
-
         String uri = BASE_URI + "get.person";
 
         WorkerRecord worker = createWorkerRecord();
@@ -178,19 +147,14 @@ public class TestWorkerController {
 
         WorkerRecord wr = getWorkerByUri(uriBuilder);
 
-        Assert.assertNotNull("Result of get.person is null!", wr);
         Assert.assertEquals("get.person: added and got person are different", sr.getId(), wr.getId());
 
         deleteWorker(worker);
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
     @Test
     public void testGetWorker() throws Exception {
-        logger.debug("START =======================================================================");
-
         String uri = BASE_URI + "get.worker";
         WorkerRecord worker = createWorkerRecord();
         DepartmentRecord department = createDepartmentRecord();
@@ -204,70 +168,48 @@ public class TestWorkerController {
 
         WorkerRecord wr = getWorkerByUri(uriBuilder);
 
-        Assert.assertNotNull("Result of get.worker is null!", wr);
         Assert.assertEquals("get.worker: added and got worker are different", worker.getWorkerId(), wr.getWorkerId());
 
         deleteWorker(worker);
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
     @Test
     public void testGetDepartment() throws Exception {
-        logger.debug("START =======================================================================");
-
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
         DepartmentRecord dr = getDepartment(department);
 
-        Assert.assertNotNull("Result of get.department is null!", dr);
         Assert.assertEquals("get.department: added and got worker are different", department.getDepartmentId(), dr.getDepartmentId());
 
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
     @Test
     public void testUpdateDepartment() throws Exception {
-        logger.debug("START =======================================================================");
-
         DepartmentRecord department = createDepartmentRecord();
 
         ServiceResult sr = createOrUpdateDepartment(department);
 
-        Assert.assertNotNull("Result update.department is null!", sr);
         Assert.assertEquals("update.department is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("update.department must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
 
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
     @Test
     public void testDeleteDepartment() throws Exception {
-        logger.debug("START =======================================================================");
-
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
 
         ServiceResult sr = deleteDepartment(department);
 
-        Assert.assertNotNull("Result delete.department is null!", sr);
         Assert.assertEquals("delete.department is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("delete.department must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
-
-        logger.debug("END =========================================================================");
     }
 
 
     @Test
     public void testUpdatePosition() throws Exception {
-        logger.debug("START =======================================================================");
-
         String uri = BASE_URI + "update.position";
         DepartmentRecord department = createDepartmentRecord();
         createOrUpdateDepartment(department);
@@ -292,20 +234,14 @@ public class TestWorkerController {
 
         logger.debug("ServiceResult = " + sr);
 
-        Assert.assertNotNull("Result update.position is null!", sr);
         Assert.assertEquals("update.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("update.position must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
 
         deleteWorker(worker);
         deleteDepartment(department);
-
-        logger.debug("END =========================================================================");
     }
 
     @Test
     public void testDeletePosition() throws Exception {
-        logger.debug("START =======================================================================");
-
         String uri = BASE_URI + "delete.position";
         WorkerRecord worker = createWorkerRecord();
 
@@ -325,14 +261,9 @@ public class TestWorkerController {
 
         logger.debug("ServiceResult = " + sr);
 
-        Assert.assertNotNull("Result delete.position is null!", sr);
         Assert.assertEquals("delete.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-        Assert.assertTrue("delete.position must return not null identifer!", (sr.getId() != null && sr.getId() > 0));
-        logger.debug("The position is deleted. id = " + sr.getId());
 
         deleteWorker(worker);
-
-        logger.debug("END =========================================================================");
     }
 
 
@@ -346,9 +277,6 @@ public class TestWorkerController {
 
         Long id = sr.getId();
         byte[] buf = read (id);
-        logger.debug ("personId = " + sr.getId());
-        logger.debug ("photo = " + buf);
-        logger.debug("photo's length = " + (buf != null ? buf.length : null));
 
         String uri = BASE_URI + "update.photo";
 
@@ -365,10 +293,7 @@ public class TestWorkerController {
         );
         sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
 
-        Assert.assertNotNull ("Result updatePhoto() is null!", sr);
         Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
-        Assert.assertTrue ("updatePhoto() must return not null identifer!", (sr.getId () != null && sr.getId () > 0));
-        logger.debug ("The photo of worker is updated. id = " + sr.getId ());
 
         deleteWorker(worker);
         deleteDepartment(department);
