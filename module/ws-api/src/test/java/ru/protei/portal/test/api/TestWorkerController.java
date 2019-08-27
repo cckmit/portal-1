@@ -1,5 +1,6 @@
 package ru.protei.portal.test.api;
 
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.protei.portal.api.config.APIConfigurationContext;
+import ru.protei.portal.api.config.WSConfig;
 import ru.protei.portal.api.model.*;
 import ru.protei.portal.config.DatabaseConfiguration;
 import ru.protei.portal.core.model.struct.Photo;
@@ -275,22 +277,22 @@ public class TestWorkerController {
         Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
     }
 
-  /*  @Test
-    public void testGetPhotos() {
+    @Test
+    @Ignore
+    public void testGetPhotos() throws Exception{
         IdList list = new IdList ();
         list.getIds().add (new Long (148));
         list.getIds().add (new Long (149));
 
-        String URI = BASE_URI + "get.photos";
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(getMessageConverters());
+        String uri = BASE_URI + "get.photos";
+        ResultActions result = mockMvc.perform(
+                get(uri)
+                        .header("Accept", "application/xml")
+                        .contentType(MediaType.APPLICATION_XML)
+        );
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Arrays.asList(MediaType.APPLICATION_XML));
-        HttpEntity<IdList> entity = new HttpEntity<>(list, headers);
 
-        ResponseEntity<PhotoList> response = restTemplate.exchange(URI, HttpMethod.POST, entity, PhotoList.class);
-        PhotoList pl = response.getBody();
+        PhotoList pl = (PhotoList) fromXml(result.andReturn().getResponse().getContentAsString());
 
         Assert.assertNotNull ("Result getPhotos() is null!", pl);
         for (Photo p : pl.getPhotos()) {
@@ -311,7 +313,7 @@ public class TestWorkerController {
                 } catch (Exception e) {}
             }
         }
-    }*/
+    }
 
 
 
@@ -533,18 +535,12 @@ public class TestWorkerController {
         ByteArrayOutputStream out = null;
         InputStream input = null;
 
-        InputStream is = null;
-
         try {
             String fileName = id + ".jpg";
             logger.debug("fileName = " + fileName);
             File file = new File(getClass().getClassLoader().getResource("source.jpg").getFile());
             if (file.exists()) {
                 copy(file.getAbsolutePath(), file.getParent() + "/" + id + ".jpg");
-                /*is = TestWorkerController.class.getResourceAsStream("/service.properties");
-                Properties props = new Properties();
-                props.load(is);
-                props.setProperty("dir_photos", file.getAbsolutePath());*/
                 out = new ByteArrayOutputStream();
                 input = new BufferedInputStream(new FileInputStream(file));
                 int data = 0;
