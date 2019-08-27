@@ -35,7 +35,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ContextConfiguration(classes = {APIConfigurationContext.class, DatabaseConfiguration.class})
 public class TestWorkerController {
 
-
     @Autowired
     WebApplicationContext webApplicationContext;
     private static Logger logger = LoggerFactory.getLogger(TestWorkerController.class);
@@ -48,7 +47,6 @@ public class TestWorkerController {
     public static void initClass() throws Exception {
         initJAXB();
         BASE_URI = "http://localhost:8090/api/worker/";
-
     }
 
     @Before
@@ -77,9 +75,6 @@ public class TestWorkerController {
 
         sr = addWorker(worker);
         Assert.assertEquals("add.worker: already exist worker was added! " + sr.getErrInfo(), false, sr.isSuccess());
-
-        deleteWorker(worker);
-        deleteDepartment(department);
     }
 
 
@@ -105,8 +100,6 @@ public class TestWorkerController {
 
         sr = updateWorker(worker);
         Assert.assertEquals("update.worker fired worker was updated!", false, sr.isSuccess());
-
-        deleteDepartment(department);
     }
 
 
@@ -129,8 +122,6 @@ public class TestWorkerController {
 
         sr = deleteWorker(worker);
         Assert.assertEquals("delete.worker: already deleted worker was deleted! ", false, sr.isSuccess());
-
-        deleteDepartment(department);
     }
 
     @Test
@@ -148,9 +139,6 @@ public class TestWorkerController {
         WorkerRecord wr = getWorkerByUri(uriBuilder);
 
         Assert.assertEquals("get.person: added and got person are different", sr.getId(), wr.getId());
-
-        deleteWorker(worker);
-        deleteDepartment(department);
     }
 
     @Test
@@ -169,9 +157,6 @@ public class TestWorkerController {
         WorkerRecord wr = getWorkerByUri(uriBuilder);
 
         Assert.assertEquals("get.worker: added and got worker are different", worker.getWorkerId(), wr.getWorkerId());
-
-        deleteWorker(worker);
-        deleteDepartment(department);
     }
 
     @Test
@@ -182,8 +167,6 @@ public class TestWorkerController {
         DepartmentRecord dr = getDepartment(department);
 
         Assert.assertEquals("get.department: added and got worker are different", department.getDepartmentId(), dr.getDepartmentId());
-
-        deleteDepartment(department);
     }
 
     @Test
@@ -193,8 +176,6 @@ public class TestWorkerController {
         ServiceResult sr = createOrUpdateDepartment(department);
 
         Assert.assertEquals("update.department is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-
-        deleteDepartment(department);
     }
 
     @Test
@@ -235,15 +216,15 @@ public class TestWorkerController {
         logger.debug("ServiceResult = " + sr);
 
         Assert.assertEquals("update.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-
-        deleteWorker(worker);
-        deleteDepartment(department);
     }
 
     @Test
     public void testDeletePosition() throws Exception {
         String uri = BASE_URI + "delete.position";
         WorkerRecord worker = createWorkerRecord();
+        worker.setPositionName("Unique position for delete test");
+        addWorker(worker);
+        deleteWorker(worker);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(uri)
                 .queryParam("name", worker.getPositionName())
@@ -262,8 +243,6 @@ public class TestWorkerController {
         logger.debug("ServiceResult = " + sr);
 
         Assert.assertEquals("delete.position is not success! " + sr.getErrInfo(), true, sr.isSuccess());
-
-        deleteWorker(worker);
     }
 
 
@@ -294,9 +273,6 @@ public class TestWorkerController {
         sr = (ServiceResult) fromXml(result.andReturn().getResponse().getContentAsString());
 
         Assert.assertEquals ("updatePhoto() is not success! " + sr.getErrInfo (), true, sr.isSuccess ());
-
-        deleteWorker(worker);
-        deleteDepartment(department);
     }
 
   /*  @Test
@@ -343,7 +319,6 @@ public class TestWorkerController {
         WorkerRecord worker = new WorkerRecord();
 
         worker.setCompanyCode("protei");
-        worker.setId(100000L + new Random().nextInt(100000));
         worker.setFirstName("TestFirstName" + System.currentTimeMillis());
         worker.setLastName("TestLastName" + System.currentTimeMillis());
         worker.setSecondName("TestSecondName" + System.currentTimeMillis());
