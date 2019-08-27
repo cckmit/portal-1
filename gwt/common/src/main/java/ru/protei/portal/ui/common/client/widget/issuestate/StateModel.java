@@ -127,7 +127,10 @@ public abstract class StateModel implements Activity {
             }
         }
 
-        return CollectionUtils.toList(nextCaseStates, cs -> cs);
+        List<En_CaseState> availableCaseStates = new ArrayList<>(caseStatesList);
+        availableCaseStates.retainAll(nextCaseStates); // если возвращать nextCaseStates, список статусов не отсортировани в нужном порядке
+
+        return availableCaseStates;
     }
 
     @Inject
